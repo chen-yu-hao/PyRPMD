@@ -1,0 +1,54 @@
+{
+  "adopted": false,
+  "created_utc": "2026-11-01T21:57:25.356569+00:00",
+  "physical_execution_authorized": false,
+  "preparation_envelope": {
+    "no_physical_calls": true,
+    "observed_CPU_limit_seconds": 300,
+    "wall_limit_seconds": 900
+  },
+  "proposal": {
+    "bytes": 16401,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/proposal.json",
+    "sha256": "65568f44ab61a40207c4b7bb3f72ba9e228eade37ca152fc753cb5612aa67e7a"
+  },
+  "required_reviewer_scope": "Validate new admission/source/archive binding, exact relocation/no-original-writes, whole8 membership, private worker limits before scientific imports, SIGALRM ownership-capture mask and confirmed drain. No real sampling in tests.",
+  "resource_estimates": {
+    "bytes": 6654,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/resource-estimates.json",
+    "sha256": "0b9b99fc9a41714392ff98601d99c0194c0c485f64264704051bffc73a182bb0"
+  },
+  "sampling_envelope": {
+    "allowed_workers": [
+      2,
+      4
+    ],
+    "automatic_retry_or_extension": false,
+    "drain_reserve_seconds": 120,
+    "metadata_watchdog_interval_seconds": 1.0,
+    "mid_run_resize": false,
+    "owner_CPU_semantics": "Observed cooperative process-CPU budget checked by hash/guard operations and metadata watchdog; not an inherited low RLIMIT_CPU that would prevent children installing the6h hard cap.",
+    "owner_observed_CPU_limit_seconds": 600,
+    "per_seed_CPU_hard_limit_seconds": 21600,
+    "per_seed_wall_hard_limit_seconds": 21600,
+    "planned_total_observed_RSS_limit_bytes": 3221225472,
+    "whole_owner_wall_seconds": 43200
+  },
+  "schema": "pyrpmd.h3.isolated300k-implementation-policy.v1",
+  "scope": "New scheduling-only owner around frozen one_seed; all scientific parameters/prefixes/seed order/analysis remain from the proposal. This policy supplements the historical design before implementation/adoption.",
+  "storage_revision": {
+    "MC_new_working_future_archive_and_fresh_replay_allowance_bytes": 5000000000,
+    "adoption_must_recheck_actual_headroom_and_remaining_other_reservations": true,
+    "four_worker_watchdog_free_threshold_bytes": 5174967296,
+    "mandatory_free_reserve_bytes": 4294967296,
+    "no_deletion_or_cleanup_of_old_evidence": true,
+    "observation_arrays_bytes_per_seed": 195840000,
+    "other_prospective_water_reservation_bytes": 15300000000,
+    "per_active_checkpoint_temporary_buffer_allowance_bytes": 220000000,
+    "planning_only_no_OS_quota_or_other_workload_guarantee": true,
+    "root_reported_free_bytes_approximate": 25000000000,
+    "supersedes_only_initial10GiB_storage_forecast": true,
+    "two_worker_watchdog_free_threshold_bytes": 4734967296,
+    "watchdog_action": "Signal only this owner to stop admissions and bounded-drain owned children before reaching the reserved floor. It reads filesystem free bytes and only owned-worker RSS, never another project or process."
+  }
+}

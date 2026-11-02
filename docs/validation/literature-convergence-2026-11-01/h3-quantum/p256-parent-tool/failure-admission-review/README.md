@@ -1,0 +1,9 @@
+# Final failure-admission review
+
+This final scheduling-only revision closes the related independent review finding: a worker that has already exited nonzero must prevent another free-slot admission. Both immediate pre-admission checks now poll all still-owned active processes. A known nonzero exit stops admissions, and the failed process stays in the drain/reap set. No producer, settings, RNG, estimator, physical proposal or output schema changed.
+
+The authoritative gate in this directory is `synthetic-gate.json`: **61 tests passed, zero skipped, 3.62 seconds**, one CPU, zero external PES evaluations or real dynamics. The added inert fixture waits for a known first-child exit 3 with `waitid(..., WNOWAIT)`, then checks that no second child starts and the original child is reaped. All earlier replay, identity, authorization, signal, deadline, exclusion and completion fixtures still pass. The actual read-only preflight again passes all 39 guards and creates no production output.
+
+Use the authorization schema and output contract in this directory; they bind the final driver SHA. The previous candidate is preserved in `initial-source/` with the earlier source/test hashes, and all earlier receipts and inventories remain unchanged. The complete current publication list is `../publishable-files-v3.json`; `freeze.json` binds this candidate. An independent review receipt and root's actual resource authorization remain prerequisites for running the tool. This package itself launches no parent sampling or children.
+
+The independent eight-chain design and global eligible-manifest semantics are exactly those described in the original tool README. Old candidate manifests describe historical path contents at their freeze time; the corresponding preserved source versions make those records reviewable after the bug fixes.

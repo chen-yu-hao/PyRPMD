@@ -1,0 +1,678 @@
+{
+  "all_eight_counts_complete_and_verified": true,
+  "all_owned_workers_drained": true,
+  "attempt_plan": {
+    "bytes": 11146,
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/plan.json",
+    "sha256": "589a04492fb95071b088b1d64b02d47801b1409c57a8a1fc5ac7e2220e99dfc7"
+  },
+  "authorization": {
+    "bytes": 1387,
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/execution/authorization.json",
+    "sha256": "ad0c4140ddb6cce7bf0eb0a8d499ab1a4a8ecdfa4d25656c1170dbf2bf83ba3e"
+  },
+  "child_system_CPU_seconds": 13.4524,
+  "child_user_CPU_seconds": 2018.9784,
+  "coordinator_system_CPU_seconds": 0.49202399999999996,
+  "coordinator_user_CPU_seconds": 2.593849,
+  "created_utc": "2026-11-01T20:07:20.325689+00:00",
+  "design_sha256": "c668c15fd89ca0a535afc4082521e3f42ba9e84f5736b5b481bc1d7c376d791d",
+  "dynamic_bead_convergence_demonstrated": false,
+  "eligible_for_separately_authorized_children": true,
+  "errors": [],
+  "four_chain_interim_selection": false,
+  "independent_parent_chains": 8,
+  "launched_seeds": [
+    825601,
+    825603,
+    825607,
+    825609,
+    825613,
+    825617,
+    825621,
+    825623
+  ],
+  "parents": [
+    {
+      "BAR_log_TS_quantum_classical_ratio": -2.188673115015974,
+      "beads": 256,
+      "checkpoint_bytes": 5932283,
+      "checkpoint_sha256": "8ee6608c545e52cbf82eb5dbddcc0de0eb9ed01d981fc7c16e3650166bd0b185",
+      "cohort_role": "historical_deterministic_replay",
+      "complete": true,
+      "completed_sweeps": 22000,
+      "files": {
+        "checkpoint.npz": {
+          "bytes": 5932283,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/checkpoint.npz",
+          "sha256": "8ee6608c545e52cbf82eb5dbddcc0de0eb9ed01d981fc7c16e3650166bd0b185"
+        },
+        "reference-domain.json": {
+          "bytes": 495,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/reference-domain.json",
+          "sha256": "f9bad9ab1d3f83eb18f65f09cd8755fc9f138ba6ef5bfd379e54f075c4354449"
+        },
+        "reference.json": {
+          "bytes": 603,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/reference.json",
+          "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+        },
+        "report.json": {
+          "bytes": 8708,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/report.json",
+          "sha256": "3767c31ec46d4828127934bdc33e5f14cde3f6cbcceecb6ce6b735fbfd5a694a"
+        },
+        "settings.json": {
+          "bytes": 2893,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/settings.json",
+          "sha256": "e518706d08ad3bc9e6a97f9401e7f50e04c0bd7afd104d92349a129790afcac8"
+        }
+      },
+      "half_log_partition_difference": -0.03443139884751689,
+      "historical_replay": {
+        "bitwise_verified_array_count": 16,
+        "bitwise_verified_arrays": [
+          "accepted",
+          "completed",
+          "delta_energy",
+          "diagnostics",
+          "domain_sha256",
+          "endpoint_traversals",
+          "eta_R",
+          "eta_r",
+          "last_extreme",
+          "lineage",
+          "proposed",
+          "radius",
+          "ratio",
+          "rng",
+          "swap_accepts",
+          "swap_attempts"
+        ],
+        "original_checkpoint_sha256": "50537e53bd1e5923c2b5ad8660f880fc51327f21e5b2a29868bacd9507658803",
+        "original_files": {
+          "checkpoint.npz": {
+            "bytes": 2397672,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/checkpoint.npz",
+            "sha256": "50537e53bd1e5923c2b5ad8660f880fc51327f21e5b2a29868bacd9507658803"
+          },
+          "progress.json": {
+            "bytes": 303,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/progress.json",
+            "sha256": "8cbb4582de84ecbce750b5582a3e2f296edd02b0124b52e81bb0f223de8bbd06"
+          },
+          "reference-domain.json": {
+            "bytes": 495,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/reference-domain.json",
+            "sha256": "f9bad9ab1d3f83eb18f65f09cd8755fc9f138ba6ef5bfd379e54f075c4354449"
+          },
+          "reference.json": {
+            "bytes": 603,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/reference.json",
+            "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+          },
+          "report.json": {
+            "bytes": 8704,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/report.json",
+            "sha256": "b7f133d2748e1c50162b9df9bd3b69e95e1ce7e7b867de7f350384affccdc9ca"
+          },
+          "settings.json": {
+            "bytes": 2891,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/settings.json",
+            "sha256": "8f244e633b79b7dd988a1bd209126a7b71dbdadfbe9926ac57e9bac7a513b21d"
+          }
+        },
+        "reference_bytes_equal": true,
+        "scientific_report_equal": true
+      },
+      "identity_and_geometry_verified": true,
+      "maximum_COM_coordinate_bohr": 7.401486830834377e-17,
+      "maximum_surface_error_bohr": 3.1086244689504383e-15,
+      "minimum_BAR_overlap": 0.9037728807213181,
+      "minimum_bead_pair_bohr": 0.8891132635858887,
+      "minimum_energy_ESS": 898.2230897070262,
+      "parents": 200,
+      "recrossing_children_generated": 0,
+      "sampling_flags_passed": true,
+      "seed": 825601,
+      "settings_fingerprint": "dc38239f77167d197559b91c81da257403fd83230089c42f23c6fdf779077dab",
+      "uncertainty_unit": "one independent equilibrium chain"
+    },
+    {
+      "BAR_log_TS_quantum_classical_ratio": -2.195883329549739,
+      "beads": 256,
+      "checkpoint_bytes": 5931931,
+      "checkpoint_sha256": "f9d00d0031468aacdc7d21da0bdc59166e17a445bbb2c44fa3d49d722a510126",
+      "cohort_role": "historical_deterministic_replay",
+      "complete": true,
+      "completed_sweeps": 22000,
+      "files": {
+        "checkpoint.npz": {
+          "bytes": 5931931,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825603/checkpoint.npz",
+          "sha256": "f9d00d0031468aacdc7d21da0bdc59166e17a445bbb2c44fa3d49d722a510126"
+        },
+        "reference-domain.json": {
+          "bytes": 495,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825603/reference-domain.json",
+          "sha256": "1fdde72830859c42d49b14862a88c5ed2ec60774195fe1cd3ce6ec99acafc60b"
+        },
+        "reference.json": {
+          "bytes": 603,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825603/reference.json",
+          "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+        },
+        "report.json": {
+          "bytes": 8710,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825603/report.json",
+          "sha256": "cc9a8dfeaf4eea37cef98b0f14f4387da97122f25e7d45c4f0e4313bd9d198da"
+        },
+        "settings.json": {
+          "bytes": 2893,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825603/settings.json",
+          "sha256": "68c81549056dc4f8d096fbc694457fd5e6a34e6b409bd3a1428fdd46c913fbfc"
+        }
+      },
+      "half_log_partition_difference": 0.02528009419746624,
+      "historical_replay": {
+        "bitwise_verified_array_count": 16,
+        "bitwise_verified_arrays": [
+          "accepted",
+          "completed",
+          "delta_energy",
+          "diagnostics",
+          "domain_sha256",
+          "endpoint_traversals",
+          "eta_R",
+          "eta_r",
+          "last_extreme",
+          "lineage",
+          "proposed",
+          "radius",
+          "ratio",
+          "rng",
+          "swap_accepts",
+          "swap_attempts"
+        ],
+        "original_checkpoint_sha256": "3af1cc602a14455d816e524e341841aa29a5974fc2f3d99b742b7a3ab499b290",
+        "original_files": {
+          "checkpoint.npz": {
+            "bytes": 2397890,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/checkpoint.npz",
+            "sha256": "3af1cc602a14455d816e524e341841aa29a5974fc2f3d99b742b7a3ab499b290"
+          },
+          "progress.json": {
+            "bytes": 304,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/progress.json",
+            "sha256": "7deea19760806c1d09f1893a4ca458a0fd6fbadeb699db1a65b5a44add8769b3"
+          },
+          "reference-domain.json": {
+            "bytes": 495,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/reference-domain.json",
+            "sha256": "1fdde72830859c42d49b14862a88c5ed2ec60774195fe1cd3ce6ec99acafc60b"
+          },
+          "reference.json": {
+            "bytes": 603,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/reference.json",
+            "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+          },
+          "report.json": {
+            "bytes": 8707,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/report.json",
+            "sha256": "d341d6f77ace62f1df89530e60014874c2ec48f10935996dda0b39034e127a85"
+          },
+          "settings.json": {
+            "bytes": 2891,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/settings.json",
+            "sha256": "1c175cb52de13430ac05e9b1cdb2409f3a5b24f63f98c8af0805ab977aec9713"
+          }
+        },
+        "reference_bytes_equal": true,
+        "scientific_report_equal": true
+      },
+      "identity_and_geometry_verified": true,
+      "maximum_COM_coordinate_bohr": 7.401486830834377e-17,
+      "maximum_surface_error_bohr": 2.6645352591003757e-15,
+      "minimum_BAR_overlap": 0.8981879635739524,
+      "minimum_bead_pair_bohr": 0.9478213781934053,
+      "minimum_energy_ESS": 728.5939845679276,
+      "parents": 200,
+      "recrossing_children_generated": 0,
+      "sampling_flags_passed": true,
+      "seed": 825603,
+      "settings_fingerprint": "4cea017c59175987aa7834f0d0e81ffd12d337b939a1124182f5f224d3994abb",
+      "uncertainty_unit": "one independent equilibrium chain"
+    },
+    {
+      "BAR_log_TS_quantum_classical_ratio": -2.195188786817124,
+      "beads": 256,
+      "checkpoint_bytes": 5932271,
+      "checkpoint_sha256": "66e0bbc585040285f6be6b11e50156f0fbf73fd7315f8d65b27ad09ed7ad672f",
+      "cohort_role": "historical_deterministic_replay",
+      "complete": true,
+      "completed_sweeps": 22000,
+      "files": {
+        "checkpoint.npz": {
+          "bytes": 5932271,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825607/checkpoint.npz",
+          "sha256": "66e0bbc585040285f6be6b11e50156f0fbf73fd7315f8d65b27ad09ed7ad672f"
+        },
+        "reference-domain.json": {
+          "bytes": 495,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825607/reference-domain.json",
+          "sha256": "e536d350bf464890ff956ef295add3aede1a9e1760938e9ae7afc2b4f0610ead"
+        },
+        "reference.json": {
+          "bytes": 603,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825607/reference.json",
+          "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+        },
+        "report.json": {
+          "bytes": 8693,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825607/report.json",
+          "sha256": "c0561d215048cab083a03763502983f8ec5b4ae450d7f98315dafecc249f54f2"
+        },
+        "settings.json": {
+          "bytes": 2893,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825607/settings.json",
+          "sha256": "a541e4a80a6fdcd2180b3f3543555bb12c6a65eb2bcb9152ff1572d0bd5a66a4"
+        }
+      },
+      "half_log_partition_difference": -0.010783448037796184,
+      "historical_replay": {
+        "bitwise_verified_array_count": 16,
+        "bitwise_verified_arrays": [
+          "accepted",
+          "completed",
+          "delta_energy",
+          "diagnostics",
+          "domain_sha256",
+          "endpoint_traversals",
+          "eta_R",
+          "eta_r",
+          "last_extreme",
+          "lineage",
+          "proposed",
+          "radius",
+          "ratio",
+          "rng",
+          "swap_accepts",
+          "swap_attempts"
+        ],
+        "original_checkpoint_sha256": "0c4387eeace08fe35f24a10109c03a7d3b4a6e72d2473363e6e90a69b9b2b664",
+        "original_files": {
+          "checkpoint.npz": {
+            "bytes": 2397287,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/checkpoint.npz",
+            "sha256": "0c4387eeace08fe35f24a10109c03a7d3b4a6e72d2473363e6e90a69b9b2b664"
+          },
+          "progress.json": {
+            "bytes": 305,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/progress.json",
+            "sha256": "a3d2f856060709c90ba1d523d2cf79f309b1582aca69aa4a45cc0a548a208b18"
+          },
+          "reference-domain.json": {
+            "bytes": 495,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/reference-domain.json",
+            "sha256": "e536d350bf464890ff956ef295add3aede1a9e1760938e9ae7afc2b4f0610ead"
+          },
+          "reference.json": {
+            "bytes": 603,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/reference.json",
+            "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+          },
+          "report.json": {
+            "bytes": 8689,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/report.json",
+            "sha256": "f9ce9de57eb0ecd3e9b11ea9ddc6bf304356eb15ca0b4ab87f0fcea9fd938513"
+          },
+          "settings.json": {
+            "bytes": 2891,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/settings.json",
+            "sha256": "59cb3d80a4dddd18caf26d856d09233eb2197f1492c76ef3ef6397c85c9517a5"
+          }
+        },
+        "reference_bytes_equal": true,
+        "scientific_report_equal": true
+      },
+      "identity_and_geometry_verified": true,
+      "maximum_COM_coordinate_bohr": 7.401486830834377e-17,
+      "maximum_surface_error_bohr": 4.440892098500626e-15,
+      "minimum_BAR_overlap": 0.9040290095783151,
+      "minimum_bead_pair_bohr": 0.9360462427208633,
+      "minimum_energy_ESS": 1025.2456074966778,
+      "parents": 200,
+      "recrossing_children_generated": 0,
+      "sampling_flags_passed": true,
+      "seed": 825607,
+      "settings_fingerprint": "4dc20dd809ca1faf0f13097ca43a3614b5814aa6b6727fc72863e4ec50e11545",
+      "uncertainty_unit": "one independent equilibrium chain"
+    },
+    {
+      "BAR_log_TS_quantum_classical_ratio": -2.1639505226659623,
+      "beads": 256,
+      "checkpoint_bytes": 5932301,
+      "checkpoint_sha256": "74f16372a30bcbc3fb2fe08d79210997377fbdbe4e9b4e37a4d020d223a6335c",
+      "cohort_role": "historical_deterministic_replay",
+      "complete": true,
+      "completed_sweeps": 22000,
+      "files": {
+        "checkpoint.npz": {
+          "bytes": 5932301,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825609/checkpoint.npz",
+          "sha256": "74f16372a30bcbc3fb2fe08d79210997377fbdbe4e9b4e37a4d020d223a6335c"
+        },
+        "reference-domain.json": {
+          "bytes": 494,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825609/reference-domain.json",
+          "sha256": "36c7dc9bd309797409c71c742f9bb862d9e634b264472201e25f9552f1f0d224"
+        },
+        "reference.json": {
+          "bytes": 603,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825609/reference.json",
+          "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+        },
+        "report.json": {
+          "bytes": 8716,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825609/report.json",
+          "sha256": "1bcb2e299881f4e2a0e82077cb9103c1b0e27a94fada19fe9f6c7f03c28860f9"
+        },
+        "settings.json": {
+          "bytes": 2893,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825609/settings.json",
+          "sha256": "9b52dd5e89c7fe87fe6049a79ec104d85aeaffa14f31aec44c4d05be4abe7d23"
+        }
+      },
+      "half_log_partition_difference": 0.02112995661235395,
+      "historical_replay": {
+        "bitwise_verified_array_count": 16,
+        "bitwise_verified_arrays": [
+          "accepted",
+          "completed",
+          "delta_energy",
+          "diagnostics",
+          "domain_sha256",
+          "endpoint_traversals",
+          "eta_R",
+          "eta_r",
+          "last_extreme",
+          "lineage",
+          "proposed",
+          "radius",
+          "ratio",
+          "rng",
+          "swap_accepts",
+          "swap_attempts"
+        ],
+        "original_checkpoint_sha256": "7edb555fc86f3395936fbabd42d4705bd8654b865bb9ed00758b62e40dbfe6c0",
+        "original_files": {
+          "checkpoint.npz": {
+            "bytes": 2397311,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/checkpoint.npz",
+            "sha256": "7edb555fc86f3395936fbabd42d4705bd8654b865bb9ed00758b62e40dbfe6c0"
+          },
+          "progress.json": {
+            "bytes": 304,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/progress.json",
+            "sha256": "50ff9eb21abbfe358341364fc9290e9ee51b9dbe23f214096dd89f9e7fb6315c"
+          },
+          "reference-domain.json": {
+            "bytes": 494,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/reference-domain.json",
+            "sha256": "36c7dc9bd309797409c71c742f9bb862d9e634b264472201e25f9552f1f0d224"
+          },
+          "reference.json": {
+            "bytes": 603,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/reference.json",
+            "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+          },
+          "report.json": {
+            "bytes": 8712,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/report.json",
+            "sha256": "176eea850477ea511f7b9b5f88e8947d13047535776e50060dd0d98237b7b62c"
+          },
+          "settings.json": {
+            "bytes": 2891,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/settings.json",
+            "sha256": "64050597dcbf5a313de032b0e5f91cc71b00b8fc0a0fba698424bb094cbf1a3f"
+          }
+        },
+        "reference_bytes_equal": true,
+        "scientific_report_equal": true
+      },
+      "identity_and_geometry_verified": true,
+      "maximum_COM_coordinate_bohr": 7.401486830834377e-17,
+      "maximum_surface_error_bohr": 3.1086244689504383e-15,
+      "minimum_BAR_overlap": 0.9020695069255699,
+      "minimum_bead_pair_bohr": 0.9450222508965519,
+      "minimum_energy_ESS": 734.4193607277025,
+      "parents": 200,
+      "recrossing_children_generated": 0,
+      "sampling_flags_passed": true,
+      "seed": 825609,
+      "settings_fingerprint": "0cd429ac596663865254b938b5bf80b5f54dbe88fd23d711beb3cd08472b0c63",
+      "uncertainty_unit": "one independent equilibrium chain"
+    },
+    {
+      "BAR_log_TS_quantum_classical_ratio": -2.1675251977625396,
+      "beads": 256,
+      "checkpoint_bytes": 5932064,
+      "checkpoint_sha256": "e8f1f0a78940f317681684fab1fa264d550117ac7781def0d728c43accf693b3",
+      "cohort_role": "new_independent_chain",
+      "complete": true,
+      "completed_sweeps": 22000,
+      "files": {
+        "checkpoint.npz": {
+          "bytes": 5932064,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825613/checkpoint.npz",
+          "sha256": "e8f1f0a78940f317681684fab1fa264d550117ac7781def0d728c43accf693b3"
+        },
+        "reference-domain.json": {
+          "bytes": 495,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825613/reference-domain.json",
+          "sha256": "017523525c264342d935f40360eb62897dd82f3213e43461f6315898fcd33db5"
+        },
+        "reference.json": {
+          "bytes": 603,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825613/reference.json",
+          "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+        },
+        "report.json": {
+          "bytes": 8666,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825613/report.json",
+          "sha256": "7df5d25828c624a031f11763b03bf9c0ae2557eff718789cf17ebf400e23e260"
+        },
+        "settings.json": {
+          "bytes": 2893,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825613/settings.json",
+          "sha256": "e9032275c34de6e608c92ceb04a11190cc3c030c37ac426ad2d548b99ccb1bf0"
+        }
+      },
+      "half_log_partition_difference": -0.013806117323299727,
+      "historical_replay": null,
+      "identity_and_geometry_verified": true,
+      "maximum_COM_coordinate_bohr": 7.401486830834377e-17,
+      "maximum_surface_error_bohr": 3.552713678800501e-15,
+      "minimum_BAR_overlap": 0.9022828201753055,
+      "minimum_bead_pair_bohr": 0.9918465981229382,
+      "minimum_energy_ESS": 1078.002098905971,
+      "parents": 200,
+      "recrossing_children_generated": 0,
+      "sampling_flags_passed": true,
+      "seed": 825613,
+      "settings_fingerprint": "0e131c6ceb4bbc4e02cd2cb59179bc805e45db36df3fb378a3f0e4cbb1933e7a",
+      "uncertainty_unit": "one independent equilibrium chain"
+    },
+    {
+      "BAR_log_TS_quantum_classical_ratio": -2.2120319008477973,
+      "beads": 256,
+      "checkpoint_bytes": 5932064,
+      "checkpoint_sha256": "13e9ea6693cc0adc51ae612229d4cdddae7474d54de6158fbe5480a4839d5c1f",
+      "cohort_role": "new_independent_chain",
+      "complete": true,
+      "completed_sweeps": 22000,
+      "files": {
+        "checkpoint.npz": {
+          "bytes": 5932064,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825617/checkpoint.npz",
+          "sha256": "13e9ea6693cc0adc51ae612229d4cdddae7474d54de6158fbe5480a4839d5c1f"
+        },
+        "reference-domain.json": {
+          "bytes": 494,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825617/reference-domain.json",
+          "sha256": "e3d5b683b4c77b7c7138bea21ade2af48354a247b8696fd0f2e8ca5f2573b8a6"
+        },
+        "reference.json": {
+          "bytes": 603,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825617/reference.json",
+          "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+        },
+        "report.json": {
+          "bytes": 8638,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825617/report.json",
+          "sha256": "798b5cfcb8ee3f92ead9d7406e171b33543c231cb7f2d975149180f012d84576"
+        },
+        "settings.json": {
+          "bytes": 2893,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825617/settings.json",
+          "sha256": "32c39f2f7cc88a45c1c2f4bffdcddd6bf28203b1e288899f431b8c2305a75fa5"
+        }
+      },
+      "half_log_partition_difference": 0.08802538029795715,
+      "historical_replay": null,
+      "identity_and_geometry_verified": true,
+      "maximum_COM_coordinate_bohr": 7.401486830834377e-17,
+      "maximum_surface_error_bohr": 2.886579864025407e-15,
+      "minimum_BAR_overlap": 0.9119442582164691,
+      "minimum_bead_pair_bohr": 0.9604443415706966,
+      "minimum_energy_ESS": 950.0592564208595,
+      "parents": 200,
+      "recrossing_children_generated": 0,
+      "sampling_flags_passed": true,
+      "seed": 825617,
+      "settings_fingerprint": "c607ad2c877fdceec0a2953295cc00d7f8c9d7c0d2112df1211c620610dfdcd0",
+      "uncertainty_unit": "one independent equilibrium chain"
+    },
+    {
+      "BAR_log_TS_quantum_classical_ratio": -2.1354039056510232,
+      "beads": 256,
+      "checkpoint_bytes": 5932227,
+      "checkpoint_sha256": "97b695412105b246747a059e46ec1cb2d4b59ea21f2eb79868781bf10e5be56c",
+      "cohort_role": "new_independent_chain",
+      "complete": true,
+      "completed_sweeps": 22000,
+      "files": {
+        "checkpoint.npz": {
+          "bytes": 5932227,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825621/checkpoint.npz",
+          "sha256": "97b695412105b246747a059e46ec1cb2d4b59ea21f2eb79868781bf10e5be56c"
+        },
+        "reference-domain.json": {
+          "bytes": 493,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825621/reference-domain.json",
+          "sha256": "cb1f928e7624096af2dc0b043096210415005ed7f0f580b693c674f6e80ef719"
+        },
+        "reference.json": {
+          "bytes": 603,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825621/reference.json",
+          "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+        },
+        "report.json": {
+          "bytes": 8702,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825621/report.json",
+          "sha256": "888dcc27fd58354dc6c3efead91f85d850e63066366a152f0474ee0af4dbb27c"
+        },
+        "settings.json": {
+          "bytes": 2893,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825621/settings.json",
+          "sha256": "6ed6423e5f15534be03ccb91ee300435a803278475b756b998ef7cd10eb83233"
+        }
+      },
+      "half_log_partition_difference": 0.014525077454917934,
+      "historical_replay": null,
+      "identity_and_geometry_verified": true,
+      "maximum_COM_coordinate_bohr": 7.401486830834377e-17,
+      "maximum_surface_error_bohr": 3.1086244689504383e-15,
+      "minimum_BAR_overlap": 0.8993590393135844,
+      "minimum_bead_pair_bohr": 0.9107746278137557,
+      "minimum_energy_ESS": 829.2516677752668,
+      "parents": 200,
+      "recrossing_children_generated": 0,
+      "sampling_flags_passed": true,
+      "seed": 825621,
+      "settings_fingerprint": "fa08c9c6ca2a992f8277e6c767798bf47275250d9025bf371c4fa784d034ffab",
+      "uncertainty_unit": "one independent equilibrium chain"
+    },
+    {
+      "BAR_log_TS_quantum_classical_ratio": -2.1883949574006745,
+      "beads": 256,
+      "checkpoint_bytes": 5931408,
+      "checkpoint_sha256": "dd93dea375895f19a0c317b2d49d4bc9ed9f004dd182c29c4b7711e77ebf5b9f",
+      "cohort_role": "new_independent_chain",
+      "complete": true,
+      "completed_sweeps": 22000,
+      "files": {
+        "checkpoint.npz": {
+          "bytes": 5931408,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825623/checkpoint.npz",
+          "sha256": "dd93dea375895f19a0c317b2d49d4bc9ed9f004dd182c29c4b7711e77ebf5b9f"
+        },
+        "reference-domain.json": {
+          "bytes": 495,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825623/reference-domain.json",
+          "sha256": "e5b1a3b0ffb4e04b67cfa7e81986281ee44eb506d58f7d05deb32a57bb53f6b5"
+        },
+        "reference.json": {
+          "bytes": 603,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825623/reference.json",
+          "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+        },
+        "report.json": {
+          "bytes": 8668,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825623/report.json",
+          "sha256": "73d2c2a1f03faeee1e8375ff75f8946c4e7611408bc9ca8a6b73dd687c440ea1"
+        },
+        "settings.json": {
+          "bytes": 2893,
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825623/settings.json",
+          "sha256": "23a001bd5fb6f4fb6dce73d3613abdacaee6eea9047288c793c785c6bae84284"
+        }
+      },
+      "half_log_partition_difference": -0.03364830442960809,
+      "historical_replay": null,
+      "identity_and_geometry_verified": true,
+      "maximum_COM_coordinate_bohr": 7.401486830834377e-17,
+      "maximum_surface_error_bohr": 3.1086244689504383e-15,
+      "minimum_BAR_overlap": 0.8994575217710237,
+      "minimum_bead_pair_bohr": 0.8502081643509307,
+      "minimum_energy_ESS": 865.8378418812357,
+      "parents": 200,
+      "recrossing_children_generated": 0,
+      "sampling_flags_passed": true,
+      "seed": 825623,
+      "settings_fingerprint": "cc8f484c9e2f42f0f7f13ebd40336dde72c337dbf32533b3bfec0d10cef95f4f",
+      "uncertainty_unit": "one independent equilibrium chain"
+    }
+  ],
+  "partial_verified_results": [],
+  "recrossing_children_generated": 0,
+  "registration_sha256": "7775d890c3e75a063bf56b50d55c13da9e0b8d5f977276b5e28b4636ffe85c84",
+  "sampling_flags": {
+    "maximum_absolute_half_log_difference": 0.2,
+    "minimum_BAR_overlap": 0.2,
+    "minimum_energy_ESS": 200
+  },
+  "schema": "pyrpmd.h3.p256-eight-parent-completion.v1",
+  "seed_order": [
+    825601,
+    825603,
+    825607,
+    825609,
+    825613,
+    825617,
+    825621,
+    825623
+  ],
+  "unstarted_seeds": [],
+  "wall_seconds_since_module_entry": 1080.7069602279953
+}

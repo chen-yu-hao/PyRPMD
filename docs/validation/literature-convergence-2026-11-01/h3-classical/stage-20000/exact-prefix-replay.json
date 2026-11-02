@@ -1,0 +1,11 @@
+{
+  "schema": "pyrpmd.h3.classical-old-stage-exact-replay.v1",
+  "stage": 20000,
+  "numerical_comparison_all_fields_equal": true,
+  "new_dynamics_executed": 0,
+  "original_analysis_source_sha256": "04ee5a5e6733fb88d162c59da47c7b222bba5e62ada38bb167ee62aea97ee359",
+  "replay_analysis_source_sha256": "47bd4c33043dee36196c4c4828fb3993e174d735a80e22df4112ae93f20878dc",
+  "original_comparison_sha256": "357a4deee6d597afc03f84c1d1d382e3dc72c4f8121f96a4da40f07524ffe353",
+  "replay_comparison_sha256": "8768a18bedab2af1fb0f9870ddd0a1cc584f752e08e372e9029bd32322e8a568",
+  "note": "The analysis-source hash change is the previously documented atomic-checkpoint hash/load fix; no estimator equations changed."
+}

@@ -1,0 +1,26 @@
+{
+  "adopted": false,
+  "created_utc": "2026-11-01T20:53:19.624722+00:00",
+  "file_count": 3,
+  "files": [
+    {
+      "bytes": 2035,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/original-cohort-adoption-draft/README.md",
+      "sha256": "7ad77b471601f48c833d9d7ab7712af7b4b86573a7d44e904850570393aa64c0"
+    },
+    {
+      "bytes": 8016,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/original-cohort-adoption-draft/pending-adoption.json",
+      "sha256": "36bd3fea357df4f37d81f45956af85ba01ce2314387914ea89c6aa121d61db40"
+    },
+    {
+      "bytes": 29525,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/original-cohort-adoption-draft/selected-inputs.json",
+      "sha256": "7218d5d0bf79b71210c29a729d7ea2a05cca4fc410da14969c13ca772511f56a"
+    }
+  ],
+  "frozen": true,
+  "launched": false,
+  "schema": "pyrpmd.water-paired-timestep-adoption-draft-inventory.v1",
+  "total_bytes": 39576
+}

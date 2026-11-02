@@ -1,0 +1,235 @@
+{
+  "schema": "pyrpmd.integrated-python313314-publication-inventory.v1",
+  "frozen_utc": "2026-11-01T18:19:52.441421+00:00",
+  "source_head": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+  "scope": "New ABI compatibility evidence only; executed driver and text receipts; all prior frozen publication inventories unchanged.",
+  "files": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/README.md",
+      "bytes": 5506,
+      "sha256": "a1cdf01e2a9bc3a602be9393a6f5e2162845a93c7b5f1714d0ef108ab819ea6a"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/abi-link-cleanup.json",
+      "bytes": 3950,
+      "sha256": "62a1f9e5b5630884ef309af626f7fd027dde215df445e2ff217fd3c59f78bffd"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/abi-link-final-cleanup.json",
+      "bytes": 1776,
+      "sha256": "bcfa9f80a1e3aee1acafb863fae49458adc19ac755179da3c87565fc44f693e9"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/abi-link-retained-status.json",
+      "bytes": 3808,
+      "sha256": "ec0c2822f5b96e11f7986b9f46465dde67e9f3be850d46746dc008bdd6557ea4"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/compiler.txt",
+      "bytes": 246,
+      "sha256": "59d1cbef41d4ae78d5063d525b7aa13d18dc0493ea00537efc19b2ee398cb5a8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/guard-before-initial.json",
+      "bytes": 145825,
+      "sha256": "37c1e48c58392f11a59b7e1a4e2028f55099b082a96ed73536ff413e08f3f3c4"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/guard-before.json",
+      "bytes": 146312,
+      "sha256": "77bcaab47b5c8f76879eb6b91a5bfcd08f3466afc0b2017c8881b8184528535e"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/official-openmm-wheels.json",
+      "bytes": 660,
+      "sha256": "16d31bd180fae2677890940aff186fc7f0879e2e265a5c006d1b2e858ece2498"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/openmm-requirements.txt",
+      "bytes": 172,
+      "sha256": "d71d57d46b07de20b9093d050239ad4fd11995e1c48999bf970dadaba34358a2"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/original-py312/environment-after.json",
+      "bytes": 3077,
+      "sha256": "b17528adbf200b7334e6557cf1e32f3c279777fda1eddfe98172db0212d7123f"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/original-py312/environment-before.json",
+      "bytes": 3077,
+      "sha256": "b17528adbf200b7334e6557cf1e32f3c279777fda1eddfe98172db0212d7123f"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/preflight-guard-difference.json",
+      "bytes": 278,
+      "sha256": "920e43433f9156ba2b64d9480a0e9254c83bc34ce098448ea495e860c1a0fad9"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/preflight-guard-resolution.json",
+      "bytes": 799,
+      "sha256": "40a5d00dfd340190b9c3213c461e31adcb8a3588f762cb455ad473449b6eebd6"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py313/child-import.json",
+      "bytes": 3284,
+      "sha256": "36ce0fa811fc999cefda7b1b55e10f1493526551c4d15df93a26d92a332bd113"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py313/child-import.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py313/compatibility.json",
+      "bytes": 27699,
+      "sha256": "876c1794255a2d5786a353b0552ec608852168b52aab9e6db96ccc75e49600c5"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py313/environment-after-install.json",
+      "bytes": 1604,
+      "sha256": "1520ed5035ac1f7d3a7a16448a187d0416efad8dda1661d9898d7a3f84438b18"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py313/environment-before.json",
+      "bytes": 1094,
+      "sha256": "6637adb17b3b60ed23e3da4c631f3925de40eb349a114618cadf7ffe31aa5b07"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py313/native-build.log",
+      "bytes": 7165,
+      "sha256": "6b328444fe2104f3e364648aac19a0866e8d947f8706de1cb3edf839d27eb9ab"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py313/openmm-install-authorized.log",
+      "bytes": 824,
+      "sha256": "1408c4a01dedc53f68f8ab0dcbc76d27507876bf1e442f5e60c4c24908b1276f"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py313/openmm-install.json",
+      "bytes": 2783,
+      "sha256": "9d4cf500aeed9226999c6807338965f69cc4114d9f8335871388ceaf2a1499b6"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py313/openmm-install.log",
+      "bytes": 155,
+      "sha256": "81095ab53a698bfe4f5225efa2d8d808770589346d7531799e4ea5c5e40520fe"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py313/preflight-guard.log",
+      "bytes": 617,
+      "sha256": "fc42565043a87d14cf65a8e397f8df645574299cb8f80a004eae4e86ca2e0c37"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py313/pytest-runtime-finish.json",
+      "bytes": 27904,
+      "sha256": "ea8a5af178931a15bd39d211677a2483f899c83406e209a21d2d1680d16a34f3"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py313/pytest-runtime-start.json",
+      "bytes": 3284,
+      "sha256": "36ce0fa811fc999cefda7b1b55e10f1493526551c4d15df93a26d92a332bd113"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py313/pytest.log",
+      "bytes": 2197,
+      "sha256": "b19497ac2250e430600d3c9671943b18234741af7d42bef65e3c9190b4f71f17"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py313/pytest.xml",
+      "bytes": 30772,
+      "sha256": "18bbe8f10d11854615b2ef00f8ae74940c0cc5150b3f985368ecdc592d9810ca"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py314/child-import.json",
+      "bytes": 3232,
+      "sha256": "7aaf29fc84e2f30b0c87a903f43ddaf778b276b5c0fe75a0f19b58a1a0dc02c1"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py314/child-import.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py314/compatibility.json",
+      "bytes": 27699,
+      "sha256": "908a20e388206bdb612de931c3a30116fc880ac8f646f99c0bb51854fdabcbf7"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py314/environment-after-install.json",
+      "bytes": 1556,
+      "sha256": "8a0075210ea0c8464622ddd56436c25bd941c96552ff23f8e2c544fba6f4e796"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py314/environment-before.json",
+      "bytes": 1046,
+      "sha256": "e2d8ef11405ae594cf9c180bc99393e39c54bce3248e49d92ef52f94ea146b80"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py314/native-build.log",
+      "bytes": 7165,
+      "sha256": "befbebfad3e76f3f81a1045721835a7afaced64475cf5ec022ec425130f24d8f"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py314/openmm-install-authorized.log",
+      "bytes": 824,
+      "sha256": "98f05f38c2d31ed74aa42f27f1ec3dd44282df0979ff8c7018a43bcba72a4be6"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py314/openmm-install.json",
+      "bytes": 2783,
+      "sha256": "d4162d63b7e2a27896bc4897b127f8030b3dac60fed879c820b8c678fa446964"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py314/pytest-runtime-finish.json",
+      "bytes": 27852,
+      "sha256": "a4c85a80989ac7e376073f0f3d3f7828335cc288be43bdeb5498ab39fc668a5e"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py314/pytest-runtime-start.json",
+      "bytes": 3232,
+      "sha256": "7aaf29fc84e2f30b0c87a903f43ddaf778b276b5c0fe75a0f19b58a1a0dc02c1"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py314/pytest.log",
+      "bytes": 2197,
+      "sha256": "abb31022a7baae09a44ae9d0f05e88a86423ee0e5f4113c676869976da20fa3e"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/py314/pytest.xml",
+      "bytes": 30772,
+      "sha256": "80cd1cf5c08913b629990d47ad15f978e4a591f5b6c62f6b140454c74a68950d"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/run_method_checks.py",
+      "bytes": 10201,
+      "sha256": "f3e58b1df32e55ab9da6fe00c3a9157e4f73e904b1df1200c4299a506ab66c68"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/selection.json",
+      "bytes": 5149,
+      "sha256": "ac9930252484e201769dec652a08723b0f334ab3e7f2537850694fbab5372ce6"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/summary.json",
+      "bytes": 9276,
+      "sha256": "cb30fcaf8d5030e9480ea677584715b9361f90d7512b9c9d66c329eb2ea14b59"
+    }
+  ],
+  "file_count": 42,
+  "total_bytes": 557852,
+  "include_this_inventory_file": true,
+  "inventory_self_checksum_omitted": true,
+  "selected_unique_tests": 217,
+  "interpreter_runs": 2,
+  "test_executions": 434,
+  "all_tests_passed_without_skips": true,
+  "scientific_or_test_source_changes": false,
+  "native_binary_or_raw_trajectory_publication": false,
+  "format_checks": {
+    "json": 26,
+    "xml": 2,
+    "python": 1,
+    "markdown_local_targets": 18
+  },
+  "temporary_ignored_ABI_link_status": "abi-link-retained-status.json"
+}

@@ -1,0 +1,167 @@
+{
+  "ABI_links_modified": false,
+  "active_original_sources_modified": false,
+  "builds": 0,
+  "case_coverage_sha256": "7293ff051d2e05a6c775f4c179bd6183b38be6f3889629e4a1976a0e7f1b2a24",
+  "combined_distinct_cases_per_interpreter": 731,
+  "created_utc": "2026-11-01T21:28:21.953415+00:00",
+  "distinct_new_cases": 135,
+  "driver_sha256": "210bc1d6cc77bd7e46a4bc0ab9ae2f2e64356e0f079f7bce39300a3309403c8f",
+  "full_repository_suite_run_by_this_gate": false,
+  "guard_before_sha256": "bd0e49e5205bf321542c62e55d63a55a4a2681456f46d1b6a979bee27c51fa50",
+  "installs": 0,
+  "interpreters": {
+    "py312": {
+      "combined_distinct_cases": 731,
+      "dependencies_unchanged": true,
+      "guard_after": {
+        "all_unchanged": true,
+        "external_files": {
+          "changed": [],
+          "files_checked": 15
+        },
+        "integrated": {
+          "changed": [],
+          "files_checked": 1194
+        },
+        "original": {
+          "changed": [],
+          "files_checked": 958
+        },
+        "owned_ABI_links": {
+          "changed": [],
+          "files_checked": 6
+        }
+      },
+      "junit_counts": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 135
+      },
+      "junit_sha256": "b4dfae26c454355446c1b404f690fc89cf0722ebba91723a9c8ca851c2638637",
+      "native_imports_checked_in_actual_test_process_and_fresh_child": true,
+      "new_distinct_cases": 135,
+      "prior_distinct_case_receipts_reused": 596,
+      "pytest_seconds": 13.766,
+      "receipt_sha256": "763290653ed0f65a31d3ce00b0eabe73129e849b9ed6ec72018a949c38991d20",
+      "supervised_wall_seconds": 14.867357365001226
+    },
+    "py313": {
+      "combined_distinct_cases": 731,
+      "dependencies_unchanged": true,
+      "guard_after": {
+        "all_unchanged": true,
+        "external_files": {
+          "changed": [],
+          "files_checked": 15
+        },
+        "integrated": {
+          "changed": [],
+          "files_checked": 1194
+        },
+        "original": {
+          "changed": [],
+          "files_checked": 958
+        },
+        "owned_ABI_links": {
+          "changed": [],
+          "files_checked": 6
+        }
+      },
+      "junit_counts": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 135
+      },
+      "junit_sha256": "696bdebe55088e5f16f59af341bfcbd6ea05b8e67a9fd572af3b67344cdb32be",
+      "native_imports_checked_in_actual_test_process_and_fresh_child": true,
+      "new_distinct_cases": 135,
+      "prior_distinct_case_receipts_reused": 596,
+      "pytest_seconds": 14.549,
+      "receipt_sha256": "b64aa5097e60b30ec77223cffcc8ef0446bf19d165f22b3e9ccbcc89a290791f",
+      "supervised_wall_seconds": 15.621780323999701
+    },
+    "py314": {
+      "combined_distinct_cases": 731,
+      "dependencies_unchanged": true,
+      "guard_after": {
+        "all_unchanged": true,
+        "external_files": {
+          "changed": [],
+          "files_checked": 15
+        },
+        "integrated": {
+          "changed": [],
+          "files_checked": 1194
+        },
+        "original": {
+          "changed": [],
+          "files_checked": 958
+        },
+        "owned_ABI_links": {
+          "changed": [],
+          "files_checked": 6
+        }
+      },
+      "junit_counts": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 135
+      },
+      "junit_sha256": "b778454fd7fa748c488a19240b973cc9f9cae978704982ce46b8188075b72577",
+      "native_imports_checked_in_actual_test_process_and_fresh_child": true,
+      "new_distinct_cases": 135,
+      "prior_distinct_case_receipts_reused": 596,
+      "pytest_seconds": 13.256,
+      "receipt_sha256": "1bdfa70d67bef4818f37a6cd785d404e69410e371ef9589b5de147331806caa3",
+      "supervised_wall_seconds": 14.256882909001433
+    }
+  },
+  "new_case_executions": 405,
+  "physical_PES_evaluations_or_dynamics_steps_by_this_gate": 0,
+  "previous_596_cases_rerun": false,
+  "prior_HCH4_wall_fixture_change": {
+    "added_distinct_cases": 0,
+    "cross_python_inventory_sha256": "ee0f53335877c9493a9bab111bc79c4ebdb0d0d65d97f845e6c2118295acdbdc",
+    "supersession_sha256": "42065fe6c3f8833f0c57929603e40c475317b07e5c27dce745db2f482ba1fead"
+  },
+  "same_distinct_cases_all_interpreters": true,
+  "schema": "pyrpmd.fifth-stage-compatibility-summary.v1",
+  "scope": "Synthetic identities, lifecycle, statistical integrals and analytic VACF/MSD oracles; no actual PES evaluation, real dynamics or live campaign analysis.",
+  "selection_sha256": "aed48847fe6e5097643a0edf8a97fe6815470c34bfb4b8e1da9d48747aa6c486",
+  "source_bundles": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/publication-inventory.json",
+      "sha256": "a547ecba7890116439f7bfd8f908805751d1ce72c68b1716cc67ac2d16d693b2"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-cohort-archive-replay/publication-inventory.json",
+      "sha256": "ed81dc97c108549006bda497f9832c64102e2309d798897f010e533610e43ac6"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/vacf-msd-identity/publication-inventory.json",
+      "sha256": "ef17405ea42c3068196c5f6d630a2819bcbef51ef862c6128cea2ed3fed799d9"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/publication-inventory.json",
+      "sha256": "c16c2d38582639169cb707b85a956686e89cdf1c604a33ad2d3be32c50328cb5"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/publication-inventory.json",
+      "sha256": "83d73d906ff8e345ee39761029ad36b889426c7c2c01b7b2ae7781718040511f"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-efficiency-execution-guide/publication-inventory.json",
+      "sha256": "fcfb67a0b5db02a1ce50aa3ebf57e888b1182d5c7a3815cc6c55a2c612680272"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-36ec289-20261101T211518Z/publication-inventory.json",
+      "sha256": "cffb2e44d4a5f5dd874246d3b04bf1907ef64c2a05a4c279332230f5a2d10d46"
+    }
+  ],
+  "source_head": "36ec289981639bbeb8feecf3b30400b4cbda9afe",
+  "source_state_note": "Published head plus the separately validated synthetic wall-fixture correction and the exact additive frozen files in copy-receipt.json. Original active scientific sources remain unchanged."
+}

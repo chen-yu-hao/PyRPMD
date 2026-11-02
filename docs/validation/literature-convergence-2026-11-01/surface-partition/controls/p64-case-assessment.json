@@ -1,0 +1,112 @@
+{
+  "schema": "pyrpmd.h3.completed-control-case-assessment.v1",
+  "created_utc": "2026-11-01T16:48:41.498482+00:00",
+  "phase": "complete predeclared P64 case; other fixed-count controls continue",
+  "case": {
+    "name": "p64-cutoff05",
+    "beads": 64,
+    "minimum": 0.5,
+    "seeds": [
+      826401,
+      826403,
+      826407,
+      826409
+    ],
+    "completed_seed_results": [
+      {
+        "seed": 826401,
+        "log_TS_quantum_classical_ratio": -2.170915040678788,
+        "minimum_BAR_overlap": 0.8981188514144617,
+        "minimum_energy_ESS": 957.0788246533376,
+        "half_log_difference": 0.02772125949128368,
+        "checkpoint_sha256": "a1573fd366d8c9130d1fe3673c1a3d28c1ccbbe4347bf8ce4c145de951e89170",
+        "report_sha256": "3daf6091caf7b49e5f1bc86b96a95d496271d1e56ad521e64dc9afb08d77f81e"
+      },
+      {
+        "seed": 826403,
+        "log_TS_quantum_classical_ratio": -2.150086649072805,
+        "minimum_BAR_overlap": 0.9034544566538422,
+        "minimum_energy_ESS": 1076.5866310587307,
+        "half_log_difference": -0.017912593100621876,
+        "checkpoint_sha256": "48b71e05f5b088913efa77ea568fb525cf67340e80473eb8cadf0b44d2070f29",
+        "report_sha256": "f1882fefae0a61837c0b609616633f788f5a2feeacf81d9c8b557720ff180322"
+      },
+      {
+        "seed": 826407,
+        "log_TS_quantum_classical_ratio": -2.171452937576797,
+        "minimum_BAR_overlap": 0.8976226604381967,
+        "minimum_energy_ESS": 870.4311883850498,
+        "half_log_difference": 0.046766823911964295,
+        "checkpoint_sha256": "63c3be4afa48c0bf3aab3531268a53688febe8b9c21088c0c183f8e9e863dac4",
+        "report_sha256": "33e3d6c9e4fd94dc7cd223fda8f57c7b94647bd514551ff356421f9f20e9d7e1"
+      },
+      {
+        "seed": 826409,
+        "log_TS_quantum_classical_ratio": -2.1947978302202267,
+        "minimum_BAR_overlap": 0.9089412631370516,
+        "minimum_energy_ESS": 1012.6291148965508,
+        "half_log_difference": -0.012678629094045046,
+        "checkpoint_sha256": "c067e160530b9e199bb33af900e63c5948e8dda9aa4515bfc941ed6b91b6e7d0",
+        "report_sha256": "f90083d41eb9d20ef1cf3cc518e19d41e3604f7ec1afbbca7ee74029c1837c8e"
+      }
+    ],
+    "complete": true,
+    "independent_seed_statistics": {
+      "seed_count": 4,
+      "mean": -11.406518824776812,
+      "standard_error": 0.009134516593226205,
+      "CI95": [
+        -11.435588933359478,
+        -11.377448716194147
+      ],
+      "uncertainty_unit": "independent seed chain",
+      "individual_seed_values": [
+        -11.405620751068446,
+        -11.384792359462462,
+        -11.406158647966455,
+        -11.429503540609884
+      ]
+    },
+    "relative_QTST_comparison": {
+      "mean_log_difference": -0.038325455018677346,
+      "standard_error": 0.010904736346297076,
+      "Welch_degrees_of_freedom": 5.655057186906123,
+      "CI95_log_difference": [
+        -0.06540792503683267,
+        -0.011242985000522024
+      ],
+      "relative_point_difference": -0.037600327886746006,
+      "CI95_relative_difference": [
+        -0.06331471194736818,
+        -0.011180018841445276
+      ],
+      "equivalence_log_margin": 0.04879016416943204,
+      "CI95_wholly_within_margin": false,
+      "uncertainty_unit": "independent seed chain in each group; shared baseline is not a new independent sample per control"
+    },
+    "paired_seed_half_log_difference": {
+      "seed_count": 4,
+      "mean": 0.010974215302145263,
+      "standard_error": 0.015693626805960693,
+      "CI95": [
+        -0.0389699093429857,
+        0.060918339947276225
+      ],
+      "uncertainty_unit": "independent seed chain",
+      "individual_seed_values": [
+        0.02772125949128368,
+        -0.017912593100621876,
+        0.046766823911964295,
+        -0.012678629094045046
+      ]
+    },
+    "classical_and_exact_reactant_log_offset": -9.234705710389658,
+    "seed_sampling_flags_passed": true
+  },
+  "exact_reactant_log_shift": 0.03729733369946153,
+  "TS_log_correction_shift": -0.0010281213192158134,
+  "protocol_sha256": "0b3cbbff1aa90f8ec0f9c77d0d5c68786f0f368e26d8b93bc6c35604b736eb56",
+  "primary_parent_files_modified": false,
+  "algorithm_or_counts_changed_after_observation": false,
+  "interpretation": "Sampling flags pass. The 95% interval crosses the registered equivalence boundary; retain this failed equivalence result. The resolved coarse-bead QTST shift is predominantly the independently calculated reactant finite-P correction."
+}

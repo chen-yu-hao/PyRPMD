@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/workspace/scratch/a5e4820daedd/fortran-env/bin/x86_64-conda-linux-gnu-gfortran",
+    "-O2",
+    "-fPIC",
+    "-shared",
+    "-std=legacy",
+    "-ffixed-line-length-none",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/build/ch52008.f",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/build/utility.f",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/hch4/wrapper.f90",
+    "-o",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/build/cbe-build-_c73cke6/libcbe2008.so"
+  ],
+  "returncode": 1,
+  "stdout": "",
+  "stderr": "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/build/utility.f:904:10:\n\n  904 |          I = 1                                                          JC05132003\n      |          1\nError: Unclassifiable statement at (1)\n",
+  "builder_sha256": "0b574908632134ca3b8ecbd69f90b09ba29a4b83aa4a224322e86da259e261e5",
+  "note": "Same initial build repeated once to preserve compiler stderr hidden by the first traceback."
+}

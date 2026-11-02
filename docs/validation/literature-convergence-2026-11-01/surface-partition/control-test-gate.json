@@ -1,0 +1,17 @@
+{
+  "passed": 4,
+  "failed": 0,
+  "skipped": 0,
+  "seconds": 4.62,
+  "source_sha256": {
+    "benchmarks/h3/surface_partition_controls.py": "4440394a6358221bca6c304afa9aa10571abdc23d1c692980ffd37cbc56c9d76",
+    "tests/test_h3_surface_partition_controls.py": "394f21d90082ed65410310f1b8645e75f53669cfb529474226df7170d29bf03b"
+  },
+  "protocol_sha256": "0b3cbbff1aa90f8ec0f9c77d0d5c68786f0f368e26d8b93bc6c35604b736eb56",
+  "checks": [
+    "P1 domain-volume normalization retained",
+    "independent-group Welch variance and degrees of freedom",
+    "equivalence requires the full interval",
+    "finite-P reactant selection binds both P and radial domain"
+  ]
+}

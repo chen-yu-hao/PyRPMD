@@ -1,0 +1,59 @@
+{
+  "CPU_affinity": [
+    5
+  ],
+  "CPU_seconds_before_write": 8.716425838,
+  "Git_helpers_CPU_seconds": 0.111584,
+  "all_checks_passed": true,
+  "all_scientific_and_failed_gate_fields_equal": true,
+  "archive": {
+    "bytes": 203386405,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-water-paired-timestep-2026-11-01-raw.tar.gz",
+    "sha256": "3629eb0f07319354aeacdf6d1af9327566277c7083246e35a4ff03ed271959bf"
+  },
+  "archive_members": 202,
+  "bitwise_equal_compact_arrays": 33,
+  "compact_curve_container_sha256": "5b66d8e9e3dc4c964044b390bc743d7d3121fd492777dd37241d52d1b072eedb",
+  "complete_branches": 16,
+  "extracted_numerical_input_files": 96,
+  "independent_checks": {
+    "bytes": 4080,
+    "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/independent-checks.json",
+    "sha256": "753debf470b936f06c5f55e75a006a76dddd16f3b9a7dfef3570473622e1d522"
+  },
+  "lease_proof": {
+    "bytes": 1637,
+    "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/lease-proof.json",
+    "sha256": "c8200b3032c2e6d3ccd60e63dd7a61ee109a0026438a1b9b9c26583adda7a2ad"
+  },
+  "literature_reproduced": false,
+  "maximum_RSS_KiB": 170596,
+  "new_PES_calls": 0,
+  "new_RNG_draws": 0,
+  "new_dynamics_steps": 0,
+  "nice_increment": 10,
+  "only_report_metadata_difference": "registration_sha256 for explicit path-only relocation",
+  "original_NVE_ps": 64,
+  "original_data_access_attempts": 0,
+  "original_data_files": 199,
+  "original_data_unchanged": true,
+  "original_integration_steps": 384000,
+  "original_report_sha256": "6d657d7dc11d98dd78ac8a2659a9907c8b94eedba0aa013dcd2d3d5db54aa370",
+  "physical_converged": false,
+  "read_audit": {
+    "bytes": 5326,
+    "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/read-audit.json",
+    "sha256": "a74062bee7555adf0d32cd74690e9cf3607f7444ba94f22f764c9c7665230724"
+  },
+  "relocation": {
+    "bytes": 423,
+    "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/relocation.json",
+    "sha256": "968d8672d88b88fa1d51027109e73ce195fa8b5d50e642e20370d50e531a60af"
+  },
+  "replayed_report_sha256": "11bcea03183b9e83e7f431f8ba5085878ad1a3e328b0a6be826d8f1b581001d2",
+  "schema": "pyrpmd.water-complete-paired-control-extraction-replay.v1",
+  "scope": "Exact data curation/replay and independently recomputed paired statistics only; both equivalence failures remain. No new physical execution.",
+  "source_guards_unchanged": true,
+  "threads": 1,
+  "wall_seconds_before_write": 8.897909054998308
+}

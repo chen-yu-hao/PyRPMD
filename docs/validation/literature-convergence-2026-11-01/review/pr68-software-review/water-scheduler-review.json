@@ -1,0 +1,45 @@
+{
+  "schema": "pyrpmd.water-scheduler-independent-review.v1",
+  "reviewed_utc": "2026-11-01T17:31:51.958687+00:00",
+  "source": "benchmarks/water/native_campaign_schedule_v2.py",
+  "source_sha256": "af1258f9118c4de296c90edb18c57aceb07a007d564652b4f5db6e851cece75e",
+  "tests": "tests/test_water_native_schedule_v2.py",
+  "tests_sha256": "5611446ccb7d9b2ea520dd04c237c723b37f47cd1106c270a9effebe6ddfc11c",
+  "junit_absolute_path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/logs/four-worker-scheduler-pytest-v2.xml",
+  "junit_sha256": "faac115802c3ceb54fbc24ef7eb2fbd9fbf3fa11df3859564dc7b5291e39a0ad",
+  "junit_counts": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "19",
+    "time": "0.582",
+    "timestamp": "2026-11-01T12:30:24.003827-05:00",
+    "hostname": "13d968332fed"
+  },
+  "verification_scope": "Read-only review plus independent checksum and JUnit parsing. The 19 tests were executed by the implementing provider agent; this review did not repeat them or launch a molecular-dynamics child.",
+  "conclusion": "The three concrete exception/receipt findings were fixed before scheduler source freeze. No remaining code blocker was found in the reviewed exclusion and ordinary-exception drain paths. Actual migration still requires independently observed normal old-native exits and retired legacy dispatchers.",
+  "resolved_findings": [
+    {
+      "finding": "Journaling after a successful Popen could raise before reaching child.wait.",
+      "resolution": "An invocation ExitStack registers child.wait immediately after Popen; cleanup waits before closing the child log and preserves inherited leases. An injected post-spawn logging failure test requires the failure latch to exist before the wait."
+    },
+    {
+      "finding": "A locked pre-dispatch validation exception could release launch_lock before setting stopped.",
+      "resolution": "The exception handler calls latch while it still owns launch_lock. A regression rejects every Popen after injected source validation failure."
+    },
+    {
+      "finding": "An empty or duplicate old-dispatcher list could pass the migration receipt.",
+      "resolution": "The receipt requires exactly one odd and one even entry, four distinct positive dispatcher/native PIDs, normal native exit codes, and all seed prefixes; malformed-receipt tests cover missing/duplicate queues."
+    }
+  ],
+  "exclusion_review": [
+    "Every native child inherits coordinator, both legacy queue, and own-seed flock descriptors through pass_fds.",
+    "Locks are released only by closing file descriptions; no explicit LOCK_UN accidentally releases a child-held lease.",
+    "A durable FAILURE.json prevents later invocations; in-flight children are allowed to finish, not terminated or replaced.",
+    "Two or four executor workers process the same four fixed queues with all seed leases held; thread-count fallback changes orchestration only.",
+    "Existing chunk prefixes, source identity, initial state and per-seed configuration are rechecked before new native calls."
+  ],
+  "runtime_handoff_status": "Not certified by this code review. At the provider handoff, one old native child had exited normally; the other was still running. Do not use this review as a substitute for the final migration receipt.",
+  "scientific_source_changes_by_reviewer": []
+}

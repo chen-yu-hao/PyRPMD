@@ -1,0 +1,41 @@
+{
+  "PID": 6,
+  "actual_imports": {
+    "benchmarks.hch4.pes": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/hch4/pes.py",
+      "sha256": "4ba178e3cd8d4167b69e947a0c3dd8cacbe45498959a149c8c61a56752df232c"
+    },
+    "pyrpmd.constants": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/constants.py",
+      "sha256": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+    },
+    "pyrpmd.potentials.base": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/potentials/base.py",
+      "sha256": "5399de666b55975ee3ee801e8dc3c0ce598f684613a95ce0282b22c67362b7b3"
+    },
+    "pyrpmd.potentials.cabi": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/potentials/cabi.py",
+      "sha256": "79c876b666967c678ebf5117e67236f47605d5bd54d47c9f387634c2c48ce02a"
+    }
+  },
+  "affinity": [
+    8
+  ],
+  "environment": {
+    "numpy": "2.5.4",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "python_executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+    "python_version": "3.12.14",
+    "scipy": "1.18.1"
+  },
+  "hard_CPU_seconds_in_this_process": 55,
+  "started_utc": "2026-11-01T19:38:13.036581+00:00",
+  "supervisor_process_token": "5bbd8d0381174988a234ebd1a9817a0b",
+  "thread_environment": {
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "worker_process_token": "eb3cbd9181ea4eb49a8dbcbd37a12f55"
+}

@@ -1,0 +1,74 @@
+{
+  "schema": "pyrpmd.h3.quantum-convergence-protocol.v1",
+  "registered_utc": "2026-11-01T15:07:29.128457+00:00",
+  "temperature_K": 300.0,
+  "beads_primary": 128,
+  "additional_bead_controls": [
+    64,
+    256
+  ],
+  "independent_ladder_seeds": [
+    211017,
+    211019,
+    211021,
+    211023,
+    211027,
+    211031,
+    211033,
+    211039
+  ],
+  "warmup_sweeps": 5000,
+  "initial_production_sweeps": 30000,
+  "fixed_refinement_prefixes": [
+    30000,
+    100000,
+    300000
+  ],
+  "schedule_file": "docs/validation/literature-convergence-2026-11-01/h3-classical/umbrella-schedule.json",
+  "schedule_sha256": "0799d38f37bb75aaee74e1f24d802d32365f9537fd327ef530097e52bd63e9ae",
+  "sampler_file": "benchmarks/h3/mixing_sampling.py",
+  "sampler_sha256": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0",
+  "sampling_measure": "physical-channel ring-polymer canonical measure times centroid flux metric, with umbrella; pCN uses exact free-ring Gaussian prior",
+  "time_semantics": "Monte Carlo sweeps, not real-time RPMD propagation",
+  "physical_domain": {
+    "minimum_bead_pair_bohr": 0.5,
+    "maximum_centroid_breaking_bond_bohr": 8.0,
+    "positive_xi_denominator": true,
+    "cutoff_controls_bohr": [
+      0.4,
+      0.6
+    ]
+  },
+  "analysis": {
+    "method": "histogram WHAM, no Gaussian-window assumption",
+    "bin_widths": [
+      0.001,
+      0.0005,
+      0.00025
+    ],
+    "primary_xi": 1.0,
+    "local_log_density_fit_halfwidth": 0.004,
+    "fit_halfwidth_controls": [
+      0.002,
+      0.003,
+      0.006
+    ],
+    "uncertainty_unit": "independent exchange ladder; temporal blocks retain all windows together",
+    "primary_paper_qtst_cm3_molecule_s": 2.51e-16,
+    "primary_paper_full_rate_cm3_molecule_s": 1.95e-16
+  },
+  "gates": {
+    "wham_residual_max": 1e-09,
+    "overlap_connected": true,
+    "bin_refinement_max_abs_log_rate_change": 0.02,
+    "fit_width_max_abs_log_rate_change": 0.02,
+    "target_qtst_relative_standard_error": 0.03,
+    "time_split_consistency_standard_errors": 2.0,
+    "independent_seed_heterogeneity_p_min": 0.01,
+    "paper_qtst_relative_difference_for_point_agreement": 0.05
+  },
+  "stopping_rule": "Stop/refine using numerical precision, stationarity and independent seed evidence. Retain all predetermined seeds and all prefixes; do not select a seed/time segment or fit a rate prefactor to match the paper. A converged systematic discrepancy triggers diagnosis rather than more sampling until accidental agreement.",
+  "recrossing": "New PyRPMD constrained parents and unthermostatted children after a stable PMF; existing pilot kappa is not reused.",
+  "hardware": "shared existing 8 CPU-equivalent, 8GiB environment; no GPU or paid compute requested",
+  "calibration_excluded_from_primary_samples": "/workspace/scratch/a5e4820daedd/convergence-h3-p128-calibration (seed211013,100+500sweeps; ~50ms/sweep)"
+}

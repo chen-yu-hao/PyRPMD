@@ -1,0 +1,363 @@
+{
+  "calibration": {
+    "TS_objective": "beta*(V-E0)-log(Jz*rho^2*sqrt(G/(2*pi*beta))/abs(Srho))-log(Jomega)",
+    "additional_optimizer_calls": 0,
+    "any_invalid_stencil_or_failed_construction": "stop failed pilot; preserve all executed/staged points; no proposal fallback",
+    "deterministic_no_RNG": true,
+    "diagonal_refinement_geometry_count": 62,
+    "diagonal_refinement_relative_denominator": "max(1,abs(refined_diagonal))",
+    "diagonal_refinement_step": 0.01,
+    "dimensionless_shape_scales_TS": [
+      0.15,
+      0.12,
+      0.12,
+      0.2,
+      0.2,
+      0.2,
+      0.2,
+      0.2,
+      0.2
+    ],
+    "dimensionless_shape_scales_entry": [
+      0.12,
+      0.12,
+      0.12,
+      0.2,
+      0.2,
+      0.2,
+      0.2,
+      0.2,
+      0.2
+    ],
+    "dimensions": [
+      11,
+      11,
+      9
+    ],
+    "direction_scale": "1/(2*sqrt(8)) for each stereographic coordinate",
+    "eigenvalue_or_displacement_clipping": false,
+    "energy_only_no_force_gradient_assumption": true,
+    "entry_objective": "beta*(V(z,d+30*ez)-E0)-log(Jz*30^2/sqrt(2*pi*beta*mu))",
+    "full_Hessian_step": 0.02,
+    "full_stencil_geometry_count": 649,
+    "initial_stencil_ledger_count": 711,
+    "maximum_Newton_Mahalanobis_length": 3.0,
+    "maximum_condition_number": 100000000.0,
+    "maximum_diagonal_refinement_discrepancy": 0.05,
+    "maximum_reflection_distance_difference_bohr": 1e-12,
+    "maximum_reflection_energy_difference_hartree": 1e-10,
+    "maximum_unit_probe_quadratic_residual": 5.0,
+    "minimum_eigenvalue": 1e-06,
+    "post_Hessian_calibration_ledger_count": 89,
+    "proposal_parameters_frozen_before_fresh_draws": true,
+    "reference_shape": "exact distributed TS geometry and old regular-tetrahedron entry geometry; fixed h3 chart with positive ay reflection convention",
+    "reflected_existing_probe_geometry_count": 24,
+    "reflection_probes_per_model": "shifted center; +/- first three covariance eigenaxes; +fourth axis",
+    "shifted_center_geometry_count": 3,
+    "single_Newton_mean_shift": "-H_inverse*g",
+    "total_calibration_geometry_cap": 800,
+    "unit_width_probe_geometry_count": 62
+  },
+  "coordinates": {
+    "TS_direction": [
+      "tx",
+      "ty"
+    ],
+    "entry_mirror_negative_coordinates_zero_based": [
+      4,
+      7
+    ],
+    "excluded_south_pole": "Gaussian/Student solid-angle contribution defined by its zero limit; uniform component remains nonzero",
+    "joint_density_with_respect_to_dz_dOmega": "g(z,t)/sphere_Jacobian",
+    "mirror_negative_coordinates_zero_based": [
+      4,
+      7,
+      10
+    ],
+    "shape": [
+      "r",
+      "s",
+      "v",
+      "ax",
+      "ay",
+      "az",
+      "bx",
+      "by",
+      "bz"
+    ],
+    "shape_Jacobian": "r^2*s^2",
+    "sphere_Jacobian": "4/(1+|t|^2)^2",
+    "stereographic_u": "(2tx,2ty,1-|t|^2)/(1+|t|^2)"
+  },
+  "created_utc": "2026-11-01T20:27:06.282534+00:00",
+  "domains": {
+    "all_TS_domains_require": [
+      "positive radial root",
+      "designated branch is active maximum",
+      "xi denominator >0"
+    ],
+    "entry_always_single_sphere": true,
+    "inner_diagnostic": {
+      "CH_radii_bohr": [
+        1.6,
+        4.0
+      ],
+      "minimum_all_pair_bohr": 0.9
+    },
+    "original_target": {
+      "CH_radii_bohr": [
+        1.4,
+        4.5
+      ],
+      "minimum_all_pair_bohr": 0.7
+    },
+    "outer_audit_envelope": {
+      "CH_radii_bohr": [
+        1.2,
+        5.0
+      ],
+      "minimum_all_pair_bohr": 0.6
+    },
+    "physical_domain_or_tail_validated": false,
+    "target_outside_original_domain_remains_zero": true
+  },
+  "efficiency_screen_original_domain": {
+    "does_not_trigger_automatic_extension": true,
+    "maximum_leave_one_complete_seed_out_log_integral_change": 0.25,
+    "maximum_mass_in_largest_ceil_1percent_draws": 0.2,
+    "per_channel_alpha_draws": 256,
+    "per_channel_maximum_normalized_weight": 0.1,
+    "per_channel_minimum_empirical_ESS": 32,
+    "pooled_maximum_normalized_weight": 0.025,
+    "pooled_minimum_empirical_ESS": 128,
+    "pooled_target_draws": 1024,
+    "scope": "proposal efficiency only; pass does not validate finite-domain rate or exclude unseen tails"
+  },
+  "entry_separation_control": {
+    "does_not_test_entire_finite_Rinf_rate": true,
+    "draws_per_seed": 16,
+    "maximum_extra_geometries": 128,
+    "new_R_bohr": 60.0,
+    "no_inferred_full_surface_equivalence": true,
+    "ratio_compares": "entry integral divided by R^2 at each separation",
+    "reference_R_bohr": 30.0,
+    "same_methane_shape_and_direction": true,
+    "same_mixture_fraction_as_main_entry": true,
+    "selection_before_energies": "first2 uniform, first6 perGaussian mirror, first1 perStudent mirror within each seed"
+  },
+  "estimator": {
+    "TS_channel_integral": "mean_over_all256_unconditional_draws_of_fh/q",
+    "TS_total": "sum_of4_channel_means_exactly_once",
+    "central_dimensionless_flux_ratio": "ratio_of_pooled_integral_means_Abar/Bbar",
+    "converted_physical_rate": false,
+    "entry_integral": "mean_over_all1024_unconditional_draws_of_f0/q",
+    "optional_95_interval": "nominal_t_df7; approximate small-sample conditional Monte Carlo interval, not tail/physical-rate coverage",
+    "optional_SE": "sd(influence,ddof=1)/sqrt(8)",
+    "optional_log_ratio_delta_influence": "Ai/Abar-Bi/Bbar",
+    "paper_point_used": false,
+    "quantum_correction": false,
+    "transmission_coefficient": false,
+    "uncertainty_unit": "8 complete fresh independent seed vectors conditional on frozen proposal; keep all pairing/covariance"
+  },
+  "excluded_from_all_primary_rates": true,
+  "execution_authorized_by_this_document": false,
+  "fixed_PES_identity": {
+    "absolute_path": "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/build/libcbe2008.so",
+    "read_action": "identity copied from original frozen proposal; no load/evaluation during this design",
+    "redistributed": false,
+    "sha256": "aa33e4f55246d5b99839cd3b08702f1d091a6b3dddac1d6c97d34bb542d95aaf"
+  },
+  "fresh_diagnostic_draws": {
+    "RNG": "NumPy Generator(PCG64(seed)); exact NumPy/runtime pinned before implementation adoption",
+    "TS_draws_per_channel_seed": 32,
+    "TS_geometries_total": 2048,
+    "TS_stratum_counts_per_channel_seed": {
+      "normal_alpha0.999_negative": 6,
+      "normal_alpha0.999_positive": 6,
+      "normal_alpha1.007_negative": 6,
+      "normal_alpha1.007_positive": 6,
+      "student5_alpha0.999_negative": 1,
+      "student5_alpha0.999_positive": 1,
+      "student5_alpha1.007_negative": 1,
+      "student5_alpha1.007_positive": 1,
+      "uniform_shape_sphere": 4
+    },
+    "entry_draws_per_seed": 128,
+    "entry_geometries_total": 1024,
+    "entry_stratum_counts_per_seed": {
+      "normal_negative": 48,
+      "normal_positive": 48,
+      "student5_negative": 8,
+      "student5_positive": 8,
+      "uniform_shape_sphere": 16
+    },
+    "main_and_control_ledger_written_before_first_diagnostic_PES": true,
+    "paired_alpha_evaluation": true,
+    "seeds": [
+      2026112201,
+      2026112202,
+      2026112203,
+      2026112204,
+      2026112205,
+      2026112206,
+      2026112207,
+      2026112208
+    ],
+    "total_main_target_geometries": 3072,
+    "zero_draws_replaced": false
+  },
+  "implementation_exists": false,
+  "physics": {
+    "Rinf_primary_bohr": 30.0,
+    "all_four_channels_sampled_separately": true,
+    "alpha1point007_is_classical_not_P128": true,
+    "alpha_values": [
+      0.999,
+      1.007
+    ],
+    "beads": 1,
+    "beta_hartree_inverse": 1052.5834160132904,
+    "channel_labels": [
+      0,
+      2,
+      3,
+      4
+    ],
+    "electronic_weight": 1.0,
+    "energy_offset_hartree": -0.7,
+    "entry_chart_label": 3,
+    "extra_symmetry_multiplier": 1.0,
+    "masses_amu": [
+      1.00782503207,
+      12.0,
+      1.00782503207,
+      1.00782503207,
+      1.00782503207,
+      1.00782503207
+    ],
+    "reference_bond_difference_bohr": -0.9779332364086217,
+    "temperature_K": 300.0
+  },
+  "prior_complete_pilot": {
+    "all_original_draws": 768,
+    "evaluated_geometries": 641,
+    "inventory_path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/publication-inventory.json",
+    "inventory_sha256": "10ce01b004b9870e283a79e746781543edcafa5d7598e6539a21c2bfd008528e",
+    "new_diagnostic_report_sha256": "5e05fa4c6c169d26acc7b9ff1ab4815e55b0d5f229635fe3e28adefea9e21df8",
+    "new_diagnostic_script_sha256": "0d9b19fa6adbee41471933db1845ad51abdb14468ca538f30ae2d4dd2a8de87c",
+    "no_old_seed_or_weight_dropped": true,
+    "zero_draws": 127
+  },
+  "proposal": {
+    "TS_density": "(1/8)*U(Bplus)*U(S2)+(3/4)*(1/4)*sum_j N11(x;mu_j,C_j)/Jomega+(1/8)*(1/4)*sum_j T5,11(x;mu_j,(12/5)C_j)/Jomega",
+    "TS_j": "two alpha models times both equally weighted exact mirrors",
+    "all_components_untruncated": true,
+    "asymmetric_mirror_weights_adopted": false,
+    "empirical_old_covariance_adopted": false,
+    "entry_density": "[U(Bplus)/8+(3/4)*(N9plus+N9minus)/2+(1/8)*(T5,9plus+T5,9minus)/2]/(4*pi)",
+    "full_mixture_denominator": true,
+    "full_support_lower_bound": "1/(8*volume(Bplus)*4*pi) over outer audit domain",
+    "student_covariance_multiple_of_normal_covariance": 4.0,
+    "student_degrees_of_freedom": 5,
+    "student_scale_matrix_multiple_of_normal_covariance": 2.4,
+    "uniform_box_shape_bounds": [
+      [
+        1.2,
+        5.0
+      ],
+      [
+        1.2,
+        5.0
+      ],
+      [
+        -1.0,
+        1.0
+      ],
+      [
+        -5.0,
+        5.0
+      ],
+      [
+        -5.0,
+        5.0
+      ],
+      [
+        -5.0,
+        5.0
+      ],
+      [
+        -5.0,
+        5.0
+      ],
+      [
+        -5.0,
+        5.0
+      ],
+      [
+        -5.0,
+        5.0
+      ]
+    ]
+  },
+  "protected_source_sha256": {
+    "benchmarks/hch4/geometries.json": "8e54d6bb16e21f3c34c7ef92bf0ca0863d1ec55f2c029a57289c23ff73363609",
+    "benchmarks/hch4/pes.py": "4ba178e3cd8d4167b69e947a0c3dd8cacbe45498959a149c8c61a56752df232c",
+    "benchmarks/hch4/reproduction_input.py": "31c72794a26266cf7fc128846b66f00a636331c8c35fb1e79bdfc4f4615ec4e4",
+    "benchmarks/hch4/reproduction_protocol.json": "5a84e3923ca4fb087459872f465b85b07154068392f670798bbab5fb8ad316c5",
+    "benchmarks/hch4/source.json": "2ba8ba6b918ba7a26363ce441d4671874b1fed61ede278dc904ae42eb87600ad",
+    "src/pyrpmd/bias.py": "3a2ee4fc125aaa8a9f0103e140b4f8b325c4561327604506b3f47dd5ce3a0df6",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "src/pyrpmd/cv.py": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52",
+    "src/pyrpmd/workflows/rate.py": "44acdf9c2b0ab54551de9b5362f8c4e958c03b61450760474096feef54a6a587"
+  },
+  "purpose": "Test a deterministic energy-Hessian joint proposal on fresh independent fixed draws, retaining original-domain flux targets and explicit outer-domain/tail/entry-separation diagnostics.",
+  "required_diagnostics": [
+    "all old/fresh/calibration source/input/PES identities",
+    "every attempted and successful PES geometry and zero reason",
+    "all calibration steps, Hessian spectra, Newton shifts, refinement/probe residuals and reflection comparisons",
+    "all staged ledgers and proposal-freeze receipt",
+    "all8 seed/channel/component means, ESS and maxima",
+    "top1percent weight mass and leave-one-seed-out changes",
+    "separate Gaussian/Student/uniform and mirror contributions",
+    "nested-domain and shell masses/counts/concentration/seed participation; no zero-observation upper bound",
+    "paired30/60bohr entry-only result and conditional nominal uncertainty",
+    "all failure/timeout/interruption receipts and resource accounting"
+  ],
+  "required_pre_adoption_gates": [
+    "independent stereographic/support/stratified-mixture/coarea review",
+    "new implementation synthetic analytic normalization/domain/count tests",
+    "new lifecycle/resource/one-attempt tests",
+    "freeze exact source/protocol/runtime/proposal-calibration rules",
+    "separate concrete root resource adoption"
+  ],
+  "resource_proposal": {
+    "budget_extension": false,
+    "combined_soft_admission_CPU_seconds": 55,
+    "maximum_CPUs": 1,
+    "maximum_attempted_PES_geometries": 4000,
+    "no_paid_resources": true,
+    "one_attempt_no_automatic_resume": true,
+    "outer_supervisor_wall_seconds": 120,
+    "preparation_process_CPU_cap_seconds": 2,
+    "preserve_all_caps_and_overheads": true,
+    "root_adoption_still_required": true,
+    "supervisor_process_CPU_cap_seconds": 3,
+    "threads_per_math_library": 1,
+    "whole_process_CPU_caps_sum_seconds": 60,
+    "worker_process_CPU_cap_seconds": 55
+  },
+  "schema": "pyrpmd.hch4-reference-efficiency-design.v1",
+  "status": "draft_for_independent_review_unimplemented_not_adopted_not_executed",
+  "unchanged_measure_source": {
+    "feasibility_inventory_sha256": "19932ab92f282c632227fbb473797963e221d785531127836ee55d75c21d27d3",
+    "proposal": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/pilot-design/proposal.json",
+    "sha256": "85de4292058f9ac4fce9b8c5327d3aba0bea0204e02ede17fb629fa20ee23029"
+  },
+  "unresolved_even_if_efficiency_screen_passes": [
+    "unseen importance tails and adequate repeated-seed precision",
+    "physical molecular/PES reliability over the finite domain and its omitted exterior",
+    "full finite-Rinf surface/rate convergence",
+    "absolute rate normalization against an independent numerical oracle",
+    "quantum equilibrium/recrossing convergence and agreement with literature"
+  ]
+}

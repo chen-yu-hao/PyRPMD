@@ -1,0 +1,37 @@
+{
+  "PES_calls": 0,
+  "RNG_draws": 0,
+  "created_utc": "2026-11-01T22:17:16.207855+00:00",
+  "dynamics_steps": 0,
+  "files": [
+    {
+      "bytes": 4197,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hele2015-source-review/README.md",
+      "sha256": "f0e3c09b4a4bfe42ec20f096e41e8986e1c6544946f844e7de60c71d667b8199"
+    },
+    {
+      "bytes": 7591,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hele2015-source-review/check_fh2.py",
+      "sha256": "dd7bc398af88a2263abd605a75dc9c68eff3d9e51964830f0afc69d5a31caa5c"
+    },
+    {
+      "bytes": 5665,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hele2015-source-review/checks.json",
+      "sha256": "c0452ad39a1161a6ae33670b4238bc7fc49a748e21f9089d129f06ec3047b31d"
+    },
+    {
+      "bytes": 1213,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hele2015-source-review/execution.json",
+      "sha256": "802b0a5e56876151fa1acbf8957b96371ae15a0e9c52d9b4f4cd752e00eadcd4"
+    },
+    {
+      "bytes": 7647,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hele2015-source-review/independent-review.json",
+      "sha256": "99dae2ad596531e2d87dda9718eb627d9bedbbf1656476597a66750e2420729e"
+    }
+  ],
+  "listed_bytes": 26313,
+  "schema": "pyrpmd.hele2015.independent-source-review-inventory.v1",
+  "scope": "Five compact review/code/JSON files only. Original PDFs, source TeX/archive/images, external PES and molecular raw data excluded.",
+  "source_or_simulation_mutations": false
+}

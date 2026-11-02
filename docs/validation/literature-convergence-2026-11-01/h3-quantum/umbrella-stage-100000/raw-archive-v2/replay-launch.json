@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_sampling_analyze.py",
+    "--campaign",
+    "/workspace/scratch/a5e4820daedd/h3-quantum-umbrella-stage-100000-restored-v2/data/campaign-run",
+    "--protocol",
+    "/workspace/scratch/a5e4820daedd/h3-quantum-umbrella-stage-100000-restored-v2/reference/protocol.json",
+    "--output",
+    "/workspace/scratch/a5e4820daedd/h3-quantum-umbrella-stage-100000-replay-v2",
+    "--stage",
+    "100000"
+  ],
+  "created_utc": "2026-11-01T21:39:42.213064+00:00",
+  "one_analysis_replay_only": true,
+  "original_execution": {
+    "bytes": 2074,
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-100000/execution.json",
+    "sha256": "a84f0a0434199c7897e99c9f4e55fbe40a641fe78f8cdea27bd08d194bbd54cb"
+  }
+}

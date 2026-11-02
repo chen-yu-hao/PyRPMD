@@ -1,0 +1,12 @@
+{
+  "created_utc": "2026-11-01T21:43:47.592466+00:00",
+  "exec_session_id": 14201,
+  "schema": "pyrpmd.agent-actual-exec-observation.v1",
+  "scope": "Actual saved-history read-only comparison; no new physical work.",
+  "tool_result": {
+    "chunk_id": "e5ef90",
+    "exit_code": 0,
+    "output": "{\"all8_checked\": true, \"coarse_reuse_eligible\": false, \"source_unchanged\": true, \"CPU_seconds\": 1.29069015}\n",
+    "wall_time_seconds": 2.6298e-05
+  }
+}

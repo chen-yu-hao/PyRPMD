@@ -1,0 +1,120 @@
+{
+  "schema": "pyrpmd.fh2.author-public-source-fetch.v1",
+  "created_utc": "2026-11-01T19:06:17.352998+00:00",
+  "records": [
+    {
+      "url": "https://www.itheoc.uni-stuttgart.de/research/werner/research/h2f/potential/sw1.tar",
+      "started_utc": "2026-11-01T19:06:15.143592+00:00",
+      "catalog": "https://www.itheoc.uni-stuttgart.de/research/werner/research/h2f/potential/",
+      "attempts": 1,
+      "authentication": false,
+      "status": 200,
+      "effective_url": "https://www.itheoc.uni-stuttgart.de/research/werner/research/h2f/potential/sw1.tar",
+      "content_type": "application/x-tar",
+      "bytes": 30720,
+      "sha256": "dcabcc090fb39206d3dd269adf700afde49918f8646665aeccdbb65cdc9441da",
+      "local_path": "/workspace/scratch/a5e4820daedd/fh2-author-assets/sw1.tar",
+      "members": [
+        {
+          "name": "pot.f",
+          "type": "file",
+          "bytes": 2958,
+          "sha256": "6c94969e838acca88e04a2308dcfa55564024e9eb7c8a0fd1d6b3c38f1dc337e"
+        },
+        {
+          "name": "pot_deriv.f",
+          "type": "file",
+          "bytes": 3589,
+          "sha256": "aa691c2bb00c6abc3341ccedfff01da50d0a7569638b854044b8943f6c2874f8"
+        },
+        {
+          "name": "readme.txt",
+          "type": "file",
+          "bytes": 3122,
+          "sha256": "453abc358883a53a5d9f33aaed9d3e3732096ecb5a49236bd7053567bbae6d24"
+        },
+        {
+          "name": "three.param",
+          "type": "file",
+          "bytes": 9702,
+          "sha256": "817e9c45ea1e85640f78ed748173ae71056dab6210083909d500ca97f9dc48d7"
+        },
+        {
+          "name": "two.param",
+          "type": "file",
+          "bytes": 144,
+          "sha256": "0aca577d9d2d7fb712286d9a26e2635c8d4b47d6122fda4a935c50e224956812"
+        }
+      ],
+      "downloaded": true
+    },
+    {
+      "url": "https://www.itheoc.uni-stuttgart.de/research/werner/research/h2f/potential/hsw.tar",
+      "started_utc": "2026-11-01T19:06:16.208207+00:00",
+      "catalog": "https://www.itheoc.uni-stuttgart.de/research/werner/research/h2f/potential/",
+      "attempts": 1,
+      "authentication": false,
+      "status": 200,
+      "effective_url": "https://www.itheoc.uni-stuttgart.de/research/werner/research/h2f/potential/hsw.tar",
+      "content_type": "application/x-tar",
+      "bytes": 81920,
+      "sha256": "12a71daa7063a0fa44689236955ac3e1a4e1942b8fb3f7f19ef0324edd6cdee1",
+      "local_path": "/workspace/scratch/a5e4820daedd/fh2-author-assets/hsw.tar",
+      "members": [
+        {
+          "name": "hswpot.f",
+          "type": "file",
+          "bytes": 6838,
+          "sha256": "6cc34620f04b2446c185eaa64b22939357138f88debd3a6b16a3ffa5833bf93e"
+        },
+        {
+          "name": "readme.txt",
+          "type": "file",
+          "bytes": 1474,
+          "sha256": "c0e229de6eed8cfd6ea789c787945faaafd693c78b12e9d7735af2acbb68a7ce"
+        },
+        {
+          "name": "so.input",
+          "type": "file",
+          "bytes": 12480,
+          "sha256": "b58e5eb9b2c5150d3e6a26ec27faa04a6c1e59c180f3c82c01a0e3a37021dc2d"
+        },
+        {
+          "name": "so.param",
+          "type": "file",
+          "bytes": 144,
+          "sha256": "0a432fe392e44e27abaa6cb517cac84fadfea01f8cb30bddf11204f845737296"
+        },
+        {
+          "name": "sospline.f",
+          "type": "file",
+          "bytes": 33947,
+          "sha256": "c6b4e79e7c7130bc01858152872d938fc88b0292b2659cf614e3808d48fe4d2a"
+        },
+        {
+          "name": "three.param",
+          "type": "file",
+          "bytes": 9701,
+          "sha256": "6dd148607f472ca27c83aa64eba7d5a2085ccb5578b64e17e156be73fc2bbdb7"
+        },
+        {
+          "name": "two.param",
+          "type": "file",
+          "bytes": 144,
+          "sha256": "0aca577d9d2d7fb712286d9a26e2635c8d4b47d6122fda4a935c50e224956812"
+        },
+        {
+          "name": "verify.f",
+          "type": "file",
+          "bytes": 611,
+          "sha256": "65e71317235b01719ff2c9eac4ecfea0bc4c5a612d913f7fe01fa848517e9a8f"
+        }
+      ],
+      "downloaded": true
+    }
+  ],
+  "extracted_to_filesystem": false,
+  "source_executed": false,
+  "corrected_literature_rates_obtained": false,
+  "raw_uploads": false
+}

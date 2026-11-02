@@ -1,0 +1,160 @@
+{
+  "schema": "pyrpmd.isotopologue-primary-source-index.v1",
+  "reviewed_utc": "2026-11-01T17:33:57.995085+00:00",
+  "scope": "Source identification for a possible later campaign. No simulation, reference-registry edit, new target acceptance, or frozen scientific-source change.",
+  "sources": [
+    {
+      "doi": "10.1021/jz201702q",
+      "year": 2012,
+      "publisher_url": "https://pubs.acs.org/doi/10.1021/jz201702q",
+      "institutional_metadata_url": "https://ora.ox.ac.uk/objects/uuid%3A5264d1ce-0252-4e6b-9982-41949ecbb987",
+      "verified_reaction": "Mu + H2 -> MuH + H",
+      "verified_scope": "The publisher abstract identifies zero-point energy as dominant and tunnelling as a minor contribution.",
+      "access": "Publisher and Oxford metadata/abstract retrieved through search; direct page opens returned 403. No full original numerical table read.",
+      "temperature_K_directly_verified": null,
+      "exact_masses_u_verified": null,
+      "pes_directly_verified": null,
+      "beads_directly_verified": null,
+      "target_ready": false,
+      "caution": "Do not attribute the later 2013 table or its 512 bead protocol directly to this 2012 article."
+    },
+    {
+      "doi": "10.1039/C2CP44364C",
+      "year": 2013,
+      "publisher_url": "https://pubs.rsc.org/en/content/articlelanding/2013/cp/c2cp44364c",
+      "author_profile_url": "https://cyi.academia.edu/YurySuleimanov",
+      "readable_author_upload_url": "https://www.academia.edu/14618599/A_ring_polymer_molecular_dynamics_study_of_the_isotopologues_of_the_H_H2_reaction",
+      "version": "Author-uploaded publisher proof, explicitly containing production queries; final numerical table not cross-verified.",
+      "verified_reactions": [
+        "Mu + H2 -> MuH + H",
+        "H + H2 -> H2 + H",
+        "D + H2 -> DH + H",
+        "He_mu + H2 -> He_muH + H"
+      ],
+      "temperature_K": [
+        200,
+        300,
+        400,
+        500,
+        600,
+        700,
+        800,
+        900,
+        1000
+      ],
+      "additional_He_mu_temperatures_K": [
+        295.5,
+        405
+      ],
+      "pes": "BKMP2",
+      "beads_all_standard_temperatures": 512,
+      "classical_beads": 1,
+      "mass_statement": {
+        "Mu_u_approximate": 0.114,
+        "exact_H_D_He_mu_masses_verified": false
+      },
+      "table2": "Born-Oppenheimer rates; no diagonal adiabatic correction. Units stated cm^3/s.",
+      "table3_correction": "Multiply by exp[-Delta/(kB*T)].",
+      "Delta_over_kB_K": {
+        "Mu": 120.22,
+        "H": 64.4,
+        "D": 70.91,
+        "He_mu": 75.78
+      },
+      "selected_table2_rows_300K": [
+        {
+          "incoming": "Mu",
+          "xi_max": 1.031,
+          "kappa": 0.489,
+          "qtst": 1.79e-19,
+          "rpmd": 8.75e-20,
+          "qm": 8.24e-20
+        },
+        {
+          "incoming": "H",
+          "xi_max": 1.0,
+          "kappa": 0.775,
+          "qtst": 2.53e-16,
+          "rpmd": 1.96e-16,
+          "qm": 2.93e-16
+        },
+        {
+          "incoming": "D",
+          "xi_max": 0.994,
+          "kappa": 0.751,
+          "qtst": 3.33e-16,
+          "rpmd": 2.51e-16,
+          "qm": 3.72e-16
+        }
+      ],
+      "unresolved_version_checks": [
+        "H at 300 K proof classical TST 1.04e-18 and full rate 1.03e-18 differ from the existing CPC benchmark 1.56e-18 and 1.55e-18; cause unestablished.",
+        "He_mu at 900 K extracted QTST 1.11e-13 times kappa 0.809 disagrees tenfold with listed RPMD 9.01e-13; OCR or proof error unclassified."
+      ],
+      "target_ready": false
+    },
+    {
+      "doi": "10.1021/jz502216g",
+      "year": 2014,
+      "publisher_url": "https://pubs.acs.org/doi/10.1021/jz502216g",
+      "author_profile_url": "https://cyi.academia.edu/YurySuleimanov",
+      "readable_author_upload_url": "https://www.academia.edu/14618605/Stress_Test_for_Quantum_Dynamics_Approximations_Deep_Tunneling_in_the_Muonium_Exchange_Reaction_D_HMu_DMu_H",
+      "version": "Author manuscript linked by its author profile; exact acceptance/revision status not verified.",
+      "verified_reaction": "D + HMu -> DMu + H",
+      "distinct_channel_excluded_from_this_stress_test": "D + HMu -> DH + Mu",
+      "temperature_K": [
+        150,
+        200,
+        300,
+        400,
+        500,
+        600,
+        700,
+        800,
+        900,
+        1000
+      ],
+      "pes": "H3 BKMP2",
+      "Mu_mass_u_as_printed": 0.11398,
+      "exact_H_D_masses_verified": false,
+      "crossover_temperature_K_approximate": 860,
+      "beads_verified": false,
+      "timestep_verified": false,
+      "readable_numerical_table": "Table 1 gives classical, RPMD, SCI/Wigner, iCVT/muOMT and QM rates.",
+      "selected_table1_raw_numbers": [
+        {
+          "temperature_K": 150,
+          "classical": 2.04e-26,
+          "rpmd": 2.7e-15,
+          "qm": 1.43e-14
+        },
+        {
+          "temperature_K": 300,
+          "classical": 1.63e-18,
+          "rpmd": 1.15e-13,
+          "qm": 3.33e-13
+        },
+        {
+          "temperature_K": 1000,
+          "classical": 1.24e-12,
+          "rpmd": 1.23e-11,
+          "qm": 2.47e-11
+        }
+      ],
+      "unit_verification": "The accessible Table 1 transcription omits an explicit unit; verify the original PDF/figure or SI before importing rates.",
+      "supporting_information_file": "jz502216g_si_001.pdf",
+      "supporting_information_url": "https://pubs.acs.org/doi/suppl/10.1021/jz502216g/suppl_file/jz502216g_si_001.pdf",
+      "supporting_information_access": "Publisher lists free numerical details, but document retrieval was inaccessible in this session.",
+      "target_ready": false
+    }
+  ],
+  "source_chain": "Both full-text uploads are linked from Yury Suleimanov's own Academia profile; publication identities were checked against publisher metadata. These are primary manuscripts hosted on a third-party platform, not independent secondary summaries.",
+  "not_verified_for_any_new_campaign": [
+    "Exact full mass triples and conventions",
+    "The original executable PES source revision and byte checksum",
+    "An accessible final published table resolving proof/OCR differences",
+    "Original per-temperature discretization and time-step details where absent above"
+  ],
+  "artifact_policy": "Only this short source index and review are retained for publication. Full copyrighted article text, third-party PDF bytes and webpage snapshots are not reproduced.",
+  "retrieval_limits": "Direct publisher/repository opens returned 403/inaccessible. Two ordinary scratch-environment fetches returned Operation not permitted; no escalation, proxy bypass, access-control workaround or login was attempted."
+}

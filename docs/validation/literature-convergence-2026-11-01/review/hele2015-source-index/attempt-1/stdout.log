@@ -1,0 +1,62 @@
+{
+  "output": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/review/hele2015-source-index/attempt-1/digitization.json",
+  "sha256": "2c26402ef22418c4c00d8c8708d770ead9e591e6b78c535acb8a9ff5e2151d8f",
+  "RPMD_lambda0": {
+    "hhh.pdf": [
+      {
+        "T_K": 200,
+        "rate_cm3_s": 1.1798958884133266e-18
+      },
+      {
+        "T_K": 300,
+        "rate_cm3_s": 1.948494980189796e-16
+      },
+      {
+        "T_K": 500,
+        "rate_cm3_s": 2.5483872923760266e-14
+      }
+    ],
+    "dmuh.pdf": [
+      {
+        "T_K": 200,
+        "rate_cm3_s": 1.1222337990602671e-14
+      },
+      {
+        "T_K": 300,
+        "rate_cm3_s": 1.1397542123402468e-13
+      },
+      {
+        "T_K": 500,
+        "rate_cm3_s": 1.2947474134488877e-12
+      }
+    ],
+    "ch4h.pdf": [
+      {
+        "T_K": 250,
+        "rate_cm3_s": 4.016143462849317e-21
+      },
+      {
+        "T_K": 300,
+        "rate_cm3_s": 1.138683262549703e-19
+      },
+      {
+        "T_K": 500,
+        "rate_cm3_s": 2.5900528522414053e-16
+      }
+    ],
+    "fhh.pdf": [
+      {
+        "T_K": 200,
+        "rate_cm3_s": 1.9301814424289e-11
+      },
+      {
+        "T_K": 300,
+        "rate_cm3_s": 2.8608206737597767e-11
+      },
+      {
+        "T_K": 500,
+        "rate_cm3_s": 5.356237543860426e-11
+      }
+    ]
+  }
+}

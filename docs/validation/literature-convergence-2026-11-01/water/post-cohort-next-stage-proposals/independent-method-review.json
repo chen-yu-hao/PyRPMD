@@ -1,0 +1,64 @@
+{
+  "approved_as_reviewed_design": true,
+  "authorizes_physical_execution": false,
+  "blocking_findings": [],
+  "created_utc": "2026-11-01T21:30:02.563451+00:00",
+  "implementation_requirements_remaining": [
+    "The new general-lag analyzer and production-only phase/restart coordinator must be separately implemented, tested, reviewed and source-frozen.",
+    "The frozen preparation coordinator predates paired-control outcome gates: a later root admission must explicitly bind the complete control result, actual normal exit and current exclusion.",
+    "The offline preparation scalar/RDF definitions require their promised implementation review before long preparation.",
+    "Root must separately authorize actual resources and cumulative admission accounting. The32-worker-hour ceiling is a nominal admission budget with committed-boundary drain, not an OS hard-runtime bound.",
+    "No new paper-agreement claim follows from these proposals or this review. The future scientific assessment must retain model, finite-cell, thermostat, source-rounding and finite-time limitations."
+  ],
+  "inputs": [
+    {
+      "bytes": 16758,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-proposals/README.md",
+      "sha256": "d203f7288fdf60a0f40dd2737af75863a98fe4e05dbeab2c8be20dada38ab852"
+    },
+    {
+      "bytes": 15956,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-proposals/preparation-proposal.json",
+      "sha256": "3521b5c25ee27466d95f750dae421e8d74566b5ddf3f927ce7d426fc69e9bce1"
+    },
+    {
+      "bytes": 10924,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-proposals/long-lag-production-design.json",
+      "sha256": "678270ed5353c9d7d6d92ed44fd6180cd6c1ca91f5e43c91386d011ccff787c4"
+    }
+  ],
+  "observed_arithmetic_checks": {
+    "actual_physical_steps_executed_in_review": 0,
+    "additional_preparation_steps_per_seed": 1600000,
+    "additional_refreshes_per_seed": 4000,
+    "fixed_seeds": 8,
+    "frames_per_segment": 4001,
+    "origins_per_molecule_at10ps": 2001,
+    "production_segments_per_seed": 20,
+    "total_production_steps_all8": 12800000
+  },
+  "reviewed_mathematics_and_cohort": {
+    "chain_uncertainty": "The8 whole-chain means are the uncertainty units.20segments,216molecules and overlapping origins do not increase df beyond7. All contrasts are paired within chain; old and new shared-ancestry outcomes cannot be counted as16 independent chains.",
+    "complete_cohort": "Every8-chain fixed preparation endpoint and every160 production segment is required; failed seeds/segments and original eligibility failures cannot be dropped. No target-rate or favorable-window stop is introduced.",
+    "finite_origin_counts": "20ps at5fs gives4001 frames. At10ps/index2000, N-k=2001 origins per molecule; retain the lag-specific denominator and no per-record velocity mean subtraction.",
+    "fixed_lag_and_stationarity": "All predeclared cutoff/window and early10/late10 contrasts remain visible. Marginal df7 intervals and empirical scalar thresholds do not establish equilibrium, simultaneous coverage or an infinite-time diffusion limit.",
+    "preparation_phase": "At absolute step400000, execute exactly the pending normal Maxwell preparation draw with no COM projection. Fixed1.6M added steps contain4000 draws at400-step intervals. Stop at2000000 before the terminal draw.",
+    "production_phase": "At2000000, the first NVE COM-projected draw replaces the pending preparation draw; continue the saved RNG for exactly20 draws, one per segment. No thermostat within segments and no final extra draw.20*80000 steps end at3600000.",
+    "structural_measure": "Unordered OO pair normalization N(N-1)/2 times shell volume/V is internally consistent. The3.5A coordination uses2*unordered count/N. The final partial radial shell, histogram under/overflow and all fixed blocks remain retained.",
+    "transport_factors": "The stored3D VACF dot product requires1/3 on its integral; the3D MSD slope requires1/6. Unwrapped molecular COM displacement must not be minimum-imaged or re-centered."
+  },
+  "reviewer_role": "Independent benchmark-method review; read-only design and metadata arithmetic.",
+  "schema": "pyrpmd.water-next-stage-independent-scientific-design-review.v1",
+  "scope": {
+    "not_performed": [
+      "No active or archived checkpoint arrays opened.",
+      "No PES, Context, RNG draw, dynamics or diffusion calculation.",
+      "No new-source implementation or synthetic-test execution.",
+      "No current control outcome, lease release or resource availability independently established."
+    ],
+    "read": [
+      "Three bound design documents and resource-estimates.json."
+    ]
+  },
+  "source_and_draft_mutations": false
+}

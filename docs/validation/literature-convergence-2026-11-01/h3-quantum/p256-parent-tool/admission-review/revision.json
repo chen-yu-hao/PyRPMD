@@ -1,0 +1,21 @@
+{
+  "created_utc": "2026-11-01T19:42:29.368098+00:00",
+  "finding": "Stop/deadline was checked only at the outer dispatch loop; a stop while guarding inputs or journaling the first admission could permit another inner-loop admission.",
+  "initial_inventory_sha256": "9efee79d76e48e04f0f7ea8f34747f600d178b7dfee5c87098ef47a3cbb875e5",
+  "original_sources": [
+    {
+      "bytes": 34562,
+      "original_path": "benchmarks/h3/p256_parent_campaign.py",
+      "preserved_path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/initial-source/p256_parent_campaign.py",
+      "sha256": "a84b3a77ad86e7bec2285ce592ee096410fe202b9c4f04804733fb0cd1520923"
+    },
+    {
+      "bytes": 19942,
+      "original_path": "tests/test_h3_p256_parent_campaign.py",
+      "preserved_path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/initial-source/test_h3_p256_parent_campaign.py",
+      "sha256": "aa8266bfb11fa7e836e3cf27c726be0cb6325b254c8116e042bd93944aa66183"
+    }
+  ],
+  "schema": "pyrpmd.h3.p256-parent-admission-review-revision.v1",
+  "scope": "Scheduling-only; immediate stop/deadline checks before each Popen. No producer/settings/RNG/physics/output schema change."
+}

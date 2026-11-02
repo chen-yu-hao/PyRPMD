@@ -1,0 +1,284 @@
+{
+  "all_original_leases_acquired_and_released": true,
+  "complete_original_cohort": true,
+  "completed_chains": [
+    {
+      "chunks": 200,
+      "committed_steps": 800000,
+      "complete": true,
+      "completed_NVE_segments": 25,
+      "manifest_sha256": "5d32b200e8073dc9818696fe2c77611c0539379fd494418bfc8fc191bbb777bd",
+      "raw_directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1101",
+      "seed": 1101,
+      "total_ps": 200.0
+    },
+    {
+      "chunks": 200,
+      "committed_steps": 800000,
+      "complete": true,
+      "completed_NVE_segments": 25,
+      "manifest_sha256": "cffd93df0a58c82388b1509822ec0bf31e4d6ccf37e76d3c6ffb44314d1e1bb5",
+      "raw_directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1102",
+      "seed": 1102,
+      "total_ps": 200.0
+    },
+    {
+      "chunks": 200,
+      "committed_steps": 800000,
+      "complete": true,
+      "completed_NVE_segments": 25,
+      "manifest_sha256": "dcd638e3052964747fc6d22ebc40ab6eafd33519e2c6caf790d7a686435a45b3",
+      "raw_directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1103",
+      "seed": 1103,
+      "total_ps": 200.0
+    },
+    {
+      "chunks": 200,
+      "committed_steps": 800000,
+      "complete": true,
+      "completed_NVE_segments": 25,
+      "manifest_sha256": "02d5eaa6bf6aff7cc4a56459279087efcf07b1ca36d589379c33b5aae0107ebf",
+      "raw_directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1104",
+      "seed": 1104,
+      "total_ps": 200.0
+    },
+    {
+      "chunks": 200,
+      "committed_steps": 800000,
+      "complete": true,
+      "completed_NVE_segments": 25,
+      "manifest_sha256": "3dfdf5dff6f8d03c65e29f9b87d0d4b14ef8c40cb592a38577a363a8bfee64ac",
+      "raw_directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1105",
+      "seed": 1105,
+      "total_ps": 200.0
+    },
+    {
+      "chunks": 200,
+      "committed_steps": 800000,
+      "complete": true,
+      "completed_NVE_segments": 25,
+      "manifest_sha256": "ad64b10ecf9d5cc906aac6cf99dd936e2256307b83146064e2197ff889b56c52",
+      "raw_directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1106",
+      "seed": 1106,
+      "total_ps": 200.0
+    },
+    {
+      "chunks": 200,
+      "committed_steps": 800000,
+      "complete": true,
+      "completed_NVE_segments": 25,
+      "manifest_sha256": "12ebe411009ce33f0e7a5aba12128dc1bb9b73d6ebf5b5c573eddaf242bd7cb0",
+      "raw_directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1107",
+      "seed": 1107,
+      "total_ps": 200.0
+    },
+    {
+      "chunks": 200,
+      "committed_steps": 800000,
+      "complete": true,
+      "completed_NVE_segments": 25,
+      "manifest_sha256": "affbd97b119bbcceb0dc2f0b865b21876417ab0f13424d80ae9f065d769a2f2a",
+      "raw_directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1108",
+      "seed": 1108,
+      "total_ps": 200.0
+    }
+  ],
+  "coordinator_finished_event": {
+    "coordinator_pid": 4,
+    "elapsed_wall_seconds": 3342.759914430004,
+    "event": "coordinator_finished",
+    "failed": false,
+    "run_id": "aaf3ff95896e4f03ac1a03d69acbab61",
+    "utc": "2026-11-01T20:41:12.926357+00:00"
+  },
+  "current_invocation_finished_events": [
+    {
+      "committed": {
+        "chunk_count": 138,
+        "chunk_prefix_sha256": "ee44c8c69bdd717772762c4bcac428499e150b17ca6316676a053ca5db2c8f3c",
+        "committed_steps": 552000,
+        "complete": false,
+        "completed_NVE_segments": 9,
+        "last_chunk": {
+          "file": "chunk-000137.npz",
+          "observations": 200,
+          "sha256": "f67927e6112f230ae9818afaa96d3cf484d329d050ecc3041786a094ae441e4b",
+          "step": 552000
+        },
+        "manifest_sha256": "6587198ccd9c0432fe480f2d1548a21189c2c0f6cd829e5bbd7cf44c275cee86"
+      },
+      "coordinator_pid": 4,
+      "event": "invocation_finished",
+      "exit_code": 0,
+      "native_child_pid": 9,
+      "queue": "c",
+      "run_id": "aaf3ff95896e4f03ac1a03d69acbab61",
+      "seed": 1107,
+      "utc": "2026-11-01T20:15:37.121208+00:00"
+    },
+    {
+      "committed": {
+        "chunk_count": 138,
+        "chunk_prefix_sha256": "b8a9ffaba308af45f0015facbec3f32583f72099dc224bfab327ce8882537f21",
+        "committed_steps": 552000,
+        "complete": false,
+        "completed_NVE_segments": 9,
+        "last_chunk": {
+          "file": "chunk-000137.npz",
+          "observations": 200,
+          "sha256": "9ac978adeff15a71d4183d36c2cfdc7204ddc26d453102a7a74f4f22c313df15",
+          "step": 552000
+        },
+        "manifest_sha256": "8ac0ef2d94b684a589484f33ba6876e74df203cab1d60153f9e61832c1bc6d94"
+      },
+      "coordinator_pid": 4,
+      "event": "invocation_finished",
+      "exit_code": 0,
+      "native_child_pid": 22,
+      "queue": "d",
+      "run_id": "aaf3ff95896e4f03ac1a03d69acbab61",
+      "seed": 1108,
+      "utc": "2026-11-01T20:15:46.677075+00:00"
+    },
+    {
+      "committed": {
+        "chunk_count": 200,
+        "chunk_prefix_sha256": "28f1efd05d11a243f38888dd58454297de43f901c1ab7368a76f1081ba259d6f",
+        "committed_steps": 800000,
+        "complete": true,
+        "completed_NVE_segments": 25,
+        "last_chunk": {
+          "file": "chunk-000199.npz",
+          "observations": 200,
+          "sha256": "80205eb66677b96bc144acb5f35f3297393449c5d397782de430584290accc3e",
+          "step": 800000
+        },
+        "manifest_sha256": "12ebe411009ce33f0e7a5aba12128dc1bb9b73d6ebf5b5c573eddaf242bd7cb0"
+      },
+      "coordinator_pid": 4,
+      "event": "invocation_finished",
+      "exit_code": 0,
+      "native_child_pid": 35,
+      "queue": "c",
+      "run_id": "aaf3ff95896e4f03ac1a03d69acbab61",
+      "seed": 1107,
+      "utc": "2026-11-01T20:41:02.316345+00:00"
+    },
+    {
+      "committed": {
+        "chunk_count": 200,
+        "chunk_prefix_sha256": "32194ee9de829f02c2df14e20e639227ce5586d566ca70bc387514260d0ba474",
+        "committed_steps": 800000,
+        "complete": true,
+        "completed_NVE_segments": 25,
+        "last_chunk": {
+          "file": "chunk-000199.npz",
+          "observations": 200,
+          "sha256": "c0511b51299ecd593a17d02b830f3fff4aaafa56bb4fb908fbbeae2ae000c656",
+          "step": 800000
+        },
+        "manifest_sha256": "affbd97b119bbcceb0dc2f0b865b21876417ab0f13424d80ae9f065d769a2f2a"
+      },
+      "coordinator_pid": 4,
+      "event": "invocation_finished",
+      "exit_code": 0,
+      "native_child_pid": 48,
+      "queue": "d",
+      "run_id": "aaf3ff95896e4f03ac1a03d69acbab61",
+      "seed": 1108,
+      "utc": "2026-11-01T20:41:12.781748+00:00"
+    }
+  ],
+  "current_invocation_started_events": [
+    {
+      "coordinator_pid": 4,
+      "event": "invocation_started",
+      "native_child_pid": 9,
+      "queue": "c",
+      "run_id": "aaf3ff95896e4f03ac1a03d69acbab61",
+      "seed": 1107,
+      "utc": "2026-11-01T19:45:31.737181+00:00"
+    },
+    {
+      "coordinator_pid": 4,
+      "event": "invocation_started",
+      "native_child_pid": 22,
+      "queue": "d",
+      "run_id": "aaf3ff95896e4f03ac1a03d69acbab61",
+      "seed": 1108,
+      "utc": "2026-11-01T19:45:32.143956+00:00"
+    },
+    {
+      "coordinator_pid": 4,
+      "event": "invocation_started",
+      "native_child_pid": 35,
+      "queue": "c",
+      "run_id": "aaf3ff95896e4f03ac1a03d69acbab61",
+      "seed": 1107,
+      "utc": "2026-11-01T20:15:37.194638+00:00"
+    },
+    {
+      "coordinator_pid": 4,
+      "event": "invocation_started",
+      "native_child_pid": 48,
+      "queue": "d",
+      "run_id": "aaf3ff95896e4f03ac1a03d69acbab61",
+      "seed": 1108,
+      "utc": "2026-11-01T20:15:46.741949+00:00"
+    }
+  ],
+  "journal_path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/four-worker-control/events.jsonl",
+  "journal_sha256": "9345c3d377762d59ae37323096f90ed0481af7885b94d34f49e29934e67fec81",
+  "lease_check_utc": "2026-11-01T20:41:35.658709+00:00",
+  "new_control_or_preparation_registered_or_launched": false,
+  "observed_utc": "2026-11-01T20:41:35.659206+00:00",
+  "original_campaign_registration_sha256": "de42e00933f60b6a7b224ab206124cf2db22b2a79e82f7bfa80b5d3ad61a5326",
+  "original_lease_count": 11,
+  "physical_source_sha256": {
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/native_reference.py": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2",
+    "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+  },
+  "pool_drained": true,
+  "process_completion_observation": {
+    "completion_chunk_id": "74179f",
+    "observed_returned_exit_code": 0,
+    "session_id": 17135,
+    "tool": "write_stdin"
+  },
+  "process_exit_code": 0,
+  "queue_complete_events": [
+    {
+      "coordinator_pid": 4,
+      "event": "queue_complete",
+      "queue": "a",
+      "run_id": "aaf3ff95896e4f03ac1a03d69acbab61",
+      "utc": "2026-11-01T19:45:31.575094+00:00"
+    },
+    {
+      "coordinator_pid": 4,
+      "event": "queue_complete",
+      "queue": "b",
+      "run_id": "aaf3ff95896e4f03ac1a03d69acbab61",
+      "utc": "2026-11-01T19:45:31.994758+00:00"
+    },
+    {
+      "coordinator_pid": 4,
+      "event": "queue_complete",
+      "queue": "c",
+      "run_id": "aaf3ff95896e4f03ac1a03d69acbab61",
+      "utc": "2026-11-01T20:41:02.453678+00:00"
+    },
+    {
+      "coordinator_pid": 4,
+      "event": "queue_complete",
+      "queue": "d",
+      "run_id": "aaf3ff95896e4f03ac1a03d69acbab61",
+      "utc": "2026-11-01T20:41:12.918929+00:00"
+    }
+  ],
+  "raw_payload_verification": "Whole raw chunk and artifact hashes will be independently verified by the frozen complete-cohort analyzer.",
+  "scheduler_source_sha256": "af1258f9118c4de296c90edb18c57aceb07a007d564652b4f5db6e851cece75e",
+  "schema": "pyrpmd.water-original-coordinator-normal-exit.v1"
+}

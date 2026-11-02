@@ -1,0 +1,53 @@
+{
+  "actual_PES_or_RNG_or_dynamics_by_reviewer": false,
+  "added_nonmathematical_module_constant": "TESTS = ROOT / 'tests/test_hch4_efficiency_pilot.py'",
+  "all25_reviewed_scientific_function_ASTs_identical": true,
+  "all9_protected_source_identities_unchanged": true,
+  "all_other_module_AST_including_scientific_constants_imports_classes_identical": true,
+  "approved_mathematics_for_exact_excluded_design": true,
+  "created_utc": "2026-11-01T21:08:57.673590+00:00",
+  "current_source": {
+    "bytes": 65143,
+    "path": "benchmarks/hch4/efficiency_pilot.py",
+    "sha256": "8630f0ac4106d826beb4ccb471eb57ab0382443cd9a6bca1fb474400877d91fb"
+  },
+  "current_tests": {
+    "bytes": 47526,
+    "path": "tests/test_hch4_efficiency_pilot.py",
+    "sha256": "3f32570efcef28733db3ec961450cafdf836836bc213d1794d50436c24924dc6"
+  },
+  "execution_authorized_by_this_receipt": false,
+  "independently_compared_added_functions": [
+    "validate_implementation_receipts"
+  ],
+  "independently_compared_existing_changed_functions": [
+    "load_plan",
+    "required_sources"
+  ],
+  "observed_cases": 85,
+  "observed_synthetic_gate": {
+    "bytes": 1696,
+    "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/admission-guard-gate/gate.json",
+    "sha256": "7d084215e7cb4b83cfda6f2c0b8e44d227107c529bcbfcbba03eec5f7c77ed6a"
+  },
+  "preserved_prior_source": {
+    "bytes": 63126,
+    "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/before-receipt-semantics/efficiency_pilot.py",
+    "sha256": "89c42621af370d2eb1101d1d0ecc50cd75023e60d8c5854e27f6c9d001f82598"
+  },
+  "prior_method_review": {
+    "bytes": 11778,
+    "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/independent-method-review.json",
+    "sha256": "efbbc8ba95aa1715a0e9b262d1aacaf15dc170764b6d734e2affb11a8af48ce5"
+  },
+  "reviewer_task": "/root/benchmarks",
+  "schema": "pyrpmd.hch4-efficiency.method-review-source-identity-update.v1",
+  "scope": "Additive identity-only extension of the preserved mathematical review to the narrow receipt-admission/source-conflict guard repair and added test-file identity. All mathematical findings and scientific limitations remain unchanged. Providers independently reviews the lifecycle/admission correction; separate root adoption remains required.",
+  "supersession_evidence": {
+    "bytes": 5087,
+    "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/admission-guard-supersession.json",
+    "sha256": "fa7e776a6029d59ce8c3f28f07df8bb41bbac82a14cae6d2c403f9b5587cbca9"
+  },
+  "tests_independently_rerun": false,
+  "zero_errors_failures_skips_in_observed_gate": true
+}

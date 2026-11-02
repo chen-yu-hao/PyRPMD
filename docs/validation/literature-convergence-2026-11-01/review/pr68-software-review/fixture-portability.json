@@ -1,0 +1,199 @@
+{
+  "schema": "pyrpmd.pr68-test-fixture-review.v1",
+  "observed_utc": "2026-11-01T17:29:23.568711+00:00",
+  "repository": "chen-yu-hao/PyRPMD",
+  "reviewed_commit": "3ff0b674fc9b28e60da9261e08a08ca1ecf75335",
+  "base_commit": "4698c1202d0726bce7d63742e7cd31a6f137a847",
+  "scope": "Read-only review of the new H3 method tests and pending water method tests in the integration checkout. No new long tests, simulations, source changes, or optional-library installation.",
+  "conclusion": "No unresolved clean-checkout fixture blocker found for the documented python -m pytest CI invocations. Remote CI remains uncompleted in the separate status observation.",
+  "new_h3_test_files": 13,
+  "reviewed_files": [
+    {
+      "path": ".github/workflows/tests.yml",
+      "sha256": "29d628ca88c62a57cf196e5fc8ea044e8037ef3afb6f080c1686de39adb5f857",
+      "bytes": 6065,
+      "present_in_reviewed_commit": true
+    },
+    {
+      "path": "benchmarks/h3/source.json",
+      "sha256": "0bd8e0a692d91386c8ac1b48a949f933165f1a5c9f7c887c5ceac0e81f1408f8",
+      "bytes": 1417,
+      "present_in_reviewed_commit": true
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "84ac6bd985d0f430e1f81cb8da4951d92f924a853b69018c64395271901ec265",
+      "bytes": 2396,
+      "present_in_reviewed_commit": true
+    },
+    {
+      "path": "tests/test_h3_classical_sampling.py",
+      "sha256": "c528d41ad564a0e8aee5ae4e44bf97b3e80ba94ccd77975b6bec08604285c987",
+      "bytes": 4766,
+      "present_in_reviewed_commit": true
+    },
+    {
+      "path": "tests/test_h3_classical_sampling_surface.py",
+      "sha256": "31b19b503d6ce89d4de5f179e7b5a96b07bbfe5b2fa0245513779e1316e743f2",
+      "bytes": 2879,
+      "present_in_reviewed_commit": true
+    },
+    {
+      "path": "tests/test_h3_classical_sampling_v2.py",
+      "sha256": "4c53738f91ee71536b8f7ba376e40398bc8f1b64650d9f367ca95c330e1b3900",
+      "bytes": 4139,
+      "present_in_reviewed_commit": true
+    },
+    {
+      "path": "tests/test_h3_classical_sampling_xi_proposal.py",
+      "sha256": "aa47e60d7c108343204ab020b7a5526ae6555b47e21ed3eecbde45163ec9694b",
+      "bytes": 3322,
+      "present_in_reviewed_commit": true
+    },
+    {
+      "path": "tests/test_h3_diatom_partition.py",
+      "sha256": "812860534f57d3aefbdf95ba1c4cb882c6c4b3068566441aec93854581bc69a7",
+      "bytes": 2469,
+      "present_in_reviewed_commit": true
+    },
+    {
+      "path": "tests/test_h3_diatom_transfer.py",
+      "sha256": "0c27c18c4513ccdc578ea99873ab90e590b832cfd42d23b5d494980968ae10c5",
+      "bytes": 1722,
+      "present_in_reviewed_commit": true
+    },
+    {
+      "path": "tests/test_h3_mixing_sampling.py",
+      "sha256": "b72e83813eb9de418c400fccd988869186d67dbaa5a6e7146f2a5a9f8999f30b",
+      "bytes": 6786,
+      "present_in_reviewed_commit": true
+    },
+    {
+      "path": "tests/test_h3_quantum_recrossing_analysis.py",
+      "sha256": "baa8663d7aff6d6f16920c7eca89e1cfc737a740ffb2a1b0627bbf6fad6eaa4d",
+      "bytes": 4101,
+      "present_in_reviewed_commit": true
+    },
+    {
+      "path": "tests/test_h3_quantum_sampling_analysis.py",
+      "sha256": "6b01d82679a87590af518e7a7b2578dc35460f52a7222c86b8d79df8727ac9a9",
+      "bytes": 2590,
+      "present_in_reviewed_commit": true
+    },
+    {
+      "path": "tests/test_h3_quantum_surface_recrossing.py",
+      "sha256": "2f5974034d1dda0db1542d6b11d79cb2ef2f669809dafb593d6ca99ed9a2b8ea",
+      "bytes": 4356,
+      "present_in_reviewed_commit": true
+    },
+    {
+      "path": "tests/test_h3_surface_partition.py",
+      "sha256": "109c9bd6412122cbba57e3174ba133d54316f91402f9488e508ef57437aeb228",
+      "bytes": 17073,
+      "present_in_reviewed_commit": true
+    },
+    {
+      "path": "tests/test_h3_surface_partition_controls.py",
+      "sha256": "394f21d90082ed65410310f1b8645e75f53669cfb529474226df7170d29bf03b",
+      "bytes": 3414,
+      "present_in_reviewed_commit": true
+    },
+    {
+      "path": "tests/test_h3_wham.py",
+      "sha256": "963aca069a329c5a4bf3fda54914055cdd0e96382b54697f425241fc1bf811de",
+      "bytes": 2705,
+      "present_in_reviewed_commit": true
+    },
+    {
+      "path": "tests/test_water_campaign.py",
+      "sha256": "86207baadcc35737b4c7f3726bffa908a3cc16ad1e61fcc26986b489d9f9710b",
+      "bytes": 6786,
+      "present_in_reviewed_commit": true
+    },
+    {
+      "path": "tests/test_water_native_quantum.py",
+      "sha256": "3d7e7fe171c0cb2d3910d49e92ef95953da59fe9d744ca96b49284b07323ddb7",
+      "bytes": 10613,
+      "present_in_reviewed_commit": false
+    },
+    {
+      "path": "tests/test_water_native_reference.py",
+      "sha256": "6ed99f89b56953f02c02948091a971e9df52e907b27b8fbb053450e92ed7cd3b",
+      "bytes": 10796,
+      "present_in_reviewed_commit": false
+    },
+    {
+      "path": "tests/test_water_native_schedule.py",
+      "sha256": "aa86db798b491d74b96601767d39d4511a8920c73aa16bd70d8c2ffdddfb021f",
+      "bytes": 6412,
+      "present_in_reviewed_commit": false
+    },
+    {
+      "path": "tests/test_water_velocity_cadence.py",
+      "sha256": "b99704290e44142bd7a07e8f54e8a7f09dc0a4cab2fb5ed9fc86dca1feac5fed",
+      "bytes": 5508,
+      "present_in_reviewed_commit": false
+    }
+  ],
+  "committed_external_fixtures": [
+    {
+      "path": "docs/validation/literature-audit-2026-11-01/water/classical-pilot/endpoint.npz",
+      "git_blob_bytes": 31220,
+      "sha256": "663023b530463f892bdb7792cd71395805679b75c8ae7da32f41d2748df4bead",
+      "worktree_matches_git_blob": true,
+      "binary_format_magic_hex": "504b0304"
+    },
+    {
+      "path": "docs/validation/literature-audit-2026-11-01/water/numerics/report.json",
+      "git_blob_bytes": 12830,
+      "sha256": "07f55d7856185be036e37c87f6809bb305082e21e33696a066e661414619ebff",
+      "worktree_matches_git_blob": true,
+      "binary_format_magic_hex": null
+    },
+    {
+      "path": "docs/validation/literature-audit-2026-11-01/water/source-audit.json",
+      "git_blob_bytes": 5814,
+      "sha256": "a98c06b457f3d048d983f56004a0b38759c4c35ada0cc4323043ad7be1e4ad83",
+      "worktree_matches_git_blob": true,
+      "binary_format_magic_hex": null
+    },
+    {
+      "path": "benchmarks/h3/source.json",
+      "git_blob_bytes": 1417,
+      "sha256": "0bd8e0a692d91386c8ac1b48a949f933165f1a5c9f7c887c5ceac0e81f1408f8",
+      "worktree_matches_git_blob": true,
+      "binary_format_magic_hex": null
+    }
+  ],
+  "optional_bkmp2_tests": {
+    "expected_skips_without_built_library": 9,
+    "guarded_files": [
+      "tests/test_h3_classical_sampling_v2.py",
+      "tests/test_h3_mixing_sampling.py",
+      "tests/test_h3_surface_partition.py"
+    ],
+    "required_path": "benchmarks/h3/build/libbkmp2.so",
+    "source_descriptor_is_committed": true,
+    "library_not_loaded_at_module_import": true
+  },
+  "evidence_already_run_by_integrator": {
+    "compatibility_report": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/compatibility.json",
+    "compatibility_report_sha256": "01b9a1925d41fa359cc4ac4ef7ed9878e97d27e61549bece33f3dc96840e5b5d",
+    "initial_tests": 123,
+    "initial_skipped": 9,
+    "initial_failed": 0,
+    "followup_report": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/complete-check.json",
+    "followup_report_sha256": "646defd4c59d3830fc91d2a41e57fba2f37ef34ce8799f3b6518f58df6a7b905",
+    "unique_tests_passed_with_exact_optional_library": 123,
+    "all_13_recorded_test_hashes_match_reviewed_worktree": true
+  },
+  "water_notes": [
+    "The revised native scheduler tests synthesize protocol, revision, configuration and manifest fixtures in tmp_path; they do not require private historical runs.",
+    "fcntl is skipped before importing POSIX scheduler modules on unsupported platforms.",
+    "Engine tests use pytest.importorskip(openmm) before constructing an OpenMM context.",
+    "The liquid-checkpoint fixture is actual committed NPZ data, not an unavailable local archive or LFS pointer.",
+    "New water method source/tests were reviewed from the integration worktree and some were not yet present in the reviewed commit; their exact hashes are retained above."
+  ],
+  "invocation_note": "CPU and source-archive workflows invoke python -m pytest from the repository/archive root; benchmark namespace imports have that root on sys.path. No claim is made for a bare pytest console entry point from another directory.",
+  "fresh_work_executed": "Python AST parsing, git blob existence/content comparison, and exact existing test-evidence hash checks only."
+}

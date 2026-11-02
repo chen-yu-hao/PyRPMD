@@ -1,0 +1,58 @@
+Verified base seed 721301, dt=0.1: 25 immutable chunks
+Verified base seed 721301, dt=0.05: 25 immutable chunks
+Verified base seed 721303, dt=0.1: 25 immutable chunks
+Verified base seed 721303, dt=0.05: 25 immutable chunks
+Verified base seed 721307, dt=0.1: 25 immutable chunks
+Verified base seed 721307, dt=0.05: 25 immutable chunks
+Verified base seed 721309, dt=0.1: 25 immutable chunks
+Verified base seed 721309, dt=0.05: 25 immutable chunks
+Verified base seed 721313, dt=0.1: 25 immutable chunks
+Verified base seed 721313, dt=0.05: 25 immutable chunks
+Verified base seed 721317, dt=0.1: 25 immutable chunks
+Verified base seed 721317, dt=0.05: 25 immutable chunks
+Verified base seed 721321, dt=0.1: 25 immutable chunks
+Verified base seed 721321, dt=0.05: 25 immutable chunks
+Verified base seed 721323, dt=0.1: 25 immutable chunks
+Verified base seed 721323, dt=0.05: 25 immutable chunks
+{
+  "archive": {
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-recrossing-stage-200-pairs-2-2026-11-01.tar.gz",
+    "sha256": "d3205ebc4a5210af59d03ebdbf0737708278d83f1e4cb540a18818213d78cea8",
+    "bytes": 324627489
+  },
+  "sidecar": {
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-recrossing-stage-200-pairs-2-2026-11-01.members.json",
+    "sha256": "2bee3fcf59f5bbdfc8f92dda422164512c251aeb2ec83e58c519016b105c199f",
+    "bytes": 184927
+  },
+  "verification": {
+    "schema": "pyrpmd.h3.quantum-child-archive-verification.v1",
+    "members_verified": 465,
+    "original_files_rehashed_after_archive": 465,
+    "raw_checkpoints_original_and_archived_reloaded": 400,
+    "parent_checkpoint_integrity_envelopes_verified": 8,
+    "independent_review_input_hashes_verified": 483,
+    "all_16_runs_bound_to_original_complete_analysis": true,
+    "all_stored_signed_flux_numerators_and_denominators_exactly_replayed": true,
+    "paired_timestep_momenta_and_channels_identical": true,
+    "native_steps_preserved": 38400000,
+    "no_simulation_or_analysis_output_rewritten": true,
+    "all_original_registered_gate_outcomes_retained": {
+      "complete_registered_cohort": true,
+      "parent_sampling_flags": true,
+      "time_plateau_equivalence": true,
+      "timestep_equivalence": true,
+      "kappa_statistical_precision": false,
+      "no_sampled_static_domain_crossings": true,
+      "primary_maximum_energy_error_at_most_01_kbt_per_bead": true,
+      "full_rate_95_log_halfwidth_at_most_5_percent": true,
+      "paper_full_rate_point_within_reported_5_percent": true,
+      "paper_qtst_point_within_reported_5_percent": true,
+      "paper_kappa_point_within_reported_5_percent": true
+    },
+    "fixed_P_independent_rate_gates_passed": false,
+    "elapsed_seconds": 17.328066739995847,
+    "CPU_seconds": 16.499802,
+    "peak_RSS_KiB": 41868
+  }
+}

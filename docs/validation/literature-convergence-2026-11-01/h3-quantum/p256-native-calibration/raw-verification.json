@@ -1,0 +1,28 @@
+{
+  "CPU_seconds": 0.081443,
+  "PES_evaluations": 0,
+  "archive": {
+    "bytes": 1337176,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-p256-native-calibration-2026-11-01.tar.gz",
+    "sha256": "bb031b5500171b661f162edc19d410fc3b124e322becbbe2393005c4afb23bf4"
+  },
+  "copied_report_sha256": "ea075cd029804fa4dbc691ad90db3ffc075deaa22471d51573d50b6b356abb53",
+  "created_utc": "2026-11-01T20:26:31.007866+00:00",
+  "dynamics_steps": 0,
+  "member_count": 14,
+  "original_report_sha256": "ea075cd029804fa4dbc691ad90db3ffc075deaa22471d51573d50b6b356abb53",
+  "raw_index": {
+    "bytes": 6647,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/raw-data-index.json",
+    "sha256": "d1652738063284d435f607ca7196be6387ff7717c752ab618959d74af4dfe077"
+  },
+  "raw_integrity_verified": 9,
+  "schema": "pyrpmd.h3.p256-native-calibration.raw-verification.v1",
+  "sidecar": {
+    "bytes": 4354,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-p256-native-calibration-2026-11-01.members.json",
+    "sha256": "9ce221a3a2647f8ca0af81bc6cb2fa383ac3ccfbe0e0a825589b7359a62b6d69"
+  },
+  "upload_attempted": false,
+  "wall_seconds": 6.167826208999031
+}

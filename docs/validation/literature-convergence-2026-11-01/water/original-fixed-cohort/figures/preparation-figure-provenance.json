@@ -1,0 +1,58 @@
+{
+  "RDF_hard_gate_adopted": false,
+  "RDF_intervals": "nominal pointwise 95% Student-t intervals; not simultaneous or an equivalence test",
+  "all_eight_fixed_chains_complete": true,
+  "artifacts": {
+    "preparation-rdf.csv": {
+      "bytes": 179472,
+      "sha256": "95448d3d05d9b3269db18743607791a03eff4260623cc3c1b181401b9bd9fa62"
+    },
+    "preparation-rdf.png": {
+      "bytes": 317693,
+      "sha256": "f7aad44a780e4d2c2d1afc8ef3f47c828daad0ff768d4daa47d71d15cf5ca44a"
+    },
+    "preparation-rdf.svg": {
+      "bytes": 353875,
+      "sha256": "085d0ed2f7fc799fdf334efc6c938cbc915cf5f4f4c9272cac43e5e5ad710db4"
+    },
+    "preparation-scalars.csv": {
+      "bytes": 4065,
+      "sha256": "3074492b9eb594f0922e3a33374d481a0c216734337112ed0ca5d3d915cfa8ed"
+    },
+    "preparation-scalars.png": {
+      "bytes": 183653,
+      "sha256": "aea6792796d23cf3592fc19c5d824639189569d989cdb2fa82ac1b39cd77a942"
+    },
+    "preparation-scalars.svg": {
+      "bytes": 138892,
+      "sha256": "9dffca9e652277e16469423e6cf9030e2da8d494a33b9b9006ce637bacf1cc25"
+    }
+  },
+  "complete_cohort_helper_sha256": "f08bc32ec90ef1172a7032fb74ddab2de9e5185df4e075ab95b0b75ce64b6362",
+  "degrees_of_freedom": 7,
+  "diffusion_evidence": false,
+  "external_OpenMM_reference": true,
+  "fixed_seeds": [
+    1101,
+    1102,
+    1103,
+    1104,
+    1105,
+    1106,
+    1107,
+    1108
+  ],
+  "input_sha256": {
+    "curves.npz": "1555714decf9bf34b73463d05283ada6a8c5aa875798ca8834e18eb65f2e17f2",
+    "protocol.json": "288059c14c1b0467c322806fcf41765b69df0ed50af436941e7f0cad3fbcf631",
+    "report.json": "f544d5de9202a73f7013ee5191fed4e53e330a9eeb41c87770bfaaa3f7d4d1f8"
+  },
+  "matplotlib_version": "3.11.2",
+  "physical_convergence_certified": false,
+  "plot_source_sha256": "1505c570c41bf67b7f51a767ee2a5e1dfb610d9562872ee303c6dbb3bbc34b15",
+  "pyrpmd_production_trajectory": false,
+  "scalar_thresholds_changed": false,
+  "schema": "pyrpmd.water-original-preparation-figures.v1",
+  "synthetic_data": false,
+  "uncertainty_unit": "seed-chain mean"
+}

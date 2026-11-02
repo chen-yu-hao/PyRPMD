@@ -1,0 +1,27 @@
+[
+  {
+    "member": "fhh.pdf",
+    "bytes": 37981,
+    "sha256": "f5953a36abf65ddb6ca3d2965a6bde62c26113d8e2a76357d5598d6c43d15347"
+  },
+  {
+    "member": "dmuh.pdf",
+    "bytes": 37304,
+    "sha256": "e38db2b3844f694e9801d4110284167917952a84ba193e56dc32d7c6aebfeddf"
+  },
+  {
+    "member": "hhh.pdf",
+    "bytes": 37759,
+    "sha256": "91ef2ee5dc824cacfa7022adad9672e1e1f617b8c30408acc74f2754b9787b94"
+  },
+  {
+    "member": "ch4h.pdf",
+    "bytes": 38487,
+    "sha256": "485ae36a16a1a46b12410fdc24f796beb4af158d2c9ba8b994a1b433a1a15a95"
+  },
+  {
+    "member": "t.tex",
+    "bytes": 74832,
+    "sha256": "35f742da39e3747c6cb792b2eb856ed705db0f2cd9d2e0034dfafa4a0bb69fdf"
+  }
+]

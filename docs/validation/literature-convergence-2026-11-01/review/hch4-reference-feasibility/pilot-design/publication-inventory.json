@@ -1,0 +1,38 @@
+{
+  "PES_calls": 0,
+  "depends_on": {
+    "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/publication-inventory.json",
+    "sha256": "19932ab92f282c632227fbb473797963e221d785531127836ee55d75c21d27d3"
+  },
+  "dynamics_steps": 0,
+  "excluded": [
+    "future implementation and tests",
+    "future registrations/outputs",
+    "external PES source/library",
+    "all running campaign data"
+  ],
+  "file_count": 3,
+  "files": [
+    {
+      "bytes": 10590,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/pilot-design/README.md",
+      "sha256": "cb2ded20a210b10a169d0c44b9b287a156723dda608989ee8fab703a5b1062f5"
+    },
+    {
+      "bytes": 10459,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/pilot-design/proposal.json",
+      "sha256": "85de4292058f9ac4fce9b8c5327d3aba0bea0204e02ede17fb629fa20ee23029"
+    },
+    {
+      "bytes": 6200,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/pilot-design/independent-review.json",
+      "sha256": "47d6860dffaff99eb0c32abf8db35fb4fe0ca257becff778337de923cfa3755d"
+    }
+  ],
+  "frozen_utc": "2026-11-01T19:08:46.104895+00:00",
+  "maximum_proposed_evaluated_geometries": 768,
+  "rate_estimates": 0,
+  "schema": "pyrpmd.hch4-reference-pilot-design-publication-inventory.v1",
+  "scope": "Reviewed mathematical design only; implementation, synthetic tests, adoption and all PES execution outstanding",
+  "total_bytes": 27249
+}

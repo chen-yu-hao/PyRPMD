@@ -1,0 +1,37 @@
+{
+  "schema": "pyrpmd.P256-analysis-initial-failure.v1",
+  "recorded_utc": "2026-11-01T19:50:16.719678+00:00",
+  "passed": 17,
+  "failed": 5,
+  "errors": 0,
+  "PES_calls": 0,
+  "dynamics_steps": 0,
+  "cause": "New helper returned NumPy bool scalars for equivalence flags; native bool contracts failed. Numeric Welch/SciPy interval comparisons themselves passed.",
+  "next_changes": [
+    "Return native bool equivalence flags",
+    "Bind unchanged imported P128analysis helpers before/after",
+    "Write explicit whole-cohort failed-inference receipt for nonfinite outcomes"
+  ],
+  "files": [
+    {
+      "path": "p256_recrossing_analyze.py",
+      "sha256": "c84e2a7af50c0f57f4e55b960091750e5c0a70b90cbb7c1284ddb5beb466faae",
+      "bytes": 13367
+    },
+    {
+      "path": "pytest.log",
+      "sha256": "d7b3b19567ff80f5c217f441c0d1f4f8c02604d9abca6da6b61477448a3aa347",
+      "bytes": 4501
+    },
+    {
+      "path": "pytest.xml",
+      "sha256": "b4517f75d5d9afef52126367160769b2a0757e3932ef39a3e9f00d312b232bbb",
+      "bytes": 7040
+    },
+    {
+      "path": "test_h3_p256_recrossing_analysis.py",
+      "sha256": "e188da4571a39e0aefe6ee9827e7015a8e038bc1ee98147c48f2c6df744f45f8",
+      "bytes": 5306
+    }
+  ]
+}

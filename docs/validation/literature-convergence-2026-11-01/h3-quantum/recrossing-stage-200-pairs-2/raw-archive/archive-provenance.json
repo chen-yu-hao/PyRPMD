@@ -1,0 +1,56 @@
+{
+  "archive": {
+    "bytes": 324627489,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-recrossing-stage-200-pairs-2-2026-11-01.tar.gz",
+    "sha256": "d3205ebc4a5210af59d03ebdbf0737708278d83f1e4cb540a18818213d78cea8"
+  },
+  "availability": "Local only; no upload attempted or external persistence asserted.",
+  "builder": {
+    "bytes": 21394,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-2/raw-archive/package_stage.py",
+    "sha256": "bec90ac63ff708efb0cb9753a4bf82380a95457de4398fd5844086f009297eab"
+  },
+  "created_utc": "2026-11-01T18:37:34.195437+00:00",
+  "excluded": [
+    "active extra-pair-batch-1",
+    "its live logs and output",
+    "water data",
+    "umbrella data",
+    "parent raw already in equilibrium archive",
+    "external PES source and binary",
+    "compiled native binary",
+    "Git-backed source code"
+  ],
+  "external_prerequisites": {
+    "bytes": 18140,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-2/raw-archive/external-prerequisites.json",
+    "sha256": "f3e7e5f2e4964f88a54be23c1c5b2d832b4b8b37594c18b05f628e2b7413b997"
+  },
+  "format": "Sorted regular PAX members, mode0444, uid/gid/mtime0; gzip level1, mtime0.",
+  "git_HEAD_observed_not_source_identity_authority": "3d096d5cfc5709f14a1ad5e3d184b108eef9f20e",
+  "immutability": "Exclusive creation, all member bytes verified, original input bytes rehashed, archive and sidecar chmod0444.",
+  "member_count": 465,
+  "member_inventory": {
+    "bytes": 184927,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-recrossing-stage-200-pairs-2-2026-11-01.members.json",
+    "sha256": "2bee3fcf59f5bbdfc8f92dda422164512c251aeb2ec83e58c519016b105c199f"
+  },
+  "runtime": {
+    "numpy": "2.5.4",
+    "python": "3.12.14"
+  },
+  "schema": "pyrpmd.h3.quantum-child-archive-provenance.v1",
+  "scientific_claim": "Preserves a complete first cohort whose registered kappa precision gate failed; archiving does not change that outcome.",
+  "scope_counts": {
+    "analysis_reference": 4,
+    "archive_prerequisite_metadata": 1,
+    "archive_scope_and_replay_instructions": 1,
+    "base_analysis_log": 1,
+    "base_child_raw_NPZ": 400,
+    "base_protocol_and_schedule": 3,
+    "base_seed_settings_reports_curves": 48,
+    "completed_base_analysis_and_continuation_metadata": 5,
+    "independent_review_input_identities": 1,
+    "partial_truncated_base_terminal_receipt": 1
+  }
+}

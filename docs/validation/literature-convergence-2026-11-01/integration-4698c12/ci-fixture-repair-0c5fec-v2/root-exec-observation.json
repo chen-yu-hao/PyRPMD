@@ -1,0 +1,15 @@
+{
+  "exec_session_id": 4174,
+  "prior_yield_in_same_session": {
+    "chunk_id": "aa90a5",
+    "output": "{\"label\": \"py312\", \"exit_code\": 0, \"wall_seconds\": 10.995878993999213, \"passed\": true}\n"
+  },
+  "recorded_after_observation_utc": "2026-11-01T22:23:34.301321+00:00",
+  "schema": "pyrpmd.root-actual-exec-observation.v1",
+  "tool_result": {
+    "chunk_id": "392cd5",
+    "exit_code": 0,
+    "output": "{\"label\": \"py313\", \"exit_code\": 0, \"wall_seconds\": 11.098864708008477, \"passed\": true}\n{\"label\": \"py314\", \"exit_code\": 0, \"wall_seconds\": 10.343366978995618, \"passed\": true}\n",
+    "wall_time_seconds": 4.1946e-05
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "schema": 1,
+  "archive_sha256": "8463fbbbab3f613c1daa021df99cf89791be3ca61c7f3b9c2f5307e484bf8029",
+  "license_members": [
+    {
+      "archive_member": "./wales/COPYING",
+      "bytes": 35148,
+      "sha256": "f51a732c36a182d9489bc3f074b24aff519214acd72207a70aa24ca171e022f2",
+      "local_path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/wales-selected-files/license-.__wales__COPYING",
+      "first_line": [
+        "                     GNU GENERAL PUBLIC LICENSE",
+        "                       Version 3, 29 June 2007",
+        ""
+      ]
+    },
+    {
+      "archive_member": "./wales/OPTIM/source/CONNECT/LICENSE",
+      "bytes": 18064,
+      "sha256": "c0188a9a9c89ea08a194f1f1b1c92513322dfb8d2fd2aef50febebbd468facfb",
+      "local_path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/wales-selected-files/license-.__wales__OPTIM__source__CONNECT__LICENSE",
+      "first_line": [
+        "              GNU GENERAL PUBLIC LICENSE",
+        "                 Version 2, June 1991",
+        ""
+      ]
+    },
+    {
+      "archive_member": "./wales/OPTIM/source/NEB/LICENSE",
+      "bytes": 18064,
+      "sha256": "c0188a9a9c89ea08a194f1f1b1c92513322dfb8d2fd2aef50febebbd468facfb",
+      "local_path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/wales-selected-files/license-.__wales__OPTIM__source__NEB__LICENSE",
+      "first_line": [
+        "              GNU GENERAL PUBLIC LICENSE",
+        "                 Version 2, June 1991",
+        ""
+      ]
+    },
+    {
+      "archive_member": "./wales/OPTIM/source/DLFWrapper/COPYING",
+      "bytes": 36198,
+      "sha256": "9c712e9f923bbea7d149c33013f7c5c1ed99cbde2892f17b39470de242f5f0b7",
+      "local_path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/wales-selected-files/license-.__wales__OPTIM__source__DLFWrapper__COPYING",
+      "first_line": [
+        "                    GNU GENERAL PUBLIC LICENSE",
+        "                       Version 3, 29 June 2007",
+        ""
+      ]
+    },
+    {
+      "archive_member": "./wales/OPTIM/source/DLFWrapper/COPYING.LESSER",
+      "bytes": 7639,
+      "sha256": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c",
+      "local_path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/wales-selected-files/license-.__wales__OPTIM__source__DLFWrapper__COPYING.LESSER",
+      "first_line": [
+        "\t\t   GNU LESSER GENERAL PUBLIC LICENSE",
+        "                       Version 3, 29 June 2007",
+        ""
+      ]
+    }
+  ],
+  "elapsed_seconds": 17.419663050000963,
+  "cpu_seconds": 15.529222390000001,
+  "scope": "license identification only; exact source/header already preserved outside Git"
+}

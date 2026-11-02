@@ -1,0 +1,17 @@
+{
+  "case": {
+    "beads": 8,
+    "steps": 20,
+    "dt_fs": 0.1,
+    "platform": "Reference",
+    "maximum_position_difference_bohr": 1.0820588869364656e-10,
+    "maximum_momentum_difference_au": 6.6763359285459956e-09,
+    "thermostat": false,
+    "contraction": null,
+    "match_openmm_hbar_frequency_control": true,
+    "openmm_to_modern_free_ring_frequency_ratio": 1.0000001798324383
+  },
+  "purpose": "A deterministic frequency convention control, not a temperature adjustment in production or an equilibrium comparison.",
+  "replay_command": ".venv/bin/python -c \"from benchmarks.water.native_validation import native_rpmd_map; print(native_rpmd_map(8, match_openmm_hbar=True))\"",
+  "source_sha256": "3a85a0c5ed5cfbac76225db15c1a74436e30552c8acc10e144e04a9e65e6e759"
+}

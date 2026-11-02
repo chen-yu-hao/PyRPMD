@@ -1,0 +1,201 @@
+{
+  "schema": "pyrpmd.integrated-python313314-summary.v1",
+  "created_utc": "2026-11-01T18:18:02.988560+00:00",
+  "source_head": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+  "scope": "The same 217 selected H3, water and HCH4 methods on each regular GIL-enabled Linux x86_64 interpreter. Not the full project suite, full scientific campaigns, GPU or other-platform certification.",
+  "selection_sha256": "ac9930252484e201769dec652a08723b0f334ab3e7f2537850694fbab5372ce6",
+  "driver_sha256": "f3e58b1df32e55ab9da6fe00c3a9157e4f73e904b1df1200c4299a506ab66c68",
+  "source_or_test_edits": false,
+  "tolerance_changes": false,
+  "CPU_policy": "Sequential interpreters; CPU affinity [8], one build worker, and OMP/OpenBLAS/MKL/NumExpr/OpenMM thread limits all 1.",
+  "interpreters": {
+    "py313": {
+      "python": "3.13.18 | packaged by conda-forge | (main, Oct 26 2026, 11:38:18) [GCC 15.3.0]",
+      "executable": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/bin/python",
+      "versions": {
+        "numpy": "2.5.4",
+        "scipy": "1.18.1",
+        "pytest": "9.2.0",
+        "setuptools": "84.2.1"
+      },
+      "openmm": "8.6.1",
+      "passed": true,
+      "junit_counts": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 217
+      },
+      "family_counts": {
+        "H3": 123,
+        "water_original": 64,
+        "water_scheduler_v2": 19,
+        "HCH4": 11
+      },
+      "pytest_seconds": 26.505,
+      "build_and_test_seconds": 36.50133174200164,
+      "native_products": {
+        "_electronic": {
+          "bytes": 35264,
+          "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_electronic.cpython-313-x86_64-linux-gnu.so",
+          "sha256": "1e54ae8815f04a711c89422053bdd98deb623ad56f4488c91ab1078470ddb8d9",
+          "temporary_import_link": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_electronic.cpython-313-x86_64-linux-gnu.so"
+        },
+        "_native": {
+          "bytes": 235864,
+          "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_native.cpython-313-x86_64-linux-gnu.so",
+          "sha256": "d557c5b066523d7a63487a6cd67b48ca69e4a3db2b67a4a623a9611560e9a505",
+          "temporary_import_link": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_native.cpython-313-x86_64-linux-gnu.so"
+        },
+        "_thermal": {
+          "bytes": 172720,
+          "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_thermal.cpython-313-x86_64-linux-gnu.so",
+          "sha256": "fde3702d5e4912dd14ad6b4ba5af9723b120ccf83cd096ead6fb939b438aa86a",
+          "temporary_import_link": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_thermal.cpython-313-x86_64-linux-gnu.so"
+        }
+      },
+      "native_identity_in_pytest_start_finish_and_child": true,
+      "installed_only": {
+        "OpenMM": "8.6.1"
+      },
+      "OpenMM_wheel_download_url": "https://files.pythonhosted.org/packages/6c/1f/42399dc86b826ab451f3fe0f9c062a40e8edb1e5b71b18b519a8fdb52e4c/openmm-8.6.1-cp313-cp313-manylinux_2_34_x86_64.whl",
+      "OpenMM_wheel_sha256": "b6295b1cfe63eac11c013cda90b9988fd74a1ec863522a1480affdaed3f20d7a",
+      "source_guards_after": {
+        "all_unchanged": true,
+        "external_models": {
+          "changed": [],
+          "files_checked": 4
+        },
+        "integrated": {
+          "changed": [],
+          "files_checked": 777
+        },
+        "original": {
+          "changed": [],
+          "files_checked": 547
+        }
+      },
+      "receipt_sha256": "876c1794255a2d5786a353b0552ec608852168b52aab9e6db96ccc75e49600c5",
+      "junit_sha256": "18bbe8f10d11854615b2ef00f8ae74940c0cc5150b3f985368ecdc592d9810ca",
+      "log_sha256": "b19497ac2250e430600d3c9671943b18234741af7d42bef65e3c9190b4f71f17"
+    },
+    "py314": {
+      "python": "3.14.10 | packaged by conda-forge | (main, Oct 26 2026, 11:35:38) [GCC 15.3.0]",
+      "executable": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/bin/python",
+      "versions": {
+        "numpy": "2.5.4",
+        "scipy": "1.18.1",
+        "pytest": "9.2.0",
+        "setuptools": "84.2.1"
+      },
+      "openmm": "8.6.1",
+      "passed": true,
+      "junit_counts": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 217
+      },
+      "family_counts": {
+        "H3": 123,
+        "water_original": 64,
+        "water_scheduler_v2": 19,
+        "HCH4": 11
+      },
+      "pytest_seconds": 26.919,
+      "build_and_test_seconds": 37.25995025099837,
+      "native_products": {
+        "_electronic": {
+          "bytes": 35264,
+          "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_electronic.cpython-314-x86_64-linux-gnu.so",
+          "sha256": "70267d8da8ba617873734ca5c6bc4cf43980a2c65f8df49f06f7acdbe85909d8",
+          "temporary_import_link": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_electronic.cpython-314-x86_64-linux-gnu.so"
+        },
+        "_native": {
+          "bytes": 235864,
+          "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_native.cpython-314-x86_64-linux-gnu.so",
+          "sha256": "a1ccae3e79e01e26a743654ffd9badb20fc6f35ab3723f4824738a0289615fbe",
+          "temporary_import_link": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_native.cpython-314-x86_64-linux-gnu.so"
+        },
+        "_thermal": {
+          "bytes": 172720,
+          "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_thermal.cpython-314-x86_64-linux-gnu.so",
+          "sha256": "b1c9ec2db1a0df599f1a3206000b243bab39679d9bcb942167391d104b3e28fb",
+          "temporary_import_link": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_thermal.cpython-314-x86_64-linux-gnu.so"
+        }
+      },
+      "native_identity_in_pytest_start_finish_and_child": true,
+      "installed_only": {
+        "OpenMM": "8.6.1"
+      },
+      "OpenMM_wheel_download_url": "https://files.pythonhosted.org/packages/b8/4f/19380624c65ccc5a9f0b8baf2ef006833b8852a71fbb46a5bde5408ff3f5/openmm-8.6.1-cp314-cp314-manylinux_2_34_x86_64.whl",
+      "OpenMM_wheel_sha256": "85fa5b75a16f57b3a6d98341653071f0fce1ae7b0864d99e4b0b6daf36aa1ae2",
+      "source_guards_after": {
+        "all_unchanged": true,
+        "external_models": {
+          "changed": [],
+          "files_checked": 4
+        },
+        "integrated": {
+          "changed": [],
+          "files_checked": 777
+        },
+        "original": {
+          "changed": [],
+          "files_checked": 547
+        }
+      },
+      "receipt_sha256": "908a20e388206bdb612de931c3a30116fc880ac8f646f99c0bb51854fdabcbf7",
+      "junit_sha256": "80cd1cf5c08913b629990d47ad15f978e4a591f5b6c62f6b140454c74a68950d",
+      "log_sha256": "abb31022a7baae09a44ae9d0f05e88a86423ee0e5f4113c676869976da20fa3e"
+    }
+  },
+  "exact_same_ordered_217_case_ids": true,
+  "original_python312_environment_unchanged": true,
+  "preserved_integrated_cp312_native_sha256": "61dc8ec076a86176e3826415444e64428272441ae3ebe50779acc69bebd51f6f",
+  "final_source_guards": {
+    "integrated": {
+      "files_checked": 777,
+      "changed": []
+    },
+    "original": {
+      "files_checked": 547,
+      "changed": []
+    }
+  },
+  "retained_ABI_link_status": {
+    "receipt": "abi-link-retained-status.json",
+    "sha256": "ec0c2822f5b96e11f7986b9f46465dde67e9f3be850d46746dc008bdd6557ea4",
+    "policy": "Only the six exact owned Git-ignored ABI discovery links may remain; root authorized retention after tool namespace cleanup proved nonpersistent. They are not publication files. The original cp312 binaries and simulation checkout are unchanged."
+  },
+  "setup_observations": [
+    {
+      "event": "Initial sandbox PyPI network denial; official compatible wheels exist.",
+      "evidence": [
+        "py313/openmm-install.log",
+        "py313/openmm-install-authorized.log",
+        "py314/openmm-install-authorized.log"
+      ],
+      "resolution": "Reviewed, hash-pinned wheel installs into existing isolated environments with --no-deps."
+    },
+    {
+      "event": "Original new plotting helper changed concurrently before tests; preflight stopped before building.",
+      "evidence": [
+        "guard-before-initial.json",
+        "preflight-guard-difference.json",
+        "py313/preflight-guard.log",
+        "preflight-guard-resolution.json"
+      ],
+      "resolution": "Only benchmarks/water/plot_native_campaign.py excluded on explicit root instruction; all frozen physical/core/model sources and integrated sources remained protected."
+    },
+    {
+      "event": "ABI symlink unlink results did not persist consistently across tool processes.",
+      "evidence": [
+        "abi-link-cleanup.json",
+        "abi-link-final-cleanup.json",
+        "abi-link-retained-status.json"
+      ],
+      "resolution": "Exact owned ignored links retained under explicit root approval; no broader cleanup and no test rerun."
+    }
+  ]
+}

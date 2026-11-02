@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "created_date": "2026-11-01",
-  "scope": "Explicit reproduction targets and remaining evidence; no case is represented as reproduced.",
+  "scope": "Explicit requested-case convergence status. Completed fixed-P H3 literature agreement is recorded separately from unresolved convergence and other unrun cases.",
   "cases": [
     {
       "id": "h_ch4",
@@ -15,7 +15,8 @@
       ],
       "source_urls": [
         "https://doi.org/10.1016/j.cpc.2012.10.017",
-        "https://doi.org/10.1063/1.4793394"
+        "https://doi.org/10.1063/1.4793394",
+        "https://doi.org/10.1063/1.3132223"
       ],
       "numeric_convergence_controls": [
         "beads",
@@ -32,8 +33,18 @@
       ],
       "status": "not_reproduced",
       "blockers": [
-        "Historical Espinosa-Garcia PES source/license/hash and matching model build are not supplied by this campaign.",
-        "Converged methane trajectories have not been run; a modern PIP-NN PES is a separate benchmark."
+        "Converged methane thermal-rate sampling has not been run; the fixed0.1fs shortP128 NVE energy gate fails while smaller-step diagnostics remain separate.",
+        "The improved excluded importance pilot still fails its xi1.007 pooled maximum-weight screen and channel2 ESS/maximum-weight screens. The Maxwell-flux/mass-metric algebraic normalization is independently checked; physical bound-reactant domains, tails/separation and a fresh production cohort still require validation."
+      ],
+      "available_evidence": [
+        "Exact RPMDrate CBE PES-2008 source/build pinned; barrier 15.0142843 kcal/mol versus published 15.01; native/Python maps, unit checks and short umbrella/checkpoint probes pass.",
+        "All 768 excluded independent-reference pilot draws retained, including 127 geometric zeros; importance ESS is only 4.33, 7.18 and 6.14 across the three full ensembles. No rate estimate is promoted.",
+        "The second excluded pilot completed800 calibration,3072 main and128 matched control draws with3672 successfulPES evaluations. Pooled ESS is336.17,165.49,704.02; xi1.007 pooled maxweight0.045147 exceeds0.025, and channel2 ESS27.53<32/maxweight0.15743>0.10. Independent calculation and fresh archive-extraction replay agree; no physical rate is promoted.",
+        "Independent SI/atomic-unit and mass-metric checks establish the Maxwell capture prefactor and show that active-channel selection already includes the four equivalent channels. This is a normalization derivation, not a converted pilot rate or a physical tail/separation certificate."
+      ],
+      "evidence_path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/FINAL_STATUS.md",
+      "additional_evidence_paths": [
+        "docs/validation/literature-convergence-2026-11-01/review/hch4-absolute-normalization/FINAL_STATUS.md"
       ]
     },
     {
@@ -68,8 +79,13 @@
       "status": "not_reproduced",
       "blockers": [
         "NN1/YZCL2 surfaces and model files must be matched explicitly.",
-        "Corrected and uncorrected electronic factors are separate targets; converged PyRPMD results are absent."
-      ]
+        "Corrected and uncorrected electronic factors are separate targets; converged PyRPMD results are absent.",
+        "Resolve the cross-paper 1000 K final-rate discrepancy using original source-specific surface and calculation identities; do not infer a typo or silently select a favorable target."
+      ],
+      "available_evidence": [
+        "The 2017 and 2018 author tables both give uncorrected NN1 300 K rate 1.25e-14; their printed 1000 K final rates differ (3.75e-12 versus 2.23e-12). The source discrepancy remains unresolved and the existing registry is unchanged."
+      ],
+      "evidence_path": "docs/validation/literature-convergence-2026-11-01/other-reactions/oh-source-consistency/README.md"
     },
     {
       "id": "f_h2",
@@ -83,7 +99,9 @@
       ],
       "source_urls": [
         "https://doi.org/10.1063/1.3127145",
-        "https://doi.org/10.1063/1.3464477"
+        "https://doi.org/10.1063/1.3464477",
+        "https://www.itheoc.uni-stuttgart.de/research/werner/research/h2f/potential/",
+        "https://doi.org/10.1063/1.4928599"
       ],
       "numeric_convergence_controls": [
         "beads",
@@ -99,9 +117,19 @@
         "Check replica independence, source integrity, and all rate outputs with benchmarks/published_rates/compare.py."
       ],
       "status": "not_reproduced",
+      "available_evidence": [
+        "Exact author-distributed SW1 and HSW archives are separately pinned and built unchanged; ten static geometries, SW1 analytic distance gradients, H exchange and the original HSW verification program pass fixed checks.",
+        "The original default-real literal rounding is recorded without changing source or energy shifts; HSW forces and RPMD dynamics were not tested.",
+        "A separate2015 Hele-Suleimanov primary-source audit recovers the SW-family lambda0 graph rates approximately1.93e-11,2.86e-11,5.36e-11cm3/s at200/300/500K and TableII settings. An independent PDF parser agrees within0.181ppm. Graph-coordinate sensitivity is not paper statistical uncertainty; exact masses/SW bytes/state factors remain unresolved and no reference-registry substitution or physical comparison is made."
+      ],
+      "evidence_path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/README.md",
       "blockers": [
         "Original rate data plus erratum and the exact PES/adiabatic-spin-orbit conventions are still pending source verification.",
         "No numeric comparison is allowed against the pending registry entry."
+      ],
+      "additional_evidence_paths": [
+        "docs/validation/literature-convergence-2026-11-01/review/hele2015-source-index/README.md",
+        "docs/validation/literature-convergence-2026-11-01/review/hele2015-source-review/README.md"
       ]
     },
     {
@@ -133,8 +161,20 @@
       ],
       "status": "not_reproduced",
       "blockers": [
-        "Pinned BKMP2 builder and a real pilot already exist; the pilot is not a converged thermal-rate reproduction.",
-        "Resolve the documented PMF pilot discrepancy and all convergence checks before claiming agreement."
+        "Supplementary parent-time-half kappa equivalence still fails: 95% interval [-0.0231007344,+0.0362553622] is not wholly within +/-0.03.",
+        "P128-to-P256 equilibrium refinement passes. All eight fixed P256 parent chains are complete and their raw archive is independently verified; the full dynamic bead comparison is not yet complete. The P64 equilibrium control remains a recorded failure.",
+        "Independent MC umbrella sampling fails the unchanged precision gate at complete30000 and100000 sweeps. At100000, logSE0.0508737487 exceeds0.03. The originally registered300000 continuation has now been separately adopted and started from a new isolated verified restore; its full result and precision gate remain pending; the anomalous original campaign remains unchanged. This MC/reference evidence does not validate production MD umbrella sampling."
+      ],
+      "available_evidence": [
+        "Complete independent classical reference rate 1.5454063761e-18 agrees with paper 1.55e-18 within its stated approximately 5% precision.",
+        "Complete P128 four-pair quantum rate 1.9678563652801757e-16 has nominal 95% CI [1.9329386067562914e-16,2.003404899068246e-16], +0.915711% from paper 1.95e-16. All eleven fixed-P primary criteria pass; kappa relative half-width 2.317249% is below the unchanged 3% threshold.",
+        "All eight chains and 800 raw child chunks were independently reconstructed and exactly replayed after actual base-plus-increment archive extraction. Same-chain partition/transmission covariance is retained.",
+        "Complete100000-sweep all-eight umbrella QTST2.5873968041771664e-16, nominal95%CI[2.294132956321048e-16,2.918149187395823e-16], +3.083538% from paperQTST. Seven criteria pass but statistical_precision fails. All checkpoint/RNG/prefix bytes and scientific analysis exactly replay after actual archive extraction.",
+        "The fixed300000 endpoint resumes the same8 complete100000 checkpoints/RNG prefixes in a new isolated copy under an independently reviewed owner. Root admission binds4workers and joint resource reservations; actual startup records4owned workers. No partial scientific estimate, final completion or automatic extension is asserted."
+      ],
+      "evidence_path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/README.md",
+      "additional_evidence_paths": [
+        "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-execution-v1/README.md"
       ]
     },
     {
@@ -210,7 +250,9 @@
       "unit": "angstrom2 ps-1",
       "reference_ids": [],
       "source_urls": [
-        "https://doi.org/10.1021/jp302453z"
+        "https://doi.org/10.1021/jp302453z",
+        "https://www-wales.ch.cam.ac.uk/OPTIM/",
+        "https://www-wales.ch.cam.ac.uk/OPTIM.doc/node36.html"
       ],
       "numeric_convergence_controls": [
         "beads",
@@ -226,9 +268,15 @@
         "Transcribe a source-matched table or digitized curve with uncertainty and provenance before comparison."
       ],
       "status": "not_reproduced",
+      "available_evidence": [
+        "Pinned author-attributed Cambridge nimetpot.f90 identifies EAM4 Ni(100)/H and explicitly cites the 2012 paper; the unchanged nb=1 suffix builds through an isolated static adapter.",
+        "Four static geometries, four cutoff probes and ten collected tests pass, covering active-coordinate derivatives, invariances and fixed/mobile partitions; no diffusion or mixed-bead dynamics was run."
+      ],
+      "evidence_path": "docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/README.md",
       "blockers": [
-        "Existing NiAlH_jea EAM software pilot does not match the lattice/PES specification of the 2012 study.",
-        "Reference values remain unavailable; no number is manufactured from a plot or a short ballistic trajectory."
+        "Original numerical targets and complete 2012 masses, lattice, movable/fixed partitions, temperature grid, bead conventions and sampling protocol remain unresolved; current OPTIM examples do not establish those paper settings.",
+        "The author-cited source has static implementation checks only; original 2012 executable identity, RPMD dynamics and diffusion convergence remain unverified.",
+        "The separate NiAlH_jea software pilot remains an unmatched model and is not substituted for EAM4."
       ]
     },
     {
@@ -289,9 +337,16 @@
       ],
       "status": "not_reproduced",
       "blockers": [
-        "The model factory and tiny periodic integration pilot are available; a source-sized equilibrated liquid campaign has not been run.",
-        "The P=4 eight-molecule pilot and its 2.5-A cutoff cannot be compared quantitatively with the paper."
-      ]
+        "Complete original classical cohort fails preparation potential-energy stationarity for seeds1102,1105,1106 and the short-lag MSD-window equivalence screen. These outcomes remain unchanged despite a paper-near diffusion point.",
+        "Complete paired0.25/0.125fs timestep control passes energy checks but neither VACF norMSD95% difference interval lies inside+/-0.01A2/ps. The500ps preparation and longer-lag proposals remain unadopted because their timestep prerequisite is unmet.",
+        "Long quantum production, exact source isotope masses, finite-size comparison and PyRPMD-own long-time transport validation remain incomplete."
+      ],
+      "available_evidence": [
+        "All8 original OpenMM reference seeds and200 NVE segments complete:216 flexible molecules,298K,fullPME,100ps preparation+100ps production perchain. VACFD0.1978089161, nominal95%CI[0.1856114149,0.2100064173]A2/ps; MSDD0.1979215878,CI[0.1867404812,0.2091026944]. Literature comparison remainsnull andphysical_converged=false.",
+        "All8 paired timestep seeds complete:16branches64ps. Fine-minus-coarse VACFmean-0.0141245323,95%CI[-0.0412683731,0.0130193084]; MSDmean-0.0248398419,95%CI[-0.0491920712,-0.0004876125]A2/ps. Both equivalence screens unresolved at+/-0.01; energy checks pass.",
+        "Both original and paired datasets pass actual raw-archive extraction and complete scientific replay. A separately tested VACF-MSD integral identity explains early-time curvature while preserving every failed gate."
+      ],
+      "evidence_path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/README.md"
     },
     {
       "id": "qtip4pf_d2o_diffusion",

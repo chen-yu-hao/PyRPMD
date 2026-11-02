@@ -1,0 +1,197 @@
+{
+  "copied_new_paths": [
+    "benchmarks/h3/quantum_isolated_continuation.py",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/README.md",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/excluded-resource-probe-receipt.json",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/independent-final-checks.json",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/independent-review-final.json",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/independent-review.json",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate/gate.json",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate/pytest.log",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate/pytest.xml",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate-final/gate.json",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate-final/pytest.log",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate-final/pytest.xml",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate-v2/gate.json",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate-v2/pytest.log",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate-v2/pytest.xml",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/initial-candidate/README.md",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/initial-candidate/quantum_isolated_continuation.py",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/initial-candidate/root-adoption-template.json",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/initial-candidate/test_h3_quantum_isolated_continuation.py",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/initial-review/findings.json",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/owned-resource-observability-probe.json",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/pre-portability-test/test_h3_quantum_isolated_continuation.py",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/root-adoption-template.json",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/storage-stage-estimates.json",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/synthetic-AS-layout-probe.json",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/implementation-policy-v2.json",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/implementation-policy.json",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/proposal.json",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/resource-estimates.json",
+    "tests/test_h3_quantum_isolated_continuation.py",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/publication-inventory.json"
+  ],
+  "created_utc": "2026-11-01T22:27:04.943443+00:00",
+  "different_existing_files_overwritten": 0,
+  "inventory_sha256": "7fcb7706bc43b26721daae0c6e99f3f47458a982b3348bd6eab2b9712c9585c3",
+  "original_active_scientific_sources_modified": false,
+  "schema": "pyrpmd.mc300k-integration-immutable-copy.v1",
+  "selected_files": {
+    "benchmarks/h3/quantum_isolated_continuation.py": {
+      "bytes": 59669,
+      "path": "benchmarks/h3/quantum_isolated_continuation.py",
+      "sha256": "a7ec140dbe953a3e068cb491b24f0769e395cd4d2c449e9d2daf20aa45b4a2b7"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/README.md": {
+      "bytes": 11979,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/README.md",
+      "sha256": "c9a37145fa0ce258c9424020e9ef1ff16d1f64fcbf405be77c05ead2e86655ad"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/excluded-resource-probe-receipt.json": {
+      "bytes": 2226,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/excluded-resource-probe-receipt.json",
+      "sha256": "d6b7fade26e2fb5edca58e21951fd5fb84ebfcc5528a4450495dc333856d3f33"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/independent-final-checks.json": {
+      "bytes": 11572,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/independent-final-checks.json",
+      "sha256": "c971fe7ef558d65aa61a9b8d0013181de529bb9e444f67e676d7c6180d2b1b8a"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/independent-review-final.json": {
+      "bytes": 11186,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/independent-review-final.json",
+      "sha256": "776f9520a6db6212790cd5c7b35f559321b9aebca1754cfb6a6fe15c06a789c0"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/independent-review.json": {
+      "bytes": 8635,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/independent-review.json",
+      "sha256": "204ed29ca8d16446c3ab3376d623e62a017b68b932dff55f799960cfb66438cc"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate-final/gate.json": {
+      "bytes": 4506,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate-final/gate.json",
+      "sha256": "7d3359bbce96e1988e7a7b943485fc5d530f7f3f5836d8792c2b9569ed81bbbb"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate-final/pytest.log": {
+      "bytes": 179,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate-final/pytest.log",
+      "sha256": "0da68bc80b5bc3c50eb785276e1cb06428f5bd7ac15c5f17f1444df815f9b36c"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate-final/pytest.xml": {
+      "bytes": 11757,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate-final/pytest.xml",
+      "sha256": "f8ed4a02d36a1672725e64af64e90c51d27b5cfd98e71f3cc57f9264b998f79a"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate-v2/gate.json": {
+      "bytes": 4329,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate-v2/gate.json",
+      "sha256": "48da0165fc94a8237b2a20f69a8a0be5666b2e1034ddb1c882bd425e849bf64c"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate-v2/pytest.log": {
+      "bytes": 179,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate-v2/pytest.log",
+      "sha256": "9eb2cec6f132119d94d3fda9ce7e97160787b45db53ee91cd28d5ef05eea598f"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate-v2/pytest.xml": {
+      "bytes": 11757,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate-v2/pytest.xml",
+      "sha256": "0a0a9348e6647f6bdb8a9d8bbfbde6ec6bcc1216c74354ac8b8290c356dfce0c"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate/gate.json": {
+      "bytes": 4206,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate/gate.json",
+      "sha256": "3d2180978f853e96f502822eabb64ef79a90476a1678b87c8e67c6665d2acdc8"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate/pytest.log": {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate/pytest.log",
+      "sha256": "ec67e7e3b079fe4339a57cdc4d6cdde5f2878b880e045bf9531c32e52170034e"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate/pytest.xml": {
+      "bytes": 9579,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate/pytest.xml",
+      "sha256": "bb5c91616f9d8b82560cf8ab1177b58ffd8b0d2b3f637ccf7725978c6f9f9807"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/initial-candidate/README.md": {
+      "bytes": 7928,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/initial-candidate/README.md",
+      "sha256": "3d527b36dc15961e614700d71b1ffac9db3fc64d53e238e257ea299a01381c28"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/initial-candidate/quantum_isolated_continuation.py": {
+      "bytes": 47016,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/initial-candidate/quantum_isolated_continuation.py",
+      "sha256": "403300a6ca82a040c98a1e847a78c47f45ee494a16a2c146afcf106fd1e208b4"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/initial-candidate/root-adoption-template.json": {
+      "bytes": 3602,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/initial-candidate/root-adoption-template.json",
+      "sha256": "397c41cc70a777167e1e9949b6957c76768c03558cf8b18861f00b5642912de1"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/initial-candidate/test_h3_quantum_isolated_continuation.py": {
+      "bytes": 18025,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/initial-candidate/test_h3_quantum_isolated_continuation.py",
+      "sha256": "cf738c22badbd7c51073181e8cecaea8b6b0959799c5d2385d638737b372e052"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/initial-review/findings.json": {
+      "bytes": 3802,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/initial-review/findings.json",
+      "sha256": "98b0a2a073ae86884baff1bd4fe41401757623d9a9ccf7dca939a4a71c2503cd"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/owned-resource-observability-probe.json": {
+      "bytes": 557,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/owned-resource-observability-probe.json",
+      "sha256": "b61b1b98737ade12743a4155c383376cbb0786fbe70ce9bfeed008e214693bd8"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/pre-portability-test/test_h3_quantum_isolated_continuation.py": {
+      "bytes": 24074,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/pre-portability-test/test_h3_quantum_isolated_continuation.py",
+      "sha256": "6230db68a84e780fe7933bdb3a50760c3dd2764ec339fc2d7944718e67ff24f1"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/publication-inventory.json": {
+      "bytes": 9389,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/publication-inventory.json",
+      "sha256": "7fcb7706bc43b26721daae0c6e99f3f47458a982b3348bd6eab2b9712c9585c3"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/root-adoption-template.json": {
+      "bytes": 5038,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/root-adoption-template.json",
+      "sha256": "fecd86bb37d82abc5585a90a5bda53d1ed5191e5de679a716a38aad7aa3ba130"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/storage-stage-estimates.json": {
+      "bytes": 4117,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/storage-stage-estimates.json",
+      "sha256": "cc3b2b006ba86e3aed2cef72466cef451b5b455d017c0edce955e6986e9e1f66"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/synthetic-AS-layout-probe.json": {
+      "bytes": 1993,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/synthetic-AS-layout-probe.json",
+      "sha256": "b0fba866f8ff531d0bbbdecb9c5a9ff0971915a6ecd6cb9f8b09c2c423773351"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/implementation-policy-v2.json": {
+      "bytes": 5222,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/implementation-policy-v2.json",
+      "sha256": "a8cbef299f4bda18fbdab495fdabcae26982ea08aca25aca257f83866366c5da"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/implementation-policy.json": {
+      "bytes": 3076,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/implementation-policy.json",
+      "sha256": "6a3b93f045acd421507b407dd4b2b3c36600591c0488c4437b04957a3e326409"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/proposal.json": {
+      "bytes": 16401,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/proposal.json",
+      "sha256": "65568f44ab61a40207c4b7bb3f72ba9e228eade37ca152fc753cb5612aa67e7a"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/resource-estimates.json": {
+      "bytes": 6654,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/resource-estimates.json",
+      "sha256": "0b9b99fc9a41714392ff98601d99c0194c0c485f64264704051bffc73a182bb0"
+    },
+    "tests/test_h3_quantum_isolated_continuation.py": {
+      "bytes": 24058,
+      "path": "tests/test_h3_quantum_isolated_continuation.py",
+      "sha256": "69df0a97c06992db5c24e074abee9866474ae4f02a90b8e9f6fe73d1d073ef05"
+    }
+  }
+}

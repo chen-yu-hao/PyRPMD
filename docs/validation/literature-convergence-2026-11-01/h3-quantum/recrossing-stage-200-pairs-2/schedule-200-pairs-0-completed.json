@@ -1,0 +1,76 @@
+{
+  "inventory": {
+    "schema": "pyrpmd.h3.quantum-child-schedule.v1",
+    "horizon_fs": 200,
+    "pair_batch": 0,
+    "seeds": [
+      721301,
+      721303,
+      721307,
+      721309,
+      721313,
+      721317,
+      721321,
+      721323
+    ],
+    "timestep_order_fs": [
+      0.1,
+      0.05
+    ],
+    "protocol_sha256": "53203aeca4fdf66d9fbf1a23fe7a430ab99e24d18c351e85bd2eb383a87d3589",
+    "scheduler_source_sha256": "16bb6f9255bc284f955532955c11973bc4178f7403aea8cd3b96f6795fbe3de5",
+    "rule": "All registered seeds and both timesteps; no rate-dependent selection or early stopping."
+  },
+  "completed": [
+    {
+      "seed": 721301,
+      "horizon_fs": 200,
+      "pair_batch": 0,
+      "complete": true
+    },
+    {
+      "seed": 721303,
+      "horizon_fs": 200,
+      "pair_batch": 0,
+      "complete": true
+    },
+    {
+      "seed": 721307,
+      "horizon_fs": 200,
+      "pair_batch": 0,
+      "complete": true
+    },
+    {
+      "seed": 721309,
+      "horizon_fs": 200,
+      "pair_batch": 0,
+      "complete": true
+    },
+    {
+      "seed": 721313,
+      "horizon_fs": 200,
+      "pair_batch": 0,
+      "complete": true
+    },
+    {
+      "seed": 721317,
+      "horizon_fs": 200,
+      "pair_batch": 0,
+      "complete": true
+    },
+    {
+      "seed": 721321,
+      "horizon_fs": 200,
+      "pair_batch": 0,
+      "complete": true
+    },
+    {
+      "seed": 721323,
+      "horizon_fs": 200,
+      "pair_batch": 0,
+      "complete": true
+    }
+  ],
+  "workers": 2,
+  "created_utc": "2026-11-01T18:14:47.718178+00:00"
+}

@@ -1,0 +1,114 @@
+{
+  "ABI_links_modified": false,
+  "builds": 0,
+  "case_ids": [
+    "tests.test_h3_p256_parent_archive::test_ready_metadata_requires_full_root_observation_before_any_parent_read",
+    "tests.test_h3_p256_parent_archive::test_observed_exit_also_binds_actual_wrapper_and_tool_receipts[completion.json]",
+    "tests.test_h3_p256_parent_archive::test_observed_exit_also_binds_actual_wrapper_and_tool_receipts[exec-observation.json]",
+    "tests.test_h3_p256_parent_archive::test_partial_or_unbound_results_block_numerical_inspection[nonzero_exit]",
+    "tests.test_h3_p256_parent_archive::test_partial_or_unbound_results_block_numerical_inspection[boolean_exit]",
+    "tests.test_h3_p256_parent_archive::test_partial_or_unbound_results_block_numerical_inspection[undrained]",
+    "tests.test_h3_p256_parent_archive::test_partial_or_unbound_results_block_numerical_inspection[session]",
+    "tests.test_h3_p256_parent_archive::test_partial_or_unbound_results_block_numerical_inspection[missing_global]",
+    "tests.test_h3_p256_parent_archive::test_partial_or_unbound_results_block_numerical_inspection[ineligible]",
+    "tests.test_h3_p256_parent_archive::test_partial_or_unbound_results_block_numerical_inspection[four_chains]",
+    "tests.test_h3_p256_parent_archive::test_partial_or_unbound_results_block_numerical_inspection[unstarted]",
+    "tests.test_h3_p256_parent_archive::test_partial_or_unbound_results_block_numerical_inspection[failure]",
+    "tests.test_h3_p256_parent_archive::test_partial_or_unbound_results_block_numerical_inspection[changed_hash]",
+    "tests.test_h3_p256_parent_archive::test_complete_journal_matches_all_fixed_worker_lifecycles",
+    "tests.test_h3_p256_parent_archive::test_journal_cannot_claim_success_with_unmatched_workers[failed_exit]",
+    "tests.test_h3_p256_parent_archive::test_journal_cannot_claim_success_with_unmatched_workers[wrong_PID]",
+    "tests.test_h3_p256_parent_archive::test_journal_cannot_claim_success_with_unmatched_workers[missing_reap]",
+    "tests.test_h3_p256_parent_archive::test_journal_cannot_claim_success_with_unmatched_workers[duplicate_start]",
+    "tests.test_h3_p256_parent_archive::test_journal_cannot_claim_success_with_unmatched_workers[duplicate_drain]",
+    "tests.test_h3_p256_parent_archive::test_journal_cannot_claim_success_with_unmatched_workers[missing_seed]",
+    "tests.test_h3_p256_native_calibration::test_once_claim_retains_failed_attempt",
+    "tests.test_h3_p256_native_calibration::test_content_guard_rejects_same_length_change",
+    "tests.test_h3_p256_native_calibration::test_checkpoint_preserves_every_state_and_observation_bit",
+    "tests.test_h3_p256_native_calibration::test_checkpoint_rejects_other_registration_or_split[other-2-fingerprint]",
+    "tests.test_h3_p256_native_calibration::test_checkpoint_rejects_other_registration_or_split[fixed-id-3-frame]",
+    "tests.test_h3_p256_native_calibration::test_checkpoint_integrity_is_required",
+    "tests.test_h3_p256_native_calibration::test_budget_is_checked_before_admission[55.0-1.0]",
+    "tests.test_h3_p256_native_calibration::test_budget_is_checked_before_admission[1.0-115.0]",
+    "tests.test_h3_p256_native_calibration::test_resource_caps_installed_in_isolated_process_before_scientific_imports",
+    "tests.test_h3_p256_native_calibration::test_exact_adoption_and_review_authorize",
+    "tests.test_h3_p256_native_calibration::test_unreviewed_or_unadopted_source_is_rejected[review-source_sha256-0000000000000000000000000000000000000000000000000000000000000000]",
+    "tests.test_h3_p256_native_calibration::test_unreviewed_or_unadopted_source_is_rejected[review-approved_for_once_execution-False]",
+    "tests.test_h3_p256_native_calibration::test_unreviewed_or_unadopted_source_is_rejected[review-proposal_sha256-0000000000000000000000000000000000000000000000000000000000000000]",
+    "tests.test_h3_p256_native_calibration::test_unreviewed_or_unadopted_source_is_rejected[root-adoption-adopted-False]",
+    "tests.test_h3_p256_native_calibration::test_restart_bitwise_gate_detects_signed_zero",
+    "tests.test_h3_p256_native_calibration::test_identical_nan_initial_observation_cannot_pass_comparison",
+    "tests.test_water_production_stability::test_paired_chain_variance_and_middle_retention_are_distinct",
+    "tests.test_water_production_stability::test_missing_or_nonfinite_segment_is_not_excluded",
+    "tests.test_water_production_stability::test_completed_report_alone_does_not_establish_writer_shutdown[manifest]",
+    "tests.test_water_production_stability::test_completed_report_alone_does_not_establish_writer_shutdown[exit]",
+    "tests.test_water_production_stability::test_completed_report_alone_does_not_establish_writer_shutdown[leases]",
+    "tests.test_water_production_stability::test_plot_retains_every_segment_without_adding_a_gate"
+  ],
+  "child_import_command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/auxiliary-proof-compatibility-v2/run_checks.py",
+    "--label",
+    "py312",
+    "--probe"
+  ],
+  "completed_utc": "2026-11-01T20:35:01.761375+00:00",
+  "dependency_changes": 0,
+  "distinct_case_ids": 42,
+  "driver_sha256": "33e97eb543d88b43ea7205484e03a0088b6c2db8f8e5cdf6d62cbfb22c02313d",
+  "elapsed_seconds": 47.88542029600649,
+  "environment_distributions_unchanged": true,
+  "expected_distinct_cases": 42,
+  "guard_after": {
+    "all_unchanged": true,
+    "external_files": {
+      "changed": [],
+      "files_checked": 15
+    },
+    "integrated": {
+      "changed": [],
+      "files_checked": 1066
+    },
+    "original": {
+      "changed": [],
+      "files_checked": 830
+    },
+    "owned_ABI_links": {
+      "changed": [],
+      "files_checked": 6
+    }
+  },
+  "guard_sha256": "8a5f69b0dd9f535d6726819f79cc1bb0434346fbf3fde2ec968d750a7b80f17d",
+  "junit_counts": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 42
+  },
+  "junit_sha256": "2c0f5750af1fa1fbe2e5d97a61bf6b2f198bd1371590f139015ffca9a04eaf6e",
+  "label": "py312",
+  "passed": true,
+  "pytest_arguments": [
+    "-ra",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_h3_p256_parent_archive.py",
+    "tests/test_h3_p256_native_calibration.py",
+    "tests/test_water_production_stability.py",
+    "--basetemp=/workspace/scratch/a5e4820daedd/distribution-check/auxiliary-proof-compatibility-v2/py312/pytest-tmp",
+    "--junitxml=/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/auxiliary-proof-compatibility-v2/py312/pytest.xml"
+  ],
+  "pytest_exit_code": 0,
+  "requested_files": [
+    "tests/test_h3_p256_parent_archive.py",
+    "tests/test_h3_p256_native_calibration.py",
+    "tests/test_water_production_stability.py"
+  ],
+  "schema": "pyrpmd.auxiliary-proof-python-method-gate.v2",
+  "selection_count_matches": true,
+  "selection_sha256": "86356a0b8b2ca9f6c6807e41dd7eb8da27d3a5a04a0060c56b8a0f5e3bd9234f",
+  "source_head": "67d55e9ce745a2e18906d7aff9327c7b8646a2cb",
+  "source_state_note": "Original running sources remain unchanged. One integration-only rendering test now skips explicitly if its optional matplotlib dependency is absent; all three selected environments provide that dependency.",
+  "started_utc": "2026-11-01T20:34:13.875959+00:00"
+}

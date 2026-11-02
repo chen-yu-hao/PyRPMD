@@ -1,0 +1,70 @@
+{
+  "depends_on": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-continuation-gate/publication-inventory.json",
+      "sha256": "7b186295269b666de793252b52f91e7d8a51db3017978663be157b1889c86863"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-coordinator-gate/publication-inventory.json",
+      "sha256": "09871c5277f29e681cba26d2c385740fe0e686c8f8a811ee1952f294b9631d06"
+    }
+  ],
+  "excludes": [
+    "live cohort progress and raw trajectories",
+    "any claimed full time-step result"
+  ],
+  "file_count": 9,
+  "files": [
+    {
+      "bytes": 36618,
+      "path": "benchmarks/water/paired_timestep.py",
+      "sha256": "e51bfafb6a091087ac8eeda1f71fc323744c3a556e7118b02acf04028d850c0d"
+    },
+    {
+      "bytes": 14792,
+      "path": "tests/test_water_paired_timestep.py",
+      "sha256": "18d0e35879b114411607310d731d6fc36b9bd5732c38e4cd3a33dceec174a4c1"
+    },
+    {
+      "bytes": 9712,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/README.md",
+      "sha256": "ace4ebd617152a8f8a05c98c8692e3dcfcf38b0f1523fbd8417269461aed29a4"
+    },
+    {
+      "bytes": 2153,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/cohort-guard-13-pytest.xml",
+      "sha256": "b0015a1963d50678e1b1a29a4e4a6a6c69c1588d5f87c575218587643b12ebd2"
+    },
+    {
+      "bytes": 1694,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/gate.json",
+      "sha256": "f59f9f2501ba04815dead854fa29bb7765be23522b8a3dbff6987e33bbd85692"
+    },
+    {
+      "bytes": 2384,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/implementation-registration.json",
+      "sha256": "8dbe704fcd14abed2a4bed63e89d07b11e89a227e2de34d76d8d010b777ed3d0"
+    },
+    {
+      "bytes": 1468,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/independent-review.json",
+      "sha256": "ed60a851cb874aa993ae3c8e6442defb1726c23dbe6a00f1101f5dfaf4e7706c"
+    },
+    {
+      "bytes": 2005,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/initial-12-pytest.xml",
+      "sha256": "02e4a05f33cd3653464fc44ec6eca1e06ebdf39d711430eefa13c5c6c22f11fe"
+    },
+    {
+      "bytes": 6568,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/protocol.json",
+      "sha256": "d7a34a9f92604b38ef0a4ab2bc6271b20bd14b09e92b95b4312bd2efe0543747"
+    }
+  ],
+  "frozen_utc": "2026-11-01T19:19:17.798533+00:00",
+  "live_control_started": false,
+  "original_cohort_changed": false,
+  "purpose": "Preregistered full-eight paired numerical control, implementation,13 focused gates and limited independent review; no full control data yet.",
+  "schema": "pyrpmd.water-paired-timestep-publication-inventory.v1",
+  "total_bytes": 77394
+}

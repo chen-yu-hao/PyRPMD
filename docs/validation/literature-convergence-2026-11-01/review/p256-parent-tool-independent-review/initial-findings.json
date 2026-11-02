@@ -1,0 +1,34 @@
+{
+  "created_utc": "2026-11-01T19:44:38.186111+00:00",
+  "findings": [
+    {
+      "description": "Outer-loop stop/deadline checks allowed another inner-loop admission after a stop during guard, first-start journal handling or command construction.",
+      "id": "admission-stop-and-deadline",
+      "resolution_requested": "Recheck stop/deadline before each admission and immediately before Popen; preserve every unstarted seed identity."
+    },
+    {
+      "description": "Finished active workers were harvested after filling free slots, so an existing nonzero worker exit could precede another launch.",
+      "id": "admission-known-worker-failure",
+      "resolution_requested": "Check active nonzero return codes at each launch boundary, retain failures for owned-child draining and add an inert deterministic regression."
+    }
+  ],
+  "first_candidate_path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/initial-source/p256_parent_campaign.py",
+  "first_candidate_source_sha256": "a84b3a77ad86e7bec2285ce592ee096410fe202b9c4f04804733fb0cd1520923",
+  "first_candidate_test_gate": {
+    "passed": 56,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/final/synthetic-gate.json",
+    "sha256": "7cdeff4154d60d4dfb5ff392ef027509253469a5d968ef1197d20a87c2aab500"
+  },
+  "remaining_limits": [
+    "Sampling flags are diagnostic screens, not a scientific convergence proof.",
+    "This tool creates only static flux-weighted parents, no Maxwell momenta or recrossing children.",
+    "The unchanged underlying producer does not acquire this coordinator lock; no other invocation may write these output directories.",
+    "Hard-crash/stale locks are retained; no automatic lock removal is permitted.",
+    "On failure/deadline only owned process groups may be terminated/reaped; partial checkpoint state must remain.",
+    "Root must separately bind actual drained-queue evidence and current resource allocation before launch."
+  ],
+  "reviewer": "distribution agent",
+  "schema": "pyrpmd.h3.p256-parent-independent-initial-findings.v1",
+  "scientific_review": "No blocker found in exact16-payload historical replay, observer-only settings change, source/domain/reference/report identity, geometry/COM/domain checks, fixed8-chain sampling/eligibility, complete-state reuse or uncertainty-unit declarations.",
+  "scope": "Read-only source, analytic/inert test and protocol review; no physical PES construction, parent sampling, dynamics or Git changes."
+}

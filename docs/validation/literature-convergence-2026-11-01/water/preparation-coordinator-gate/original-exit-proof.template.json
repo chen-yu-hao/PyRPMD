@@ -1,0 +1,10 @@
+{
+  "schema": "pyrpmd.water-original-coordinator-normal-exit.v1",
+  "process_exit_code": null,
+  "pool_drained": null,
+  "scheduler_source_sha256": "af1258f9118c4de296c90edb18c57aceb07a007d564652b4f5db6e851cece75e",
+  "original_campaign_registration_sha256": "PENDING",
+  "journal_sha256": "PENDING",
+  "coordinator_finished_event": null,
+  "note": "Template only. Fill from observed process completion and the final journal event after the complete original cohort has finished; never infer a normal process exit from a complete manifest alone."
+}

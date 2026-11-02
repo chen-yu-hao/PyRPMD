@@ -1,0 +1,20 @@
+{
+  "PES_evaluations_before_this_receipt": 0,
+  "eligible_PES_geometries": 641,
+  "ledger_bytes_identical_to_preserved_failed_attempt": true,
+  "ledger_sha256": "8c1018119828753931319f08bf10304ee3f089af7f1f79cf8449ab81c47f8eb7",
+  "new_output_root": "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/reference-pilot-768-namespace-v2",
+  "observed_utc": "2026-11-01T19:38:08.854082+00:00",
+  "old_attempt_and_RUN_ONCE_retained": true,
+  "plan_sha256": "13d0194e931fa2c3b9e1e4268b45d81630d6fc9eafaef5b75aa5081de3d0a194",
+  "preparation_CPU_seconds_before_registration_write": 0.715043672,
+  "preparation_hard_CPU_cap_seconds": 2,
+  "preparation_process_PID": 4,
+  "preparation_process_token": "689712e1375340cbb9f36040ae41f7b2",
+  "prepared_target_draws": 768,
+  "protected_files_unchanged": 157,
+  "registration_sha256": "c74d63139ff3badf13812f26b29ea2fd920da071a0975b557ff5ce9366b123c6",
+  "schema": "pyrpmd.hch4-reference-pilot-pre-PES-launch-receipt.v2",
+  "source_sha256": "a164ff9ab148e24b5175d7087224efd95a95435665b90f4a353b2ddf0778a65a",
+  "timestamp_scope": "Clock observed after zero-PES preparation and immediately before the separate run invocation; not an exact process-start timestamp."
+}

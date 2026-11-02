@@ -1,0 +1,129 @@
+{
+  "created_utc": "2026-11-01T21:33:00.288397+00:00",
+  "file_count": 24,
+  "files": [
+    {
+      "bytes": 3330,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/README.md",
+      "sha256": "9162e842c9f0447f4536088dccc8997673ed3f6850c0693f0b5c4cd02cbe2c2b"
+    },
+    {
+      "bytes": 2074,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/analysis-execution.json",
+      "sha256": "a84f0a0434199c7897e99c9f4e55fbe40a641fe78f8cdea27bd08d194bbd54cb"
+    },
+    {
+      "bytes": 12059,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/campaign-comparison.json",
+      "sha256": "db76aa53b848e9b24ee32c6e4ad7b199c151c3547f28d7954c9f49388d8bb16a"
+    },
+    {
+      "bytes": 1055,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/comparison-plot-data.json",
+      "sha256": "653e74060a44b42894e316413805684f6889dacb61ba27a87914ef7cef251544"
+    },
+    {
+      "bytes": 81620,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/complete-prefix-comparison.png",
+      "sha256": "a5f08a248564fa7262649cac8a1f9f8213f7d9402927fd68c90d63ec37922855"
+    },
+    {
+      "bytes": 64588,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/complete-prefix-comparison.svg",
+      "sha256": "ef1038b6d0b46dc9ade9ff62e7c1d4291c915c67c422a43547023364e871cd44"
+    },
+    {
+      "bytes": 11728,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/curate_results.py",
+      "sha256": "212b95e8a44732d01e13e51deb44a429371f4f1b9959f25afff0a39b357de4c1"
+    },
+    {
+      "bytes": 8045,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/curation-provenance.json",
+      "sha256": "eccc28f441788cd8135ef5ab40be3e6a8b213592c3ce214175b9c1bc50c2c126"
+    },
+    {
+      "bytes": 5425,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/executed_analysis_waiter.py",
+      "sha256": "341a00ea0a17d93e6c91b1ba040dccc37000df03516303b9372a61be469bbf8c"
+    },
+    {
+      "bytes": 4335,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/executed_sampling_launcher.py",
+      "sha256": "955de8875a5eed1915963801e538bcd148caa8cf95fd7265c8f38696930ac3b2"
+    },
+    {
+      "bytes": 367,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/execution/umbrella-analysis-100000-root-observation.json",
+      "sha256": "dd83c17b1dfbca5246cdf4103d03fd396098b9f9f61bdb559d1243e49744f5a3"
+    },
+    {
+      "bytes": 844,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/execution/umbrella-analysis-100000.log",
+      "sha256": "7350f25ec077d7f89f59cd57f4510b7b1dfe7a02a5f8e7827a2b48aa67f6549d"
+    },
+    {
+      "bytes": 3307,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/execution/umbrella-stage100000-launch.json",
+      "sha256": "a31ac94e0c3b50fa8b84c85e3dace16c510480e8527cabcb4c0ac8226711ca10"
+    },
+    {
+      "bytes": 401,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/execution/umbrella-stage100000-root-observation.json",
+      "sha256": "66082b68f9e6240677c93b1bf86ab6bd28c0defa8434bed05ccd13fa6d5939d3"
+    },
+    {
+      "bytes": 1083,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/execution/umbrella-stage100000.log",
+      "sha256": "7c18e9bc31960d0fe15bdcca723b1e457bf2430dddfa28d2ceb42d345b09627e"
+    },
+    {
+      "bytes": 46138,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/global-completion.json",
+      "sha256": "c102f002d674e347020ecf5003b1a5e4de4bfc7b22d4691b28a5a768727ad317"
+    },
+    {
+      "bytes": 5060,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/per-seed/seed-211017.json",
+      "sha256": "74438a8405cfd0e03725116336b8aa16098e817a00e258f7fc97bc9befb6f5d0"
+    },
+    {
+      "bytes": 5059,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/per-seed/seed-211019.json",
+      "sha256": "59379e0ffd323ae9ec0a166411e32543493e0360fb547317c9fc07831beddec3"
+    },
+    {
+      "bytes": 5058,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/per-seed/seed-211021.json",
+      "sha256": "7df18037fa9d29eb4ca35924482dd31400c8fbba0c1a5d1789e950ee250fc4b8"
+    },
+    {
+      "bytes": 5053,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/per-seed/seed-211023.json",
+      "sha256": "8b08051500c6f5edd1f152d323c0e99fa3c2e236823eefb25a74ece17d46339e"
+    },
+    {
+      "bytes": 5057,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/per-seed/seed-211027.json",
+      "sha256": "0a34e0c9ba27d60267294bea1c8ed41fe2254e34805a33ca94e896c83df546d6"
+    },
+    {
+      "bytes": 5067,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/per-seed/seed-211031.json",
+      "sha256": "fb9ba0326890a41ef300e2cb2528ea4b93e6ba5c59dc7e7ac67244e69b6658d9"
+    },
+    {
+      "bytes": 5064,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/per-seed/seed-211033.json",
+      "sha256": "985245f15e3618e6b583f7cc77f113250b82af2801dfa7289e9fafdd036e179c"
+    },
+    {
+      "bytes": 5055,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/per-seed/seed-211039.json",
+      "sha256": "b6628168c39430f0b485da544ad4de90884e2fa1734e63e8da02961bd7c8a0c3"
+    }
+  ],
+  "inventory_excludes_itself": true,
+  "schema": "pyrpmd.immutable-validation-inventory.v1",
+  "total_bytes": 286872
+}

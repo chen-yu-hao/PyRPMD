@@ -1,0 +1,71 @@
+{
+  "approved_for_one_root_adopted_read_only_archive_and_exact_replay": true,
+  "authorizes_sampler_or_lease_retirement": false,
+  "created_utc": "2026-11-01T21:36:58.343675+00:00",
+  "frozen_v1_review_sha256": "c9326e71bb74a626c2f6575b06a18f2acb8ee6214fcfa840dbfc6cdd40792293",
+  "frozen_v1_source_sha256": "af1288ec403880899a42202ae7e5c1ab6c1f44c419dad6f1c73678d7ffb9738f",
+  "gate": {
+    "distinct_cases": 65,
+    "errors": 0,
+    "failures": 0,
+    "junit_sha256": "5278fe1573a0f9ed963b19aca9e71dd35c78c02dcf98d82c08c81f68edf18bfb",
+    "log_sha256": "e14cb61e237a74cb4074cf7874d366b0e149178aa2d769509d06625b9371840c",
+    "new_v2_cases": 37,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation-v2/initial-gate/execution.json",
+    "reviewer_reran_tests": false,
+    "sha256": "3f0db9f49aba36598fe8862ccd211b0a536149a080406827874227df9e646af8",
+    "skips": 0,
+    "unchanged_v1_cases": 28
+  },
+  "independently_observed_metadata": {
+    "analysis_actual_exit_code": 0,
+    "analysis_actual_session": 1094,
+    "analysis_observation_utc": "2026-11-01 21:28:28 UTC",
+    "both_present_exact_inode_owner_and_membership_records_match_policy": true,
+    "current_old_path_directory_inode": 537353,
+    "durable_lease_absence_established": false,
+    "fixed_completed_metadata_all_hashes_match": true,
+    "journal_completed": 8,
+    "journal_events": 20,
+    "journal_final_order": [
+      "all_submitted_workers_drained",
+      "complete_cohort_verified"
+    ],
+    "journal_submitted": 8,
+    "owner_PID_used_to_infer_process_liveness": false,
+    "quarantined_original_directory_inode": 530697,
+    "sampling_actual_exit_code": 0,
+    "sampling_actual_session": 57942,
+    "sampling_observation_utc": "2026-11-01 21:17:10 UTC"
+  },
+  "limitations": [
+    "Approval concerns this completed cohort and the exact policy/source only. It permits neither another retirement nor any new sampling, continuation, original-data mutation or general bypass of scheduling locks.",
+    "The anomaly remains unexplained. The initial immediate absence receipt and failed later durable-absence postcondition both remain valid historical observations; this review does not diagnose the creating process or filesystem.",
+    "Root no-writer attestation and active scheduling coordination remain necessary; the read-only archive runner does not acquire the original sampler lease. Any mismatch stops the attempt rather than silently rebaseline or retry.",
+    "As in v1,300CPU-s and1GiB RSS limits are cooperative observed budgets. Parent/child real-time timers bound wall work with cleanup reserve; hard termination may leave a permanent claim and partial evidence without a final receipt.",
+    "Successful archive/replay proves recorded-calculation reproducibility only. Original statistical/scientific gate failures remain unchanged, and no physical-rate or dynamic-bead-validation inference follows."
+  ],
+  "policy_sha256": "e73a940695fdfe86460c76b1d3ade84555867d85f4ca115fe103b44c233dbfe0",
+  "remaining_blockers_in_reviewed_scope": [],
+  "review_findings": [
+    "The new policy is additive and exact-hash bound. Frozen predecessor source, policy,28-case evidence, original scientific sources and prior anomaly receipts remain unchanged.",
+    "Both actual saved terminal observations are parsed for exact session, integer zero exit, observation time and chunk identity; the separate root row must match. Complete all-eight stage100000/global/source identities and original complete analysis remain required before any raw admission.",
+    "The event journal requires exact fixed-cohort admissions and matching completions before drain and final verification; unknown/failure/late/duplicate events are rejected. The inspected original journal has the expected complete order.",
+    "The policy honestly retains two present lease directories with distinct inode identities and identical old owner bytes. No lease is removed or treated as absent; changed directory,owner,inode,membership or new300000 stage fails.",
+    "Root must explicitly attest no current/pending legacy,direct or new writer and no writer until archive attempt completion. This is a procedural no-writer boundary; inode/hash observations do not prove the absence of an unobserved process.",
+    "Lease anomaly identities are checked before raw reads, before packing, after extraction, before replay and before publication. Every original source/data hash is checked before and after as in the predecessor.",
+    "Only seven operational metadata members are added, all under execution/lease-anomaly/. No original lease is created in the restored campaign; the scientific raw whitelist remains exactly33NPZ.",
+    "The unchanged predecessor functions perform exact checkpoint/state/RNG/prefix audits, safe byte copying/extraction and exact scientific replay. No estimator, gate, seed, physical parameter or precision criterion changes.",
+    "Permanent new attempt directory and exclusive output paths retain failures and prohibit automatic retry. The unchanged wall-timer/owned-child reference/signal/drain structure stays intact; only one unchanged analyzer may run on extracted data."
+  ],
+  "reviewer": "distribution agent, separate read-only review of benchmarks agent archive-v2 delta",
+  "reviewer_PES_calls": 0,
+  "reviewer_RNG_draws": 0,
+  "reviewer_mutations": "This new receipt only; no existing source/policy/data/lease/inventory/Git/integration mutation.",
+  "reviewer_raw_checkpoint_array_reads": 0,
+  "reviewer_sampler_or_analyzer_invocations": 0,
+  "root_adoption_remains_separate": true,
+  "schema": "pyrpmd.h3.umbrella100000-readonly-archive-v2-independent-review.v1",
+  "source_sha256": "d7004587d6643f8a36f3b40d9d591b0d048a6d53b2233092c2e03c1c373166ad",
+  "tests_sha256": "2b76c85450f43181d67d58825c5a5c424903ef53283061dab20f1b5a444ec88c"
+}

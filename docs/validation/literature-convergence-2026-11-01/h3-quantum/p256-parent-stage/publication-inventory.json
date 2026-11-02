@@ -1,0 +1,95 @@
+{
+  "created_utc": "2026-11-01T20:15:46.935584+00:00",
+  "excluded_raw": "Exactly eight checkpoint NPZ files are indexed separately in raw-data-index.json.",
+  "file_count": 17,
+  "files": [
+    {
+      "bytes": 6247,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/README.md",
+      "sha256": "275c9d1509c23289a06a2ea7bf5bb16d93b6987462e28074edfcae2827e98add"
+    },
+    {
+      "bytes": 909,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/archive-execution.json",
+      "sha256": "792376d0c5cae0f06dbb84b9b3bdc2b6a95dd07c1136f7d1eea87e36f9014f04"
+    },
+    {
+      "bytes": 1835,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/archive-execution.log",
+      "sha256": "746f8d10ebc33aa4acc44081832839db64aa8aba8627367888627b7a02fcbd0d"
+    },
+    {
+      "bytes": 5526,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/archive-plan.json",
+      "sha256": "df9a5583f3600cf19e01469dc4d768b5b19e244324ffbc5553e055d7049b5149"
+    },
+    {
+      "bytes": 1835,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/archive-verification.json",
+      "sha256": "c8f8c89472f7a922769f47b4a0827fdffc6139ab0c4bc8cb5a11c273058f86bc"
+    },
+    {
+      "bytes": 22261,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/archive_parents.py",
+      "sha256": "2a9d468330732f51f2be5128215b1f8de186f3594bc49ab371eff8fd75b6ebbb"
+    },
+    {
+      "bytes": 48513,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/complete-audit.json",
+      "sha256": "71e811ed90e866c19f7b90668e65bc0c3332925090f4bed2f09447497576d4f1"
+    },
+    {
+      "bytes": 1902,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/counts-before-completion.json",
+      "sha256": "fedd62548c165bfd5a742aef15a78fde4d11e70b9266fd4bd657fde6b15c15e2"
+    },
+    {
+      "bytes": 18362,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/external-prerequisites.json",
+      "sha256": "015abba3ccf8815eb1812f24e51f7149d2dc357f55fe052762bfb663f6442db3"
+    },
+    {
+      "bytes": 47730,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/extracted-complete-audit.json",
+      "sha256": "dd9e5a56f047852cc73fa3c1875b45695a7d77856bce630ffc814a1043bc31f3"
+    },
+    {
+      "bytes": 1662,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/manifest-path-correction.json",
+      "sha256": "3e80f83731f68b10c160ba77f5f9f361c14cdfaec52c58b7e4f42f789462f55d"
+    },
+    {
+      "bytes": 36739,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/member-inventory.json",
+      "sha256": "6364e84fa93788f4dbca4c0df9cddcc9cef4d9cb7a9e478aa073afc4c186e889"
+    },
+    {
+      "bytes": 4450,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/raw-data-index.json",
+      "sha256": "aaa751a8dc7ca6e1b320907e6c3f7fe90e92cda04489fd5c0ef8f79bf2cdb4a3"
+    },
+    {
+      "bytes": 1230,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/synthetic-gate.json",
+      "sha256": "147546c9123a4aacc513944dd0e65dcee53bd04bc856d1e80510247f2c8bacc8"
+    },
+    {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/synthetic-pytest.log",
+      "sha256": "5a84374e2bf56ac6fe7000d91cc2e0abfa514170dff2262561fe2a60f4c4e4cb"
+    },
+    {
+      "bytes": 3248,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/synthetic-pytest.xml",
+      "sha256": "71d6d89ddd8dfc2274ec7df6d748763af2469302c2d83dc84035242488f211e5"
+    },
+    {
+      "bytes": 6337,
+      "path": "tests/test_h3_p256_parent_archive.py",
+      "sha256": "a5e19b2da14c72066ae8e6fc09614aa1cc87f5e0802f9cc259d5715c9f2a6c80"
+    }
+  ],
+  "schema": "pyrpmd.h3.p256-parent-stage.publishable.v1",
+  "scope": "Completed parent read-only lifecycle/identity audit and raw archive metadata. No raw checkpoint, model source, native binary or physical run.",
+  "total_bytes": 208885
+}

@@ -1,0 +1,165 @@
+{
+  "ABI_links_modified": false,
+  "active_original_sources_modified": false,
+  "builds": 0,
+  "case_coverage_sha256": "e5044d5670511f7011b220c2fa328b1fd4788432ce8aa842dcbf70fd52df0124",
+  "combined_distinct_cases_per_interpreter": 596,
+  "created_utc": "2026-11-01T20:37:02.587330+00:00",
+  "dependency_changes": false,
+  "distinct_new_cases": 42,
+  "driver_sha256": "33e97eb543d88b43ea7205484e03a0088b6c2db8f8e5cdf6d62cbfb22c02313d",
+  "full_repository_suite_run": false,
+  "interpreters": {
+    "py312": {
+      "actual_native_imports_checked_in_test_and_child": true,
+      "combined_distinct_passed_cases": 596,
+      "environment_distributions_unchanged": true,
+      "guard_after": {
+        "all_unchanged": true,
+        "external_files": {
+          "changed": [],
+          "files_checked": 15
+        },
+        "integrated": {
+          "changed": [],
+          "files_checked": 1066
+        },
+        "original": {
+          "changed": [],
+          "files_checked": 830
+        },
+        "owned_ABI_links": {
+          "changed": [],
+          "files_checked": 6
+        }
+      },
+      "junit_counts": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 42
+      },
+      "junit_sha256": "2c0f5750af1fa1fbe2e5d97a61bf6b2f198bd1371590f139015ffca9a04eaf6e",
+      "new_case_families": {
+        "tests/test_h3_p256_native_calibration.py": 16,
+        "tests/test_h3_p256_parent_archive.py": 20,
+        "tests/test_water_production_stability.py": 6
+      },
+      "new_distinct_cases": 42,
+      "prior_distinct_cases_reused": 554,
+      "pytest_seconds": 38.851,
+      "receipt_elapsed_seconds": 47.88542029600649,
+      "receipt_sha256": "50ef1751194a7d761ba6913fc630972cea3d963dc659e386edd54b528d995110"
+    },
+    "py313": {
+      "actual_native_imports_checked_in_test_and_child": true,
+      "combined_distinct_passed_cases": 596,
+      "environment_distributions_unchanged": true,
+      "guard_after": {
+        "all_unchanged": true,
+        "external_files": {
+          "changed": [],
+          "files_checked": 15
+        },
+        "integrated": {
+          "changed": [],
+          "files_checked": 1066
+        },
+        "original": {
+          "changed": [],
+          "files_checked": 830
+        },
+        "owned_ABI_links": {
+          "changed": [],
+          "files_checked": 6
+        }
+      },
+      "junit_counts": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 42
+      },
+      "junit_sha256": "be1e71ad492fd94c874e826c5875439e3eadba530bb164cf91272cc7e1ef1518",
+      "new_case_families": {
+        "tests/test_h3_p256_native_calibration.py": 16,
+        "tests/test_h3_p256_parent_archive.py": 20,
+        "tests/test_water_production_stability.py": 6
+      },
+      "new_distinct_cases": 42,
+      "prior_distinct_cases_reused": 554,
+      "pytest_seconds": 33.267,
+      "receipt_elapsed_seconds": 40.41955634600163,
+      "receipt_sha256": "66f318685398c43114ee056c5fd90a9c4fbb6bbcdeea44f9cad0cc606e97f915"
+    },
+    "py314": {
+      "actual_native_imports_checked_in_test_and_child": true,
+      "combined_distinct_passed_cases": 596,
+      "environment_distributions_unchanged": true,
+      "guard_after": {
+        "all_unchanged": true,
+        "external_files": {
+          "changed": [],
+          "files_checked": 15
+        },
+        "integrated": {
+          "changed": [],
+          "files_checked": 1066
+        },
+        "original": {
+          "changed": [],
+          "files_checked": 830
+        },
+        "owned_ABI_links": {
+          "changed": [],
+          "files_checked": 6
+        }
+      },
+      "junit_counts": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 42
+      },
+      "junit_sha256": "a576e10b6172ef28e26df7a4dff88c7c76532469be6fdc833e84cfac8c56b10c",
+      "new_case_families": {
+        "tests/test_h3_p256_native_calibration.py": 16,
+        "tests/test_h3_p256_parent_archive.py": 20,
+        "tests/test_water_production_stability.py": 6
+      },
+      "new_distinct_cases": 42,
+      "prior_distinct_cases_reused": 554,
+      "pytest_seconds": 32.822,
+      "receipt_elapsed_seconds": 40.68210750599974,
+      "receipt_sha256": "f8757bfe116cc429bb232094b2cad6f56467f1bda9c3fd3eab9dbd62a4c75bb0"
+    }
+  },
+  "long_dynamics_run": false,
+  "new_case_executions": 126,
+  "previous_554_cases_rerun": false,
+  "same_distinct_cases_all_interpreters": true,
+  "schema": "pyrpmd.auxiliary-proof-compatibility-summary.v2",
+  "scope": "Synthetic lifecycle, finite-array/restart-compare and paired-statistic/whole-cohort plotting contracts. No external PES call, real parent numerical read or physical propagation occurs in this gate.",
+  "selection_sha256": "86356a0b8b2ca9f6c6807e41dd7eb8da27d3a5a04a0060c56b8a0f5e3bd9234f",
+  "source_bundles": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/publication-inventory.json",
+      "sha256": "24ba0b8efe7fe873923da7a0d06d055de2016930c1fc11ab22f8486b62afe61a"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/publication-inventory.json",
+      "sha256": "f7dd402d577e062eae14d00d50b1506dfd86cc08ceea2b31af2094699ab9e3a8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/production-stability-helper/publication-inventory.json",
+      "sha256": "ac2c4283de357a1c06845f333702aa4bc870a474b52f235c5b44f9248796bc10"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/production-stability-portability/publication-inventory.json",
+      "sha256": "cb62d954a7fe314ea29df0af2319d7ff1a2e7bed704a48ca0b151c8cbd9c8a44"
+    }
+  ],
+  "source_guard_sha256": "8a5f69b0dd9f535d6726819f79cc1bb0434346fbf3fde2ec968d750a7b80f17d",
+  "source_head": "67d55e9ce745a2e18906d7aff9327c7b8646a2cb",
+  "source_state_note": "Original running sources remain unchanged. One integration-only rendering test now skips explicitly if its optional matplotlib dependency is absent; all three selected environments provide that dependency."
+}

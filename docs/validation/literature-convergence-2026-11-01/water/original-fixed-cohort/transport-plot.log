@@ -1,0 +1,45 @@
+{
+  "schema": "pyrpmd.water-complete-cohort-figure.v1",
+  "synthetic_data": false,
+  "external_OpenMM_reference": true,
+  "pyrpmd_production_trajectory": false,
+  "all_eight_fixed_chains_complete": true,
+  "independence_unit": "seed-chain mean",
+  "degrees_of_freedom": 7,
+  "paper_comparison_enabled": false,
+  "physical_convergence_certified_by_plot": false,
+  "failed_predeclared_checks": [
+    "MSD_window_compatibility",
+    "paired_equivalence",
+    "sampling_potential_per_molecule_hartree"
+  ],
+  "input_sha256": {
+    "report.json": "f544d5de9202a73f7013ee5191fed4e53e330a9eeb41c87770bfaaa3f7d4d1f8",
+    "curves.npz": "1555714decf9bf34b73463d05283ada6a8c5aa875798ca8834e18eb65f2e17f2",
+    "protocol.json": "288059c14c1b0467c322806fcf41765b69df0ed50af436941e7f0cad3fbcf631"
+  },
+  "plot_source_sha256": "f08bc32ec90ef1172a7032fb74ddab2de9e5185df4e075ab95b0b75ce64b6362",
+  "matplotlib_version": "3.11.2",
+  "analysis_source_sha256": {
+    "benchmarks/water/analyze_campaign.py": "c6d0c1047653c2dea961053287572fccdbcd3e7074c75a6266031e691bae304e",
+    "benchmarks/water/analyze_native.py": "323b3e8506ffbd0c509150f3a6c7c137369c75e5775cdb4e338cdb2bd3c3c718",
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/native_reference.py": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2",
+    "src/pyrpmd/analysis/diffusion.py": "bd3593fa4ad2b9e87ba1a4d2d612cb5875b98cba5b16d95187fd48cbe439926e",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+  },
+  "artifacts": {
+    "fixed-cohort-transport.png": {
+      "sha256": "1e4df044b2587c8dff459f4d132571919bdde4c98033ed405551ad283f072d19",
+      "bytes": 354421
+    },
+    "fixed-cohort-transport.svg": {
+      "sha256": "a95e9fa391cfed15bc48ee789394e3f2b8fbb4d9f294c2998baa7c5d222a2a62",
+      "bytes": 240449
+    },
+    "chain-summary.csv": {
+      "sha256": "fb32aaa8734983588b3c5ba062d8b5c5eca30d3c576f32ade8e3f7a4a49af715",
+      "bytes": 808
+    }
+  }
+}

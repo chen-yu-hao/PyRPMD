@@ -1,0 +1,163 @@
+{
+  "ABI_links_modified": false,
+  "active_original_sources_modified": false,
+  "builds": 0,
+  "case_coverage_sha256": "f55d0e8e506285e07dbae1501943fe6109670873cd74f19b030616d485428c60",
+  "combined_distinct_cases_per_interpreter": 796,
+  "created_utc": "2026-11-01T21:40:56.396380+00:00",
+  "distinct_new_cases": 65,
+  "driver_sha256": "c26c737477da92a3ed4568d456b7e42ece1c44df88956d474467ecb3b1de8d96",
+  "full_repository_suite_run_by_this_gate": false,
+  "guard_before_sha256": "e6671acbdfa2c677d3fa3dfc1a22cff5d9a44626f86aac9887a4f758e76bf4d0",
+  "installs": 0,
+  "interpreters": {
+    "py312": {
+      "combined_distinct_cases": 796,
+      "dependencies_unchanged": true,
+      "guard_after": {
+        "all_unchanged": true,
+        "external_files": {
+          "changed": [],
+          "files_checked": 15
+        },
+        "integrated": {
+          "changed": [],
+          "files_checked": 1303
+        },
+        "original": {
+          "changed": [],
+          "files_checked": 1067
+        },
+        "owned_ABI_links": {
+          "changed": [],
+          "files_checked": 6
+        }
+      },
+      "junit_counts": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 65
+      },
+      "junit_sha256": "14e9e472dce939a6a5113c7eb5f52297df02cb2fd3177f360970d26ce7752fc2",
+      "native_imports_checked_in_actual_test_process_and_fresh_child": true,
+      "new_distinct_cases": 65,
+      "prior_distinct_case_receipts_reused": 731,
+      "pytest_seconds": 0.375,
+      "receipt_sha256": "a7634504a49a9ff0a9600f463666109e23c3c2863963d110f2b5df78b489d79f",
+      "supervised_wall_seconds": 1.6202544580009999
+    },
+    "py313": {
+      "combined_distinct_cases": 796,
+      "dependencies_unchanged": true,
+      "guard_after": {
+        "all_unchanged": true,
+        "external_files": {
+          "changed": [],
+          "files_checked": 15
+        },
+        "integrated": {
+          "changed": [],
+          "files_checked": 1303
+        },
+        "original": {
+          "changed": [],
+          "files_checked": 1067
+        },
+        "owned_ABI_links": {
+          "changed": [],
+          "files_checked": 6
+        }
+      },
+      "junit_counts": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 65
+      },
+      "junit_sha256": "101f431f481f4cdc370db59e45c7861528281c953159b45f680d283772aad1e3",
+      "native_imports_checked_in_actual_test_process_and_fresh_child": true,
+      "new_distinct_cases": 65,
+      "prior_distinct_case_receipts_reused": 731,
+      "pytest_seconds": 0.308,
+      "receipt_sha256": "71d9a03c3fad983e20dae1e3a6c1c47baf4c87cfbf9f8f9a3b2f75512703873b",
+      "supervised_wall_seconds": 1.1183897820010316
+    },
+    "py314": {
+      "combined_distinct_cases": 796,
+      "dependencies_unchanged": true,
+      "guard_after": {
+        "all_unchanged": true,
+        "external_files": {
+          "changed": [],
+          "files_checked": 15
+        },
+        "integrated": {
+          "changed": [],
+          "files_checked": 1303
+        },
+        "original": {
+          "changed": [],
+          "files_checked": 1067
+        },
+        "owned_ABI_links": {
+          "changed": [],
+          "files_checked": 6
+        }
+      },
+      "junit_counts": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 65
+      },
+      "junit_sha256": "07c70e7622242054a2102ead78ddc0c9a2096b257ae772473a32fb6f1e888bdb",
+      "native_imports_checked_in_actual_test_process_and_fresh_child": true,
+      "new_distinct_cases": 65,
+      "prior_distinct_case_receipts_reused": 731,
+      "pytest_seconds": 0.239,
+      "receipt_sha256": "1c2e19e978dbb25eef92b25c9c05e70eddf8330945263d28ea1cee2fe3d6b179",
+      "supervised_wall_seconds": 1.018443667999236
+    }
+  },
+  "new_case_executions": 195,
+  "physical_PES_evaluations_or_dynamics_steps_by_this_gate": 0,
+  "previous_731_cases_rerun": false,
+  "prior_HCH4_wall_fixture_change": {
+    "added_distinct_cases": 0,
+    "cross_python_inventory_sha256": "ee0f53335877c9493a9bab111bc79c4ebdb0d0d65d97f845e6c2118295acdbdc",
+    "supersession_sha256": "42065fe6c3f8833f0c57929603e40c475317b07e5c27dce745db2f482ba1fead"
+  },
+  "same_distinct_cases_all_interpreters": true,
+  "schema": "pyrpmd.archive-method-compatibility-summary.v1",
+  "scope": "65 inert lifecycle, exact replay, checkpoint and explicit anomaly-admission fixtures; no actual campaign archive, PES or analysis execution.",
+  "selection_sha256": "d2eea655bc3e8a89e99e2c80b800157f1c08076ab4512d4fa98bcca37b17f85a",
+  "source_bundles": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/publication-inventory.json",
+      "sha256": "6fff89937fa5e11ef58c4fb70ed3e676a03b6fffd9fce784a000970c20e0f79c"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation-v2/publication-inventory.json",
+      "sha256": "b69ac4725a8ada021d33b51f9e82e58b0fe59bdcd61d5cb5aee103d207b667a1"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/publication-inventory.json",
+      "sha256": "e4e7da7f08e53f7e6f1e70e4439a80eb84cc67a7b25c839ddef19884d5d43e24"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-review/publication-inventory.json",
+      "sha256": "0dc728a61b04fcc6d72098a7dab562d5eb1df305000f49ba420f962a710cb334"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-postcondition-review/publication-inventory.json",
+      "sha256": "606c225a96c35f5e2c5f8259770a46317e5718f8ef75a257d0aee3c3985d264e"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/publication-inventory.json",
+      "sha256": "0662473b33f03494d58cde0c8a4a8b2dd66d600bf66b89bfd8647d5449490f73"
+    }
+  ],
+  "source_head": "36ec289981639bbeb8feecf3b30400b4cbda9afe",
+  "source_state_note": "Published head plus exact frozen additive sources and the previously validated HCH4 wall-fixture correction. Full-project gate and previous135-case gate completed before this copy."
+}

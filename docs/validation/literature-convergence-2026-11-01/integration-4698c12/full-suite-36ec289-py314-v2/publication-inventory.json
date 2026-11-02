@@ -1,0 +1,107 @@
+{
+  "created_utc": "2026-11-01T21:19:24.363890+00:00",
+  "file_count": 19,
+  "files": [
+    {
+      "bytes": 2491,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/full-suite-36ec289-py314-v2/README.md",
+      "sha256": "8daf7263baea7575c94c886b28292896994a60c9da82fd257bc6672c9dfd8d14"
+    },
+    {
+      "bytes": 1974,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/full-suite-36ec289-py314-v2/admission.json",
+      "sha256": "28ea6b53ea639fb36562627a537c08ade4c74130289a4e282f160bef51bb5f0b"
+    },
+    {
+      "bytes": 529,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/full-suite-36ec289-py314-v2/count-interpretation.json",
+      "sha256": "9ed3bbada70a528109ec2c09e912b942f65a71623de6d1b07a685e93417bd86c"
+    },
+    {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/full-suite-36ec289-py314-v2/environment-followups/full-suite-ipc-followup.log",
+      "sha256": "0b84182d2fb719266800649f3bbc7a26497ef292ba354a9c76ddfb69e6cbe112"
+    },
+    {
+      "bytes": 3032,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/full-suite-36ec289-py314-v2/environment-followups/full-suite-ipc-followup.xml",
+      "sha256": "b290eb54870b0610c39a1d5b520e29627b46a92b3ed40ec436df6c326268cc50"
+    },
+    {
+      "bytes": 98,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/full-suite-36ec289-py314-v2/environment-followups/full-suite-worker-affinity-followup.log",
+      "sha256": "fbf834ed000ff63cef6aba584945158c33adb38b91e49939db4a9c3b9f3ed6bd"
+    },
+    {
+      "bytes": 526,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/full-suite-36ec289-py314-v2/environment-followups/full-suite-worker-affinity-followup.xml",
+      "sha256": "802eecabadfb68196e1cc9f6a4304f7b62761365975a8cd95ec0cbd857616087"
+    },
+    {
+      "bytes": 2691,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/full-suite-36ec289-py314-v2/environment-followups/receipts.json",
+      "sha256": "7c8adaaedce248c1902a4bf4e068ed3efd26e196299eca9a0a5820692df190a0"
+    },
+    {
+      "bytes": 8147,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/full-suite-36ec289-py314-v2/executed_driver.py",
+      "sha256": "beb66b6aab538d0bbaf53e79545120c818308b3ef6a934e07cdde828a8449e21"
+    },
+    {
+      "bytes": 402,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/full-suite-36ec289-py314-v2/execution.json",
+      "sha256": "c787e4cc896306deac9ccf8d956a10a496dbdf40497feb0523f75ec02318841a"
+    },
+    {
+      "bytes": 65392,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/full-suite-36ec289-py314-v2/pytest-runtime-finish.json",
+      "sha256": "3363d1a5866924fa1f820cc3128ca62219e0d6f5756efda09d39350db3f2f2a0"
+    },
+    {
+      "bytes": 3150,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/full-suite-36ec289-py314-v2/pytest-runtime-start.json",
+      "sha256": "e6249f1395361ea4baf34e8c5a3f1159fe65d1f1477c84cb697a8420c25f1c87"
+    },
+    {
+      "bytes": 27508,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/full-suite-36ec289-py314-v2/pytest.log",
+      "sha256": "56e04f22f30a807919f685ec780520038a6e46681f437933bcbfbe43b85fac7a"
+    },
+    {
+      "bytes": 1101022,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/full-suite-36ec289-py314-v2/pytest.xml",
+      "sha256": "865024adf7c040b4a4af3a278ab05da2f101d0a47cb5a752a5bc70805fbf824b"
+    },
+    {
+      "bytes": 798447,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/full-suite-36ec289-py314-v2/report.json",
+      "sha256": "e5811d4ee54b9e41acd9801e718897aac2f1b1e306167f17ac6716e20fb40c33"
+    },
+    {
+      "bytes": 481,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/full-suite-36ec289-py314-v2/root-exec-observation.json",
+      "sha256": "3fed8c1f0e181d507c9832667c0ea04c6b951fd283f01646cfac9dc030a4f221"
+    },
+    {
+      "bytes": 3150,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/full-suite-36ec289-py314-v2/runtime-after.json",
+      "sha256": "e6249f1395361ea4baf34e8c5a3f1159fe65d1f1477c84cb697a8420c25f1c87"
+    },
+    {
+      "bytes": 3150,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/full-suite-36ec289-py314-v2/runtime-before.json",
+      "sha256": "e6249f1395361ea4baf34e8c5a3f1159fe65d1f1477c84cb697a8420c25f1c87"
+    },
+    {
+      "bytes": 23349,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/full-suite-36ec289-py314-v2/test_hch4_reference_pilot.executed.py",
+      "sha256": "b19e275b7b6837584afeea8f17f8038ecf162be85f2bfa97447113ee1bd267e1"
+    }
+  ],
+  "inventory_excludes_itself": true,
+  "raw_scientific_NPZ_or_external_PES_included": false,
+  "schema": "pyrpmd.immutable-validation-inventory.v1",
+  "scope": "Successful ordinary Python3.14 full-suite with explicit test-only patch and retained targeted environment followups.",
+  "source_root": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration",
+  "total_bytes": 2045638
+}

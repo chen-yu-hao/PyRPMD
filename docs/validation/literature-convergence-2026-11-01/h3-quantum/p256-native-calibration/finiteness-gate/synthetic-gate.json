@@ -1,0 +1,56 @@
+{
+  "CPU_affinity": [
+    6
+  ],
+  "PES_evaluations": 0,
+  "change_from_initial_candidate": "Explicit finite check for every trace array including initial frame; allclose equal_nan=False. One identical-NaN initial observation regression. No physical propagation, initial-state selection, tolerance or resource change.",
+  "command": [
+    "taskset",
+    "-c",
+    "6",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_h3_p256_native_calibration.py",
+    "--junitxml=/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/finiteness-gate/pytest.xml"
+  ],
+  "created_utc": "2026-11-01T20:23:25.349808+00:00",
+  "failed": 0,
+  "junit": {
+    "bytes": 2649,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/finiteness-gate/pytest.xml",
+    "sha256": "2c9ff0b0b21ac06b8547a679d3cbcfd2212090e900647a64b8207fcba5614eab"
+  },
+  "log": {
+    "bytes": 99,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/finiteness-gate/pytest.log",
+    "sha256": "055ec9ad5ed6c669d4523fdd0dd3f40f50f12200e9becc9ec3d0ee5ccc7e6327"
+  },
+  "passed": 16,
+  "physical_map_steps": 0,
+  "pytest_reported_seconds": 0.28,
+  "schema": "pyrpmd.h3.p256-native-calibration.synthetic-gate.v1",
+  "skipped": 0,
+  "source": {
+    "bytes": 17345,
+    "path": "benchmarks/h3/p256_native_calibration.py",
+    "sha256": "9eb0bfc88b210d6abf432b91f8ee54274ec3f0d94de8c573433d76400b5220c8"
+  },
+  "source_snapshot": {
+    "bytes": 17345,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/finiteness-gate/p256_native_calibration.py",
+    "sha256": "9eb0bfc88b210d6abf432b91f8ee54274ec3f0d94de8c573433d76400b5220c8"
+  },
+  "test_snapshot": {
+    "bytes": 6368,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/finiteness-gate/test_h3_p256_native_calibration.py",
+    "sha256": "0a51ca8b6407b5e0a5bb56e3c3f8d4ee3f8e0e083c2c9ed30d480ac7e12f5fa4"
+  },
+  "tests": {
+    "bytes": 6368,
+    "path": "tests/test_h3_p256_native_calibration.py",
+    "sha256": "0a51ca8b6407b5e0a5bb56e3c3f8d4ee3f8e0e083c2c9ed30d480ac7e12f5fa4"
+  },
+  "threads": 1
+}

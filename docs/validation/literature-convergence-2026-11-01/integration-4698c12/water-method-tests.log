@@ -1,0 +1,79 @@
+...............................................FF...............         [100%]
+=================================== FAILURES ===================================
+_________ test_native_child_failure_stops_queue_without_replacing_seed _________
+
+tmp_path = PosixPath('/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/pytest-of-root/pytest-2/test_native_child_failure_stop0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fd9186053a0>
+
+    def test_native_child_failure_stops_queue_without_replacing_seed(tmp_path,monkeypatch):
+        calls=[]
+        def fail(command,**kwargs):
+            calls.append(command)
+            return SimpleNamespace(returncode=17)
+        monkeypatch.setattr(schedule.subprocess,"run",fail)
+        with pytest.raises(RuntimeError,match="failed; queue stopped without replacement"):
+>           schedule.schedule(tmp_path,PROTOCOL,"odd",wall_seconds=120)
+
+tests/test_water_native_schedule.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/water/native_campaign_schedule.py:56: in schedule
+    protocol=json.loads(protocol_path.read_text())
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/water/protocol.json')
+mode = 'r', buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/water/protocol.json'
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py:1013: FileNotFoundError
+_______ test_scheduler_rejects_self_consistent_replacement_of_old_chunk ________
+
+tmp_path = PosixPath('/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/pytest-of-root/pytest-2/test_scheduler_rejects_self_co0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fd9185c6cc0>
+
+    def test_scheduler_rejects_self_consistent_replacement_of_old_chunk(tmp_path,monkeypatch):
+        directory=tmp_path/"runs"/"classical-1102";directory.mkdir(parents=True)
+>       config=json.loads((PROTOCOL.parent/"configs"/"classical-seed-1102.json").read_text())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_water_native_schedule.py:38: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/water/configs/classical-seed-1102.json')
+mode = 'r', buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/water/configs/classical-seed-1102.json'
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py:1013: FileNotFoundError
+=========================== short test summary info ============================
+FAILED tests/test_water_native_schedule.py::test_native_child_failure_stops_queue_without_replacing_seed
+FAILED tests/test_water_native_schedule.py::test_scheduler_rejects_self_consistent_replacement_of_old_chunk
+2 failed, 62 passed in 51.36s

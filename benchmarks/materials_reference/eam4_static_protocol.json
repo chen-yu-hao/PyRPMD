@@ -1,0 +1,46 @@
+{
+  "schema": "pyrpmd.materials-reference.eam4-static-protocol.v1",
+  "purpose": "Excluded synthetic static geometry; not a paper lattice, dynamics run, or diffusivity reference",
+  "declared_before_execution": true,
+  "atom_order": ["H", "Ni", "Ni", "Ni", "Ni", "Ni", "Ni", "Ni", "Ni"],
+  "q_angstrom": [
+    [0.17, -0.11, 0.95],
+    [-1.244507934888, -1.244507934888, 0.0],
+    [1.244507934888, -1.244507934888, 0.0],
+    [-1.244507934888, 1.244507934888, 0.0],
+    [1.244507934888, 1.244507934888, 0.0],
+    [0.0, 0.0, -1.76],
+    [2.489015869776, 0.0, -1.76],
+    [0.0, 2.489015869776, -1.76],
+    [2.489015869776, 2.489015869776, -1.76]
+  ],
+  "cases": [
+    {"name": "finite_all_mobile", "mobile_ni": 8, "periodic_xy": false},
+    {"name": "finite_mixed_partition", "mobile_ni": 4, "periodic_xy": false},
+    {"name": "finite_fixed_host", "mobile_ni": 0, "periodic_xy": false},
+    {"name": "xy_periodic_all_mobile", "mobile_ni": 8, "periodic_xy": true}
+  ],
+  "lengths_angstrom": [24.0, 26.0, 30.0],
+  "finite_difference_steps_angstrom": [0.0001, 0.00005, 0.000025],
+  "translation_angstrom": [2.13, -4.27, 1.41],
+  "rotation_axis": [1.0, 2.0, 3.0],
+  "rotation_angle_rad": 0.417,
+  "cutoff_probe_H_Ni_distances_angstrom": [4.9, 5.1, 9.9, 10.1],
+  "tolerances": {
+    "energy_route_agreement_eV": 1e-11,
+    "finite_difference_atol_eV_per_angstrom": 0.000002,
+    "finite_difference_rtol": 0.0000002,
+    "symmetry_energy_eV": 1e-10,
+    "symmetry_gradient_eV_per_angstrom": 1e-9,
+    "net_gradient_eV_per_angstrom": 1e-10,
+    "partition_active_gradient_eV_per_angstrom": 1e-10
+  },
+  "decisions": [
+    "Use unmodified source coefficients and physical cutoff; no fit to paper values.",
+    "Differentiate H and mobile Ni only; fixed Ni output is upstream zero by convention.",
+    "Compare arbitrary rotations only for nonperiodic geometry.",
+    "For XY periodic geometry, use whole-configuration translation and one-atom lattice-vector shifts.",
+    "Do not compare absolute energies between fixed/mobile partitions because a fixed--fixed pair constant is omitted.",
+    "Retain all cases and any failed checks. No dynamics or mixed-bead interpretation is authorized by this protocol."
+  ]
+}

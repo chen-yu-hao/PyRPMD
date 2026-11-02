@@ -1,0 +1,60 @@
+{
+  "adopted_CPU_affinity": [
+    8
+  ],
+  "authorize_single_bounded_pilot": true,
+  "available_CPU_count": 1,
+  "combined_prepare_plus_run_wall_claim": false,
+  "counted_whole_process_CPU_caps_seconds": {
+    "prepare": 2,
+    "supervisor": 3,
+    "worker": 55
+  },
+  "created_utc": "2026-11-01T21:16:33.140324+00:00",
+  "failure_policy": "Retain incomplete ledgers and failed checks. No automatic retry, resume, proposal refit, budget extension, replacement draw or seed selection.",
+  "implementation_inventory": {
+    "bytes": 10788,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/publication-inventory.json",
+    "sha256": "83d73d906ff8e345ee39761029ad36b889426c7c2c01b7b2ae7781718040511f"
+  },
+  "lifecycle_review": {
+    "bytes": 6457,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/independent-lifecycle-review.json",
+    "sha256": "6fcbaa6f5ddaf4cdebe7989408dc8e6abc16901e122a93d8a14562358e087a07"
+  },
+  "mathematical_identity_update": {
+    "bytes": 2790,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/independent-method-identity-update.json",
+    "sha256": "c79ddaea13e71c4a2bfea3ac48621a7f8ee7cb959a763a1bf3c461bc47f4cf6c"
+  },
+  "mathematical_review": {
+    "bytes": 11778,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/independent-method-review.json",
+    "sha256": "efbbc8ba95aa1715a0e9b262d1aacaf15dc170764b6d734e2affb11a8af48ce5"
+  },
+  "maximum_PES_geometries": 4000,
+  "observed_allowed_affinity": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "preparation_registration_and_PES_executed_at_adoption": false,
+  "preparation_separate_wall_ceiling_seconds": 120,
+  "protected_production_sources_modified": false,
+  "resource_decision": "One short CPU-8 pilot within the observed eight-CPU quota. Existing long workers remain two P256, two final umbrella, and one paired-water worker. No new long trajectory or paid compute is authorized.",
+  "schema": "pyrpmd.hch4-efficiency.root-resource-adoption.v1",
+  "scope": "One excluded classical proposal-efficiency calibration; no absolute reaction rate, quantum result, or paper-agreement test.",
+  "sum_nominal_CPU_caps_seconds": 60,
+  "supervisor_and_worker_wall_ceiling_seconds": 120,
+  "synthetic_gate": {
+    "bytes": 1696,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/admission-guard-gate/gate.json",
+    "sha256": "7d084215e7cb4b83cfda6f2c0b8e44d227107c529bcbfcbba03eec5f7c77ed6a"
+  }
+}

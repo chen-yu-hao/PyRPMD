@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/a5e4820daedd/audit_fifth_publication.py", line 158, in <module>
+    main()
+  File "/workspace/scratch/a5e4820daedd/audit_fifth_publication.py", line 103, in main
+    assert not unexpected_missing, json.dumps(unexpected_missing, indent=2)
+           ^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: [
+  {
+    "source": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/README.md",
+    "target": "../timestep-paired-control/original-cohort-adoption-draft/README.md"
+  },
+  {
+    "source": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/README.md",
+    "target": "../original-cohort-adoption/root-adoption.json"
+  }
+]

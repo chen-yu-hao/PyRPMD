@@ -1,0 +1,41 @@
+{
+  "schema": "pyrpmd.hch4.time-step-followup.v1",
+  "created_utc": "2026-11-01T17:17:51.873076+00:00",
+  "original_probe_sha256": "fae2e07d2ef7a4660bd9b0d2c95e955968226a296ef4179934905ab5ff97b786",
+  "source_sha256": "3689c0b4ea24f539a3ca1ceeb66a2f7c79ed30de96deb5ad10d066708931a880",
+  "native_probe_source_sha256": "13b2ddba84f15bacc06ef22cf456b8e001128fd56b8d907078d2a88e197d203c",
+  "rows": [
+    {
+      "beads": 128,
+      "dt_fs": 0.1,
+      "duration_fs": 20,
+      "energy_span_per_bead_hartree": 0.00018773813694206165,
+      "energy_end_minus_start_per_bead_hartree": 0.00015046332018375796,
+      "scope": "Non-equilibrium but identical initial state at both time steps"
+    },
+    {
+      "beads": 128,
+      "dt_fs": 0.05,
+      "duration_fs": 20,
+      "energy_span_per_bead_hartree": 4.6039519112250904e-05,
+      "energy_end_minus_start_per_bead_hartree": 3.221934837049911e-05,
+      "scope": "Non-equilibrium but identical initial state at both time steps"
+    },
+    {
+      "beads": 128,
+      "dt_fs": 0.025,
+      "duration_fs": 20,
+      "energy_span_per_bead_hartree": 1.1429659524497815e-05,
+      "energy_end_minus_start_per_bead_hartree": 8.923864463994402e-06,
+      "scope": "Identical non-equilibrium start to the original probe"
+    }
+  ],
+  "successive_span_ratios": [
+    0.24523264085900287,
+    0.2482575783780599
+  ],
+  "CPU_seconds": 0.792684232,
+  "original_gate_unchanged": false,
+  "rate_validated": false,
+  "interpretation": "A diagnostic discretization refinement. It neither erases the paper-step failure nor establishes thermal or rate convergence."
+}

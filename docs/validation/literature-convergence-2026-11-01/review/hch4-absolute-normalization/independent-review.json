@@ -1,0 +1,150 @@
+{
+  "approved_normalization_algebra_for_the_declared_finite_entry_measure": true,
+  "created_utc": "2026-11-01T22:01:10.984316+00:00",
+  "execution_authorized": false,
+  "findings": [
+    {
+      "conclusion": "The unconditional positive flux is sqrt(G/(2*pi*beta)), including the probability of the positive half. The same six-atom Cartesian momentum normalization cancels between the chosen labeled numerator and separated reactant denominator. A common translation removes one volume and the bimolecular normalization supplies the remaining volume; no extra one-half or mass determinant remains.",
+      "topic": "Positive Maxwell flux and absolute phase-space normalization"
+    },
+    {
+      "conclusion": "The carbon-origin and COM coordinate changes each have unit Jacobian. Carbon remains in the mass metric. For a translation-invariant surface, conditioning total linear momentum to zero subtracts |sum gradients|^2/M_total = 0. Removing the simultaneous SO(3) coordinate volume is not a zero-angular-momentum constraint.",
+      "topic": "Translation and rotation"
+    },
+    {
+      "conclusion": "On the nonsingular surface, xi-alpha=S_alpha/(s0-s1), so the delta Jacobian |s0-s1| exactly cancels the inverse factor in the flux metric. The registered D>0 component and domain must remain explicit. With x=b_h+rho*u the radial factor rho^2/|dS_alpha/drho| is required; the declared alpha values make the radial derivative strictly negative.",
+      "topic": "Interpolating surface and coarea"
+    },
+    {
+      "conclusion": "Direct gradient reasoning gives G00=1/mu, G11=(3+2*u_b.dot(u))/m_H+1/m_C and G01=u_R.dot(u)/mu. The carbon and tagged-H cross terms involving u_R.dot(u_b) cancel. The implemented quadratic G_alpha retains the negative (1-alpha) at alpha=1.007 and the carbon contribution.",
+      "topic": "Full Cartesian mass metric"
+    },
+    {
+      "conclusion": "The chart measure has common 8*pi^2 and retained r^2*s^2. The four active-maximum indicators partition the surface up to measure-zero ties. The producer sums four channel means, already counting four abstractions; neither an additional factor four nor a product-H2 factorial belongs in that matched ratio. Consistent labeled reactant factors cancel. Both mirror sectors must remain supported.",
+      "topic": "Four channels and common rotational volume"
+    },
+    {
+      "conclusion": "For the existing per-solid-angle proposal convention, N0(L)=4*pi*L^2/sqrt(2*pi*beta*mu) times the orientation-averaged finite-entry partition. Thus the quoted F_L is correct for N_alpha/N0(L). Replacing the integral by an angular average or changing L on only one side would change normalization. This identity defines a finite-entry normalization and does not establish asymptotic decoupling.",
+      "topic": "Finite-entry prefactor"
+    },
+    {
+      "conclusion": "Read-only inspection confirms the entry proposal is normalized per dOmega, r^2*s^2 is retained, the active-max indicator and domain zeros remain unconditional, the full metric and radial coarea factor are used, and transition-surface aggregation sums channel means. The efficiency source delegates the same metric/chart convention.",
+      "topic": "Source consistency"
+    },
+    {
+      "conclusion": "The atomic rate unit is a0^3/t_au converted to cm^3/s; no Avogadro factor is required for number-density cm^3 molecule^-1 s^-1. The recorded author-executed deterministic checks use independent SI and atomic-unit routes, one-sided Gaussian versus three-dimensional Maxwell integrals, and twelve Cartesian-gradient metric cases. I inspected these computations and their saved receipt but did not independently rerun them.",
+      "topic": "Units and deterministic evidence"
+    }
+  ],
+  "limits": [
+    "No absolute physical rate is validated. Molecular domains, importance support, unseen tails, finite-entry separation, statistical precision and a matched-surface transmission coefficient remain separate requirements.",
+    "The known prefactor is not a fit or a correction to the PES. No pilot dimensionless ratio was converted to a rate in this review.",
+    "A P1 calculation on alpha=1.007 is still classical; it is not a P128 equilibrium ensemble or quantum correction.",
+    "Consistent symmetry cancellation is conditional on matching domains and label conventions. A different reactant basin or angular measure requires a fresh derivation.",
+    "The saved deterministic check result is the author execution record, not a reviewer-run test. Review finding is limited to the read scope and the exact identified bytes."
+  ],
+  "physical_rate_validated": false,
+  "primary_method_sources": [
+    {
+      "checked_conventions": "Eq.10 interpolating coordinate; Eq.12 bimolecular prefactor; Eqs.15-16 flux-weighted umbrella measure; Table1 four H-abstraction channels and R_infinity=30 bohr.",
+      "kind": "author-uploaded CPC manuscript",
+      "url": "https://www.researchgate.net/publication/279840192_RPMDrate_Bimolecular_chemical_reaction_rates_from_ring_polymer_molecular_dynamics"
+    },
+    {
+      "doi": "10.1016/j.cpc.2012.10.017",
+      "kind": "official MIT manuscript/bibliographic record",
+      "url": "https://dspace.mit.edu/entities/publication/a4555c62-26a0-4500-8953-5dd1905583cc"
+    }
+  ],
+  "recorded_known_prefactor_not_a_converted_pilot_rate": {
+    "L_bohr": 30,
+    "SI_vs_atomic_relative_difference_in_author_receipt": -1.9484414082171497e-13,
+    "atomic_units": 3.345036263813077,
+    "cm3_molecule_inverse_s_inverse": 2.049222557524084e-08,
+    "temperature_K": 300
+  },
+  "remaining_blockers_in_review_scope": [],
+  "review_method": "Independent symbolic reasoning and read-only inspection of the note, deterministic calculator, saved algebra receipt and relevant source definitions. No execution of the calculator or producer; no pilot observations or raw trajectory data read for this review.",
+  "reviewer": "/root/providers; independent author from the normalization note and calculator",
+  "reviewer_RNG_draws": 0,
+  "reviewer_dynamics_steps": 0,
+  "reviewer_new_PES_calls": 0,
+  "reviewer_pilot_rates_computed": 0,
+  "reviewer_tests_or_calculator_runs": 0,
+  "schema": "pyrpmd.hch4.absolute-normalization.independent-read-review.v1",
+  "source_identities_rechecked": [
+    {
+      "bytes": 10459,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/pilot-design/proposal.json",
+      "sha256": "85de4292058f9ac4fce9b8c5327d3aba0bea0204e02ede17fb629fa20ee23029"
+    },
+    {
+      "bytes": 15380,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/proposal.json",
+      "sha256": "8c9c576f37714cead7beb6a788a1262f88b7a1f34914029f041643774b78d962"
+    },
+    {
+      "bytes": 36870,
+      "path": "benchmarks/hch4/reference_pilot.py",
+      "sha256": "a164ff9ab148e24b5175d7087224efd95a95435665b90f4a353b2ddf0778a65a"
+    },
+    {
+      "bytes": 65143,
+      "path": "benchmarks/hch4/efficiency_pilot.py",
+      "sha256": "8630f0ac4106d826beb4ccb471eb57ab0382443cd9a6bca1fb474400877d91fb"
+    },
+    {
+      "bytes": 9776,
+      "path": "benchmarks/hch4/reproduction_protocol.json",
+      "sha256": "5a84e3923ca4fb087459872f465b85b07154068392f670798bbab5fb8ad316c5"
+    },
+    {
+      "bytes": 6173,
+      "path": "benchmarks/hch4/reproduction_input.py",
+      "sha256": "31c72794a26266cf7fc128846b66f00a636331c8c35fb1e79bdfc4f4615ec4e4"
+    },
+    {
+      "bytes": 1629,
+      "path": "benchmarks/hch4/geometries.json",
+      "sha256": "8e54d6bb16e21f3c34c7ef92bf0ca0863d1ec55f2c029a57289c23ff73363609"
+    },
+    {
+      "bytes": 34870,
+      "path": "src/pyrpmd/cv.py",
+      "sha256": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52"
+    },
+    {
+      "bytes": 25355,
+      "path": "src/pyrpmd/bias.py",
+      "sha256": "3a2ee4fc125aaa8a9f0103e140b4f8b325c4561327604506b3f47dd5ce3a0df6"
+    },
+    {
+      "bytes": 940,
+      "path": "src/pyrpmd/constants.py",
+      "sha256": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+    },
+    {
+      "bytes": 60151,
+      "path": "src/pyrpmd/workflows/rate.py",
+      "sha256": "44acdf9c2b0ab54551de9b5362f8c4e958c03b61450760474096feef54a6a587"
+    }
+  ],
+  "status": "no_remaining_blocker_within_normalization_algebra_and_source_convention_scope",
+  "subjects": [
+    {
+      "bytes": 16122,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-absolute-normalization/README.md",
+      "sha256": "67380eaea915b4a3dc765a7d4e607506139d03011fe428b212b98f80ce1dcf71"
+    },
+    {
+      "bytes": 8581,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-absolute-normalization/check_normalization.py",
+      "sha256": "0824630ba3bdfa9cc1dc9ab288660161ed9a199953093e5bf76504fb25c4375f"
+    },
+    {
+      "bytes": 10794,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-absolute-normalization/algebra-checks.json",
+      "sha256": "ff0530394466c19bc97ee0a3ea2bb5207f59b541066f09588597e4de44b67fba"
+    }
+  ]
+}

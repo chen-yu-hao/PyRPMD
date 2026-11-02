@@ -1,0 +1,91 @@
+{
+  "adopted_NVE_ps": 64,
+  "adopted_physical_steps": 384000,
+  "all_commands_reaped": true,
+  "completed_utc": "2026-11-01T21:23:08.224313+00:00",
+  "exit_code": 0,
+  "fixed_control_complete": true,
+  "literature_reproduction_claimed": false,
+  "preparation_extension_started": false,
+  "records": [
+    {
+      "command": [
+        "nice",
+        "-n",
+        "5",
+        "taskset",
+        "-c",
+        "4",
+        "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+        "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/paired_timestep.py",
+        "register",
+        "--original-root",
+        "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01",
+        "--output",
+        "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01",
+        "--protocol",
+        "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/protocol.json",
+        "--assessment",
+        "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/analysis/report.json",
+        "--exit-proof",
+        "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/original-normal-exit.json"
+      ],
+      "completed_utc": "2026-11-01T20:57:24.833826+00:00",
+      "elapsed_seconds": 2.8761264229979133,
+      "exit_code": 0,
+      "label": "registration",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "fa4c6abc18dffddcfe132b9e795eddfb4f0b86ba0541f9413242f83c599cb5fb"
+    },
+    {
+      "command": [
+        "nice",
+        "-n",
+        "5",
+        "taskset",
+        "-c",
+        "4",
+        "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+        "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/paired_timestep.py",
+        "run",
+        "--registration",
+        "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/registration.json",
+        "--wall-seconds",
+        "1800"
+      ],
+      "completed_utc": "2026-11-01T21:23:05.445633+00:00",
+      "elapsed_seconds": 1540.6086484820116,
+      "exit_code": 0,
+      "label": "run-1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "9521218d2fa44963d54f5cc9fd8f1fc1926f789b87afdc9ce7dc4bbcf32c463e"
+    },
+    {
+      "command": [
+        "nice",
+        "-n",
+        "5",
+        "taskset",
+        "-c",
+        "4",
+        "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+        "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/paired_timestep.py",
+        "analyze",
+        "--registration",
+        "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/registration.json",
+        "--output",
+        "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/analysis"
+      ],
+      "completed_utc": "2026-11-01T21:23:08.223515+00:00",
+      "elapsed_seconds": 2.7754007740004454,
+      "exit_code": 0,
+      "label": "complete-analysis",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "678504ed0020e1e9f6005994ab1171e8ab3476ff8e55f53b0aec00e6fcf2c0e5"
+    }
+  ],
+  "registration_sha256": "0d73545ac4751b84bdf64a99d693dee23a7f683bb3cd38e2cff5b7d8055e8365",
+  "schema": "pyrpmd.water-adopted-timestep-execution.v1",
+  "source_inputs_unchanged": true,
+  "wall_seconds": 1546.2691765210038
+}

@@ -1,0 +1,193 @@
+{
+  "schema": "pyrpmd.h3.p256-child-execution-authorization.v1",
+  "parent_adoption": true,
+  "design_sha256": "c668c15fd89ca0a535afc4082521e3f42ba9e84f5736b5b481bc1d7c376d791d",
+  "P128_baseline_sha256": "62ce4fea23a55955cf404ae8aa00a2c70204bf20dd48e74de520169a83724720",
+  "source_files": {
+    "benchmarks/h3/classical_tst.py": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/classical_tst.py",
+      "bytes": 7765,
+      "sha256": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be"
+    },
+    "benchmarks/h3/mixing_sampling.py": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/mixing_sampling.py",
+      "bytes": 17299,
+      "sha256": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0"
+    },
+    "benchmarks/h3/p256_child_campaign.py": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_child_campaign.py",
+      "bytes": 38810,
+      "sha256": "0304915726116f062cee1cbb23a649d2c4e4086a787e4206d6dc7ec939ef89bb"
+    },
+    "benchmarks/h3/p256_parent_campaign.py": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_parent_campaign.py",
+      "bytes": 35515,
+      "sha256": "7934c1d7f695ce43337d11171cbad8c46ff95311490b755bf4191a56e00c0da3"
+    },
+    "benchmarks/h3/p256_recrossing_analyze.py": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_recrossing_analyze.py",
+      "bytes": 16902,
+      "sha256": "9e2fdacddcf2ef5b825e0eb0b65789e5f045a8505a8fbd09fe21b704ed4936b6"
+    },
+    "benchmarks/h3/p256_surface_recrossing.py": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_surface_recrossing.py",
+      "bytes": 31442,
+      "sha256": "9c5c5106d8392ca577f8ea6b54f6e1828dcabb8f86a0e01b732c2e626aa15692"
+    },
+    "benchmarks/h3/pes.py": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/pes.py",
+      "bytes": 9908,
+      "sha256": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892"
+    },
+    "benchmarks/h3/quantum_recrossing_analyze.py": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_recrossing_analyze.py",
+      "bytes": 21326,
+      "sha256": "4d1925461219e87d85d4e1f4ac98263c4bb58ff0d7713075782145ba909649c1"
+    },
+    "benchmarks/h3/quantum_surface_recrossing.py": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_surface_recrossing.py",
+      "bytes": 30072,
+      "sha256": "dc900e74fe8191cc8c88925a2413e55f76724a2835a8f447039d25a415c45f9e"
+    },
+    "benchmarks/h3/surface_partition.py": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/surface_partition.py",
+      "bytes": 40251,
+      "sha256": "23d2805270a82c91eff7b9a70f89621a356d7625aeaf76246f00896147b7a5db"
+    },
+    "src/pyrpmd/analysis/fes.py": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/analysis/fes.py",
+      "bytes": 62426,
+      "sha256": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c"
+    },
+    "src/pyrpmd/checkpoint.py": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/checkpoint.py",
+      "bytes": 9555,
+      "sha256": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f"
+    },
+    "src/pyrpmd/constants.py": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/constants.py",
+      "bytes": 940,
+      "sha256": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+    },
+    "src/pyrpmd/cv.py": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/cv.py",
+      "bytes": 34870,
+      "sha256": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52"
+    },
+    "src/pyrpmd/dynamics.py": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/dynamics.py",
+      "bytes": 40171,
+      "sha256": "00c9967571196ea79fae06398116c6dda1d466d2952628b78fcc4c1ccba8dd02"
+    },
+    "src/pyrpmd/io.py": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/io.py",
+      "bytes": 5865,
+      "sha256": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1"
+    },
+    "src/pyrpmd/propagation.py": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/propagation.py",
+      "bytes": 16478,
+      "sha256": "3b661fced182f0944cdac61c82e82de11648cb74d49f03408d8657627a4a11aa"
+    },
+    "loaded_native:_native.cpython-312-x86_64-linux-gnu.so": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "bytes": 2407952,
+      "sha256": "42319e0f816bdf9f94fb9d5d0230b8b5c1d74e3b4975ff56295c609897e66220"
+    }
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "python_executable": {
+      "path": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+      "bytes": 30894944,
+      "sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7"
+    },
+    "actual_native_module": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "bytes": 2407952,
+      "sha256": "42319e0f816bdf9f94fb9d5d0230b8b5c1d74e3b4975ff56295c609897e66220"
+    }
+  },
+  "output": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/recrossing",
+  "seed_order": [
+    825601,
+    825603,
+    825607,
+    825609,
+    825613,
+    825617,
+    825621,
+    825623
+  ],
+  "branch_order": [
+    [
+      0,
+      0.1
+    ],
+    [
+      0,
+      0.05
+    ],
+    [
+      1,
+      0.1
+    ],
+    [
+      1,
+      0.05
+    ]
+  ],
+  "workers": 2,
+  "cpu_affinity": [
+    6,
+    7
+  ],
+  "whole_campaign_wall_seconds": 36000,
+  "finalization_reserve_seconds": 120,
+  "wall_budget_origin": "root explicit child-campaign choice; not the parent-generation proposal",
+  "automatic_resume": false,
+  "automatic_analysis": false,
+  "parent_manifest": {
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/parents-complete.json",
+    "sha256": "b95668a72710809cd2b92a00fd5d6228988e8ee04f7229dc29b9f6bb91255120",
+    "bytes": 32761
+  },
+  "P128_complete_four_pair_report": {
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-analysis-200-four-pairs/quantum-rate-comparison.json",
+    "sha256": "62ce4fea23a55955cf404ae8aa00a2c70204bf20dd48e74de520169a83724720",
+    "bytes": 380711
+  },
+  "library": {
+    "bytes": 45704,
+    "path": "/workspace/scratch/a5e4820daedd/literature-audit-assets/libbkmp2.so",
+    "sha256": "c7af84fb8a2caaec3ef56ee4225169fef7048e2fcc365ba6d16c605263049609"
+  },
+  "library_build_receipt": {
+    "bytes": 2976,
+    "path": "/workspace/scratch/a5e4820daedd/literature-audit-assets/libbkmp2.build.json",
+    "sha256": "5c1c6d092f667caaddc814f5f671b61d12c254a6abe83dc2ee939a5e3872622e"
+  },
+  "synthetic_gate": {
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/final/synthetic-gate.json",
+    "sha256": "76a5d5e64b23ba67a246e50b329e0a4eb1e58828dd30386800206d82bd87e4df",
+    "bytes": 4560
+  },
+  "independent_coordinator_review": {
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/independent-review.json",
+    "sha256": "06aaa12cd2302c078a6969cf95ef9d9b928a9ffceff7f92f3edf7de0a247f67d",
+    "bytes": 5980
+  },
+  "scientific_review": {
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-tool/independent-analysis-review.json",
+    "sha256": "4bb9d6a68527f225d490ff5fedbd5ff7d7913da821dac39f6b5aa15efa43ce88",
+    "bytes": 4150
+  },
+  "resource_decision": {
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/child-execution/resource-decision.json",
+    "sha256": "34d03a69f5fa1b5e344e05e50735183e4ab646caf863746d0911acb53fe8298a",
+    "bytes": 2686
+  }
+}

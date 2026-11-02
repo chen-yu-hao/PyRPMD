@@ -1,0 +1,34 @@
+{
+  "after": {
+    "bytes": 24455,
+    "path": "tests/test_h3_quantum_isolated_continuation.py",
+    "sha256": "da0b38029eb88ee273dfba2de708f759ca079b36ef981620f1238e6796a1d980"
+  },
+  "before": {
+    "bytes": 24058,
+    "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/before-test_h3_quantum_isolated_continuation.py",
+    "sha256": "69df0a97c06992db5c24e074abee9866474ae4f02a90b8e9f6fe73d1d073ef05"
+  },
+  "created_utc": "2026-11-01T22:32:01.286272+00:00",
+  "current_path": "tests/test_h3_quantum_isolated_continuation.py",
+  "independent_review": {
+    "bytes": 5374,
+    "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/mc300k-pidfd-capability-review.json",
+    "sha256": "615d3024ead3319ea833428d876c4134ef21b151e9e9615b75152a9ec2d85260"
+  },
+  "initial_false_positive_cases_not_counted_as_valid_coverage": [
+    "test_stop_or_event_error_never_admits_remaining_workers[signal]",
+    "test_stop_or_event_error_never_admits_remaining_workers[journal]"
+  ],
+  "new_distinct_test_identities": 0,
+  "original_active_test_sha256": "69df0a97c06992db5c24e074abee9866474ae4f02a90b8e9f6fe73d1d073ef05",
+  "reason": "Only seven real ownership tests require two optional Linux interfaces absent from the observed local conda3.13/3.14 builds. All function bodies and remaining69 tests are unchanged; the pre-Popen guard variant still runs.",
+  "required_original_physical_runtime_has_full_coverage": true,
+  "retained_initial_failure": {
+    "bytes": 17978,
+    "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/py313/pytest.log",
+    "sha256": "6f9dc4559654df5a447f24bed4d0a3ee8edaa7cf372dd542a3a8bd099e5c08a0"
+  },
+  "schema": "pyrpmd.mc300k-pidfd-test-capability-supersession.v1",
+  "scientific_source_or_runtime_changed": false
+}

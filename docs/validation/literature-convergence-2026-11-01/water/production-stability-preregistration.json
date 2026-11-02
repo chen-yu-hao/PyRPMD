@@ -1,0 +1,120 @@
+{
+  "authorization": "Root approved this descriptive supplement in the active task before full-cohort D inspection.",
+  "display": {
+    "all_25_segment_means_per_chain": true,
+    "both_endpoints": true,
+    "each_seed_retained": true,
+    "no_reference_value_stopping_or_selection": true
+  },
+  "early_segments": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "endpoints": {
+    "primary": "D_VACF_2ps",
+    "secondary": "D_MSD_1_2ps",
+    "unit": "angstrom^2/ps"
+  },
+  "fixed_seeds": [
+    1101,
+    1102,
+    1103,
+    1104,
+    1105,
+    1106,
+    1107,
+    1108
+  ],
+  "frozen_analysis_sources_sha256": {
+    "benchmarks/water/analyze_native.py": "323b3e8506ffbd0c509150f3a6c7c137369c75e5775cdb4e338cdb2bd3c3c718",
+    "benchmarks/water/plot_native_campaign.py": "f08bc32ec90ef1172a7032fb74ddab2de9e5185df4e075ab95b0b75ce64b6362"
+  },
+  "late_segments": [
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+  ],
+  "middle_segment": {
+    "excluded_from_balanced_contrast_only": true,
+    "index": 12,
+    "retained_in_full_segment_plot": true,
+    "retained_in_primary_25_segment_mean": true
+  },
+  "original_protocol_sha256": "288059c14c1b0467c322806fcf41765b69df0ed50af436941e7f0cad3fbcf631",
+  "preregistered_utc": "2026-11-01T20:18:37.564937+00:00",
+  "purpose": "Resolve the odd25-segment split for the original protocol remaining production-stability review, without changing primary estimators, eligibility gates or cohort membership.",
+  "required_completed_segments_each_seed": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+  ],
+  "requirements": {
+    "all25_segments_remain_in_primary_means": true,
+    "all_eight_original_chains_complete": true,
+    "all_raw_chunks_verified_by_frozen_complete_cohort_analysis": true,
+    "diffusion_used_to_choose_split": false,
+    "new_hard_gate": false,
+    "no_physics_source_or_rng_changes": true,
+    "original_coordinator_normal_exit_and_leases_released": true,
+    "production_or_preparation_extension_authorized_by_this_supplement": false
+  },
+  "schema": "pyrpmd.water-fixed-cohort-production-stability-supplement.v1",
+  "scope": {
+    "PyRPMD_production_validation": false,
+    "external_OpenMM_reference": true,
+    "literature_reproduced": false,
+    "preparation_failure_repaired": false
+  },
+  "statistics": {
+    "CI95": "mean +/- scipy.stats.t.ppf(0.975,7)*standard_error",
+    "degrees_of_freedom": 7,
+    "interpretation": "Nominal small-n paired t interval; descriptive, not a new equivalence or hard pass gate. Adjacent segments, time origins and molecules are not independent uncertainty units.",
+    "mean": "sum(delta_i)/8",
+    "negative_or_nonfinite_values": "Finite negative estimates remain; nonfinite or missing endpoints prevent the complete-cohort diagnostic and remain errors, never exclusions.",
+    "paired_chain_difference": "delta_i = mean(D_i,segments13..24) - mean(D_i,segments0..11)",
+    "standard_error": "sample_standard_deviation(delta_i,ddof=1)/sqrt(8)",
+    "uncertainty_unit": "One paired seed-chain difference; eight fixed independently randomized chains conditional on their common initial geometry and original preparations."
+  },
+  "status": "sealed_before_any_complete_cohort_diffusion_inspection"
+}

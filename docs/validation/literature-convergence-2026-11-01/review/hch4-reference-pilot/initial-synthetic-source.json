@@ -1,0 +1,18 @@
+{
+  "scope": "Initial19synthetic tests before worker-only one-attempt hardening; noPES",
+  "sources": [
+    {
+      "original_path": "benchmarks/hch4/reference_pilot.py",
+      "snapshot_path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/initial-source/reference_pilot.py",
+      "sha256": "7680aeb68843af1204ad87b2b2d58433559403c0baefa8bf486b2f50ef0e7f44"
+    },
+    {
+      "original_path": "tests/test_hch4_reference_pilot.py",
+      "snapshot_path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/initial-source/test_hch4_reference_pilot.py",
+      "sha256": "879d4810bbecb4dc728c572e287b46fac0753c5a3891c997069e5c962e6490e1"
+    }
+  ],
+  "exit_code": 0,
+  "passed": 19,
+  "seconds": 13.17
+}

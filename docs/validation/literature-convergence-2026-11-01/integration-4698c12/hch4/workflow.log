@@ -1,0 +1,161 @@
+{
+  "passed": true,
+  "CPU_seconds": 0.13422339500000002,
+  "records": [
+    {
+      "beads": 1,
+      "window": 5,
+      "center": [
+        0.0
+      ],
+      "steps": 3,
+      "samples": 3,
+      "native_propagation": {
+        "native_steps": 3,
+        "python_steps": 0,
+        "fallback_reasons": {}
+      },
+      "python_propagation": {
+        "native_steps": 0,
+        "python_steps": 3,
+        "fallback_reasons": {}
+      },
+      "position_error_bohr": 0.0,
+      "momentum_error_au": 6.661338147750939e-16,
+      "energy_per_bead_error_hartree": 1.1102230246251565e-16,
+      "completed_restart_arrays_and_file_exact": true,
+      "passed": true
+    },
+    {
+      "beads": 1,
+      "window": 105,
+      "center": [
+        1.0
+      ],
+      "steps": 3,
+      "samples": 3,
+      "native_propagation": {
+        "native_steps": 3,
+        "python_steps": 0,
+        "fallback_reasons": {}
+      },
+      "python_propagation": {
+        "native_steps": 0,
+        "python_steps": 3,
+        "fallback_reasons": {}
+      },
+      "position_error_bohr": 0.0,
+      "momentum_error_au": 0.0,
+      "energy_per_bead_error_hartree": 2.220446049250313e-16,
+      "completed_restart_arrays_and_file_exact": true,
+      "passed": true
+    },
+    {
+      "beads": 128,
+      "window": 5,
+      "center": [
+        0.0
+      ],
+      "steps": 3,
+      "samples": 3,
+      "native_propagation": {
+        "native_steps": 3,
+        "python_steps": 0,
+        "fallback_reasons": {}
+      },
+      "python_propagation": {
+        "native_steps": 0,
+        "python_steps": 3,
+        "fallback_reasons": {}
+      },
+      "position_error_bohr": 3.552713678800501e-15,
+      "momentum_error_au": 7.126743639673805e-12,
+      "energy_per_bead_error_hartree": 7.216449660063518e-16,
+      "completed_restart_arrays_and_file_exact": true,
+      "passed": true
+    },
+    {
+      "beads": 128,
+      "window": 105,
+      "center": [
+        1.0
+      ],
+      "steps": 3,
+      "samples": 3,
+      "native_propagation": {
+        "native_steps": 3,
+        "python_steps": 0,
+        "fallback_reasons": {}
+      },
+      "python_propagation": {
+        "native_steps": 0,
+        "python_steps": 3,
+        "fallback_reasons": {}
+      },
+      "position_error_bohr": 0.0,
+      "momentum_error_au": 3.552713678800501e-15,
+      "energy_per_bead_error_hartree": 4.440892098500626e-16,
+      "completed_restart_arrays_and_file_exact": true,
+      "passed": true
+    }
+  ]
+}
+
+
+  J. Espinosa-Garcia and J. C. Corchado                                      
+  Unpublished results, 1999.                                                 
+                                                                             
+                                                                             
+                                                                             
+
+
+   MAX. AND ACTUAL NO. OF EXCITED SURFACES:   0       0
+   MAX. AND ACTUAL ORDER OF DERIVATIVES:      1       1
+
+  The potential routine in POTLIB assumes a
+  default labeling of the atoms.  The user has
+  made the following selection of atomic labels:
+
+               DEFAULT                         USER-SELECTED
+
+  Atom  1 is       H                                   H 
+  Atom  2 is       C                                   C 
+  Atom  3 is       H                                   H 
+  Atom  4 is       H                                   H 
+  Atom  5 is       H                                   H 
+  Atom  6 is       H                                   H 
+
+
+  Atom  1  H  is a member of Reactant #1
+  Atom  2  C  is a member of Reactant #1
+  Atom  3  H  is a member of Reactant #1
+  Atom  4  H  is a member of Reactant #1
+  Atom  5  H  is a member of Reactant #1
+  Atom  6  H  is a member of Reactant #2
+
+  The Potential Energy is Zero for the following
+  geometric arrangement:  The reactants are at
+  their equilibrium geometries, widely separated.
+
+
+  Reactant #1
+  H C H H H 
+
+  Reactant #2
+  H 
+
+  The default units are:
+     BOHR FOR DISTANCE
+     HARTREE FOR ENERGY
+
+
+  The user has chosen units :
+     BOHR                 FOR DISTANCE
+     HARTREE              FOR ENERGY
+
+
+  To reset the zero-of-energy, assign a
+  non-zero value to the variable ANUZERO.
+  The value of ANUZERO will be SUBTRACTED from
+  the energy calculated by this routine.
+

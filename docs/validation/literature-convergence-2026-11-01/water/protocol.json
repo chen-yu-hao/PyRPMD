@@ -1,0 +1,112 @@
+{
+  "conditions": {
+    "beads": 1,
+    "constraints": false,
+    "density_g_cm3": 0.997,
+    "electrostatics": "full PME tolerance 1e-5; no contraction",
+    "initial_geometry": "same archived 28 ps classical endpoint; independent 100 ps preparation with distinct seeds",
+    "isotope": "H2O",
+    "molecules": 216,
+    "parameters": "printed Table I q-TIP4P/F",
+    "production": "NVE, fresh canonical momenta per segment, total COM momentum removed once per segment",
+    "sampling_thermostat": "global canonical Maxwell momentum refresh every 100 fs; Andersen heat-bath scheme",
+    "short_range_cutoff_angstrom": 9,
+    "tail_correction": false,
+    "temperature_K": 298,
+    "timestep_fs": 0.25
+  },
+  "created_utc": "2026-11-01T15:01:02.831587+00:00",
+  "engine": "OpenMM VerletIntegrator external reference with synchronized physical velocities",
+  "estimators": {
+    "NVE_record_interval_fs": 5,
+    "diagnostics_MSD_windows_ps": [
+      [
+        0.5,
+        1
+      ],
+      [
+        1,
+        1.5
+      ],
+      [
+        1.5,
+        2
+      ],
+      [
+        1,
+        2
+      ]
+    ],
+    "diagnostics_VACF_cutoffs_ps": [
+      1,
+      1.5,
+      2
+    ],
+    "primary": "molecular COM VACF integral/3 to 2 ps, all segments equally weighted",
+    "raw_precision": "float32 COM positions/velocities and oxygen positions, float64 scalar observations and restart q/p; quantify storage error separately",
+    "sampling_record_interval_fs": 100,
+    "secondary": "molecular COM MSD slope/6 from 1 to 2 ps",
+    "uncertainty": "Student t interval of equally weighted chain means (df=chains-1); within-chain blocking separately",
+    "uncertainty_unit": "independent seed chain; no molecule/time-origin/segment independence assumption"
+  },
+  "fixed_stage": {
+    "NVE_ps_per_segment": 4,
+    "NVE_segments_per_chain": 25,
+    "independent_seed_chains": 8,
+    "new_sampling_ps_per_chain": 100,
+    "seeds": [
+      1101,
+      1102,
+      1103,
+      1104,
+      1105,
+      1106,
+      1107,
+      1108
+    ],
+    "stop_rule": "Complete the fixed stage or checkpoint at a declared compute budget. Never stop, extend, select or discard trajectories based on closeness to the reference value.",
+    "total_NVE_ps": 800
+  },
+  "limitations": [
+    "External OpenMM reference is not a PyRPMD production trajectory.",
+    "800 ps fixed production stage versus 8000 ps in the paper.",
+    "Common initial geometry requires adequate new preparation and chain mixing diagnostics.",
+    "Printed parameters and declared masses can differ slightly from original unpublished executable inputs.",
+    "No quantum diffusion or PA-CMD IR claim follows from classical agreement."
+  ],
+  "literature_comparison": {
+    "doi": "10.1063/1.3167790",
+    "reference": 0.199,
+    "standard_error": 0.002,
+    "table": "IV",
+    "unit": "angstrom^2/ps",
+    "use": "Report difference and combined uncertainty after eligibility checks; target proximity never determines stopping or selection."
+  },
+  "predeclared_eligibility_checks": {
+    "additional_reviews": [
+      "late oxygen RDF stability",
+      "first-half/second-half production stability",
+      "timestep uncertainty explicitly unresolved without an independent property comparison"
+    ],
+    "all_fixed_chains_complete": true,
+    "all_raw_chunks_verified": true,
+    "cutoff_and_estimator_difference_threshold": "larger of 0.01 A^2/ps and 95% paired-chain CI halfwidth; inspect all prespecified windows without excluding failed segments",
+    "diffusion_95pct_CI_halfwidth_max_angstrom2_ps": 0.02,
+    "finite_all_states": true,
+    "max_abs_energy_change_kcal_mol_water_per_4ps_segment": 0.01,
+    "max_abs_energy_linear_drift_kcal_mol_water_ps": 0.001,
+    "max_split_mean_OH_difference_angstrom": 0.001,
+    "max_split_mean_angle_difference_degrees": 0.1,
+    "max_split_mean_potential_difference_kcal_mol_water": 0.05,
+    "max_split_mean_temperature_difference_K": 5,
+    "sampling_last_50ps_split_window_ps": 25
+  },
+  "pyrpmd_production_trajectory": false,
+  "schema": "pyrpmd.water-convergence-preregistration.v1",
+  "source_sha256": {
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/native_reference.py": "592ca5eed2e0234bf936f8808fe4877281c3b762720e68fcd4eb9caab30482f2",
+    "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "command": [
+    "nice",
+    "-n",
+    "5",
+    "taskset",
+    "-c",
+    "4",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/paired_timestep.py",
+    "analyze",
+    "--registration",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/registration.json",
+    "--output",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/analysis"
+  ],
+  "completed_utc": "2026-11-01T21:23:08.223515+00:00",
+  "elapsed_seconds": 2.7754007740004454,
+  "exit_code": 0,
+  "label": "complete-analysis",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "678504ed0020e1e9f6005994ab1171e8ab3476ff8e55f53b0aec00e6fcf2c0e5"
+}

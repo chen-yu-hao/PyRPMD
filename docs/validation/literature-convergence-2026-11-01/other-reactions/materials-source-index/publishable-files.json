@@ -1,0 +1,159 @@
+{
+  "schema": "pyrpmd.materials-reference.publication-inventory.v1",
+  "scope": "Only new isolated wrapper/build/static validation source and tests; primary-source index, unresolved original protocol fields, logs and compact receipts. No third-party code, license files, compiler outputs, binaries, downloaded archive or trajectories.",
+  "files": [
+    {
+      "path": "benchmarks/materials_reference/README.md",
+      "sha256": "f1295f95a4423075792790e53c433bb4141ba593a379cc35a3c5e1bafe0d3155",
+      "bytes": 5608
+    },
+    {
+      "path": "benchmarks/materials_reference/__init__.py",
+      "sha256": "d849db13e54a96270d4a0a1839d57a24c51d337d4fa18d3432a05cc90a8d505a",
+      "bytes": 76
+    },
+    {
+      "path": "benchmarks/materials_reference/build_eam4.py",
+      "sha256": "9cd9c4e8726f5b3f6bc1b252718ff3546ef6f885b6f562f1963ea54a4dcae853",
+      "bytes": 6665
+    },
+    {
+      "path": "benchmarks/materials_reference/eam4.py",
+      "sha256": "87b46d4b5c3fe08016c7d081d9cded352d7a808cad9706fea8761ebf1a64978e",
+      "bytes": 3972
+    },
+    {
+      "path": "benchmarks/materials_reference/eam4_bridge.f90",
+      "sha256": "aae4cbcd5e44491736b00698be6afba2ddcc5773060b55599bead52d6b022e6c",
+      "bytes": 2534
+    },
+    {
+      "path": "benchmarks/materials_reference/eam4_static_protocol.json",
+      "sha256": "23d584b4d668b8562ae8d075ae9cef7abcb61653442c6603956883b69db136f9",
+      "bytes": 2203
+    },
+    {
+      "path": "benchmarks/materials_reference/verify_eam4.py",
+      "sha256": "a1bb2c3c89061e145ec4e4d40fd4b05a55a8b11837397e12e8b48d5804660711",
+      "bytes": 8486
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/README.md",
+      "sha256": "d67d2962c68ffddaf3ce1fa4df4980dc07e53ea748daedde00fad345f472dbec",
+      "bytes": 8615
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/evidence-verification.json",
+      "sha256": "6bd613577b30b8145f9ef356646d614cd95850db662f0766417c64e574e409e3",
+      "bytes": 2627
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/external-assets.json",
+      "sha256": "38c8cd6250fb6013009f767f139629b3f0a1c3adc569c9cb7b3af8034fed14dd",
+      "bytes": 5943
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/hal-title-query-receipt.json",
+      "sha256": "a96aa1c9d3a24e7273e57f51de8156f41850e507e87dce3ba41c376a085199cf",
+      "bytes": 3860
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/protocol-gaps.json",
+      "sha256": "a3dbf3d897ee042dac60292a2fc4624486ae0375c3cee88ca02d809514d36c6f",
+      "bytes": 4190
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/public-fetch-receipt.json",
+      "sha256": "d559dbb9cd726679d8df8a96cbfb1d42ea92d54ab98e5c052681baeeee1197fb",
+      "bytes": 2580
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/source-index.json",
+      "sha256": "dd6749e96f12134a050fc86c52060fb466a0ccce3cf3ff652c242ecf55400a3c",
+      "bytes": 8540
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/static-check/build-execution.json",
+      "sha256": "daa3905c13cf376124a035caa36832c9d70cdccb44739e31c062758cf67f5e76",
+      "bytes": 1669
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/static-check/build-receipt.json",
+      "sha256": "c32f10a589875869bf1f8814dd25bf8470a2925711d8f762035174247759023c",
+      "bytes": 3003
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/static-check/build.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/static-check/build.stdout.txt",
+      "sha256": "c32f10a589875869bf1f8814dd25bf8470a2925711d8f762035174247759023c",
+      "bytes": 3003
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/static-check/initial-launcher-failure.json",
+      "sha256": "ea1ee6c52ae2607e08b1498e0c4e9326c7df31017e132686772285955a1a3e55",
+      "bytes": 297
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/static-check/pytest.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/static-check/pytest.stdout.txt",
+      "sha256": "5807f121a5840b9d92ca3260f9a81cb6a3dd027c879191deb60426f3ba1ced0b",
+      "bytes": 3249
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/static-check/report.json",
+      "sha256": "02af1251650a38031f12551d0706ab9368e31943656923526e93240186061e41",
+      "bytes": 19433
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/static-check/validation-execution.json",
+      "sha256": "98fd112019f692dc092fdcf4b0550e7ac1e35a9fd533d909e30b1676496ad89f",
+      "bytes": 1816
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/static-check/validation.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/static-check/validation.stdout.txt",
+      "sha256": "96620416e5638d59e750bfd2a6572fc2d75ec237208f4a84eeac6243f3a53696",
+      "bytes": 87147
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/wales-license-receipt.json",
+      "sha256": "f1619efbc233e19b72357e64f65a4b0884f49654e8f0f5b2e1f70b0d24baba43",
+      "bytes": 2721
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/wales-selected-source-inventory.json",
+      "sha256": "0b37b20a7aff704317e2b680e1c594481657c917ec6761db760b346a0ecb3f7b",
+      "bytes": 1088
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/wales-source-fetch-receipt.json",
+      "sha256": "beead0f9f2cc62b4e75e1f91d082a9fa32e16a73f84d65e0dbaf5b6b09608874",
+      "bytes": 815
+    },
+    {
+      "path": "tests/test_materials_reference_eam4.py",
+      "sha256": "95734181efc669bd84d75300f2af48bb6b176c361035d795b1c1e1d1aefe7884",
+      "bytes": 2579
+    }
+  ],
+  "total_files": 29,
+  "total_bytes": 192719,
+  "include_this_manifest_separately": true,
+  "real_dynamics_or_sampling_launched": false,
+  "all_configured_tests_passed": 10,
+  "static_potential_checks_passed": true,
+  "original_paper_diffusion_reproduced": false,
+  "external_assets_index": "docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/external-assets.json"
+}

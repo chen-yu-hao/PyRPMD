@@ -1,0 +1,17 @@
+{
+  "schema": "pyrpmd.frozen-source-audit-inventory.v1",
+  "created_utc": "2026-11-01T19:33:55.511334+00:00",
+  "files": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/oh-source-consistency/README.md",
+      "sha256": "1b72ea31bcd6a74cb12dfe77726a7611c8b07e7afe66204cee04850b868eab64",
+      "bytes": 2796
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/oh-source-consistency/check.json",
+      "sha256": "b62947da1012d988f5846233035941406001ce30ecec3c66ace3e62bb9050135",
+      "bytes": 2819
+    }
+  ],
+  "source_only": true
+}

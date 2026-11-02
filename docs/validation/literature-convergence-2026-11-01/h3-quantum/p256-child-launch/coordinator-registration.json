@@ -1,0 +1,27 @@
+{
+  "P128_baseline_sha256": "62ce4fea23a55955cf404ae8aa00a2c70204bf20dd48e74de520169a83724720",
+  "authorization_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/child-execution/authorization.json",
+  "authorization_sha256": "3cefa11143fbcd2868f84b7d4ebf034ca48c0412cd55a6c119e70fecbf9ff384",
+  "automatic_analysis": false,
+  "automatic_resume": false,
+  "created_utc": "2026-11-01T20:25:27.326010+00:00",
+  "output": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/recrossing",
+  "parent_manifest": {
+    "bytes": 32761,
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/parents-complete.json",
+    "sha256": "b95668a72710809cd2b92a00fd5d6228988e8ee04f7229dc29b9f6bb91255120"
+  },
+  "protocol_sha256": "c96429270787bda5404959648d66cfbc76575f94fd5903a64cadc482cae08d6f",
+  "schema": "pyrpmd.h3.p256-child-coordinator-registration.v1",
+  "seed_order": [
+    825601,
+    825603,
+    825607,
+    825609,
+    825613,
+    825617,
+    825621,
+    825623
+  ],
+  "source_sha256": "0304915726116f062cee1cbb23a649d2c4e4086a787e4206d6dc7ec939ef89bb"
+}

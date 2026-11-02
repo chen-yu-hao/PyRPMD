@@ -1,0 +1,727 @@
+{
+  "CPU_affinity": [
+    0
+  ],
+  "CPU_seconds": 10.806051,
+  "all_raw_envelopes_and_report_hashes_verified": true,
+  "all_signed_flux_numerators_and_denominators_exact": true,
+  "children_per_timestep": 12800,
+  "complete_independent_chains": 8,
+  "created_utc": "2026-11-01T19:50:17.709975+00:00",
+  "dynamics_steps": 0,
+  "elapsed_seconds": 18.752385885993135,
+  "external_PES_calls": 0,
+  "independent_uncertainty_units": 8,
+  "input_bytes_unchanged": true,
+  "keyed_Maxwell_array_checks_including_timestep_repetition": 12800,
+  "keyed_channel_checks_including_batch_and_timestep_repetition": 6400,
+  "limitations": [
+    "Raw replay verifies the recorded estimator and identities; it does not re-integrate trajectories or rerun BAR.",
+    "Eight-chain t intervals are nominal approximations; ratio/geometric-mean bias and conditional-extension coverage are not separately corrected.",
+    "The failed supplementary parent-half diagnostic remains visible; extra momenta did not add parent equilibration.",
+    "The minimum-distance record samples 1-fs boundaries, not every integration step.",
+    "A fixed-P128 reference does not establish dynamic bead convergence, validate production umbrella sampling or validate another PES/reaction."
+  ],
+  "native_steps_preserved": 76800000,
+  "numerical_replay_maximum_errors": {
+    "final_clock_au": 6.45741238258779e-10,
+    "final_minimum_pair_bohr": 0.0,
+    "final_surface_bohr": 0.0,
+    "flux_metric_relative": 0.0,
+    "velocity_au": 0.0
+  },
+  "original_protocol_sha256": "53203aeca4fdf66d9fbf1a23fe7a430ab99e24d18c351e85bd2eb383a87d3589",
+  "parent_checkpoints": 8,
+  "parent_configurations": 1600,
+  "peak_RSS_KiB": 119872,
+  "producer_or_analysis_functions_called": false,
+  "raw_bytes": 650064363,
+  "raw_chunks_verified": 800,
+  "reviewed_report_sha256": "62ce4fea23a55955cf404ae8aa00a2c70204bf20dd48e74de520169a83724720",
+  "reviewer_source_sha256": "431be7bdd8e23bb95510539c8f3d70110749cd4fec284d6509a40a7a20649b84",
+  "same_momenta_and_channels_at_both_timesteps": true,
+  "schema": "pyrpmd.h3.quantum-four-pair-independent-replay.v1",
+  "summaries": {
+    "2": {
+      "criteria": {
+        "complete_registered_cohort": true,
+        "full_rate_95_log_halfwidth_at_most_5_percent": true,
+        "kappa_statistical_precision": false,
+        "no_sampled_static_domain_crossings": true,
+        "paper_full_rate_point_within_reported_5_percent": true,
+        "paper_kappa_point_within_reported_5_percent": true,
+        "paper_qtst_point_within_reported_5_percent": true,
+        "parent_sampling_flags": true,
+        "primary_maximum_energy_error_at_most_01_kbt_per_bead": true,
+        "time_plateau_equivalence": true,
+        "timestep_equivalence": true
+      },
+      "denominator_diagnostic": {
+        "CI95": [
+          1.9503523676258328,
+          2.0739488587517707
+        ],
+        "degrees_of_freedom": 7,
+        "halfwidth95": 0.061798245562968916,
+        "mean": 2.0121506131888016,
+        "standard_error": 0.026134488606949845
+      },
+      "fixed_P_primary_gates_passed": false,
+      "kappa": {
+        "CI95": [
+          0.7477806568790755,
+          0.7983739263235681
+        ],
+        "degrees_of_freedom": 7,
+        "halfwidth95": 0.025296634722246275,
+        "mean": 0.7730772916013218,
+        "standard_error": 0.010697951146025314
+      },
+      "log_qtst": {
+        "CI95": [
+          -35.91837664255445,
+          -35.89020926015037
+        ],
+        "degrees_of_freedom": 7,
+        "halfwidth95": 0.014083691202040836,
+        "mean": -35.90429295135241,
+        "standard_error": 0.005955995415573625
+      },
+      "log_rate": {
+        "CI95": [
+          -36.19351516088124,
+          -36.131151514402696
+        ],
+        "degrees_of_freedom": 7,
+        "halfwidth95": 0.031181823239269563,
+        "mean": -36.16233333764197,
+        "standard_error": 0.013186798375372257
+      },
+      "pair_indices": [
+        0,
+        1
+      ],
+      "paired_time": {
+        "CI95": [
+          0.0,
+          0.0
+        ],
+        "degrees_of_freedom": 7,
+        "halfwidth95": 0.0,
+        "mean": 0.0,
+        "standard_error": 0.0
+      },
+      "paired_timestep": {
+        "CI95": [
+          -0.000836682176255736,
+          0.0024584187469677814
+        ],
+        "degrees_of_freedom": 7,
+        "halfwidth95": 0.0016475504616117588,
+        "mean": 0.0008108682853560228,
+        "standard_error": 0.0006967493717033426
+      },
+      "parent_time_halves": {
+        "CI95": [
+          -0.020555937584557787,
+          0.06477010898729219
+        ],
+        "degrees_of_freedom": 7,
+        "halfwidth95": 0.042663023285924986,
+        "mean": 0.0221070857013672,
+        "standard_error": 0.01804219983669188
+      },
+      "per_timestep_per_seed": {
+        "0.05": [
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.7358534325163614,
+            "maximum_energy_error_kbt_per_bead": 0.06799794168435333,
+            "mean_denominator": 1.9102001695243118,
+            "minimum_pair_at_1fs_bohr": 0.6613714205625518,
+            "plateaus": {
+              "180-200": 0.7377742108578154,
+              "80-100": 0.7377742108578154
+            },
+            "second_parent_half": 0.7395646425035058,
+            "seed": 721301,
+            "unique_native_steps": 3200000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.7530815083722158,
+            "maximum_energy_error_kbt_per_bead": 0.07068802841770427,
+            "mean_denominator": 2.022963125906472,
+            "minimum_pair_at_1fs_bohr": 0.6366121725400038,
+            "plateaus": {
+              "180-200": 0.7742942708647609,
+              "80-100": 0.7742942708647609
+            },
+            "second_parent_half": 0.795659980651711,
+            "seed": 721303,
+            "unique_native_steps": 3200000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.8246992804990002,
+            "maximum_energy_error_kbt_per_bead": 0.0628496407655914,
+            "mean_denominator": 2.0147859503467918,
+            "minimum_pair_at_1fs_bohr": 0.682920315582919,
+            "plateaus": {
+              "180-200": 0.8271971438350512,
+              "80-100": 0.8271971438350512
+            },
+            "second_parent_half": 0.8298344183487287,
+            "seed": 721307,
+            "unique_native_steps": 3200000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.7303116368044298,
+            "maximum_energy_error_kbt_per_bead": 0.062358943603361756,
+            "mean_denominator": 2.088510693660506,
+            "minimum_pair_at_1fs_bohr": 0.6685214610391643,
+            "plateaus": {
+              "180-200": 0.7707500351755383,
+              "80-100": 0.7707500351755383
+            },
+            "second_parent_half": 0.8081686933930357,
+            "seed": 721309,
+            "unique_native_steps": 3200000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.7407482633265202,
+            "maximum_energy_error_kbt_per_bead": 0.06504456176074738,
+            "mean_denominator": 2.13411990789303,
+            "minimum_pair_at_1fs_bohr": 0.6321465822699779,
+            "plateaus": {
+              "180-200": 0.7911458117912583,
+              "80-100": 0.7911458117912583
+            },
+            "second_parent_half": 0.8394988621123545,
+            "seed": 721313,
+            "unique_native_steps": 3200000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.8197821706151378,
+            "maximum_energy_error_kbt_per_bead": 0.06047131981572341,
+            "mean_denominator": 1.9881366174767257,
+            "minimum_pair_at_1fs_bohr": 0.5588503650172778,
+            "plateaus": {
+              "180-200": 0.7913925577019596,
+              "80-100": 0.7913925577019596
+            },
+            "second_parent_half": 0.7642246640988345,
+            "seed": 721317,
+            "unique_native_steps": 3200000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.7646168569868572,
+            "maximum_energy_error_kbt_per_bead": 0.06567838948236761,
+            "mean_denominator": 2.006425771463515,
+            "minimum_pair_at_1fs_bohr": 0.6236656768797236,
+            "plateaus": {
+              "180-200": 0.7531743564420685,
+              "80-100": 0.7531743564420685
+            },
+            "second_parent_half": 0.7405755479442994,
+            "seed": 721321,
+            "unique_native_steps": 3200000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.7240332002661584,
+            "maximum_energy_error_kbt_per_bead": 0.07220569274073672,
+            "mean_denominator": 1.932062669239062,
+            "minimum_pair_at_1fs_bohr": 0.6627779489772315,
+            "plateaus": {
+              "180-200": 0.7388899461421216,
+              "80-100": 0.7388899461421216
+            },
+            "second_parent_half": 0.7524562259451488,
+            "seed": 721323,
+            "unique_native_steps": 3200000
+          }
+        ],
+        "0.1": [
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.7358534325163614,
+            "maximum_energy_error_kbt_per_bead": 0.24549476492771166,
+            "mean_denominator": 1.9102001695243118,
+            "minimum_pair_at_1fs_bohr": 0.6690205810920099,
+            "plateaus": {
+              "180-200": 0.7377742108578154,
+              "80-100": 0.7377742108578154
+            },
+            "second_parent_half": 0.7395646425035058,
+            "seed": 721301,
+            "unique_native_steps": 1600000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.746215494611068,
+            "maximum_energy_error_kbt_per_bead": 0.24733937606716136,
+            "mean_denominator": 2.022963125906472,
+            "minimum_pair_at_1fs_bohr": 0.6688338333991027,
+            "plateaus": {
+              "180-200": 0.7734429755575943,
+              "80-100": 0.7734429755575943
+            },
+            "second_parent_half": 0.8008667708476997,
+            "seed": 721303,
+            "unique_native_steps": 1600000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.8246992804990002,
+            "maximum_energy_error_kbt_per_bead": 0.21986625347848684,
+            "mean_denominator": 2.0147859503467918,
+            "minimum_pair_at_1fs_bohr": 0.677302775928911,
+            "plateaus": {
+              "180-200": 0.8271971438350512,
+              "80-100": 0.8271971438350512
+            },
+            "second_parent_half": 0.8298344183487287,
+            "seed": 721307,
+            "unique_native_steps": 1600000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.7303116368044298,
+            "maximum_energy_error_kbt_per_bead": 0.23716618431339456,
+            "mean_denominator": 2.088510693660506,
+            "minimum_pair_at_1fs_bohr": 0.6617734267377547,
+            "plateaus": {
+              "180-200": 0.7707500351755383,
+              "80-100": 0.7707500351755383
+            },
+            "second_parent_half": 0.8081686933930357,
+            "seed": 721309,
+            "unique_native_steps": 1600000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.7407482633265202,
+            "maximum_energy_error_kbt_per_bead": 0.27119108202572395,
+            "mean_denominator": 2.13411990789303,
+            "minimum_pair_at_1fs_bohr": 0.6805041576801488,
+            "plateaus": {
+              "180-200": 0.793162212521352,
+              "80-100": 0.793162212521352
+            },
+            "second_parent_half": 0.8434498634121155,
+            "seed": 721313,
+            "unique_native_steps": 1600000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.8197821706151378,
+            "maximum_energy_error_kbt_per_bead": 0.2687314614500631,
+            "mean_denominator": 1.9881366174767257,
+            "minimum_pair_at_1fs_bohr": 0.6047915240302502,
+            "plateaus": {
+              "180-200": 0.7913925577019596,
+              "80-100": 0.7913925577019596
+            },
+            "second_parent_half": 0.7642246640988345,
+            "seed": 721317,
+            "unique_native_steps": 1600000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.7645973602018846,
+            "maximum_energy_error_kbt_per_bead": 0.2655792948064851,
+            "mean_denominator": 2.006425771463515,
+            "minimum_pair_at_1fs_bohr": 0.6965464922652779,
+            "plateaus": {
+              "180-200": 0.7584327978831419,
+              "80-100": 0.7584327978831419
+            },
+            "second_parent_half": 0.7516452832291199,
+            "seed": 721321,
+            "unique_native_steps": 1600000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.7240332002661584,
+            "maximum_energy_error_kbt_per_bead": 0.22233869204693377,
+            "mean_denominator": 1.932062669239062,
+            "minimum_pair_at_1fs_bohr": 0.6570221053888299,
+            "plateaus": {
+              "180-200": 0.7389533455609693,
+              "80-100": 0.7389533455609693
+            },
+            "second_parent_half": 0.7525775178703784,
+            "seed": 721323,
+            "unique_native_steps": 1600000
+          }
+        ]
+      },
+      "rate_CI95_cm3_molecule_s": [
+        1.9114198197410773e-16,
+        2.0344183877557662e-16
+      ],
+      "rate_cm3_molecule_s": 1.9719603515289195e-16,
+      "relative_kappa_95_halfwidth": 0.032721999465083015,
+      "same_chain_covariance_of_mean": [
+        [
+          3.5473881390327535e-05,
+          -2.524883064769346e-05
+        ],
+        [
+          -2.524883064769346e-05,
+          0.00018891543129778243
+        ]
+      ],
+      "supplementary_parent_half_equivalence_passed": false
+    },
+    "4": {
+      "criteria": {
+        "complete_registered_cohort": true,
+        "full_rate_95_log_halfwidth_at_most_5_percent": true,
+        "kappa_statistical_precision": true,
+        "no_sampled_static_domain_crossings": true,
+        "paper_full_rate_point_within_reported_5_percent": true,
+        "paper_kappa_point_within_reported_5_percent": true,
+        "paper_qtst_point_within_reported_5_percent": true,
+        "parent_sampling_flags": true,
+        "primary_maximum_energy_error_at_most_01_kbt_per_bead": true,
+        "time_plateau_equivalence": true,
+        "timestep_equivalence": true
+      },
+      "denominator_diagnostic": {
+        "CI95": [
+          1.9846943992834052,
+          2.0474350313244245
+        ],
+        "degrees_of_freedom": 7,
+        "halfwidth95": 0.03137031602050955,
+        "mean": 2.016064715303915,
+        "standard_error": 0.013266512004763066
+      },
+      "fixed_P_primary_gates_passed": true,
+      "kappa": {
+        "CI95": [
+          0.7533393625865996,
+          0.7890810833807669
+        ],
+        "degrees_of_freedom": 7,
+        "halfwidth95": 0.01787086039708365,
+        "mean": 0.7712102229836832,
+        "standard_error": 0.00755758991520367
+      },
+      "log_qtst": {
+        "CI95": [
+          -35.91837664255445,
+          -35.89020926015037
+        ],
+        "degrees_of_freedom": 7,
+        "halfwidth95": 0.014083691202040836,
+        "mean": -35.90429295135241,
+        "standard_error": 0.005955995415573625
+      },
+      "log_rate": {
+        "CI95": [
+          -36.18232004878494,
+          -36.14651330533521
+        ],
+        "degrees_of_freedom": 7,
+        "halfwidth95": 0.017903371724865915,
+        "mean": -36.164416677060075,
+        "standard_error": 0.0075713389612774235
+      },
+      "pair_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "paired_time": {
+        "CI95": [
+          0.0,
+          0.0
+        ],
+        "degrees_of_freedom": 7,
+        "halfwidth95": 0.0,
+        "mean": 0.0,
+        "standard_error": 0.0
+      },
+      "paired_timestep": {
+        "CI95": [
+          -0.0011343367453628625,
+          0.0012529521507299243
+        ],
+        "degrees_of_freedom": 7,
+        "halfwidth95": 0.0011936444480463934,
+        "mean": 5.9307702683530916e-05,
+        "standard_error": 0.0005047924410156785
+      },
+      "parent_time_halves": {
+        "CI95": [
+          -0.023100734412439386,
+          0.03625536216744012
+        ],
+        "degrees_of_freedom": 7,
+        "halfwidth95": 0.02967804828993975,
+        "mean": 0.006577313877500365,
+        "standard_error": 0.012550851692377322
+      },
+      "per_timestep_per_seed": {
+        "0.05": [
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.7582339456194956,
+            "maximum_energy_error_kbt_per_bead": 0.07621793658293326,
+            "mean_denominator": 1.9558789770042413,
+            "minimum_pair_at_1fs_bohr": 0.6409511943285,
+            "plateaus": {
+              "180-200": 0.7483915412272081,
+              "80-100": 0.7483915412272081
+            },
+            "second_parent_half": 0.7389255009254508,
+            "seed": 721301,
+            "unique_native_steps": 6400000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.7575181916558013,
+            "maximum_energy_error_kbt_per_bead": 0.07593879574549506,
+            "mean_denominator": 2.015527168093594,
+            "minimum_pair_at_1fs_bohr": 0.6218642168863171,
+            "plateaus": {
+              "180-200": 0.7695681446412598,
+              "80-100": 0.7695681446412598
+            },
+            "second_parent_half": 0.7819158951187701,
+            "seed": 721303,
+            "unique_native_steps": 6400000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.8124854201138302,
+            "maximum_energy_error_kbt_per_bead": 0.0628496407655914,
+            "mean_denominator": 2.041759254645349,
+            "minimum_pair_at_1fs_bohr": 0.6481904405716192,
+            "plateaus": {
+              "180-200": 0.8177231519412305,
+              "80-100": 0.8177231519412305
+            },
+            "second_parent_half": 0.8228728330508892,
+            "seed": 721307,
+            "unique_native_steps": 6400000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.7545208807748599,
+            "maximum_energy_error_kbt_per_bead": 0.062358943603361756,
+            "mean_denominator": 2.063812390652962,
+            "minimum_pair_at_1fs_bohr": 0.5846666798860458,
+            "plateaus": {
+              "180-200": 0.7707124568901931,
+              "80-100": 0.7707124568901931
+            },
+            "second_parent_half": 0.7858212885995538,
+            "seed": 721309,
+            "unique_native_steps": 6400000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.7393181259172475,
+            "maximum_energy_error_kbt_per_bead": 0.06504456176074738,
+            "mean_denominator": 2.0342849794441222,
+            "minimum_pair_at_1fs_bohr": 0.6321465822699779,
+            "plateaus": {
+              "180-200": 0.7736438089603016,
+              "80-100": 0.7736438089603016
+            },
+            "second_parent_half": 0.8068209723660148,
+            "seed": 721313,
+            "unique_native_steps": 6400000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.7879585981547244,
+            "maximum_energy_error_kbt_per_bead": 0.07424462464478387,
+            "mean_denominator": 1.9709411924127869,
+            "minimum_pair_at_1fs_bohr": 0.5588503650172778,
+            "plateaus": {
+              "180-200": 0.7664737213957771,
+              "80-100": 0.7664737213957771
+            },
+            "second_parent_half": 0.7453520833758236,
+            "seed": 721317,
+            "unique_native_steps": 6400000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.7622296929733762,
+            "maximum_energy_error_kbt_per_bead": 0.07126746189585377,
+            "mean_denominator": 2.002851102189131,
+            "minimum_pair_at_1fs_bohr": 0.6236656768797236,
+            "plateaus": {
+              "180-200": 0.7493819058711679,
+              "80-100": 0.7493819058711679
+            },
+            "second_parent_half": 0.7359951515271981,
+            "seed": 721321,
+            "unique_native_steps": 6400000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.7702792927265568,
+            "maximum_energy_error_kbt_per_bead": 0.07220569274073672,
+            "mean_denominator": 2.0434626579891306,
+            "minimum_pair_at_1fs_bohr": 0.6627779489772315,
+            "plateaus": {
+              "180-200": 0.7737870529423277,
+              "80-100": 0.7737870529423277
+            },
+            "second_parent_half": 0.7774589339921943,
+            "seed": 721323,
+            "unique_native_steps": 6400000
+          }
+        ],
+        "0.1": [
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.7582339456194956,
+            "maximum_energy_error_kbt_per_bead": 0.24549476492771166,
+            "mean_denominator": 1.9558789770042413,
+            "minimum_pair_at_1fs_bohr": 0.6690205810920099,
+            "plateaus": {
+              "180-200": 0.7484426480423728,
+              "80-100": 0.7484426480423728
+            },
+            "second_parent_half": 0.7390257602802561,
+            "seed": 721301,
+            "unique_native_steps": 3200000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.7541018418073675,
+            "maximum_energy_error_kbt_per_bead": 0.24733937606716136,
+            "mean_denominator": 2.015527168093594,
+            "minimum_pair_at_1fs_bohr": 0.6568587460954477,
+            "plateaus": {
+              "180-200": 0.7691409266302803,
+              "80-100": 0.7691409266302803
+            },
+            "second_parent_half": 0.784551681097749,
+            "seed": 721303,
+            "unique_native_steps": 3200000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.8124854201138302,
+            "maximum_energy_error_kbt_per_bead": 0.21986625347848684,
+            "mean_denominator": 2.041759254645349,
+            "minimum_pair_at_1fs_bohr": 0.6706386851308744,
+            "plateaus": {
+              "180-200": 0.8177231519412305,
+              "80-100": 0.8177231519412305
+            },
+            "second_parent_half": 0.8228728330508892,
+            "seed": 721307,
+            "unique_native_steps": 3200000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.7545208807748599,
+            "maximum_energy_error_kbt_per_bead": 0.23716618431339456,
+            "mean_denominator": 2.063812390652962,
+            "minimum_pair_at_1fs_bohr": 0.6381088500195689,
+            "plateaus": {
+              "180-200": 0.7703596778816749,
+              "80-100": 0.7703596778816749
+            },
+            "second_parent_half": 0.7851393212135525,
+            "seed": 721309,
+            "unique_native_steps": 3200000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.7393181259172475,
+            "maximum_energy_error_kbt_per_bead": 0.27119108202572395,
+            "mean_denominator": 2.0342849794441222,
+            "minimum_pair_at_1fs_bohr": 0.6801521969932611,
+            "plateaus": {
+              "180-200": 0.7747014879442856,
+              "80-100": 0.7747014879442856
+            },
+            "second_parent_half": 0.8089009409411011,
+            "seed": 721313,
+            "unique_native_steps": 3200000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.786654601385623,
+            "maximum_energy_error_kbt_per_bead": 0.2687314614500631,
+            "mean_denominator": 1.9709411924127869,
+            "minimum_pair_at_1fs_bohr": 0.6047915240302502,
+            "plateaus": {
+              "180-200": 0.7659707983401592,
+              "80-100": 0.7659707983401592
+            },
+            "second_parent_half": 0.745636690506826,
+            "seed": 721317,
+            "unique_native_steps": 3200000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.7622196635263883,
+            "maximum_energy_error_kbt_per_bead": 0.2655792948064851,
+            "mean_denominator": 2.002851102189131,
+            "minimum_pair_at_1fs_bohr": 0.6386709851519171,
+            "plateaus": {
+              "180-200": 0.7521968129008852,
+              "80-100": 0.7521968129008852
+            },
+            "second_parent_half": 0.7417535016845228,
+            "seed": 721321,
+            "unique_native_steps": 3200000
+          },
+          {
+            "children_with_sampled_domain_crossing": 0,
+            "first_parent_half": 0.7687194792439934,
+            "maximum_energy_error_kbt_per_bead": 0.24204875087168837,
+            "mean_denominator": 2.0434626579891306,
+            "minimum_pair_at_1fs_bohr": 0.6075459201268326,
+            "plateaus": {
+              "180-200": 0.7716207418100454,
+              "80-100": 0.7716207418100454
+            },
+            "second_parent_half": 0.7746577484415357,
+            "seed": 721323,
+            "unique_native_steps": 3200000
+          }
+        ]
+      },
+      "rate_CI95_cm3_molecule_s": [
+        1.9329386067562914e-16,
+        2.003404899068246e-16
+      ],
+      "rate_cm3_molecule_s": 1.9678563652801757e-16,
+      "relative_kappa_95_halfwidth": 0.02317248898483773,
+      "same_chain_covariance_of_mean": [
+        [
+          3.5473881390327535e-05,
+          -3.5674182299346365e-05
+        ],
+        [
+          -3.5674182299346365e-05,
+          9.31996568749299e-05
+        ]
+      ],
+      "supplementary_parent_half_equivalence_passed": false
+    }
+  },
+  "timesteps_fs": [
+    0.1,
+    0.05
+  ],
+  "unique_parent_momentum_pairs": 6400
+}

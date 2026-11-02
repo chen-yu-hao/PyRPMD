@@ -1,0 +1,1168 @@
+﻿2026-11-01T22:51:01.7667021Z Current runner version: '2.338.2'
+2026-11-01T22:51:01.7687767Z ##[group]Runner Image Provisioner
+2026-11-01T22:51:01.7688554Z Hosted Compute Agent
+2026-11-01T22:51:01.7688984Z Version: 20261021.618
+2026-11-01T22:51:01.7689391Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-11-01T22:51:01.7689798Z Build Date: 2026-10-21T00:45:21Z
+2026-11-01T22:51:01.7690241Z Worker ID: {68a684fc-7c10-4f76-aabd-5c81fd6658b4}
+2026-11-01T22:51:01.7690654Z Region: westus3
+2026-11-01T22:51:01.7691002Z Cloud: Azure
+2026-11-01T22:51:01.7691389Z ##[endgroup]
+2026-11-01T22:51:01.7692211Z ##[group]Operating System
+2026-11-01T22:51:01.7692614Z Ubuntu
+2026-11-01T22:51:01.7692922Z 26.04.1
+2026-11-01T22:51:01.7693253Z LTS
+2026-11-01T22:51:01.7693603Z ##[endgroup]
+2026-11-01T22:51:01.7693929Z ##[group]Runner Image
+2026-11-01T22:51:01.7694303Z Image: ubuntu-26.04
+2026-11-01T22:51:01.7694635Z Version: 20261025.179.1
+2026-11-01T22:51:01.7695493Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261025.179/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-01T22:51:01.7696366Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261025.179
+2026-11-01T22:51:01.7696958Z ##[endgroup]
+2026-11-01T22:51:01.7697626Z ##[group]GITHUB_TOKEN Permissions
+2026-11-01T22:51:01.7699081Z Contents: read
+2026-11-01T22:51:01.7699421Z Metadata: read
+2026-11-01T22:51:01.7699745Z ##[endgroup]
+2026-11-01T22:51:01.7701557Z Secret source: Actions
+2026-11-01T22:51:01.7702081Z Cache mode: write
+2026-11-01T22:51:01.7702600Z Prepare workflow directory
+2026-11-01T22:51:01.7954744Z Prepare all required actions
+2026-11-01T22:51:01.7988757Z Getting action download info
+2026-11-01T22:51:02.0670607Z Download action repository 'actions/checkout@v6' (SHA:d23441a48e516b6c34aea4fa41551a30e30af803)
+2026-11-01T22:51:02.2109194Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-11-01T22:51:02.3938802Z Complete job name: cpu (3.14)
+2026-11-01T22:51:02.4576265Z ##[group]Run actions/checkout@v6
+2026-11-01T22:51:02.4576716Z with:
+2026-11-01T22:51:02.4576958Z   repository: chen-yu-hao/PyRPMD
+2026-11-01T22:51:02.4579326Z   token: ***
+2026-11-01T22:51:02.4579566Z   ssh-strict: true
+2026-11-01T22:51:02.4579805Z   ssh-user: git
+2026-11-01T22:51:02.4580054Z   persist-credentials: true
+2026-11-01T22:51:02.4580319Z   clean: true
+2026-11-01T22:51:02.4580567Z   sparse-checkout-cone-mode: true
+2026-11-01T22:51:02.4580854Z   fetch-depth: 1
+2026-11-01T22:51:02.4581091Z   fetch-tags: false
+2026-11-01T22:51:02.4581340Z   show-progress: true
+2026-11-01T22:51:02.4581586Z   lfs: false
+2026-11-01T22:51:02.4581822Z   submodules: false
+2026-11-01T22:51:02.4582072Z   set-safe-directory: true
+2026-11-01T22:51:02.4582351Z   allow-unsafe-pr-checkout: false
+2026-11-01T22:51:02.4582708Z env:
+2026-11-01T22:51:02.4582932Z   OMP_NUM_THREADS: 1
+2026-11-01T22:51:02.4583185Z   OPENBLAS_NUM_THREADS: 1
+2026-11-01T22:51:02.4583441Z ##[endgroup]
+2026-11-01T22:51:02.7047179Z Syncing repository: chen-yu-hao/PyRPMD
+2026-11-01T22:51:02.7048676Z ##[group]Getting Git version info
+2026-11-01T22:51:02.7049063Z Working directory is '/home/runner/work/PyRPMD/PyRPMD'
+2026-11-01T22:51:02.7049588Z [command]/usr/bin/git version
+2026-11-01T22:51:02.7074817Z git version 2.56.0
+2026-11-01T22:51:02.7088503Z ##[endgroup]
+2026-11-01T22:51:02.7098820Z Temporarily overriding HOME='/home/runner/work/_temp/e81419ac-360d-480d-87f8-2ee1579bb008' before making global git config changes
+2026-11-01T22:51:02.7099856Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-01T22:51:02.7102394Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/PyRPMD/PyRPMD
+2026-11-01T22:51:02.7173190Z Deleting the contents of '/home/runner/work/PyRPMD/PyRPMD'
+2026-11-01T22:51:02.7176697Z ##[group]Determining repository object format
+2026-11-01T22:51:02.7177906Z ##[endgroup]
+2026-11-01T22:51:02.7178638Z ##[group]Initializing the repository
+2026-11-01T22:51:02.7180895Z [command]/usr/bin/git init /home/runner/work/PyRPMD/PyRPMD
+2026-11-01T22:51:02.7287556Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-01T22:51:02.7289080Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-01T22:51:02.7289591Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-01T22:51:02.7289989Z hint: call:
+2026-11-01T22:51:02.7290208Z hint:
+2026-11-01T22:51:02.7290513Z hint: 	git config --global init.defaultBranch <name>
+2026-11-01T22:51:02.7290847Z hint:
+2026-11-01T22:51:02.7291167Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-01T22:51:02.7291673Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-01T22:51:02.7292070Z hint:
+2026-11-01T22:51:02.7292300Z hint: 	git branch -m <name>
+2026-11-01T22:51:02.7292559Z hint:
+2026-11-01T22:51:02.7292902Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-01T22:51:02.7301302Z Initialized empty Git repository in /home/runner/work/PyRPMD/PyRPMD/.git/
+2026-11-01T22:51:02.7311730Z [command]/usr/bin/git remote add origin https://github.com/chen-yu-hao/PyRPMD
+2026-11-01T22:51:02.7361939Z ##[endgroup]
+2026-11-01T22:51:02.7362774Z ##[group]Disabling automatic garbage collection
+2026-11-01T22:51:02.7365237Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-01T22:51:02.7461613Z ##[endgroup]
+2026-11-01T22:51:02.7464615Z ##[group]Setting up auth
+2026-11-01T22:51:02.7465183Z Removing SSH command configuration
+2026-11-01T22:51:02.7465855Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-01T22:51:02.7494422Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-01T22:51:02.7905216Z Removing HTTP extra header
+2026-11-01T22:51:02.7911111Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-01T22:51:02.7942556Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-01T22:51:02.8167262Z Removing includeIf entries pointing to credentials config files
+2026-11-01T22:51:02.8173329Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-01T22:51:02.8205313Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-01T22:51:02.8461659Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-7cc856ed-95a8-457c-a0e0-dee1e5992d7e.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-01T22:51:02.8502608Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/PyRPMD/PyRPMD/.git.path /home/runner/work/_temp/git-credentials-7cc856ed-95a8-457c-a0e0-dee1e5992d7e.config
+2026-11-01T22:51:02.8542488Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/PyRPMD/PyRPMD/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-7cc856ed-95a8-457c-a0e0-dee1e5992d7e.config
+2026-11-01T22:51:02.8583031Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-7cc856ed-95a8-457c-a0e0-dee1e5992d7e.config
+2026-11-01T22:51:02.8626462Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-7cc856ed-95a8-457c-a0e0-dee1e5992d7e.config
+2026-11-01T22:51:02.8654511Z ##[endgroup]
+2026-11-01T22:51:02.8654957Z ##[group]Fetching the repository
+2026-11-01T22:51:02.8661240Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +c3eb34e5302910b90d02b568518c6faa5a57b0e1:refs/remotes/pull/68/merge
+2026-11-01T22:51:07.3829880Z From https://github.com/chen-yu-hao/PyRPMD
+2026-11-01T22:51:07.3831361Z  * [new ref]         c3eb34e5302910b90d02b568518c6faa5a57b0e1 -> pull/68/merge
+2026-11-01T22:51:07.3833714Z ##[endgroup]
+2026-11-01T22:51:07.3834397Z ##[group]Determining the checkout info
+2026-11-01T22:51:07.3835199Z ##[endgroup]
+2026-11-01T22:51:07.3839215Z [command]/usr/bin/git sparse-checkout disable
+2026-11-01T22:51:07.3884724Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-01T22:51:07.3951249Z ##[group]Checking out the ref
+2026-11-01T22:51:07.3951878Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/68/merge
+2026-11-01T22:51:07.8484685Z Note: switching to 'refs/remotes/pull/68/merge'.
+2026-11-01T22:51:07.8485406Z 
+2026-11-01T22:51:07.8485849Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-01T22:51:07.8486879Z changes and commit them, and you can discard any commits you make in this
+2026-11-01T22:51:07.8488186Z state without impacting any branches by switching back to a branch.
+2026-11-01T22:51:07.8488860Z 
+2026-11-01T22:51:07.8489291Z If you want to create a new branch to retain commits you create, you may
+2026-11-01T22:51:07.8490257Z do so (now or later) by using -c with the switch command. Example:
+2026-11-01T22:51:07.8490809Z 
+2026-11-01T22:51:07.8491046Z   git switch -c <new-branch-name>
+2026-11-01T22:51:07.8491417Z 
+2026-11-01T22:51:07.8491658Z Or undo this operation with:
+2026-11-01T22:51:07.8492025Z 
+2026-11-01T22:51:07.8492271Z   git switch -
+2026-11-01T22:51:07.8492555Z 
+2026-11-01T22:51:07.8493017Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-01T22:51:07.8493682Z 
+2026-11-01T22:51:07.8494424Z HEAD is now at c3eb34e Merge bbb950528db2f43f59cb24acea5097568cd393a3 into 4698c1202d0726bce7d63742e7cd31a6f137a847
+2026-11-01T22:51:07.8528584Z ##[endgroup]
+2026-11-01T22:51:07.8570456Z [command]/usr/bin/git log -1 --format=%H
+2026-11-01T22:51:07.8593307Z c3eb34e5302910b90d02b568518c6faa5a57b0e1
+2026-11-01T22:51:07.8862001Z ##[group]Run actions/setup-python@v5
+2026-11-01T22:51:07.8862725Z with:
+2026-11-01T22:51:07.8863214Z   python-version: 3.14
+2026-11-01T22:51:07.8863742Z   check-latest: false
+2026-11-01T22:51:07.8868828Z   token: ***
+2026-11-01T22:51:07.8869330Z   update-environment: true
+2026-11-01T22:51:07.8869899Z   allow-prereleases: false
+2026-11-01T22:51:07.8870476Z   freethreaded: false
+2026-11-01T22:51:07.8870976Z env:
+2026-11-01T22:51:07.8871417Z   OMP_NUM_THREADS: 1
+2026-11-01T22:51:07.8871934Z   OPENBLAS_NUM_THREADS: 1
+2026-11-01T22:51:07.8872474Z ##[endgroup]
+2026-11-01T22:51:07.9813840Z ##[group]Installed versions
+2026-11-01T22:51:07.9890625Z (node:2153) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-01T22:51:07.9892312Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-01T22:51:07.9893597Z Successfully set up CPython (3.14.9)
+2026-11-01T22:51:07.9894990Z ##[endgroup]
+2026-11-01T22:51:08.0064351Z ##[group]Run sudo apt-get update && sudo apt-get install -y libopenmpi-dev openmpi-bin
+2026-11-01T22:51:08.0066421Z [36;1msudo apt-get update && sudo apt-get install -y libopenmpi-dev openmpi-bin[0m
+2026-11-01T22:51:08.0230524Z shell: /usr/bin/bash -e {0}
+2026-11-01T22:51:08.0231172Z env:
+2026-11-01T22:51:08.0231659Z   OMP_NUM_THREADS: 1
+2026-11-01T22:51:08.0232209Z   OPENBLAS_NUM_THREADS: 1
+2026-11-01T22:51:08.0232902Z   pythonLocation: /opt/hostedtoolcache/Python/3.14.9/x64
+2026-11-01T22:51:08.0233868Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.14.9/x64/lib/pkgconfig
+2026-11-01T22:51:08.0235174Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.9/x64
+2026-11-01T22:51:08.0236052Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.9/x64
+2026-11-01T22:51:08.0236975Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.9/x64
+2026-11-01T22:51:08.0237866Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.14.9/x64/lib
+2026-11-01T22:51:08.0238810Z ##[endgroup]
+2026-11-01T22:51:08.1195266Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-11-01T22:51:08.1474193Z Get:6 https://packages.microsoft.com/ubuntu/26.04/prod resolute InRelease [3964 B]
+2026-11-01T22:51:08.1593396Z Hit:2 http://azure.archive.ubuntu.com/ubuntu resolute InRelease
+2026-11-01T22:51:08.1696408Z Get:3 http://azure.archive.ubuntu.com/ubuntu resolute-updates InRelease [137 kB]
+2026-11-01T22:51:08.2235265Z Get:4 http://azure.archive.ubuntu.com/ubuntu resolute-backports InRelease [137 kB]
+2026-11-01T22:51:08.2377933Z Get:13 https://packages.microsoft.com/ubuntu/26.04/prod resolute/main amd64 Packages [131 kB]
+2026-11-01T22:51:08.3307676Z Get:5 http://azure.archive.ubuntu.com/ubuntu resolute-security InRelease [137 kB]
+2026-11-01T22:51:08.3435244Z Get:14 https://packages.microsoft.com/ubuntu/26.04/prod resolute/main arm64 Packages [120 kB]
+2026-11-01T22:51:08.3736709Z Get:7 http://azure.archive.ubuntu.com/ubuntu resolute-updates/main amd64v3 Packages [804 kB]
+2026-11-01T22:51:08.4294289Z Get:8 http://azure.archive.ubuntu.com/ubuntu resolute-updates/main Translation-en [184 kB]
+2026-11-01T22:51:08.4311483Z Get:9 http://azure.archive.ubuntu.com/ubuntu resolute-updates/universe amd64v3 Packages [375 kB]
+2026-11-01T22:51:08.4801240Z Get:10 http://azure.archive.ubuntu.com/ubuntu resolute-updates/universe Translation-en [118 kB]
+2026-11-01T22:51:08.4824830Z Get:11 http://azure.archive.ubuntu.com/ubuntu resolute-updates/restricted amd64v3 Packages [543 kB]
+2026-11-01T22:51:08.5798452Z Get:12 http://azure.archive.ubuntu.com/ubuntu resolute-updates/restricted Translation-en [112 kB]
+2026-11-01T22:51:08.5814441Z Get:15 http://azure.archive.ubuntu.com/ubuntu resolute-security/main amd64v3 Packages [608 kB]
+2026-11-01T22:51:08.6800849Z Get:16 http://azure.archive.ubuntu.com/ubuntu resolute-security/main Translation-en [141 kB]
+2026-11-01T22:51:08.6810121Z Get:17 http://azure.archive.ubuntu.com/ubuntu resolute-security/universe amd64v3 Packages [206 kB]
+2026-11-01T22:51:08.7749982Z Get:18 http://azure.archive.ubuntu.com/ubuntu resolute-security/universe Translation-en [67.9 kB]
+2026-11-01T22:51:11.0772667Z Fetched 3824 kB in 1s (5621 kB/s)
+2026-11-01T22:51:11.5575402Z Reading package lists...
+2026-11-01T22:51:11.5857153Z Reading package lists...
+2026-11-01T22:51:11.7420678Z Building dependency tree...
+2026-11-01T22:51:11.7426247Z Reading state information...
+2026-11-01T22:51:11.8643268Z Solving dependencies...
+2026-11-01T22:51:11.9495559Z The following additional packages will be installed:
+2026-11-01T22:51:11.9499185Z   libamd-comgr3 libamdhip64-7 libcaf-openmpi-3t64 libcoarrays-dev
+2026-11-01T22:51:11.9499585Z   libcoarrays-openmpi-dev libevent-2.1-7t64 libevent-dev
+2026-11-01T22:51:11.9508731Z   libevent-extra-2.1-7t64 libevent-openssl-2.1-7t64 libevent-pthreads-2.1-7t64
+2026-11-01T22:51:11.9509348Z   libfabric1 libhsa-runtime64-1 libhsakmt1 libhwloc-dev libhwloc-plugins
+2026-11-01T22:51:11.9509800Z   libhwloc15 libibmad5 libibumad3 libibverbs-dev libjs-jquery-ui libltdl-dev
+2026-11-01T22:51:11.9511209Z   libmunge2 libnl-3-dev libnl-route-3-dev libnuma-dev libopenmpi40 libpmix-dev
+2026-11-01T22:51:11.9511702Z   libpmix2t64 libprrte-bin libprrte-dev libprrte3 libpsm2-2 librdmacm1t64
+2026-11-01T22:51:11.9512155Z   libucc1 libucx0 libxnvctrl0 libze1 ocl-icd-libopencl1 openmpi-common
+2026-11-01T22:51:11.9512941Z Suggested packages:
+2026-11-01T22:51:11.9513255Z   libhwloc-contrib-plugins libjs-jquery-ui-docs libtool-doc openmpi-doc
+2026-11-01T22:51:11.9513609Z   opencl-icd
+2026-11-01T22:51:11.9779219Z The following NEW packages will be installed:
+2026-11-01T22:51:11.9779688Z   libamd-comgr3 libamdhip64-7 libcaf-openmpi-3t64 libcoarrays-dev
+2026-11-01T22:51:11.9780094Z   libcoarrays-openmpi-dev libevent-2.1-7t64 libevent-dev
+2026-11-01T22:51:11.9780600Z   libevent-extra-2.1-7t64 libevent-openssl-2.1-7t64 libevent-pthreads-2.1-7t64
+2026-11-01T22:51:11.9780944Z   libfabric1 libhsa-runtime64-1 libhsakmt1 libhwloc-dev libhwloc-plugins
+2026-11-01T22:51:11.9781363Z   libhwloc15 libibmad5 libibumad3 libibverbs-dev libjs-jquery-ui libltdl-dev
+2026-11-01T22:51:11.9781895Z   libmunge2 libnl-3-dev libnl-route-3-dev libnuma-dev libopenmpi-dev
+2026-11-01T22:51:11.9782663Z   libopenmpi40 libpmix-dev libpmix2t64 libprrte-bin libprrte-dev libprrte3
+2026-11-01T22:51:11.9785122Z   libpsm2-2 librdmacm1t64 libucc1 libucx0 libxnvctrl0 libze1
+2026-11-01T22:51:11.9786970Z   ocl-icd-libopencl1 openmpi-bin openmpi-common
+2026-11-01T22:51:11.9980607Z 0 upgraded, 41 newly installed, 0 to remove and 16 not upgraded.
+2026-11-01T22:51:11.9981011Z Need to get 46.1 MB of archives.
+2026-11-01T22:51:11.9981296Z After this operation, 161 MB of additional disk space will be used.
+2026-11-01T22:51:11.9981552Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-11-01T22:51:12.0789317Z Get:2 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libamd-comgr3 amd64 7.1.1+dfsg-0ubuntu1 [15.3 MB]
+2026-11-01T22:51:12.5073080Z Get:3 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libhsakmt1 amd64 7.1.0+dfsg-0ubuntu9 [78.3 kB]
+2026-11-01T22:51:12.5536197Z Get:4 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libhsa-runtime64-1 amd64 7.1.0+dfsg-0ubuntu9 [604 kB]
+2026-11-01T22:51:12.6040158Z Get:5 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libamdhip64-7 amd64 7.1.0-0ubuntu2 [11.1 MB]
+2026-11-01T22:51:12.9349498Z Get:6 http://azure.archive.ubuntu.com/ubuntu resolute-updates/main amd64v3 libevent-pthreads-2.1-7t64 amd64 2.1.12-stable-10ubuntu0.2 [8188 B]
+2026-11-01T22:51:12.9811069Z Get:7 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libpsm2-2 amd64 11.2.185-2.1build1 [195 kB]
+2026-11-01T22:51:13.0279559Z Get:8 http://azure.archive.ubuntu.com/ubuntu resolute/main amd64v3 librdmacm1t64 amd64 61.0-2ubuntu3 [75.5 kB]
+2026-11-01T22:51:13.0742405Z Get:9 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libfabric1 amd64 2.1.0-1.1build1 [710 kB]
+2026-11-01T22:51:13.1261954Z Get:10 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libhwloc15 amd64 2.13.0-2 [176 kB]
+2026-11-01T22:51:13.1729752Z Get:11 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libmunge2 amd64 0.5.16-1.1 [15.3 kB]
+2026-11-01T22:51:13.2189949Z Get:12 http://azure.archive.ubuntu.com/ubuntu resolute/main amd64v3 libxnvctrl0 amd64 510.47.03-0ubuntu7 [13.3 kB]
+2026-11-01T22:51:13.2652085Z Get:13 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libze1 amd64 1.28.2-2 [891 kB]
+2026-11-01T22:51:13.3181901Z Get:14 http://azure.archive.ubuntu.com/ubuntu resolute/main amd64v3 ocl-icd-libopencl1 amd64 2.3.4-1 [41.0 kB]
+2026-11-01T22:51:13.3650177Z Get:15 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libhwloc-plugins amd64 2.13.0-2 [21.8 kB]
+2026-11-01T22:51:13.4111788Z Get:16 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libpmix2t64 amd64 6.0.0+really5.0.9-3build1 [729 kB]
+2026-11-01T22:51:13.4627609Z Get:17 http://azure.archive.ubuntu.com/ubuntu resolute/main amd64v3 libibumad3 amd64 61.0-2ubuntu3 [31.9 kB]
+2026-11-01T22:51:13.5088600Z Get:18 http://azure.archive.ubuntu.com/ubuntu resolute/main amd64v3 libibmad5 amd64 61.0-2ubuntu3 [44.3 kB]
+2026-11-01T22:51:13.5552394Z Get:19 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libucx0 amd64 1.20.0+ds-4ubuntu2 [958 kB]
+2026-11-01T22:51:13.6103180Z Get:20 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libucc1 amd64 1.7.0~rc1-1 [373 kB]
+2026-11-01T22:51:13.6594738Z Get:21 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libopenmpi40 amd64 5.0.10-1 [2282 kB]
+2026-11-01T22:51:13.7560306Z Get:22 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libcaf-openmpi-3t64 amd64 2.10.3-4 [48.1 kB]
+2026-11-01T22:51:13.8022306Z Get:23 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libcoarrays-dev amd64 2.10.3-4 [37.9 kB]
+2026-11-01T22:51:13.8498976Z Get:24 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 openmpi-common all 5.0.10-1 [29.4 kB]
+2026-11-01T22:51:13.8960946Z Get:25 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libprrte3 amd64 3.0.13-2 [484 kB]
+2026-11-01T22:51:13.9455839Z Get:26 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libprrte-bin amd64 3.0.13-2 [55.3 kB]
+2026-11-01T22:51:13.9918508Z Get:27 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 openmpi-bin amd64 5.0.10-1 [161 kB]
+2026-11-01T22:51:14.0392583Z Get:28 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libcoarrays-openmpi-dev amd64 2.10.3-4 [451 kB]
+2026-11-01T22:51:14.0886314Z Get:29 http://azure.archive.ubuntu.com/ubuntu resolute-updates/main amd64v3 libevent-2.1-7t64 amd64 2.1.12-stable-10ubuntu0.2 [146 kB]
+2026-11-01T22:51:14.1381098Z Get:30 http://azure.archive.ubuntu.com/ubuntu resolute-updates/main amd64v3 libevent-extra-2.1-7t64 amd64 2.1.12-stable-10ubuntu0.2 [64.9 kB]
+2026-11-01T22:51:14.1847324Z Get:31 http://azure.archive.ubuntu.com/ubuntu resolute-updates/main amd64v3 libevent-openssl-2.1-7t64 amd64 2.1.12-stable-10ubuntu0.2 [15.9 kB]
+2026-11-01T22:51:14.2310623Z Get:32 http://azure.archive.ubuntu.com/ubuntu resolute-updates/main amd64v3 libevent-dev amd64 2.1.12-stable-10ubuntu0.2 [276 kB]
+2026-11-01T22:51:14.2786100Z Get:33 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libjs-jquery-ui all 1.13.2+dfsg-1build1 [251 kB]
+2026-11-01T22:51:14.3263098Z Get:34 http://azure.archive.ubuntu.com/ubuntu resolute/main amd64v3 libltdl-dev amd64 2.5.4-9 [173 kB]
+2026-11-01T22:51:14.3732651Z Get:35 http://azure.archive.ubuntu.com/ubuntu resolute/main amd64v3 libnl-3-dev amd64 3.12.0-2 [105 kB]
+2026-11-01T22:51:14.4198415Z Get:36 http://azure.archive.ubuntu.com/ubuntu resolute/main amd64v3 libnl-route-3-dev amd64 3.12.0-2 [237 kB]
+2026-11-01T22:51:14.4671709Z Get:37 http://azure.archive.ubuntu.com/ubuntu resolute/main amd64v3 libnuma-dev amd64 2.0.19-1build1 [37.5 kB]
+2026-11-01T22:51:14.5150594Z Get:38 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libhwloc-dev amd64 2.13.0-2 [276 kB]
+2026-11-01T22:51:14.5636736Z Get:39 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libpmix-dev amd64 6.0.0+really5.0.9-3build1 [4082 kB]
+2026-11-01T22:51:14.7064502Z Get:40 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libprrte-dev amd64 3.0.13-2 [3726 kB]
+2026-11-01T22:51:14.8483701Z Get:41 http://azure.archive.ubuntu.com/ubuntu resolute/main amd64v3 libibverbs-dev amd64 61.0-2ubuntu3 [741 kB]
+2026-11-01T22:51:14.9001111Z Get:42 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libopenmpi-dev amd64 5.0.10-1 [1027 kB]
+2026-11-01T22:51:15.2006910Z Fetched 46.1 MB in 3s (15.8 MB/s)
+2026-11-01T22:51:15.2207384Z Selecting previously unselected package libamd-comgr3:amd64.
+2026-11-01T22:51:15.2485629Z (Reading database ... 
+2026-11-01T22:51:15.2485790Z (Reading database ... 5%
+2026-11-01T22:51:15.2485931Z (Reading database ... 10%
+2026-11-01T22:51:15.2486068Z (Reading database ... 15%
+2026-11-01T22:51:15.2486208Z (Reading database ... 20%
+2026-11-01T22:51:15.2486336Z (Reading database ... 25%
+2026-11-01T22:51:15.2486781Z (Reading database ... 30%
+2026-11-01T22:51:15.2486913Z (Reading database ... 35%
+2026-11-01T22:51:15.2487052Z (Reading database ... 40%
+2026-11-01T22:51:15.2487180Z (Reading database ... 45%
+2026-11-01T22:51:15.2487307Z (Reading database ... 50%
+2026-11-01T22:51:15.3246233Z (Reading database ... 55%
+2026-11-01T22:51:15.4636426Z (Reading database ... 60%
+2026-11-01T22:51:15.6622568Z (Reading database ... 65%
+2026-11-01T22:51:15.8229085Z (Reading database ... 70%
+2026-11-01T22:51:15.9229234Z (Reading database ... 75%
+2026-11-01T22:51:16.1221710Z (Reading database ... 80%
+2026-11-01T22:51:16.3118505Z (Reading database ... 85%
+2026-11-01T22:51:16.4917133Z (Reading database ... 90%
+2026-11-01T22:51:16.6271567Z (Reading database ... 95%
+2026-11-01T22:51:16.6271849Z (Reading database ... 100%
+2026-11-01T22:51:16.6272077Z (Reading database ... 212715 files and directories currently installed.)
+2026-11-01T22:51:16.6310195Z Preparing to unpack .../00-libamd-comgr3_7.1.1+dfsg-0ubuntu1_amd64v3.deb ...
+2026-11-01T22:51:16.6354776Z Unpacking libamd-comgr3:amd64 (7.1.1+dfsg-0ubuntu1) ...
+2026-11-01T22:51:17.0915498Z Selecting previously unselected package libhsakmt1:amd64.
+2026-11-01T22:51:17.1026201Z Preparing to unpack .../01-libhsakmt1_7.1.0+dfsg-0ubuntu9_amd64v3.deb ...
+2026-11-01T22:51:17.1034670Z Unpacking libhsakmt1:amd64 (7.1.0+dfsg-0ubuntu9) ...
+2026-11-01T22:51:17.1271497Z Selecting previously unselected package libhsa-runtime64-1:amd64.
+2026-11-01T22:51:17.1380899Z Preparing to unpack .../02-libhsa-runtime64-1_7.1.0+dfsg-0ubuntu9_amd64v3.deb ...
+2026-11-01T22:51:17.1388406Z Unpacking libhsa-runtime64-1:amd64 (7.1.0+dfsg-0ubuntu9) ...
+2026-11-01T22:51:17.1763564Z Selecting previously unselected package libamdhip64-7:amd64.
+2026-11-01T22:51:17.1881585Z Preparing to unpack .../03-libamdhip64-7_7.1.0-0ubuntu2_amd64v3.deb ...
+2026-11-01T22:51:17.1889320Z Unpacking libamdhip64-7:amd64 (7.1.0-0ubuntu2) ...
+2026-11-01T22:51:17.4102851Z Selecting previously unselected package libevent-pthreads-2.1-7t64:amd64.
+2026-11-01T22:51:17.4214120Z Preparing to unpack .../04-libevent-pthreads-2.1-7t64_2.1.12-stable-10ubuntu0.2_amd64v3.deb ...
+2026-11-01T22:51:17.4222727Z Unpacking libevent-pthreads-2.1-7t64:amd64 (2.1.12-stable-10ubuntu0.2) ...
+2026-11-01T22:51:17.4449747Z Selecting previously unselected package libpsm2-2.
+2026-11-01T22:51:17.4559644Z Preparing to unpack .../05-libpsm2-2_11.2.185-2.1build1_amd64v3.deb ...
+2026-11-01T22:51:17.4568475Z Unpacking libpsm2-2 (11.2.185-2.1build1) ...
+2026-11-01T22:51:17.4795934Z Selecting previously unselected package librdmacm1t64:amd64.
+2026-11-01T22:51:17.4906932Z Preparing to unpack .../06-librdmacm1t64_61.0-2ubuntu3_amd64v3.deb ...
+2026-11-01T22:51:17.4916117Z Unpacking librdmacm1t64:amd64 (61.0-2ubuntu3) ...
+2026-11-01T22:51:17.5279519Z Selecting previously unselected package libfabric1:amd64.
+2026-11-01T22:51:17.5396287Z Preparing to unpack .../07-libfabric1_2.1.0-1.1build1_amd64v3.deb ...
+2026-11-01T22:51:17.5405210Z Unpacking libfabric1:amd64 (2.1.0-1.1build1) ...
+2026-11-01T22:51:17.5704189Z Selecting previously unselected package libhwloc15:amd64.
+2026-11-01T22:51:17.5822326Z Preparing to unpack .../08-libhwloc15_2.13.0-2_amd64v3.deb ...
+2026-11-01T22:51:17.5830498Z Unpacking libhwloc15:amd64 (2.13.0-2) ...
+2026-11-01T22:51:17.6064479Z Selecting previously unselected package libmunge2:amd64.
+2026-11-01T22:51:17.6177746Z Preparing to unpack .../09-libmunge2_0.5.16-1.1_amd64v3.deb ...
+2026-11-01T22:51:17.6184728Z Unpacking libmunge2:amd64 (0.5.16-1.1) ...
+2026-11-01T22:51:17.6396636Z Selecting previously unselected package libxnvctrl0:amd64.
+2026-11-01T22:51:17.6509919Z Preparing to unpack .../10-libxnvctrl0_510.47.03-0ubuntu7_amd64v3.deb ...
+2026-11-01T22:51:17.6517904Z Unpacking libxnvctrl0:amd64 (510.47.03-0ubuntu7) ...
+2026-11-01T22:51:17.6742417Z Selecting previously unselected package libze1:amd64.
+2026-11-01T22:51:17.6856500Z Preparing to unpack .../11-libze1_1.28.2-2_amd64v3.deb ...
+2026-11-01T22:51:17.6865389Z Unpacking libze1:amd64 (1.28.2-2) ...
+2026-11-01T22:51:17.7295265Z Selecting previously unselected package ocl-icd-libopencl1:amd64.
+2026-11-01T22:51:17.7404078Z Preparing to unpack .../12-ocl-icd-libopencl1_2.3.4-1_amd64v3.deb ...
+2026-11-01T22:51:17.7411942Z Unpacking ocl-icd-libopencl1:amd64 (2.3.4-1) ...
+2026-11-01T22:51:17.7818772Z Selecting previously unselected package libhwloc-plugins:amd64.
+2026-11-01T22:51:17.7928104Z Preparing to unpack .../13-libhwloc-plugins_2.13.0-2_amd64v3.deb ...
+2026-11-01T22:51:17.7934486Z Unpacking libhwloc-plugins:amd64 (2.13.0-2) ...
+2026-11-01T22:51:17.8150016Z Selecting previously unselected package libpmix2t64:amd64.
+2026-11-01T22:51:17.8262061Z Preparing to unpack .../14-libpmix2t64_6.0.0+really5.0.9-3build1_amd64v3.deb ...
+2026-11-01T22:51:17.8270085Z Unpacking libpmix2t64:amd64 (6.0.0+really5.0.9-3build1) ...
+2026-11-01T22:51:17.8652544Z Selecting previously unselected package libibumad3:amd64.
+2026-11-01T22:51:17.8770343Z Preparing to unpack .../15-libibumad3_61.0-2ubuntu3_amd64v3.deb ...
+2026-11-01T22:51:17.8779727Z Unpacking libibumad3:amd64 (61.0-2ubuntu3) ...
+2026-11-01T22:51:17.9007931Z Selecting previously unselected package libibmad5:amd64.
+2026-11-01T22:51:17.9120895Z Preparing to unpack .../16-libibmad5_61.0-2ubuntu3_amd64v3.deb ...
+2026-11-01T22:51:17.9128136Z Unpacking libibmad5:amd64 (61.0-2ubuntu3) ...
+2026-11-01T22:51:17.9339236Z Selecting previously unselected package libucx0:amd64.
+2026-11-01T22:51:17.9451820Z Preparing to unpack .../17-libucx0_1.20.0+ds-4ubuntu2_amd64v3.deb ...
+2026-11-01T22:51:17.9463900Z Unpacking libucx0:amd64 (1.20.0+ds-4ubuntu2) ...
+2026-11-01T22:51:17.9797929Z Selecting previously unselected package libucc1:amd64.
+2026-11-01T22:51:17.9910028Z Preparing to unpack .../18-libucc1_1.7.0~rc1-1_amd64v3.deb ...
+2026-11-01T22:51:17.9917082Z Unpacking libucc1:amd64 (1.7.0~rc1-1) ...
+2026-11-01T22:51:18.0225593Z Selecting previously unselected package libopenmpi40:amd64.
+2026-11-01T22:51:18.0337634Z Preparing to unpack .../19-libopenmpi40_5.0.10-1_amd64v3.deb ...
+2026-11-01T22:51:18.0345166Z Unpacking libopenmpi40:amd64 (5.0.10-1) ...
+2026-11-01T22:51:18.0953114Z Selecting previously unselected package libcaf-openmpi-3t64:amd64.
+2026-11-01T22:51:18.1061627Z Preparing to unpack .../20-libcaf-openmpi-3t64_2.10.3-4_amd64v3.deb ...
+2026-11-01T22:51:18.1069225Z Unpacking libcaf-openmpi-3t64:amd64 (2.10.3-4) ...
+2026-11-01T22:51:18.1271806Z Selecting previously unselected package libcoarrays-dev:amd64.
+2026-11-01T22:51:18.1379307Z Preparing to unpack .../21-libcoarrays-dev_2.10.3-4_amd64v3.deb ...
+2026-11-01T22:51:18.1385960Z Unpacking libcoarrays-dev:amd64 (2.10.3-4) ...
+2026-11-01T22:51:18.1601270Z Selecting previously unselected package openmpi-common.
+2026-11-01T22:51:18.1710413Z Preparing to unpack .../22-openmpi-common_5.0.10-1_all.deb ...
+2026-11-01T22:51:18.1716850Z Unpacking openmpi-common (5.0.10-1) ...
+2026-11-01T22:51:18.2041195Z Selecting previously unselected package libprrte3:amd64.
+2026-11-01T22:51:18.2152015Z Preparing to unpack .../23-libprrte3_3.0.13-2_amd64v3.deb ...
+2026-11-01T22:51:18.2160206Z Unpacking libprrte3:amd64 (3.0.13-2) ...
+2026-11-01T22:51:18.2413497Z Selecting previously unselected package libprrte-bin.
+2026-11-01T22:51:18.2521732Z Preparing to unpack .../24-libprrte-bin_3.0.13-2_amd64v3.deb ...
+2026-11-01T22:51:18.2528496Z Unpacking libprrte-bin (3.0.13-2) ...
+2026-11-01T22:51:18.2991915Z Selecting previously unselected package openmpi-bin.
+2026-11-01T22:51:18.3107865Z Preparing to unpack .../25-openmpi-bin_5.0.10-1_amd64v3.deb ...
+2026-11-01T22:51:18.3253432Z Unpacking openmpi-bin (5.0.10-1) ...
+2026-11-01T22:51:18.3541169Z Selecting previously unselected package libcoarrays-openmpi-dev:amd64.
+2026-11-01T22:51:18.3652727Z Preparing to unpack .../26-libcoarrays-openmpi-dev_2.10.3-4_amd64v3.deb ...
+2026-11-01T22:51:18.3659699Z Unpacking libcoarrays-openmpi-dev:amd64 (2.10.3-4) ...
+2026-11-01T22:51:18.4239128Z Selecting previously unselected package libevent-2.1-7t64:amd64.
+2026-11-01T22:51:18.4353983Z Preparing to unpack .../27-libevent-2.1-7t64_2.1.12-stable-10ubuntu0.2_amd64v3.deb ...
+2026-11-01T22:51:18.4362994Z Unpacking libevent-2.1-7t64:amd64 (2.1.12-stable-10ubuntu0.2) ...
+2026-11-01T22:51:18.4597518Z Selecting previously unselected package libevent-extra-2.1-7t64:amd64.
+2026-11-01T22:51:18.4709945Z Preparing to unpack .../28-libevent-extra-2.1-7t64_2.1.12-stable-10ubuntu0.2_amd64v3.deb ...
+2026-11-01T22:51:18.4717393Z Unpacking libevent-extra-2.1-7t64:amd64 (2.1.12-stable-10ubuntu0.2) ...
+2026-11-01T22:51:18.4944565Z Selecting previously unselected package libevent-openssl-2.1-7t64:amd64.
+2026-11-01T22:51:18.5059568Z Preparing to unpack .../29-libevent-openssl-2.1-7t64_2.1.12-stable-10ubuntu0.2_amd64v3.deb ...
+2026-11-01T22:51:18.5067609Z Unpacking libevent-openssl-2.1-7t64:amd64 (2.1.12-stable-10ubuntu0.2) ...
+2026-11-01T22:51:18.5402290Z Selecting previously unselected package libevent-dev.
+2026-11-01T22:51:18.5517695Z Preparing to unpack .../30-libevent-dev_2.1.12-stable-10ubuntu0.2_amd64v3.deb ...
+2026-11-01T22:51:18.5524798Z Unpacking libevent-dev (2.1.12-stable-10ubuntu0.2) ...
+2026-11-01T22:51:18.5812910Z Selecting previously unselected package libjs-jquery-ui.
+2026-11-01T22:51:18.5925881Z Preparing to unpack .../31-libjs-jquery-ui_1.13.2+dfsg-1build1_all.deb ...
+2026-11-01T22:51:18.5932725Z Unpacking libjs-jquery-ui (1.13.2+dfsg-1build1) ...
+2026-11-01T22:51:18.6471150Z Selecting previously unselected package libltdl-dev:amd64.
+2026-11-01T22:51:18.6590485Z Preparing to unpack .../32-libltdl-dev_2.5.4-9_amd64v3.deb ...
+2026-11-01T22:51:18.6598166Z Unpacking libltdl-dev:amd64 (2.5.4-9) ...
+2026-11-01T22:51:18.6875525Z Selecting previously unselected package libnl-3-dev:amd64.
+2026-11-01T22:51:18.6991870Z Preparing to unpack .../33-libnl-3-dev_3.12.0-2_amd64v3.deb ...
+2026-11-01T22:51:18.6999820Z Unpacking libnl-3-dev:amd64 (3.12.0-2) ...
+2026-11-01T22:51:18.7319404Z Selecting previously unselected package libnl-route-3-dev:amd64.
+2026-11-01T22:51:18.7433605Z Preparing to unpack .../34-libnl-route-3-dev_3.12.0-2_amd64v3.deb ...
+2026-11-01T22:51:18.7441730Z Unpacking libnl-route-3-dev:amd64 (3.12.0-2) ...
+2026-11-01T22:51:18.7682241Z Selecting previously unselected package libnuma-dev:amd64.
+2026-11-01T22:51:18.7795251Z Preparing to unpack .../35-libnuma-dev_2.0.19-1build1_amd64v3.deb ...
+2026-11-01T22:51:18.7924224Z Unpacking libnuma-dev:amd64 (2.0.19-1build1) ...
+2026-11-01T22:51:18.8300546Z Selecting previously unselected package libhwloc-dev:amd64.
+2026-11-01T22:51:18.8411331Z Preparing to unpack .../36-libhwloc-dev_2.13.0-2_amd64v3.deb ...
+2026-11-01T22:51:18.8419376Z Unpacking libhwloc-dev:amd64 (2.13.0-2) ...
+2026-11-01T22:51:18.8709518Z Selecting previously unselected package libpmix-dev:amd64.
+2026-11-01T22:51:18.8822541Z Preparing to unpack .../37-libpmix-dev_6.0.0+really5.0.9-3build1_amd64v3.deb ...
+2026-11-01T22:51:18.8830945Z Unpacking libpmix-dev:amd64 (6.0.0+really5.0.9-3build1) ...
+2026-11-01T22:51:19.0037436Z Selecting previously unselected package libprrte-dev:amd64.
+2026-11-01T22:51:19.0153798Z Preparing to unpack .../38-libprrte-dev_3.0.13-2_amd64v3.deb ...
+2026-11-01T22:51:19.0161782Z Unpacking libprrte-dev:amd64 (3.0.13-2) ...
+2026-11-01T22:51:19.1369250Z Selecting previously unselected package libibverbs-dev:amd64.
+2026-11-01T22:51:19.1485730Z Preparing to unpack .../39-libibverbs-dev_61.0-2ubuntu3_amd64v3.deb ...
+2026-11-01T22:51:19.1493198Z Unpacking libibverbs-dev:amd64 (61.0-2ubuntu3) ...
+2026-11-01T22:51:19.2108323Z Selecting previously unselected package libopenmpi-dev.
+2026-11-01T22:51:19.2221189Z Preparing to unpack .../40-libopenmpi-dev_5.0.10-1_amd64v3.deb ...
+2026-11-01T22:51:19.2226695Z Unpacking libopenmpi-dev (5.0.10-1) ...
+2026-11-01T22:51:19.3546469Z Setting up libcoarrays-dev:amd64 (2.10.3-4) ...
+2026-11-01T22:51:19.3569837Z Setting up libevent-pthreads-2.1-7t64:amd64 (2.1.12-stable-10ubuntu0.2) ...
+2026-11-01T22:51:19.3587100Z Setting up libevent-openssl-2.1-7t64:amd64 (2.1.12-stable-10ubuntu0.2) ...
+2026-11-01T22:51:19.3603474Z Setting up libibumad3:amd64 (61.0-2ubuntu3) ...
+2026-11-01T22:51:19.3623425Z Setting up libevent-2.1-7t64:amd64 (2.1.12-stable-10ubuntu0.2) ...
+2026-11-01T22:51:19.3641007Z Setting up libibmad5:amd64 (61.0-2ubuntu3) ...
+2026-11-01T22:51:19.3658241Z Setting up libze1:amd64 (1.28.2-2) ...
+2026-11-01T22:51:19.3675447Z Setting up libnuma-dev:amd64 (2.0.19-1build1) ...
+2026-11-01T22:51:19.3693355Z Setting up libxnvctrl0:amd64 (510.47.03-0ubuntu7) ...
+2026-11-01T22:51:19.3709432Z Setting up libltdl-dev:amd64 (2.5.4-9) ...
+2026-11-01T22:51:19.3725422Z Setting up libjs-jquery-ui (1.13.2+dfsg-1build1) ...
+2026-11-01T22:51:19.3743045Z Setting up libmunge2:amd64 (0.5.16-1.1) ...
+2026-11-01T22:51:19.3760179Z Setting up libhwloc15:amd64 (2.13.0-2) ...
+2026-11-01T22:51:19.3776599Z Setting up libevent-extra-2.1-7t64:amd64 (2.1.12-stable-10ubuntu0.2) ...
+2026-11-01T22:51:19.3794433Z Setting up libnl-3-dev:amd64 (3.12.0-2) ...
+2026-11-01T22:51:19.3811282Z Setting up ocl-icd-libopencl1:amd64 (2.3.4-1) ...
+2026-11-01T22:51:19.3828862Z Setting up libamd-comgr3:amd64 (7.1.1+dfsg-0ubuntu1) ...
+2026-11-01T22:51:19.3845908Z Setting up libpsm2-2 (11.2.185-2.1build1) ...
+2026-11-01T22:51:19.3863639Z Setting up openmpi-common (5.0.10-1) ...
+2026-11-01T22:51:19.3882924Z Setting up librdmacm1t64:amd64 (61.0-2ubuntu3) ...
+2026-11-01T22:51:19.3900295Z Setting up libhwloc-dev:amd64 (2.13.0-2) ...
+2026-11-01T22:51:19.3915446Z Setting up libhsakmt1:amd64 (7.1.0+dfsg-0ubuntu9) ...
+2026-11-01T22:51:19.3934558Z Setting up libfabric1:amd64 (2.1.0-1.1build1) ...
+2026-11-01T22:51:19.3951548Z Setting up libhwloc-plugins:amd64 (2.13.0-2) ...
+2026-11-01T22:51:19.3967599Z Setting up libnl-route-3-dev:amd64 (3.12.0-2) ...
+2026-11-01T22:51:19.3984004Z Setting up libevent-dev (2.1.12-stable-10ubuntu0.2) ...
+2026-11-01T22:51:19.4001173Z Setting up libpmix2t64:amd64 (6.0.0+really5.0.9-3build1) ...
+2026-11-01T22:51:19.4018206Z Setting up libhsa-runtime64-1:amd64 (7.1.0+dfsg-0ubuntu9) ...
+2026-11-01T22:51:19.4035101Z Setting up libpmix-dev:amd64 (6.0.0+really5.0.9-3build1) ...
+2026-11-01T22:51:19.4052495Z Setting up libibverbs-dev:amd64 (61.0-2ubuntu3) ...
+2026-11-01T22:51:19.4068636Z Setting up libprrte3:amd64 (3.0.13-2) ...
+2026-11-01T22:51:19.4084945Z Setting up libamdhip64-7:amd64 (7.1.0-0ubuntu2) ...
+2026-11-01T22:51:19.4103454Z Setting up libprrte-dev:amd64 (3.0.13-2) ...
+2026-11-01T22:51:19.4125927Z Setting up libprrte-bin (3.0.13-2) ...
+2026-11-01T22:51:19.4142416Z Setting up libucx0:amd64 (1.20.0+ds-4ubuntu2) ...
+2026-11-01T22:51:19.4174794Z Setting up libucc1:amd64 (1.7.0~rc1-1) ...
+2026-11-01T22:51:19.4212010Z Setting up libopenmpi40:amd64 (5.0.10-1) ...
+2026-11-01T22:51:19.4232322Z Setting up libcaf-openmpi-3t64:amd64 (2.10.3-4) ...
+2026-11-01T22:51:19.4331791Z Setting up openmpi-bin (5.0.10-1) ...
+2026-11-01T22:51:19.4518821Z update-alternatives: using /usr/bin/mpirun.openmpi to provide /usr/bin/mpirun (mpirun) in auto mode
+2026-11-01T22:51:19.4519667Z update-alternatives: warning: skip creation of /usr/share/man/man1/mpiexec.1.gz because associated file /usr/share/man/man1/mpiexec.openmpi.1.gz (of link group mpirun) does not exist
+2026-11-01T22:51:19.4554002Z update-alternatives: using /usr/bin/mpicc.openmpi to provide /usr/bin/mpicc (mpi) in auto mode
+2026-11-01T22:51:19.4584928Z Setting up libcoarrays-openmpi-dev:amd64 (2.10.3-4) ...
+2026-11-01T22:51:19.4632457Z update-alternatives: using /usr/lib/x86_64-linux-gnu/open-coarrays/openmpi/bin/caf to provide /usr/bin/caf.openmpi (caf-openmpi) in auto mode
+2026-11-01T22:51:19.4664435Z update-alternatives: using /usr/bin/caf.openmpi to provide /usr/bin/caf (caf) in auto mode
+2026-11-01T22:51:19.4683406Z Setting up libopenmpi-dev (5.0.10-1) ...
+2026-11-01T22:51:19.4918686Z update-alternatives: using /usr/lib/x86_64-linux-gnu/openmpi/include to provide /usr/include/x86_64-linux-gnu/mpi (mpi-x86_64-linux-gnu) in auto mode
+2026-11-01T22:51:19.4944530Z Processing triggers for man-db (2.13.1-1build1) ...
+2026-11-01T22:51:19.4965501Z Not building database; man-db/auto-update is not 'true'.
+2026-11-01T22:51:19.4979364Z Processing triggers for libc-bin (2.43-2ubuntu2.4) ...
+2026-11-01T22:51:20.1790596Z 
+2026-11-01T22:51:20.1791590Z Running kernel seems to be up-to-date.
+2026-11-01T22:51:20.1791851Z 
+2026-11-01T22:51:20.1794044Z Restarting services...
+2026-11-01T22:51:20.1869491Z 
+2026-11-01T22:51:20.1870082Z Service restarts being deferred:
+2026-11-01T22:51:20.1873115Z  systemctl restart hosted-compute-agent.service
+2026-11-01T22:51:20.1873324Z 
+2026-11-01T22:51:20.1874192Z No containers need to be restarted.
+2026-11-01T22:51:20.1874325Z 
+2026-11-01T22:51:20.1874404Z No user sessions are running outdated binaries.
+2026-11-01T22:51:20.1874519Z 
+2026-11-01T22:51:20.1874641Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+2026-11-01T22:51:20.9443921Z ##[group]Run python -m pip install -e '.[test,ase,mpi]'
+2026-11-01T22:51:20.9444182Z [36;1mpython -m pip install -e '.[test,ase,mpi]'[0m
+2026-11-01T22:51:20.9471732Z shell: /usr/bin/bash -e {0}
+2026-11-01T22:51:20.9471893Z env:
+2026-11-01T22:51:20.9472012Z   OMP_NUM_THREADS: 1
+2026-11-01T22:51:20.9472145Z   OPENBLAS_NUM_THREADS: 1
+2026-11-01T22:51:20.9472326Z   pythonLocation: /opt/hostedtoolcache/Python/3.14.9/x64
+2026-11-01T22:51:20.9472565Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.14.9/x64/lib/pkgconfig
+2026-11-01T22:51:20.9472961Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.9/x64
+2026-11-01T22:51:20.9473175Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.9/x64
+2026-11-01T22:51:20.9473388Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.9/x64
+2026-11-01T22:51:20.9473603Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.14.9/x64/lib
+2026-11-01T22:51:20.9473787Z ##[endgroup]
+2026-11-01T22:51:22.9701759Z Obtaining file:///home/runner/work/PyRPMD/PyRPMD
+2026-11-01T22:51:22.9715478Z   Installing build dependencies: started
+2026-11-01T22:51:23.8281720Z   Installing build dependencies: finished with status 'done'
+2026-11-01T22:51:23.8286591Z   Checking if build backend supports build_editable: started
+2026-11-01T22:51:24.1340202Z   Checking if build backend supports build_editable: finished with status 'done'
+2026-11-01T22:51:24.1345986Z   Getting requirements to build editable: started
+2026-11-01T22:51:24.9277728Z   Getting requirements to build editable: finished with status 'done'
+2026-11-01T22:51:24.9284893Z   Preparing editable metadata (pyproject.toml): started
+2026-11-01T22:51:25.5766197Z   Preparing editable metadata (pyproject.toml): finished with status 'done'
+2026-11-01T22:51:25.7291818Z Collecting numpy>=1.26 (from PyRPMD==0.2.0)
+2026-11-01T22:51:25.7481841Z   Downloading numpy-2.5.4-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+2026-11-01T22:51:25.8120260Z Collecting scipy>=1.11 (from PyRPMD==0.2.0)
+2026-11-01T22:51:25.8155136Z   Downloading scipy-1.18.1-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-11-01T22:51:25.8689277Z Collecting h5py>=3.10 (from PyRPMD==0.2.0)
+2026-11-01T22:51:25.8741432Z   Downloading h5py-3.16.0-cp314-cp314-manylinux_2_28_x86_64.whl.metadata (3.0 kB)
+2026-11-01T22:51:25.9011206Z Collecting threadpoolctl>=3.1 (from PyRPMD==0.2.0)
+2026-11-01T22:51:25.9038968Z   Downloading threadpoolctl-3.7.0-py3-none-any.whl.metadata (24 kB)
+2026-11-01T22:51:25.9389719Z Collecting mpi4py>=3.1 (from PyRPMD==0.2.0)
+2026-11-01T22:51:25.9428553Z   Downloading mpi4py-4.1.2-cp314-cp314-manylinux1_x86_64.manylinux_2_5_x86_64.whl.metadata (16 kB)
+2026-11-01T22:51:25.9807108Z Collecting ase>=3.23 (from PyRPMD==0.2.0)
+2026-11-01T22:51:25.9841752Z   Downloading ase-3.29.0-py3-none-any.whl.metadata (4.4 kB)
+2026-11-01T22:51:26.0158632Z Collecting pytest>=8 (from PyRPMD==0.2.0)
+2026-11-01T22:51:26.0188437Z   Downloading pytest-9.2.0-py3-none-any.whl.metadata (7.9 kB)
+2026-11-01T22:51:26.1092273Z Collecting matplotlib>=3.5.2 (from ase>=3.23->PyRPMD==0.2.0)
+2026-11-01T22:51:26.1129551Z   Downloading matplotlib-3.11.2-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (80 kB)
+2026-11-01T22:51:26.1337681Z Collecting typing_extensions>=4.13.1 (from ase>=3.23->PyRPMD==0.2.0)
+2026-11-01T22:51:26.1370731Z   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+2026-11-01T22:51:26.1719461Z Collecting contourpy>=1.0.1 (from matplotlib>=3.5.2->ase>=3.23->PyRPMD==0.2.0)
+2026-11-01T22:51:26.1753843Z   Downloading contourpy-1.4.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (3.8 kB)
+2026-11-01T22:51:26.1844279Z Collecting cycler>=0.10 (from matplotlib>=3.5.2->ase>=3.23->PyRPMD==0.2.0)
+2026-11-01T22:51:26.1874738Z   Downloading cycler-0.12.1-py3-none-any.whl.metadata (3.8 kB)
+2026-11-01T22:51:26.2618138Z Collecting fonttools>=4.28.2 (from matplotlib>=3.5.2->ase>=3.23->PyRPMD==0.2.0)
+2026-11-01T22:51:26.2666327Z   Downloading fonttools-4.68.0-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (139 kB)
+2026-11-01T22:51:26.3070501Z Collecting kiwisolver>=1.3.1 (from matplotlib>=3.5.2->ase>=3.23->PyRPMD==0.2.0)
+2026-11-01T22:51:26.3101547Z   Downloading kiwisolver-1.5.1-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (5.2 kB)
+2026-11-01T22:51:26.3188665Z Collecting packaging>=20.0 (from matplotlib>=3.5.2->ase>=3.23->PyRPMD==0.2.0)
+2026-11-01T22:51:26.3197302Z   Using cached packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+2026-11-01T22:51:26.4129425Z Collecting pillow>=9 (from matplotlib>=3.5.2->ase>=3.23->PyRPMD==0.2.0)
+2026-11-01T22:51:26.4163661Z   Downloading pillow-13.0.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (9.1 kB)
+2026-11-01T22:51:26.4325231Z Collecting pyparsing>=3 (from matplotlib>=3.5.2->ase>=3.23->PyRPMD==0.2.0)
+2026-11-01T22:51:26.4363481Z   Downloading pyparsing-3.3.3-py3-none-any.whl.metadata (5.9 kB)
+2026-11-01T22:51:26.4473609Z Collecting python-dateutil>=2.7 (from matplotlib>=3.5.2->ase>=3.23->PyRPMD==0.2.0)
+2026-11-01T22:51:26.4505473Z   Downloading python_dateutil-4.0.0-py3-none-any.whl.metadata (7.3 kB)
+2026-11-01T22:51:26.4643724Z Collecting iniconfig>=2 (from pytest>=8->PyRPMD==0.2.0)
+2026-11-01T22:51:26.4678470Z   Downloading iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+2026-11-01T22:51:26.4908811Z Collecting pluggy<2,>=1.6 (from pytest>=8->PyRPMD==0.2.0)
+2026-11-01T22:51:26.4945528Z   Downloading pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)
+2026-11-01T22:51:26.5234996Z Collecting pygments>=2.15 (from pytest>=8->PyRPMD==0.2.0)
+2026-11-01T22:51:26.5269878Z   Downloading pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+2026-11-01T22:51:26.5513864Z Collecting tzdata (from python-dateutil>=2.7->matplotlib>=3.5.2->ase>=3.23->PyRPMD==0.2.0)
+2026-11-01T22:51:26.5548605Z   Downloading tzdata-2026.6-py2.py3-none-any.whl.metadata (1.4 kB)
+2026-11-01T22:51:26.5803661Z Downloading ase-3.29.0-py3-none-any.whl (3.0 MB)
+2026-11-01T22:51:26.6430281Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.0/3.0 MB 45.6 MB/s  0:00:00
+2026-11-01T22:51:26.6483582Z Downloading h5py-3.16.0-cp314-cp314-manylinux_2_28_x86_64.whl (5.4 MB)
+2026-11-01T22:51:26.7371175Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.4/5.4 MB 59.2 MB/s  0:00:00
+2026-11-01T22:51:26.7429992Z Downloading matplotlib-3.11.2-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (11.0 MB)
+2026-11-01T22:51:26.9744160Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 11.0/11.0 MB 46.6 MB/s  0:00:00
+2026-11-01T22:51:26.9787471Z Downloading contourpy-1.4.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (384 kB)
+2026-11-01T22:51:26.9894140Z Downloading cycler-0.12.1-py3-none-any.whl (8.3 kB)
+2026-11-01T22:51:27.0076601Z Downloading fonttools-4.68.0-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (5.4 MB)
+2026-11-01T22:51:27.0521460Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.4/5.4 MB 119.6 MB/s  0:00:00
+2026-11-01T22:51:27.0559713Z Downloading kiwisolver-1.5.1-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (1.5 MB)
+2026-11-01T22:51:27.0827314Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.5/1.5 MB 53.6 MB/s  0:00:00
+2026-11-01T22:51:27.0892765Z Downloading mpi4py-4.1.2-cp314-cp314-manylinux1_x86_64.manylinux_2_5_x86_64.whl (1.4 MB)
+2026-11-01T22:51:27.1130042Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.4/1.4 MB 56.4 MB/s  0:00:00
+2026-11-01T22:51:27.1161928Z Downloading numpy-2.5.4-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.7 MB)
+2026-11-01T22:51:27.3751422Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.7/16.7 MB 64.4 MB/s  0:00:00
+2026-11-01T22:51:27.3760770Z Using cached packaging-26.3-py3-none-any.whl (129 kB)
+2026-11-01T22:51:27.3794679Z Downloading pillow-13.0.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (7.1 MB)
+2026-11-01T22:51:27.5913098Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 7.1/7.1 MB 32.8 MB/s  0:00:00
+2026-11-01T22:51:27.5997902Z Downloading pyparsing-3.3.3-py3-none-any.whl (126 kB)
+2026-11-01T22:51:27.6342575Z Downloading pytest-9.2.0-py3-none-any.whl (411 kB)
+2026-11-01T22:51:27.7077852Z Downloading pluggy-1.7.0-py3-none-any.whl (27 kB)
+2026-11-01T22:51:27.7551317Z Downloading iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+2026-11-01T22:51:27.7713985Z Downloading pygments-2.21.0-py3-none-any.whl (1.3 MB)
+2026-11-01T22:51:27.7837259Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 127.1 MB/s  0:00:00
+2026-11-01T22:51:27.7891324Z Downloading python_dateutil-4.0.0-py3-none-any.whl (92 kB)
+2026-11-01T22:51:27.7948969Z Downloading scipy-1.18.1-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (35.3 MB)
+2026-11-01T22:51:28.2626041Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 35.3/35.3 MB 76.0 MB/s  0:00:00
+2026-11-01T22:51:28.2675983Z Downloading threadpoolctl-3.7.0-py3-none-any.whl (26 kB)
+2026-11-01T22:51:28.2783446Z Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+2026-11-01T22:51:28.2875469Z Downloading tzdata-2026.6-py2.py3-none-any.whl (348 kB)
+2026-11-01T22:51:28.3938749Z Building wheels for collected packages: PyRPMD
+2026-11-01T22:51:28.3944781Z   Building editable for PyRPMD (pyproject.toml): started
+2026-11-01T22:51:45.1276983Z   Building editable for PyRPMD (pyproject.toml): finished with status 'done'
+2026-11-01T22:51:45.1281223Z   Created wheel for PyRPMD: filename=pyrpmd-0.2.0-0.editable-cp314-cp314-linux_x86_64.whl size=24148 sha256=ed6f61f2a94e4b6474150b6a6f2025f384fc3cdeac79ad86206cb5a632bc1c57
+2026-11-01T22:51:45.1282133Z   Stored in directory: /tmp/pip-ephem-wheel-cache-2z21t1hr/wheels/5d/25/da/7f7595c462d1862ae4b2aef07a5691e5a73a277c5918231f4c
+2026-11-01T22:51:45.1303236Z Successfully built PyRPMD
+2026-11-01T22:51:45.1794839Z Installing collected packages: tzdata, typing_extensions, threadpoolctl, pyparsing, pygments, pluggy, pillow, packaging, numpy, mpi4py, kiwisolver, iniconfig, fonttools, cycler, scipy, python-dateutil, pytest, h5py, contourpy, PyRPMD, matplotlib, ase
+2026-11-01T22:51:56.3896294Z 
+2026-11-01T22:51:56.3915858Z Successfully installed PyRPMD-0.2.0 ase-3.29.0 contourpy-1.4.0 cycler-0.12.1 fonttools-4.68.0 h5py-3.16.0 iniconfig-2.3.1 kiwisolver-1.5.1 matplotlib-3.11.2 mpi4py-4.1.2 numpy-2.5.4 packaging-26.3 pillow-13.0.0 pluggy-1.7.0 pygments-2.21.0 pyparsing-3.3.3 pytest-9.2.0 python-dateutil-4.0.0 scipy-1.18.1 threadpoolctl-3.7.0 typing_extensions-4.16.0 tzdata-2026.6
+2026-11-01T22:51:56.5349066Z ##[group]Run pyrpmd info
+2026-11-01T22:51:56.5349257Z [36;1mpyrpmd info[0m
+2026-11-01T22:51:56.5375695Z shell: /usr/bin/bash -e {0}
+2026-11-01T22:51:56.5375853Z env:
+2026-11-01T22:51:56.5375970Z   OMP_NUM_THREADS: 1
+2026-11-01T22:51:56.5376113Z   OPENBLAS_NUM_THREADS: 1
+2026-11-01T22:51:56.5376294Z   pythonLocation: /opt/hostedtoolcache/Python/3.14.9/x64
+2026-11-01T22:51:56.5376539Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.14.9/x64/lib/pkgconfig
+2026-11-01T22:51:56.5376776Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.9/x64
+2026-11-01T22:51:56.5376996Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.9/x64
+2026-11-01T22:51:56.5377208Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.9/x64
+2026-11-01T22:51:56.5377428Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.14.9/x64/lib
+2026-11-01T22:51:56.5377626Z ##[endgroup]
+2026-11-01T22:51:57.1045355Z {
+2026-11-01T22:51:57.1045615Z   "name": "PyRPMD",
+2026-11-01T22:51:57.1045852Z   "version": "0.2.0",
+2026-11-01T22:51:57.1046157Z   "environment": {
+2026-11-01T22:51:57.1046360Z     "python": "3.14.9",
+2026-11-01T22:51:57.1046653Z     "executable": "/opt/hostedtoolcache/Python/3.14.9/x64/bin/python",
+2026-11-01T22:51:57.1047042Z     "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.43",
+2026-11-01T22:51:57.1047351Z     "dependencies": {
+2026-11-01T22:51:57.1047544Z       "numpy": "2.5.4",
+2026-11-01T22:51:57.1047748Z       "scipy": "1.18.1",
+2026-11-01T22:51:57.1048096Z       "h5py": "3.16.0",
+2026-11-01T22:51:57.1048309Z       "threadpoolctl": "3.7.0",
+2026-11-01T22:51:57.1048525Z       "mpi4py": "4.1.2",
+2026-11-01T22:51:57.1048733Z       "torch": null,
+2026-11-01T22:51:57.1048933Z       "ase": "3.29.0",
+2026-11-01T22:51:57.1049128Z       "openmm": null,
+2026-11-01T22:51:57.1049320Z       "lammps": null,
+2026-11-01T22:51:57.1049472Z       "pymbar": null,
+2026-11-01T22:51:57.1049604Z       "matplotlib": "3.11.2"
+2026-11-01T22:51:57.1049739Z     }
+2026-11-01T22:51:57.1049850Z   },
+2026-11-01T22:51:57.1049963Z   "native": {
+2026-11-01T22:51:57.1050082Z     "available": true,
+2026-11-01T22:51:57.1050211Z     "openmp": true,
+2026-11-01T22:51:57.1050335Z     "integrators": [
+2026-11-01T22:51:57.1050463Z       "cayley-bcb",
+2026-11-01T22:51:57.1050793Z       "normal-mode-bab",
+2026-11-01T22:51:57.1050927Z       "velocity-verlet"
+2026-11-01T22:51:57.1051049Z     ]
+2026-11-01T22:51:57.1051153Z   },
+2026-11-01T22:51:57.1051258Z   "workflows": [
+2026-11-01T22:51:57.1051374Z     "rate",
+2026-11-01T22:51:57.1051485Z     "drpmd",
+2026-11-01T22:51:57.1051598Z     "fes",
+2026-11-01T22:51:57.1051733Z     "network",
+2026-11-01T22:51:57.1051852Z     "metadynamics",
+2026-11-01T22:51:57.1051967Z     "opes",
+2026-11-01T22:51:57.1052077Z     "pcet",
+2026-11-01T22:51:57.1052183Z     "pimd",
+2026-11-01T22:51:57.1052293Z     "diffusion",
+2026-11-01T22:51:57.1052409Z     "site_rate",
+2026-11-01T22:51:57.1052529Z     "surface_rate",
+2026-11-01T22:51:57.1052673Z     "nonadiabatic",
+2026-11-01T22:51:57.1052793Z     "spectroscopy",
+2026-11-01T22:51:57.1052913Z     "plumed"
+2026-11-01T22:51:57.1053025Z   ],
+2026-11-01T22:51:57.1053131Z   "materials": {
+2026-11-01T22:51:57.1053263Z     "cell": "fixed_or_isotropic_bzp",
+2026-11-01T22:51:57.1053427Z     "trajectory": "unwrapped_centroid",
+2026-11-01T22:51:57.1053597Z     "pressure_ensemble": true,
+2026-11-01T22:51:57.1053745Z     "fixed_atoms": true,
+2026-11-01T22:51:57.1053890Z     "streaming_trajectories": true,
+2026-11-01T22:51:57.1054095Z     "bond_constraints": "per_bead_shake_rattle_velocity_verlet_fixed_cell"
+2026-11-01T22:51:57.1054300Z   },
+2026-11-01T22:51:57.1054417Z   "trajectory_formats": [
+2026-11-01T22:51:57.1054547Z     "extxyz",
+2026-11-01T22:51:57.1054656Z     "h5md",
+2026-11-01T22:51:57.1054762Z     "ase_traj"
+2026-11-01T22:51:57.1054872Z   ],
+2026-11-01T22:51:57.1054980Z   "integrators": [
+2026-11-01T22:51:57.1055104Z     "cayley-bcb",
+2026-11-01T22:51:57.1055224Z     "normal-mode-bab",
+2026-11-01T22:51:57.1055355Z     "velocity-verlet"
+2026-11-01T22:51:57.1055481Z   ],
+2026-11-01T22:51:57.1055756Z   "enhanced_sampling": [
+2026-11-01T22:51:57.1055901Z     "adaptive_umbrella",
+2026-11-01T22:51:57.1056173Z     "replica_exchange_umbrella",
+2026-11-01T22:51:57.1056324Z     "standard_metadynamics",
+2026-11-01T22:51:57.1056470Z     "well_tempered_metadynamics",
+2026-11-01T22:51:57.1056619Z     "shared_walker_metadynamics",
+2026-11-01T22:51:57.1056760Z     "opes",
+2026-11-01T22:51:57.1056876Z     "opes_explore",
+2026-11-01T22:51:57.1057002Z     "adaptive_opes_bandwidth"
+2026-11-01T22:51:57.1057136Z   ],
+2026-11-01T22:51:57.1057251Z   "sampling_python_apis": [
+2026-11-01T22:51:57.1057392Z     "plumed_centroid_bias",
+2026-11-01T22:51:57.1057537Z     "transition_interface_sampling",
+2026-11-01T22:51:57.1057704Z     "temperature_hamiltonian_replica_exchange",
+2026-11-01T22:51:57.1057877Z     "positive_ensemble_retis",
+2026-11-01T22:51:57.1058170Z     "audited_biased_kinetics"
+2026-11-01T22:51:57.1058316Z   ],
+2026-11-01T22:51:57.1058427Z   "path_integral_actions": [
+2026-11-01T22:51:57.1058571Z     "suzuki_chin",
+2026-11-01T22:51:57.1058688Z     "bosonic",
+2026-11-01T22:51:57.1058802Z     "pigs"
+2026-11-01T22:51:57.1058910Z   ],
+2026-11-01T22:51:57.1059024Z   "spectroscopy_methods": [
+2026-11-01T22:51:57.1059158Z     "pa-cmd",
+2026-11-01T22:51:57.1059275Z     "rpmd",
+2026-11-01T22:51:57.1059385Z     "trpmd",
+2026-11-01T22:51:57.1059512Z     "f-cmd_quadratic_centroid_pmf"
+2026-11-01T22:51:57.1059656Z   ],
+2026-11-01T22:51:57.1059775Z   "nonadiabatic_python_apis": [
+2026-11-01T22:51:57.1059925Z     "adiabatic_rpsh",
+2026-11-01T22:51:57.1060057Z     "quasi_diabatic_nrpmd",
+2026-11-01T22:51:57.1060193Z     "two_state_mash"
+2026-11-01T22:51:57.1060312Z   ],
+2026-11-01T22:51:57.1060417Z   "ml_lifecycle": [
+2026-11-01T22:51:57.1060537Z     "committee",
+2026-11-01T22:51:57.1060662Z     "active_learning_candidates",
+2026-11-01T22:51:57.1060804Z     "delta_rpc"
+2026-11-01T22:51:57.1060916Z   ],
+2026-11-01T22:51:57.1061029Z   "unimplemented_methods": [
+2026-11-01T22:51:57.1061168Z     "qcmd",
+2026-11-01T22:51:57.1061284Z     "h-cmd"
+2026-11-01T22:51:57.1061399Z   ],
+2026-11-01T22:51:57.1061508Z   "scientific_tools": [
+2026-11-01T22:51:57.1061646Z     "general_centroid_site_rates",
+2026-11-01T22:51:57.1061798Z     "temperature_isotope_studies",
+2026-11-01T22:51:57.1062062Z     "ring_polymer_instanton",
+2026-11-01T22:51:57.1062213Z     "takahashi_imada_thermodynamics",
+2026-11-01T22:51:57.1062365Z     "open_path_momentum"
+2026-11-01T22:51:57.1062493Z   ],
+2026-11-01T22:51:57.1062602Z   "initial_ensembles": [
+2026-11-01T22:51:57.1062737Z     "thermal_parent",
+2026-11-01T22:51:57.1062863Z     "ne_rpmd",
+2026-11-01T22:51:57.1062981Z     "qct"
+2026-11-01T22:51:57.1063090Z   ],
+2026-11-01T22:51:57.1063202Z   "input_schema_version": 1,
+2026-11-01T22:51:57.1063347Z   "run_manifest_schema_version": 2,
+2026-11-01T22:51:57.1063504Z   "checkpoint_schema_version": 2,
+2026-11-01T22:51:57.1063649Z   "input_formats": [
+2026-11-01T22:51:57.1063773Z     "TOML .inp",
+2026-11-01T22:51:57.1063895Z     "Python build()"
+2026-11-01T22:51:57.1064018Z   ],
+2026-11-01T22:51:57.1064129Z   "postprocessing": [
+2026-11-01T22:51:57.1064265Z     "rate-postprocess",
+2026-11-01T22:51:57.1064391Z     "export"
+2026-11-01T22:51:57.1064508Z   ],
+2026-11-01T22:51:57.1064627Z   "additional_workflow_commands": [
+2026-11-01T22:51:57.1064786Z     "nonadiabatic-rate"
+2026-11-01T22:51:57.1064916Z   ]
+2026-11-01T22:51:57.1065021Z }
+2026-11-01T22:51:57.1394082Z ##[group]Run python -m pytest -q
+2026-11-01T22:51:57.1394299Z [36;1mpython -m pytest -q[0m
+2026-11-01T22:51:57.1420098Z shell: /usr/bin/bash -e {0}
+2026-11-01T22:51:57.1420241Z env:
+2026-11-01T22:51:57.1420355Z   OMP_NUM_THREADS: 1
+2026-11-01T22:51:57.1420490Z   OPENBLAS_NUM_THREADS: 1
+2026-11-01T22:51:57.1420664Z   pythonLocation: /opt/hostedtoolcache/Python/3.14.9/x64
+2026-11-01T22:51:57.1420914Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.14.9/x64/lib/pkgconfig
+2026-11-01T22:51:57.1421151Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.9/x64
+2026-11-01T22:51:57.1421367Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.9/x64
+2026-11-01T22:51:57.1421581Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.9/x64
+2026-11-01T22:51:57.1421798Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.14.9/x64/lib
+2026-11-01T22:51:57.1421998Z ##[endgroup]
+2026-11-01T22:52:15.4628893Z ........................................................................ [  0%]
+2026-11-01T22:52:27.3298729Z ........................................................................ [  1%]
+2026-11-01T22:52:28.0338378Z ............................sssss....................................... [  2%]
+2026-11-01T22:52:29.9721369Z ........................................................................ [  3%]
+2026-11-01T22:52:50.0519024Z ........................................................................ [  4%]
+2026-11-01T22:52:50.6579189Z ........................................................................ [  5%]
+2026-11-01T22:52:51.5809564Z ........................................................................ [  6%]
+2026-11-01T22:52:52.3711658Z ........................................................................ [  7%]
+2026-11-01T22:52:52.4547685Z .......sssssss................................ssssssssssssssss.ss....... [  8%]
+2026-11-01T22:52:53.3660810Z .............ssssssssssssssssssssssssssss............................... [  9%]
+2026-11-01T22:52:56.2379980Z ............................................................................................... [ 10%]
+2026-11-01T22:52:56.4548346Z .................................................................................................... [ 11%]
+2026-11-01T22:52:56.4861887Z ........................................................................ [ 12%]
+2026-11-01T22:52:57.6051287Z .............................................................. [ 13%]
+2026-11-01T22:53:00.3976801Z ........................................................................ [ 14%]
+2026-11-01T22:53:04.5738256Z ............................................................................................................ [ 15%]
+2026-11-01T22:53:04.6241235Z ........................................................................ [ 16%]
+2026-11-01T22:53:05.0662246Z ........................................................................ [ 17%]
+2026-11-01T22:53:21.2619541Z ........................................................................ [ 18%]
+2026-11-01T22:53:22.0644252Z ........................................................................ [ 19%]
+2026-11-01T22:53:24.0133648Z .sssss.................................................................. [ 20%]
+2026-11-01T22:53:31.1499241Z ................................................................... [ 21%]
+2026-11-01T22:53:33.9608611Z ........................................................................ [ 22%]
+2026-11-01T22:53:36.9657212Z ........................................................................ [ 23%]
+2026-11-01T22:53:39.0498884Z ........................................................................ [ 24%]
+2026-11-01T22:53:40.0269202Z ........................................................................ [ 25%]
+2026-11-01T22:53:40.1218575Z ........................................................................ [ 26%]
+2026-11-01T22:53:42.7670004Z .....................s.................................................. [ 27%]
+2026-11-01T22:53:43.7683486Z ......................................................sssssss........... [ 28%]
+2026-11-01T22:53:45.5119793Z ....................................ssss............sssss......... [ 28%]
+2026-11-01T22:53:46.1747686Z ....s................................................................... [ 29%]
+2026-11-01T22:53:48.4364963Z .........................................................s.............. [ 30%]
+2026-11-01T22:53:50.4386413Z ........................................................................ [ 31%]
+2026-11-01T22:53:53.2573367Z ............................................................sss............................................................................ [ 33%]
+2026-11-01T22:53:53.3961784Z ........................................................................ [ 34%]
+2026-11-01T22:53:53.4602001Z ................................s....................................... [ 35%]
+2026-11-01T22:54:02.8093430Z ...............................F........................................ [ 36%]
+2026-11-01T22:54:07.5160374Z ........................................................................ [ 37%]
+2026-11-01T22:54:08.4027874Z ...................................s.................................... [ 38%]
+2026-11-01T22:54:14.4199787Z ........................................................................ [ 39%]
+2026-11-01T22:54:22.5502081Z .............ssssss...ss................................................ [ 40%]
+2026-11-01T22:54:26.6265563Z ...................................................... [ 40%]
+2026-11-01T22:54:26.7521069Z ........................................................................ [ 41%]
+2026-11-01T22:54:27.3936505Z ...................ssssss............................................... [ 42%]
+2026-11-01T22:54:30.3607896Z ........................................................................ [ 43%]
+2026-11-01T22:54:30.8521352Z ...................sssssssss............................sssssssss....... [ 44%]
+2026-11-01T22:54:31.7704954Z .............................................................s.......... [ 45%]
+2026-11-01T22:54:34.3805060Z ..................................................................ssssss [ 46%]
+2026-11-01T22:54:38.7924533Z ss................................................................. [ 47%]
+2026-11-01T22:54:39.6754290Z ........................................................................ [ 48%]
+2026-11-01T22:54:39.9184011Z ........................................................................ [ 49%]
+2026-11-01T22:54:41.1981862Z ........................................................................ [ 50%]
+2026-11-01T22:54:46.1051205Z ........................................................................ [ 51%]
+2026-11-01T22:54:50.1879290Z ........................................................................ [ 51%]
+2026-11-01T22:54:50.6079119Z ........................................................................ [ 52%]
+2026-11-01T22:54:50.7550307Z ........................................................................ [ 53%]
+2026-11-01T22:54:51.8891639Z ........................................................................ [ 54%]
+2026-11-01T22:54:53.5623539Z ........................................................................ [ 55%]
+2026-11-01T22:54:54.1895197Z ........................................................................ [ 56%]
+2026-11-01T22:54:54.4611628Z ........................................................................ [ 57%]
+2026-11-01T22:54:54.6001085Z ........................................................................ [ 58%]
+2026-11-01T22:54:55.2483093Z ........................................................................ [ 59%]
+2026-11-01T22:54:56.0013040Z ........................................................................ [ 60%]
+2026-11-01T22:54:56.0551981Z ........................................................................ [ 61%]
+2026-11-01T22:54:56.3523439Z ........................................................................ [ 62%]
+2026-11-01T22:54:56.3821862Z ........................................................................ [ 63%]
+2026-11-01T22:54:58.3729703Z ........................................................................ [ 64%]
+2026-11-01T22:54:58.4825598Z ........................................................................ [ 65%]
+2026-11-01T22:55:03.0288498Z ..........................sssssssss..................................... [ 66%]
+2026-11-01T22:55:06.4258374Z ...........................s............................................ [ 66%]
+2026-11-01T22:55:06.8520118Z ................................. [ 67%]
+2026-11-01T22:55:07.9823056Z .....................................................ssssss.sss [ 68%]
+2026-11-01T22:55:08.6201430Z sssss................................................................... [ 69%]
+2026-11-01T22:55:10.2544969Z ....sss...........................................................s..... [ 70%]
+2026-11-01T22:55:11.8700357Z ....................................................sssssss............. [ 71%]
+2026-11-01T22:55:12.3208718Z ..................................................................... [ 71%]
+2026-11-01T22:55:12.8098096Z .ss..................................................................... [ 72%]
+2026-11-01T22:55:13.0118240Z .................................................................. [ 73%]
+2026-11-01T22:55:23.1620326Z ....sss................................................................. [ 74%]
+2026-11-01T22:55:32.1199240Z .............................................................. [ 75%]
+2026-11-01T22:55:34.5711785Z ............................................................... [ 76%]
+2026-11-01T22:55:47.7152305Z ...................................................................... [ 77%]
+2026-11-01T22:55:49.8038246Z ........................................................................ [ 78%]
+2026-11-01T22:55:49.9906415Z ........................................................................ [ 79%]
+2026-11-01T22:55:53.5180764Z ........................................................................ [ 80%]
+2026-11-01T22:55:53.7572547Z ........................................................................ [ 80%]
+2026-11-01T22:56:09.6151664Z ........................................................................ [ 81%]
+2026-11-01T22:56:12.5682804Z ............................................................................................................. [ 83%]
+2026-11-01T22:56:13.0622860Z ........................................................................ [ 84%]
+2026-11-01T22:56:21.3093144Z ........................................................................ [ 85%]
+2026-11-01T22:56:23.0721532Z .............................................................s.s.... [ 86%]
+2026-11-01T22:56:26.2841860Z ............................................................................................ [ 87%]
+2026-11-01T22:56:28.2124372Z ........................................................................ [ 88%]
+2026-11-01T22:56:29.7095437Z ........................................................................ [ 89%]
+2026-11-01T22:56:43.5718256Z ................................................................................................................................ [ 90%]
+2026-11-01T22:56:43.6158904Z ........................................................................ [ 91%]
+2026-11-01T22:56:43.7878790Z ...............................................................ssssssss. [ 92%]
+2026-11-01T22:56:47.5797532Z ............................ss.......................................... [ 93%]
+2026-11-01T22:56:56.0314733Z ........................................................................ [ 94%]
+2026-11-01T22:56:56.5553888Z ........................................................................ [ 95%]
+2026-11-01T22:56:57.2593482Z ..................................................................................................... [ 96%]
+2026-11-01T22:56:57.2862651Z .....................................................................ss. [ 97%]
+2026-11-01T22:56:57.4915638Z .........s......ssssss.........ssssss.......ssssssssssss................ [ 98%]
+2026-11-01T22:57:00.5203844Z ............sssss....................................................... [ 99%]
+2026-11-01T22:57:02.2571961Z .......ssss...............s.....                                         [100%]
+2026-11-01T22:57:02.2572430Z =================================== FAILURES ===================================
+2026-11-01T22:57:02.2572818Z ___ test_real_capped_worker_self_heartbeat_is_accepted_before_next_admission ___
+2026-11-01T22:57:02.2573079Z 
+2026-11-01T22:57:02.2573295Z tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-0/test_real_capped_worker_self_h0')
+2026-11-01T22:57:02.2573575Z 
+2026-11-01T22:57:02.2573653Z     @requires_pidfd
+2026-11-01T22:57:02.2573879Z     def test_real_capped_worker_self_heartbeat_is_accepted_before_next_admission(tmp_path):
+2026-11-01T22:57:02.2574153Z         policy = json.loads(owner.POLICY.read_text())
+2026-11-01T22:57:02.2574486Z         monitor = owner.ResourceWatchdog(policy, [0, 1])
+2026-11-01T22:57:02.2574870Z         registration = dump(tmp_path/"registration.json", {"fixture": "no physics"})
+2026-11-01T22:57:02.2575225Z         monitor.bind(tmp_path, registration)
+2026-11-01T22:57:02.2575485Z         script = tmp_path/"inert_resource.py"
+2026-11-01T22:57:02.2575751Z         script.write_text(
+2026-11-01T22:57:02.2576021Z             "import os,time,json,sys\nfrom pathlib import Path\n"
+2026-11-01T22:57:02.2576570Z             "from benchmarks.h3.quantum_isolated_continuation import install_address_space_limit,WorkerResourceReporter,identity\n"
+2026-11-01T22:57:02.2577073Z             "install_address_space_limit()\n"
+2026-11-01T22:57:02.2577803Z             "with WorkerResourceReporter(Path(sys.argv[1]),int(sys.argv[2]),int(sys.argv[3]),identity(Path(sys.argv[1])/'registration.json'),{'owner_process_token':os.environ['PYRPMD_ISOLATED300K_OWNER_TOKEN']}):time.sleep(.1)\n")
+2026-11-01T22:57:02.2578778Z         attempt = tmp_path/"attempt"; attempt.mkdir()
+2026-11-01T22:57:02.2579023Z         # Resource files and registration intentionally share the fixture root;
+2026-11-01T22:57:02.2579276Z         # production binds the actual attempt path independently.
+2026-11-01T22:57:02.2579638Z         with owner.exclusive_owner(tmp_path/"new-root") as lease, dispatch.deferred_stop_signals(), alarms.work_alarm(time.monotonic()+8, {}):
+2026-11-01T22:57:02.2579980Z             result = owner.dispatch_owned(dispatch,
+2026-11-01T22:57:02.2580239Z                 lambda seed, cpu: [sys.executable, str(script), str(tmp_path), str(seed), str(cpu)],
+2026-11-01T22:57:02.2580532Z                 lambda seed: {"seed": seed}, cpus=[0, 1], deadline=time.monotonic()+6,
+2026-11-01T22:57:02.2580801Z                 attempt=attempt, lease=lease, guard=lambda: None, monitor=monitor)
+2026-11-01T22:57:02.2581059Z >       assert not result["errors"] and result["all_workers_drained"]
+2026-11-01T22:57:02.2581357Z E       AssertionError: assert (not ['ValueError: worker exited before initial resource observation'])
+2026-11-01T22:57:02.2581928Z 
+2026-11-01T22:57:02.2582043Z tests/test_h3_quantum_isolated_continuation.py:434: AssertionError
+2026-11-01T22:57:02.2582277Z =============================== warnings summary ===============================
+2026-11-01T22:57:02.2582481Z tests/test_ase_force_consistency.py: 170 warnings
+2026-11-01T22:57:02.2582663Z tests/test_barostat.py: 2 warnings
+2026-11-01T22:57:02.2582822Z tests/test_parallel.py: 5 warnings
+2026-11-01T22:57:02.2582988Z tests/test_periodic_materials.py: 19 warnings
+2026-11-01T22:57:02.2583175Z tests/test_potential_adapters.py: 24 warnings
+2026-11-01T22:57:02.2583367Z tests/test_potential_energy_identity.py: 186 warnings
+2026-11-01T22:57:02.2583556Z tests/test_potentials.py: 45 warnings
+2026-11-01T22:57:02.2583722Z tests/test_surface_examples.py: 33 warnings
+2026-11-01T22:57:02.2583897Z tests/test_surface_geometry.py: 1 warning
+2026-11-01T22:57:02.2584294Z   /opt/hostedtoolcache/Python/3.14.9/x64/lib/python3.14/site-packages/ase/atoms.py:432: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+2026-11-01T22:57:02.2584914Z   As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+2026-11-01T22:57:02.2585184Z     a.shape = (-1,) + shape
+2026-11-01T22:57:02.2585275Z 
+2026-11-01T22:57:02.2585351Z tests/test_ase_force_consistency.py: 141 warnings
+2026-11-01T22:57:02.2585779Z   /opt/hostedtoolcache/Python/3.14.9/x64/lib/python3.14/site-packages/ase/geometry/geometry.py:403: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+2026-11-01T22:57:02.2586269Z   As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+2026-11-01T22:57:02.2586513Z     D.shape = (-1, len(p2), 3)
+2026-11-01T22:57:02.2586606Z 
+2026-11-01T22:57:02.2586677Z tests/test_ase_force_consistency.py: 141 warnings
+2026-11-01T22:57:02.2587093Z   /opt/hostedtoolcache/Python/3.14.9/x64/lib/python3.14/site-packages/ase/geometry/geometry.py:404: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+2026-11-01T22:57:02.2587582Z   As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+2026-11-01T22:57:02.2587827Z     D_len.shape = (-1, len(p2))
+2026-11-01T22:57:02.2587918Z 
+2026-11-01T22:57:02.2588146Z tests/test_ase_force_consistency.py: 141 warnings
+2026-11-01T22:57:02.2588604Z   /opt/hostedtoolcache/Python/3.14.9/x64/lib/python3.14/site-packages/ase/atoms.py:1548: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+2026-11-01T22:57:02.2589065Z   As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+2026-11-01T22:57:02.2589300Z     D.shape = (-1, 3)
+2026-11-01T22:57:02.2589382Z 
+2026-11-01T22:57:02.2589688Z tests/test_constraint_workflow_guards.py::test_run_resolved_rejects_before_creating_run_manifest[metadynamics]
+2026-11-01T22:57:02.2590076Z tests/test_fes_entry.py::test_old_run_manifest_and_streams_migrate_without_changing_samples[metadynamics]
+2026-11-01T22:57:02.2590457Z tests/test_report_workflow_e2e.py::test_actual_workflow_exports_match_archives_and_never_execute_dynamics
+2026-11-01T22:57:02.2590931Z   /home/runner/work/PyRPMD/PyRPMD/src/pyrpmd/runner.py:163: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+2026-11-01T22:57:02.2591316Z     config = normalize_fes_task(copy.deepcopy(config))
+2026-11-01T22:57:02.2591443Z 
+2026-11-01T22:57:02.2591599Z tests/test_constraint_workflow_guards.py::test_run_resolved_rejects_before_creating_run_manifest[opes]
+2026-11-01T22:57:02.2591952Z tests/test_fes_entry.py::test_old_run_manifest_and_streams_migrate_without_changing_samples[opes]
+2026-11-01T22:57:02.2592369Z   /home/runner/work/PyRPMD/PyRPMD/src/pyrpmd/runner.py:163: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+2026-11-01T22:57:02.2592723Z     config = normalize_fes_task(copy.deepcopy(config))
+2026-11-01T22:57:02.2592950Z 
+2026-11-01T22:57:02.2593152Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[nhc-metadynamics]
+2026-11-01T22:57:02.2593583Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[svr-metadynamics]
+2026-11-01T22:57:02.2594007Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[gle-metadynamics]
+2026-11-01T22:57:02.2594443Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[pile-g-metadynamics]
+2026-11-01T22:57:02.2594877Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[ffl-metadynamics]
+2026-11-01T22:57:02.2595315Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[pile-l-metadynamics]
+2026-11-01T22:57:02.2595852Z   /home/runner/work/PyRPMD/PyRPMD/tests/test_enhanced_sampling_composition.py:140: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+2026-11-01T22:57:02.2596479Z     resolved, _ = JobSpec.from_mapping(cfg).resolve()
+2026-11-01T22:57:02.2596605Z 
+2026-11-01T22:57:02.2596808Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[nhc-opes]
+2026-11-01T22:57:02.2597212Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[svr-opes]
+2026-11-01T22:57:02.2597611Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[gle-opes]
+2026-11-01T22:57:02.2598179Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[pile-g-opes]
+2026-11-01T22:57:02.2598581Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[ffl-opes]
+2026-11-01T22:57:02.2598986Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[pile-l-opes]
+2026-11-01T22:57:02.2599487Z   /home/runner/work/PyRPMD/PyRPMD/tests/test_enhanced_sampling_composition.py:140: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+2026-11-01T22:57:02.2599873Z     resolved, _ = JobSpec.from_mapping(cfg).resolve()
+2026-11-01T22:57:02.2600005Z 
+2026-11-01T22:57:02.2600161Z tests/test_fes_entry.py::test_nested_and_legacy_namespaces_have_same_scientific_identity[metadynamics]
+2026-11-01T22:57:02.2600619Z   /home/runner/work/PyRPMD/PyRPMD/tests/test_fes_entry.py:51: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+2026-11-01T22:57:02.2601004Z     historical, _ = JobSpec.from_mapping(legacy).resolve()
+2026-11-01T22:57:02.2601135Z 
+2026-11-01T22:57:02.2601284Z tests/test_fes_entry.py::test_nested_and_legacy_namespaces_have_same_scientific_identity[opes]
+2026-11-01T22:57:02.2601695Z   /home/runner/work/PyRPMD/PyRPMD/tests/test_fes_entry.py:51: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+2026-11-01T22:57:02.2602045Z     historical, _ = JobSpec.from_mapping(legacy).resolve()
+2026-11-01T22:57:02.2602177Z 
+2026-11-01T22:57:02.2602316Z tests/test_grid_metadynamics.py::test_grid_frontend_explicit_and_declared_units_and_defaults
+2026-11-01T22:57:02.2602783Z   /home/runner/work/PyRPMD/PyRPMD/tests/test_grid_metadynamics.py:285: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+2026-11-01T22:57:02.2603173Z     cfg, system = JobSpec.from_mapping(job).resolve()
+2026-11-01T22:57:02.2603293Z 
+2026-11-01T22:57:02.2603436Z tests/test_grid_metadynamics.py::test_grid_frontend_explicit_and_declared_units_and_defaults
+2026-11-01T22:57:02.2603887Z   /home/runner/work/PyRPMD/PyRPMD/tests/test_grid_metadynamics.py:291: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+2026-11-01T22:57:02.2604266Z     JobSpec.from_mapping(job).resolve()
+2026-11-01T22:57:02.2604467Z 
+2026-11-01T22:57:02.2604580Z tests/test_metadynamics.py::test_metadynamics_default_production_budget
+2026-11-01T22:57:02.2604999Z   /home/runner/work/PyRPMD/PyRPMD/tests/test_metadynamics.py:293: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+2026-11-01T22:57:02.2605360Z     cfg, _ = spec.resolve()
+2026-11-01T22:57:02.2605446Z 
+2026-11-01T22:57:02.2605580Z tests/test_metadynamics.py::test_frontend_resolves_width_units_and_rejects_bad_options
+2026-11-01T22:57:02.2606014Z   /home/runner/work/PyRPMD/PyRPMD/tests/test_metadynamics.py:365: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+2026-11-01T22:57:02.2606393Z     cfg, sys = JobSpec.from_mapping(job).resolve()
+2026-11-01T22:57:02.2606513Z 
+2026-11-01T22:57:02.2606641Z tests/test_metadynamics.py::test_frontend_resolves_width_units_and_rejects_bad_options
+2026-11-01T22:57:02.2607149Z   /home/runner/work/PyRPMD/PyRPMD/tests/test_metadynamics.py:372: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+2026-11-01T22:57:02.2607527Z     JobSpec.from_mapping(job).resolve()
+2026-11-01T22:57:02.2607631Z 
+2026-11-01T22:57:02.2607695Z tests/test_report_render.py: 3 warnings
+2026-11-01T22:57:02.2607868Z tests/test_report_workflow_e2e.py: 11 warnings
+2026-11-01T22:57:02.2608216Z tests/test_reporting.py: 1 warning
+2026-11-01T22:57:02.2608695Z   /home/runner/work/PyRPMD/PyRPMD/src/pyrpmd/analysis/report_render.py:157: PendingDeprecationWarning: The set_bad function will be deprecated in a future version. Use cmap.with_extremes(bad=...) or Colormap(bad=...) instead.
+2026-11-01T22:57:02.2609174Z     cmap.set_bad("#D9D9D9")
+2026-11-01T22:57:02.2609263Z 
+2026-11-01T22:57:02.2609399Z tests/test_sampling_public_api.py::test_opes_public_default_and_frozen_run_resume_offline
+2026-11-01T22:57:02.2609813Z   /home/runner/work/PyRPMD/PyRPMD/src/pyrpmd/runner.py:524: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+2026-11-01T22:57:02.2610148Z     config, system = spec.resolve()
+2026-11-01T22:57:02.2610251Z 
+2026-11-01T22:57:02.2610388Z tests/test_sampling_public_api.py::test_opes_public_default_and_frozen_run_resume_offline
+2026-11-01T22:57:02.2610791Z   /home/runner/work/PyRPMD/PyRPMD/src/pyrpmd/runner.py:158: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+2026-11-01T22:57:02.2611112Z     config, system = spec.resolve()
+2026-11-01T22:57:02.2611213Z 
+2026-11-01T22:57:02.2611383Z tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[reaction]
+2026-11-01T22:57:02.2611723Z tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[rate]
+2026-11-01T22:57:02.2612059Z tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[recrossing]
+2026-11-01T22:57:02.2612439Z tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[collision]
+2026-11-01T22:57:02.2612780Z tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[outcomes]
+2026-11-01T22:57:02.2613211Z   /home/runner/work/PyRPMD/PyRPMD/tests/test_sampling_public_api.py:77: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+2026-11-01T22:57:02.2613563Z     JobSpec.from_mapping(job).resolve()
+2026-11-01T22:57:02.2613669Z 
+2026-11-01T22:57:02.2613807Z tests/test_shared_metadynamics.py::test_shared_input_and_cli_run_resume_and_offline_analyze
+2026-11-01T22:57:02.2614271Z   /home/runner/work/PyRPMD/PyRPMD/tests/test_shared_metadynamics.py:305: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+2026-11-01T22:57:02.2614664Z     cfg, _ = JobSpec.from_file(source).resolve()
+2026-11-01T22:57:02.2614778Z 
+2026-11-01T22:57:02.2614918Z tests/test_shared_metadynamics.py::test_shared_input_and_cli_run_resume_and_offline_analyze
+2026-11-01T22:57:02.2615359Z   /home/runner/work/PyRPMD/PyRPMD/src/pyrpmd/runner.py:158: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+2026-11-01T22:57:02.2615809Z     config, system = spec.resolve()
+2026-11-01T22:57:02.2615910Z 
+2026-11-01T22:57:02.2615974Z tests/test_surface_source.py: 13 warnings
+2026-11-01T22:57:02.2616342Z   /home/runner/work/PyRPMD/PyRPMD/tests/test_surface_source.py:35: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+2026-11-01T22:57:02.2616727Z     cfg, system = JobSpec.from_mapping(original).resolve()
+2026-11-01T22:57:02.2616855Z 
+2026-11-01T22:57:02.2617017Z tests/test_surface_workflow.py::test_metadynamics_input_accepts_fixed_atoms_and_periodic_cell[fixed]
+2026-11-01T22:57:02.2617385Z tests/test_surface_workflow.py::test_metadynamics_input_accepts_fixed_atoms_and_periodic_cell[periodic]
+2026-11-01T22:57:02.2617849Z   /home/runner/work/PyRPMD/PyRPMD/tests/test_surface_workflow.py:56: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+2026-11-01T22:57:02.2618539Z     return JobSpec.from_mapping(cluster_job() if job is None else job).resolve()
+2026-11-01T22:57:02.2618748Z 
+2026-11-01T22:57:02.2618816Z tests/test_trajectory_export.py: 10 warnings
+2026-11-01T22:57:02.2619216Z   /opt/hostedtoolcache/Python/3.14.9/x64/lib/python3.14/site-packages/ase/io/ulm.py:658: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+2026-11-01T22:57:02.2619676Z   As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+2026-11-01T22:57:02.2619934Z     a.shape = (stop - start,) + self.shape[1:]
+2026-11-01T22:57:02.2620048Z 
+2026-11-01T22:57:02.2620252Z tests/test_water_preparation_coordinator.py::test_real_coordinator_signal_stops_admission_and_drains_real_stub_child[2-False]
+2026-11-01T22:57:02.2620696Z tests/test_water_preparation_coordinator.py::test_real_coordinator_signal_stops_admission_and_drains_real_stub_child[15-False]
+2026-11-01T22:57:02.2621141Z tests/test_water_preparation_coordinator.py::test_real_coordinator_signal_stops_admission_and_drains_real_stub_child[15-True]
+2026-11-01T22:57:02.2621713Z   /opt/hostedtoolcache/Python/3.14.9/x64/lib/python3.14/multiprocessing/popen_fork.py:76: DeprecationWarning: This process (pid=2885) is multi-threaded, use of fork() may lead to deadlocks in the child.
+2026-11-01T22:57:02.2622138Z     self.pid = os.fork()
+2026-11-01T22:57:02.2622224Z 
+2026-11-01T22:57:02.2622362Z -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+2026-11-01T22:57:02.2622621Z =========================== short test summary info ============================
+2026-11-01T22:57:02.2622927Z SKIPPED [1] tests/test_h3_preparation_report.py:11: could not import 'reportlab': No module named 'reportlab'
+2026-11-01T22:57:02.2623268Z SKIPPED [1] tests/test_onnx_native.py:20: optional native ONNX plugin not configured
+2026-11-01T22:57:02.2623594Z SKIPPED [1] tests/test_rpmdrate_normal_modes.py:9: could not import 'torch': No module named 'torch'
+2026-11-01T22:57:02.2623930Z SKIPPED [1] tests/test_torch_backend.py:7: could not import 'torch': No module named 'torch'
+2026-11-01T22:57:02.2624242Z SKIPPED [1] tests/test_torch_bcocb.py:9: could not import 'torch': No module named 'torch'
+2026-11-01T22:57:02.2624588Z SKIPPED [1] tests/test_torch_observable_validation.py:15: could not import 'torch': No module named 'torch'
+2026-11-01T22:57:02.2624955Z SKIPPED [1] tests/test_torch_paper_validation.py:8: could not import 'torch': No module named 'torch'
+2026-11-01T22:57:02.2625320Z SKIPPED [1] tests/test_water_preparation_extension.py:11: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2625666Z SKIPPED [3] tests/test_advanced_cv.py:150: could not import 'torch': No module named 'torch'
+2026-11-01T22:57:02.2625978Z SKIPPED [1] tests/test_advanced_cv.py:167: could not import 'torch': No module named 'torch'
+2026-11-01T22:57:02.2626286Z SKIPPED [1] tests/test_advanced_cv.py:180: could not import 'torch': No module named 'torch'
+2026-11-01T22:57:02.2626683Z SKIPPED [1] tests/test_brhcl_pes.py:45: optional pinned BrHCl_LEPS1 has not been built
+2026-11-01T22:57:02.2626987Z SKIPPED [1] tests/test_brhcl_pes.py:57: optional pinned BrHCl_LEPS1 has not been built
+2026-11-01T22:57:02.2627284Z SKIPPED [1] tests/test_brhcl_pes.py:71: optional pinned BrHCl_LEPS1 has not been built
+2026-11-01T22:57:02.2627575Z SKIPPED [1] tests/test_brhcl_pes.py:91: optional pinned BrHCl_LEPS1 has not been built
+2026-11-01T22:57:02.2627872Z SKIPPED [1] tests/test_brhcl_pes.py:102: optional pinned BrHCl_LEPS1 has not been built
+2026-11-01T22:57:02.2628336Z SKIPPED [1] tests/test_brhcl_pes.py:126: optional pinned BrHCl_LEPS1 has not been built
+2026-11-01T22:57:02.2628630Z SKIPPED [1] tests/test_brhcl_pes.py:147: optional pinned BrHCl_LEPS1 has not been built
+2026-11-01T22:57:02.2628972Z SKIPPED [1] tests/test_brhcl_reference.py:246: build optional pinned BrHCl PES for actual-source cache checks
+2026-11-01T22:57:02.2629356Z SKIPPED [11] tests/test_brhcl_reference.py:260: build optional pinned BrHCl PES for actual-source cache checks
+2026-11-01T22:57:02.2629831Z SKIPPED [4] tests/test_brhcl_reference.py:290: build optional pinned BrHCl PES for actual-source cache checks
+2026-11-01T22:57:02.2630204Z SKIPPED [1] tests/test_brhcl_reference.py:331: build optional pinned BrHCl PES for actual-source cache checks
+2026-11-01T22:57:02.2630576Z SKIPPED [1] tests/test_brhcl_reference.py:349: build optional pinned BrHCl PES for actual-source cache checks
+2026-11-01T22:57:02.2630907Z SKIPPED [1] tests/test_brhcl_scan.py:50: build optional pinned BrHCl PES first
+2026-11-01T22:57:02.2631185Z SKIPPED [1] tests/test_brhcl_scan.py:83: build optional pinned BrHCl PES first
+2026-11-01T22:57:02.2631467Z SKIPPED [1] tests/test_brhcl_scan.py:100: build optional pinned BrHCl PES first
+2026-11-01T22:57:02.2631746Z SKIPPED [15] tests/test_brhcl_scan.py:139: build optional pinned BrHCl PES first
+2026-11-01T22:57:02.2632027Z SKIPPED [1] tests/test_brhcl_scan.py:166: build optional pinned BrHCl PES first
+2026-11-01T22:57:02.2632312Z SKIPPED [8] tests/test_brhcl_scan.py:186: build optional pinned BrHCl PES first
+2026-11-01T22:57:02.2632586Z SKIPPED [1] tests/test_brhcl_scan.py:209: build optional pinned BrHCl PES first
+2026-11-01T22:57:02.2632897Z SKIPPED [4] tests/test_electronic_backends.py:130: could not import 'torch': No module named 'torch'
+2026-11-01T22:57:02.2633246Z SKIPPED [1] tests/test_electronic_backends.py:145: could not import 'torch': No module named 'torch'
+2026-11-01T22:57:02.2633553Z SKIPPED [1] tests/test_fused_propagation.py:120: optional real BKMP2 not built
+2026-11-01T22:57:02.2633867Z SKIPPED [1] tests/test_h3_classical_sampling_v2.py:27: optional pinned BKMP2 library is not built
+2026-11-01T22:57:02.2634208Z SKIPPED [2] tests/test_h3_classical_sampling_v2.py:40: optional pinned BKMP2 library is not built
+2026-11-01T22:57:02.2634538Z SKIPPED [1] tests/test_h3_classical_sampling_v2.py:52: optional pinned BKMP2 library is not built
+2026-11-01T22:57:02.2634869Z SKIPPED [2] tests/test_h3_classical_sampling_v2.py:63: optional pinned BKMP2 library is not built
+2026-11-01T22:57:02.2635205Z SKIPPED [1] tests/test_h3_classical_sampling_v2.py:78: optional pinned BKMP2 library is not built
+2026-11-01T22:57:02.2635581Z SKIPPED [1] tests/test_h3_diatomic_action.py:210: Build verified benchmarks/h3/build/libbkmp2.so for the real-PES checks
+2026-11-01T22:57:02.2636018Z SKIPPED [1] tests/test_h3_diatomic_action.py:237: Build verified benchmarks/h3/build/libbkmp2.so for the real-PES checks
+2026-11-01T22:57:02.2636431Z SKIPPED [1] tests/test_h3_diatomic_action.py:248: Build verified benchmarks/h3/build/libbkmp2.so for the real-PES checks
+2026-11-01T22:57:02.2636841Z SKIPPED [1] tests/test_h3_diatomic_action.py:222: Build verified benchmarks/h3/build/libbkmp2.so for the real-PES checks
+2026-11-01T22:57:02.2637219Z SKIPPED [1] tests/test_h3_diatomic_switch.py:279: Build verified BKMP2 for the real-PES switch checks
+2026-11-01T22:57:02.2637562Z SKIPPED [1] tests/test_h3_diatomic_switch.py:306: Build verified BKMP2 for the real-PES switch checks
+2026-11-01T22:57:02.2638064Z SKIPPED [1] tests/test_h3_diatomic_switch.py:286: Build verified BKMP2 for the real-PES switch checks
+2026-11-01T22:57:02.2638405Z SKIPPED [1] tests/test_h3_diatomic_switch.py:299: Build verified BKMP2 for the real-PES switch checks
+2026-11-01T22:57:02.2638744Z SKIPPED [1] tests/test_h3_diatomic_switch.py:312: Build verified BKMP2 for the real-PES switch checks
+2026-11-01T22:57:02.2639077Z SKIPPED [1] tests/test_h3_mixing_sampling.py:139: optional built BKMP2 library unavailable
+2026-11-01T22:57:02.2639424Z SKIPPED [1] tests/test_h3_p256_native_calibration.py:82: fixed adopted CPU6 is unavailable on this machine
+2026-11-01T22:57:02.2639748Z SKIPPED [1] tests/test_h3_pes.py:29: optional real BKMP2 PES has not been built
+2026-11-01T22:57:02.2640022Z SKIPPED [1] tests/test_h3_pes.py:35: optional real BKMP2 PES has not been built
+2026-11-01T22:57:02.2640286Z SKIPPED [1] tests/test_h3_pes.py:18: optional real BKMP2 PES has not been built
+2026-11-01T22:57:02.2640716Z SKIPPED [1] tests/test_h3_preparation_study.py:307: Build verified BKMP2 for the full-PES near-threshold launch check
+2026-11-01T22:57:02.2641077Z SKIPPED [1] tests/test_h3_surface_partition.py:86: optional real BKMP2 library unavailable
+2026-11-01T22:57:02.2641427Z SKIPPED [1] benchmarks/hch4/test_native.py:32: Set PYRPMD_CBE2008_LIBRARY; this test never downloads a PES
+2026-11-01T22:57:02.2641794Z SKIPPED [1] benchmarks/hch4/test_native.py:23: Set PYRPMD_CBE2008_LIBRARY; this test never downloads a PES
+2026-11-01T22:57:02.2642152Z SKIPPED [4] benchmarks/hch4/test_native.py:47: Set PYRPMD_CBE2008_LIBRARY; this test never downloads a PES
+2026-11-01T22:57:02.2642538Z SKIPPED [1] tests/test_hch4_pes.py:48: Set PYRPMD_CBE2008_LIBRARY to the locally built pinned PES; no implicit download
+2026-11-01T22:57:02.2642947Z SKIPPED [1] tests/test_hch4_pes.py:60: Set PYRPMD_CBE2008_LIBRARY to the locally built pinned PES; no implicit download
+2026-11-01T22:57:02.2643321Z SKIPPED [6] tests/test_integrator_workflows.py:123: optional real BKMP2 PES has not been built
+2026-11-01T22:57:02.2643632Z SKIPPED [4] tests/test_jaxpip_pesgen.py:138: optional real JaxPIP environment
+2026-11-01T22:57:02.2643913Z SKIPPED [2] tests/test_jaxpip_pesgen.py:167: optional real JaxPIP environment
+2026-11-01T22:57:02.2644184Z SKIPPED [1] tests/test_jaxpip_pesgen.py:189: optional real JaxPIP environment
+2026-11-01T22:57:02.2644455Z SKIPPED [1] tests/test_jaxpip_pesgen.py:196: optional real JaxPIP environment
+2026-11-01T22:57:02.2644709Z SKIPPED [1] tests/test_jaxpip_pesgen.py:208: optional real PySCF
+2026-11-01T22:57:02.2644998Z SKIPPED [9] tests/test_lammps_provider.py:15: could not import 'lammps': No module named 'lammps'
+2026-11-01T22:57:02.2645365Z SKIPPED [1] tests/test_materials_eam.py:85: Set PYRPMD_NIALH_POTENTIAL to opt into the source-pinned real EAM check
+2026-11-01T22:57:02.2645747Z SKIPPED [1] tests/test_materials_reference_eam4.py:39: opt-in exact EAM4 static library is not configured
+2026-11-01T22:57:02.2646117Z SKIPPED [4] tests/test_materials_reference_eam4.py:47: opt-in exact EAM4 static library is not configured
+2026-11-01T22:57:02.2646480Z SKIPPED [1] tests/test_materials_reference_eam4.py:54: opt-in exact EAM4 static library is not configured
+2026-11-01T22:57:02.2646836Z SKIPPED [1] tests/test_materials_reference_eam4.py:60: opt-in exact EAM4 static library is not configured
+2026-11-01T22:57:02.2647189Z SKIPPED [1] tests/test_materials_reference_eam4.py:66: opt-in exact EAM4 static library is not configured
+2026-11-01T22:57:02.2647556Z SKIPPED [9] tests/test_openmm_provider.py:14: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2647895Z SKIPPED [1] tests/test_opes_initialization.py:133: optional PLUMED Python wrapper unavailable
+2026-11-01T22:57:02.2648366Z SKIPPED [1] tests/test_pesgen.py:86: could not import 'pyscf': No module named 'pyscf'
+2026-11-01T22:57:02.2648666Z SKIPPED [3] tests/test_pesgen.py:101: could not import 'pyscf': No module named 'pyscf'
+2026-11-01T22:57:02.2649057Z SKIPPED [1] tests/test_pesgen.py:111: could not import 'pyscf': No module named 'pyscf'
+2026-11-01T22:57:02.2649362Z SKIPPED [1] tests/test_pesgen.py:120: could not import 'pyscf': No module named 'pyscf'
+2026-11-01T22:57:02.2649708Z SKIPPED [1] tests/test_pesgen_native.py:48: explicit pinned native Caracal build/source required
+2026-11-01T22:57:02.2650042Z SKIPPED [1] tests/test_pesgen_native.py:65: explicit pinned native Caracal build/source required
+2026-11-01T22:57:02.2650371Z SKIPPED [1] tests/test_pesgen_native.py:95: explicit pinned native Caracal build/source required
+2026-11-01T22:57:02.2650705Z SKIPPED [2] tests/test_pesgen_native.py:110: explicit pinned native Caracal build/source required
+2026-11-01T22:57:02.2651029Z SKIPPED [1] tests/test_pesgen_native.py:149: full MPI installation for original optimizer
+2026-11-01T22:57:02.2651349Z SKIPPED [1] tests/test_pesgen_native.py:158: explicit pinned native Caracal build/source required
+2026-11-01T22:57:02.2651670Z SKIPPED [1] tests/test_pesgen_native.py:174: full MPI installation for original optimizer
+2026-11-01T22:57:02.2652061Z SKIPPED [1] tests/test_plumed.py:379: optional PLUMED Python wrapper unavailable
+2026-11-01T22:57:02.2652412Z SKIPPED [2] tests/test_plumed_live_workflow.py:36: Optional real PLUMED runtime unavailable: No module named 'plumed'
+2026-11-01T22:57:02.2652763Z SKIPPED [1] tests/test_pmf_2d_accuracy.py:117: independent optional reference solver
+2026-11-01T22:57:02.2653083Z SKIPPED [1] tests/test_potential_adapters.py:266: could not import 'pyscf': No module named 'pyscf'
+2026-11-01T22:57:02.2653448Z SKIPPED [1] tests/test_potential_adapters.py:276: could not import 'tblite.interface': No module named 'tblite'
+2026-11-01T22:57:02.2653829Z SKIPPED [1] tests/test_potential_adapters.py:289: could not import 'tblite.interface': No module named 'tblite'
+2026-11-01T22:57:02.2654194Z SKIPPED [1] tests/test_potential_adapters.py:305: could not import 'pyscf': No module named 'pyscf'
+2026-11-01T22:57:02.2654545Z SKIPPED [1] tests/test_potential_adapters.py:325: could not import 'pyscf': No module named 'pyscf'
+2026-11-01T22:57:02.2654890Z SKIPPED [2] tests/test_potential_adapters.py:339: could not import 'pyscf': No module named 'pyscf'
+2026-11-01T22:57:02.2655337Z SKIPPED [2] ../../../../../opt/hostedtoolcache/Python/3.14.9/x64/lib/python3.14/site-packages/_pytest/unittest.py:521: optional PyTorch runtime not installed
+2026-11-01T22:57:02.2655771Z SKIPPED [1] tests/test_qtip4pf_benchmark.py:67: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2656113Z SKIPPED [1] tests/test_qtip4pf_benchmark.py:90: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2656455Z SKIPPED [1] tests/test_qtip4pf_benchmark.py:100: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2656783Z SKIPPED [2] tests/test_spin_mapping.py:206: could not import 'torch': No module named 'torch'
+2026-11-01T22:57:02.2657117Z SKIPPED [1] tests/test_tier2_spectroscopy.py:296: could not import 'torch': No module named 'torch'
+2026-11-01T22:57:02.2657455Z SKIPPED [7] tests/test_torch_periodic.py:13: could not import 'torch': No module named 'torch'
+2026-11-01T22:57:02.2657801Z SKIPPED [2] tests/test_trajectory_export.py:92: could not import 'MDAnalysis': No module named 'MDAnalysis'
+2026-11-01T22:57:02.2658288Z SKIPPED [1] tests/test_water_campaign.py:54: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2658616Z SKIPPED [1] tests/test_water_campaign.py:82: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2658958Z SKIPPED [1] tests/test_water_chain_statistics.py:50: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2659308Z SKIPPED [1] tests/test_water_compact_split.py:30: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2659655Z SKIPPED [3] tests/test_water_compact_split.py:53: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2659995Z SKIPPED [2] tests/test_water_compact_split.py:75: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2660445Z SKIPPED [1] tests/test_water_native_optimizations.py:21: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2660817Z SKIPPED [3] tests/test_water_native_optimizations.py:55: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2661184Z SKIPPED [2] tests/test_water_native_optimizations.py:88: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2661541Z SKIPPED [1] tests/test_water_native_quantum.py:81: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2661894Z SKIPPED [1] tests/test_water_native_quantum.py:127: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2662241Z SKIPPED [2] tests/test_water_native_quantum.py:161: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2662588Z SKIPPED [1] tests/test_water_native_quantum.py:192: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2662933Z SKIPPED [1] tests/test_water_native_reference.py:32: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2663368Z SKIPPED [1] tests/test_water_native_reference.py:59: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2663719Z SKIPPED [1] tests/test_water_native_reference.py:79: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2664074Z SKIPPED [1] tests/test_water_native_reference.py:105: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2664432Z SKIPPED [1] tests/test_water_native_reference.py:124: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2664787Z SKIPPED [1] tests/test_water_native_reference.py:161: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2665137Z SKIPPED [1] tests/test_water_native_reference.py:193: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2665488Z SKIPPED [1] tests/test_water_paired_timestep.py:54: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2665845Z SKIPPED [1] tests/test_water_paired_timestep.py:81: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2666191Z SKIPPED [1] tests/test_water_paired_timestep.py:98: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2666540Z SKIPPED [1] tests/test_water_paired_timestep.py:119: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2666892Z SKIPPED [1] tests/test_water_paired_timestep.py:143: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2667243Z SKIPPED [1] tests/test_water_split_reference.py:46: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2667590Z SKIPPED [1] tests/test_water_split_reference.py:67: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2667936Z SKIPPED [1] tests/test_water_split_reference.py:86: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2668355Z SKIPPED [1] tests/test_water_split_reference.py:105: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2668711Z SKIPPED [1] tests/test_water_velocity_cadence.py:64: could not import 'openmm': No module named 'openmm'
+2026-11-01T22:57:02.2669294Z FAILED tests/test_h3_quantum_isolated_continuation.py::test_real_capped_worker_self_heartbeat_is_accepted_before_next_admission - AssertionError: assert (not ['ValueError: worker exited before initial resource observation'])
+2026-11-01T22:57:02.2669846Z 1 failed, 7472 passed, 225 skipped, 984 warnings, 478 subtests passed in 304.02s (0:05:04)
+2026-11-01T22:57:03.6319676Z ##[error]Process completed with exit code 1.
+2026-11-01T22:57:03.6435501Z Post job cleanup.
+2026-11-01T22:57:03.7008716Z [command]/usr/bin/git version
+2026-11-01T22:57:03.7044559Z git version 2.56.0
+2026-11-01T22:57:03.7071807Z Temporarily overriding HOME='/home/runner/work/_temp/f5e71c60-c680-45e7-9842-a8a770823d43' before making global git config changes
+2026-11-01T22:57:03.7072485Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-01T22:57:03.7075757Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/PyRPMD/PyRPMD
+2026-11-01T22:57:03.7108870Z Removing SSH command configuration
+2026-11-01T22:57:03.7113693Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-01T22:57:03.7144664Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-01T22:57:03.7405383Z Removing HTTP extra header
+2026-11-01T22:57:03.7413816Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-01T22:57:03.7441350Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-01T22:57:03.7709006Z Removing includeIf entries pointing to credentials config files
+2026-11-01T22:57:03.7715732Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-01T22:57:03.7739236Z includeif.gitdir:/home/runner/work/PyRPMD/PyRPMD/.git.path
+2026-11-01T22:57:03.7739664Z includeif.gitdir:/home/runner/work/PyRPMD/PyRPMD/.git/worktrees/*.path
+2026-11-01T22:57:03.7739908Z includeif.gitdir:/github/workspace/.git.path
+2026-11-01T22:57:03.7740113Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-01T22:57:03.7747588Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/PyRPMD/PyRPMD/.git.path
+2026-11-01T22:57:03.7768704Z /home/runner/work/_temp/git-credentials-7cc856ed-95a8-457c-a0e0-dee1e5992d7e.config
+2026-11-01T22:57:03.7777843Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/PyRPMD/PyRPMD/.git.path /home/runner/work/_temp/git-credentials-7cc856ed-95a8-457c-a0e0-dee1e5992d7e.config
+2026-11-01T22:57:03.7810867Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/PyRPMD/PyRPMD/.git/worktrees/*.path
+2026-11-01T22:57:03.7832907Z /home/runner/work/_temp/git-credentials-7cc856ed-95a8-457c-a0e0-dee1e5992d7e.config
+2026-11-01T22:57:03.7838866Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/PyRPMD/PyRPMD/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-7cc856ed-95a8-457c-a0e0-dee1e5992d7e.config
+2026-11-01T22:57:03.7868908Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-01T22:57:03.7888697Z /github/runner_temp/git-credentials-7cc856ed-95a8-457c-a0e0-dee1e5992d7e.config
+2026-11-01T22:57:03.7895014Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-7cc856ed-95a8-457c-a0e0-dee1e5992d7e.config
+2026-11-01T22:57:03.7924765Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-01T22:57:03.7990000Z /github/runner_temp/git-credentials-7cc856ed-95a8-457c-a0e0-dee1e5992d7e.config
+2026-11-01T22:57:03.7998693Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-7cc856ed-95a8-457c-a0e0-dee1e5992d7e.config
+2026-11-01T22:57:03.8038423Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-01T22:57:03.8301474Z Removing credentials config '/home/runner/work/_temp/git-credentials-7cc856ed-95a8-457c-a0e0-dee1e5992d7e.config'
+2026-11-01T22:57:03.8452778Z Cleaning up orphan processes
+2026-11-01T22:57:03.8688591Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/setup-python@v5. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

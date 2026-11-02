@@ -1,0 +1,90 @@
+{
+  "CPU_affinity": [
+    8
+  ],
+  "created_utc": "2026-11-01T20:11:01.060533+00:00",
+  "errors": 0,
+  "evidence": {
+    "actual-source-inventory.json": "b82a103023b97b6e7fe30e79e409a758a85068c765e5f688e7a69d0dfa004d51",
+    "pytest.log": "0865f24275ba81c65c0eb7606bb737046ec4a3a07c4a214861d3c9d20b85d435",
+    "pytest.xml": "2d410f7a1e5cd72dd65b5012b3151121044001503cc78c4e953c3eb2afc2e5bd"
+  },
+  "external_PES_evaluations": 0,
+  "failed": 0,
+  "initial_gate_retained": {
+    "changes_since_initial": "One final-publication source-guard regression and explicit report booleans; scientific producer/helper unchanged.",
+    "passed": 69,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/initial/pytest.xml",
+    "sha256": "7e384d0b85253b0ce6f84b87bb72021c81a00b71e9592e591c2341feef597954"
+  },
+  "junit_wall_seconds": 2.143,
+  "parent_or_child_campaign_launched": false,
+  "passed": 73,
+  "physical_dynamics_steps": 0,
+  "prior_candidate_gate": {
+    "passed": 70,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/candidate/synthetic-gate.json",
+    "sha256": "ec33dbbc570ebf7dca7caf1851f990059e077c9f627e00cdf60f186e96872264"
+  },
+  "producer_protocol_registered": false,
+  "protected_frozen_source_sha256": {
+    "benchmarks/h3/p256_parent_campaign.py": "7934c1d7f695ce43337d11171cbad8c46ff95311490b755bf4191a56e00c0da3",
+    "benchmarks/h3/p256_recrossing_analyze.py": "9e2fdacddcf2ef5b825e0eb0b65789e5f045a8505a8fbd09fe21b704ed4936b6",
+    "benchmarks/h3/p256_surface_recrossing.py": "9c5c5106d8392ca577f8ea6b54f6e1828dcabb8f86a0e01b732c2e626aa15692",
+    "benchmarks/h3/quantum_recrossing_analyze.py": "4d1925461219e87d85d4e1f4ac98263c4bb58ff0d7713075782145ba909649c1",
+    "benchmarks/h3/quantum_surface_recrossing.py": "dc900e74fe8191cc8c88925a2413e55f76724a2835a8f447039d25a415c45f9e",
+    "benchmarks/h3/surface_partition.py": "23d2805270a82c91eff7b9a70f89621a356d7625aeaf76246f00896147b7a5db"
+  },
+  "reported_wall_seconds": 2.23,
+  "review_correction": {
+    "added_tests": "One wrong-clock metadata case plus two independent repeated-addition clock cases; no physical propagation.",
+    "allowance_au_by_timestep_fs": {
+      "0.05": 7.351046830546813e-09,
+      "0.1": 3.6791952668354825e-09
+    },
+    "allowance_chosen_from_floating_point_arithmetic_before_child_observation": true,
+    "finding": "Final saved atomic-unit time was previously checked only for shape/finiteness; enforce agreement with the fixed physical endpoint.",
+    "native_clock_source": {
+      "path": "native/fused.hpp",
+      "sha256": "a948ee95140fe0027baf250410e72a8d145958a75578eab847a7874804f8c95e"
+    },
+    "preserved_candidate_source_directory": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/candidate/source",
+    "roundoff_bound": "gamma_(N+4) * abs(HORIZON_fs * FS_TO_AU); gamma_k = k*float64_eps/(1-k*float64_eps); N = round(200/dt)",
+    "target_time_au": 8268.274667034031
+  },
+  "runtime": {
+    "actual_native_module": {
+      "bytes": 2407952,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "42319e0f816bdf9f94fb9d5d0230b8b5c1d74e3b4975ff56295c609897e66220"
+    },
+    "numpy": "2.5.4",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "python": "3.12.14",
+    "python_executable": {
+      "bytes": 30894944,
+      "path": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+      "sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7"
+    },
+    "scipy": "1.18.1"
+  },
+  "schema": "pyrpmd.h3.p256-child-coordinator-synthetic-gate.v1",
+  "scope": "Synthetic checkpoint metadata and integrity envelopes, inert subprocess dispatch, signals/failure/resource receipts only. No actual potential construction or dynamics. No producer registration or complete live-input preflight performed by this gate.",
+  "skipped": 0,
+  "source_inventory_only_read": {
+    "all_fixed_physical_hashes_match": true,
+    "files": 18,
+    "physical_import_identity_fields": 14
+  },
+  "source_sha256": {
+    "benchmarks/h3/p256_child_campaign.py": "0304915726116f062cee1cbb23a649d2c4e4086a787e4206d6dc7ec939ef89bb",
+    "tests/test_h3_p256_child_campaign.py": "74fa8be60a287ec4a8a604e07de8a7407c854daf47f63e853a990adead75682d"
+  },
+  "status": "passed",
+  "thread_environment": {
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  }
+}

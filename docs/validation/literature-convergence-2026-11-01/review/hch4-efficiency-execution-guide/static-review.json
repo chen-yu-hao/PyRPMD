@@ -1,0 +1,12 @@
+{
+  "PES_evaluations": 0,
+  "all36_frozen_implementation_members_still_match": true,
+  "all_local_links_exist": true,
+  "command_blocks_checked_with_bash_n": 2,
+  "commands_executed": false,
+  "created_utc": "2026-11-01T21:15:05.503649+00:00",
+  "execution_authorized": false,
+  "frozen_inventory_sha256": "83d73d906ff8e345ee39761029ad36b889426c7c2c01b7b2ae7781718040511f",
+  "new_adoption_plan_or_registration_created": false,
+  "schema": "pyrpmd.hch4.efficiency-execution-guide.static-review.v1"
+}

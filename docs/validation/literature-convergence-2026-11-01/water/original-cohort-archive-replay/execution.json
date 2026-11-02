@@ -1,0 +1,22 @@
+{
+  "additional_physical_work": false,
+  "command": [
+    "env",
+    "OMP_NUM_THREADS=1",
+    "OPENBLAS_NUM_THREADS=1",
+    "MKL_NUM_THREADS=1",
+    "OPENMM_CPU_THREADS=1",
+    ".venv/bin/python",
+    "docs/validation/literature-convergence-2026-11-01/water/original-cohort-archive-replay/replay.py"
+  ],
+  "log_sha256": "e3a74c5e66b901adb2308c5c4677b36fe7317e0eb79d0768b7cb053ac3061a37",
+  "observed_exit_code": 0,
+  "one_actual_extraction_and_analysis_attempt": true,
+  "replay_source_sha256": "fe688ac3b71058711027a41550d52bb9e334745c1b442079e564389c91872275",
+  "report_sha256": "e19fc997b611def37b661c7f47e52605b352293cc6e81b0c388a896f1ea7528c",
+  "schema": "pyrpmd.water-archive-replay-observed-execution.v1",
+  "stdout_stderr_log": "execution.log",
+  "tool_final_chunk_id": "987d59",
+  "tool_session_id": 93386,
+  "working_directory": "/workspace/scratch/a5e4820daedd/PyRPMD"
+}

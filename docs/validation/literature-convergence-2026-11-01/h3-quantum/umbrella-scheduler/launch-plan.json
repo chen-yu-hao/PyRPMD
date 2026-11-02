@@ -1,0 +1,63 @@
+{
+  "schema": "pyrpmd.h3.reviewable-umbrella-launch-plan.v1",
+  "cwd": "/workspace/scratch/a5e4820daedd/PyRPMD",
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "-m",
+    "benchmarks.h3.quantum_sampling_scheduler",
+    "--campaign",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run",
+    "--library",
+    "/workspace/scratch/a5e4820daedd/literature-audit-assets/libbkmp2.so",
+    "--protocol",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/protocol.json",
+    "--prior-snapshot",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/raw-archive/stage-snapshot.json",
+    "--prior-snapshot-sha256",
+    "0ea2cd78af59dafb91ab4f0846786b6b63a63457ecc4434e8489ec1478b6d9a4",
+    "--decision",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/continuation-decision.json",
+    "--decision-sha256",
+    "c96255a6eea63023f4eefe9450daa8fc4d67399d55a3143769bd83aa41169c16",
+    "--stage",
+    "100000",
+    "--workers",
+    "2",
+    "--worker-control",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-worker-control.json"
+  ],
+  "environment": {
+    "PYTHONPATH": "src:.",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "scheduler_sha256": "1fa4d02c5a9ed5884e81fd0de1203cec47570d9a514a512d636524583e59ed98",
+  "initial_control_file": {
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-worker-control.json",
+    "content": {
+      "active_workers": 2
+    },
+    "created_by_this_preparation": false
+  },
+  "later_control_change": {
+    "active_workers": 4,
+    "condition": "Root confirms extra-pair child jobs have completed and CPU capacity is available; no automatic outside-process inspection."
+  },
+  "complete_registered_seeds": [
+    211017,
+    211019,
+    211021,
+    211023,
+    211027,
+    211031,
+    211033,
+    211039
+  ],
+  "stage": 100000,
+  "source_review_required_before_launch": true,
+  "long_sampling_launched_by_this_preparation": false,
+  "scheduler_source_sha256": "1fa4d02c5a9ed5884e81fd0de1203cec47570d9a514a512d636524583e59ed98",
+  "validation_execution_sha256": "7962872f83463113eea1cbaffbc6f4448fb2a545ed7c95b937be20e0a67b6274"
+}

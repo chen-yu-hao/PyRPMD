@@ -1,0 +1,113 @@
+{
+  "all_input_identities": {
+    "bytes": 252883,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/original/input-file-identities.json",
+    "sha256": "b01806561038cce0f01210f4291ff991ab1a011b1c069da41eacc500dc15feb8"
+  },
+  "claims_not_made": [
+    "No re-integration of trajectory forces or BAR resampling.",
+    "No dynamic P128-to-P256 convergence claim.",
+    "No validation of the production MD umbrella sampler.",
+    "No treating200fs endpoint observations as a guarantee against arbitrarily late recrossing."
+  ],
+  "created_utc": "2026-11-01T19:52:04.854641+00:00",
+  "execution": {
+    "bytes": 893,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/original-execution.json",
+    "sha256": "30f0bbc72032e8dd65e7552f9b0d731a4c8985bd57fec1816ecf862d7cabf528"
+  },
+  "external_PES_calls": 0,
+  "findings": {
+    "base_failed_criteria": [
+      "kappa_statistical_precision"
+    ],
+    "base_relative_kappa_95_halfwidth": 0.032721999465083015,
+    "kappa": {
+      "CI95": [
+        0.7533393625865996,
+        0.7890810833807669
+      ],
+      "degrees_of_freedom": 7,
+      "halfwidth95": 0.01787086039708365,
+      "mean": 0.7712102229836832,
+      "standard_error": 0.00755758991520367
+    },
+    "original_and_extra_chunks": 800,
+    "primary_criteria": {
+      "complete_registered_cohort": true,
+      "full_rate_95_log_halfwidth_at_most_5_percent": true,
+      "kappa_statistical_precision": true,
+      "no_sampled_static_domain_crossings": true,
+      "paper_full_rate_point_within_reported_5_percent": true,
+      "paper_kappa_point_within_reported_5_percent": true,
+      "paper_qtst_point_within_reported_5_percent": true,
+      "parent_sampling_flags": true,
+      "primary_maximum_energy_error_at_most_01_kbt_per_bead": true,
+      "time_plateau_equivalence": true,
+      "timestep_equivalence": true
+    },
+    "rate_CI95_cm3_molecule_s": [
+      1.9329386067562914e-16,
+      2.003404899068246e-16
+    ],
+    "rate_cm3_molecule_s": 1.9678563652801757e-16,
+    "relative_kappa_95_halfwidth": 0.02317248898483773,
+    "supplementary_parent_half": {
+      "CI95": [
+        -0.023100734412439386,
+        0.03625536216744012
+      ],
+      "degrees_of_freedom": 7,
+      "halfwidth95": 0.02967804828993975,
+      "mean": 0.006577313877500365,
+      "standard_error": 0.012550851692377322
+    },
+    "supplementary_parent_half_equivalence_passed": false
+  },
+  "independent_derivations": [
+    "Explicit Cartesian s1 gradient and flux norm from saved parent geometry.",
+    "Exact keyed channel and Maxwell momentum replay, including both dt and all pairIDs0..3.",
+    "Stored sign arrays, velocity/fs and abs(velocity)/fs, preserving signed contributions.",
+    "Pool all four pair numerator/denominator contributions within each chain before the ratio; retain each chain partition/transmission covariance in log rates.",
+    "Eight-chain Student-t intervals, all11 fixed primary criteria, supplementary parent halves, paired timestep/time windows and complete200point mean/CI curves."
+  ],
+  "input_files_or_prior_manifests_modified": false,
+  "limitations": [
+    "Raw replay verifies the recorded estimator and identities; it does not re-integrate trajectories or rerun BAR.",
+    "Eight-chain t intervals are nominal approximations; ratio/geometric-mean bias and conditional-extension coverage are not separately corrected.",
+    "The failed supplementary parent-half diagnostic remains visible; extra momenta did not add parent equilibration.",
+    "The minimum-distance record samples 1-fs boundaries, not every integration step.",
+    "A fixed-P128 reference does not establish dynamic bead convergence, validate production umbrella sampling or validate another PES/reaction."
+  ],
+  "new_dynamics_steps": 0,
+  "parent_identities": {
+    "bytes": 13307,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/original/parent-identities.json",
+    "sha256": "f8045f8fb2737f3c1b8e80cf6ea2387ffb0dd4c95f60326280380ec519d85079"
+  },
+  "raw_archive_scope": "Separate incremental archive/extraction replay will receive its own immutable inventory.",
+  "raw_input_identities": {
+    "bytes": 815523,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/original/raw-chunk-identities.json",
+    "sha256": "a6b13e8ac332c8b9416fa71efa3e05e621adaf06b25d80e4e2a8ead199251081"
+  },
+  "raw_replay": {
+    "bytes": 26905,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/original/raw-replay.json",
+    "sha256": "1683e97165994719cd7ed48e61c23f57f7312ee3e0a6562d135d6c05ac0a3823"
+  },
+  "reviewer_source": {
+    "bytes": 30386,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/replay_complete.py",
+    "sha256": "431be7bdd8e23bb95510539c8f3d70110749cd4fec284d6509a40a7a20649b84"
+  },
+  "root_curated_files_hash_verified": 63,
+  "root_curated_publication_inventory": {
+    "bytes": 17497,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/publication-inventory.json",
+    "sha256": "40dc3e500115a0bbff95be18ab25d82cfb1b6459da9e692b184606d65804ab46"
+  },
+  "schema": "pyrpmd.h3.complete-four-pair-independent-review.v1",
+  "scientific_scope": "Complete P128 BKMP2 H+H2 300K fixed-P reference experiment;8 independent source chains,1600 shared parent configurations,4 keyed antithetic momentum pairs per parent,dt0.1/0.05fs,horizon200fs.",
+  "status": "all_recorded_primary_gates_and_raw_identities_reproduced_supplementary_failure_retained"
+}

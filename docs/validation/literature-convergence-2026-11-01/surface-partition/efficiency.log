@@ -1,0 +1,2 @@
+{"surface": "ts", "minimum_BAR_overlap": 0.870452657738172, "minimum_energy_ESS": 11.768287779687991, "acceptance_at_lambda1": [0.59, 0.499, 0.479, 0.456], "total_endpoint_traversals": 100, "endpoint_snapshot_count": 5, "elapsed_seconds": 6.67716578499676}
+{"surface": "reactant", "minimum_BAR_overlap": 0.9465983697489422, "minimum_energy_ESS": 50.254266893652996, "acceptance_at_lambda1": [0.631, 0.0, 0.0, 0.311], "total_endpoint_traversals": 86, "endpoint_snapshot_count": 0, "elapsed_seconds": 3.960100230993703}

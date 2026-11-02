@@ -1,0 +1,154 @@
+{
+  "CPU_accounting": {
+    "measured_supervisor_CPU_seconds_before_receipt": 0.67336529,
+    "measured_worker_entire_process_CPU_seconds": 1.040043,
+    "prepare_CPU_seconds_before_registration_write": 0.715043672,
+    "three_enforced_caps": {
+      "created_utc": "2026-11-01T19:38:12.290134+00:00",
+      "hard_caps_requested": true,
+      "measured_supervisor_CPU_seconds_at_allocation": 0.660938033,
+      "preparation_hard_CPU_seconds": 2,
+      "registration_sha256": "c74d63139ff3badf13812f26b29ea2fd920da071a0975b557ff5ce9366b123c6",
+      "soft_total_CPU_admission_seconds": 55,
+      "sum_hard_CPU_caps_seconds": 60,
+      "supervisor_PID": 4,
+      "supervisor_hard_CPU_seconds": 3,
+      "supervisor_process_token": "5bbd8d0381174988a234ebd1a9817a0b",
+      "worker_hard_CPU_seconds": 55
+    },
+    "unmeasured_finalization_bounded_by_allocated_reserves": true
+  },
+  "PES_call_intervals": {
+    "count": 641,
+    "maximum_CPU_seconds": 0.002197804999999997,
+    "mean_CPU_seconds": 0.00013301290951638173,
+    "median_CPU_seconds": 0.00011259600000002035,
+    "scope": "Intervals include pre-call attempt-record writing/fsync and energy/force adapter evaluation; not pure energy-only kernel timing.",
+    "total_CPU_seconds": 0.08526127500000069
+  },
+  "PES_failures": 0,
+  "command_exit_code": 0,
+  "created_utc": "2026-11-01T19:39:06.879420+00:00",
+  "data_scope": "Excluded classical finite-domain cost and weight-concentration diagnostic; all eight fixed diagnostic seeds retained.",
+  "dynamics_steps": 0,
+  "eight_seed_log_ratio_ranges": {
+    "alpha_0.999": [
+      -36.399711867673055,
+      -28.785873704930783
+    ],
+    "alpha_1.007": [
+      -39.44294296453091,
+      -32.0532283647115
+    ]
+  },
+  "execution_status": "complete_cost_pilot",
+  "external_PES_library_and_coefficients_not_copied": true,
+  "fixed_target_draws": 768,
+  "geometric_zero_draws": 127,
+  "importance_reference_precision_established": false,
+  "independent_replay_sha256": "c6ef00fc44adb2d70aea63dc3657cddb75f3589083cffc547890d38ec6794763",
+  "interpretation": "Severe observed importance-weight concentration prevents this small pilot from establishing a usable precision reference. Cost is low, but empirical ESS does not bound unseen tails or validate the finite molecular domain, asymptotic separation, normalization or thermal rate.",
+  "maximum_authorized_geometries": 768,
+  "new_attempt_authorization": "Root explicitly authorized one new bounded attempt after namespace-safe token repair, focused regression and independent review; the first zero-PES attempt remains immutable.",
+  "no_extra_samples_or_proposal_adjustment_after_results": true,
+  "old_failed_attempt_PES_calls": 0,
+  "plan_sha256": "13d0194e931fa2c3b9e1e4268b45d81630d6fc9eafaef5b75aa5081de3d0a194",
+  "protected_files_unchanged": 157,
+  "quantum_simulations": 0,
+  "raw_files_copied_byte_for_byte": true,
+  "run_registration_sha256": "c74d63139ff3badf13812f26b29ea2fd920da071a0975b557ff5ce9366b123c6",
+  "run_report_sha256": "0b957112d970fc2eaeda735c1c29dcb8ebf5357d3c5cfeb0a4f471d11f62cc92",
+  "same_latent_ledger_sha256": "8c1018119828753931319f08bf10304ee3f089af7f1f79cf8449ab81c47f8eb7",
+  "schema": "pyrpmd.hch4-reference-pilot-execution-summary.v1",
+  "scientific_rate_validated": false,
+  "source_sha256": "a164ff9ab148e24b5175d7087224efd95a95435665b90f4a353b2ddf0778a65a",
+  "successful_PES_geometries": 641,
+  "supervisor_wall_seconds": 2.060053291999793,
+  "tests_sha256": "296b1c4b97cbcdb1eb4132e4eee8f7d65e5aedbaf662f616a21bb856787ec78e",
+  "weight_diagnostics": {
+    "alpha_0.999": {
+      "channel_means": {
+        "0": {
+          "draws": 64,
+          "empirical_ESS": 1.8080029073538315,
+          "log_mean": -34.02874858915953,
+          "maximum_normalized_weight": 0.7227591614483289,
+          "positive_weights": 54
+        },
+        "2": {
+          "draws": 64,
+          "empirical_ESS": 1.2193591132566604,
+          "log_mean": -30.348440608040015,
+          "maximum_normalized_weight": 0.9025557162812925,
+          "positive_weights": 56
+        },
+        "3": {
+          "draws": 64,
+          "empirical_ESS": 1.952443077964067,
+          "log_mean": -29.961998919335837,
+          "maximum_normalized_weight": 0.6308734179501649,
+          "positive_weights": 51
+        },
+        "4": {
+          "draws": 64,
+          "empirical_ESS": 1.125538886961289,
+          "log_mean": -30.31216209101828,
+          "maximum_normalized_weight": 0.9422162037612627,
+          "positive_weights": 53
+        }
+      },
+      "draws": 256,
+      "empirical_ESS": 4.3284993954834405,
+      "log_mean": -30.472334477812304,
+      "log_surface_integral_without_common_rotation": -29.086040116692413,
+      "maximum_normalized_weight": 0.27647289565297006,
+      "positive_weights": 214
+    },
+    "alpha_1.007": {
+      "channel_means": {
+        "0": {
+          "draws": 64,
+          "empirical_ESS": 1.2310327566756216,
+          "log_mean": -33.47090048533775,
+          "maximum_normalized_weight": 0.8996661150997215,
+          "positive_weights": 54
+        },
+        "2": {
+          "draws": 64,
+          "empirical_ESS": 2.2009834014172305,
+          "log_mean": -33.66988994432465,
+          "maximum_normalized_weight": 0.6186605067496599,
+          "positive_weights": 56
+        },
+        "3": {
+          "draws": 64,
+          "empirical_ESS": 1.9792164905264638,
+          "log_mean": -35.65258904148805,
+          "maximum_normalized_weight": 0.6796544047338816,
+          "positive_weights": 51
+        },
+        "4": {
+          "draws": 64,
+          "empirical_ESS": 3.9219317438811743,
+          "log_mean": -32.458792559967456,
+          "maximum_normalized_weight": 0.37464738844930023,
+          "positive_weights": 53
+        }
+      },
+      "draws": 256,
+      "empirical_ESS": 7.18302731617501,
+      "log_mean": -33.31308424870079,
+      "log_surface_integral_without_common_rotation": -31.926789887580895,
+      "maximum_normalized_weight": 0.22007812869897006,
+      "positive_weights": 214
+    },
+    "entry": {
+      "draws": 256,
+      "empirical_ESS": 6.142929378693437,
+      "log_mean": 1.8106394246704474,
+      "log_surface_integral_without_common_rotation": 1.8106394246704474,
+      "maximum_normalized_weight": 0.32999415545663646,
+      "positive_weights": 213
+    }
+  }
+}

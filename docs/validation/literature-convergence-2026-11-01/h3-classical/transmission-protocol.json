@@ -1,0 +1,35 @@
+{
+  "schema": "pyrpmd.h3.classical-transmission-predeclaration.v1",
+  "purpose": "Independent classical transition-surface flux ensemble plus unchanged PyRPMD native real-time child dynamics; separate from umbrella equilibrium convergence.",
+  "temperature_K": 300.0,
+  "independent_seeds": [2026110201, 2026110202, 2026110203, 2026110204],
+  "parents_per_seed": 2048,
+  "independent_surface_chains_per_seed": 32,
+  "surface_samples_per_chain": 64,
+  "surface_warmup_proposals_per_chain": 256,
+  "surface_proposals_between_retained_parents": 10,
+  "surface_density": "r^4*t*sqrt((2+t^2)/m)*exp(-beta V), with r in [0.5,8] bohr and t in [1,2]; rotations and translations analytically integrated; both equivalent channels represented.",
+  "surface_proposal": {
+    "kind": "independence Metropolis",
+    "r": "normal(mean=1.7570000251 bohr, sigma=0.1 bohr), truncated to [0.5,8]",
+    "2_minus_t": "exponential(scale=0.05), truncated to [0,1]",
+    "acceptance": "Includes the exact proposal-density ratio; proposal parameters are not fitted to a published rate."
+  },
+  "momentum_distribution": "Unconstrained physical-mass Maxwell distribution at 300K, followed by antithetic p and -p child trajectories.",
+  "transmission_estimator": "sum_i [(v_i/fs_i)*(h(S(q_i(t;p_i)))-h(S(q_i(t;-p_i))))] / sum_i [abs(v_i)/fs_i], with S=s1 and xi_star=1.",
+  "timestep_fs": [0.1, 0.05],
+  "child_horizon_fs": 400.0,
+  "observation_interval_fs": 1.0,
+  "plateau_windows_fs": [[80,100], [180,200], [380,400]],
+  "acceptance_criteria": {
+    "surface_moments": "Independent-chain estimates must agree with the direct 2D surface quadrature within three standard errors; compare r,t,r^2,t^2 and potential energy.",
+    "relative_transmission_95_halfwidth_maximum": 0.01,
+    "absolute_transmission_timestep_difference_maximum": 0.01,
+    "absolute_transmission_100_200_400fs_difference_maximum": 0.01,
+    "time_and_timestep_consistency": "Also report paired independent-seed differences and their standard errors; interval overlap alone is not a convergence claim.",
+    "uncertainty_units": "Independent full seeds for the main interval, with parent-chain block diagnostics; antithetic children are paired, not independent samples."
+  },
+  "paper_classical_transmission_coefficient": 0.994,
+  "paper_reference": "Suleimanov, Allen and Green, CPC184(2013)833-840, DOI10.1016/j.cpc.2012.10.017, Table2, 300K H+H2 classical column.",
+  "limitations": "This is a classical reference sampler, not a quantum RPMD convergence test or a validation of constrained-parent equilibrium. The previous umbrella campaign remains independently assessed."
+}

@@ -1,0 +1,34 @@
+{
+  "copied_independent_review_files": 5,
+  "created_utc": "2026-11-01T22:23:34.321589+00:00",
+  "existing_original_bundles_overwritten": 0,
+  "inventories": [
+    {
+      "bytes": 10235,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/publication-inventory.json",
+      "sha256": "ba3547a9431b5a9e46bf1cfde6cd2eaa917b575ef4aaa02cd7b4bca74554b42c"
+    },
+    {
+      "bytes": 2744,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec/publication-inventory.json",
+      "sha256": "83ff5d498afb3d4761b186a3620da0d5954d408266e5b4abc8f71086fd1ee122"
+    },
+    {
+      "bytes": 3463,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-0c5fec-20261101T2214Z/publication-inventory.json",
+      "sha256": "cef4ef06903fd113310d672e70d833b86506d31b179dae7b44e9124d3afcf7dd"
+    },
+    {
+      "bytes": 2904,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hele2015-source-index/publication-inventory.json",
+      "sha256": "e0b8d5bec8a4a54eabbfb7acf5a6cfe18b5b66e00607a8c875f9bddaa4026062"
+    },
+    {
+      "bytes": 1558,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hele2015-source-review/publication-inventory.json",
+      "sha256": "6844344e4ef02504c34982e316173fb684f850f1921aaf0f07ae810733113101"
+    }
+  ],
+  "schema": "pyrpmd.sixth-new-evidence-sealing.v1",
+  "scientific_sources_mutated": false
+}

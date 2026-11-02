@@ -1,0 +1,28 @@
+{
+  "created_utc": "2026-11-01T21:41:31.324450+00:00",
+  "files": [
+    {
+      "bytes": 1066,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/root-adopted-waiter/README.md",
+      "sha256": "e495c11153348f795619613a4842ebeeea97bd1a6d9543d30c1ae47bf9ece4bf"
+    },
+    {
+      "bytes": 1385,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/root-adopted-waiter/RUN_ONCE.json",
+      "sha256": "bad7366916655e161b6cf46177d46d733f025f89d1f216864cc4c57f65ef5b99"
+    },
+    {
+      "bytes": 3854,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/root-adopted-waiter/adopt_p256_complete_analysis.py",
+      "sha256": "d0a36290e0af735b96e9d6ef201629886822f09a956306590abe8f23ab08326d"
+    },
+    {
+      "bytes": 2532,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/root-adoption.json",
+      "sha256": "1c7cc69a70dd4a452f18725a64708f2808e4a9a8eef07bfb142fe76b80dc7bda"
+    }
+  ],
+  "inventory_excludes_itself": true,
+  "schema": "pyrpmd.root-operational-evidence-inventory.v1",
+  "scope": "Actual root adoption and immutable once-only waiter registration; no complete-P256 result claimed."
+}

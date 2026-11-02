@@ -1,0 +1,65 @@
+{
+  "schema": "pyrpmd.ci-heartbeat-import-publication-inventory.v1",
+  "created_utc": "2026-11-01T23:13:56Z",
+  "parent_commit": "bbb950528db2f43f59cb24acea5097568cd393a3",
+  "files": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-bbb9505-heartbeat-import/before-test_h3_quantum_isolated_continuation.py",
+      "bytes": 24455,
+      "sha256": "da0b38029eb88ee273dfba2de708f759ca079b36ef981620f1238e6796a1d980"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-bbb9505-heartbeat-import/failed-ci-evidence.json",
+      "bytes": 5336,
+      "sha256": "3512760f280036387633974f6d137cea8b002b70b4a1796d274f25a08efcc8e9"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-bbb9505-heartbeat-import/failed-job-125004861946.log",
+      "bytes": 104319,
+      "sha256": "b1e30e4b0d4a299920042bf093c521d2b2846a5e48a7835c9897b79b469b539c"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-bbb9505-heartbeat-import/failed-job-125005230063.log",
+      "bytes": 107530,
+      "sha256": "fb25b93f8caa8470e47db448774e81802a12fbbe1b21ce1d9ade4a5d71f80fb8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-bbb9505-heartbeat-import/failed-job-125005230125.log",
+      "bytes": 111398,
+      "sha256": "bccd873de59a4ac982c438aeb97a4defe51ba7949b4431527450d79c0d897b1d"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-bbb9505-heartbeat-import/failed-job-125005230131.log",
+      "bytes": 111395,
+      "sha256": "758dba8d1267309e01c8f509334a0c34fc7c95cc904f26e6c79699d6f3a9bdeb"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-bbb9505-heartbeat-import/failed-job-125005230167.log",
+      "bytes": 111360,
+      "sha256": "2a6d8b5a3e7a1ef2e2825553d64963686ba4cba0b743ec0fea8c261b39ceff61"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-bbb9505-heartbeat-import/fixture-supersession.json",
+      "bytes": 2030,
+      "sha256": "ed19c6bcf1b937276c09bd35038889fc7f6ca19a230dcac52492250d3d0dc22f"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-bbb9505-heartbeat-import/independent-static-review.json",
+      "bytes": 1512,
+      "sha256": "f2331bd25114e662cd86771b55421e9b3647b200fde215fe99e0171af9cbc1ff"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-bbb9505-heartbeat-import/README.md",
+      "bytes": 2890,
+      "sha256": "11af3c0d99aaa979a9e7bb9cd9dbcdf966e8b6dece74612914c31cd9ae5916cd"
+    },
+    {
+      "path": "tests/test_h3_quantum_isolated_continuation.py",
+      "bytes": 24889,
+      "sha256": "fa2c3efe7cb60ea55af86bc2f1b5cc3f43b0d2895a58e637adbee5a624be90c5"
+    }
+  ],
+  "inventory_self_excluded": true,
+  "local_execution": false,
+  "scientific_change": false
+}

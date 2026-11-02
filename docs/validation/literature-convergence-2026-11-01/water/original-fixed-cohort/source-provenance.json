@@ -1,0 +1,81 @@
+{
+  "analysis_report_git_path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/analysis/report.json",
+  "analysis_report_sha256": "f544d5de9202a73f7013ee5191fed4e53e330a9eeb41c87770bfaaa3f7d4d1f8",
+  "environment": {
+    "dependencies": {
+      "numpy": "2.5.4",
+      "openmm": "8.6.1",
+      "scipy": "1.18.1"
+    },
+    "machine": "x86_64",
+    "python": "3.12.14"
+  },
+  "initial_geometry": {
+    "duplicated_in_archive": false,
+    "matching_published_git_commit": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+    "path": "docs/validation/literature-audit-2026-11-01/water/classical-pilot/endpoint.npz",
+    "sha256": "663023b530463f892bdb7792cd71395805679b75c8ae7da32f41d2748df4bead"
+  },
+  "project": "PyRPMD",
+  "runtime_manifest_git_revisions": {
+    "1101": "274f8289fcc2392278ba9ed894bdae88a92f8b01",
+    "1102": "274f8289fcc2392278ba9ed894bdae88a92f8b01",
+    "1103": "3d096d5cfc5709f14a1ad5e3d184b108eef9f20e",
+    "1104": "3d096d5cfc5709f14a1ad5e3d184b108eef9f20e",
+    "1105": "3d096d5cfc5709f14a1ad5e3d184b108eef9f20e",
+    "1106": "3d096d5cfc5709f14a1ad5e3d184b108eef9f20e",
+    "1107": "3d096d5cfc5709f14a1ad5e3d184b108eef9f20e",
+    "1108": "3d096d5cfc5709f14a1ad5e3d184b108eef9f20e"
+  },
+  "schema": "pyrpmd.water-raw-dataset-source-references.v1",
+  "source_commit_qualification": "Exact source references are per file. The original diffusion analysis dependency is at3d096d5; c2c5ae2 refactors only its integer validator. Do not assume one revision matches every source byte.",
+  "source_files_redistributed": false,
+  "source_records": [
+    {
+      "matching_published_git_commit": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+      "path": "benchmarks/water/analyze_campaign.py",
+      "sha256": "c6d0c1047653c2dea961053287572fccdbcd3e7074c75a6266031e691bae304e"
+    },
+    {
+      "matching_published_git_commit": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+      "path": "benchmarks/water/analyze_native.py",
+      "sha256": "323b3e8506ffbd0c509150f3a6c7c137369c75e5775cdb4e338cdb2bd3c3c718"
+    },
+    {
+      "matching_published_git_commit": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+      "path": "benchmarks/water/campaign.py",
+      "sha256": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639"
+    },
+    {
+      "matching_published_git_commit": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+      "path": "benchmarks/water/native_campaign_schedule_v2.py",
+      "sha256": "af1258f9118c4de296c90edb18c57aceb07a007d564652b4f5db6e851cece75e"
+    },
+    {
+      "matching_published_git_commit": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+      "path": "benchmarks/water/native_reference.py",
+      "sha256": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2"
+    },
+    {
+      "matching_published_git_commit": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+      "path": "benchmarks/water/qtip4pf.py",
+      "sha256": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61"
+    },
+    {
+      "matching_published_git_commit": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+      "path": "benchmarks/water/velocity_cadence.py",
+      "sha256": "bac1e70a6e16e9bfb3164379b800086d82abdb6a509d4a5e9fee7c6c1556888d"
+    },
+    {
+      "matching_published_git_commit": "3d096d5cfc5709f14a1ad5e3d184b108eef9f20e",
+      "path": "src/pyrpmd/analysis/diffusion.py",
+      "sha256": "bd3593fa4ad2b9e87ba1a4d2d612cb5875b98cba5b16d95187fd48cbe439926e"
+    },
+    {
+      "matching_published_git_commit": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+      "path": "src/pyrpmd/constants.py",
+      "sha256": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+    }
+  ],
+  "trajectory_replay_qualification": "CPU checkpoint restoration verifies raw state and bounds force-cache-to-canonical-momentum differences; it does not promise bitwise identical future CPU trajectories."
+}

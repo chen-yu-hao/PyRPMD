@@ -1,0 +1,19 @@
+{
+  "adoption": {
+    "bytes": 5464,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-root-adoption-v2/root-adoption.json",
+    "sha256": "39c27db548b74e21a6351d70d117a328bcbc2fccdeb3e66af6593eec855c9d57"
+  },
+  "automatic_retry_or_continuation": false,
+  "created_utc": "2026-11-01T21:39:19.652951+00:00",
+  "policy": {
+    "bytes": 8887,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation-v2/policy.json",
+    "sha256": "e73a940695fdfe86460c76b1d3ade84555867d85f4ca115fe103b44c233dbfe0"
+  },
+  "source": {
+    "bytes": 22139,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_umbrella_archive_v2.py",
+    "sha256": "d7004587d6643f8a36f3b40d9d591b0d048a6d53b2233092c2e03c1c373166ad"
+  }
+}

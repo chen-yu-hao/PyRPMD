@@ -1,0 +1,13 @@
+{
+  "PID": 5,
+  "child_CPU_seconds": 0.7374059999999999,
+  "exit_code": 0,
+  "launch_sha256": "234818abb8f0931e36407549b82d7ac18a21ce9027f02a1a5618902a5707a2e6",
+  "log_sha256": "02bdefda53aa027e557917e094b5d020806a90e162c9f6cbe040a1d3e27e7d83",
+  "observed_completion_utc": "2026-11-01T20:24:58.654024+00:00",
+  "report_sha256": "ea075cd029804fa4dbc691ad90db3ffc075deaa22471d51573d50b6b356abb53",
+  "schema": "pyrpmd.h3.p256-native-calibration.execution.v1",
+  "source_sha256": "9eb0bfc88b210d6abf432b91f8ee54274ec3f0d94de8c573433d76400b5220c8",
+  "source_unchanged": true,
+  "wall_seconds": 0.7760891169964452
+}

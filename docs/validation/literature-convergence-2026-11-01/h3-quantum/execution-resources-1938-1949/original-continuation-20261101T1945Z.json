@@ -1,0 +1,68 @@
+{
+  "actual_integration_workers": 2,
+  "captured_utc": "2026-11-01T19:45:39.663578+00:00",
+  "completed_queues_with_no_dispatch": [
+    "a",
+    "b"
+  ],
+  "coordinator_started_event": {
+    "active_worker_limit": 4,
+    "coordinator_pid": 4,
+    "event": "coordinator_started",
+    "inherited_legacy_and_seed_leases": true,
+    "invocation_wall_seconds": 1800.0,
+    "outer_wall_seconds": 7200.0,
+    "propagator_protocol_changes": false,
+    "queues": {
+      "a": [
+        1101,
+        1105
+      ],
+      "b": [
+        1102,
+        1106
+      ],
+      "c": [
+        1103,
+        1107
+      ],
+      "d": [
+        1104,
+        1108
+      ]
+    },
+    "registration_sha256": "de42e00933f60b6a7b224ab206124cf2db22b2a79e82f7bfa80b5d3ad61a5326",
+    "run_id": "aaf3ff95896e4f03ac1a03d69acbab61",
+    "utc": "2026-11-01T19:45:31.309485+00:00"
+  },
+  "exec_session_id": 17135,
+  "journal_prefix": {
+    "bytes": 48790,
+    "sha256": "6137b07923e37dc3dfa2492934292719f2e0b357b83738dbdb997ca8abea1ab4"
+  },
+  "native_children_started": [
+    {
+      "coordinator_pid": 4,
+      "event": "invocation_started",
+      "native_child_pid": 9,
+      "queue": "c",
+      "run_id": "aaf3ff95896e4f03ac1a03d69acbab61",
+      "seed": 1107,
+      "utc": "2026-11-01T19:45:31.737181+00:00"
+    },
+    {
+      "coordinator_pid": 4,
+      "event": "invocation_started",
+      "native_child_pid": 22,
+      "queue": "d",
+      "run_id": "aaf3ff95896e4f03ac1a03d69acbab61",
+      "seed": 1108,
+      "utc": "2026-11-01T19:45:32.143956+00:00"
+    }
+  ],
+  "physics_or_fixed_cohort_changed": false,
+  "predecessor_exit_proof_sha256": "3c8db033aa727341a39b02e7e788fc878ee60f18e64880c728be74629e29d963",
+  "registration_sha256": "de42e00933f60b6a7b224ab206124cf2db22b2a79e82f7bfa80b5d3ad61a5326",
+  "scheduler_source_sha256": "af1258f9118c4de296c90edb18c57aceb07a007d564652b4f5db6e851cece75e",
+  "schema": "pyrpmd.water-original-bounded-continuation-start.v1"
+}

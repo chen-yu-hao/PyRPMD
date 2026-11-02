@@ -1,0 +1,157 @@
+{
+  "actual_extraction": "/workspace/scratch/a5e4820daedd/h3-p256-native-calibration-roundtrip-2026-11-01",
+  "all_members_hashed": true,
+  "all_raw_integrity_envelopes_verified": [
+    {
+      "completed_frame": 4,
+      "fingerprint": "3585f09e8d1d2129deadcce311753e9102395decd5b86e873622b35d62d4768f",
+      "member": "0.05-native-trace.npz",
+      "payload_array_count": 8
+    },
+    {
+      "completed_frame": 4,
+      "fingerprint": "3585f09e8d1d2129deadcce311753e9102395decd5b86e873622b35d62d4768f",
+      "member": "0.05-python-trace.npz",
+      "payload_array_count": 8
+    },
+    {
+      "completed_frame": 2,
+      "fingerprint": "3585f09e8d1d2129deadcce311753e9102395decd5b86e873622b35d62d4768f",
+      "member": "0.05-restart-midpoint.npz",
+      "payload_array_count": 8
+    },
+    {
+      "completed_frame": 4,
+      "fingerprint": "3585f09e8d1d2129deadcce311753e9102395decd5b86e873622b35d62d4768f",
+      "member": "0.05-restart-trace.npz",
+      "payload_array_count": 8
+    },
+    {
+      "completed_frame": 4,
+      "fingerprint": "3585f09e8d1d2129deadcce311753e9102395decd5b86e873622b35d62d4768f",
+      "member": "0.1-native-trace.npz",
+      "payload_array_count": 8
+    },
+    {
+      "completed_frame": 4,
+      "fingerprint": "3585f09e8d1d2129deadcce311753e9102395decd5b86e873622b35d62d4768f",
+      "member": "0.1-python-trace.npz",
+      "payload_array_count": 8
+    },
+    {
+      "completed_frame": 2,
+      "fingerprint": "3585f09e8d1d2129deadcce311753e9102395decd5b86e873622b35d62d4768f",
+      "member": "0.1-restart-midpoint.npz",
+      "payload_array_count": 8
+    },
+    {
+      "completed_frame": 4,
+      "fingerprint": "3585f09e8d1d2129deadcce311753e9102395decd5b86e873622b35d62d4768f",
+      "member": "0.1-restart-trace.npz",
+      "payload_array_count": 8
+    },
+    {
+      "completed_frame": 0,
+      "fingerprint": "3585f09e8d1d2129deadcce311753e9102395decd5b86e873622b35d62d4768f",
+      "member": "initial-state.npz",
+      "payload_array_count": 6
+    }
+  ],
+  "archive": {
+    "bytes": 1337176,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-p256-native-calibration-2026-11-01.tar.gz",
+    "sha256": "bb031b5500171b661f162edc19d410fc3b124e322becbbe2393005c4afb23bf4"
+  },
+  "files": [
+    {
+      "bytes": 179675,
+      "member": "0.05-native-trace.npz",
+      "sha256": "f6af651cb1fce58fec345bd1178bbfe6fd717b1c56d0e7a8195c59f486784466",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-native-calibration-v1/0.05-native-trace.npz"
+    },
+    {
+      "bytes": 179673,
+      "member": "0.05-python-trace.npz",
+      "sha256": "b28a3c369f53ee7dee5ad9c0f8f023c8a4bdce4f88a5ddd02377055bafb0343f",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-native-calibration-v1/0.05-python-trace.npz"
+    },
+    {
+      "bytes": 108853,
+      "member": "0.05-restart-midpoint.npz",
+      "sha256": "1d0a76123d643c1f7fdb79970ebba49ed2a4b7a2ca20fd834b8d1504d3cacb27",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-native-calibration-v1/0.05-restart-midpoint.npz"
+    },
+    {
+      "bytes": 179675,
+      "member": "0.05-restart-trace.npz",
+      "sha256": "f6af651cb1fce58fec345bd1178bbfe6fd717b1c56d0e7a8195c59f486784466",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-native-calibration-v1/0.05-restart-trace.npz"
+    },
+    {
+      "bytes": 179654,
+      "member": "0.1-native-trace.npz",
+      "sha256": "2d7341e08ea0f975e74232190a44ddea22055b58f69c8d08c06576aab82ae520",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-native-calibration-v1/0.1-native-trace.npz"
+    },
+    {
+      "bytes": 179645,
+      "member": "0.1-python-trace.npz",
+      "sha256": "67c3ce4db64223360ae672a4be4a60cd1846ecf0379d929ec5ddb62fb650502b",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-native-calibration-v1/0.1-python-trace.npz"
+    },
+    {
+      "bytes": 108865,
+      "member": "0.1-restart-midpoint.npz",
+      "sha256": "5fba0f062b1845a4d32314565d53b5cae19b5f5685431982f81455e34aff01dd",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-native-calibration-v1/0.1-restart-midpoint.npz"
+    },
+    {
+      "bytes": 179654,
+      "member": "0.1-restart-trace.npz",
+      "sha256": "2d7341e08ea0f975e74232190a44ddea22055b58f69c8d08c06576aab82ae520",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-native-calibration-v1/0.1-restart-trace.npz"
+    },
+    {
+      "bytes": 633,
+      "member": "RUN_ONCE.json",
+      "sha256": "af154ddd73364f8a9a748638786a117ffe7653736fec6acbbed24d06f33ac4d1",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-native-calibration-v1/RUN_ONCE.json"
+    },
+    {
+      "bytes": 1750,
+      "member": "checks-0.05.json",
+      "sha256": "bb70937ca9f910937c3793d27d2c3dbf0e91534ff72ae14ebdc7b38035c93ebc",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-native-calibration-v1/checks-0.05.json"
+    },
+    {
+      "bytes": 1746,
+      "member": "checks-0.1.json",
+      "sha256": "f6cbf8da08144548f1d7e2a7a587d545d66fd8d6fd6cdf2a9636b1cbc4a4fcde",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-native-calibration-v1/checks-0.1.json"
+    },
+    {
+      "bytes": 7574,
+      "member": "initial-ledger.json",
+      "sha256": "ea9a773922e6243f0a611641a6aa5191b0126dffbd2e1a6c433e8ccef8b00edf",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-native-calibration-v1/initial-ledger.json"
+    },
+    {
+      "bytes": 37458,
+      "member": "initial-state.npz",
+      "sha256": "cbefb23c2410e62b7a2ec12945155813c980473d7c53bebc14de432989f493e0",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-native-calibration-v1/initial-state.npz"
+    },
+    {
+      "bytes": 19478,
+      "member": "report.json",
+      "sha256": "ea075cd029804fa4dbc691ad90db3ffc075deaa22471d51573d50b6b356abb53",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-native-calibration-v1/report.json"
+    }
+  ],
+  "member_count": 14,
+  "original_outputs_unchanged": true,
+  "raw_checkpoint_count": 9,
+  "schema": "pyrpmd.h3.p256-native-calibration.raw-index.v1",
+  "scope": "Excluded implementation calibration outputs only; no primary raw, external model, native binary, Git source or physical-rate claim.",
+  "upload_attempted": false
+}

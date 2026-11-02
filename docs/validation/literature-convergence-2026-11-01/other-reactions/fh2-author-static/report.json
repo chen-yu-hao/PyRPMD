@@ -1,0 +1,225 @@
+{
+  "schema": "pyrpmd.fh2.author-static-check.v1",
+  "started_utc": "2026-11-01T19:14:26.248592+00:00",
+  "source_sha256": {
+    "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/fh2_reference/static_protocol.json": "f83b624bd6259bb9194f42071268f286848e60f2f86fae3e1a440e69f7422ea8",
+    "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/fh2_reference/sources.json": "7f18522757459d80527b1f290ee04e317d0888323eb33608f81e481fa7f5d39c",
+    "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/fh2_reference/run_static_check.py": "ca6ea27253cca9ef5e04f6a4c79703a5ba080879ff089d550a64c137e347aa43"
+  },
+  "CPU_affinity": [
+    0
+  ],
+  "numeric_threads": 1,
+  "PES_coefficients_or_source_modified": false,
+  "potential_rate_reference_match": false,
+  "thermal_rate_computed": false,
+  "paper_reproduction": false,
+  "dynamics_steps": 0,
+  "gates": {
+    "SW1_two_energy_implementations": true,
+    "SW1_analytic_distance_gradient_all_three_steps": true,
+    "SW1_H_exchange_gradient": true,
+    "both_H_exchange_energies": true,
+    "same_SW1_component_in_both_archives": true,
+    "HSW_two_author_decimal_targets": true,
+    "HSW_unchanged_author_program_vs_wrapper": true,
+    "sources_unchanged": true
+  },
+  "all_static_checks_passed": true,
+  "SW1_cross_archive_absolute_differences_hartree": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "external_assets": [
+    {
+      "path": "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/sw1/pot.f",
+      "bytes": 2958,
+      "sha256": "6c94969e838acca88e04a2308dcfa55564024e9eb7c8a0fd1d6b3c38f1dc337e"
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/sw1/pot_deriv.f",
+      "bytes": 3589,
+      "sha256": "aa691c2bb00c6abc3341ccedfff01da50d0a7569638b854044b8943f6c2874f8"
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/sw1/readme.txt",
+      "bytes": 3122,
+      "sha256": "453abc358883a53a5d9f33aaed9d3e3732096ecb5a49236bd7053567bbae6d24"
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/sw1/three.param",
+      "bytes": 9702,
+      "sha256": "817e9c45ea1e85640f78ed748173ae71056dab6210083909d500ca97f9dc48d7"
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/sw1/two.param",
+      "bytes": 144,
+      "sha256": "0aca577d9d2d7fb712286d9a26e2635c8d4b47d6122fda4a935c50e224956812"
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/sw1/libsw1_static.so",
+      "bytes": 21416,
+      "sha256": "c5d8b5dc0e7b71fc30d5878cf0a7af92db976538aeeea0a93dffde90f3485c21"
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/hsw/hswpot.f",
+      "bytes": 6838,
+      "sha256": "6cc34620f04b2446c185eaa64b22939357138f88debd3a6b16a3ffa5833bf93e"
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/hsw/readme.txt",
+      "bytes": 1474,
+      "sha256": "c0e229de6eed8cfd6ea789c787945faaafd693c78b12e9d7735af2acbb68a7ce"
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/hsw/so.input",
+      "bytes": 12480,
+      "sha256": "b58e5eb9b2c5150d3e6a26ec27faa04a6c1e59c180f3c82c01a0e3a37021dc2d"
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/hsw/so.param",
+      "bytes": 144,
+      "sha256": "0a432fe392e44e27abaa6cb517cac84fadfea01f8cb30bddf11204f845737296"
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/hsw/sospline.f",
+      "bytes": 33947,
+      "sha256": "c6b4e79e7c7130bc01858152872d938fc88b0292b2659cf614e3808d48fe4d2a"
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/hsw/three.param",
+      "bytes": 9701,
+      "sha256": "6dd148607f472ca27c83aa64eba7d5a2085ccb5578b64e17e156be73fc2bbdb7"
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/hsw/two.param",
+      "bytes": 144,
+      "sha256": "0aca577d9d2d7fb712286d9a26e2635c8d4b47d6122fda4a935c50e224956812"
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/hsw/verify.f",
+      "bytes": 611,
+      "sha256": "65e71317235b01719ff2c9eac4ecfea0bc4c5a612d913f7fe01fa848517e9a8f"
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/hsw/libhsw_static.so",
+      "bytes": 35208,
+      "sha256": "254120f83df6ad85b7f659be920b62dcb71660a5e6d55f699fa75c77ae9e9852"
+    }
+  ],
+  "expected_geometry_count": 10,
+  "HSW_author_reference_note": "Decimal values are retained as written; unchanged verify.f uses default-real literals assigned to double precision. Both the original executable and the decimal targets are reported; no constants or energy shifts are changed.",
+  "commands": [
+    {
+      "label": "sw1-build",
+      "command": [
+        "/workspace/scratch/a5e4820daedd/fortran-env/bin/x86_64-conda-linux-gnu-gfortran",
+        "-O2",
+        "-std=legacy",
+        "-ffixed-line-length-none",
+        "-fno-automatic",
+        "-Wl,-rpath,/workspace/scratch/a5e4820daedd/fortran-env/lib",
+        "-shared",
+        "-fPIC",
+        "pot.f",
+        "pot_deriv.f",
+        "-o",
+        "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/sw1/libsw1_static.so"
+      ],
+      "cwd": "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/sw1",
+      "returncode": 0,
+      "wall_seconds": 0.2220454990019789
+    },
+    {
+      "label": "sw1-checks",
+      "command": [
+        "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+        "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/fh2_reference/run_static_check.py",
+        "--worker",
+        "sw1",
+        "--library",
+        "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/sw1/libsw1_static.so",
+        "--output",
+        "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/sw1-results.json"
+      ],
+      "cwd": "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/sw1",
+      "returncode": 0,
+      "wall_seconds": 0.17367198699503206
+    },
+    {
+      "label": "hsw-build",
+      "command": [
+        "/workspace/scratch/a5e4820daedd/fortran-env/bin/x86_64-conda-linux-gnu-gfortran",
+        "-O2",
+        "-std=legacy",
+        "-ffixed-line-length-none",
+        "-fno-automatic",
+        "-Wl,-rpath,/workspace/scratch/a5e4820daedd/fortran-env/lib",
+        "-shared",
+        "-fPIC",
+        "hswpot.f",
+        "sospline.f",
+        "-o",
+        "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/hsw/libhsw_static.so"
+      ],
+      "cwd": "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/hsw",
+      "returncode": 0,
+      "wall_seconds": 0.823652453997056
+    },
+    {
+      "label": "hsw-checks",
+      "command": [
+        "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+        "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/fh2_reference/run_static_check.py",
+        "--worker",
+        "hsw",
+        "--library",
+        "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/hsw/libhsw_static.so",
+        "--output",
+        "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/hsw-results.json"
+      ],
+      "cwd": "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/hsw",
+      "returncode": 0,
+      "wall_seconds": 0.1734571729975869
+    },
+    {
+      "label": "hsw-author-build",
+      "command": [
+        "/workspace/scratch/a5e4820daedd/fortran-env/bin/x86_64-conda-linux-gnu-gfortran",
+        "-O2",
+        "-std=legacy",
+        "-ffixed-line-length-none",
+        "-fno-automatic",
+        "-Wl,-rpath,/workspace/scratch/a5e4820daedd/fortran-env/lib",
+        "hswpot.f",
+        "sospline.f",
+        "verify.f",
+        "-o",
+        "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/hsw/verify-original"
+      ],
+      "cwd": "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/hsw",
+      "returncode": 0,
+      "wall_seconds": 0.9253492979987641
+    },
+    {
+      "label": "hsw-author-verify",
+      "command": [
+        "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/hsw/verify-original"
+      ],
+      "cwd": "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/hsw",
+      "returncode": 0,
+      "wall_seconds": 0.00870306300203083
+    }
+  ],
+  "whole_call_wall_seconds": 2.332971304000239,
+  "child_CPU_seconds": 1.960445,
+  "completed_utc": "2026-11-01T19:14:28.581407+00:00"
+}

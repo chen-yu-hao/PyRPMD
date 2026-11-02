@@ -1,0 +1,143 @@
+{
+  "builds": 0,
+  "created_before_execution_utc": "2026-11-01T20:15:44.002361+00:00",
+  "driver_changes": [
+    "Include actually loaded hch4 modules in audit",
+    "Separate evidence/temp directory",
+    "New receipt schema"
+  ],
+  "driver_parent": {
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/materials-preparation-compatibility/run_checks.py",
+    "sha256": "9a5dbaf587638f638a1b9b387bf6a44477c402e13fb5e1eca7e4e74a3386fd5c"
+  },
+  "frozen_inventories": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/publication-inventory.json",
+      "sha256": "fef19a7571f5ac5605c665d6a2e9d0964c208047df0d34497f4673596649072e"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-plot-helper/publication-inventory.json",
+      "sha256": "fd2a9e421a3c274c869563b30e07c5759954944964077e5681d2783dd2b173fe"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/publication-inventory.json",
+      "sha256": "10ce01b004b9870e283a79e746781543edcafa5d7598e6539a21c2bfd008528e"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/publishable-files-v3.json",
+      "sha256": "0dd49f90e9dd4b038c9a665f63f1ae067bb73a56b4750180148f5008e5bd02cb"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-tool/publication-inventory.json",
+      "sha256": "1a769e61c4578d1fba0d1fd3dc7cc529e82d3b899c3cbf22d7df6d5dfa5fb256"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/publication-inventory.json",
+      "sha256": "e53ce2dc1a99223a1f6e72b5c71506d2a63ed5149566d460e765f615baf01476"
+    }
+  ],
+  "installs": 0,
+  "native_products": {
+    "py312": {
+      "_electronic": {
+        "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_electronic.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "bd3828d6235883c375e0ad690a4e2c283b752ae96a16558504243938f339662a"
+      },
+      "_native": {
+        "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "61dc8ec076a86176e3826415444e64428272441ae3ebe50779acc69bebd51f6f"
+      },
+      "_thermal": {
+        "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_thermal.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "430373fd797ef0919592fd636430fba8c98b010b33e83ee0b9e2ee36616d24b5"
+      }
+    },
+    "py313": {
+      "_electronic": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_electronic.cpython-313-x86_64-linux-gnu.so",
+        "sha256": "1e54ae8815f04a711c89422053bdd98deb623ad56f4488c91ab1078470ddb8d9"
+      },
+      "_native": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_native.cpython-313-x86_64-linux-gnu.so",
+        "sha256": "d557c5b066523d7a63487a6cd67b48ca69e4a3db2b67a4a623a9611560e9a505"
+      },
+      "_thermal": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_thermal.cpython-313-x86_64-linux-gnu.so",
+        "sha256": "fde3702d5e4912dd14ad6b4ba5af9723b120ccf83cd096ead6fb939b438aa86a"
+      }
+    },
+    "py314": {
+      "_electronic": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_electronic.cpython-314-x86_64-linux-gnu.so",
+        "sha256": "70267d8da8ba617873734ca5c6bc4cf43980a2c65f8df49f06f7acdbe85909d8"
+      },
+      "_native": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_native.cpython-314-x86_64-linux-gnu.so",
+        "sha256": "a1ccae3e79e01e26a743654ffd9badb20fc6f35ab3723f4824738a0289615fbe"
+      },
+      "_thermal": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_thermal.cpython-314-x86_64-linux-gnu.so",
+        "sha256": "b1c9ec2db1a0df599f1a3206000b243bab39679d9bcb942167391d104b3e28fb"
+      }
+    }
+  },
+  "new_case_families": {
+    "hch4_reference_pilot": 30,
+    "p256_child_coordinator": 73,
+    "p256_parent_binding": 30,
+    "p256_parent_campaign": 61,
+    "p256_statistical_analysis": 28,
+    "water_paired_timestep": 13,
+    "water_preparation_plot": 4
+  },
+  "per_interpreter": {
+    "py312": {
+      "expected": 239,
+      "files": [
+        "tests/test_water_paired_timestep.py",
+        "tests/test_water_preparation_plot.py",
+        "tests/test_hch4_reference_pilot.py",
+        "tests/test_h3_p256_parent_campaign.py",
+        "tests/test_h3_p256_surface_recrossing.py",
+        "tests/test_h3_p256_recrossing_analysis.py",
+        "tests/test_h3_p256_child_campaign.py"
+      ],
+      "python": "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python"
+    },
+    "py313": {
+      "expected": 239,
+      "files": [
+        "tests/test_water_paired_timestep.py",
+        "tests/test_water_preparation_plot.py",
+        "tests/test_hch4_reference_pilot.py",
+        "tests/test_h3_p256_parent_campaign.py",
+        "tests/test_h3_p256_surface_recrossing.py",
+        "tests/test_h3_p256_recrossing_analysis.py",
+        "tests/test_h3_p256_child_campaign.py"
+      ],
+      "python": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/bin/python"
+    },
+    "py314": {
+      "expected": 239,
+      "files": [
+        "tests/test_water_paired_timestep.py",
+        "tests/test_water_preparation_plot.py",
+        "tests/test_hch4_reference_pilot.py",
+        "tests/test_h3_p256_parent_campaign.py",
+        "tests/test_h3_p256_surface_recrossing.py",
+        "tests/test_h3_p256_recrossing_analysis.py",
+        "tests/test_h3_p256_child_campaign.py"
+      ],
+      "python": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/bin/python"
+    }
+  },
+  "previous_315_case_coverage": {
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/materials-preparation-compatibility/case-coverage.json",
+    "sha256": "5c6c1e321a29435cc7f30dbfb6b41ee7baa31756742545a8a0921640d18953e5"
+  },
+  "previous_315_cases_rerun": false,
+  "schema": "pyrpmd.four-pair-p256-integration-selection.v1",
+  "source_head": "67d55e9ce745a2e18906d7aff9327c7b8646a2cb",
+  "source_state_note": "Six frozen new method/coordinator bundles copied byte-for-byte. The separate literature catalog update is explicit in the guard deltas.",
+  "test_scope": "New contracts, analytic/synthetic statistics, small OpenMM restart/timestep fixtures and bounded inert subprocess lifecycle tests. No external reaction PES or long scientific production is launched."
+}

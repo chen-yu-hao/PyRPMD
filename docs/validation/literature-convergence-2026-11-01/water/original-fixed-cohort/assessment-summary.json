@@ -1,0 +1,224 @@
+{
+  "NVE_mean_temperature_K": 298.21788898014574,
+  "NVE_segment_mean_temperature_range_K": [
+    283.21589878436333,
+    316.5583231469969
+  ],
+  "RDF_hard_gate_adopted": false,
+  "chain_rows": [
+    {
+      "D_MSD_1_2ps_angstrom2_ps": 0.17079902533218225,
+      "D_VACF_2ps_angstrom2_ps": 0.17260107300689975,
+      "all25_NVE_segments_retained": true,
+      "original_U_gate_passed": true,
+      "preparation_delta_HOH_degrees": 0.03609124738646585,
+      "preparation_delta_OH_angstrom": 0.00020935614124906188,
+      "preparation_delta_T_K": -0.1394566027690871,
+      "preparation_delta_U_kcal_mol_water": -0.009007497058994974,
+      "seed": 1101
+    },
+    {
+      "D_MSD_1_2ps_angstrom2_ps": 0.19928370155618397,
+      "D_VACF_2ps_angstrom2_ps": 0.20296724717807016,
+      "all25_NVE_segments_retained": true,
+      "original_U_gate_passed": false,
+      "preparation_delta_HOH_degrees": -0.08591944287195474,
+      "preparation_delta_OH_angstrom": 0.0005161995580053036,
+      "preparation_delta_T_K": -0.4708190529551075,
+      "preparation_delta_U_kcal_mol_water": -0.15744222030008717,
+      "seed": 1102
+    },
+    {
+      "D_MSD_1_2ps_angstrom2_ps": 0.19573796765245458,
+      "D_VACF_2ps_angstrom2_ps": 0.19401773768534367,
+      "all25_NVE_segments_retained": true,
+      "original_U_gate_passed": true,
+      "preparation_delta_HOH_degrees": 0.0383329161744399,
+      "preparation_delta_OH_angstrom": 0.00012144441896499991,
+      "preparation_delta_T_K": 1.5315888128264419,
+      "preparation_delta_U_kcal_mol_water": -0.03463591409736435,
+      "seed": 1103
+    },
+    {
+      "D_MSD_1_2ps_angstrom2_ps": 0.20972629871018783,
+      "D_VACF_2ps_angstrom2_ps": 0.20637432035712544,
+      "all25_NVE_segments_retained": true,
+      "original_U_gate_passed": true,
+      "preparation_delta_HOH_degrees": 0.008845536809928944,
+      "preparation_delta_OH_angstrom": -7.841397158592223e-05,
+      "preparation_delta_T_K": 0.018435447421040863,
+      "preparation_delta_U_kcal_mol_water": -0.020865984010081755,
+      "seed": 1104
+    },
+    {
+      "D_MSD_1_2ps_angstrom2_ps": 0.19239521183979943,
+      "D_VACF_2ps_angstrom2_ps": 0.19781356066203454,
+      "all25_NVE_segments_retained": true,
+      "original_U_gate_passed": false,
+      "preparation_delta_HOH_degrees": 0.008238186240163259,
+      "preparation_delta_OH_angstrom": -0.0002784462858561598,
+      "preparation_delta_T_K": 0.6262112755433691,
+      "preparation_delta_U_kcal_mol_water": 0.056427216586422815,
+      "seed": 1105
+    },
+    {
+      "D_MSD_1_2ps_angstrom2_ps": 0.1945092030982056,
+      "D_VACF_2ps_angstrom2_ps": 0.19208747342092475,
+      "all25_NVE_segments_retained": true,
+      "original_U_gate_passed": false,
+      "preparation_delta_HOH_degrees": 0.008921785639770974,
+      "preparation_delta_OH_angstrom": 0.0003170210431554521,
+      "preparation_delta_T_K": -0.1868477635539989,
+      "preparation_delta_U_kcal_mol_water": -0.10859990236062417,
+      "seed": 1106
+    },
+    {
+      "D_MSD_1_2ps_angstrom2_ps": 0.21309068853779117,
+      "D_VACF_2ps_angstrom2_ps": 0.22391287773233814,
+      "all25_NVE_segments_retained": true,
+      "original_U_gate_passed": true,
+      "preparation_delta_HOH_degrees": 0.055520661653403636,
+      "preparation_delta_OH_angstrom": -8.647200205624817e-05,
+      "preparation_delta_T_K": -1.0332562273172812,
+      "preparation_delta_U_kcal_mol_water": -0.0017258874983002337,
+      "seed": 1107
+    },
+    {
+      "D_MSD_1_2ps_angstrom2_ps": 0.20783060558993405,
+      "D_VACF_2ps_angstrom2_ps": 0.19269703876701338,
+      "all25_NVE_segments_retained": true,
+      "original_U_gate_passed": true,
+      "preparation_delta_HOH_degrees": -0.02047726739763789,
+      "preparation_delta_OH_angstrom": -0.00014388640522478013,
+      "preparation_delta_T_K": -1.5140144041289432,
+      "preparation_delta_U_kcal_mol_water": -0.021319449690310032,
+      "seed": 1108
+    }
+  ],
+  "completed_NVE_segments": 200,
+  "created_utc": "2026-11-01T20:50:13.185664+00:00",
+  "diffusion_MSD_angstrom2_ps": {
+    "CI95": [
+      0.18674048116769618,
+      0.20910269441148852
+    ],
+    "CI95_halfwidth": 0.011181106621896164,
+    "chains": 8,
+    "degrees_of_freedom": 7,
+    "mean": 0.19792158778959235,
+    "standard_deviation": 0.013374194751131456,
+    "standard_error": 0.004728491900717291
+  },
+  "diffusion_VACF_angstrom2_ps": {
+    "CI95": [
+      0.18561141486410837,
+      0.2100064173383291
+    ],
+    "CI95_halfwidth": 0.012197501237110357,
+    "chains": 8,
+    "degrees_of_freedom": 7,
+    "mean": 0.19780891610121873,
+    "standard_deviation": 0.014589947358414138,
+    "standard_error": 0.005158325357144696
+  },
+  "eligibility_checks": {
+    "MSD_VACF_compatibility": true,
+    "MSD_window_compatibility": false,
+    "VACF_cutoff_compatibility": true,
+    "energy_envelope": true,
+    "energy_linear_drift": true,
+    "fixed_stage_complete": true,
+    "paired_equivalence": false,
+    "precision": true,
+    "sampling_mean_HOH_degrees": true,
+    "sampling_mean_OH_angstrom": true,
+    "sampling_potential_per_molecule_hartree": false,
+    "sampling_temperature_momenta_K": true
+  },
+  "energy_extrema": {
+    "energy_drift_kcal_mol_water_ps": {
+      "maximum_absolute_value": 0.0001281862273713204,
+      "seed": 1108,
+      "segment": 12,
+      "signed_value": -0.0001281862273713204
+    },
+    "max_abs_sampled_energy_change_kcal_mol_water": {
+      "maximum_absolute_value": 0.0019549350289139455,
+      "seed": 1104,
+      "segment": 5,
+      "signed_value": 0.0019549350289139455
+    }
+  },
+  "failed_original_potential_energy_seeds": [
+    1102,
+    1105,
+    1106
+  ],
+  "fixed_seeds": [
+    1101,
+    1102,
+    1103,
+    1104,
+    1105,
+    1106,
+    1107,
+    1108
+  ],
+  "formal_literature_comparison": null,
+  "frames_per_segment": [
+    801
+  ],
+  "individual_window_status_counts": {
+    "diffusive_regime_candidate": 118,
+    "non_diffusive_window": 82
+  },
+  "individual_window_status_interpretation": "Heuristic descriptors from the frozen diffusion analyzer; all200 segments remain included regardless of status. A positive offset in an approximately linear MSD can produce a log-log slope below one, so this descriptor is not an independent proof of anomalous diffusion.",
+  "largest_abs_preparation_differences": {
+    "mean_HOH_degrees": 0.08591944287195474,
+    "mean_OH_angstrom": 0.0005161995580053036,
+    "temperature_momenta_K": 1.5315888128264419
+  },
+  "late_preparation_scalar_means": {
+    "mean_HOH_degrees": 104.79418661302682,
+    "mean_OH_angstrom": 0.9635626592138344,
+    "temperature_momenta_K": 297.82381258747427
+  },
+  "literature_reproduced": false,
+  "log_MSD_slope_range": [
+    0.3764828588827934,
+    0.9029204628539665
+  ],
+  "new_hard_gates_added": false,
+  "physical_converged": false,
+  "primary_report_sha256": "f544d5de9202a73f7013ee5191fed4e53e330a9eeb41c87770bfaaa3f7d4d1f8",
+  "production_halves": {
+    "MSD": {
+      "CI95": [
+        -0.004945728488056102,
+        0.039190822525783015
+      ],
+      "CI95_halfwidth": 0.02206827550691956,
+      "chains": 8,
+      "degrees_of_freedom": 7,
+      "mean": 0.017122547018863458,
+      "standard_deviation": 0.026396798137420296,
+      "standard_error": 0.00933267748229116
+    },
+    "VACF": {
+      "CI95": [
+        -0.009282837765584057,
+        0.03571439918152831
+      ],
+      "CI95_halfwidth": 0.022498618473556182,
+      "chains": 8,
+      "degrees_of_freedom": 7,
+      "mean": 0.013215780707972125,
+      "standard_deviation": 0.026911549569475043,
+      "standard_error": 0.009514669596406858
+    }
+  },
+  "production_stability_sha256": "de670bab0413d0adfa7ffcb5c45a16820bbd87dcae9fe5fbe63135d679fc9357",
+  "schema": "pyrpmd.water-complete-original-cohort-assessment-summary.v1",
+  "scope": "Descriptive complete original external OpenMM reference; unchanged eligibility failures retained.",
+  "total_NVE_ps": 800
+}

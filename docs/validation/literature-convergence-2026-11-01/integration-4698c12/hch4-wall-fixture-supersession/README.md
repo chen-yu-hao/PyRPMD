@@ -1,0 +1,9 @@
+# HCH₄ wall-timeout fixture supersession
+
+The complete Python 3.14 suite at head `36ec289981639bbeb8feecf3b30400b4cbda9afe` exposed a test-isolation failure: this synthetic wall-timeout fixture inherited the CPU time already used by the long-lived pytest interpreter. The production supervisor correctly refused admission once that whole-process CPU budget was exhausted. The fixture therefore never reached the wall-timeout behavior it intended to test.
+
+The additive correction changes only `test_wall_supervisor_retains_ledger_and_refuses_second_attempt` in the integration checkout's `tests/test_hch4_reference_pilot.py`. It supplies a fixed synthetic CPU clock of 0.1 seconds. Its real monotonic wall deadline, sleeping inert child, cleanup, retained marker and second-attempt refusal assertions remain unchanged. The production supervisor, original runtime checkout and all prior inventories remain byte-for-byte unchanged.
+
+The [exact patch](fixture-only.patch), [prior test](test_hch4_reference_pilot.before.py), [corrected test](test_hch4_reference_pilot.after.py), and [supersession receipt](supersession.json) are retained. An AST comparison confirms that only the named test function changed. The full-suite failure remains in the earlier immutable [failure classification](../full-suite-36ec289-py314/failure-classification.json).
+
+The corrected case passed on Python 3.14 in 0.88 seconds with an explicitly emulated **1,000-second outer process CPU age**, while retaining the real wall timeout. This reproduces the relevant long-suite condition without burning CPU. The [JUnit result](pytest-py314.xml) and [log](pytest-py314.log) record that one focused check; they are not a new complete-suite pass. No PES evaluation or physical dynamics occurred. Root owns the subsequent targeted and complete-suite gates.

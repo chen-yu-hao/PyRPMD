@@ -1,0 +1,335 @@
+{
+  "schema": "pyrpmd.h3.four-pair-stage-publication.v1",
+  "created_utc": "2026-11-01T19:39:46.378150+00:00",
+  "files": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/README.md",
+      "bytes": 6863,
+      "sha256": "c4b723f731d85a686be5e6462a56dcf4bc12c68942b70f1da027fcda3036f251"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/analysis_driver.py",
+      "bytes": 3403,
+      "sha256": "d818e9c65e68df42b227703692f475acb4e400c853909ab58599936d89846ba4"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/curation.json",
+      "bytes": 25248,
+      "sha256": "ee9ca71bf2fc0052282a0d495ebecdfba2e4d9340d7a5628f6bc8dd41e7e7414"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/curation_driver.py",
+      "bytes": 4912,
+      "sha256": "07199b7d2d0b00802aeb5972f696916eba9e8df85b3c38b2a7b9abe5bcf1096d"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/execution.json",
+      "bytes": 1544,
+      "sha256": "b0e2424aec155ad46fee8b6110a1df72e99b084754b71942c7aa7a2565f1e200"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721301/dt-0.05/kappa.csv",
+      "bytes": 10014,
+      "sha256": "aa908d1b2842a3ef6c57b780da2004a6cd71dc2590ed74b605f763f35f5b478f"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721301/dt-0.05/report.json",
+      "bytes": 4894,
+      "sha256": "47336c73369e30a63b6daba7e629b173d5995497235817fd4bfd140edcd9eac3"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721301/dt-0.05/settings.json",
+      "bytes": 1815,
+      "sha256": "a9a85b60ffd387debbc01b7002913508f838115a54ca1fc8340cdf7cbf42b915"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721301/dt-0.1/kappa.csv",
+      "bytes": 10014,
+      "sha256": "5b2c0b457fb9bc5f47b1eeba419d43ce6445e497ee34bede9785156196c4aea5"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721301/dt-0.1/report.json",
+      "bytes": 4893,
+      "sha256": "ce3807e4c18e59d52765d6615c8a10a15c6c819a266ead67346a90275b7bf78e"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721301/dt-0.1/settings.json",
+      "bytes": 1814,
+      "sha256": "27a3ca183e0bee3b1a9c93e336bf36fa446d48a5225d74c30aa6cff6e40dfb30"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721303/dt-0.05/kappa.csv",
+      "bytes": 10014,
+      "sha256": "087704602019e34a0c495e92032bfa175fe48ca8754d9c2167a54846100a0cc7"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721303/dt-0.05/report.json",
+      "bytes": 4898,
+      "sha256": "6761e53d0a8c5a55571cf598916e65c91abe775041750970979a379f4c8fb9e6"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721303/dt-0.05/settings.json",
+      "bytes": 1818,
+      "sha256": "8fa1cb305ec13bee788e1831dc738378485c1aee7c0f1b273d1a842c807b5d75"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721303/dt-0.1/kappa.csv",
+      "bytes": 10014,
+      "sha256": "87ed3ed8c7e7845348d6a8eae8c5703cb2fc693b896bc30474581d78d2fafb49"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721303/dt-0.1/report.json",
+      "bytes": 4897,
+      "sha256": "55e91976137b03a5edd7f05133369dddc09404d3420ea72500d602d53e81ede0"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721303/dt-0.1/settings.json",
+      "bytes": 1817,
+      "sha256": "8e89c6410f83a37e0cf43965c9da24d2949a82c498c187ca4188823f4f812dd8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721307/dt-0.05/kappa.csv",
+      "bytes": 10014,
+      "sha256": "599a79faa34efe99609e8374d8f437fb4d79aa832796d6ddf16944b67b828395"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721307/dt-0.05/report.json",
+      "bytes": 4900,
+      "sha256": "7cbef0bf6cf76b4cda589b1e8834c0f01890e6b6f03a62ddfd9d19c897215a17"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721307/dt-0.05/settings.json",
+      "bytes": 1817,
+      "sha256": "0a7819bdf83cfed310f7bf147c3ef90a2aa513e0df64a09f349ab2f0b69cfc16"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721307/dt-0.1/kappa.csv",
+      "bytes": 10014,
+      "sha256": "4b6df1a544391a8b995da74e29a788d977d6913e1630063d8a1560d88c7fafb1"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721307/dt-0.1/report.json",
+      "bytes": 4894,
+      "sha256": "5826d0ed00b796979bd74d5f285c104f87f49be11bcc758ed200cc7e477398ed"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721307/dt-0.1/settings.json",
+      "bytes": 1816,
+      "sha256": "46278a591e909a902a1ffa1f630da9d942a5913680f6f4eac947fe1cf09b5179"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721309/dt-0.05/kappa.csv",
+      "bytes": 10014,
+      "sha256": "ff448ebacbb2c88c8ab604cf59caff9363129dbde5b270784f3476a8b7c8e6dd"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721309/dt-0.05/report.json",
+      "bytes": 4899,
+      "sha256": "7bc86c36b2db073b33a3870d207b496b0ea3f1ccf93c61a7e4ca9fa40b431b80"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721309/dt-0.05/settings.json",
+      "bytes": 1817,
+      "sha256": "d83ca3a5e934aa8819807f47b78446e11a5d7c291cadc55b50cdeeeeeec5584b"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721309/dt-0.1/kappa.csv",
+      "bytes": 10014,
+      "sha256": "296d95fe9060a46de388eec14fea9f816eb7a8b9fbd9800df4d376d72c5a40ee"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721309/dt-0.1/report.json",
+      "bytes": 4891,
+      "sha256": "caa1c5e3ecc4b526d0cd7c65b5c22b84f2a4861c44f8040d0e6e7f58ae9ebad3"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721309/dt-0.1/settings.json",
+      "bytes": 1816,
+      "sha256": "cdde3dbfb884c474be3c8310ee5415b442d43f0bf264c5b3b019ed5806d01a40"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721313/dt-0.05/kappa.csv",
+      "bytes": 10014,
+      "sha256": "af7c96b935012d21d6e5efe0ae99f940839b3238fcf15302fb0796c9b36894ef"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721313/dt-0.05/report.json",
+      "bytes": 4894,
+      "sha256": "5428e75af70bd3eacee833667c86667672a5b661c0f08c84ec2e6212d443ad41"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721313/dt-0.05/settings.json",
+      "bytes": 1817,
+      "sha256": "34db6bdc18e1c20c1f5befd47ad2619e6865b59ac49495eb488ec2697e5e8c4e"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721313/dt-0.1/kappa.csv",
+      "bytes": 10014,
+      "sha256": "52aa41b32343d6a29e9801e901365214b449a2916346a9eefb04c81b8db18c3d"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721313/dt-0.1/report.json",
+      "bytes": 4891,
+      "sha256": "c3511b1466a39e9ae4bed94c64815bd10ab93c936cb39fd61f5529eebc9c4eee"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721313/dt-0.1/settings.json",
+      "bytes": 1816,
+      "sha256": "3db42d79c0c7cad1476161bed26885835d35a95d1942e61d4a349118ebb2f46a"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721317/dt-0.05/kappa.csv",
+      "bytes": 10014,
+      "sha256": "3508162efb50b21a2e95e168e2e7557a8102da9456b3cedf0fc914473689b874"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721317/dt-0.05/report.json",
+      "bytes": 4897,
+      "sha256": "c6ff50c384dc0014ac3a4133c6fa7ce0e69b3e82eb383e510350c9a08e397d96"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721317/dt-0.05/settings.json",
+      "bytes": 1817,
+      "sha256": "7674af2bc7fb83218e0ba4227e6e12a569eea470a033fa27dcd68913e5b1f93c"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721317/dt-0.1/kappa.csv",
+      "bytes": 10014,
+      "sha256": "917968bb77af659e4051218c302335a7accb1ebe174d7c3bde134a724dda41fb"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721317/dt-0.1/report.json",
+      "bytes": 4897,
+      "sha256": "cd624a63ebbdef8bb51ca6e87f119080095e7b16bae0fde973ba488b2195c55e"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721317/dt-0.1/settings.json",
+      "bytes": 1816,
+      "sha256": "e674928749ef43fa3ceb58e5fc4ea44752c53b96ec6aeb76fab2d1df6b448472"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721321/dt-0.05/kappa.csv",
+      "bytes": 10014,
+      "sha256": "1a0c81e1974e5db763de0ae7a6f51dbb0433260bbaee70121d89af4fded74c6b"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721321/dt-0.05/report.json",
+      "bytes": 4899,
+      "sha256": "b4785f2a37d813efa63b3127b037d7976b9cbdbe0e6efeab2bbd41110c95f5b5"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721321/dt-0.05/settings.json",
+      "bytes": 1817,
+      "sha256": "ac244118ab160e0c36420ea385f06c5196c40f31cdcbc4b15f2d7416620936c3"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721321/dt-0.1/kappa.csv",
+      "bytes": 10014,
+      "sha256": "0865be2e23767f93da7654c1e7f1d41eb8687c71a50eb275d8a0989060b329b9"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721321/dt-0.1/report.json",
+      "bytes": 4892,
+      "sha256": "5c4164c74cc8cadffa4d5f67e99ea49bda3728ed5728dccad0bbd15e946183f3"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721321/dt-0.1/settings.json",
+      "bytes": 1816,
+      "sha256": "920bd581b687543629648c09f4c61390e0e44badba9b8fbe055ab94ccbc81440"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721323/dt-0.05/kappa.csv",
+      "bytes": 10014,
+      "sha256": "8d6efe864031ed22613f5286923e603d2fc6325b04b18234c82e03ed5e7e8cad"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721323/dt-0.05/report.json",
+      "bytes": 4899,
+      "sha256": "db92233372d5a7331616d6c4434387119ec8be909ba40204a77af4f5c92cca7e"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721323/dt-0.05/settings.json",
+      "bytes": 1817,
+      "sha256": "bf7200f4d4320fab8646f082a4cb1ca1ebfad4906a72d1532e2473e40c8ac1ac"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721323/dt-0.1/kappa.csv",
+      "bytes": 10014,
+      "sha256": "1a9e0cb1dbb4e601d3f39e47a3d17992413fccf37f9daa8e868997cd0c549b3a"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721323/dt-0.1/report.json",
+      "bytes": 4894,
+      "sha256": "45ef0b9faa3f7bcb3116396f938433a58ec4c4d2b46b8c52e5274c399ff9d20d"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/seed-721323/dt-0.1/settings.json",
+      "bytes": 1816,
+      "sha256": "faf230fd895c2f8f24a1993f6095703cd061ef67c2fb39ade130b935c84a7b54"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/figures/figure-provenance.json",
+      "bytes": 1677,
+      "sha256": "0a56b3d172f150f9d11a74782f77d25737be4d986526281cfc2420084064f9e6"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/figures/quantum-convergence.pdf",
+      "bytes": 34848,
+      "sha256": "a4f6327d3539bc557d054bea427edeb6cc351c1f980fe95d55338edee818cfe0"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/figures/quantum-convergence.png",
+      "bytes": 271096,
+      "sha256": "e1701819e1a31b77f440d10afca3df1f792e42ea2e6dd9925d0bca514740ed97"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/figures/visual-check.json",
+      "bytes": 563,
+      "sha256": "4c7e7dee1c467b96ea827ee5ecd184566a074376ca46d692dd2da6e743d77575"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/kappa-curve.csv",
+      "bytes": 20063,
+      "sha256": "eb1ef3f263573a28a402086cb7049edcad47996be63eb31ae46c04db105648fc"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/pool-exit-receipt.json",
+      "bytes": 402,
+      "sha256": "d9fbcab8a9c944052923f2e3d12fb6d419174c3ab3de0e104d22c11506d0d287"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/protocol.json",
+      "bytes": 6691,
+      "sha256": "53203aeca4fdf66d9fbf1a23fe7a430ab99e24d18c351e85bd2eb383a87d3589"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/quantum-rate-comparison.json",
+      "bytes": 380711,
+      "sha256": "62ce4fea23a55955cf404ae8aa00a2c70204bf20dd48e74de520169a83724720"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/schedule-200-pairs-1-completed.json",
+      "bytes": 1541,
+      "sha256": "edc07bd7d18f6413711713e11a9d944f62dc53ab078397bd4ca99920ef68e119"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/schedule-200-pairs-1.json",
+      "bytes": 542,
+      "sha256": "dfaa2b848a6bbf3b1b946de3d8489b828101ffb54997b94835b4848a36d5732d"
+    }
+  ],
+  "complete_registered_independent_chains": 8,
+  "parents": 1600,
+  "pair_batches": [
+    0,
+    1
+  ],
+  "horizon_fs": 200,
+  "both_timesteps": true,
+  "fixed_P_primary_gates_passed": true,
+  "supplementary_parent_time_half_equivalence_passed": false,
+  "scientific_estimator_or_gate_changed": false,
+  "raw_child_arrays_or_PES_included": false,
+  "base_stage_is_separate_immutable_history": true,
+  "raw_archive_and_independent_review_are_separate_inventories": true
+}

@@ -1,0 +1,8 @@
+{
+  "changes": [
+    "Separate evidence/temp/schema identities; exact selection comes from new selection.json. Import, native, source and dependency guards unchanged."
+  ],
+  "new_sha256": "c26c737477da92a3ed4568d456b7e42ece1c44df88956d474467ecb3b1de8d96",
+  "parent_path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/fifth-stage-compatibility/run_checks.py",
+  "parent_sha256": "210bc1d6cc77bd7e46a4bc0ab9ae2f2e64356e0f079f7bce39300a3309403c8f"
+}

@@ -1,0 +1,76 @@
+F.FFF....F............                                                   [100%]
+=================================== FAILURES ===================================
+____ test_independent_welch_interval_matches_scipy_unequal_variance_oracle _____
+
+    def test_independent_welch_interval_matches_scipy_unequal_variance_oracle():
+        first = np.array([.02, .05, -.04, .01, .09, -.07, .03, .04])
+        second = np.array([.005, -.003, .012, -.006, .009, -.010, .013, -.008])
+        expected = stats.ttest_ind(first, second, equal_var=False).confidence_interval(.95)
+        observed = analysis.independent_difference(first, second, np.log(1.05))
+        np.testing.assert_allclose(observed['CI95'], [expected.low, expected.high], rtol=1e-13, atol=1e-15)
+        assert observed['groups_paired_by_index'] is False
+        assert 7 < observed['Welch_df'] < 14
+>       assert observed['CI95_wholly_within_margin'] is False
+E       assert np.False_ is False
+
+tests/test_h3_p256_recrossing_analysis.py:21: AssertionError
+_ test_full_interval_equivalence_and_degenerate_observation_are_explicit[0.0-True] _
+
+shift = 0.0, passes = True
+
+    @pytest.mark.parametrize('shift,passes', [(0., True), (.04, True), (.06, False)])
+    def test_full_interval_equivalence_and_degenerate_observation_are_explicit(shift, passes):
+        result = analysis.independent_difference(np.full(8, shift), np.zeros(8), np.log(1.05))
+        assert result['degenerate_observed_variance'] is True
+>       assert result['CI95_wholly_within_margin'] is passes
+E       assert np.True_ is True
+
+tests/test_h3_p256_recrossing_analysis.py:36: AssertionError
+_ test_full_interval_equivalence_and_degenerate_observation_are_explicit[0.04-True] _
+
+shift = 0.04, passes = True
+
+    @pytest.mark.parametrize('shift,passes', [(0., True), (.04, True), (.06, False)])
+    def test_full_interval_equivalence_and_degenerate_observation_are_explicit(shift, passes):
+        result = analysis.independent_difference(np.full(8, shift), np.zeros(8), np.log(1.05))
+        assert result['degenerate_observed_variance'] is True
+>       assert result['CI95_wholly_within_margin'] is passes
+E       assert np.True_ is True
+
+tests/test_h3_p256_recrossing_analysis.py:36: AssertionError
+_ test_full_interval_equivalence_and_degenerate_observation_are_explicit[0.06-False] _
+
+shift = 0.06, passes = False
+
+    @pytest.mark.parametrize('shift,passes', [(0., True), (.04, True), (.06, False)])
+    def test_full_interval_equivalence_and_degenerate_observation_are_explicit(shift, passes):
+        result = analysis.independent_difference(np.full(8, shift), np.zeros(8), np.log(1.05))
+        assert result['degenerate_observed_variance'] is True
+>       assert result['CI95_wholly_within_margin'] is passes
+E       assert np.False_ is False
+
+tests/test_h3_p256_recrossing_analysis.py:36: AssertionError
+_______ test_joint_chain_rate_retains_partition_transmission_covariance ________
+
+    def test_joint_chain_rate_retains_partition_transmission_covariance():
+        delta = np.arange(8)*.005
+        log_ts = -2.1+delta
+        kappa = .77*np.exp(-delta)
+        old = baseline(log_ts, kappa)
+        result = analysis.full_rate_statistics(log_ts, kappa, 0., 1., old)
+        assert result['positive_finite_kappa_for_every_chain'] is True
+        statistics = result['statistics']
+        assert statistics['log_rate_statistics']['standard_error'] < 1e-14
+        assert statistics['same_chain_log_partition_log_kappa_covariance_of_mean'][0][1] < 0
+        assert statistics['incorrect_independence_log_rate_variance_for_comparison_only'] > 1e-5
+>       assert result['bead_comparison']['CI95_wholly_within_margin'] is True
+E       assert np.True_ is True
+
+tests/test_h3_p256_recrossing_analysis.py:63: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_h3_p256_recrossing_analysis.py::test_independent_welch_interval_matches_scipy_unequal_variance_oracle
+FAILED tests/test_h3_p256_recrossing_analysis.py::test_full_interval_equivalence_and_degenerate_observation_are_explicit[0.0-True]
+FAILED tests/test_h3_p256_recrossing_analysis.py::test_full_interval_equivalence_and_degenerate_observation_are_explicit[0.04-True]
+FAILED tests/test_h3_p256_recrossing_analysis.py::test_full_interval_equivalence_and_degenerate_observation_are_explicit[0.06-False]
+FAILED tests/test_h3_p256_recrossing_analysis.py::test_joint_chain_rate_retains_partition_transmission_covariance
+5 failed, 17 passed in 0.84s

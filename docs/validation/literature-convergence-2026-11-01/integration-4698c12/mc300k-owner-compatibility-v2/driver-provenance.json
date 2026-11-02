@@ -1,0 +1,9 @@
+{
+  "changes": [
+    "Separate immutable attempt.",
+    "Require exact predeclared skipped identities/reasons from observed API availability.",
+    "Report69passed/7unavailable separately from full76case coverage; zero unexpected failures/errors allowed."
+  ],
+  "current_sha256": "2a3a414d46cceb70e3f0fb6259e1396d46e01a0a27f6afbd34b83a063de9798c",
+  "parent_sha256": "6dc6101951ada8d4741d1f72c3b462740e97c7f9ef7bc7b048225d03c5fbddd8"
+}

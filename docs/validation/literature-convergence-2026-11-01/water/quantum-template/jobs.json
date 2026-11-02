@@ -1,0 +1,399 @@
+{
+  "environment": {
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OPENMM_CPU_THREADS": "1"
+  },
+  "jobs": [
+    {
+      "argv": [
+        ".venv/bin/python",
+        "benchmarks/water/native_quantum.py",
+        "--config",
+        "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2101-cpu.json",
+        "--output",
+        "../water-quantum-full-pme/seed-2101",
+        "--wall-seconds",
+        "1800"
+      ],
+      "config": "configs/seed-2101-cpu.json",
+      "config_sha256": "4ad978058766a035266dbd24db856765f0c7025ad37bbe36484b3e9d08dd5f42",
+      "integration_steps": 5000000,
+      "preparation_ps": 100,
+      "production_ps": 400,
+      "production_segments": 100,
+      "seed": 2101
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "benchmarks/water/native_quantum.py",
+        "--config",
+        "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2102-cpu.json",
+        "--output",
+        "../water-quantum-full-pme/seed-2102",
+        "--wall-seconds",
+        "1800"
+      ],
+      "config": "configs/seed-2102-cpu.json",
+      "config_sha256": "5cfc9d183854e2132f75c440c54f7d95222ca334bb51cd0e150b3439cd8f61fb",
+      "integration_steps": 5000000,
+      "preparation_ps": 100,
+      "production_ps": 400,
+      "production_segments": 100,
+      "seed": 2102
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "benchmarks/water/native_quantum.py",
+        "--config",
+        "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2103-cpu.json",
+        "--output",
+        "../water-quantum-full-pme/seed-2103",
+        "--wall-seconds",
+        "1800"
+      ],
+      "config": "configs/seed-2103-cpu.json",
+      "config_sha256": "7d4d0c948202c0b54491a27112b3fc7a99528e732fc3907f792adc693779af5a",
+      "integration_steps": 5000000,
+      "preparation_ps": 100,
+      "production_ps": 400,
+      "production_segments": 100,
+      "seed": 2103
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "benchmarks/water/native_quantum.py",
+        "--config",
+        "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2104-cpu.json",
+        "--output",
+        "../water-quantum-full-pme/seed-2104",
+        "--wall-seconds",
+        "1800"
+      ],
+      "config": "configs/seed-2104-cpu.json",
+      "config_sha256": "f48ca0073e0855be2d16e7e2c1f1478f79dbb451f7d36a60e79fe208544c4f4d",
+      "integration_steps": 5000000,
+      "preparation_ps": 100,
+      "production_ps": 400,
+      "production_segments": 100,
+      "seed": 2104
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "benchmarks/water/native_quantum.py",
+        "--config",
+        "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2105-cpu.json",
+        "--output",
+        "../water-quantum-full-pme/seed-2105",
+        "--wall-seconds",
+        "1800"
+      ],
+      "config": "configs/seed-2105-cpu.json",
+      "config_sha256": "bc16051c6168f75cdcd0bb9b9e631b03508b477d274b9d8b1fe5d8f5d378476f",
+      "integration_steps": 5000000,
+      "preparation_ps": 100,
+      "production_ps": 400,
+      "production_segments": 100,
+      "seed": 2105
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "benchmarks/water/native_quantum.py",
+        "--config",
+        "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2106-cpu.json",
+        "--output",
+        "../water-quantum-full-pme/seed-2106",
+        "--wall-seconds",
+        "1800"
+      ],
+      "config": "configs/seed-2106-cpu.json",
+      "config_sha256": "1370799ae2d198ae6c463f2f7e8300b89ba292b22ec788994306554ba9e4faaa",
+      "integration_steps": 5000000,
+      "preparation_ps": 100,
+      "production_ps": 400,
+      "production_segments": 100,
+      "seed": 2106
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "benchmarks/water/native_quantum.py",
+        "--config",
+        "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2107-cpu.json",
+        "--output",
+        "../water-quantum-full-pme/seed-2107",
+        "--wall-seconds",
+        "1800"
+      ],
+      "config": "configs/seed-2107-cpu.json",
+      "config_sha256": "2a1594bd89478cfe9b219a9874ac9d44a90e69361b79e0938521b8bbd3c5ed61",
+      "integration_steps": 5000000,
+      "preparation_ps": 100,
+      "production_ps": 400,
+      "production_segments": 100,
+      "seed": 2107
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "benchmarks/water/native_quantum.py",
+        "--config",
+        "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2108-cpu.json",
+        "--output",
+        "../water-quantum-full-pme/seed-2108",
+        "--wall-seconds",
+        "1800"
+      ],
+      "config": "configs/seed-2108-cpu.json",
+      "config_sha256": "77803e33aba9470e618195cddac528f970a4ae15d683c08540b7a9afd7492baf",
+      "integration_steps": 5000000,
+      "preparation_ps": 100,
+      "production_ps": 400,
+      "production_segments": 100,
+      "seed": 2108
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "benchmarks/water/native_quantum.py",
+        "--config",
+        "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2109-cpu.json",
+        "--output",
+        "../water-quantum-full-pme/seed-2109",
+        "--wall-seconds",
+        "1800"
+      ],
+      "config": "configs/seed-2109-cpu.json",
+      "config_sha256": "58401a29ca2643dfda93c582abe212dc82e4343cd67ec8d2833166f30700a187",
+      "integration_steps": 5000000,
+      "preparation_ps": 100,
+      "production_ps": 400,
+      "production_segments": 100,
+      "seed": 2109
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "benchmarks/water/native_quantum.py",
+        "--config",
+        "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2110-cpu.json",
+        "--output",
+        "../water-quantum-full-pme/seed-2110",
+        "--wall-seconds",
+        "1800"
+      ],
+      "config": "configs/seed-2110-cpu.json",
+      "config_sha256": "b5216d42337c0449360772b5c0c19beab5eedf5d3ae37bd46753fd13e795672e",
+      "integration_steps": 5000000,
+      "preparation_ps": 100,
+      "production_ps": 400,
+      "production_segments": 100,
+      "seed": 2110
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "benchmarks/water/native_quantum.py",
+        "--config",
+        "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2111-cpu.json",
+        "--output",
+        "../water-quantum-full-pme/seed-2111",
+        "--wall-seconds",
+        "1800"
+      ],
+      "config": "configs/seed-2111-cpu.json",
+      "config_sha256": "634b2eab1c7b2ae98a12c0342bc32f64c0b13d8d6f401ec3ed6e5c4383abf230",
+      "integration_steps": 5000000,
+      "preparation_ps": 100,
+      "production_ps": 400,
+      "production_segments": 100,
+      "seed": 2111
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "benchmarks/water/native_quantum.py",
+        "--config",
+        "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2112-cpu.json",
+        "--output",
+        "../water-quantum-full-pme/seed-2112",
+        "--wall-seconds",
+        "1800"
+      ],
+      "config": "configs/seed-2112-cpu.json",
+      "config_sha256": "5bfa57c604bb5f08895f47614fa8ffdf725e3372b2bf155ad1449b951bedeaec",
+      "integration_steps": 5000000,
+      "preparation_ps": 100,
+      "production_ps": 400,
+      "production_segments": 100,
+      "seed": 2112
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "benchmarks/water/native_quantum.py",
+        "--config",
+        "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2113-cpu.json",
+        "--output",
+        "../water-quantum-full-pme/seed-2113",
+        "--wall-seconds",
+        "1800"
+      ],
+      "config": "configs/seed-2113-cpu.json",
+      "config_sha256": "5b6238a8ad8f8d3c9e4207d70212ada92a6c5983546d9c7295c2fe4fd4c8f121",
+      "integration_steps": 5000000,
+      "preparation_ps": 100,
+      "production_ps": 400,
+      "production_segments": 100,
+      "seed": 2113
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "benchmarks/water/native_quantum.py",
+        "--config",
+        "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2114-cpu.json",
+        "--output",
+        "../water-quantum-full-pme/seed-2114",
+        "--wall-seconds",
+        "1800"
+      ],
+      "config": "configs/seed-2114-cpu.json",
+      "config_sha256": "f7afc203cfa1efeef33b7e8991de631583e97108b32fe01568b418419c36395d",
+      "integration_steps": 5000000,
+      "preparation_ps": 100,
+      "production_ps": 400,
+      "production_segments": 100,
+      "seed": 2114
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "benchmarks/water/native_quantum.py",
+        "--config",
+        "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2115-cpu.json",
+        "--output",
+        "../water-quantum-full-pme/seed-2115",
+        "--wall-seconds",
+        "1800"
+      ],
+      "config": "configs/seed-2115-cpu.json",
+      "config_sha256": "c93bf56cd39a68ce0fb53c4a84b376268897e9d904ba12d32b7be0cc001681e3",
+      "integration_steps": 5000000,
+      "preparation_ps": 100,
+      "production_ps": 400,
+      "production_segments": 100,
+      "seed": 2115
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "benchmarks/water/native_quantum.py",
+        "--config",
+        "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2116-cpu.json",
+        "--output",
+        "../water-quantum-full-pme/seed-2116",
+        "--wall-seconds",
+        "1800"
+      ],
+      "config": "configs/seed-2116-cpu.json",
+      "config_sha256": "427c2adc1b3b5c04d9252109f30b44fd9251a3079aa3054b08611102618fe01d",
+      "integration_steps": 5000000,
+      "preparation_ps": 100,
+      "production_ps": 400,
+      "production_segments": 100,
+      "seed": 2116
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "benchmarks/water/native_quantum.py",
+        "--config",
+        "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2117-cpu.json",
+        "--output",
+        "../water-quantum-full-pme/seed-2117",
+        "--wall-seconds",
+        "1800"
+      ],
+      "config": "configs/seed-2117-cpu.json",
+      "config_sha256": "e283ca5aa6958dac0097002e97c944b8296888f6d5792e0b6e7e9a6298baa2a7",
+      "integration_steps": 5000000,
+      "preparation_ps": 100,
+      "production_ps": 400,
+      "production_segments": 100,
+      "seed": 2117
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "benchmarks/water/native_quantum.py",
+        "--config",
+        "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2118-cpu.json",
+        "--output",
+        "../water-quantum-full-pme/seed-2118",
+        "--wall-seconds",
+        "1800"
+      ],
+      "config": "configs/seed-2118-cpu.json",
+      "config_sha256": "a7789358f22f98a372aab29f4e63374f44b14e7c976c72eac4c474536336b8d2",
+      "integration_steps": 5000000,
+      "preparation_ps": 100,
+      "production_ps": 400,
+      "production_segments": 100,
+      "seed": 2118
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "benchmarks/water/native_quantum.py",
+        "--config",
+        "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2119-cpu.json",
+        "--output",
+        "../water-quantum-full-pme/seed-2119",
+        "--wall-seconds",
+        "1800"
+      ],
+      "config": "configs/seed-2119-cpu.json",
+      "config_sha256": "25b5bb1ce1f57d014bdcf747909e175e1e3fd3b85d15303118619cc746c233ea",
+      "integration_steps": 5000000,
+      "preparation_ps": 100,
+      "production_ps": 400,
+      "production_segments": 100,
+      "seed": 2119
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "benchmarks/water/native_quantum.py",
+        "--config",
+        "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2120-cpu.json",
+        "--output",
+        "../water-quantum-full-pme/seed-2120",
+        "--wall-seconds",
+        "1800"
+      ],
+      "config": "configs/seed-2120-cpu.json",
+      "config_sha256": "b8147a505a4b29cdb3c27a2e9c6a0b9b844790f99a117d10142f1c4c833db094",
+      "integration_steps": 5000000,
+      "preparation_ps": 100,
+      "production_ps": 400,
+      "production_segments": 100,
+      "seed": 2120
+    }
+  ],
+  "maximum_concurrent_jobs": "set explicitly within a separately approved compute allocation; this file does not launch jobs",
+  "schema": "pyrpmd.full-pme-water-explicit-jobs.v1",
+  "single_GPU_example": {
+    "config": "configs/seed-2101-cuda-double-untested.json",
+    "config_sha256": "a91e2d5768b13e353531730672befc972453bac8bceb64f582dd9654131ee6c7",
+    "status": "untested CUDA double configuration; numerical preflight required before production"
+  },
+  "status": "templates only; no scheduler or GPU allocation has been launched",
+  "working_directory": "repository root"
+}

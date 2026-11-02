@@ -1,0 +1,18 @@
+{
+  "schema": "pyrpmd.h3.classical-execution-environment.v1",
+  "scope": "Environment collected after the completed classical source/child campaign; source identities for each original run remain in its own receipt.",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "machine": "x86_64",
+  "numpy": "2.5.4",
+  "scipy": "1.18.1",
+  "python_soabi": "cpython-312-x86_64-linux-gnu",
+  "loaded_native_filename": "_native.cpython-312-x86_64-linux-gnu.so",
+  "loaded_native_sha256": "42319e0f816bdf9f94fb9d5d0230b8b5c1d74e3b4975ff56295c609897e66220",
+  "thread_environment_for_commands": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "maximum_concurrent_workers": 2
+}

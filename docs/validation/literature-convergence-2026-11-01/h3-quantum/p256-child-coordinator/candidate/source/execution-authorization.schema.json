@@ -1,0 +1,273 @@
+{
+  "$comment": "Schema validation is not launch permission. Runtime additionally checks all hashes, full parent eligibility, fixed baseline, actual resource/queue-drain evidence, CPU availability, empty output and one-attempt exclusion.",
+  "$defs": {
+    "fileIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "path": {
+          "pattern": "^/",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "bytes",
+        "sha256"
+      ],
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "P128_baseline_sha256": {
+      "const": "62ce4fea23a55955cf404ae8aa00a2c70204bf20dd48e74de520169a83724720"
+    },
+    "P128_complete_four_pair_report": {
+      "$ref": "#/$defs/fileIdentity"
+    },
+    "automatic_analysis": {
+      "const": false
+    },
+    "automatic_resume": {
+      "const": false
+    },
+    "branch_order": {
+      "const": [
+        [
+          0,
+          0.1
+        ],
+        [
+          0,
+          0.05
+        ],
+        [
+          1,
+          0.1
+        ],
+        [
+          1,
+          0.05
+        ]
+      ]
+    },
+    "cpu_affinity": {
+      "items": {
+        "minimum": 0,
+        "type": "integer"
+      },
+      "maxItems": 2,
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "design_sha256": {
+      "const": "c668c15fd89ca0a535afc4082521e3f42ba9e84f5736b5b481bc1d7c376d791d"
+    },
+    "finalization_reserve_seconds": {
+      "const": 120
+    },
+    "independent_coordinator_review": {
+      "$ref": "#/$defs/fileIdentity"
+    },
+    "library": {
+      "$ref": "#/$defs/fileIdentity"
+    },
+    "library_build_receipt": {
+      "$ref": "#/$defs/fileIdentity"
+    },
+    "output": {
+      "const": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/recrossing"
+    },
+    "parent_adoption": {
+      "const": true
+    },
+    "parent_manifest": {
+      "$ref": "#/$defs/fileIdentity"
+    },
+    "resource_decision": {
+      "$ref": "#/$defs/fileIdentity"
+    },
+    "runtime": {
+      "const": {
+        "actual_native_module": {
+          "bytes": 2407952,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+          "sha256": "42319e0f816bdf9f94fb9d5d0230b8b5c1d74e3b4975ff56295c609897e66220"
+        },
+        "numpy": "2.5.4",
+        "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+        "python": "3.12.14",
+        "python_executable": {
+          "bytes": 30894944,
+          "path": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+          "sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7"
+        },
+        "scipy": "1.18.1"
+      }
+    },
+    "schema": {
+      "const": "pyrpmd.h3.p256-child-execution-authorization.v1"
+    },
+    "scientific_review": {
+      "$ref": "#/$defs/fileIdentity"
+    },
+    "seed_order": {
+      "const": [
+        825601,
+        825603,
+        825607,
+        825609,
+        825613,
+        825617,
+        825621,
+        825623
+      ]
+    },
+    "source_files": {
+      "const": {
+        "benchmarks/h3/classical_tst.py": {
+          "bytes": 7765,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/classical_tst.py",
+          "sha256": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be"
+        },
+        "benchmarks/h3/mixing_sampling.py": {
+          "bytes": 17299,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/mixing_sampling.py",
+          "sha256": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0"
+        },
+        "benchmarks/h3/p256_child_campaign.py": {
+          "bytes": 38164,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_child_campaign.py",
+          "sha256": "5fc72acef298678e5449059bb57c40e22254cc5ca4aa5540081df480381e7e2b"
+        },
+        "benchmarks/h3/p256_parent_campaign.py": {
+          "bytes": 35515,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_parent_campaign.py",
+          "sha256": "7934c1d7f695ce43337d11171cbad8c46ff95311490b755bf4191a56e00c0da3"
+        },
+        "benchmarks/h3/p256_recrossing_analyze.py": {
+          "bytes": 16902,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_recrossing_analyze.py",
+          "sha256": "9e2fdacddcf2ef5b825e0eb0b65789e5f045a8505a8fbd09fe21b704ed4936b6"
+        },
+        "benchmarks/h3/p256_surface_recrossing.py": {
+          "bytes": 31442,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_surface_recrossing.py",
+          "sha256": "9c5c5106d8392ca577f8ea6b54f6e1828dcabb8f86a0e01b732c2e626aa15692"
+        },
+        "benchmarks/h3/pes.py": {
+          "bytes": 9908,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/pes.py",
+          "sha256": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892"
+        },
+        "benchmarks/h3/quantum_recrossing_analyze.py": {
+          "bytes": 21326,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_recrossing_analyze.py",
+          "sha256": "4d1925461219e87d85d4e1f4ac98263c4bb58ff0d7713075782145ba909649c1"
+        },
+        "benchmarks/h3/quantum_surface_recrossing.py": {
+          "bytes": 30072,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_surface_recrossing.py",
+          "sha256": "dc900e74fe8191cc8c88925a2413e55f76724a2835a8f447039d25a415c45f9e"
+        },
+        "benchmarks/h3/surface_partition.py": {
+          "bytes": 40251,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/surface_partition.py",
+          "sha256": "23d2805270a82c91eff7b9a70f89621a356d7625aeaf76246f00896147b7a5db"
+        },
+        "loaded_native:_native.cpython-312-x86_64-linux-gnu.so": {
+          "bytes": 2407952,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+          "sha256": "42319e0f816bdf9f94fb9d5d0230b8b5c1d74e3b4975ff56295c609897e66220"
+        },
+        "src/pyrpmd/analysis/fes.py": {
+          "bytes": 62426,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/analysis/fes.py",
+          "sha256": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c"
+        },
+        "src/pyrpmd/checkpoint.py": {
+          "bytes": 9555,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/checkpoint.py",
+          "sha256": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f"
+        },
+        "src/pyrpmd/constants.py": {
+          "bytes": 940,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/constants.py",
+          "sha256": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+        },
+        "src/pyrpmd/cv.py": {
+          "bytes": 34870,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/cv.py",
+          "sha256": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52"
+        },
+        "src/pyrpmd/dynamics.py": {
+          "bytes": 40171,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/dynamics.py",
+          "sha256": "00c9967571196ea79fae06398116c6dda1d466d2952628b78fcc4c1ccba8dd02"
+        },
+        "src/pyrpmd/io.py": {
+          "bytes": 5865,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/io.py",
+          "sha256": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1"
+        },
+        "src/pyrpmd/propagation.py": {
+          "bytes": 16478,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/propagation.py",
+          "sha256": "3b661fced182f0944cdac61c82e82de11648cb74d49f03408d8657627a4a11aa"
+        }
+      }
+    },
+    "synthetic_gate": {
+      "$ref": "#/$defs/fileIdentity"
+    },
+    "wall_budget_origin": {
+      "const": "root explicit child-campaign choice; not the parent-generation proposal"
+    },
+    "whole_campaign_wall_seconds": {
+      "const": 36000
+    },
+    "workers": {
+      "maximum": 2,
+      "minimum": 1,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "schema",
+    "parent_adoption",
+    "design_sha256",
+    "P128_baseline_sha256",
+    "output",
+    "seed_order",
+    "branch_order",
+    "whole_campaign_wall_seconds",
+    "finalization_reserve_seconds",
+    "wall_budget_origin",
+    "workers",
+    "cpu_affinity",
+    "automatic_resume",
+    "automatic_analysis",
+    "runtime",
+    "source_files",
+    "parent_manifest",
+    "P128_complete_four_pair_report",
+    "library",
+    "library_build_receipt",
+    "synthetic_gate",
+    "independent_coordinator_review",
+    "scientific_review",
+    "resource_decision"
+  ],
+  "title": "Explicit root adoption of one fixed complete P256 child cohort",
+  "type": "object"
+}

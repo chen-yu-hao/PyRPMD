@@ -1,0 +1,307 @@
+{
+  "Git_mutated": false,
+  "actual_raw_checkpoint_read_by_this_proposal": false,
+  "adopted": false,
+  "analysis_after_complete_only": {
+    "all_old_failures_retained": true,
+    "analyzer": {
+      "bytes": 13976,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_sampling_analyze.py",
+      "sha256": "4a3476d0ccf12cea1bd9791c4a8ccd7ebcf482b8801e61c87738cd3970e72ea4"
+    },
+    "any_remaining_failure_at_registered_maximum": "Report failed/unresolved, retain all8/fullprefixes and controls. No automatic larger run or altered estimator/domain/prefactor/reference.",
+    "full8_and_root_actual_normal_owner_exit_required": true,
+    "implementation": {
+      "bytes": 10532,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/mixing_analysis.py",
+      "sha256": "47bd4c33043dee36196c4c4828fb3993e174d735a80e22df4112ae93f20878dc"
+    },
+    "partial_numerical_analysis_during_sampling": false,
+    "same_full300k_prefix_not_only_new200k": true,
+    "single_fresh_output": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-stage-300000-isolated-v1/full-cohort-stage-300000"
+  },
+  "created_utc": "2026-11-01T21:47:28.982113+00:00",
+  "decision": {
+    "completed_cohort_execution": {
+      "bytes": 2074,
+      "path": "/workspace/scratch/a5e4820daedd/h3-quantum-umbrella-stage-100000-restored-v2/data/full-cohort-stage-100000/execution.json",
+      "sha256": "a84f0a0434199c7897e99c9f4e55fbe40a641fe78f8cdea27bd08d194bbd54cb"
+    },
+    "completed_cohort_report": {
+      "bytes": 12059,
+      "path": "/workspace/scratch/a5e4820daedd/h3-quantum-umbrella-stage-100000-restored-v2/data/full-cohort-stage-100000/campaign-comparison.json",
+      "sha256": "db76aa53b848e9b24ee32c6e4ad7b199c151c3547f28d7954c9f49388d8bb16a"
+    },
+    "from_production_sweeps": 100000,
+    "independent_seeds": [
+      211017,
+      211019,
+      211021,
+      211023,
+      211027,
+      211031,
+      211033,
+      211039
+    ],
+    "no_automatic_prefix_beyond300000": true,
+    "point_agreement_does_not_trigger_or_stop_continuation": true,
+    "to_production_sweeps": 300000,
+    "trigger": {
+      "criterion": "statistical_precision",
+      "observed_primary_log_standard_error": 0.050873748737126245,
+      "passed": false,
+      "registered_limit": 0.03
+    }
+  },
+  "fixed_scientific_contract": {
+    "additional_production_sweeps_every_seed": 200000,
+    "additional_warmup": 0,
+    "all8_final_scalar_CV_observations": 115200000,
+    "all_300k_observations_used": true,
+    "beads": 128,
+    "final_completed_sweeps_every_seed": 305000,
+    "final_diagnostic_shape_every_seed": [
+      30000,
+      48,
+      7
+    ],
+    "final_sample_shape_every_seed": [
+      300000,
+      48
+    ],
+    "no_discard_reweight_thin_or_seed_substitution": true,
+    "protocol": {
+      "bytes": 2888,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/protocol.json",
+      "sha256": "5834471583ae8e513050dc1c22e065459e1cfa6f139cc5490fcb4eded9fe711a"
+    },
+    "registered_prefixes": [
+      30000,
+      100000,
+      300000
+    ],
+    "same_analyzer_and_every_registered_gate": true,
+    "same_physical_domain_schedule_proposals_exchange_RNG_and_measure": true,
+    "temperature_K": 300.0,
+    "time_semantics": "Monte Carlo sweeps, not real-time trajectories",
+    "warmup_sweeps_already_completed": 5000,
+    "windows": 48
+  },
+  "new_isolated_working_copy": {
+    "actual_sampling_campaign": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-stage-300000-isolated-v1/restored/data/campaign-run",
+    "compact_stage_snapshot_is_not_valid_scheduler_input": true,
+    "expected_prior_scheduler_input_sha256": "c102f002d674e347020ecf5003b1a5e4de4bfc7b22d4691b28a5a768727ad317",
+    "fresh_archive_restore": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-stage-300000-isolated-v1/restored",
+    "fresh_destination_must_not_exist": true,
+    "global_metadata_historical_campaign_directory_preserved_byte_exact": true,
+    "library": {
+      "path": "/workspace/scratch/a5e4820daedd/literature-audit-assets/libbkmp2.so",
+      "sha256": "c7af84fb8a2caaec3ef56ee4225169fef7048e2fcc365ba6d16c605263049609"
+    },
+    "new_route_bound_separately_in_registration": true,
+    "no_PES_or_native_or_code_copy_from_raw_archive": true,
+    "no_hard_links_or_symlinks_to_original_or_verified_extraction": true,
+    "old_anomalous_lease_never_copied_or_retired": true,
+    "permission_changes_allowed_only_new_owned_copy": "New working files may receive owner-write permission; physical bytes/checkpoint/RNG/settings remain unchanged.",
+    "prior_original_and_existing_verified_extraction_never_written": true,
+    "prior_scheduler_input": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-stage-300000-isolated-v1/restored/data/campaign-run/stage-100000.json",
+    "prior_scheduler_input_original_identity": {
+      "bytes": 46138,
+      "path": "/workspace/scratch/a5e4820daedd/h3-quantum-umbrella-stage-100000-restored-v2/data/campaign-run/stage-100000.json",
+      "sha256": "c102f002d674e347020ecf5003b1a5e4de4bfc7b22d4691b28a5a768727ad317"
+    },
+    "root": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-stage-300000-isolated-v1",
+    "source_code_root": "/workspace/scratch/a5e4820daedd/PyRPMD",
+    "working_restore_becomes_mutable_only_after_separate_root_sampling_adoption": true
+  },
+  "old_evidence_modified": false,
+  "physical_calls": 0,
+  "prefix_identity_gates_before_first_new_move": [
+    "Stream exact116members from the verified whole archive into a new destination; exact member paths/regular types/size/SHA, no path traversal or overwrite.",
+    "Bind new archive/member/exact-replay/root actualexit independently; do not rely on old snapshot initial_raw_archive.",
+    "Decode each copied checkpoint once via unchanged inspector and require every full payload array description, RNG/geometry/counter/lineage identity and complete checkpoint whole-file identity to equal the frozen100k embedded snapshot.",
+    "Verify exact settings,run-report and both30k/100k state/receipt file bytes plus their sample/diagnostic prefixes for all8seeds.",
+    "Preserve all historical metadata bytes including informational old absolute paths; actual paths come only from the new registered working mapping.",
+    "Verify exact frozen source/import/model/runtime identities before any physical worker. Use direct frozen preflight if needed; --check-only creates a lease and is forbidden on original or immutable verified evidence roots.",
+    "Publish an exclusive restoration/registration receipt last, containing the exact new working route and initial member hashes."
+  ],
+  "protected_source_files": [
+    {
+      "bytes": 7765,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/classical_tst.py",
+      "sha256": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be"
+    },
+    {
+      "bytes": 10532,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/mixing_analysis.py",
+      "sha256": "47bd4c33043dee36196c4c4828fb3993e174d735a80e22df4112ae93f20878dc"
+    },
+    {
+      "bytes": 17299,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/mixing_sampling.py",
+      "sha256": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0"
+    },
+    {
+      "bytes": 9908,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/pes.py",
+      "sha256": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892"
+    },
+    {
+      "bytes": 13976,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_sampling_analyze.py",
+      "sha256": "4a3476d0ccf12cea1bd9791c4a8ccd7ebcf482b8801e61c87738cd3970e72ea4"
+    },
+    {
+      "bytes": 6128,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_sampling_campaign.py",
+      "sha256": "29a70de601253ba2262fd1be3a65e65d4bc7cef26652cbe2ff2d30ccccf9df50"
+    },
+    {
+      "bytes": 62426,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/analysis/fes.py",
+      "sha256": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c"
+    },
+    {
+      "bytes": 25355,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/bias.py",
+      "sha256": "3a2ee4fc125aaa8a9f0103e140b4f8b325c4561327604506b3f47dd5ce3a0df6"
+    },
+    {
+      "bytes": 940,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/constants.py",
+      "sha256": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+    },
+    {
+      "bytes": 34870,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/cv.py",
+      "sha256": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52"
+    },
+    {
+      "bytes": 30117,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_sampling_scheduler.py",
+      "sha256": "1fa4d02c5a9ed5884e81fd0de1203cec47570d9a514a512d636524583e59ed98"
+    },
+    {
+      "bytes": 15143,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/raw-archive/freeze_stage.py",
+      "sha256": "ce6ecef585434c1b0796f0825b2dd12fbdeb10fbefb8b94ec4abca2f2f88fa48"
+    },
+    {
+      "bytes": 4335,
+      "path": "/workspace/scratch/a5e4820daedd/launch_umbrella_stage100k.py",
+      "sha256": "955de8875a5eed1915963801e538bcd148caa8cf95fd7265c8f38696930ac3b2"
+    },
+    {
+      "bytes": 5425,
+      "path": "/workspace/scratch/a5e4820daedd/run_complete_umbrella_100000_analysis.py",
+      "sha256": "341a00ea0a17d93e6c91b1ba040dccc37000df03516303b9372a61be469bbf8c"
+    }
+  ],
+  "purpose": "Improve the independently registered umbrella QTST precision at the last predeclared prefix. This is separate from the surface-partition full-rate/recrossing and dynamic-bead studies.",
+  "required_new_owner_layer": {
+    "completion": "One global completion manifest after exactly8 final branches, every305000completed/300000production, source/prior-prefix checks and confirmed owned-worker drain. No competing per-subset global writes.",
+    "fixed_cohort_order": [
+      211017,
+      211019,
+      211021,
+      211023,
+      211027,
+      211031,
+      211033,
+      211039
+    ],
+    "future_new_lease_anomaly": "Retain evidence and stop admission; do not auto-break or infer liveness from PID/existence alone.",
+    "no_live_old_dispatcher": "Root must separately attest no old original/legacy/direct writer is admitted; old campaign stays unchanged throughout.",
+    "per_seed_job": "(new_campaign,exact_external_library,unchanged_protocol,seed,300000)",
+    "private_workers": "Registration/current-source/UUID/parent ownership binding, exclusive per-seed claim, assigned single CPU, all numerical-library threads1, per-worker deadline before scientific imports; no subset invocation of the legacy campaign main.",
+    "proposed_source": "benchmarks/h3/quantum_isolated_continuation.py",
+    "reusable_frozen_alarm_helpers": {
+      "bytes": 28609,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_complete_analysis.py",
+      "sha256": "67e4e3eb1b7a7cc875fd14c74829c71be265a8171c516b7b10af5dca461d7b7e"
+    },
+    "reusable_frozen_dispatch_lifecycle": {
+      "bytes": 35515,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_parent_campaign.py",
+      "sha256": "7934c1d7f695ce43337d11171cbad8c46ff95311490b755bf4191a56e00c0da3"
+    },
+    "reuse_readonly_inspector_and_preflight": {
+      "bytes": 30117,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_sampling_scheduler.py",
+      "sha256": "1fa4d02c5a9ed5884e81fd0de1203cec47570d9a514a512d636524583e59ed98"
+    },
+    "same_frozen_driver": {
+      "bytes": 6128,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_sampling_campaign.py",
+      "sha256": "29a70de601253ba2262fd1be3a65e65d4bc7cef26652cbe2ff2d30ccccf9df50"
+    },
+    "scientific_entrypoint": "benchmarks.h3.quantum_sampling_campaign.one_seed",
+    "signals_or_failure": "Stop further admission, bound signal/drain/reap, keep failure/claims/partial raw. A timeout is incomplete, never a scientific pass. No automatic resume or seed replacement.",
+    "source_exists": false
+  },
+  "required_successful_prior_archive": {
+    "archive": {
+      "bytes": 474212366,
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-umbrella-stage-100000-2026-11-01.tar.gz",
+      "sha256": "f02c799907993143533a570e1862bbb2772f9b8994344c50982b102b02d5603d"
+    },
+    "archive_NPZ_count": 33,
+    "archive_execution": {
+      "bytes": 16019,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/raw-archive-v2/execution.json",
+      "sha256": "536d555498a54219b78aa200ff593b52622e6ca06ad9ac0729f122c1dd89d331"
+    },
+    "archive_member_count": 116,
+    "compact_publication_inventory": {
+      "bytes": 3906,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/raw-archive-v2/publication-inventory.json",
+      "sha256": "647f691b27a3126a07d2e57bb7fe4bbe3774b99a9a7cb684e0127e3f98267735"
+    },
+    "exact_scientific_replay_required": true,
+    "independent_completed_archive_review": {
+      "bytes": 5889,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/completed-archive-review/independent-review.json",
+      "sha256": "07a061f3ceb5d7b776d86cb34b366a4c75ff9b115053d267375c0df90e7e487a"
+    },
+    "member_inventory": {
+      "bytes": 47244,
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-umbrella-stage-100000-2026-11-01.members.json",
+      "sha256": "295d48f75c8ac35ac25baedd8ad32f641efeaf9f7a12d2779cb3d494188ee8ae"
+    },
+    "root_actual_normal_exit": {
+      "bytes": 401,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-root-adoption-v2/root-exec-observation.json",
+      "sha256": "b71acd9a6b3d472d28d8fb5bd6b39500d74cc16c12fab5df681659e269827145"
+    },
+    "root_adoption": {
+      "bytes": 5464,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-root-adoption-v2/root-adoption.json",
+      "sha256": "39c27db548b74e21a6351d70d117a328bcbc2fccdeb3e66af6593eec855c9d57"
+    }
+  },
+  "required_synthetic_gates_before_adoption": [
+    "Safe archive extraction and byte-exact relocation/relative-route checks; copied100k snapshot cannot be replaced with compact wrapper or an unrelated rehashed archive.",
+    "All8/full fixedseed stage300k validation, inherited30k/100k prefix tamper rejection, source/model/runtime drift rejection and no partial global completion.",
+    "Private worker registration/source/PID-or-UUID ownership checks; reject old original/verified extraction routes before worker admission.",
+    "Stop/failure/deadline at every admission, no subsequent seed after observed failure, inherited per-worker kernel deadline/cap before scientific imports.",
+    "Observed/caught owner exceptions and repeated signals still drain only owned children; unconfirmed drain keeps exclusion/failure; no automatic retry.",
+    "Exactly one global completion, complete-source checks and actual terminal/workerdrain prerequisite before one full-cohort analysis."
+  ],
+  "resource_proposal": {
+    "bytes": 6654,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/resource-estimates.json",
+    "sha256": "0b9b99fc9a41714392ff98601d99c0194c0c485f64264704051bffc73a182bb0"
+  },
+  "runtime": {
+    "executable": "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "numpy": "2.5.4",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "same_runtime_required": true,
+    "scipy": "1.18.1"
+  },
+  "sampling_authorized": false,
+  "schema": "pyrpmd.h3.isolated100k-to300k-continuation-proposal.v1",
+  "source_mutations": false,
+  "status": "proposed_only_not_adopted_not_implemented_not_launched",
+  "upload": false
+}

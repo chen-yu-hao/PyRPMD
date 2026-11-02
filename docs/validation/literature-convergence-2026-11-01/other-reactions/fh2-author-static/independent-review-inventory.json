@@ -1,0 +1,20 @@
+{
+  "created_utc": "2026-11-01T19:22:08.026372+00:00",
+  "file_count": 2,
+  "files": [
+    {
+      "bytes": 10454,
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/review_static_evidence.py",
+      "sha256": "100e29dbc9dae675ec6ef531c29a170fe05c4ae33e9f90eed8e7ce7e28904c75"
+    },
+    {
+      "bytes": 8261,
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/independent-review.json",
+      "sha256": "6c29d043d013c6fbf7d731cc63bdfec8f47a15fac5c77fe6f0c556748145d214"
+    }
+  ],
+  "frozen_execution_inventory_sha256": "b137e41a669cdfdd51a6793f85225a85ffecfd9530e4e1f710cc8987b455b935",
+  "schema": "pyrpmd.publication-inventory.v1",
+  "scope": "Additive independent read-only review of the frozen25-file F+H2 author-source static audit; no original mutation or native/PES execution.",
+  "total_bytes": 18715
+}

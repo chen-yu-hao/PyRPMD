@@ -1,0 +1,40 @@
+{
+  "CPU_affinity": [
+    9
+  ],
+  "actual_pilot_registration_or_execution": false,
+  "command": [
+    "taskset",
+    "-c",
+    "9",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_hch4_efficiency_pilot.py",
+    "--basetemp=/workspace/scratch/a5e4820daedd/efficiency-synthetic-lifecycle",
+    "--junitxml=/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/initial-lifecycle/pytest.xml"
+  ],
+  "exit_code": 1,
+  "pytest.log": {
+    "bytes": 58,
+    "sha256": "030bdb651ab214700e7d64cd7f08b0bac588634f9d92ee8afa41e8ae94a2f1c4"
+  },
+  "real_PES_evaluations": 0,
+  "real_dynamics_steps": 0,
+  "schema": "pyrpmd.hch4.efficiency-pilot.synthetic-gate.v1",
+  "source_files": {
+    "benchmarks/hch4/efficiency_pilot.py": {
+      "bytes": 63126,
+      "sha256": "89c42621af370d2eb1101d1d0ecc50cd75023e60d8c5854e27f6c9d001f82598"
+    },
+    "tests/test_hch4_efficiency_pilot.py": {
+      "bytes": 33379,
+      "sha256": "22a74bf76808140c9d1efc233af5ce03cfbd7cb84fa3bc2c3037f09539db9103"
+    }
+  },
+  "source_unchanged": true,
+  "synthetic_RNG_used": true,
+  "threads": 1,
+  "wall_seconds": 0.003220921993488446
+}

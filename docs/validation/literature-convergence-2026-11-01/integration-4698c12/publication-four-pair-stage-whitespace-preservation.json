@@ -1,0 +1,12 @@
+{
+  "schema": "pyrpmd.frozen-tested-source-whitespace-preservation.v1",
+  "initial_log_sha256": "11548e775582fa7b692dc5dafd2f57758329c695eea378d52313fbe3d6d26034",
+  "initial_whitelist_staging_exit_code": 1,
+  "source_bytes_changed": false,
+  "reason": "Three already tested, hash-bound source files end with one extra blank line. Preserve those exact bytes and require that exact per-file Git diagnostic; all other source whitespace remains checked.",
+  "paths": [
+    "benchmarks/water/paired_timestep.py",
+    "tests/test_water_paired_timestep.py",
+    "tests/test_water_preparation_coordinator.py"
+  ]
+}

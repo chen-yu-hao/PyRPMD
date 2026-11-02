@@ -1,0 +1,55 @@
+{
+  "PES_calls": 0,
+  "actual_raw_or_partial_scientific_reads": 0,
+  "approved_for_one_complete_local_archive_and_exact_analysis_replay": true,
+  "created_utc": "2026-11-01T21:22:07.245912+00:00",
+  "mutations_by_reviewer": "This new review receipt only; no frozen source, plan, protocol, data, Git or integration changes.",
+  "new_sampling_calls": 0,
+  "observed_gate": {
+    "distinct_cases": 28,
+    "errors": 0,
+    "failures": 0,
+    "junit": {
+      "bytes": 4724,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/final-source-gate/pytest.xml",
+      "sha256": "b74b255b635ec98c2a5c6218a0a6f071a62c1767fadc6d47854d5551ed8000bc"
+    },
+    "log": {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/final-source-gate/pytest.log",
+      "sha256": "72a4afff7c4fb00a63f086ffb31fd0e66def6b5dfdde45a3ee1ea8a93e8073c8"
+    },
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/final-source-gate/execution.json",
+    "reviewer_reran_tests": false,
+    "sha256": "ca6c3d6a753df88c8a4cdebdb6b2d66be1f110b0c8a43b7f15a2c0004b7fc73c",
+    "skips": 0
+  },
+  "plan_sha256": "d06a07fed6d6e69f2ddd09c614d9fc17b336c669c5f4013d3cf65ac45e7d2fa4",
+  "remaining_blockers_in_reviewed_scope": [],
+  "remaining_qualifications": [
+    "This approval is only for the separately root-adopted local archive/replay operation after both actual exits. It is not evidence that current campaigns have completed or that any scientific gate passed.",
+    "The300 CPU-second and1GiB RSS checks are cooperative observed resource checks, not kernel hard CPU/address-space limits. Polling and individual hash/compression/NumPy operations may cross those thresholds before refusal; the fixed900s wall interval has a10s cleanup reserve, and the child receives its own real-time timer.",
+    "No-writer exclusion relies on root no-pending/running300000 attestation plus repeated absent-lease/stage and before/after hash checks. The archive runner does not hold the sampler scheduling lease; root must keep the campaign frozen during archival.",
+    "A hard kill or failed final write may prevent a final execution receipt. Existing permanent claims and partial files must then be retained; no automatic retry or repair is approved here.",
+    "Source/model/runtime and historical30k archive remain external replay prerequisites described by identities; this local archive does not redistribute third-party PES or native libraries.",
+    "Exact replay verifies reproducibility of the recorded equilibrium analysis. It cannot establish missing precision, independent dynamic bead convergence or agreement of a full physical rate."
+  ],
+  "review_scope": [
+    "Read source, fixed plan, inert fixtures and exact reported gate; independently rehashed all fourteen protected source files, source/tests/plan and test evidence.",
+    "No current or partial scientific checkpoint/report was opened by the reviewer; no sampler, analyzer, PES, dynamics, archive extraction or new statistical evaluation was run.",
+    "Root actual session 57942 sampling and session 1094 analysis zero-exit/drain attestations plus hash-bound actual tool observation bytes are required before final raw admission. The attestation is a procedural trust boundary, not an inferred exit from stdout or a cryptographic signature.",
+    "All eight exact ordered seeds, stage100000, 105000 total sweeps, protocol/prior/decision/scheduler identities and explicit complete-cohort original execution are required. Failed scientific criteria are valid complete data and remain unchanged.",
+    "Final metadata guard now requires exact original execution and comparison source maps from the immutable plan before reading raw arrays. Only validate_complete_metadata changed from the preserved thread-admission candidate; two stale-digest fixtures were added.",
+    "Explicit whitelist accounts for 8 current checkpoints,16 historical/current restart states and9 analysis NPZ files: exactly33 NPZ members. No potential/native binary, source duplicate, water/recrossing/other-reaction data or stage300000 inclusion.",
+    "Bound source sizes and hashes, regular-member path checks, exclusive destination creation, byte-identical tar copying and fresh extraction hashes preserve saved arrays and RNG. The unchanged inspect_seed checks original30k prefixes and every final state before and after extraction.",
+    "Exactly one unchanged complete analyzer invocation on extracted data is allowed. Scientific JSON values compare exactly except the two registered top-level comparison clock fields; every NPZ array inventory,dtype,shape and byte string compares exactly.",
+    "The permanent output/attempt claim prevents automatic second invocation after partial failure. The reviewed helper supplies deferred stop signals, a parent wall alarm and an independent child pre-exec wall timer; owned-child reference capture blocks SIGALRM, and outer cleanup reaps or explicitly records unconfirmed drain.",
+    "Original sources and archived input files are rehashed after replay before successful archive publication. Failed/partial evidence is retained rather than omitted or relabeled."
+  ],
+  "reviewer": "distribution agent; separate from archive runner author",
+  "root_execution_adoption_still_separate": true,
+  "schema": "pyrpmd.h3.umbrella100000-independent-archive-review.v1",
+  "source_sha256": "af1288ec403880899a42202ae7e5c1ab6c1f44c419dad6f1c73678d7ffb9738f",
+  "tests_sha256": "452df37ca98be80239857b5eff8da8c52f7fbeafa7225da7de9b4bea328ba835",
+  "timeout_helper_sha256": "67e4e3eb1b7a7cc875fd14c74829c71be265a8171c516b7b10af5dca461d7b7e"
+}

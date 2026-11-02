@@ -1,0 +1,864 @@
+{
+  "control_case_assessment": {
+    "bytes": 4389,
+    "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-case-assessment.json",
+    "sha256": "0084e36d84bfd0301c148d61597d216c96c95cfb6414dae1028b4fe6076e055b"
+  },
+  "control_protocol": {
+    "bytes": 15910,
+    "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/protocol.json",
+    "sha256": "0b3cbbff1aa90f8ec0f9c77d0d5c68786f0f368e26d8b93bc6c35604b736eb56"
+  },
+  "created_utc": "2026-11-01T19:12:47.128581+00:00",
+  "current_read_only_checks": {
+    "MC_sweeps": 0,
+    "PES_evaluations": 0,
+    "all_four_original_checkpoint_envelopes_hashes_settings_and_domain_verified": true,
+    "all_registered_sampler_sources_and_runtime_match": true,
+    "dynamics_steps": 0
+  },
+  "dynamics_follow_on_not_launched": {
+    "P128_P256_random_pairing": "none; different-dimensional independently sampled parents and different chain seeds cannot be statistically paired",
+    "P128_comparison_group": "the same eight original independent primary chains with both completed pair batches0and1; bind its final full-cohort report and all input hashes before P256 launch, never read a partial cohort to choose this plan",
+    "P128_complete_four_pair_report_sha256": null,
+    "PES_forces": "recompute using exact pinned BKMP2 library, not inferred from stored scalar delta_energy",
+    "antithetic_signs": [
+      1,
+      -1
+    ],
+    "beads": 256,
+    "beta": 1052.5834160132904,
+    "current_dynamic_bead_convergence_claim": false,
+    "equivalence": {
+      "degrees_of_freedom": "(s256^2/4+s128^2/8)^2/((s256^2/4)^2/3+(s128^2/8)^2/7)",
+      "geometric_rate_ratio_equivalence_band": [
+        0.9523809523809523,
+        1.05
+      ],
+      "margin_log": 0.04879016416943204,
+      "pass_rule": "entire95% log-ratio interval strictly within +/-log1.05, plus declared dynamics/identity gates; a small point difference or overlapping marginal intervals is insufficient",
+      "primary_statistic": "difference of means of the joint per-chain full-rate logs, P256 minus P128",
+      "uncertainty": "independent-groups Welch95% interval with n256=4,n128=8; retain covariance between each chain BAR logTS and its logkappa before estimating group variance",
+      "variance": "s256^2/4+s128^2/8"
+    },
+    "existing_child_protocol_reference": {
+      "bytes": 6691,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-protocol.json",
+      "sha256": "53203aeca4fdf66d9fbf1a23fe7a430ab99e24d18c351e85bd2eb383a87d3589"
+    },
+    "existing_child_source_dependencies": {
+      "benchmarks/h3/classical_tst.py": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be",
+      "benchmarks/h3/pes.py": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892",
+      "benchmarks/h3/quantum_surface_recrossing.py": "dc900e74fe8191cc8c88925a2413e55f76724a2835a8f447039d25a415c45f9e",
+      "loaded_native:_native.cpython-312-x86_64-linux-gnu.so": "42319e0f816bdf9f94fb9d5d0230b8b5c1d74e3b4975ff56295c609897e66220",
+      "src/pyrpmd/checkpoint.py": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f",
+      "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+      "src/pyrpmd/cv.py": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52",
+      "src/pyrpmd/dynamics.py": "00c9967571196ea79fae06398116c6dda1d466d2952628b78fcc4c1ccba8dd02",
+      "src/pyrpmd/io.py": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1",
+      "src/pyrpmd/propagation.py": "3b661fced182f0944cdac61c82e82de11648cb74d49f03408d8657627a4a11aa"
+    },
+    "flux_estimator": "sum[(v/fs)*(H(s_plus)-H(s_minus))]/sum[abs(v)/fs], per independent parent chain",
+    "full_rate_log_per_chain": "log(k_classical_TST)+log(Z_TS_P/Z_TS_classical)-log(Z_R_P/Z_R_classical)+log(kappa_P)",
+    "horizon_fs": 200,
+    "independent_parent_chains": 4,
+    "mass_au": 1837.1526474396187,
+    "momentum_law": "ordinary Maxwell variance=m*P/beta; keyed by own P256 chain seed,parent index,pair index; no timestep key",
+    "new_child_adapter_required": "existing P128 driver hard-binds PARENT_PROTOCOL to primary-protocol.json and exactP128 settings; do not bypass by setting calibration=True or altering the active driver. A separate reviewed P256 parent binding must retain unchanged flux/momentum/propagator equations and validate every reconstructed identity.",
+    "pair_indices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "parents_per_chain": 200,
+    "precision_and_failure_policy": "All four chains/failures remain in the report. A wide Welch interval is inconclusive. Extra momenta do not add independent equilibrium chains. Any extension, changed timestep or new parent cohort needs a new fixed protocol; no selection by literature-point proximity.",
+    "primary_timestep_fs": 0.05,
+    "propagator": "unchanged native Cayley-BCB, no thermostat, same Hamiltonian/PES/physical masses",
+    "reactant_log_ratio_P128": -7.27275868577072,
+    "reactant_log_ratio_P256": -7.282252233219134,
+    "reference_domain": "same0.5bohr bead-pair lower bound and8bohr centroid upper bound in equilibrium; child trajectories remain unconstrained dynamics with sampled domain-crossing diagnostics and explicit PES/integrator failures retained",
+    "same_P256_dt_pairing": "same parent/channel/momentum for dt0.1and0.05; legitimate paired timestep diagnostic",
+    "seeds": [
+      825601,
+      825603,
+      825607,
+      825609
+    ],
+    "separate_kappa_reporting": {
+      "P128_student_t_df": 7,
+      "P256_student_t_df": 3,
+      "between_group_kappa_comparison": "report independent Welch interval for kappa difference and log ratio; do not turn failure to detect a change into convergence",
+      "not_allowed": "combine800parents, fourpairs, two signs or two timesteps as independent uncertainty units",
+      "per_group_relative95halfwidth_gate": 0.03
+    },
+    "status": "separate prospective experiment, cannot start on this proposal alone",
+    "suggested_initial_momentum_pairs_per_parent": 4,
+    "surface": "same classical centroid s1=0, xi*=1, all physical equivalent channels assigned by separately keyed child RNG",
+    "surface_gradient": "recompute analytic centroid CV gradient from reconstructed q; original control checkpoints contain no gradient array",
+    "surface_observation_interval_fs": 1,
+    "temperature_K": 300.0,
+    "timestep_fs": [
+      0.1,
+      0.05
+    ],
+    "within_P256_gates": {
+      "energy_check": "full ring Hamiltonian extrema at every physical step",
+      "minimum_pair_check": "1fs boundary observations only, not an every-step bound",
+      "paired_dt_absolute_margin": 0.01,
+      "paired_rule": "full four-chain95%Student-t interval inside the margin",
+      "paired_time_absolute_margin": 0.01,
+      "plateau_windows_fs": [
+        [
+          80,
+          100
+        ],
+        [
+          180,
+          200
+        ]
+      ],
+      "primary_dt_maximum_energy_error_beta_over_P": 0.1
+    }
+  },
+  "external_library": {
+    "bytes": 45704,
+    "path": "/workspace/scratch/a5e4820daedd/literature-audit-assets/libbkmp2.so",
+    "sha256": "c7af84fb8a2caaec3ef56ee4225169fef7048e2fcc365ba6d16c605263049609"
+  },
+  "external_library_build_receipt": {
+    "bytes": 2976,
+    "path": "/workspace/scratch/a5e4820daedd/literature-audit-assets/libbkmp2.build.json",
+    "sha256": "5c1c6d092f667caaddc814f5f671b61d12c254a6abe83dc2ee939a5e3872622e"
+  },
+  "historical_timing_and_uncertainty": {
+    "CPU_gap": "The original producer used perf_counter after reference/domain initialization and before final BAR analysis. CPU/rusage and whole-call time were not recorded. Its one-CPU affinity bounds CPU only for the timed region; setup/analysis and contention require new measurements.",
+    "P256_child_cost_extrapolation": [
+      {
+        "dt_fs": [
+          0.1,
+          0.05
+        ],
+        "horizon_fs": 200,
+        "independent_chains": 4,
+        "measurement": "not measured at P256; linear bead-cost extrapolation from full immutable P128 base reports",
+        "native_steps": 19200000,
+        "pairs_per_parent": 2,
+        "parents_per_seed": 200,
+        "worker_wall_seconds_linear_bead_from_all_base": 14357.40687564401,
+        "worker_wall_seconds_linear_bead_from_later_four_base_seeds": 9392.095970290015
+      },
+      {
+        "dt_fs": [
+          0.1,
+          0.05
+        ],
+        "horizon_fs": 200,
+        "independent_chains": 4,
+        "measurement": "not measured at P256; linear bead-cost extrapolation from full immutable P128 base reports",
+        "native_steps": 38400000,
+        "pairs_per_parent": 4,
+        "parents_per_seed": 200,
+        "worker_wall_seconds_linear_bead_from_all_base": 28714.81375128802,
+        "worker_wall_seconds_linear_bead_from_later_four_base_seeds": 18784.19194058003
+      }
+    ],
+    "original_process_CPU_seconds_total": null,
+    "original_sampling_wall_seconds_total": 1736.1785629379883,
+    "precision_illustration": {
+      "P128_kappa_per_chain_sd": 0.030258375200627626,
+      "P128_log_rate_per_chain_sd": 0.03729789821346057,
+      "basis": "Illustration only: assume P256 per-chain variance equals completed two-pair P128 variance. No active extra-pair data read.",
+      "equal_variance_four_vs_eight_Welch_df": 6.096774193548388,
+      "four_pairs_per_parent_may_reduce_momentum_noise_but_not_parent_chain_variance": true,
+      "not_a_power_certificate": true,
+      "planned_full_rate_equivalence_margin_log": 0.04879016416943204,
+      "predicted_P256_four_chain_kappa_95_halfwidth_absolute": 0.04814782718056278,
+      "predicted_P256_four_chain_kappa_95_halfwidth_relative": 0.06228074178822569,
+      "predicted_four_vs_eight_kappa_difference_95_halfwidth_absolute": 0.04516591397669598,
+      "predicted_four_vs_eight_log_rate_difference_95_halfwidth": 0.055673632541438665
+    }
+  },
+  "input_audit": {
+    "bytes": 59169,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-dynamics-readiness/input-audit.json",
+    "sha256": "a765acc61d761056bad2e5c0d011c72444b11b430a3c38b8cbc71f29c8a338a4"
+  },
+  "no_git_or_upload_action": true,
+  "parent_archive": {
+    "bytes": 83259073,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-equilibrium-2026-11-01.tar.gz",
+    "scope": "existing immutable equilibrium/control sources and whole raw checkpoint identities; not rewritten",
+    "sha256": "051ca8d016c722b740bc340f07387b72cf14c3379c21394a171dd34f083e944d"
+  },
+  "replay": {
+    "entry_point": "benchmarks.h3.surface_partition.run(output, library, **run_keyword_arguments)",
+    "failure_or_budget_policy": "Stop starting new work; retain partial/new checkpoints, logs and all failures; confirm the only worker has drained. Emit an incomplete/failure receipt and no child-eligible manifest. No seed replacement or comparison-selected replay. A later explicitly approved resume must keep identical new protocol/settings/RNG and retain the interrupted outcome.",
+    "implementation_before_launch": [
+      "separate scheduling/integrity wrapper with a global exclusion lock",
+      "bounded synthetic tests proving snapshot observation preserves RNG/state bytes and catches any payload/source/settings mismatch",
+      "timeout/failure drain tests and atomic final whole-cohort manifest",
+      "reviewed source freeze plus exact launch receipt"
+    ],
+    "new_independent_chains_created": 0,
+    "new_output_directory_in_settings": false,
+    "new_snapshots_per_seed": 200,
+    "new_snapshots_total": 800,
+    "original_cohorts_modified_or_extended": false,
+    "original_settings_only_allowed_field_change": {
+      "snapshot_interval": {
+        "from": 0,
+        "to": 100
+      }
+    },
+    "output_root_proposed": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-parent-history-replay-v1",
+    "replay_has_been_executed": false,
+    "resource_budget": {
+      "BLAS_OpenMP_threads": 1,
+      "CPU_affinity": "one available CPU recorded at launch, not inferred or fixed to a conflicting existing worker",
+      "ceiling_scope": "all four sequential calls, initialization, checkpoint writes, verification and final analysis included; not7200perseed",
+      "maximum_concurrent_workers": 1,
+      "prelaunch_required": "root records extra-pair pool normal completion, current allocations and exact scheduling receipt; no implicit MC worker increase",
+      "rusage_measurement": "worker RUSAGE_SELF user and system CPU plus whole-call monotonic wall per seed; coordinator RUSAGE_CHILDREN and own CPU at campaign boundaries",
+      "whole_campaign_wall_seconds_ceiling": 7200
+    },
+    "sampler_modified": false,
+    "seed_inputs": [
+      {
+        "exact_non_snapshot_arrays": [
+          "domain_sha256",
+          "radius",
+          "ratio",
+          "eta_R",
+          "eta_r",
+          "completed",
+          "delta_energy",
+          "diagnostics",
+          "accepted",
+          "proposed",
+          "swap_attempts",
+          "swap_accepts",
+          "lineage",
+          "last_extreme",
+          "endpoint_traversals",
+          "rng"
+        ],
+        "expected_replay_settings_fingerprint": "dc38239f77167d197559b91c81da257403fd83230089c42f23c6fdf779077dab",
+        "new_relative_directory": "seed-825601",
+        "original_files": {
+          "checkpoint.npz": {
+            "bytes": 2397672,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/checkpoint.npz",
+            "sha256": "50537e53bd1e5923c2b5ad8660f880fc51327f21e5b2a29868bacd9507658803"
+          },
+          "progress.json": {
+            "bytes": 303,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/progress.json",
+            "sha256": "8cbb4582de84ecbce750b5582a3e2f296edd02b0124b52e81bb0f223de8bbd06"
+          },
+          "reference-domain.json": {
+            "bytes": 495,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/reference-domain.json",
+            "sha256": "f9bad9ab1d3f83eb18f65f09cd8755fc9f138ba6ef5bfd379e54f075c4354449"
+          },
+          "reference.json": {
+            "bytes": 603,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/reference.json",
+            "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+          },
+          "report.json": {
+            "bytes": 8704,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/report.json",
+            "sha256": "b7f133d2748e1c50162b9df9bd3b69e95e1ce7e7b867de7f350384affccdc9ca"
+          },
+          "settings.json": {
+            "bytes": 2891,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/settings.json",
+            "sha256": "8f244e633b79b7dd988a1bd209126a7b71dbdadfbe9926ac57e9bac7a513b21d"
+          }
+        },
+        "original_settings_fingerprint": "34cd32b5143263544a59c28e6f3b843beee4a94f162d75e19e5ba27ae35d6c0d",
+        "run_keyword_arguments": {
+          "alpha_R": 0.7,
+          "alpha_r": 0.7,
+          "angular_order": 96,
+          "beads": 256,
+          "checkpoint_interval": 1000,
+          "diagnostic_interval": 10,
+          "domain_samples": 131072,
+          "lambdas": [
+            0.0,
+            0.015625,
+            0.0625,
+            0.140625,
+            0.25,
+            0.390625,
+            0.5625,
+            0.765625,
+            1.0
+          ],
+          "mass": 1837.1526474396187,
+          "maximum": 8.0,
+          "minimum": 0.5,
+          "phase": "production",
+          "production": 20000,
+          "radial_order": 192,
+          "radius_step": 0.08,
+          "ratio_step": 0.03,
+          "resume": false,
+          "sample_interval": 1,
+          "seed": 825601,
+          "snapshot_interval": 100,
+          "stop_after": null,
+          "surface": "ts",
+          "swap_interval": 1,
+          "temperature": 300.0,
+          "warmup": 2000
+        },
+        "seed": 825601
+      },
+      {
+        "exact_non_snapshot_arrays": [
+          "domain_sha256",
+          "radius",
+          "ratio",
+          "eta_R",
+          "eta_r",
+          "completed",
+          "delta_energy",
+          "diagnostics",
+          "accepted",
+          "proposed",
+          "swap_attempts",
+          "swap_accepts",
+          "lineage",
+          "last_extreme",
+          "endpoint_traversals",
+          "rng"
+        ],
+        "expected_replay_settings_fingerprint": "4cea017c59175987aa7834f0d0e81ffd12d337b939a1124182f5f224d3994abb",
+        "new_relative_directory": "seed-825603",
+        "original_files": {
+          "checkpoint.npz": {
+            "bytes": 2397890,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/checkpoint.npz",
+            "sha256": "3af1cc602a14455d816e524e341841aa29a5974fc2f3d99b742b7a3ab499b290"
+          },
+          "progress.json": {
+            "bytes": 304,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/progress.json",
+            "sha256": "7deea19760806c1d09f1893a4ca458a0fd6fbadeb699db1a65b5a44add8769b3"
+          },
+          "reference-domain.json": {
+            "bytes": 495,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/reference-domain.json",
+            "sha256": "1fdde72830859c42d49b14862a88c5ed2ec60774195fe1cd3ce6ec99acafc60b"
+          },
+          "reference.json": {
+            "bytes": 603,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/reference.json",
+            "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+          },
+          "report.json": {
+            "bytes": 8707,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/report.json",
+            "sha256": "d341d6f77ace62f1df89530e60014874c2ec48f10935996dda0b39034e127a85"
+          },
+          "settings.json": {
+            "bytes": 2891,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/settings.json",
+            "sha256": "1c175cb52de13430ac05e9b1cdb2409f3a5b24f63f98c8af0805ab977aec9713"
+          }
+        },
+        "original_settings_fingerprint": "f646683ce0c9b2322cc4bc5537cd4cf3220e134bdd3a5d925456b42dca14ce46",
+        "run_keyword_arguments": {
+          "alpha_R": 0.7,
+          "alpha_r": 0.7,
+          "angular_order": 96,
+          "beads": 256,
+          "checkpoint_interval": 1000,
+          "diagnostic_interval": 10,
+          "domain_samples": 131072,
+          "lambdas": [
+            0.0,
+            0.015625,
+            0.0625,
+            0.140625,
+            0.25,
+            0.390625,
+            0.5625,
+            0.765625,
+            1.0
+          ],
+          "mass": 1837.1526474396187,
+          "maximum": 8.0,
+          "minimum": 0.5,
+          "phase": "production",
+          "production": 20000,
+          "radial_order": 192,
+          "radius_step": 0.08,
+          "ratio_step": 0.03,
+          "resume": false,
+          "sample_interval": 1,
+          "seed": 825603,
+          "snapshot_interval": 100,
+          "stop_after": null,
+          "surface": "ts",
+          "swap_interval": 1,
+          "temperature": 300.0,
+          "warmup": 2000
+        },
+        "seed": 825603
+      },
+      {
+        "exact_non_snapshot_arrays": [
+          "domain_sha256",
+          "radius",
+          "ratio",
+          "eta_R",
+          "eta_r",
+          "completed",
+          "delta_energy",
+          "diagnostics",
+          "accepted",
+          "proposed",
+          "swap_attempts",
+          "swap_accepts",
+          "lineage",
+          "last_extreme",
+          "endpoint_traversals",
+          "rng"
+        ],
+        "expected_replay_settings_fingerprint": "4dc20dd809ca1faf0f13097ca43a3614b5814aa6b6727fc72863e4ec50e11545",
+        "new_relative_directory": "seed-825607",
+        "original_files": {
+          "checkpoint.npz": {
+            "bytes": 2397287,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/checkpoint.npz",
+            "sha256": "0c4387eeace08fe35f24a10109c03a7d3b4a6e72d2473363e6e90a69b9b2b664"
+          },
+          "progress.json": {
+            "bytes": 305,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/progress.json",
+            "sha256": "a3d2f856060709c90ba1d523d2cf79f309b1582aca69aa4a45cc0a548a208b18"
+          },
+          "reference-domain.json": {
+            "bytes": 495,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/reference-domain.json",
+            "sha256": "e536d350bf464890ff956ef295add3aede1a9e1760938e9ae7afc2b4f0610ead"
+          },
+          "reference.json": {
+            "bytes": 603,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/reference.json",
+            "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+          },
+          "report.json": {
+            "bytes": 8689,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/report.json",
+            "sha256": "f9ce9de57eb0ecd3e9b11ea9ddc6bf304356eb15ca0b4ab87f0fcea9fd938513"
+          },
+          "settings.json": {
+            "bytes": 2891,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/settings.json",
+            "sha256": "59cb3d80a4dddd18caf26d856d09233eb2197f1492c76ef3ef6397c85c9517a5"
+          }
+        },
+        "original_settings_fingerprint": "c63382b13b69959f4334c95e0a766705618f2f6df69596229af2c8f28f3a0bbc",
+        "run_keyword_arguments": {
+          "alpha_R": 0.7,
+          "alpha_r": 0.7,
+          "angular_order": 96,
+          "beads": 256,
+          "checkpoint_interval": 1000,
+          "diagnostic_interval": 10,
+          "domain_samples": 131072,
+          "lambdas": [
+            0.0,
+            0.015625,
+            0.0625,
+            0.140625,
+            0.25,
+            0.390625,
+            0.5625,
+            0.765625,
+            1.0
+          ],
+          "mass": 1837.1526474396187,
+          "maximum": 8.0,
+          "minimum": 0.5,
+          "phase": "production",
+          "production": 20000,
+          "radial_order": 192,
+          "radius_step": 0.08,
+          "ratio_step": 0.03,
+          "resume": false,
+          "sample_interval": 1,
+          "seed": 825607,
+          "snapshot_interval": 100,
+          "stop_after": null,
+          "surface": "ts",
+          "swap_interval": 1,
+          "temperature": 300.0,
+          "warmup": 2000
+        },
+        "seed": 825607
+      },
+      {
+        "exact_non_snapshot_arrays": [
+          "domain_sha256",
+          "radius",
+          "ratio",
+          "eta_R",
+          "eta_r",
+          "completed",
+          "delta_energy",
+          "diagnostics",
+          "accepted",
+          "proposed",
+          "swap_attempts",
+          "swap_accepts",
+          "lineage",
+          "last_extreme",
+          "endpoint_traversals",
+          "rng"
+        ],
+        "expected_replay_settings_fingerprint": "0cd429ac596663865254b938b5bf80b5f54dbe88fd23d711beb3cd08472b0c63",
+        "new_relative_directory": "seed-825609",
+        "original_files": {
+          "checkpoint.npz": {
+            "bytes": 2397311,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/checkpoint.npz",
+            "sha256": "7edb555fc86f3395936fbabd42d4705bd8654b865bb9ed00758b62e40dbfe6c0"
+          },
+          "progress.json": {
+            "bytes": 304,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/progress.json",
+            "sha256": "50ff9eb21abbfe358341364fc9290e9ee51b9dbe23f214096dd89f9e7fb6315c"
+          },
+          "reference-domain.json": {
+            "bytes": 494,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/reference-domain.json",
+            "sha256": "36c7dc9bd309797409c71c742f9bb862d9e634b264472201e25f9552f1f0d224"
+          },
+          "reference.json": {
+            "bytes": 603,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/reference.json",
+            "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+          },
+          "report.json": {
+            "bytes": 8712,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/report.json",
+            "sha256": "176eea850477ea511f7b9b5f88e8947d13047535776e50060dd0d98237b7b62c"
+          },
+          "settings.json": {
+            "bytes": 2891,
+            "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/settings.json",
+            "sha256": "64050597dcbf5a313de032b0e5f91cc71b00b8fc0a0fba698424bb094cbf1a3f"
+          }
+        },
+        "original_settings_fingerprint": "0938c288f7da80cc95cda816f59343001b0f6051c008b0426e23eddefb541eb8",
+        "run_keyword_arguments": {
+          "alpha_R": 0.7,
+          "alpha_r": 0.7,
+          "angular_order": 96,
+          "beads": 256,
+          "checkpoint_interval": 1000,
+          "diagnostic_interval": 10,
+          "domain_samples": 131072,
+          "lambdas": [
+            0.0,
+            0.015625,
+            0.0625,
+            0.140625,
+            0.25,
+            0.390625,
+            0.5625,
+            0.765625,
+            1.0
+          ],
+          "mass": 1837.1526474396187,
+          "maximum": 8.0,
+          "minimum": 0.5,
+          "phase": "production",
+          "production": 20000,
+          "radial_order": 192,
+          "radius_step": 0.08,
+          "ratio_step": 0.03,
+          "resume": false,
+          "sample_interval": 1,
+          "seed": 825609,
+          "snapshot_interval": 100,
+          "stop_after": null,
+          "surface": "ts",
+          "swap_interval": 1,
+          "temperature": 300.0,
+          "warmup": 2000
+        },
+        "seed": 825609
+      }
+    ],
+    "seed_order": [
+      825601,
+      825603,
+      825607,
+      825609
+    ],
+    "snapshot_completed_sweeps": [
+      2100,
+      2200,
+      2300,
+      2400,
+      2500,
+      2600,
+      2700,
+      2800,
+      2900,
+      3000,
+      3100,
+      3200,
+      3300,
+      3400,
+      3500,
+      3600,
+      3700,
+      3800,
+      3900,
+      4000,
+      4100,
+      4200,
+      4300,
+      4400,
+      4500,
+      4600,
+      4700,
+      4800,
+      4900,
+      5000,
+      5100,
+      5200,
+      5300,
+      5400,
+      5500,
+      5600,
+      5700,
+      5800,
+      5900,
+      6000,
+      6100,
+      6200,
+      6300,
+      6400,
+      6500,
+      6600,
+      6700,
+      6800,
+      6900,
+      7000,
+      7100,
+      7200,
+      7300,
+      7400,
+      7500,
+      7600,
+      7700,
+      7800,
+      7900,
+      8000,
+      8100,
+      8200,
+      8300,
+      8400,
+      8500,
+      8600,
+      8700,
+      8800,
+      8900,
+      9000,
+      9100,
+      9200,
+      9300,
+      9400,
+      9500,
+      9600,
+      9700,
+      9800,
+      9900,
+      10000,
+      10100,
+      10200,
+      10300,
+      10400,
+      10500,
+      10600,
+      10700,
+      10800,
+      10900,
+      11000,
+      11100,
+      11200,
+      11300,
+      11400,
+      11500,
+      11600,
+      11700,
+      11800,
+      11900,
+      12000,
+      12100,
+      12200,
+      12300,
+      12400,
+      12500,
+      12600,
+      12700,
+      12800,
+      12900,
+      13000,
+      13100,
+      13200,
+      13300,
+      13400,
+      13500,
+      13600,
+      13700,
+      13800,
+      13900,
+      14000,
+      14100,
+      14200,
+      14300,
+      14400,
+      14500,
+      14600,
+      14700,
+      14800,
+      14900,
+      15000,
+      15100,
+      15200,
+      15300,
+      15400,
+      15500,
+      15600,
+      15700,
+      15800,
+      15900,
+      16000,
+      16100,
+      16200,
+      16300,
+      16400,
+      16500,
+      16600,
+      16700,
+      16800,
+      16900,
+      17000,
+      17100,
+      17200,
+      17300,
+      17400,
+      17500,
+      17600,
+      17700,
+      17800,
+      17900,
+      18000,
+      18100,
+      18200,
+      18300,
+      18400,
+      18500,
+      18600,
+      18700,
+      18800,
+      18900,
+      19000,
+      19100,
+      19200,
+      19300,
+      19400,
+      19500,
+      19600,
+      19700,
+      19800,
+      19900,
+      20000,
+      20100,
+      20200,
+      20300,
+      20400,
+      20500,
+      20600,
+      20700,
+      20800,
+      20900,
+      21000,
+      21100,
+      21200,
+      21300,
+      21400,
+      21500,
+      21600,
+      21700,
+      21800,
+      21900,
+      22000
+    ],
+    "source_of_added_snapshots": "existing deterministic path_coordinates observer at lambda=1; no extra RNG draw or PES evaluation in the observer",
+    "strict_acceptance_checks": [
+      "Read-only source/runtime/library/build hashes equal the registered input identities before any sampling and before accepting each checkpoint.",
+      "Each new directory is empty at first launch. No original checkpoint/settings/report is rewritten or fed as a mutable resume target.",
+      "New settings dictionary differs from its exact old dictionary only at snapshot_interval,0to100. Fingerprints of both dictionaries are checked separately.",
+      "Load both checkpoints with expected_kind=h3.surface-partition and require_integrity=True. Whole old checkpoint SHA must still equal its report and input-audit receipt.",
+      "Every one of the16 old non-snapshot payload arrays has exactly equal key, dtype, shape and C-order bytes in the replay. This includes radius,ratio,eta_R,eta_r,completed,delta_energy,diagnostics,acceptance,swap,lineage,traversal counters,domain_sha256 and the exact RNG string. No float tolerance replaces byte equality.",
+      "The only differing checkpoint arrays are fingerprint,endpoint_q,endpoint_completed_sweeps. New endpoints have shape(200,256,3,3) and exact fixed sweep indices2100..22000by100.",
+      "Original and replay reference.json and reference-domain.json raw bytes must match exactly. Domain normalization is never recomputed into a different accepted identity.",
+      "Report analysis and all physical/source settings match the original. Elapsed/creation metadata, new checkpoint hash and declared snapshot-count fields may change explicitly.",
+      "Each saved parent is finite, on r01=r12<=r02 within1e-10bohr, beadwise minimum pair>=0.5bohr within1e-12, and beadwise total COM zero within1e-10bohr. No PES gradient or Maxwell momentum is claimed to have been archived.",
+      "Rehash all original inputs after replay and verification. A source, data or RNG mismatch is a failed replay, not a new acceptable seed.",
+      "All four fixed chains must satisfy every identity/geometry check before a global parent-eligible manifest exists. A subset cannot enable children."
+    ]
+  },
+  "schema": "pyrpmd.h3.p256-history-replay-and-dynamics-proposal.v1",
+  "scientific_source_identity": {
+    "model": {
+      "atomic_numbers": [
+        1,
+        1,
+        1
+      ],
+      "charge": 0,
+      "dtype": "float64",
+      "energy_zero": "three separated H atoms",
+      "execution_device": "cpu",
+      "library_sha256": "c7af84fb8a2caaec3ef56ee4225169fef7048e2fcc365ba6d16c605263049609",
+      "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+      "multiplicity": 2,
+      "native_batch": true,
+      "provider": "BKMP2",
+      "source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+      "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+      "thread_safety": "process_serial",
+      "trajectory_batch_safe": true
+    },
+    "runtime": {
+      "numpy": "2.5.4",
+      "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+      "python": "3.12.14",
+      "scipy": "1.18.1"
+    },
+    "source_sha256": {
+      "benchmarks/h3/classical_tst.py": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be",
+      "benchmarks/h3/mixing_sampling.py": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0",
+      "benchmarks/h3/pes.py": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892",
+      "benchmarks/h3/surface_partition.py": "23d2805270a82c91eff7b9a70f89621a356d7625aeaf76246f00896147b7a5db",
+      "src/pyrpmd/analysis/fes.py": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+      "src/pyrpmd/checkpoint.py": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f",
+      "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+      "src/pyrpmd/io.py": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1"
+    }
+  },
+  "scope": "reconstruct deterministic historical parents in new directories, then separately authorize a finite-P dynamical equivalence experiment; no existing scientific source or campaign is modified",
+  "status": "reviewable fixed-input proposal; not adopted or launched"
+}

@@ -1,0 +1,41 @@
+{
+  "schema": "pyrpmd.h3.complete-umbrella-stage30000-publication.v1",
+  "created_utc": "2026-11-01T18:40:56.773495+00:00",
+  "files": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/README.md",
+      "bytes": 3838,
+      "sha256": "d2438de97832caa3acf18fd3274933050e3042b88e78d368ad0ba97e9ef30ba9"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/campaign-comparison.json",
+      "bytes": 12026,
+      "sha256": "aa0fd9969752428e68414376354e37d6e469c98b5c606639c955277578cf8a6f"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/execution.json",
+      "bytes": 1542,
+      "sha256": "ca37d8c021ef81dc85a6364a2a6829ff7e8f781ad8d5334652cd4db80f380bd8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/continuation-decision.json",
+      "bytes": 2487,
+      "sha256": "c96255a6eea63023f4eefe9450daa8fc4d67399d55a3143769bd83aa41169c16"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/continuation-launch.json",
+      "bytes": 3307,
+      "sha256": "a31ac94e0c3b50fa8b84c85e3dace16c510480e8527cabcb4c0ac8226711ca10"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/launch_recorded_stage.py",
+      "bytes": 4335,
+      "sha256": "955de8875a5eed1915963801e538bcd148caa8cf95fd7265c8f38696930ac3b2"
+    }
+  ],
+  "file_count": 6,
+  "include_this_inventory_file": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/publication-inventory.json",
+  "raw_samples_and_models_included": false,
+  "scientific_stage_report_and_decision_unchanged": true,
+  "continuation_status": "Running the next registered100000prefix for all8seeds with2initialworkers; the first30000stage remainsfailed."
+}

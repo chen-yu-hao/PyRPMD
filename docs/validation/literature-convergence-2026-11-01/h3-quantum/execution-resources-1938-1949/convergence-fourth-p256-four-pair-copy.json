@@ -1,0 +1,549 @@
+{
+  "schema": "pyrpmd.integration.frozen-bundle-copy.v1",
+  "created_utc": "2026-11-01T19:59:12.730081+00:00",
+  "source": "/workspace/scratch/a5e4820daedd/PyRPMD",
+  "destination": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration",
+  "inventories": {
+    "h3-quantum/p256-parent-tool/publishable-files-v3.json": "0dd49f90e9dd4b038c9a665f63f1ae067bb73a56b4750180148f5008e5bd02cb",
+    "review/p256-parent-tool-independent-review/publication-inventory.json": "bd91eb0ff5081cf15ccc4d57dae8313ee9a290539e8e8278836afdb27c660bf3",
+    "h3-quantum/p256-child-tool/publication-inventory.json": "1a769e61c4578d1fba0d1fd3dc7cc529e82d3b899c3cbf22d7df6d5dfa5fb256",
+    "h3-quantum/recrossing-stage-200-pairs-4/independent-review/publication-inventory.json": "945c4f1385f55142fd78a6f9f32bc510ec8cf39de0705b4cb524c5a9d67cee54",
+    "h3-quantum/recrossing-stage-200-pairs-4/raw-archive/publication-inventory.json": "a53da099bdb241ce013d50d6a37a59d03f07f7960085a291da08c4dbc17ba3f5"
+  },
+  "copied_files": 106,
+  "total_bytes": 3575804,
+  "files": [
+    {
+      "path": "benchmarks/h3/p256_parent_campaign.py",
+      "sha256": "7934c1d7f695ce43337d11171cbad8c46ff95311490b755bf4191a56e00c0da3",
+      "bytes": 35515
+    },
+    {
+      "path": "benchmarks/h3/p256_recrossing_analyze.py",
+      "sha256": "9e2fdacddcf2ef5b825e0eb0b65789e5f045a8505a8fbd09fe21b704ed4936b6",
+      "bytes": 16902
+    },
+    {
+      "path": "benchmarks/h3/p256_surface_recrossing.py",
+      "sha256": "9c5c5106d8392ca577f8ea6b54f6e1828dcabb8f86a0e01b732c2e626aa15692",
+      "bytes": 31442
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-tool/README.md",
+      "sha256": "3ed3d316dee2ea104d12a101d40517f6594884b3bccd71d6466f1b985e4196be",
+      "bytes": 4490
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-tool/final-gate.json",
+      "sha256": "823e23e3468c60bba670c5820127f5dc8cb3c7fa2fb4c3478a9461c8fb2c331a",
+      "bytes": 3089
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-tool/final-pytest.log",
+      "sha256": "7c2cbf9eb4ccc009bed70fd59b7b850b991af541641f70d4148f26bfc0741037",
+      "bytes": 99
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-tool/final-pytest.xml",
+      "sha256": "650f09eba5efdb707f7be74160ce9ec0c424d9496eafbc066eae445bdc909571",
+      "bytes": 8985
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-tool/independent-adapter-review.json",
+      "sha256": "1aa5466f982e23ed38158a249c78f05d7f8a06ac84f8873612eb84cc10a0eb22",
+      "bytes": 3264
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-tool/independent-analysis-review.json",
+      "sha256": "4bb9d6a68527f225d490ff5fedbd5ff7d7913da821dac39f6b5aa15efa43ce88",
+      "bytes": 4150
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-tool/initial-28-case-gate/p256_surface_recrossing.py",
+      "sha256": "3327779277c466b3989fb219fc3753c7d0e198e18c6b6d65ff9ae7c0922c6f84",
+      "bytes": 31028
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-tool/initial-28-case-gate/pytest.xml",
+      "sha256": "52de0c71d0365221c1c12b1fa3ad12ea1c333ac58fbdb37a9905ae8a782875f9",
+      "bytes": 4477
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-tool/initial-28-case-gate/receipt.json",
+      "sha256": "e884a37a57f3a8cb9082211565940bd8378dde2e951d09fd42f019bf4727ffa6",
+      "bytes": 1127
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-tool/initial-28-case-gate/test_h3_p256_surface_recrossing.py",
+      "sha256": "d76ce4bfee0c07efd86bf7546c56e39bf4a547539a947934ea9ae608a4853904",
+      "bytes": 10593
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-tool/initial-28-case-gate/tool-result.log",
+      "sha256": "450d77c0dccda620c6ac59f52aa5dcf96bbf3a9eebc3588ad5009338be7bd6bb",
+      "bytes": 99
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-tool/initial-analysis-gate/p256_recrossing_analyze.py",
+      "sha256": "c84e2a7af50c0f57f4e55b960091750e5c0a70b90cbb7c1284ddb5beb466faae",
+      "bytes": 13367
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-tool/initial-analysis-gate/pytest.log",
+      "sha256": "d7b3b19567ff80f5c217f441c0d1f4f8c02604d9abca6da6b61477448a3aa347",
+      "bytes": 4501
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-tool/initial-analysis-gate/pytest.xml",
+      "sha256": "b4517f75d5d9afef52126367160769b2a0757e3932ef39a3e9f00d312b232bbb",
+      "bytes": 7040
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-tool/initial-analysis-gate/receipt.json",
+      "sha256": "27faa788239236bfa15a8881e43469cfa4fc12c88fd1de9cfe57a43bfe5da1c7",
+      "bytes": 1220
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-tool/initial-analysis-gate/test_h3_p256_recrossing_analysis.py",
+      "sha256": "e188da4571a39e0aefe6ee9827e7015a8e038bc1ee98147c48f2c6df744f45f8",
+      "bytes": 5306
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-tool/intermediate-29-case-gate/pytest.log",
+      "sha256": "51c23991e8b3500a7c1627ba080da4602df0a188f11a1093b0ee7d5ae213d489",
+      "bytes": 99
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-tool/intermediate-29-case-gate/pytest.xml",
+      "sha256": "f4d67bf233cead0cb656a790a04c18df9b7561654590285b2567a78891a8d325",
+      "bytes": 4635
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-tool/intermediate-29-case-gate/receipt.json",
+      "sha256": "c9cff4399b07c851a928055cc6bfa1a7f0ac5ad52f860f4849697dea3783516d",
+      "bytes": 480
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-tool/publication-inventory.json",
+      "sha256": "1a769e61c4578d1fba0d1fd3dc7cc529e82d3b899c3cbf22d7df6d5dfa5fb256",
+      "bytes": 5681
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/README.md",
+      "sha256": "13490799970e5005bf32de8919f111588f3be6a80c011c5e500ec02489a6ca93",
+      "bytes": 8548
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/README.md",
+      "sha256": "ba482f4e37fd66d0efac02e55af4100966ea18b6a5ca8742200e1b8d2af30125",
+      "bytes": 2198
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/execution-authorization.schema.json",
+      "sha256": "cf87130b5bc3ecc945f813708c7c6294a4711fc6c0a32531a17f1bc6d5bfa764",
+      "bytes": 2867
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/final/preflight-receipt.json",
+      "sha256": "f37acd338c40572a441a024b98ec2da5dcf0cbc12c5b5d9ec3025b0b55429bd8",
+      "bytes": 1366
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/final/preflight.log",
+      "sha256": "626c3d92e3720d4b11459e59dedc18a896973be2035cbf8a010cab2b62818573",
+      "bytes": 327
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/final/synthetic-gate.json",
+      "sha256": "ddd0e0b863e2fc3e0bab3fd0a33a0270187d3424074c3d13385965c8f019b112",
+      "bytes": 1981
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/final/synthetic-pytest.log",
+      "sha256": "47d20905760d78a027fe5d2b7efb3ffc001ee1cf06488d262f17f368924b7387",
+      "bytes": 99
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/final/synthetic-pytest.xml",
+      "sha256": "89151f4fad1f1c5b19c57ac6ddb269d1397d2ba73dd1764d907bb6e250484f44",
+      "bytes": 9424
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/freeze.json",
+      "sha256": "169dc18386b0c754c0cfa51b8de7168e5a7716b5dc3ad90d3a0ec4f383f7bd0a",
+      "bytes": 2100
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/initial-source/p256_parent_campaign.py",
+      "sha256": "a84b3a77ad86e7bec2285ce592ee096410fe202b9c4f04804733fb0cd1520923",
+      "bytes": 34562
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/initial-source/test_h3_p256_parent_campaign.py",
+      "sha256": "aa8266bfb11fa7e836e3cf27c726be0cb6325b254c8116e042bd93944aa66183",
+      "bytes": 19942
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/parent-output-contract.json",
+      "sha256": "b9f52014d327456a332215f109fd5dfad3f9d4246836964ce0c298f99db30b99",
+      "bytes": 5339
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/revision.json",
+      "sha256": "8bb0711d0de700115b08a7a4326832b398aab02f7023ae953c80a29bda371077",
+      "bytes": 1259
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/before-finalization-reserve/p256_parent_campaign.py",
+      "sha256": "ff41236e1dcfcb0ed2de36b885ae09b3ca70d3a06cd8bc54c267b710f9310714",
+      "bytes": 34396
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/before-finalization-reserve/preflight-receipt.json",
+      "sha256": "6b2e2f15e13b610e2df83c1d54736af06b9ea8c2d3b0a4d4aa786f889f489826",
+      "bytes": 1412
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/before-finalization-reserve/preflight.log",
+      "sha256": "626c3d92e3720d4b11459e59dedc18a896973be2035cbf8a010cab2b62818573",
+      "bytes": 327
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/before-finalization-reserve/synthetic-gate.json",
+      "sha256": "6f1248f1846fcb772c60bd67c15d97a4318e45094271bb4b3708fedc272dced1",
+      "bytes": 1910
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/before-finalization-reserve/synthetic-pytest.log",
+      "sha256": "aa33b1d22a81311a7d85e9aff8bc9b7bfe4c69ee31d8d28a5490f2ee22fd0a00",
+      "bytes": 99
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/before-finalization-reserve/synthetic-pytest.xml",
+      "sha256": "e0384473b0123c075d6cee469f823a31f3b10407ad42768c87fdb48bce701c96",
+      "bytes": 8872
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/before-finalization-reserve/test_h3_p256_parent_campaign.py",
+      "sha256": "67a77b73cbc40e8dc2f8cafc47ef310766a9dad8cdc67a4b5766a2417ba0c6e9",
+      "bytes": 19783
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/execution-authorization.schema.json",
+      "sha256": "d940f99cfdfdf8ed17ffb4b669104401692e2deb3f21316a1e7a27777b49f7c1",
+      "bytes": 2867
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/README.md",
+      "sha256": "2ce82773d7f9b941cd89b8aabca56ddbdf885c37d638b06e2e853dc5e992f3f4",
+      "bytes": 1837
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/execution-authorization.schema.json",
+      "sha256": "4733de78846487147ccd4a66db965c25cd2a77812b321beb06d1db51077d8f28",
+      "bytes": 2867
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/freeze.json",
+      "sha256": "5aff098f0e3b540d7fcdb84f616fd5ea60bf803612677400a67c4d60b6f25dab",
+      "bytes": 2119
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/initial-source/p256_parent_campaign.py",
+      "sha256": "af6ce9c9dbb21fa689cafc8142ed079825f10391788bed231c39035d6ee5cbf6",
+      "bytes": 35195
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/initial-source/test_h3_p256_parent_campaign.py",
+      "sha256": "f60368a386f95cc8fa3c4bf4969794d70e3cb70b2c5108bd839ca004014baa42",
+      "bytes": 22755
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/parent-output-contract.json",
+      "sha256": "19f5c764134632f3bccdfa0dba579636946368bf145cab7713ebb1f0a41b23a5",
+      "bytes": 5339
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/preflight-receipt.json",
+      "sha256": "1d67c0c2532885719eb5d49471b84d8e5ba6fe3aa3755283558e54f51d4210a7",
+      "bytes": 1369
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/preflight.log",
+      "sha256": "626c3d92e3720d4b11459e59dedc18a896973be2035cbf8a010cab2b62818573",
+      "bytes": 327
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/revision.json",
+      "sha256": "3422cd7b3317f275c545e9f7815d261f811bddcc8203d8646c7b24920e34a73d",
+      "bytes": 1279
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/synthetic-gate.json",
+      "sha256": "9a770e711313f9c1faad56316aa58cc68ad6ce19e4e45d0d46cee2629ce47e4b",
+      "bytes": 1991
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/synthetic-pytest.log",
+      "sha256": "2b65c3c81c90661773382c286653c9db0ee6accae3531a0df7d111c173b488d3",
+      "bytes": 99
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/synthetic-pytest.xml",
+      "sha256": "cdca8189b74c97785711c8e36d599597543c21c7bf16d16cf0faad7d2b081a37",
+      "bytes": 9565
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/final/preflight-receipt.json",
+      "sha256": "2bc39d33d456280c6825cb4a91e93be1523a21e9d3ffbc3abb60f7146eebd369",
+      "bytes": 1418
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/final/preflight.log",
+      "sha256": "626c3d92e3720d4b11459e59dedc18a896973be2035cbf8a010cab2b62818573",
+      "bytes": 327
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/final/synthetic-gate.json",
+      "sha256": "7cdeff4154d60d4dfb5ff392ef027509253469a5d968ef1197d20a87c2aab500",
+      "bytes": 2072
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/final/synthetic-pytest.log",
+      "sha256": "db4371c69a0dcb9c95913dd4982abea57146ef6bb31403a6a4b5bca1a03bc3a4",
+      "bytes": 99
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/final/synthetic-pytest.xml",
+      "sha256": "1f5a80a3c1f1fc0c97e64d6683cdd2a06dd19e98f4ca3ab6087ac5c9f2e0809d",
+      "bytes": 8872
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/parent-output-contract.json",
+      "sha256": "9368115cbc2f97d4187d9149d5628c23b9121250c00eeb9afa9fad505cf6057c",
+      "bytes": 5339
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/preflight-receipt.json",
+      "sha256": "6b2e2f15e13b610e2df83c1d54736af06b9ea8c2d3b0a4d4aa786f889f489826",
+      "bytes": 1412
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/preflight.log",
+      "sha256": "626c3d92e3720d4b11459e59dedc18a896973be2035cbf8a010cab2b62818573",
+      "bytes": 327
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/publishable-files-v2.json",
+      "sha256": "d8636ad103e5e6b2e3ab73fd0553d2db495db568e8cf00bb590c51afc9db1f73",
+      "bytes": 9157
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/publishable-files-v3.json",
+      "sha256": "0dd49f90e9dd4b038c9a665f63f1ae067bb73a56b4750180148f5008e5bd02cb",
+      "bytes": 12494
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/publishable-files.json",
+      "sha256": "9efee79d76e48e04f0f7ea8f34747f600d178b7dfee5c87098ef47a3cbb875e5",
+      "bytes": 5685
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/synthetic-gate.json",
+      "sha256": "6f1248f1846fcb772c60bd67c15d97a4318e45094271bb4b3708fedc272dced1",
+      "bytes": 1910
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/synthetic-pytest.log",
+      "sha256": "aa33b1d22a81311a7d85e9aff8bc9b7bfe4c69ee31d8d28a5490f2ee22fd0a00",
+      "bytes": 99
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/synthetic-pytest.xml",
+      "sha256": "e0384473b0123c075d6cee469f823a31f3b10407ad42768c87fdb48bce701c96",
+      "bytes": 8872
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/README.md",
+      "sha256": "111dc92f78916e62c4fd6c0e4b80c249a61b84fcd027f0064aeaa8b0207801de",
+      "bytes": 2896
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/independent-review.json",
+      "sha256": "f34eafd195113d0b191ce6b31c0ac9d73b6967a27f5d4aca431775ef6125e20f",
+      "bytes": 6131
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/original/input-file-identities.json",
+      "sha256": "b01806561038cce0f01210f4291ff991ab1a011b1c069da41eacc500dc15feb8",
+      "bytes": 252883
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/original/parent-identities.json",
+      "sha256": "f8045f8fb2737f3c1b8e80cf6ea2387ffb0dd4c95f60326280380ec519d85079",
+      "bytes": 13307
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/original/raw-chunk-identities.json",
+      "sha256": "a6b13e8ac332c8b9416fa71efa3e05e621adaf06b25d80e4e2a8ead199251081",
+      "bytes": 815523
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/original/raw-replay.json",
+      "sha256": "1683e97165994719cd7ed48e61c23f57f7312ee3e0a6562d135d6c05ac0a3823",
+      "bytes": 26905
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/original-execution.json",
+      "sha256": "30f0bbc72032e8dd65e7552f9b0d731a4c8985bd57fec1816ecf862d7cabf528",
+      "bytes": 893
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/original-replay.log",
+      "sha256": "2493147149e3eead594a6d90e736663ab0da22ca1fd24058eebeec9f273dd892",
+      "bytes": 1726
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/publication-inventory.json",
+      "sha256": "945c4f1385f55142fd78a6f9f32bc510ec8cf39de0705b4cb524c5a9d67cee54",
+      "bytes": 2644
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/replay_complete.py",
+      "sha256": "431be7bdd8e23bb95510539c8f3d70110749cd4fec284d6509a40a7a20649b84",
+      "bytes": 30386
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/INCREMENT-SCOPE.md",
+      "sha256": "ad31f14edb3e60229476290638bc3f4acadf97fb6c9ada2a0268e0010fc26849",
+      "bytes": 6195
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/README.md",
+      "sha256": "98f54294578e47eaf26b09f11d582a24dd655fe4e5764fd164c9937988f7228d",
+      "bytes": 3882
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/archive-provenance.json",
+      "sha256": "040c276b05504959662e7633e4417c9df3115126aec4883ff57e7953ec8c2b2e",
+      "bytes": 3919
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/external-prerequisites.json",
+      "sha256": "19cf708f37026edeb6db073d075cb563c36a82f1539ca117a86571983edfac41",
+      "bytes": 22035
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/extracted-replay/input-file-identities.json",
+      "sha256": "5f466942c8d76d21c3d27000068991ceffe4ed1bc9acd9207a7ff7020adfc95e",
+      "bytes": 272842
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/extracted-replay/parent-identities.json",
+      "sha256": "2981661b728344ae6eb46c649cfaaf0dea61624326638d115d3822320e009c45",
+      "bytes": 15147
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/extracted-replay/raw-chunk-identities.json",
+      "sha256": "f2a0b66c864a1754295d3c119214be98e630e2197585198a15622ecb6927d891",
+      "bytes": 831523
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/extracted-replay/raw-replay.json",
+      "sha256": "e9e12ad7f79da5d1003ecbba227ffd2c3189712aa66311404086e7138e9a5fae",
+      "bytes": 26904
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/extracted-replay.log",
+      "sha256": "2493147149e3eead594a6d90e736663ab0da22ca1fd24058eebeec9f273dd892",
+      "bytes": 1726
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/filesystem-mode-observation.json",
+      "sha256": "de20092e67a927df4acf11bda83dc6f4b4cae9f0bb3f67ed60f84df9cf4485e2",
+      "bytes": 1155
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/member-inventory.json",
+      "sha256": "501d1c13d2c81ec844d4c0b4e545a2a87a193bc1a95819ea69ce0c45df013e37",
+      "bytes": 205393
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/package-execution.json",
+      "sha256": "28cb242b370cef33c59907eacc8fd8a4b58b3ca6033d3ed36cc7340cfe7d8fe3",
+      "bytes": 709
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/package.log",
+      "sha256": "0c1b91de2bab6f04019af87183ec209e3f8307e64b12499306ce7843fe21c5b5",
+      "bytes": 762
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/package_increment.py",
+      "sha256": "a05e56589694fb06cc6cc084ab5dc9b48a7a0d3064857429b12d990628aeb07a",
+      "bytes": 19490
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/publication-inventory.json",
+      "sha256": "a53da099bdb241ce013d50d6a37a59d03f07f7960085a291da08c4dbc17ba3f5",
+      "bytes": 5124
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/raw-data-index.json",
+      "sha256": "61a0f2fed36826a5e1610b5560e4fc08601784666faa128c0331188d71405f2b",
+      "bytes": 436110
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/verification.json",
+      "sha256": "3b4bb6d4c74f5687262582a1a339f915507cc7d1ccc885a104ae8db78629f6ec",
+      "bytes": 3542
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/p256-parent-tool-independent-review/README.md",
+      "sha256": "4fe403ea4d152ccaa6db0d03a788836514f0f16cdc9282f9a178e1ae798c1609",
+      "bytes": 2725
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/p256-parent-tool-independent-review/focused-pytest.log",
+      "sha256": "ef73a72f1265620c1d3cd44bec9a8619547dafd295908033398f55c9ce6bb01d",
+      "bytes": 113
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/p256-parent-tool-independent-review/focused-pytest.xml",
+      "sha256": "32a235cbefb319b2b5417a356ca30fa8b6b85b155672d0ade26d646f4ec877be",
+      "bytes": 824
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/p256-parent-tool-independent-review/independent-review.json",
+      "sha256": "b0512985ac3312d58d3048e9d56071205cb416af2be54341b3ab0669cfdd3d68",
+      "bytes": 10179
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/p256-parent-tool-independent-review/initial-findings.json",
+      "sha256": "6030907a2a8f120a858b6a94a280eb64a8b374be0e650aed649b09182835647b",
+      "bytes": 2544
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/p256-parent-tool-independent-review/publication-inventory.json",
+      "sha256": "bd91eb0ff5081cf15ccc4d57dae8313ee9a290539e8e8278836afdb27c660bf3",
+      "bytes": 1532
+    },
+    {
+      "path": "tests/test_h3_p256_parent_campaign.py",
+      "sha256": "57e78795ecda9fa754fef5a6ca2180e7b4f262ada7b763b76c8f8281506d7634",
+      "bytes": 23981
+    },
+    {
+      "path": "tests/test_h3_p256_recrossing_analysis.py",
+      "sha256": "71a6e544d774e859286e484e09cb37ac79226ee5f96c7322eb0d9e8829c49903",
+      "bytes": 11210
+    },
+    {
+      "path": "tests/test_h3_p256_surface_recrossing.py",
+      "sha256": "43a804ba96ac508bc0e93fad7121c6164b265c7bb993fc7de53eb2c3fec18445",
+      "bytes": 12852
+    }
+  ],
+  "original_runtime_unchanged": true,
+  "raw_arrays_copied": false
+}

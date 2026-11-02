@@ -1,0 +1,55 @@
+{
+  "CPU_affinity": [
+    6
+  ],
+  "PES_evaluations": 0,
+  "command": [
+    "taskset",
+    "-c",
+    "6",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_h3_p256_native_calibration.py",
+    "--junitxml=/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/candidate-gate/pytest.xml"
+  ],
+  "created_utc": "2026-11-01T20:21:56.412050+00:00",
+  "failed": 0,
+  "junit": {
+    "bytes": 2505,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/candidate-gate/pytest.xml",
+    "sha256": "518243bde39590bcab0ed62b59decb38cde2cf4e697d9eae68a4abb3e57017b0"
+  },
+  "log": {
+    "bytes": 99,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/candidate-gate/pytest.log",
+    "sha256": "ff73c3b52ec6f9e718effa95c0d20b197d8448ce77ac3ccff7acce737a494962"
+  },
+  "passed": 15,
+  "physical_map_steps": 0,
+  "pytest_reported_seconds": 0.24,
+  "schema": "pyrpmd.h3.p256-native-calibration.synthetic-gate.v1",
+  "skipped": 0,
+  "source": {
+    "bytes": 17089,
+    "path": "benchmarks/h3/p256_native_calibration.py",
+    "sha256": "bb686afb30db75702ac90a62bfec6c667d2752f6d0f24643e16fa8635e3321ec"
+  },
+  "source_snapshot": {
+    "bytes": 17089,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/candidate-gate/p256_native_calibration.py",
+    "sha256": "bb686afb30db75702ac90a62bfec6c667d2752f6d0f24643e16fa8635e3321ec"
+  },
+  "test_snapshot": {
+    "bytes": 6108,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/candidate-gate/test_h3_p256_native_calibration.py",
+    "sha256": "a48436ef363c85c873b2fafcc83d0c2d1f6625b6dcdb15a59402321e3b56d476"
+  },
+  "tests": {
+    "bytes": 6108,
+    "path": "tests/test_h3_p256_native_calibration.py",
+    "sha256": "a48436ef363c85c873b2fafcc83d0c2d1f6625b6dcdb15a59402321e3b56d476"
+  },
+  "threads": 1
+}

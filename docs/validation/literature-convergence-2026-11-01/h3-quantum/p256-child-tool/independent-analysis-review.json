@@ -1,0 +1,50 @@
+{
+  "execution_scope": {
+    "MD_steps": 0,
+    "PES_evaluations": 0,
+    "new_momentum_draws": 0,
+    "source_files_modified_by_reviewer": [],
+    "test_cases_rerun_by_reviewer": 0
+  },
+  "findings": [
+    {
+      "issue": "The imported P128 analysis helpers were not initially bound by the new analyzer single-file hash.",
+      "resolution": "The exact fixed P128 helper SHA is checked against both disk and the fixed baseline before and after analysis; both analyzers are also included in the child producer source identity.",
+      "resolved": true
+    },
+    {
+      "issue": "A nonfinite kappa could produce a failed rate helper result but then throw in the later paired interval before the whole-analysis failure report was written.",
+      "resolution": "The complete per-timestep cohort is now screened before inference; all rows and exact nonfinite field paths/representations are retained, inference is unavailable, no kappa CSV is written, and the pass flag is false. Finite nonpositive kappa is also retained without log-rate inference.",
+      "resolved": true
+    }
+  ],
+  "initial_analyzer_source_sha256": "c84e2a7af50c0f57f4e55b960091750e5c0a70b90cbb7c1284ddb5beb466faae",
+  "limitations": [
+    "This is not a P256 scientific result or a second execution record for root-owned tests.",
+    "The child scheduling coordinator still requires a separate exclusion/admission/drain review before any long child launch.",
+    "Intervals are nominal, are not sequentially adjusted, and do not bound arbitrary rare recrossing or PES/model uncertainty.",
+    "A sampled boundary minimum is not an every-step distance guarantee; the report distinguishes it from native hard guards and full-Hamiltonian extrema."
+  ],
+  "predecessor_adapter_review_sha256": "1aa5466f982e23ed38158a249c78f05d7f8a06ac84f8873612eb84cc10a0eb22",
+  "remaining_blocking_findings": [],
+  "reviewed_at_utc": "2026-11-01T19:53:16.544368+00:00",
+  "reviewed_source_sha256": {
+    "benchmarks/h3/p256_recrossing_analyze.py": "9e2fdacddcf2ef5b825e0eb0b65789e5f045a8505a8fbd09fe21b704ed4936b6",
+    "benchmarks/h3/p256_surface_recrossing.py": "9c5c5106d8392ca577f8ea6b54f6e1828dcabb8f86a0e01b732c2e626aa15692",
+    "benchmarks/h3/quantum_recrossing_analyze.py": "4d1925461219e87d85d4e1f4ac98263c4bb58ff0d7713075782145ba909649c1",
+    "benchmarks/h3/quantum_surface_recrossing.py": "dc900e74fe8191cc8c88925a2413e55f76724a2835a8f447039d25a415c45f9e"
+  },
+  "reviewer": "providers subagent; independent read-only code and statistical review",
+  "schema": "pyrpmd.h3.p256-analyzer-independent-review.v1",
+  "verified_contracts": [
+    "All eight registered seeds, both timesteps and both two-pair batches must complete before inference.",
+    "Each chain uses the exact bound parent checkpoint/normalization/source identity and both timesteps must have identical keyed momenta and equivalent-channel hashes.",
+    "The P256 reactant row is selected explicitly and checked against the fixed P256 log ratio, reduced mass, free-kernel beta, temperature, domain and PES identity. The P128 finite-P denominator is not substituted.",
+    "Same-chain log(Z_TS) and log(kappa) are combined before the within-group variance, retaining their covariance.",
+    "The P256 and P128 groups are independent eight-chain groups. Welch uses s256^2/8+s128^2/8, Satterthwaite degrees of freedom, and mean(log k256)-mean(log k128).",
+    "Full-rate equivalence requires the entire two-sided 95% interval inside plus/minus log(1.05); the corresponding ratio band is [1/1.05,1.05].",
+    "Within-P256 time/timestep controls retain paired-chain 95% intervals, df = 7, and the unchanged 0.01 absolute margins. The parent-time-half 0.03 diagnostic remains explicitly supplementary.",
+    "The 76,800,000 total native-step check equals 8 chains \u00d7 200 parents \u00d7 4 pairs \u00d7 2 signs \u00d7 200 frames \u00d7 (10+20 steps/frame). Individual children do not become uncertainty units.",
+    "The adapter source identity revision adds the analysis dependencies only. Its propagation/RNG/checkpoint suffix and summary statistical body remain AST-identical to the frozen P128 implementation."
+  ]
+}

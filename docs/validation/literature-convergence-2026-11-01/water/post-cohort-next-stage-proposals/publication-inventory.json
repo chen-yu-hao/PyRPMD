@@ -1,0 +1,65 @@
+{
+  "PES_evaluations": 0,
+  "adopted": false,
+  "created_utc": "2026-11-01T21:30:31.021640+00:00",
+  "file_count": 10,
+  "files": [
+    {
+      "bytes": 16758,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-proposals/README.md",
+      "sha256": "d203f7288fdf60a0f40dd2737af75863a98fe4e05dbeab2c8be20dada38ab852"
+    },
+    {
+      "bytes": 1933,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-proposals/future-root-adoption.template.json",
+      "sha256": "28b871b3d3c6109ccb6f8d282f71a5afd1b8f06d6b8be318125bf68006c1fa41"
+    },
+    {
+      "bytes": 4819,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-proposals/independent-method-review.json",
+      "sha256": "34ed6c23333f50117f23989c7042d3cc71c2b6eef3f7e6aa12d26c91bb051d8a"
+    },
+    {
+      "bytes": 1552,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-proposals/literature-context.json",
+      "sha256": "7b3bd1e7ee1a230532bf493686d4f806e1d01e605cf2c2c1a9313ccff503cbff"
+    },
+    {
+      "bytes": 10924,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-proposals/long-lag-production-design.json",
+      "sha256": "678270ed5353c9d7d6d92ed44fd6180cd6c1ca91f5e43c91386d011ccff787c4"
+    },
+    {
+      "bytes": 15956,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-proposals/preparation-proposal.json",
+      "sha256": "3521b5c25ee27466d95f750dae421e8d74566b5ddf3f927ce7d426fc69e9bce1"
+    },
+    {
+      "bytes": 1362,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-proposals/proposal-consistency.json",
+      "sha256": "78354f875789cd808537d78b46d62cf55723a8b0a711050b28a712f56688db9b"
+    },
+    {
+      "bytes": 3750,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-proposals/resource-estimates.json",
+      "sha256": "f59162d0b9565ebaf47af1a78ac856b89e73be99015610945e2e07d1c87ee234"
+    },
+    {
+      "bytes": 6336,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-proposals/source-and-evidence-bindings.json",
+      "sha256": "014cc4c5d5288bab9a1787f36f078002a6a081bf9253a5cf406870e29829dec2"
+    },
+    {
+      "bytes": 35929,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-proposals/starting-state-bindings.json",
+      "sha256": "4e14a86f6c533409fbf90fdc1949faf1ee65db75a24f8b42f255a856833c0cfc"
+    }
+  ],
+  "integration_tree_modified": false,
+  "long_campaign_launched": false,
+  "physical_steps": 0,
+  "raw_trajectory_chunks_included": false,
+  "schema": "pyrpmd.water-post-cohort-next-stage-proposals-publication-inventory.v1",
+  "scope": "Unadopted design snapshot: all-eight fixed400ps preparation and separate prospective long-lag production. Drafts and review are retained byte-for-byte; the subsequently reported paired-timestep failure will be handled in a separate additive outcome record. No execution or resource authorization.",
+  "total_bytes": 99319
+}

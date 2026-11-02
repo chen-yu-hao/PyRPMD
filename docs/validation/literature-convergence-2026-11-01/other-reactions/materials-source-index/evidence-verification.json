@@ -1,0 +1,60 @@
+{
+  "schema": "pyrpmd.materials-reference.final-evidence-check.v1",
+  "created_utc": "2026-11-01T18:57:55.658679+00:00",
+  "source_hash_matches": [
+    {
+      "path": "benchmarks/materials_reference/verify_eam4.py",
+      "expected_sha256": "a1bb2c3c89061e145ec4e4d40fd4b05a55a8b11837397e12e8b48d5804660711",
+      "actual_sha256": "a1bb2c3c89061e145ec4e4d40fd4b05a55a8b11837397e12e8b48d5804660711",
+      "matched": true
+    },
+    {
+      "path": "benchmarks/materials_reference/eam4.py",
+      "expected_sha256": "87b46d4b5c3fe08016c7d081d9cded352d7a808cad9706fea8761ebf1a64978e",
+      "actual_sha256": "87b46d4b5c3fe08016c7d081d9cded352d7a808cad9706fea8761ebf1a64978e",
+      "matched": true
+    },
+    {
+      "path": "benchmarks/materials_reference/build_eam4.py",
+      "expected_sha256": "9cd9c4e8726f5b3f6bc1b252718ff3546ef6f885b6f562f1963ea54a4dcae853",
+      "actual_sha256": "9cd9c4e8726f5b3f6bc1b252718ff3546ef6f885b6f562f1963ea54a4dcae853",
+      "matched": true
+    },
+    {
+      "path": "benchmarks/materials_reference/eam4_bridge.f90",
+      "expected_sha256": "aae4cbcd5e44491736b00698be6afba2ddcc5773060b55599bead52d6b022e6c",
+      "actual_sha256": "aae4cbcd5e44491736b00698be6afba2ddcc5773060b55599bead52d6b022e6c",
+      "matched": true
+    },
+    {
+      "path": "benchmarks/materials_reference/eam4_static_protocol.json",
+      "expected_sha256": "23d584b4d668b8562ae8d075ae9cef7abcb61653442c6603956883b69db136f9",
+      "actual_sha256": "23d584b4d668b8562ae8d075ae9cef7abcb61653442c6603956883b69db136f9",
+      "matched": true
+    },
+    {
+      "path": "benchmarks/materials_reference/build_eam4.py",
+      "expected_sha256": "9cd9c4e8726f5b3f6bc1b252718ff3546ef6f885b6f562f1963ea54a4dcae853",
+      "actual_sha256": "9cd9c4e8726f5b3f6bc1b252718ff3546ef6f885b6f562f1963ea54a4dcae853",
+      "matched": true
+    },
+    {
+      "path": "benchmarks/materials_reference/eam4_bridge.f90",
+      "expected_sha256": "aae4cbcd5e44491736b00698be6afba2ddcc5773060b55599bead52d6b022e6c",
+      "actual_sha256": "aae4cbcd5e44491736b00698be6afba2ddcc5773060b55599bead52d6b022e6c",
+      "matched": true
+    },
+    {
+      "path": "tests/test_materials_reference_eam4.py",
+      "expected_sha256": "95734181efc669bd84d75300f2af48bb6b176c361035d795b1c1e1d1aefe7884",
+      "actual_sha256": "95734181efc669bd84d75300f2af48bb6b176c361035d795b1c1e1d1aefe7884",
+      "matched": true
+    }
+  ],
+  "relative_markdown_link_failures": [],
+  "all_static_checks_passed": true,
+  "native_opt_in_test_count": 10,
+  "paper_reproduced": false,
+  "sampling_launched": false,
+  "third_party_bytes_in_publishable_scope": false
+}

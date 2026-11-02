@@ -2,15 +2,46 @@
 
 `campaign.json` gives an explicit status, source and acceptance protocol for
 H + CH₄, OH + H₂, F + H₂, H/D/Mu + H₂, H in Ni/Pd and q-TIP4P/F water.
-Every case currently has `status="not_reproduced"`. Available model/interface
-pilots and source-verified numbers are recorded without upgrading that status.
+Every case currently retains `status="not_reproduced"` for its full requested
+convergence scope. The complete H + H₂ P128 reference now passes all eleven
+fixed-P primary criteria and agrees with the paper; its supplementary parent
+half check, dynamic bead refinement and production-umbrella validation remain
+separate. The inventory records that successful fixed-P result explicitly
+without treating it as evidence for the unresolved tests or other cases.
 
 The campaign reuses the
 [published-rate registry and comparator](../published_rates/README.md), the
 [BKMP2 builder/driver](../h3/README.md) and the
-[Ni EAM pilot](../materials/README.md). The
+[Ni EAM pilot](../materials/README.md). A separate
+[author-cited Ni/H EAM4 static reference](../materials_reference/README.md)
+now pins and checks the original routines without claiming diffusion or
+promoting the unmatched NiAlH pilot. The
 [water model and pilot](../water/README.md) add a new physical force field with
 independent model checks. This is not another set of synthetic reaction rates.
+
+## Latest completed controls
+
+The independent H + H₂ umbrella cohort is complete through 100,000
+production sweeps per ladder. Its QTST point is +3.084% from the paper,
+but the primary log standard error is 0.050874 against a fixed 0.03 limit.
+Actual archive extraction and exact numerical replay preserve that failure.
+The complete P256 dynamic comparison remains pending. The original fixed300000 MC endpoint has now been adopted and started from an exact isolated100000 restore; its complete-cohort result remains pending. No intermediate point estimate selects the endpoint.
+
+The original eight-chain classical water cohort gives VACF diffusion
+0.19780892 Å²/ps versus the paper's 0.199(2), but three preparation checks
+and the short-lag MSD screen fail. Its subsequent all-eight paired timestep
+control passes energy checks while both diffusion-equivalence intervals
+remain outside the fixed margin. These complete OpenMM reference datasets
+do not establish quantum water or PyRPMD long-time transport agreement.
+
+The second excluded H + CH₄ importance proposal uses 3,672 actual PES
+evaluations within a 4,000-call cap. Effective sampling improves substantially,
+but ξ=1.007 still fails the pooled maximum-weight and channel-2 screens.
+Its saved calculations and actual extracted archive replay successfully;
+no physical rate is promoted from either excluded pilot.
+
+All case statuses below retain their full convergence scope. See the
+[complete evidence record](../../docs/validation/literature-convergence-2026-11-01/README.md).
 
 ## Inspect the inventory
 

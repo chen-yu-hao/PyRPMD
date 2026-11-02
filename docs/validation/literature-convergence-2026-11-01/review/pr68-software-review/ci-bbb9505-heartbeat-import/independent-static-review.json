@@ -1,0 +1,22 @@
+{
+  "schema": "pyrpmd.ci-heartbeat-import-static-review.v1",
+  "recorded_utc": "2026-11-01T23:13:56Z",
+  "reviewer": "independent distribution agent",
+  "published_sources_read_at_commit": "bbb950528db2f43f59cb24acea5097568cd393a3",
+  "published_source_paths": [
+    "tests/test_h3_quantum_isolated_continuation.py",
+    "benchmarks/h3/quantum_isolated_continuation.py",
+    "benchmarks/h3/p256_parent_campaign.py"
+  ],
+  "outcome": "no blocker in described test-only delta",
+  "execution_review": false,
+  "candidate_sha256_reported_by_root": "fa2c3efe7cb60ea55af86bc2f1b5cc3f43b0d2895a58e637adbee5a624be90c5",
+  "candidate_full_bytes_independently_hashed": false,
+  "findings": [
+    "Removing PYTHONPATH makes independence from the caller environment explicit; pytest restores that environment after this test.",
+    "The generated temporary script receives repr-quoted owner.ROOT in sys.path before importing benchmarks.",
+    "The dispatcher writes combined stdout/stderr to attempt/seed-{seed}.log and closes logs after draining workers; only those logs are read on errors.",
+    "The capability marker, eight fixed seeds, 0.1-second inert-worker duration, 6-second dispatch deadline, 8-second alarm, address-space cap, positive RSS/complete heartbeat, and independent reap assertions are unchanged."
+  ],
+  "qualification": "The child import failure remains an inference: the existing main CI logs do not contain child stderr. No execution validation was possible in the unavailable managed workspace."
+}

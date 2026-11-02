@@ -1,0 +1,44 @@
+{
+  "schema": "pyrpmd.full-suite-initial-failure-classification.v1",
+  "created_utc": "2026-11-01T21:01:21.918366+00:00",
+  "head": "36ec289981639bbeb8feecf3b30400b4cbda9afe",
+  "terminal_counts": {
+    "passed": 7268,
+    "failed": 17,
+    "skipped": 145,
+    "subtests_passed": 486,
+    "warnings": 982
+  },
+  "junit_counts": {
+    "errors": 0,
+    "failures": 17,
+    "skipped": 145,
+    "tests": 7916
+  },
+  "wall_seconds": 568.288024849011,
+  "sources_unchanged": true,
+  "classes": [
+    {
+      "count": 13,
+      "cause": "Sandbox blocks local AF_INET socket creation with EPERM; no product assertion was reached.",
+      "next_check": "Run the same local-only IPC tests with approved local network permissions."
+    },
+    {
+      "count": 1,
+      "cause": "The chosen long pytest basetemp makes an AF_UNIX path exceed the platform limit.",
+      "next_check": "Use a short workspace basetemp."
+    },
+    {
+      "count": 2,
+      "cause": "The test intentionally expects four already-loaded BLAS threads; the wrapper constrained affinity to two CPUs, and OpenBLAS started two.",
+      "next_check": "Use at least four allowed CPUs for these short runtime tests."
+    },
+    {
+      "count": 1,
+      "cause": "The synthetic HCH4 wall-timeout fixture inherits pytest lifetime process_time, exceeding the deliberately whole-invocation 60-second production budget in a long suite.",
+      "next_check": "Keep the production accounting unchanged; give the wall-only synthetic fixture an explicit CPU clock and test its process timeout/retry protections."
+    }
+  ],
+  "optional_dependencies_or_models_not_enabled": true,
+  "failed_or_skipped_cases_promoted_to_pass": false
+}

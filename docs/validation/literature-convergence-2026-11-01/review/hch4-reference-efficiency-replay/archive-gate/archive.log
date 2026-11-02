@@ -1,0 +1,9 @@
+{
+  "archive": {
+    "path": "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1-archive/pyrpmd-hch4-efficiency-pilot-2026-11-01-v1.tar.gz",
+    "bytes": 1136325,
+    "sha256": "9a259292ec15c17171e999256ffa96c0aec6b7885e28ad40c78904ab8742cd3b"
+  },
+  "member_count": 36,
+  "exact_fresh_calculation_equal": true
+}

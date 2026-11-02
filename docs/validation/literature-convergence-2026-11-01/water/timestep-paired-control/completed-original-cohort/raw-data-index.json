@@ -1,0 +1,31 @@
+{
+  "Git_backed_Python_or_patch_files_included": false,
+  "PES_or_third_party_code_included": false,
+  "all_scientific_and_failed_gate_fields_equal": true,
+  "archive": {
+    "bytes": 203386405,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-water-paired-timestep-2026-11-01-raw.tar.gz",
+    "sha256": "3629eb0f07319354aeacdf6d1af9327566277c7083246e35a4ff03ed271959bf"
+  },
+  "bitwise_equal_compact_arrays": 33,
+  "contains": {
+    "all16_complete_branch_chunks": 80,
+    "exact_original100ps_checkpoint_NPZ_files": 8,
+    "generated_README_source_identities_and_SHA256SUMS": 3,
+    "original_payload_files": 199,
+    "shared_initial_state_NPZ_files": 8
+  },
+  "created_utc": "2026-11-01T21:39:10.055999+00:00",
+  "extracted_replay_verified": true,
+  "frozen_control_report_sha256": "6d657d7dc11d98dd78ac8a2659a9907c8b94eedba0aa013dcd2d3d5db54aa370",
+  "full_original_cohort_archive_sha256": "b3dc0faf5ddb84d06182ebf788edc73dfa1a0ec674069f01e61eaa62918d21af",
+  "member_inventory": {
+    "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/replay/archive-members.json",
+    "sha256": "765c20ee2feda48139328b481a295d567edc0e8d969d6dcc09f367c5bc30ebcf"
+  },
+  "members": 202,
+  "new_physical_work": false,
+  "raw_data_only": true,
+  "schema": "pyrpmd.water-paired-timestep-raw-data-index.v1",
+  "uploaded": false
+}

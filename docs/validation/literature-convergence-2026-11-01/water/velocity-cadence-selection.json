@@ -1,0 +1,49 @@
+{
+  "baseline_modified": false,
+  "control_source_frozen_utc": "2026-11-01T16:42:14.673147+00:00",
+  "control_source_sha256": {
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/native_reference.py": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2",
+    "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+    "benchmarks/water/velocity_cadence.py": "bac1e70a6e16e9bfb3164379b800086d82abdb6a509d4a5e9fee7c6c1556888d",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+  },
+  "focused_test": {
+    "file": "cadence-control-pytest.xml",
+    "includes_numpy_1_26_compatibility": true,
+    "result": "7 passed",
+    "sha256": "b8e89e120b8d7634cf188a74fa391104d3e6e1c497ac6eba1e3590e40f98ef87"
+  },
+  "independent_read_only_review": "Checkpoint/RNG phase and FFT normalization reviewed; NumPy 1.26 trapezoid compatibility corrected before replay.",
+  "pre_review_control_source_sha256": {
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/native_reference.py": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2",
+    "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+    "benchmarks/water/velocity_cadence.py": "6caad72ae2ab9e330ac36400027c781c78af1f3ba182bdf595fb9f2b14ef4adf",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+  },
+  "production_replay_started": false,
+  "schema": "pyrpmd.water-velocity-cadence-selection.v1",
+  "selected_utc": "2026-11-01T16:37:00.654530+00:00",
+  "selection": {
+    "baseline_directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1101",
+    "baseline_manifest_snapshot_sha256": "a45fbb4153013165b160a1fdf14c1953d3a4a34de496b8a842c0adb10b85aaaa",
+    "checkpoint": {
+      "file": "chunk-000099.npz",
+      "observations": 10,
+      "sha256": "0b9ed7afffa6286b5f89d2a994f0f8747ac09b622e44900ed576b63aafcbd071",
+      "step": 400000
+    },
+    "config_sha256": "123f84b208215fbc6afc2f05b02f3d9ecd53a7ad2cc889ef13927113fca21d21",
+    "model_artifacts": {
+      "integrator.xml": {
+        "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+      },
+      "model.xml": {
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    "protocol_sha256": "288059c14c1b0467c322806fcf41765b69df0ed50af436941e7f0cad3fbcf631",
+    "registration_sha256": "bec53a962d2642ca720b545f8f9398b13009a269ac24d8223e969a2822eb0326"
+  }
+}

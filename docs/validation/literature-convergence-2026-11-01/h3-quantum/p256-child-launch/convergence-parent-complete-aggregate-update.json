@@ -1,0 +1,27 @@
+{
+  "schema": "pyrpmd.parent-complete-aggregate-update.v1",
+  "changes": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/README.md",
+      "before": "1996674726ab3dd19f277bfadcf527aec5bbf246b34b418f33ee7bc70a9f6241",
+      "after": "63ae1a21c471f870671844f13a0e34ee54fc33f6cc1637b6bacf560caa3087a3"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/README.md",
+      "before": "24d4f2d7276c29cbb3a999c4d8f6790868a99616edacf53bd6ac1554b351acd8",
+      "after": "022627d585e3228889d60089beb219ba3524b1495fbf89cfdd40585218eb0293"
+    },
+    {
+      "path": "docs/literature-validation.md",
+      "before": "f9059dd89a020c01ff9930aad85d1c64cdafe964eb80e23707b478cba3f630dc",
+      "after": "147e88257e8b69a9eca95884bfdcb8a19a5977c1f9deaf72ace618fcfb2fd539"
+    },
+    {
+      "path": "benchmarks/literature/campaign.json",
+      "before": "65e8f4ec8aa734ca91d86dfe8bc3ff1937ade57128ab22ee636187e919895c3b",
+      "after": "9d292c706f1a89998d4e8d3dff0e196c8d3bf83cac6d2e9bb97ea404df05bf02"
+    }
+  ],
+  "scientific_runtime_modified": false,
+  "actual_parent_manifest_sha256": "b95668a72710809cd2b92a00fd5d6228988e8ee04f7229dc29b9f6bb91255120"
+}

@@ -1,0 +1,204 @@
+{
+  "created_utc": "2026-11-01T18:33:54.800117+00:00",
+  "decision_point": "Only after the complete original fixed eight-seed cohort has been retained and assessed.",
+  "fixed_extension": {
+    "additional_preparation_ps": 400.0,
+    "additional_steps_per_seed": 1600000,
+    "all_seeds_complete_budget_before_gate": true,
+    "checkpoints_every_ps": 1.0,
+    "early_pass_or_latest_good_window_stopping": false,
+    "intermediate_diagnostics_do_not_trigger_early_production": true,
+    "intermediate_windows_absolute_ps": [
+      [
+        100,
+        200
+      ],
+      [
+        200,
+        300
+      ]
+    ],
+    "observations_every_fs": 100.0,
+    "primary_stationarity_windows_absolute_ps": [
+      [
+        300,
+        400
+      ],
+      [
+        400,
+        500
+      ]
+    ],
+    "production_automatically_started": false,
+    "total_additional_steps_all_seeds": 12800000,
+    "total_preparation_ps": 500.0
+  },
+  "fixed_seeds": [
+    1101,
+    1102,
+    1103,
+    1104,
+    1105,
+    1106,
+    1107,
+    1108
+  ],
+  "literature": {
+    "author_manuscript": "https://arxiv.org/pdf/1011.1047",
+    "doi": "10.1063/1.3167790",
+    "qualification": "Matching the reported100ps duration does not establish equilibrium of this different realized initial configuration and finite set of chains. Temperature stationarity alone does not establish structural/potential stationarity."
+  },
+  "original_protocol_sha256": "288059c14c1b0467c322806fcf41765b69df0ed50af436941e7f0cad3fbcf631",
+  "post_gate_production": {
+    "diffusion_used_to_stop_or_tune_preparation": false,
+    "independence": "The two cohorts share seed histories; do not count them as16 independent chains or pool them without a separate justified analysis.",
+    "original_production": "Retain the entire original cohort separately, including failed preparation diagnostics. Never overwrite it or silently replace its estimate.",
+    "requirement": "All eight must finish the fixed500ps preparation budget and undergo the unchanged U/T/OH/HOH checks and the structural assessment whose uncertainty policy must be settled before long preparation begins. No automatic production launch.",
+    "status": "blocked_pending_complete_original_cohort_independent_protocol_review_and_explicit_later_adoption",
+    "suggested_fixed_cohort": "Same eight seed-chain identities,25x4ps NVE per seed at0.25fs; exact phase/RNG draw registered before launch."
+  },
+  "purpose": "Test additional liquid equilibration without selecting chains or tuning transport toward the paper.",
+  "required_runner_gates_before_adoption": [
+    "New branch manifest/output; never edit an original manifest to bypass config identity checks.",
+    "Small Reference continuous-versus-split preparation trace at the exact refresh boundary, including one and only one Maxwell draw and the saved external RNG.",
+    "CPU raw checkpoint identity and force-cache bound check before the first new step.",
+    "Exact source/model/config/checkpoint provenance and preparation-only stopping at500ps, with no accidental NVE draw."
+  ],
+  "revision_basis": {
+    "all_durations_seeds_sources_RNG_phase_unchanged": true,
+    "existing_stationarity_thresholds_unchanged": true,
+    "report": "rdf-noise-audit/report.json",
+    "report_sha256": "f0c9b60ada5820b4949b73be280333c1130346bc32decb40350783ad7ebd8fb9",
+    "type": "analytic excluded-fixture count-noise audit, without reading liquid RDF or diffusion values"
+  },
+  "runner_review": {
+    "long_continuation_started": false,
+    "source": "benchmarks/water/native_preparation_extension.py",
+    "status": "nine focused Reference/CPU boundary tests passed; independent code/phase review still required before adoption",
+    "tests": "tests/test_water_preparation_extension.py"
+  },
+  "schema": "pyrpmd.water-equilibration-extension-proposal.v2",
+  "source_checkpoint_selection": {
+    "absolute_preparation_time_ps": 100.0,
+    "absolute_state_step": 400000,
+    "active_segment": -1,
+    "all_seeds_required": true,
+    "expected_filename": "chunk-000099.npz",
+    "filename_is_not_sufficient": "Verify manifest step/phase, config/seed, full chunk SHA256, model/integrator identity, checkpoint contract and external RNG.",
+    "hash_receipt": "Append all eight exact selected checkpoint hashes before any extension starts; some do not yet exist.",
+    "restore": "Same binary Context checkpoint plus redundant raw positions/half-step velocities/forces and canonical q,p checks under the frozen v2 CPU force-cache contract; retain external NumPy RNG.",
+    "selection_rule": "Exact original 100 ps canonical preparation checkpoint before any NVE momentum draw; never a chosen production endpoint."
+  },
+  "stationarity": {
+    "all_chain_summary": "Equal weight for the eight chain-level differences and a Student-t95% interval with7 degrees of freedom; individual-chain failures remain visible and cannot cancel in the average.",
+    "all_eight_chains_must_be_reported": true,
+    "each_seed_fixed_half_mean_absolute_thresholds": {
+      "HOH_degrees": 0.1,
+      "OH_angstrom": 0.001,
+      "potential_kcal_mol_water": 0.05,
+      "temperature_K": 5.0
+    },
+    "uncertainty_reporting": "Fixed5/10/20 ps block estimates and autocorrelation diagnostics; these do not change endpoints or choose a good window. An unresolved slow correlation leaves eligibility unestablished."
+  },
+  "status": "proposed_revision_for_independent_review_not_adopted_not_launched",
+  "structural_diagnostics": {
+    "RDF_maximum_difference_role": "descriptive only; not an adopted mandatory equilibrium pass gate",
+    "RDF_simultaneous_uncertainty_gate": null,
+    "RDF_uncertainty_design_status": "must be specified and independently reviewed before any long extension or inspection of its liquid RDF data",
+    "also_report": "All fixed-window curves, block uncertainties, across-seed spread, OH and HOH distributions from1ps full-state checkpoints. No chain is dropped for a failed structural diagnostic.",
+    "compare_absolute_windows_ps": [
+      [
+        300,
+        400
+      ],
+      [
+        400,
+        500
+      ]
+    ],
+    "coordination_definition": "Two times unordered OO pairs inside3.5angstrom divided by frames*N; radius is fixed, not fitted to the observed first minimum.",
+    "descriptive_max_abs_g_difference_reference": 0.1,
+    "fixed_coordination_radius_angstrom": 3.5,
+    "fixed_g_difference_range_angstrom": [
+      2.3,
+      6.0
+    ],
+    "histogram_bin_width_angstrom": 0.02,
+    "histogram_range": "0 to half the fixed cubic box length",
+    "normalization": "Unordered OO pairs divided by frames*N*(N-1)/2*shell_volume/V; cubic minimum-image distances.",
+    "oxygen_RDF_sampling_fs": 500.0,
+    "per_seed_abs_coordination_difference_threshold": 0.1,
+    "required_pre_adoption_review": [
+      "Keep the complete fixed-window RDF curves for every seed; no choosing bins, windows, seeds or thresholds after seeing the results.",
+      "Specify fixed 5/10/20 ps block uncertainty and a justified simultaneous-uncertainty assessment before adopting a mandatory RDF equivalence gate.",
+      "A confidence interval containing zero, or failure to reject a change, must not be called equivalence. Insufficient precision is unresolved.",
+      "The per-seed coordination threshold of0.1 remains an unadopted proposal and must also be assessed with fixed-block uncertainty; no calibration to current diffusion."
+    ]
+  },
+  "supersedes": {
+    "original_preserved_byte_for_byte": true,
+    "path": "equilibration-extension-proposal.json",
+    "sha256": "a5a9c85a2e2093839f3fd688516d65adef825e162b21351708fe5fa547acb1d6"
+  },
+  "throughput_estimate": {
+    "CPU_seconds_per_step": 0.005103134328358209,
+    "additional_400ps_per_seed_CPU_hours_all8": 18.1444776119403,
+    "additional_400ps_per_seed_wall_hours_at4_fully_available_CPU_equivalents": 4.536119402985075,
+    "additional_400ps_per_seed_wall_hours_at4_workers_with_observed_allocation": 5.998986561694985,
+    "committed_steps": 268000,
+    "evidence": "scheduling-v2/migration-odd-natural-exit.json",
+    "evidence_sha256": "b5ff57961aa30ae1894db7ebfc6507ab960ad59b2db7d5d2be7598aaacdf7044",
+    "limitations": [
+      "Measured call was NVE; preparation has different observation cadence and global momentum-refresh overhead.",
+      "Four-worker contention may differ from the measured call; costs are conditional on the observed allocation.",
+      "No additional preparation or production was launched for this proposal."
+    ],
+    "logged_propagation_wall_seconds": 1808.6944483510379,
+    "measured_original_seed": 1101,
+    "measured_original_time_span_ps": [
+      118.0,
+      185.0
+    ],
+    "optional_later_100ps_NVE_per_seed_CPU_hours_all8": 4.536119402985075,
+    "optional_later_100ps_NVE_per_seed_wall_hours_at4_workers_with_observed_allocation": 1.4997466404237463,
+    "previous_independent_classical_CPU_seconds_per_step": 0.005984,
+    "process_CPU_seconds": 1367.64,
+    "status": "measured on the unchanged original source and completed native call; inference for future preparation, not a guaranteed upper wall bound",
+    "wall_seconds_per_step": 0.006748859881906858
+  },
+  "trigger_evidence": {
+    "comparison_absolute_preparation_ps": [
+      [
+        50,
+        75
+      ],
+      [
+        75,
+        100
+      ]
+    ],
+    "mean_difference_kcal_mol_water": -0.15744222030008717,
+    "observable": "potential energy per water",
+    "original_cohort_discarded_or_modified": false,
+    "predeclared_absolute_threshold_kcal_mol_water": 0.05,
+    "seed": 1102
+  },
+  "unchanged_physics": {
+    "beads": 1,
+    "constraints": false,
+    "density_g_cm3": 0.997,
+    "dispersion_correction": false,
+    "dt_fs": 0.25,
+    "electrostatics": "full PME, 9 angstrom cutoff, requested tolerance1e-5",
+    "first_extension_operation": "At absolute step400000, perform exactly one normal preparation Maxwell draw with remove_com=False using the saved RNG, then advance. The original NVE COM-projected draw is not performed.",
+    "force_factory_sha256": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+    "isotope": "H2O",
+    "molecules": 216,
+    "native_source_sha256": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2",
+    "platform": "CPU",
+    "subsequent_refresh_phase": "Absolute multiples of400 integration steps; retain absolute step/time.",
+    "temperature_K": 298.0,
+    "thermostat": "original periodic global Maxwell refresh every100 fs; no COM removal in preparation",
+    "threads": 1
+  }
+}

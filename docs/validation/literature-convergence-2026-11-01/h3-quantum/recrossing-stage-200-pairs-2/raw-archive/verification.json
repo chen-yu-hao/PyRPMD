@@ -1,0 +1,30 @@
+{
+  "CPU_seconds": 16.499802,
+  "all_16_runs_bound_to_original_complete_analysis": true,
+  "all_original_registered_gate_outcomes_retained": {
+    "complete_registered_cohort": true,
+    "full_rate_95_log_halfwidth_at_most_5_percent": true,
+    "kappa_statistical_precision": false,
+    "no_sampled_static_domain_crossings": true,
+    "paper_full_rate_point_within_reported_5_percent": true,
+    "paper_kappa_point_within_reported_5_percent": true,
+    "paper_qtst_point_within_reported_5_percent": true,
+    "parent_sampling_flags": true,
+    "primary_maximum_energy_error_at_most_01_kbt_per_bead": true,
+    "time_plateau_equivalence": true,
+    "timestep_equivalence": true
+  },
+  "all_stored_signed_flux_numerators_and_denominators_exactly_replayed": true,
+  "elapsed_seconds": 17.328066739995847,
+  "fixed_P_independent_rate_gates_passed": false,
+  "independent_review_input_hashes_verified": 483,
+  "members_verified": 465,
+  "native_steps_preserved": 38400000,
+  "no_simulation_or_analysis_output_rewritten": true,
+  "original_files_rehashed_after_archive": 465,
+  "paired_timestep_momenta_and_channels_identical": true,
+  "parent_checkpoint_integrity_envelopes_verified": 8,
+  "peak_RSS_KiB": 41868,
+  "raw_checkpoints_original_and_archived_reloaded": 400,
+  "schema": "pyrpmd.h3.quantum-child-archive-verification.v1"
+}

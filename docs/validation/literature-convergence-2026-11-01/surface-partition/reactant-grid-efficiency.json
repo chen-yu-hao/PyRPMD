@@ -1,0 +1,29 @@
+{
+  "phase": "excluded calibration only",
+  "decision_basis": "overlap and acceptance; no literature target used",
+  "nine_replica_grid": [
+    0.0,
+    0.015625,
+    0.0625,
+    0.140625,
+    0.25,
+    0.390625,
+    0.5625,
+    0.765625,
+    1.0
+  ],
+  "minimum_BAR_overlap": 0.9525966018456177,
+  "move_acceptance_at_lambda0": [
+    0.7845,
+    0.0,
+    0.0,
+    0.9915
+  ],
+  "move_acceptance_at_lambda1": [
+    0.8036666666666666,
+    0.0,
+    0.0,
+    0.4836666666666667
+  ],
+  "original_checkpoint_sha256": "07cd62085ef138501f86934bb85183649be9aca861695cb38be07afc3d7952b0"
+}

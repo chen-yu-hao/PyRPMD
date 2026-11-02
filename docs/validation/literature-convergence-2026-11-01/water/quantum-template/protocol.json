@@ -1,0 +1,203 @@
+{
+  "GPU_tested": false,
+  "GPU_validation_pending": [
+    "force/energy comparisons against Reference on identical configurations",
+    "small native-map and all-copy checkpoint/RNG/phase continuation on the selected device",
+    "source-size memory and throughput measurement with model identity retained",
+    "precision/timestep/PME error controls; no inferred speed or accuracy from advertised hardware"
+  ],
+  "NVE": {
+    "COM_projection": "remove only the total ring momentum summed across all beads/physical atoms; preserve internal bead COM modes",
+    "one_new_Maxwell_draw_per_segment": true,
+    "position_mutation_at_refresh": false,
+    "thermostat_enabled": false
+  },
+  "configuration_sha256": {
+    "configs/seed-2101-cpu.json": "4ad978058766a035266dbd24db856765f0c7025ad37bbe36484b3e9d08dd5f42",
+    "configs/seed-2101-cuda-double-untested.json": "a91e2d5768b13e353531730672befc972453bac8bceb64f582dd9654131ee6c7",
+    "configs/seed-2102-cpu.json": "5cfc9d183854e2132f75c440c54f7d95222ca334bb51cd0e150b3439cd8f61fb",
+    "configs/seed-2103-cpu.json": "7d4d0c948202c0b54491a27112b3fc7a99528e732fc3907f792adc693779af5a",
+    "configs/seed-2104-cpu.json": "f48ca0073e0855be2d16e7e2c1f1478f79dbb451f7d36a60e79fe208544c4f4d",
+    "configs/seed-2105-cpu.json": "bc16051c6168f75cdcd0bb9b9e631b03508b477d274b9d8b1fe5d8f5d378476f",
+    "configs/seed-2106-cpu.json": "1370799ae2d198ae6c463f2f7e8300b89ba292b22ec788994306554ba9e4faaa",
+    "configs/seed-2107-cpu.json": "2a1594bd89478cfe9b219a9874ac9d44a90e69361b79e0938521b8bbd3c5ed61",
+    "configs/seed-2108-cpu.json": "77803e33aba9470e618195cddac528f970a4ae15d683c08540b7a9afd7492baf",
+    "configs/seed-2109-cpu.json": "58401a29ca2643dfda93c582abe212dc82e4343cd67ec8d2833166f30700a187",
+    "configs/seed-2110-cpu.json": "b5216d42337c0449360772b5c0c19beab5eedf5d3ae37bd46753fd13e795672e",
+    "configs/seed-2111-cpu.json": "634b2eab1c7b2ae98a12c0342bc32f64c0b13d8d6f401ec3ed6e5c4383abf230",
+    "configs/seed-2112-cpu.json": "5bfa57c604bb5f08895f47614fa8ffdf725e3372b2bf155ad1449b951bedeaec",
+    "configs/seed-2113-cpu.json": "5b6238a8ad8f8d3c9e4207d70212ada92a6c5983546d9c7295c2fe4fd4c8f121",
+    "configs/seed-2114-cpu.json": "f7afc203cfa1efeef33b7e8991de631583e97108b32fe01568b418419c36395d",
+    "configs/seed-2115-cpu.json": "c93bf56cd39a68ce0fb53c4a84b376268897e9d904ba12d32b7be0cc001681e3",
+    "configs/seed-2116-cpu.json": "427c2adc1b3b5c04d9252109f30b44fd9251a3079aa3054b08611102618fe01d",
+    "configs/seed-2117-cpu.json": "e283ca5aa6958dac0097002e97c944b8296888f6d5792e0b6e7e9a6298baa2a7",
+    "configs/seed-2118-cpu.json": "a7789358f22f98a372aab29f4e63374f44b14e7c976c72eac4c474536336b8d2",
+    "configs/seed-2119-cpu.json": "25b5bb1ce1f57d014bdcf747909e175e1e3fd3b85d15303118619cc746c233ea",
+    "configs/seed-2120-cpu.json": "b8147a505a4b29cdb3c27a2e9c6a0b9b844790f99a117d10142f1c4c833db094"
+  },
+  "created_utc": "2026-11-01T17:05:02.269393+00:00",
+  "estimators": {
+    "MSD_windows_ps": [
+      [
+        0.5,
+        1
+      ],
+      [
+        1,
+        1.5
+      ],
+      [
+        1.5,
+        2
+      ],
+      [
+        1,
+        2
+      ]
+    ],
+    "VACF_cutoffs_ps": [
+      1,
+      1.5,
+      2
+    ],
+    "primary": "molecular COM centroid VACF trace integral/3 to2ps",
+    "recording_cadence_control": "required before high precision transport claim; classical control does not automatically validate every quantum/internal-mode contribution",
+    "secondary": "molecular COM centroid MSD slope/6 over1\u20132ps",
+    "uncertainty_unit": "equally weighted independently prepared chain means; Student t across20 chains, never individual molecules/time origins/adjacent segments"
+  },
+  "existing_classical_campaign_modified": false,
+  "external_reference": true,
+  "fixed_stage": {
+    "NVE_ps_per_segment": 4,
+    "NVE_segments_per_chain": 100,
+    "dt_fs": 0.1,
+    "independent_seed_chains": 20,
+    "preparation_ps_per_chain": 100,
+    "seeds": [
+      2101,
+      2102,
+      2103,
+      2104,
+      2105,
+      2106,
+      2107,
+      2108,
+      2109,
+      2110,
+      2111,
+      2112,
+      2113,
+      2114,
+      2115,
+      2116,
+      2117,
+      2118,
+      2119,
+      2120
+    ],
+    "stop_rule": "Complete the fixed stage or checkpoint at a declared compute budget. No selection, stopping, extension, or exclusion based on proximity to a literature value.",
+    "total_native_steps": 100000000,
+    "total_preparation_ps": 2000,
+    "total_production_ps": 8000
+  },
+  "infrared_scope": "Diffusion/structure template only; no dipole time series or PA-CMD propagator. A5fs record has Nyquist about3336cm^-1; a separate IR design is required.",
+  "infrared_validation_claimed": false,
+  "initial_geometry": {
+    "file": "docs/validation/literature-audit-2026-11-01/water/classical-pilot/endpoint.npz",
+    "independence_caution": "A common initial geometry requires mixing/structure checks; independent RNG seeds alone do not establish independent equilibrated samples.",
+    "mode": "replicate the archived classical physical configuration onto all32 beads, then perform new canonical preparation for each independently seeded chain",
+    "sha256": "663023b530463f892bdb7792cd71395805679b75c8ae7da32f41d2748df4bead"
+  },
+  "literature": {
+    "comparison_limits": "This is full uncontracted PME with a conservative single0.1fs step, not a claim of identical original RPC/MTS executable settings. Printed parameters and declared masses remain distinct from undocumented source rounding/conventions.",
+    "doi": "10.1063/1.3167790",
+    "manuscript": "https://arxiv.org/pdf/1011.1047",
+    "paper_MTS_inter_intra_fs": [
+      0.5,
+      0.1
+    ],
+    "paper_RPC_splitting_length_angstrom": 5,
+    "paper_beads": 32,
+    "paper_molecules": 216,
+    "quantum_H2O_diffusion_angstrom2_ps": 0.221,
+    "standard_error_angstrom2_ps": 0.001,
+    "table": "III"
+  },
+  "model": {
+    "LJ_tail_correction": false,
+    "PME_real_space_cutoff_angstrom": 9,
+    "PME_requested_tolerance": 1e-05,
+    "beads": 32,
+    "bond_constraints": false,
+    "density_g_cm3": 0.997,
+    "forces_on_every_bead": true,
+    "isotope": "H2O",
+    "molecules": 216,
+    "multiple_time_step": false,
+    "parameters": "printed q-TIP4P/F Table I; NIST H-1/O-16 isotope masses",
+    "ring_polymer_contraction": false,
+    "temperature_K": 298
+  },
+  "paid_resources_requested_or_started": false,
+  "predeclared_review_targets": {
+    "equivalence_rule": "complete paired-chain95%CI inside symmetric margin; wide confidence intervals are not equivalence",
+    "half_mean_HOH_difference_degrees": 0.1,
+    "half_mean_H_radius_gyration_difference_angstrom": 0.005,
+    "half_mean_OH_difference_angstrom": 0.001,
+    "half_mean_potential_difference_kcal_mol_water": 0.05,
+    "half_mean_temperature_difference_K": 5,
+    "manual_reviews": [
+      "quantum oxygen RDF and liquid structure stability",
+      "internal and centroid thermalization",
+      "production first/second-half stability",
+      "diffusive time regime",
+      "P32 vsP64 and0.1fs vs0.05fs transport controls; short energy behavior alone is insufficient",
+      "platform precision and PME tolerance controls",
+      "initial geometry mixing and chain-level effective sample size"
+    ],
+    "maximum_4ps_energy_envelope_kcal_mol_water": 0.01,
+    "maximum_abs_linear_energy_drift_kcal_mol_water_ps": 0.001,
+    "maximum_diffusion_standard_error_angstrom2_ps": 0.001,
+    "paired_estimator_and_lag_equivalence_margin_angstrom2_ps": 0.01,
+    "preparation_last50ps_halves": [
+      25,
+      25
+    ]
+  },
+  "preparation": {
+    "bead_momentum_temperature_K": 9536,
+    "collision_deadline": "absolute next_collision_step persisted; native blocks stop at each collision deadline",
+    "draw_order": "physical all-copy Maxwell momenta, then geometric waiting time using the same NumPy RNG",
+    "mean_interval_fs": 100,
+    "mean_interval_steps": 1000,
+    "native_PILE_enabled": false,
+    "probability_per_step": 0.001,
+    "thermostat": "external global geometric Andersen momentum refresh",
+    "waiting_time_support": "positive integer steps"
+  },
+  "pyrpmd_production_trajectory": false,
+  "records": {
+    "NVE_stride_fs": 5,
+    "binary_Context_alone_sufficient": false,
+    "budget_checks_max_native_block_fs": 5,
+    "checkpoint_precision": "float64 all-copy physical and virtual-site raw q/v/forces plus physical canonical q/p",
+    "engine_artifacts": [
+      "model.xml",
+      "integrator.json"
+    ],
+    "nominal_checkpoint_interval_ps": 1,
+    "phase_and_external_RNG_and_geometric_clock_saved": true,
+    "preparation_stride_fs": 100,
+    "rough_uncompressed_storage_note": "Centroid trajectory arrays alone are about12.4GB across8000ps; redundant all-copy raw q/v/forces plus physical q/p restart checkpoints add roughly30GB for10000ps at1ps intervals. Compression and metadata alter actual size; allocate storage after a measured preflight.",
+    "trajectory_precision": "float32 centroid COM q/v and oxygen centroid positions"
+  },
+  "schema": "pyrpmd.full-pme-quantum-water-compute-template.v1",
+  "source_sha256": {
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/native_quantum.py": "6ffe98313abfc0b74e4e63531a41e5dcbb830766537b45b934b1c0d614950715",
+    "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "src/pyrpmd/workflows/sampling.py": "d2bd91a0a6efec967b3b54d1720a5cab0a03aecadaa8b77bfb9ffe6c8ead7e1b"
+  },
+  "status": "prepared, not launched; GPU numerical validation and actual resource selection remain pending"
+}

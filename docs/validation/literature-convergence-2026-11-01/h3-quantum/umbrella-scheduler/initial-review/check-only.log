@@ -1,0 +1,18 @@
+{
+  "preflight_passed": true,
+  "stage": 100000,
+  "independent_seeds": [
+    211017,
+    211019,
+    211021,
+    211023,
+    211027,
+    211031,
+    211033,
+    211039
+  ],
+  "initial_worker_limit": 2,
+  "workers_launched": 0,
+  "source_guard_count": 18,
+  "prior_snapshot_sha256": "0ea2cd78af59dafb91ab4f0846786b6b63a63457ecc4434e8489ec1478b6d9a4"
+}

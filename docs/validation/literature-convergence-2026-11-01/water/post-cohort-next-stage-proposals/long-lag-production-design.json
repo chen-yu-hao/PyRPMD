@@ -1,0 +1,185 @@
+{
+  "actual_preparation_endpoints_exist": false,
+  "actual_preparation_evidence_available": false,
+  "admission_prerequisites": [
+    "The paired timestep control has normal complete exit and passes its fixed numerical gates; its original leases are released.",
+    "All8 fixed500ps preparation branches complete normally and have a frozen whole-cohort scalar/structure assessment. Every unchanged scalar screen passes, and independent review finds no unresolved preparation issue; pointwise RDF confidence intervals crossing zero do not prove equivalence.",
+    "A new production-only runner/coordinator and a new general-lag analyzer are implemented, tested and independently reviewed. The old analyze_native.py hardcoded4ps/2ps analysis is not silently reused.",
+    "Freeze source/input/model/RNG/phase, the exact8new endpoints, this study and every analysis rule before the first new NVE step.",
+    "Verify all old/control/preparation exclusion leases are free and retain one-writer/prefix/failure protection.",
+    "Root separately adopts actual available CPU/memory/storage and the finite resource envelope."
+  ],
+  "all_original_raw_and_results_retained": true,
+  "automatic_continuation": false,
+  "created_utc": "2026-11-01T21:22:55.547095+00:00",
+  "estimators": {
+    "D_MSD": "Unweighted OLS MSD slope over the fixed lag interval, divided by6; OLS fit residuals are not used as independent-sample uncertainty.",
+    "D_VACF": "One-third trapezoidal VACF integral from0 to the fixed cutoff; no fitted tail or assumed zero remainder.",
+    "fixed_VACF_comparison_cutoffs_ps": [
+      2.0,
+      7.5,
+      10.0
+    ],
+    "fixed_late_MSD_comparison_windows_ps": [
+      [
+        2.0,
+        5.0
+      ],
+      [
+        5.0,
+        7.5
+      ],
+      [
+        7.5,
+        10.0
+      ]
+    ],
+    "full_curves_retained": true,
+    "historical_short_windows_descriptive_only_ps": [
+      [
+        0.5,
+        1.0
+      ],
+      [
+        1.0,
+        2.0
+      ]
+    ],
+    "per_segment_MSD": "Sum_i,n |R_i(n+k)-R_i(n)|^2 / [216*(N-k)], N=4001.",
+    "per_segment_VACF": "Sum_i,n v_i(n) dot v_i(n+k) / [216*(N-k)], with no per-record mean subtraction.",
+    "primary_MSD_window_ps": [
+      5.0,
+      10.0
+    ],
+    "primary_VACF_cutoff_ps": 5.0,
+    "reference_value_used_to_choose_window_or_budget": false
+  },
+  "fixed_physics_source_binding": {
+    "bytes": 6336,
+    "path": "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-proposals/source-and-evidence-bindings.json",
+    "sha256": "014cc4c5d5288bab9a1787f36f078002a6a081bf9253a5cf406870e29829dec2"
+  },
+  "fixed_production": {
+    "absolute_terminal_step": 3600000,
+    "checkpoint_interval_ps": 1.0,
+    "frames_per_segment": 4001,
+    "maximum_correlation_lag_ps": 10.0,
+    "maximum_lag_index": 2000,
+    "minimum_time_origins_at_maximum_lag_per_molecule": 2001,
+    "molecules_retained_per_frame": 216,
+    "new_output_root_proposed": "/workspace/scratch/a5e4820daedd/water-longlag-production-2026-11-01",
+    "record_interval_fs": 5.0,
+    "record_stride_steps": 20,
+    "segment_duration_ps": 20.0,
+    "segment_steps": 80000,
+    "segments_per_chain": 20,
+    "total_NVE_ps_all8": 3200.0,
+    "total_NVE_ps_per_chain": 400.0,
+    "total_physical_steps_all8": 12800000
+  },
+  "fixed_seeds": [
+    1101,
+    1102,
+    1103,
+    1104,
+    1105,
+    1106,
+    1107,
+    1108
+  ],
+  "momentum_RNG_phase": {
+    "final_segment": "Stop without an extra draw after segment19.",
+    "first_draw": "At absolute step2000000 skip the pending preparation refresh and perform the one NVE COM-projected draw.",
+    "fresh_draws": "Exactly one saved-RNG Maxwell draw at298K with total physical COM removal before each of20segments; no reseeding.",
+    "next_segment": "Keep positions, draw new COM-projected momenta exactly once from the continued same RNG.",
+    "restart": "Persist active_segment, local/global step, pending-draw flag and RNG; exact raw q/v with bounded CPU force-cache conversion; resume without duplicate draws.",
+    "source_used_for_state_conversion_and_Maxwell_draw": "Frozen native_reference.py functions; the new orchestration must be independently tested before adoption.",
+    "within_segment": "Thermostat disabled; unchanged frozen velocity-Verlet/PME force map."
+  },
+  "motivation_evidence": {
+    "bytes": 14723,
+    "path": "docs/validation/literature-convergence-2026-11-01/water/vacf-msd-identity/analysis/report.json",
+    "sha256": "4628c0bde8b433d3908efda4e44e85d0183b60d654409970189f3c16736ec9b0"
+  },
+  "new_production_sources_or_tests_exist": false,
+  "observables": {
+    "also_retain": [
+      "Oxygen positions",
+      "Potential and total energy",
+      "Temperature with the original COM degree-of-freedom convention",
+      "OH and HOH geometry",
+      "Full native checkpoint and redundant raw-state contract every1ps"
+    ],
+    "positions": "Unwrapped mass-weighted molecular COM coordinates from the frozen physical OHH observable; do not re-center saved displacements or minimum-image the accumulated displacement.",
+    "velocities": "Coincident canonical molecular COM velocities; preserve the saved three-dimensional dot-product convention."
+  },
+  "old_short_window_failure_remains": true,
+  "proposed_new_finite_lag_screens": {
+    "absolute_linear_energy_drift_every_segment_kcal_mol_water_ps_max": 0.001,
+    "energy_envelope_every20ps_segment_kcal_mol_water_max": 0.01,
+    "failure_or_insufficient_precision": "Retain all data and report unresolved/failed. No dropping seeds/segments, alternative-window search, larger budget, fitted-tail switch or target-driven stop.",
+    "hard_gate_on_historical_0p5_1ps_window_in_new_study": false,
+    "interpretation": "A new separately preregistered finite-lag consistency/precision screen. The old short-window gate stays failed; passing these new screens is not proof of the infinite-time limit or an automatic paper-agreement certificate.",
+    "paired_complete_CI95_equivalence_margin_angstrom2_ps": 0.01,
+    "primary_VACF_and_MSD_CI95_halfwidth_max_angstrom2_ps": 0.01,
+    "required_paired_contrasts": [
+      "VACF5ps minus MSD5-10ps",
+      "Each fixed VACF2,7.5,10ps minus VACF5ps",
+      "Each fixed MSD2-5,5-7.5,7.5-10ps minus MSD5-10ps",
+      "Late10minus early10segment chain means for each primary estimator"
+    ],
+    "requires_all8_and_all160segments": true
+  },
+  "relationship_to_old_experiment": "A new prospective finite-time-regime study on new data after a separately assessed500ps preparation. It never changes the old0.5-1ps criterion or reclassifies the original failed cohort.",
+  "relationship_to_v2_post_gate_suggestion": "The byte-frozen v2 document still governs only the proposed400ps preparation. Its unadopted25x4ps future-production suggestion is not adopted here; this separate20x20ps design requires its own implementation, review and root decision.",
+  "remaining_scientific_limits": [
+    "The fixed216-molecule box and unchanged electrostatics/model identity are retained; no finite-size correction is selected to improve reference proximity.",
+    "The existing force-field source/Table-I precision and CPU rounding qualifications remain; no claim of exact author-implementation identity is added.",
+    "Longer preparation and longer correlation lags answer distinct questions. Neither guarantees equilibrium, infinite-time convergence, paper agreement or a quantum result.",
+    "The earlier dense5fs cadence control is a separate limited numerical check, not a validation of all new liquid trajectories."
+  ],
+  "required_new_method_tests": [
+    "Reference canonical q/p map and continuous-versus-split restart at a preparation-end/first-NVE-draw boundary and an NVE-segment boundary.",
+    "CPU raw-state/force-cache bounds and failed/corrupt restore rejection, without loosening the frozen contract.",
+    "Synthetic nonuniform/finite-time-origin VACF/MSD normalization and analytical stationary-identity cases; correlated chain fixtures for whole-cohort/paired uncertainty.",
+    "Full8x20segment membership, unwrapped-displacement and source/model/input tamper guards; metadata-only resource/lease/drain tests.",
+    "A bounded excluded actual short Reference/CPU phase probe, without using production D to alter the design."
+  ],
+  "resource_envelope": {
+    "bytes": 3750,
+    "path": "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-proposals/resource-estimates.json",
+    "sha256": "f59162d0b9565ebaf47af1a78ac856b89e73be99015610945e2e07d1c87ee234"
+  },
+  "schema": "pyrpmd.water-long-lag-production-design-proposal.v1",
+  "scope": "Classical P1 q-TIP4P/F H2O,216molecules, unchanged finite box/model/0.25fs OpenMM CPU external reference. No quantum, IR, GPU or PyRPMD-production validation claim.",
+  "start_selection": {
+    "absolute_preparation_ps": 500.0,
+    "absolute_step": 2000000,
+    "active_segment": -1,
+    "actual_checkpoint_hashes": null,
+    "all_eight_required": true,
+    "old_checkpoint_ancestry": {
+      "bytes": 35929,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-proposals/starting-state-bindings.json",
+      "sha256": "4e14a86f6c533409fbf90fdc1949faf1ee65db75a24f8b42f255a856833c0cfc"
+    },
+    "required_parent_stage": {
+      "bytes": 15956,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-proposals/preparation-proposal.json",
+      "sha256": "3521b5c25ee27466d95f750dae421e8d74566b5ddf3f927ce7d426fc69e9bce1"
+    },
+    "selection": "The exact final committed500ps state of each fixed preparation branch, before any terminal preparation or NVE momentum draw. No endpoint search.",
+    "source_binding_before_adoption": "Record every endpoint whole-file/q/p/raw-engine/RNG/model/source/environment identity only after all8 preparation branches and their coordinator finish normally."
+  },
+  "statistics": {
+    "CI95": "mean +/- t_(0.975,7)*SE; nominal small-n inference conditional on the fixed histories.",
+    "independent_unit": "Eight complete chain means, each averaging all20segments equally; never160independent segments, molecules or overlapping origins.",
+    "interval_qualification": "Marginal/pointwise intervals, no simultaneous confidence band or guaranteed liquid-tail coverage.",
+    "old_and_new_cohorts": "Shared ancestry; do not treat old and new outcomes as16independent chains or pool their segments.",
+    "paired_comparisons": "Compute each difference within chain first, then use its8differences and df7; preserve estimator/cutoff/window covariance.",
+    "primary_mean": "Equal average across the8chain means.",
+    "production_time_diagnostic": "Predeclare segments0-9 versus10-19 within every chain; retain all20in every primary mean.",
+    "standard_error": "Sample SD of8chain means divided bysqrt(8)."
+  },
+  "status": "new_design_only_not_adopted_not_implemented_not_executed"
+}

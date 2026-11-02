@@ -1,0 +1,116 @@
+{
+  "$comment": "Runtime also checks CPU-list length equals workers, available Linux affinity, every referenced whole-file hash/size, and source guards. Resource JSON requires safe_to_launch_parent_workers=true, integer parent_workers equal workers, workers<=declared_project_active_workers<=8, prerequisite_queues_drained=true, and a nonempty evidence list of checked file identities. Root must record actual resources; this schema is not an authorization.",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "cpu_affinity": {
+      "items": {
+        "minimum": 0,
+        "type": "integer"
+      },
+      "maxItems": 2,
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "design_sha256": {
+      "const": "c668c15fd89ca0a535afc4082521e3f42ba9e84f5736b5b481bc1d7c376d791d"
+    },
+    "driver_sha256": {
+      "const": "af6ce9c9dbb21fa689cafc8142ed079825f10391788bed231c39035d6ee5cbf6"
+    },
+    "independent_review": {
+      "properties": {
+        "bytes": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "path": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "bytes"
+      ],
+      "type": "object"
+    },
+    "parent_adoption": {
+      "const": true
+    },
+    "resource_decision": {
+      "properties": {
+        "bytes": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "path": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "bytes"
+      ],
+      "type": "object"
+    },
+    "schema": {
+      "const": "pyrpmd.h3.p256-parent-execution-authorization.v1"
+    },
+    "synthetic_gate": {
+      "properties": {
+        "bytes": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "path": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "bytes"
+      ],
+      "type": "object"
+    },
+    "whole_campaign_wall_seconds": {
+      "const": 7200
+    },
+    "workers": {
+      "maximum": 2,
+      "minimum": 1,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "schema",
+    "parent_adoption",
+    "design_sha256",
+    "driver_sha256",
+    "workers",
+    "cpu_affinity",
+    "whole_campaign_wall_seconds",
+    "synthetic_gate",
+    "independent_review",
+    "resource_decision"
+  ],
+  "title": "Reviewed fixed-eight P256 parent execution authorization",
+  "type": "object"
+}

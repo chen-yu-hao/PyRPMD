@@ -1,0 +1,61 @@
+...........                                                              [100%]
+11 passed in 0.64s
+
+
+  J. Espinosa-Garcia and J. C. Corchado                                      
+  Unpublished results, 1999.                                                 
+                                                                             
+                                                                             
+                                                                             
+
+
+   MAX. AND ACTUAL NO. OF EXCITED SURFACES:   0       0
+   MAX. AND ACTUAL ORDER OF DERIVATIVES:      1       1
+
+  The potential routine in POTLIB assumes a
+  default labeling of the atoms.  The user has
+  made the following selection of atomic labels:
+
+               DEFAULT                         USER-SELECTED
+
+  Atom  1 is       H                                   H 
+  Atom  2 is       C                                   C 
+  Atom  3 is       H                                   H 
+  Atom  4 is       H                                   H 
+  Atom  5 is       H                                   H 
+  Atom  6 is       H                                   H 
+
+
+  Atom  1  H  is a member of Reactant #1
+  Atom  2  C  is a member of Reactant #1
+  Atom  3  H  is a member of Reactant #1
+  Atom  4  H  is a member of Reactant #1
+  Atom  5  H  is a member of Reactant #1
+  Atom  6  H  is a member of Reactant #2
+
+  The Potential Energy is Zero for the following
+  geometric arrangement:  The reactants are at
+  their equilibrium geometries, widely separated.
+
+
+  Reactant #1
+  H C H H H 
+
+  Reactant #2
+  H 
+
+  The default units are:
+     BOHR FOR DISTANCE
+     HARTREE FOR ENERGY
+
+
+  The user has chosen units :
+     BOHR                 FOR DISTANCE
+     HARTREE              FOR ENERGY
+
+
+  To reset the zero-of-energy, assign a
+  non-zero value to the variable ANUZERO.
+  The value of ANUZERO will be SUBTRACTED from
+  the energy calculated by this routine.
+

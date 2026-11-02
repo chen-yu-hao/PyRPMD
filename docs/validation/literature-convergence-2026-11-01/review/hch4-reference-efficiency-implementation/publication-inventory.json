@@ -1,0 +1,207 @@
+{
+  "all_current_README_local_links_verified": true,
+  "created_utc": "2026-11-01T21:10:06.779360+00:00",
+  "execution_authorized_by_this_inventory": false,
+  "files": [
+    {
+      "bytes": 65143,
+      "path": "benchmarks/hch4/efficiency_pilot.py",
+      "sha256": "8630f0ac4106d826beb4ccb471eb57ab0382443cd9a6bca1fb474400877d91fb"
+    },
+    {
+      "bytes": 47526,
+      "path": "tests/test_hch4_efficiency_pilot.py",
+      "sha256": "3f32570efcef28733db3ec961450cafdf836836bc213d1794d50436c24924dc6"
+    },
+    {
+      "bytes": 11540,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/README.md",
+      "sha256": "7438cc53ae7183a5acb79ee7f6fd3cb93e1b2e19905577fbb9a229fe02924769"
+    },
+    {
+      "bytes": 1696,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/admission-guard-gate/gate.json",
+      "sha256": "7d084215e7cb4b83cfda6f2c0b8e44d227107c529bcbfcbba03eec5f7c77ed6a"
+    },
+    {
+      "bytes": 180,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/admission-guard-gate/pytest.log",
+      "sha256": "6c99d2635c6ad07e71158029f56c917966ab3465ca186db5e6ba020c22680a95"
+    },
+    {
+      "bytes": 13394,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/admission-guard-gate/pytest.xml",
+      "sha256": "be91d897b3212a99dd46f2e2d3b08788d363a99c109e053eddccda0c557c8fc8"
+    },
+    {
+      "bytes": 65143,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/admission-guard-gate/source/efficiency_pilot.py",
+      "sha256": "8630f0ac4106d826beb4ccb471eb57ab0382443cd9a6bca1fb474400877d91fb"
+    },
+    {
+      "bytes": 47526,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/admission-guard-gate/source/test_hch4_efficiency_pilot.py",
+      "sha256": "3f32570efcef28733db3ec961450cafdf836836bc213d1794d50436c24924dc6"
+    },
+    {
+      "bytes": 4388,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/admission-guard-only.patch",
+      "sha256": "777ce372614385232c831aefeea2f4e93f451c836334755077af0fa8d3652f8f"
+    },
+    {
+      "bytes": 5087,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/admission-guard-supersession.json",
+      "sha256": "fa7e776a6029d59ce8c3f28f07df8bb41bbac82a14cae6d2c403f9b5587cbca9"
+    },
+    {
+      "bytes": 63126,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/before-receipt-semantics/efficiency_pilot.py",
+      "sha256": "89c42621af370d2eb1101d1d0ecc50cd75023e60d8c5854e27f6c9d001f82598"
+    },
+    {
+      "bytes": 834,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/before-receipt-semantics/snapshot.json",
+      "sha256": "0061a15ca4593d7bf279612917da9d6ef38a990898cb6bfd9d62f8a114ddaee7"
+    },
+    {
+      "bytes": 42477,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/before-receipt-semantics/test_hch4_efficiency_pilot.py",
+      "sha256": "31a3e6de2dfbbbd64315162bcd1a3e085c17b6e4ff610f5b81f4cd53057de474"
+    },
+    {
+      "bytes": 19779,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/final-review-consistency.json",
+      "sha256": "589c56964073b8028fa7128daed47f1408702a15771c41f37ef99264b7226f99"
+    },
+    {
+      "bytes": 6457,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/independent-lifecycle-review.json",
+      "sha256": "6fcbaa6f5ddaf4cdebe7989408dc8e6abc16901e122a93d8a14562358e087a07"
+    },
+    {
+      "bytes": 2790,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/independent-method-identity-update.json",
+      "sha256": "c79ddaea13e71c4a2bfea3ac48621a7f8ee7cb959a763a1bf3c461bc47f4cf6c"
+    },
+    {
+      "bytes": 11778,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/independent-method-review.json",
+      "sha256": "efbbc8ba95aa1715a0e9b262d1aacaf15dc170764b6d734e2affb11a8af48ce5"
+    },
+    {
+      "bytes": 1253,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/initial-lifecycle/gate.json",
+      "sha256": "080791c9a1b958a4a6dc29df6a779e7ab013d7817ce80aee088549559e53d6c5"
+    },
+    {
+      "bytes": 58,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/initial-lifecycle/pytest.log",
+      "sha256": "030bdb651ab214700e7d64cd7f08b0bac588634f9d92ee8afa41e8ae94a2f1c4"
+    },
+    {
+      "bytes": 63126,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/initial-lifecycle/source/efficiency_pilot.py",
+      "sha256": "89c42621af370d2eb1101d1d0ecc50cd75023e60d8c5854e27f6c9d001f82598"
+    },
+    {
+      "bytes": 33379,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/initial-lifecycle/source/test_hch4_efficiency_pilot.py",
+      "sha256": "22a74bf76808140c9d1efc233af5ce03cfbd7cb84fa3bc2c3037f09539db9103"
+    },
+    {
+      "bytes": 1732,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/initial-lifecycle-cpu5/gate.json",
+      "sha256": "b0fade00ef44da07a159a99eb5ae1e937db25f963e6b0c5137655816506cfddf"
+    },
+    {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/initial-lifecycle-cpu5/pytest.log",
+      "sha256": "7990ea96ac8359e97bb2b3460a9b6e61d8a3538709a50bf3e051a04dd6316e1a"
+    },
+    {
+      "bytes": 9755,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/initial-lifecycle-cpu5/pytest.xml",
+      "sha256": "c6dff81e27194dc8c59f710113fc1fe52dd5190830baa1b6f36a246da01d9c69"
+    },
+    {
+      "bytes": 63126,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/initial-lifecycle-cpu5/source/efficiency_pilot.py",
+      "sha256": "89c42621af370d2eb1101d1d0ecc50cd75023e60d8c5854e27f6c9d001f82598"
+    },
+    {
+      "bytes": 33379,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/initial-lifecycle-cpu5/source/test_hch4_efficiency_pilot.py",
+      "sha256": "22a74bf76808140c9d1efc233af5ce03cfbd7cb84fa3bc2c3037f09539db9103"
+    },
+    {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/initial-math/pytest.log",
+      "sha256": "ff620db493eb65c2adac7abe9b6026839892e307a0aed7e00a6f0f61a2272fb7"
+    },
+    {
+      "bytes": 4770,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/initial-math/pytest.xml",
+      "sha256": "89ffb66a96a4c8aa3c311875efd81d67f21216a2c82ed40b2261dc21551ee646"
+    },
+    {
+      "bytes": 63126,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/initial-math/source/efficiency_pilot.py",
+      "sha256": "89c42621af370d2eb1101d1d0ecc50cd75023e60d8c5854e27f6c9d001f82598"
+    },
+    {
+      "bytes": 14129,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/initial-math/source/test_hch4_efficiency_pilot.py",
+      "sha256": "40af14645189a1b384b0fc6f3b2bd6a9f82b5caa5831420e8363037fdf7b8181"
+    },
+    {
+      "bytes": 546,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/initial-math/source-snapshot.json",
+      "sha256": "0c656476a9bc7f2e279a562d36b40235cbdbb20f95c0520f2705365c033cfbad"
+    },
+    {
+      "bytes": 1644,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/signal-and-matched-control-gate/gate.json",
+      "sha256": "e5e1261efd35b4ec97d97f6842414d912caa4f6c565c4b64e24cdcd24f5608f2"
+    },
+    {
+      "bytes": 100,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/signal-and-matched-control-gate/pytest.log",
+      "sha256": "e7e25b064562c52158281f9ab76186fad5bc3aea76c40d2bdb8442ff7a825ecd"
+    },
+    {
+      "bytes": 11025,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/signal-and-matched-control-gate/pytest.xml",
+      "sha256": "ccf763fd41853886c8afa03e10e82d044d73c2fb75f3c281b777531abb8bdd3c"
+    },
+    {
+      "bytes": 63126,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/signal-and-matched-control-gate/source/efficiency_pilot.py",
+      "sha256": "89c42621af370d2eb1101d1d0ecc50cd75023e60d8c5854e27f6c9d001f82598"
+    },
+    {
+      "bytes": 42477,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/signal-and-matched-control-gate/source/test_hch4_efficiency_pilot.py",
+      "sha256": "31a3e6de2dfbbbd64315162bcd1a3e085c17b6e4ff610f5b81f4cd53057de474"
+    }
+  ],
+  "final_source_sha256": "8630f0ac4106d826beb4ccb471eb57ab0382443cd9a6bca1fb474400877d91fb",
+  "final_tests_sha256": "3f32570efcef28733db3ec961450cafdf836836bc213d1794d50436c24924dc6",
+  "frozen_design_sha256": "8c9c576f37714cead7beb6a788a1262f88b7a1f34914029f041643774b78d962",
+  "inventory_self_excluded": true,
+  "listed_bytes": 815813,
+  "listed_file_count": 36,
+  "observed_final_gate": {
+    "PES_evaluations": 0,
+    "dynamics_steps": 0,
+    "errors": 0,
+    "failures": 0,
+    "passed": 85,
+    "pytest_seconds": 10.815,
+    "skipped": 0,
+    "tests": 85
+  },
+  "old_feasibility_design_pilot_inventories_modified": false,
+  "raw_PES_library_native_binary_or_physical_trajectory_included": false,
+  "schema": "pyrpmd.hch4.efficiency-implementation.publication-inventory.v1",
+  "scope": "Isolated excluded-pilot implementation,85 unique synthetic/inert tests, preserved earlier gates/source candidates and two independent final implementation reviews. No actual PES/dynamics, execution adoption, registration or pilot launch."
+}

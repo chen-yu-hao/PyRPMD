@@ -1,0 +1,62 @@
+{
+  "schema": "pyrpmd.h3.umbrella100000-archive-adoption.v1",
+  "adopted": false,
+  "template_only": true,
+  "plan_sha256": "d06a07fed6d6e69f2ddd09c614d9fc17b336c669c5f4013d3cf65ac45e7d2fa4",
+  "source_sha256": "af1288ec403880899a42202ae7e5c1ab6c1f44c419dad6f1c73678d7ffb9738f",
+  "CPU_affinity": [],
+  "no_pending_or_running_300000": false,
+  "sampling_exit": {
+    "exec_session_id": 57942,
+    "exit_code": null,
+    "all_owned_workers_drained": false,
+    "observed_utc": "ACTUAL_ROOT_OBSERVATION_REQUIRED",
+    "actual_tool_observation": {
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-stage100000-root-observation.json",
+      "bytes": 0,
+      "sha256": "TO_BE_BOUND_FROM_ACTUAL_RETURN"
+    }
+  },
+  "analysis_exit": {
+    "exec_session_id": 1094,
+    "exit_code": null,
+    "all_owned_workers_drained": false,
+    "observed_utc": "ACTUAL_ROOT_OBSERVATION_REQUIRED",
+    "actual_tool_observation": {
+      "path": "ROOT_WILL_SUPPLY_ACTUAL_ANALYSIS_RETURN_PATH",
+      "bytes": 0,
+      "sha256": "TO_BE_BOUND_FROM_ACTUAL_RETURN"
+    }
+  },
+  "global_completion": {
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/stage-100000.json",
+    "bytes": 0,
+    "sha256": "TO_BE_BOUND_AFTER_COMPLETE_EXIT"
+  },
+  "analysis_execution": {
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-100000/execution.json",
+    "bytes": 0,
+    "sha256": "TO_BE_BOUND_AFTER_COMPLETE_EXIT"
+  },
+  "analysis_report": {
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-100000/campaign-comparison.json",
+    "bytes": 0,
+    "sha256": "TO_BE_BOUND_AFTER_COMPLETE_EXIT"
+  },
+  "sampling_stdout": {
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-stage100000.log",
+    "bytes": 0,
+    "sha256": "TO_BE_BOUND_AFTER_COMPLETE_EXIT"
+  },
+  "analysis_stdout": {
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-analysis-100000.log",
+    "bytes": 0,
+    "sha256": "TO_BE_BOUND_AFTER_COMPLETE_EXIT"
+  },
+  "analysis_stdout_scope": "Actual redirected complete stdout; root must confirm this after the waiter exits.",
+  "worker_control_change": {
+    "path": "ROOT_WILL_SUPPLY_EXISTING_2_TO_4_ADMISSION_CHANGE_RECEIPT",
+    "bytes": 0,
+    "sha256": "TO_BE_BOUND_WITHOUT_MODIFYING_THE_RECEIPT"
+  }
+}

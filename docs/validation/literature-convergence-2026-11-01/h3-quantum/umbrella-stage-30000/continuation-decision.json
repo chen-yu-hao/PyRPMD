@@ -1,0 +1,55 @@
+{
+  "schema": "pyrpmd.h3.umbrella-precision-continuation-decision.v1",
+  "decided_utc": "2026-11-01T18:11:41.850684+00:00",
+  "status": "scientific_continuation_selected_execution_pending_archive_and_scheduler_review",
+  "completed_cohort_report_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-30000/campaign-comparison.json",
+  "completed_cohort_report_sha256": "aa0fd9969752428e68414376354e37d6e469c98b5c606639c955277578cf8a6f",
+  "completed_cohort_execution_sha256": "ca37d8c021ef81dc85a6364a2a6829ff7e8f781ad8d5334652cd4db80f380bd8",
+  "protocol_sha256": "5834471583ae8e513050dc1c22e065459e1cfa6f139cc5490fcb4eded9fe711a",
+  "independent_seeds": [
+    211017,
+    211019,
+    211021,
+    211023,
+    211027,
+    211031,
+    211033,
+    211039
+  ],
+  "from_production_sweeps": 30000,
+  "to_production_sweeps": 100000,
+  "trigger": {
+    "criterion": "statistical_precision",
+    "passed": false,
+    "observed_primary_log_standard_error": 0.07689760467310561,
+    "registered_limit": 0.03
+  },
+  "other_observed_gates_retained": {
+    "complete_registered_cohort": true,
+    "wham_residual_and_overlap": true,
+    "bin_refinement": true,
+    "local_fit_refinement": true,
+    "statistical_precision": false,
+    "temporal_half_consistency": true,
+    "independent_seed_consistency": true,
+    "paper_point_agreement": false
+  },
+  "point_agreement_does_not_trigger_or_stop_continuation": true,
+  "preserve_every_ordered_observation_and_exact_rng_geometry_state": true,
+  "same_sampler_analysis_schedule_domain_mass_temperature_PES_beads": true,
+  "new_scientific_parameters": false,
+  "rough_inverse_sqrt_budget_forecast": {
+    "assumption": "stationary variance and unchanged mixing; planning only, not a confidence or performance guarantee",
+    "standard_error_at_100000": 0.04211855269757461,
+    "samples_per_chain_to_reach_03_if_scaling_holds": 197108.0534820411,
+    "the_registered_100000_stage_may_still_fail": true
+  },
+  "execution_requirements": [
+    "Freeze and verify the complete30000 raw archive before any checkpoint extends",
+    "Review/freeze the independent scheduling-only wrapper and its source hashes",
+    "Keep at most four sampling workers and no more than the currently available CPU budget",
+    "Retain all eight chains and earlier prefixes; no data, seed or time-window selection",
+    "Analyze the complete100000 cohort with the same frozen analyzer before any further decision"
+  ],
+  "not_launched": true
+}

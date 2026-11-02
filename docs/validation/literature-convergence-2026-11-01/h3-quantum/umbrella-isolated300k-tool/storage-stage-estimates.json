@@ -1,0 +1,80 @@
+{
+  "RNG_width_caveat": "Observed Unicode width175 is metadata from seed211017. Future RNG string digit widths can differ; small changes are covered by format/metadata slack below, not assumed byte-identical at final stage.",
+  "admission_formula": "current_free >= 5,000,000,000 + 4,294,967,296 + sum(root-bound remaining external bytes)",
+  "cohort_raw_payload_at300000_bytes": 1569130912,
+  "created_utc": "2026-11-01T22:08:40.925952+00:00",
+  "global_free_reserve_counted_once_bytes": 4294967296,
+  "interpretation": "1.62GB working is a conservative forecast above 1.569GB raw payload, retained prior state/metadata and added final states. 1.64GB archive is a gzip/tar planning allowance; these are not OS quotas or a measured peak. Actual archive preparation must inspect final sizes and refuse to exceed the adopted allocation. A second complete archive temporary/copy is not included or authorized by this forecast.",
+  "maximum_combined_remaining_external_reservation_at_that_observation_bytes": 15744134656,
+  "no_adoption_or_physical_execution": true,
+  "observed_initial_eight_checkpoint_bytes": 468486010,
+  "observed_initial_restore_bytes": 474508661,
+  "observed_retained_other_restore_bytes": 6022651,
+  "own_task_allocation_bytes": 5000000000,
+  "phase_peaks_incremental_bytes": [
+    {
+      "basis": "Exact archived member sum; archive itself is already present.",
+      "bytes": 474508661,
+      "phase": "new exact100k restore before any worker"
+    },
+    {
+      "basis": "1.62GB prospective full working tree +2x220MB; no new final archive/extract yet.",
+      "bytes": 2060000000,
+      "phase": "sampling, two active atomic checkpoint temporaries"
+    },
+    {
+      "basis": "1.62GB prospective full working tree +4x220MB; no new final archive/extract yet.",
+      "bytes": 2500000000,
+      "phase": "sampling, four active atomic checkpoint temporaries"
+    },
+    {
+      "basis": "1.62GB working +1.64GB single new archive. No simultaneous sampling or duplicate temporary archive assumed.",
+      "bytes": 3260000000,
+      "phase": "after full completion, one archive construction"
+    },
+    {
+      "basis": "1.62GB working +1.64GB archive +1.62GB fresh restore +0.12GB analysis/metadata. Stream extraction/replay; no extra intermediate full copy.",
+      "bytes": 5000000000,
+      "phase": "archive plus fresh extracted replay plus analysis"
+    }
+  ],
+  "planning_components": {
+    "completed_working_tree_bytes": 1620000000,
+    "fresh_final_replay_extract_bytes": 1620000000,
+    "future_analysis_and_metadata_allowance_bytes": 120000000,
+    "new_final_archive_bytes": 1640000000,
+    "one_atomic_checkpoint_temporary_allowance_bytes": 220000000
+  },
+  "projected_payload_total_per_seed_bytes": 196141364,
+  "projected_uncompressed_payload_per_seed_at300000": {
+    "R": 147456,
+    "accepted": 2304,
+    "completed": 8,
+    "diagnostics": 80640000,
+    "lineage": 384,
+    "proposed": 2304,
+    "r": 147456,
+    "rng": 700,
+    "samples": 115200000,
+    "swaps": 752
+  },
+  "required_external_reservations": [
+    "water: remaining raw/compression/archive/extract as the separately adopted stage actually requires",
+    "P256_children: remaining raw branches and any separately planned archive/extract; zero only with a stated completed/allocation reason"
+  ],
+  "root_latest_observed_free_bytes": 25039101952,
+  "schema": "pyrpmd.h3.isolated300k-storage-estimates.v1",
+  "scope": "Planning of incremental filesystem occupancy only; no raw NPZ decoded, no sampling, no deletion. Existing source/raw/archive/extract bytes are already excluded from current free space.",
+  "source_metadata": [
+    {
+      "bytes": 47244,
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-umbrella-stage-100000-2026-11-01.members.json",
+      "sha256": "295d48f75c8ac35ac25baedd8ad32f641efeaf9f7a12d2779cb3d494188ee8ae"
+    },
+    {
+      "bytes": 46138,
+      "path": "/workspace/scratch/a5e4820daedd/h3-quantum-umbrella-stage-100000-restored-v2/data/campaign-run/stage-100000.json",
+      "sha256": "c102f002d674e347020ecf5003b1a5e4de4bfc7b22d4691b28a5a768727ad317"
+    }
+  ]
+}

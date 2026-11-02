@@ -1,0 +1,42 @@
+GitHub job 124973261478; run 41348459263; cpu (3.14)
+Exact-head-associated completed job log excerpts. Numbers below are one-based lines of the retrieved decoded log.
+
+830: 2026-11-01T21:04:52.8343837Z =================================== FAILURES ===================================
+831: 2026-11-01T21:04:52.8344723Z ________ test_wall_supervisor_retains_ledger_and_refuses_second_attempt ________
+832: 2026-11-01T21:04:52.8344987Z 
+833: 2026-11-01T21:04:52.8345208Z tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-0/test_wall_supervisor_retains_l0')
+834: 2026-11-01T21:04:52.8345664Z monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b06ecefb380>
+835: 2026-11-01T21:04:52.8345914Z 
+836: 2026-11-01T21:04:52.8346139Z     def test_wall_supervisor_retains_ledger_and_refuses_second_attempt(tmp_path, monkeypatch):
+837: 2026-11-01T21:04:52.8346616Z         # A bounded synthetic sleeping process only; no native/MD/PES invocation.
+838: 2026-11-01T21:04:52.8346965Z         regpath = tmp_path/"registration.json"
+839: 2026-11-01T21:04:52.8347256Z         pilot.atomic_json(regpath, {"fixture": True})
+840: 2026-11-01T21:04:52.8347612Z         guard = tmp_path/"guard.txt"; guard.write_text("unchanged synthetic source")
+841: 2026-11-01T21:04:52.8348054Z         reg = {"output_root": str(tmp_path), "source_sha256": {str(guard): pilot.sha256(guard)},
+842: 2026-11-01T21:04:52.8348428Z                "prepare_hard_CPU_seconds": 1}
+843: 2026-11-01T21:04:52.8348718Z         monkeypatch.setattr(pilot, "load_registration", lambda path: (reg, {}, []))
+844: 2026-11-01T21:04:52.8349095Z >       outcome = pilot.supervise(regpath, command=[sys.executable, "-c", "import time; time.sleep(5)"], wall_seconds=.1,
+845: 2026-11-01T21:04:52.8349394Z                                   enforce_resources=False)
+846: 2026-11-01T21:04:52.8349512Z 
+847: 2026-11-01T21:04:52.8349582Z tests/test_hch4_reference_pilot.py:267: 
+848: 2026-11-01T21:04:52.8349766Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+849: 2026-11-01T21:04:52.8349974Z benchmarks/hch4/reference_pilot.py:643: in supervise
+850: 2026-11-01T21:04:52.8350216Z     budget = allocate_CPU_budget(reg["prepare_hard_CPU_seconds"], time.process_time())
+851: 2026-11-01T21:04:52.8350452Z              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+852: 2026-11-01T21:04:52.8350668Z benchmarks/hch4/reference_pilot.py:564: in allocate_CPU_budget
+853: 2026-11-01T21:04:52.8351159Z     require(worker_cap >= 1, "preflight exhausted the total CPU budget")
+854: 2026-11-01T21:04:52.8351503Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+855: 2026-11-01T21:04:52.8351749Z 
+856: 2026-11-01T21:04:52.8351913Z condition = False, message = 'preflight exhausted the total CPU budget'
+857: 2026-11-01T21:04:52.8352142Z 
+858: 2026-11-01T21:04:52.8352235Z     def require(condition, message):
+859: 2026-11-01T21:04:52.8352462Z         if not condition:
+860: 2026-11-01T21:04:52.8352674Z >           raise ValueError(message)
+861: 2026-11-01T21:04:52.8352948Z E           ValueError: preflight exhausted the total CPU budget
+862: 2026-11-01T21:04:52.8353154Z 
+863: 2026-11-01T21:04:52.8353264Z benchmarks/hch4/reference_pilot.py:100: ValueError
+
+Final pytest/exit summary:
+1134: 2026-11-01T21:04:52.8436784Z FAILED tests/test_hch4_reference_pilot.py::test_wall_supervisor_retains_ledger_and_refuses_second_attempt - ValueError: preflight exhausted the total CPU budget
+1135: 2026-11-01T21:04:52.8437219Z 1 failed, 7196 passed, 225 skipped, 984 warnings, 478 subtests passed in 291.86s (0:04:51)
+1136: 2026-11-01T21:04:54.2304741Z ##[error]Process completed with exit code 1.

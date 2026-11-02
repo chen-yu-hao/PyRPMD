@@ -1,0 +1,110 @@
+{
+  "schema": "pyrpmd.h3.completed-control-case-assessment.v1",
+  "created_utc": "2026-11-01T17:11:38.827007+00:00",
+  "phase": "complete predeclared lower-cutoff case; fixed-count upper-cutoff controls continue",
+  "case": {
+    "name": "p128-cutoff04",
+    "beads": 128,
+    "minimum": 0.4,
+    "seeds": [
+      820401,
+      820403,
+      820407,
+      820409
+    ],
+    "completed_seed_results": [
+      {
+        "seed": 820401,
+        "log_TS_quantum_classical_ratio": -2.1704712690450862,
+        "minimum_BAR_overlap": 0.9028882430356407,
+        "minimum_energy_ESS": 929.5475806685208,
+        "half_log_difference": 0.000426151789302498,
+        "checkpoint_sha256": "397f1868f0d3863d1ecf6fe47b536261fc9066a189cc2cf5cf7e6f02f9fe0735",
+        "report_sha256": "7f4a9f5fc0900d83d3971264b9148513710a19cefa0c207fc351e8839c7839cb"
+      },
+      {
+        "seed": 820403,
+        "log_TS_quantum_classical_ratio": -2.175106692901319,
+        "minimum_BAR_overlap": 0.9024942230964396,
+        "minimum_energy_ESS": 893.2003589726245,
+        "half_log_difference": 0.051015968316684646,
+        "checkpoint_sha256": "a9c77ec87d7b96a020a0dd6904bc2bd48d8b52e5e012a4a86c866ab8dfde9732",
+        "report_sha256": "8ee52c74c318971639a49c8023fa005d61cecb254cb7b5b8db0469ff76350c93"
+      },
+      {
+        "seed": 820407,
+        "log_TS_quantum_classical_ratio": -2.2141026671926602,
+        "minimum_BAR_overlap": 0.9124885291988539,
+        "minimum_energy_ESS": 1132.4662675294678,
+        "half_log_difference": -0.019135735036968526,
+        "checkpoint_sha256": "6e660959d2009f6977821dbd44d1a4a2ab10cd23e4919afa683b8c3c925cd5db",
+        "report_sha256": "3c85d2c8c8e706c7a5c32cced6c243a72e8c371e5ec34c540c2d9b85e1a629b4"
+      },
+      {
+        "seed": 820409,
+        "log_TS_quantum_classical_ratio": -2.153610520559096,
+        "minimum_BAR_overlap": 0.8953455427793251,
+        "minimum_energy_ESS": 907.2657538520295,
+        "half_log_difference": 0.009495675267332526,
+        "checkpoint_sha256": "920546d48719eeaf74d97619e9997d5d1b7c6118e93a1ee66c397c8b078d9098",
+        "report_sha256": "468febe97db0eaf4ca6c6ea04872c41989b5799cf080e453677ce331219fbccb"
+      }
+    ],
+    "complete": true,
+    "independent_seed_statistics": {
+      "seed_count": 4,
+      "mean": -11.37573116406766,
+      "standard_error": 0.012789597122581497,
+      "CI95": [
+        -11.416433370176488,
+        -11.335028957958833
+      ],
+      "uncertainty_unit": "independent seed chain",
+      "individual_seed_values": [
+        -11.367879645688207,
+        -11.372515069544441,
+        -11.411511043835782,
+        -11.351018897202216
+      ]
+    },
+    "relative_QTST_comparison": {
+      "mean_log_difference": -0.007537794309525836,
+      "standard_error": 0.014108425707649756,
+      "Welch_degrees_of_freedom": 4.354529705280277,
+      "CI95_log_difference": [
+        -0.045482809433427376,
+        0.030407220814375704
+      ],
+      "relative_point_difference": -0.007509456384518994,
+      "CI95_relative_difference": [
+        -0.0444639713635198,
+        0.03087424193912442
+      ],
+      "equivalence_log_margin": 0.04879016416943204,
+      "CI95_wholly_within_margin": true,
+      "uncertainty_unit": "independent seed chain in each group; shared baseline is not a new independent sample per control"
+    },
+    "paired_seed_half_log_difference": {
+      "seed_count": 4,
+      "mean": 0.010450515084087786,
+      "standard_error": 0.014782596103563833,
+      "CI95": [
+        -0.03659430326820027,
+        0.05749533343637584
+      ],
+      "uncertainty_unit": "independent seed chain",
+      "individual_seed_values": [
+        0.000426151789302498,
+        0.051015968316684646,
+        -0.019135735036968526,
+        0.009495675267332526
+      ]
+    },
+    "classical_and_exact_reactant_log_offset": -9.197408376643121,
+    "seed_sampling_flags_passed": true
+  },
+  "protocol_sha256": "0b3cbbff1aa90f8ec0f9c77d0d5c68786f0f368e26d8b93bc6c35604b736eb56",
+  "primary_parent_files_modified": false,
+  "algorithm_or_counts_changed_after_observation": false,
+  "interpretation": "Individual predeclared .4-versus-.5-bohr equilibrium equivalence test; the aggregate protocol retains the failed coarse-P64 equivalence result and does not test real-time recrossing domain sensitivity."
+}

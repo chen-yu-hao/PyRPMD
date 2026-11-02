@@ -1,0 +1,120 @@
+{
+  "admission_consequence": {
+    "additional400ps_preparation_adopted": false,
+    "changed_to_accept_failure": false,
+    "fine_timestep_declared_converged": false,
+    "future20x20ps_production_adopted": false,
+    "new_preparation_coordinator_registration": null,
+    "original_draft_requires_complete_paired_PASS": true,
+    "resource_assignment": null,
+    "that_condition_satisfied": false
+  },
+  "all_eight_pairs_complete": true,
+  "complete_control_bundle": {
+    "bytes": 9432,
+    "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/publication-inventory.json",
+    "sha256": "ed974cc16cb5220101d2bb274fa9b5ea7137401699c071dd91e252467a03b6e6"
+  },
+  "complete_control_report": {
+    "bytes": 10600,
+    "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/analysis/report.json",
+    "sha256": "6d657d7dc11d98dd78ac8a2659a9907c8b94eedba0aa013dcd2d3d5db54aa370"
+  },
+  "created_utc": "2026-11-01T21:40:21.783345+00:00",
+  "energy_limits_pass": true,
+  "extracted_data_replay": {
+    "bytes": 2620,
+    "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/replay/replay-report.json",
+    "sha256": "487eed5a60c84fc33d83b79b5d6cf0d88655d5037008c20b6e4ed9d2ad96507b"
+  },
+  "integration_tree_modified": false,
+  "new_PES_calls": 0,
+  "new_RNG_draws": 0,
+  "new_dynamics_steps": 0,
+  "normal_wrapper_exit": {
+    "bytes": 523,
+    "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/root-execution/root-exec-observation.json",
+    "sha256": "ecf9be6d574c79159fc3a0af4c5b450e5f864c49244312ffdc287a43bcc44978"
+  },
+  "original_failed_gates_remain": {
+    "MSD_0p5_1ps_vs_1_2ps_compatibility": false,
+    "MSD_window_paired_equivalence": false,
+    "formal_literature_comparison": null,
+    "preparation_potential_energy_seeds": [
+      1102,
+      1105,
+      1106
+    ]
+  },
+  "overall_numerical_control_pass": false,
+  "paired_comparisons": {
+    "D_MSD_1_2ps_angstrom2_ps": {
+      "CI95": [
+        -0.049192071170147296,
+        -0.00048761253817405925
+      ],
+      "CI95_halfwidth": 0.02435222931598662,
+      "chain_differences": [
+        -0.02348672401807622,
+        -0.06469812026329064,
+        -0.03143713629602929,
+        -0.011072930304520862,
+        0.02581653436127887,
+        -0.05639763174493834,
+        -0.03419685391612001,
+        -0.0032458726515889325
+      ],
+      "degrees_of_freedom": 7,
+      "equivalence_margin_angstrom2_ps": 0.01,
+      "equivalent_within_margin": false,
+      "mean": -0.024839841854160678,
+      "standard_error": 0.010298561938364302,
+      "status": "equivalence_unresolved"
+    },
+    "D_VACF_2ps_angstrom2_ps": {
+      "CI95": [
+        -0.04126837306930683,
+        0.013019308413145698
+      ],
+      "CI95_halfwidth": 0.027143840741226263,
+      "chain_differences": [
+        -0.03456409114576986,
+        -0.02964516110663598,
+        0.036558705144802334,
+        0.021394011455940387,
+        -0.00040500468137974477,
+        -0.061461359293917134,
+        -0.03514382141695474,
+        -0.00972953758072978
+      ],
+      "degrees_of_freedom": 7,
+      "equivalence_margin_angstrom2_ps": 0.01,
+      "equivalent_within_margin": false,
+      "mean": -0.014124532328080565,
+      "standard_error": 0.011479134887051285,
+      "status": "equivalence_unresolved"
+    }
+  },
+  "post_exit_lease_release_proof": {
+    "bytes": 1637,
+    "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/replay/lease-proof.json",
+    "sha256": "c8200b3032c2e6d3ccd60e63dd7a61ee109a0026438a1b9b9c26583adda7a2ad"
+  },
+  "prior_design_snapshot": {
+    "bytes": 3202,
+    "path": "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-proposals/publication-inventory.json",
+    "sha256": "bfafe068355b68f36594ba4148452ee4753ea7c6d44fa09ef5204340ccecc5b4"
+  },
+  "prior_evidence_or_sources_modified": false,
+  "schema": "pyrpmd.water-next-stage-paired-timestep-outcome-addendum.v1",
+  "scientific_limits": [
+    "All eight pairs and the original64ps experiment remain in the record, with both unchanged equivalence_unresolved statuses.",
+    "The MSD nominal95% interval lies below zero but crosses the negative equivalence boundary; this does not satisfy either whole-interval equivalence or whole-interval beyond-margin proof.",
+    "Eight4ps pairs conditional on the original preparations do not establish equilibrium, the infinite-time diffusion limit, or convergence of0.125fs.",
+    "Additional preparation may investigate equilibrium under the unchanged thermostat, but cannot by itself resolve timestep ambiguity or preasymptotic MSD curvature.",
+    "Any separate preparation-only scientific decision would need explicit new adoption preserving these failures; this addendum does not relax the prior draft admission.",
+    "The prospective long-lag design remains useful as a design, but its tentative0.25fs setting is not approved. Do not silently switch timestep, change resource budget, or start production.",
+    "A later root-requested read-only comparison of existing coarse histories can assess reuse feasibility; it is not a new paired-study adoption, physical run or justification to select favorable segments."
+  ],
+  "status": "not_adopted_conditions_not_met"
+}

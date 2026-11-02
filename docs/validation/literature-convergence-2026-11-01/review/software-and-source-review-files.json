@@ -1,0 +1,44 @@
+{
+  "schema": "pyrpmd.review-publication-inventory.v1",
+  "files": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/README.md",
+      "bytes": 2677,
+      "sha256": "440b220ee77942c22702af983c878e25642aa10d6ce5fb4b4762d951740e986d",
+      "encoding": "utf8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-status.json",
+      "bytes": 4663,
+      "sha256": "eacb7b0988724718b5c1328b00ed82c489ab3e0c377ddba8b893a7929b094a04",
+      "encoding": "utf8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/fixture-portability.json",
+      "bytes": 8467,
+      "sha256": "40ac047ed0e252de248f7746315a28931f035eb528b26718fa2a227bf8968549",
+      "encoding": "utf8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/water-scheduler-review.json",
+      "bytes": 3377,
+      "sha256": "c9bbf4baded4606fdefcf88930027d9b6cadd6d85c81a4e14b39101450c74f57",
+      "encoding": "utf8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/isotopologues-source-index/README.md",
+      "bytes": 1867,
+      "sha256": "8277fd991455774c8249a5d1e8bd57a79bb58de3c247475a4d759b953907bd95",
+      "encoding": "utf8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/isotopologues-source-index/source-index.json",
+      "bytes": 6665,
+      "sha256": "739d8cbf3c7d07463102ae6da91c045aa156b36b5f74f14432ec9996b735a4e2",
+      "encoding": "utf8"
+    }
+  ],
+  "raw_binary_included": false,
+  "source_changes": false,
+  "include_this_inventory_file": "docs/validation/literature-convergence-2026-11-01/review/software-and-source-review-files.json"
+}

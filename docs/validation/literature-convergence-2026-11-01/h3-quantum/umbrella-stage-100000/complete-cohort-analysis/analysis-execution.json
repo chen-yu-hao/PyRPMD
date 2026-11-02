@@ -1,0 +1,45 @@
+{
+  "schema": "pyrpmd.h3.complete-umbrella-analysis-execution.v1",
+  "started_utc": "2026-11-01T21:26:04.349715+00:00",
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_sampling_analyze.py",
+    "--campaign",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run",
+    "--protocol",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/protocol.json",
+    "--output",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-100000",
+    "--stage",
+    "100000"
+  ],
+  "independent_seeds": [
+    211017,
+    211019,
+    211021,
+    211023,
+    211027,
+    211031,
+    211033,
+    211039
+  ],
+  "stage": 100000,
+  "complete_cohort_required": true,
+  "available_only_used": false,
+  "source_sha256": {
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/protocol.json": "5834471583ae8e513050dc1c22e065459e1cfa6f139cc5490fcb4eded9fe711a",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_sampling_analyze.py": "4a3476d0ccf12cea1bd9791c4a8ccd7ebcf482b8801e61c87738cd3970e72ea4",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_sampling_scheduler.py": "1fa4d02c5a9ed5884e81fd0de1203cec47570d9a514a512d636524583e59ed98",
+    "/workspace/scratch/a5e4820daedd/run_complete_umbrella_100000_analysis.py": "341a00ea0a17d93e6c91b1ba040dccc37000df03516303b9372a61be469bbf8c"
+  },
+  "sources_unchanged": true,
+  "completion_manifest": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/stage-100000.json",
+  "completion_sha256": "c102f002d674e347020ecf5003b1a5e4de4bfc7b22d4691b28a5a768727ad317",
+  "completion_unchanged": true,
+  "all_submitted_workers_drained_and_lock_released_required": true,
+  "elapsed_seconds": 36.004666592009016,
+  "CPU_seconds": 35.924906,
+  "returncode": 0,
+  "no_refinement_launched": true,
+  "worker_control_unchanged_by_this_waiter": true
+}

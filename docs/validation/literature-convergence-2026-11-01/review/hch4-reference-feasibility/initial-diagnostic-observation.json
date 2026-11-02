@@ -1,0 +1,9 @@
+{
+  "status": "initial_geometry_diagnostic_coverage_assertion_failed",
+  "source_sha256": "673f6648667742e7dee84241220fd292f2512dbde4b5713ede8cf33942319c49",
+  "exit_code": 1,
+  "failed_assertion": "total == 128 and active > 0 and inactive > 0",
+  "finding": "The selected small perturbations did not supply an inactive-channel root. No flux metric/root/Jacobian numerical bound had failed. Add a separately labeled non-equilibrium geometry to exercise the active-channel exclusion explicitly; do not infer physical weights from this synthetic set.",
+  "PES_calls": 0,
+  "dynamics_steps": 0
+}

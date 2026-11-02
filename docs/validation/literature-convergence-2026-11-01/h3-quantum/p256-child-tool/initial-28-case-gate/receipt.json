@@ -1,0 +1,35 @@
+{
+  "schema": "pyrpmd.p256-child-initial-contract-gate.v1",
+  "recorded_after_execution_utc": "2026-11-01T19:44:33.837130+00:00",
+  "exec_session_id": 75963,
+  "exec_chunk_id": "c25df3",
+  "exit_code": 0,
+  "passed": 28,
+  "reported_pytest_seconds": 5.27,
+  "PES_evaluations": 0,
+  "dynamics_steps": 0,
+  "files": [
+    {
+      "path": "p256_surface_recrossing.py",
+      "bytes": 31028,
+      "sha256": "3327779277c466b3989fb219fc3753c7d0e198e18c6b6d65ff9ae7c0922c6f84"
+    },
+    {
+      "path": "pytest.xml",
+      "bytes": 4477,
+      "sha256": "52de0c71d0365221c1c12b1fa3ad12ea1c333ac58fbdb37a9905ae8a782875f9"
+    },
+    {
+      "path": "test_h3_p256_surface_recrossing.py",
+      "bytes": 10593,
+      "sha256": "d76ce4bfee0c07efd86bf7546c56e39bf4a547539a947934ea9ae608a4853904"
+    },
+    {
+      "path": "tool-result.log",
+      "bytes": 99,
+      "sha256": "450d77c0dccda620c6ac59f52aa5dcf96bbf3a9eebc3588ad5009338be7bd6bb"
+    }
+  ],
+  "log_scope": "Exact text returned by the completed exec session; no separate stdout capture was configured.",
+  "subsequent_checkpoint_identity_review_fix_not_yet_applied": true
+}

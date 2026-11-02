@@ -1,0 +1,142 @@
+{
+  "schema": "pyrpmd.fh2.author-static-worker.v1",
+  "variant": "hsw",
+  "protocol_sha256": "f83b624bd6259bb9194f42071268f286848e60f2f86fae3e1a440e69f7422ea8",
+  "runner_sha256": "ca6ea27253cca9ef5e04f6a4c79703a5ba080879ff089d550a64c137e347aa43",
+  "library_sha256": "254120f83df6ad85b7f659be920b62dcb71660a5e6d55f699fa75c77ae9e9852",
+  "working_directory": "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/hsw",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "numpy": "2.5.4",
+  "geometries": [
+    {
+      "id": "author-equilateral",
+      "distances_bohr": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "energy_hartree": 0.034126339949292234,
+      "H_exchange_energy_error_hartree": 0.0,
+      "unmodified_sw1_component_hartree": 0.03352633992079376,
+      "HSW_minus_SW1_hartree": 0.0006000000284984708,
+      "author_decimal_hartree": 0.03412633992079376,
+      "author_decimal_absolute_difference_hartree": 2.8498474413662933e-11,
+      "author_verify_real32_literal_promoted_to_real64": 0.034126341342926025,
+      "author_verify_literal_rounding_hartree": 1.42213226611565e-09
+    },
+    {
+      "id": "author-asymmetric",
+      "distances_bohr": [
+        4.0,
+        1.5,
+        4.5
+      ],
+      "energy_hartree": 0.0018391609005588814,
+      "H_exchange_energy_error_hartree": 2.7755575615628914e-17,
+      "unmodified_sw1_component_hartree": 0.001335716322357787,
+      "HSW_minus_SW1_hartree": 0.0005034445782010945,
+      "author_decimal_hartree": 0.00183916087206041,
+      "author_decimal_absolute_difference_hartree": 2.849847137789685e-11,
+      "author_verify_real32_literal_promoted_to_real64": 0.0018391609191894531,
+      "author_verify_literal_rounding_hartree": 4.7129043072649535e-11
+    },
+    {
+      "id": "entrance-bent",
+      "distances_bohr": [
+        3.0,
+        1.4,
+        3.6
+      ],
+      "energy_hartree": 0.0034917173189219566,
+      "H_exchange_energy_error_hartree": 6.38378239159465e-16,
+      "unmodified_sw1_component_hartree": 0.0029072764038682447,
+      "HSW_minus_SW1_hartree": 0.0005844409150537119
+    },
+    {
+      "id": "transition-bent",
+      "distances_bohr": [
+        2.8,
+        1.7,
+        3.5
+      ],
+      "energy_hartree": 0.007798271865950771,
+      "H_exchange_energy_error_hartree": 1.3600232051658168e-15,
+      "unmodified_sw1_component_hartree": 0.0072041667006768895,
+      "HSW_minus_SW1_hartree": 0.0005941051652738815
+    },
+    {
+      "id": "product-bent",
+      "distances_bohr": [
+        1.8,
+        2.5,
+        3.2
+      ],
+      "energy_hartree": -0.02791198310278209,
+      "H_exchange_energy_error_hartree": 1.4432899320127035e-15,
+      "unmodified_sw1_component_hartree": -0.02851198313128056,
+      "HSW_minus_SW1_hartree": 0.0006000000284984708
+    },
+    {
+      "id": "entrance-distant",
+      "distances_bohr": [
+        5.0,
+        1.4,
+        5.6
+      ],
+      "energy_hartree": -0.00021237872945846633,
+      "H_exchange_energy_error_hartree": 4.3042826247674526e-17,
+      "unmodified_sw1_component_hartree": -0.000425993336058732,
+      "HSW_minus_SW1_hartree": 0.00021361460660026567
+    },
+    {
+      "id": "stretched-triangle",
+      "distances_bohr": [
+        2.4,
+        1.7,
+        3.8
+      ],
+      "energy_hartree": -0.0027404168732521306,
+      "H_exchange_energy_error_hartree": 1.0477729794899915e-15,
+      "unmodified_sw1_component_hartree": -0.0033358452620703763,
+      "HSW_minus_SW1_hartree": 0.0005954283888182457
+    },
+    {
+      "id": "general-triangle",
+      "distances_bohr": [
+        3.5,
+        2.2,
+        4.0
+      ],
+      "energy_hartree": 0.04788487834213783,
+      "H_exchange_energy_error_hartree": 7.632783294297951e-17,
+      "unmodified_sw1_component_hartree": 0.04728487831363936,
+      "HSW_minus_SW1_hartree": 0.0006000000284984708
+    },
+    {
+      "id": "entry-asymptotic-diagnostic",
+      "distances_bohr": [
+        20.0,
+        1.4,
+        20.5
+      ],
+      "energy_hartree": 1.2566646490378905e-07,
+      "H_exchange_energy_error_hartree": 0.0,
+      "unmodified_sw1_component_hartree": -5.119913450919406e-10,
+      "HSW_minus_SW1_hartree": 1.2617845624888098e-07
+    },
+    {
+      "id": "product-asymptotic-diagnostic",
+      "distances_bohr": [
+        1.7,
+        20.0,
+        20.5
+      ],
+      "energy_hartree": -0.04893285912197028,
+      "H_exchange_energy_error_hartree": 6.938893903907228e-18,
+      "unmodified_sw1_component_hartree": -0.049532859150468754,
+      "HSW_minus_SW1_hartree": 0.0006000000284984708
+    }
+  ],
+  "HSW_analytic_gradient_implemented": false,
+  "dynamics_steps": 0
+}

@@ -1,0 +1,32 @@
+{
+  "created_utc": "2026-11-01T21:44:59.023708+00:00",
+  "inventories": {
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/raw-archive-v2/publication-inventory.json": "647f691b27a3126a07d2e57bb7fe4bbe3774b99a9a7cb684e0127e3f98267735",
+    "docs/validation/literature-convergence-2026-11-01/water/coarse-history-correspondence/publication-inventory.json": "28f547ed41f758e760a78ac561ff3a31d9a284d20c256a1a9b3ac9ea59881356"
+  },
+  "verified_files": {
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-root-adoption-v2/root-adoption.json": "39c27db548b74e21a6351d70d117a328bcbc2fccdeb3e66af6593eec855c9d57",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-root-adoption-v2/root-exec-observation.json": "b71acd9a6b3d472d28d8fb5bd6b39500d74cc16c12fab5df681659e269827145",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/raw-archive-v2/README.md": "5c85dd2bfd9c77aa709dd091e20414a242a9578f1e3fe95f80441ed549a5eb02",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/raw-archive-v2/RUN_ONCE.json": "5b477a818155f09b5c709bec82c670e4d017eba49f02b02ad44aac45debb26d3",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/raw-archive-v2/executed-root-driver.py": "8975679d173f425a8dc240bdf34c1c65793c7b694a657ddbc431326fcaa0bf36",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/raw-archive-v2/execution.json": "536d555498a54219b78aa200ff593b52622e6ca06ad9ac0729f122c1dd89d331",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/raw-archive-v2/member-inventory.json": "295d48f75c8ac35ac25baedd8ad32f641efeaf9f7a12d2779cb3d494188ee8ae",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/raw-archive-v2/raw-data-index.json": "a41a56f6187ceefb173a48a2a8b1d438ae4341ca7e434480a20bd29c74491472",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/raw-archive-v2/registered-members.json": "a8a390dbd3dc64eb53843b2d1df4219754945e11256cf8ac59499fb4dbd4b1c8",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/raw-archive-v2/replay-launch.json": "8aea1a2579180252e6cf3bc8ab449e644a7e3cfbe3ec63d6c983d6af4d8c731f",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/raw-archive-v2/replay.log": "7350f25ec077d7f89f59cd57f4510b7b1dfe7a02a5f8e7827a2b48aa67f6549d",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/raw-archive-v2/root-stdout.log": "3ba2cb95efbaeb97a5d34e00872d64dcf2f6c037aac9a5fc253ec79628b0ee17",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/raw-archive-v2/stage-snapshot.json": "728a90a9b7eb214752e76b87b70020e24e3284329055bdbdb2b360a07dec44ca",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/raw-archive-v2/publication-inventory.json": "647f691b27a3126a07d2e57bb7fe4bbe3774b99a9a7cb684e0127e3f98267735",
+    "docs/validation/literature-convergence-2026-11-01/water/coarse-history-correspondence/README.md": "d7e166d384ab40de4a97f9426430037513113d64f1a3d12df6995c53a0f957dc",
+    "docs/validation/literature-convergence-2026-11-01/water/coarse-history-correspondence/all-time-differences.csv": "67cd762ac7d1adb3fcf078f80afbcd5348cf3dc8ee399d5771731346d38d4ba0",
+    "docs/validation/literature-convergence-2026-11-01/water/coarse-history-correspondence/check_saved.py": "e2d302e36c652a507fe91cbf69383202b3cf2457ca0d192c7cca3b09593606f7",
+    "docs/validation/literature-convergence-2026-11-01/water/coarse-history-correspondence/observed-exit.json": "f4285fdd9f12d3c67e00621358fe52225281224d1c920bb3370ca0b2fa2a9ae4",
+    "docs/validation/literature-convergence-2026-11-01/water/coarse-history-correspondence/plan.json": "2ebfeef0b24b9a5b4269dbf432514cce1788149db2de99773847e4487209341c",
+    "docs/validation/literature-convergence-2026-11-01/water/coarse-history-correspondence/report.json": "68f9a79f91a5e9f7dc282b03d1e7a403947f764d48c6ffd1bdbfe620c3acabda",
+    "docs/validation/literature-convergence-2026-11-01/water/coarse-history-correspondence/publication-inventory.json": "28f547ed41f758e760a78ac561ff3a31d9a284d20c256a1a9b3ac9ea59881356"
+  },
+  "existing_different_files_overwritten": 0,
+  "raw_trajectories_copied": false
+}

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/package_increment.py"
+  ],
+  "created_utc": "2026-11-01T19:55:34.349922+00:00",
+  "external_PES_calls": 0,
+  "log_sha256": "0c1b91de2bab6f04019af87183ec209e3f8307e64b12499306ce7843fe21c5b5",
+  "new_dynamics_steps": 0,
+  "returncode": 0,
+  "schema": "pyrpmd.h3.quantum-four-pair-archive-execution.v1",
+  "source_sha256": "a05e56589694fb06cc6cc084ab5dc9b48a7a0d3064857429b12d990628aeb07a",
+  "source_unchanged": true,
+  "upload_attempted": false,
+  "wall_seconds": 44.04751657300221
+}

@@ -1,0 +1,77 @@
+{
+  "changes": [
+    {
+      "after": {
+        "bytes": 48133,
+        "path": "tests/test_hch4_efficiency_pilot.py",
+        "sha256": "ec6c660065185388ba153e0f4537fa30e5a605da44b2d5b0ea5c852f257695f1"
+      },
+      "before": {
+        "bytes": 47526,
+        "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-0c5fec-20261101T2214Z/before-test_hch4_efficiency_pilot.py",
+        "sha256": "3f32570efcef28733db3ec961450cafdf836836bc213d1794d50436c24924dc6"
+      },
+      "original_frozen_tree_test_sha256": "3f32570efcef28733db3ec961450cafdf836836bc213d1794d50436c24924dc6",
+      "path": "tests/test_hch4_efficiency_pilot.py",
+      "reason": "Make inert project and output siblings inside the fixture; production output containment rule remains unchanged."
+    },
+    {
+      "after": {
+        "bytes": 6564,
+        "path": "tests/test_h3_p256_native_calibration.py",
+        "sha256": "4a3648fc242d7b28abfbb56b9189ffb7eb92c2bddb07dd705afe5d354500cf0f"
+      },
+      "before": {
+        "bytes": 6368,
+        "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-0c5fec-20261101T2214Z/before-test_h3_p256_native_calibration.py",
+        "sha256": "0a51ca8b6407b5e0a5bb56e3c3f8d4ee3f8e0e083c2c9ed30d480ac7e12f5fa4"
+      },
+      "original_frozen_tree_test_sha256": "0a51ca8b6407b5e0a5bb56e3c3f8d4ee3f8e0e083c2c9ed30d480ac7e12f5fa4",
+      "path": "tests/test_h3_p256_native_calibration.py",
+      "reason": "Use exact synthetic zero clock origin and a local time object; avoid addition/subtraction roundoff at the115s boundary and global time monkeypatching."
+    }
+  ],
+  "created_utc": "2026-11-01T22:23:34.302228+00:00",
+  "deterministic_before_fix_reproduction": {
+    "bytes": 1220,
+    "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-0c5fec-20261101T2214Z/before-fix-reproduction.json",
+    "sha256": "55797cde79058ae90f4e0d2095dcf29e929cd1d29b21a249f9d349d65e417b99"
+  },
+  "historical_inventories_remain_original": true,
+  "new_test_ids": 0,
+  "published_failed_head": "0c5fec22ce590634c45b8c46619cebf3e665eb85",
+  "retained_full_failed_job_logs": [
+    {
+      "bytes": 104956,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-0c5fec-20261101T2214Z/job-124990501230.log",
+      "sha256": "846c242495d708aca7ffdd934b84c1f9a2fe95bddeff8395cb9c9fe34d3c6677"
+    },
+    {
+      "bytes": 112112,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-0c5fec-20261101T2214Z/job-124990870037.log",
+      "sha256": "82b228981afcd426c6aad42fd2162f6a128167209bddbccd5e0f714f5fde3f11"
+    },
+    {
+      "bytes": 113341,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-0c5fec-20261101T2214Z/job-124990870117.log",
+      "sha256": "9959db7536c9c2a8685c56456d649b0a26d359bdcefbea1509a4b6f5ac46bdf5"
+    },
+    {
+      "bytes": 112110,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-0c5fec-20261101T2214Z/job-124990870176.log",
+      "sha256": "3a632d5b3e160082bb2f7135c298a8f5266f3f89cf7be15a31ed2a179c6f6383"
+    },
+    {
+      "bytes": 108236,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-0c5fec-20261101T2214Z/job-124990870215.log",
+      "sha256": "656072da6068948e1a297f44bf05647aeead31b57fa3c8ec702b0bb9d94801ae"
+    }
+  ],
+  "schema": "pyrpmd.ci-test-fixture-only-supersession.v1",
+  "scientific_source_changes": [],
+  "three_interpreter_full_module_gate": {
+    "bytes": 39355,
+    "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/summary.json",
+    "sha256": "4c1f1e61c65aa2ac0e15861c8b3c621f6a1020aa0faceeb6b4f084c49c490a43"
+  }
+}

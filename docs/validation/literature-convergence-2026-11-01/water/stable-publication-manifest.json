@@ -1,0 +1,436 @@
+{
+  "amended_utc": "2026-11-01T17:19:08.813199+00:00",
+  "amendment": "Corrected one stale README sentence to reflect the already completed classical5fs cadence check. No code, protocol, configuration or numerical result changed.",
+  "created_utc": "2026-11-01T17:17:20.021063+00:00",
+  "excluded": [
+    "progress/ subtree and live analysis",
+    "raw trajectory/state/checkpoint NPZ files",
+    "external raw-data directory and logs"
+  ],
+  "file_count": 69,
+  "files": [
+    {
+      "bytes": 27190,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/README.md",
+      "sha256": "a4457b6103fc73998ac5d865cf83def605765c3af98e7ad2065e5a56ffa9ce17"
+    },
+    {
+      "bytes": 1234,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/cadence-control-pytest.xml",
+      "sha256": "b8e89e120b8d7634cf188a74fa391104d3e6e1c497ac6eba1e3590e40f98ef87"
+    },
+    {
+      "bytes": 5015,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/checkpoint-audit.json",
+      "sha256": "d1775389ce54c617f215220d7fe0564bf1c74edc1d12dd781bac812fce620a09"
+    },
+    {
+      "bytes": 1259,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/checkpoint-contract-v2.json",
+      "sha256": "3e05f3ecb1207673ea1cc3c375ac341fc47ac806a2ccbc0f8936ce1dacdbff16"
+    },
+    {
+      "bytes": 14345,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/checkpoint-contract-v2.patch",
+      "sha256": "81f1f008131a07cebda1796d7c1cbcca930b7923d31c4cbecb7827d360c8d365"
+    },
+    {
+      "bytes": 2106,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/checkpoint-v2-pytest.xml",
+      "sha256": "03285c405c4bf0026ed75d4d767b3f55aa1d8d5d70de0f2f0a1f4fabe2923f44"
+    },
+    {
+      "bytes": 4470,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/code-freeze.json",
+      "sha256": "1a28a9b3d76856fa3840c80bbb611831e6083a4ef1addeb8928920805aa80e2d"
+    },
+    {
+      "bytes": 1196,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/compact-split-pytest.xml",
+      "sha256": "917b635bd058ffe6f06873b4bb22fee0b78c2b8c32a0d8d05287fd252fa2d236"
+    },
+    {
+      "bytes": 647,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/configs/classical-seed-1101.json",
+      "sha256": "123f84b208215fbc6afc2f05b02f3d9ecd53a7ad2cc889ef13927113fca21d21"
+    },
+    {
+      "bytes": 647,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/configs/classical-seed-1102.json",
+      "sha256": "5e060bfbf3df471e99c2ca500521f2c23e308fa2c31f01977651dfb3970c7344"
+    },
+    {
+      "bytes": 647,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/configs/classical-seed-1103.json",
+      "sha256": "2fd50d0601b57b82837dfbc57199312f839dd7b0dfe0edd70fee3d64ac351c21"
+    },
+    {
+      "bytes": 647,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/configs/classical-seed-1104.json",
+      "sha256": "7ca1b00e7c6ff3515808beaf848f8f8ad3ff005ea9563b424d820a48e8a8246a"
+    },
+    {
+      "bytes": 647,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/configs/classical-seed-1105.json",
+      "sha256": "2282a9133e1575ec2a2989278a8cac0e50b490e7476b69480719d47b36438b2f"
+    },
+    {
+      "bytes": 647,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/configs/classical-seed-1106.json",
+      "sha256": "178aacaa81fa8887f623bee9084c3b43bd81b4f7ed7d0adb5a41899d467cc338"
+    },
+    {
+      "bytes": 647,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/configs/classical-seed-1107.json",
+      "sha256": "8e4148e80e4f3b976e21cf755c28d6c175b789f71994c112ffa90cd6e9a54653"
+    },
+    {
+      "bytes": 647,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/configs/classical-seed-1108.json",
+      "sha256": "6137814f75564a6687c87f36bb8b2e30b05495ee2d0b2e6a1404edc4b33ffe57"
+    },
+    {
+      "bytes": 341,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/focused-gate-source-after.json",
+      "sha256": "1efb093d88527158da8a60bc7e2b5ef7eeafa9fe4aad37e1f887b2a8388e84f7"
+    },
+    {
+      "bytes": 2905,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/focused-gate-source-before.json",
+      "sha256": "6db951cee06fd7293b9e72ddb3695f7338d693c0f91abb5a41da77cb6d704412"
+    },
+    {
+      "bytes": 5704,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/focused-water-pytest.xml",
+      "sha256": "816f827122db5a59f4004fea07d22044a6dacd1b58594a0a8a1521bfce6ae1a6"
+    },
+    {
+      "bytes": 4739,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/native-optimization-checkpoints.json",
+      "sha256": "b4908be7273c485b75e46786e4c7a36e78d24ae6650084296a61403f6dcbf892"
+    },
+    {
+      "bytes": 13499,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/native-optimization-timing.json",
+      "sha256": "0eac5bbd1b9f5c043b06a6f7177839dd3acdfb42243d4c80d81e6a260ffde39c"
+    },
+    {
+      "bytes": 2417,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/native-optimizations-pytest.xml",
+      "sha256": "ad26ad5a8c076f301320fcd1f89f88a245caed59a7827010477a310ad0278d14"
+    },
+    {
+      "bytes": 2253,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/native-queue-registration.json",
+      "sha256": "e7e3d569f06fb436b9cb86b43cf3fbc8733d570b422dd72293e83f8169f50e63"
+    },
+    {
+      "bytes": 2615,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/native-reference-pytest.xml",
+      "sha256": "6301a6723b451d9dcb4cc51b1a06c558e0d2e11f66119784e71422cce537ef6d"
+    },
+    {
+      "bytes": 1115,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/native-rpmd-checkpoint-probe.json",
+      "sha256": "2180c2b14ef5a41c440c399d035bea898dba17f2409ac2d1539846847460fff7"
+    },
+    {
+      "bytes": 777,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/native-rpmd-frequency-control.json",
+      "sha256": "0ec6d83419ebefa3e8a48ddc4abac385793e482dda455f6c2b77c57935433452"
+    },
+    {
+      "bytes": 659,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/native-scheduler-pytest.xml",
+      "sha256": "eb48c47d22abbe7952abc7ad559890f79dbe83f7ab081e158595ffb9d7201e9c"
+    },
+    {
+      "bytes": 1485,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/native-timing.json",
+      "sha256": "782a70387c136fba911a3b52c906ff515a8d41e7f525e6e1c96a89133c1b5b71"
+    },
+    {
+      "bytes": 5525,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/native-validation.json",
+      "sha256": "f63e0d179fadb6343e3f87e8077e62757b0bc851d0387214d7c14f748cabc2a8"
+    },
+    {
+      "bytes": 1361,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/native-verlet-numerics.json",
+      "sha256": "a87f5f99649ae7dea52c6aeb9cf73e9275b77d4122b60dd3d770d9f44842eb7d"
+    },
+    {
+      "bytes": 1064,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/openmm-source-audit.json",
+      "sha256": "469088fd120bb347e648331c3c4297676af173c628e32911419d7dd841e480b7"
+    },
+    {
+      "bytes": 1154,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/paired-equivalence-preregistration.json",
+      "sha256": "39f528922e6ff8c0e742c9e39e7bcbc0a3964c03dcc83dd00264cef812ef8348"
+    },
+    {
+      "bytes": 4528,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/protocol.json",
+      "sha256": "288059c14c1b0467c322806fcf41765b69df0ed50af436941e7f0cad3fbcf631"
+    },
+    {
+      "bytes": 1633,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-runner-focused-gate.json",
+      "sha256": "e394c2dd226bb06d0319452b5e7f760cfb1c8b48a14a70d5bab9700bcb3279ec"
+    },
+    {
+      "bytes": 2072,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-runner-pytest.xml",
+      "sha256": "5c534a15e70c9a9b7d3c46312052ea5aa4d0a71306d93e059f7372288905c60f"
+    },
+    {
+      "bytes": 11911,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/README.md",
+      "sha256": "be1c038eb08393902440d0f72c0be0fcab2d14771e11fed5af1bbe65689734fe"
+    },
+    {
+      "bytes": 718,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2101-cpu.json",
+      "sha256": "4ad978058766a035266dbd24db856765f0c7025ad37bbe36484b3e9d08dd5f42"
+    },
+    {
+      "bytes": 833,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2101-cuda-double-untested.json",
+      "sha256": "a91e2d5768b13e353531730672befc972453bac8bceb64f582dd9654131ee6c7"
+    },
+    {
+      "bytes": 718,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2102-cpu.json",
+      "sha256": "5cfc9d183854e2132f75c440c54f7d95222ca334bb51cd0e150b3439cd8f61fb"
+    },
+    {
+      "bytes": 718,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2103-cpu.json",
+      "sha256": "7d4d0c948202c0b54491a27112b3fc7a99528e732fc3907f792adc693779af5a"
+    },
+    {
+      "bytes": 718,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2104-cpu.json",
+      "sha256": "f48ca0073e0855be2d16e7e2c1f1478f79dbb451f7d36a60e79fe208544c4f4d"
+    },
+    {
+      "bytes": 718,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2105-cpu.json",
+      "sha256": "bc16051c6168f75cdcd0bb9b9e631b03508b477d274b9d8b1fe5d8f5d378476f"
+    },
+    {
+      "bytes": 718,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2106-cpu.json",
+      "sha256": "1370799ae2d198ae6c463f2f7e8300b89ba292b22ec788994306554ba9e4faaa"
+    },
+    {
+      "bytes": 718,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2107-cpu.json",
+      "sha256": "2a1594bd89478cfe9b219a9874ac9d44a90e69361b79e0938521b8bbd3c5ed61"
+    },
+    {
+      "bytes": 718,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2108-cpu.json",
+      "sha256": "77803e33aba9470e618195cddac528f970a4ae15d683c08540b7a9afd7492baf"
+    },
+    {
+      "bytes": 718,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2109-cpu.json",
+      "sha256": "58401a29ca2643dfda93c582abe212dc82e4343cd67ec8d2833166f30700a187"
+    },
+    {
+      "bytes": 718,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2110-cpu.json",
+      "sha256": "b5216d42337c0449360772b5c0c19beab5eedf5d3ae37bd46753fd13e795672e"
+    },
+    {
+      "bytes": 718,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2111-cpu.json",
+      "sha256": "634b2eab1c7b2ae98a12c0342bc32f64c0b13d8d6f401ec3ed6e5c4383abf230"
+    },
+    {
+      "bytes": 718,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2112-cpu.json",
+      "sha256": "5bfa57c604bb5f08895f47614fa8ffdf725e3372b2bf155ad1449b951bedeaec"
+    },
+    {
+      "bytes": 718,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2113-cpu.json",
+      "sha256": "5b6238a8ad8f8d3c9e4207d70212ada92a6c5983546d9c7295c2fe4fd4c8f121"
+    },
+    {
+      "bytes": 718,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2114-cpu.json",
+      "sha256": "f7afc203cfa1efeef33b7e8991de631583e97108b32fe01568b418419c36395d"
+    },
+    {
+      "bytes": 718,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2115-cpu.json",
+      "sha256": "c93bf56cd39a68ce0fb53c4a84b376268897e9d904ba12d32b7be0cc001681e3"
+    },
+    {
+      "bytes": 718,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2116-cpu.json",
+      "sha256": "427c2adc1b3b5c04d9252109f30b44fd9251a3079aa3054b08611102618fe01d"
+    },
+    {
+      "bytes": 718,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2117-cpu.json",
+      "sha256": "e283ca5aa6958dac0097002e97c944b8296888f6d5792e0b6e7e9a6298baa2a7"
+    },
+    {
+      "bytes": 718,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2118-cpu.json",
+      "sha256": "a7789358f22f98a372aab29f4e63374f44b14e7c976c72eac4c474536336b8d2"
+    },
+    {
+      "bytes": 718,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2119-cpu.json",
+      "sha256": "25b5bb1ce1f57d014bdcf747909e175e1e3fd3b85d15303118619cc746c233ea"
+    },
+    {
+      "bytes": 718,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/configs/seed-2120-cpu.json",
+      "sha256": "b8147a505a4b29cdb3c27a2e9c6a0b9b844790f99a117d10142f1c4c833db094"
+    },
+    {
+      "bytes": 1590,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/cuda-job-description.json",
+      "sha256": "b0ba83e738bdb60dfdcee000bffc5a9c411fd38855be5b48671773a9893743bb"
+    },
+    {
+      "bytes": 13425,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/jobs.json",
+      "sha256": "c692318717bdc0aef87314023964121e66561688478e330f6422a00865226490"
+    },
+    {
+      "bytes": 9721,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/protocol.json",
+      "sha256": "1f0b3852774cd9bc789615aa22b129c8de0a1fd391f225a3a06e30c00abdb7f4"
+    },
+    {
+      "bytes": 692,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/scheduler-tests-portability-pytest.xml",
+      "sha256": "25d9c86075fbc0bfa620dbe7a0f23f1bc6e22c5bc4facac676606c4597e6f6c5"
+    },
+    {
+      "bytes": 1193,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/scheduler-tests-portability.json",
+      "sha256": "b6d95ef94f087825b22a77298c2d9df764c23779e4b688fb2bbb22361d9c6f46"
+    },
+    {
+      "bytes": 9187,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/scheduler-tests-portability.patch",
+      "sha256": "bbc63143c073b33d31701cad47d1fe4f5ca806a13b82d6adf15b6f8a3cea0494"
+    },
+    {
+      "bytes": 2222,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/split-reference-pytest.xml",
+      "sha256": "78c7041a04c48932aee3f31bbf0918eabf3a8d95993cdc048223aa2cef4d5307"
+    },
+    {
+      "bytes": 7975,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/split-validation.json",
+      "sha256": "bf22bb3b51247295a01eabc3edd132e76a5d303b52938de1d0334becb25979ba"
+    },
+    {
+      "bytes": 236297,
+      "kind": "derived_one_dimensional_correlation_curves",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/velocity-cadence/curves.npz",
+      "sha256": "72f3a32d0db61be3dbb16633d716ee21be1145a6485b4dd7762ceefc94336df6"
+    },
+    {
+      "bytes": 4864,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/velocity-cadence/report.json",
+      "sha256": "f40d8f0531371e7201ebeb9e48bfb7a0ac3e4f9398d5e36ac22377efde79c208"
+    },
+    {
+      "bytes": 2395,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/velocity-cadence-preregistration.json",
+      "sha256": "bec53a962d2642ca720b545f8f9398b13009a269ac24d8223e969a2822eb0326"
+    },
+    {
+      "bytes": 2731,
+      "kind": "stable_protocol_code_evidence_or_documentation",
+      "path": "docs/validation/literature-convergence-2026-11-01/water/velocity-cadence-selection.json",
+      "sha256": "6ff97b8d6524eb8ce8d079d29b5c1b3c60ab5e70b5d051c30f9fa6dd57a3bb93"
+    }
+  ],
+  "included_derived_npz": {
+    "path": "docs/validation/literature-convergence-2026-11-01/water/velocity-cadence/curves.npz",
+    "purpose": "Only 1D lag and VACF arrays from the completed predetermined cadence replay; no trajectories, positions, momenta or restart state"
+  },
+  "original_checkout_revision": "3d096d5cfc5709f14a1ad5e3d184b108eef9f20e",
+  "schema": "pyrpmd.water-stable-publication-files.v1",
+  "source_files": "The21 original source/test files were separately copied using code-freeze.json. Apply scheduler-tests-portability.patch only in the isolated integration tree; do not overwrite the live original test or physics files.",
+  "supersedes_manifest_sha256": "c0d104d5d1bedd48162b25adc0271fa7a5afc34bd3d3debfe89883b61319f181",
+  "total_bytes": 437233
+}

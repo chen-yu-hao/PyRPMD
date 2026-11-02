@@ -1,0 +1,21 @@
+{
+  "created_utc": "2026-11-01T19:44:40.688902+00:00",
+  "finding": "An active worker already exited nonzero during a guard, command, or first-start event could be harvested only after another free-slot admission.",
+  "prior_inventory_sha256": "d8636ad103e5e6b2e3ab73fd0553d2db495db568e8cf00bb590c51afc9db1f73",
+  "prior_sources": [
+    {
+      "bytes": 35195,
+      "original_path": "benchmarks/h3/p256_parent_campaign.py",
+      "preserved_path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/initial-source/p256_parent_campaign.py",
+      "sha256": "af6ce9c9dbb21fa689cafc8142ed079825f10391788bed231c39035d6ee5cbf6"
+    },
+    {
+      "bytes": 22755,
+      "original_path": "tests/test_h3_p256_parent_campaign.py",
+      "preserved_path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/initial-source/test_h3_p256_parent_campaign.py",
+      "sha256": "f60368a386f95cc8fa3c4bf4969794d70e3cb70b2c5108bd839ca004014baa42"
+    }
+  ],
+  "schema": "pyrpmd.h3.p256-parent-failure-admission-review.v1",
+  "scope": "Check every active return code immediately before each admission/Popen; keep failed processes in owned drain set. No scientific/source producer change."
+}

@@ -1,0 +1,32 @@
+{
+  "schema": "pyrpmd.four-pair-aggregate-update.v1",
+  "created_utc": "2026-11-01T20:01:05.540597+00:00",
+  "changes": {
+    "docs/validation/literature-convergence-2026-11-01/README.md": {
+      "before_sha256": "eb766127187a0808e0454e4c3cb6adcfc07134b34e9b25280a49839737134f82",
+      "after_sha256": "1996674726ab3dd19f277bfadcf527aec5bbf246b34b418f33ee7bc70a9f6241"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/README.md": {
+      "before_sha256": "4f68e85788ae49ea6c9e92892aa1f54bb8f817f4ab2b1669a3911e5d98234b04",
+      "after_sha256": "24d4f2d7276c29cbb3a999c4d8f6790868a99616edacf53bd6ac1554b351acd8"
+    },
+    "docs/literature-validation.md": {
+      "before_sha256": "da59037fc18bed3ac40d64d9cce0d5695dcc81c6e24856bb7dacce1b9ea4d751",
+      "after_sha256": "f9059dd89a020c01ff9930aad85d1c64cdafe964eb80e23707b478cba3f630dc"
+    },
+    "benchmarks/literature/README.md": {
+      "before_sha256": "9fa72462ce4a732d8538ed4be21961a9f3ffad6ea352c1acb3a4bd6949f86fb5",
+      "after_sha256": "3f5c8711a57c9f966699651569654b367253d6481a1c3c66a5bf6b52e7d719f9"
+    },
+    "benchmarks/literature/campaign.json": {
+      "before_sha256": "206fe4b27e9b350e1591c649a15fc10ba721bfe5d03a39ce69dde34aef4ff9de",
+      "after_sha256": "65e8f4ec8aa734ca91d86dfe8bc3ff1937ade57128ab22ee636187e919895c3b"
+    }
+  },
+  "frozen_stage_files_modified": false,
+  "runtime_or_reference_registry_modified": false,
+  "numerical_authority": {
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/quantum-rate-comparison.json",
+    "sha256": "62ce4fea23a55955cf404ae8aa00a2c70204bf20dd48e74de520169a83724720"
+  }
+}

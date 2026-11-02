@@ -1,0 +1,75 @@
+{
+  "schema": "pyrpmd.complete-200fs-review-receipt.v1",
+  "created_utc": "2026-11-01T18:32:38.516348+00:00",
+  "scope": "Read-only independent replay of all original 200 fs pair-batch-0 parents and children; separately inspect only pair-batch-1 decision, launch and schedule metadata.",
+  "result": "Raw normalization, complete cohort, keyed RNG, signed arrays, paired chain statistics and precision-only extension rule verified; original mandatory aggregate remains false.",
+  "replay_exit_code_observed": 0,
+  "replay_elapsed_seconds": 4.786986566003179,
+  "execution_command": [
+    "taskset",
+    "-c",
+    "8",
+    "env",
+    "OMP_NUM_THREADS=1",
+    "OPENBLAS_NUM_THREADS=1",
+    "MKL_NUM_THREADS=1",
+    "NUMEXPR_NUM_THREADS=1",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "PYTHONPATH=src:.",
+    ".venv/bin/python",
+    "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/complete-200fs-review/replay.py"
+  ],
+  "working_directory": "/workspace/scratch/a5e4820daedd/PyRPMD",
+  "CPU_limit": 1,
+  "MD_or_PES_evaluations": 0,
+  "complete_independent_chains": 8,
+  "immutable_parents": 1600,
+  "children_per_timestep": 6400,
+  "child_chunks": 400,
+  "input_files_unchanged": 483,
+  "independent_uncertainty_units": 8,
+  "checks": {
+    "all_raw_envelopes_and_hashes": true,
+    "all_keyed_Maxwell_and_channel_arrays": true,
+    "all_signed_numerators_and_denominators_exact": true,
+    "matched_initial_conditions_at_both_timesteps": true,
+    "same_chain_log_partition_log_kappa_covariance": true,
+    "all_original_gate_results_preserved": true,
+    "precision_extension_only_after_complete_cohort": true
+  },
+  "full_report": {
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-analysis-200/quantum-rate-comparison.json",
+    "sha256": "a8ed2999ab575e4c60141a416909cc1bd46e206601265933c431e3a0f31ae084"
+  },
+  "precision_decision": {
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-analysis-200/precision-extension-decision.json",
+    "sha256": "dcbeaaa2338e2eb9f1d45f6c7ff2275cabbe9c3cbe9302c5f6529d4a2c5939b2",
+    "decided_utc": "2026-11-01T18:17:50.040180+00:00"
+  },
+  "launch_receipt": {
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-analysis-200/precision-extension-launch-receipt.json",
+    "sha256": "50464b3404ce920584d93784a7888237ee17ce4d60a0c52f89ba7b6fb8755c48",
+    "created_utc": "2026-11-01T18:28:12.872799+00:00",
+    "start_observed_no_later_than": "2026-11-01T18:17:51Z",
+    "exact_start_captured": false,
+    "execution_order_source": "Root execution receipt and tool-call observation; independent filesystem replay does not reconstruct process-launch time."
+  },
+  "extension_schedule": {
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/schedule-200-pairs-1.json",
+    "sha256": "dfaa2b848a6bbf3b1b946de3d8489b828101ffb54997b94835b4848a36d5732d"
+  },
+  "partial_extension_results_read": false,
+  "inputs_modified": false,
+  "frozen_sources_protocols_and_manifests_modified": false,
+  "Git_mutations": false,
+  "limitations": [
+    "Parent BAR estimates are bound to their immutable raw checkpoints/reports; this review does not rerun BAR or a sampler.",
+    "Eight-chain t intervals are nominal approximations; finite-chain ratio/log and geometric-mean bias is not corrected, and conditional extension is not sequential coverage adjustment.",
+    "Exactly zero observed late-window differences are not a population bound on rare later recrossings.",
+    "Endpoint nearest-pair/outgoing diagnostics are supplementary, not new gates or energy-based binding determinations.",
+    "Minimum pair observations are at1-fs boundaries, not every physical integration step.",
+    "The failed supplementary parent-half equivalence check remains visible; further momenta do not add parent equilibration.",
+    "Endpoint observations do not prove an asymptotic mathematical limit or energy-based molecular binding.",
+    "The point-within-5-percent and precision rules are distinguished from whole-confidence-interval equivalence."
+  ]
+}

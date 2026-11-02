@@ -1,0 +1,66 @@
+{
+  "CPU_affinity": [
+    8
+  ],
+  "created_utc": "2026-11-01T20:02:27.032291+00:00",
+  "errors": 0,
+  "evidence": {
+    "pytest.log": "8af9581dd155a9a5a046b87ee9fad514eebab3d4a72b8ee15840bcff3edf1859",
+    "pytest.xml": "9d6c4a07d8dccd5987b7aeffa0fb70825b489b1769d9b86d3c8fe90f95a55a44"
+  },
+  "external_PES_evaluations": 0,
+  "failed": 0,
+  "initial_gate_retained": {
+    "changes_since_initial": "One final-publication source-guard regression and explicit report booleans; scientific producer/helper unchanged.",
+    "passed": 69,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/initial/pytest.xml",
+    "sha256": "7e384d0b85253b0ce6f84b87bb72021c81a00b71e9592e591c2341feef597954"
+  },
+  "parent_or_child_campaign_launched": false,
+  "passed": 70,
+  "physical_dynamics_steps": 0,
+  "producer_protocol_registered": false,
+  "protected_frozen_source_sha256": {
+    "benchmarks/h3/p256_parent_campaign.py": "7934c1d7f695ce43337d11171cbad8c46ff95311490b755bf4191a56e00c0da3",
+    "benchmarks/h3/p256_recrossing_analyze.py": "9e2fdacddcf2ef5b825e0eb0b65789e5f045a8505a8fbd09fe21b704ed4936b6",
+    "benchmarks/h3/p256_surface_recrossing.py": "9c5c5106d8392ca577f8ea6b54f6e1828dcabb8f86a0e01b732c2e626aa15692",
+    "benchmarks/h3/quantum_recrossing_analyze.py": "4d1925461219e87d85d4e1f4ac98263c4bb58ff0d7713075782145ba909649c1",
+    "benchmarks/h3/quantum_surface_recrossing.py": "dc900e74fe8191cc8c88925a2413e55f76724a2835a8f447039d25a415c45f9e",
+    "benchmarks/h3/surface_partition.py": "23d2805270a82c91eff7b9a70f89621a356d7625aeaf76246f00896147b7a5db"
+  },
+  "runtime": {
+    "actual_native_module": {
+      "bytes": 2407952,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "42319e0f816bdf9f94fb9d5d0230b8b5c1d74e3b4975ff56295c609897e66220"
+    },
+    "numpy": "2.5.4",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "python": "3.12.14",
+    "python_executable": {
+      "bytes": 30894944,
+      "path": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+      "sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7"
+    },
+    "scipy": "1.18.1"
+  },
+  "schema": "pyrpmd.h3.p256-child-coordinator-synthetic-gate.v1",
+  "scope": "Synthetic checkpoint metadata and integrity envelopes, inert subprocess dispatch, signals/failure/resource receipts only. No actual model construction or dynamics. Full actual-input preflight is deferred until all8 parents and a separate root resource authorization exist.",
+  "skipped": 0,
+  "source_inventory_only_read": {
+    "all_fixed_physical_hashes_match": true,
+    "files": 18,
+    "physical_import_identity_fields": 14
+  },
+  "source_sha256": {
+    "benchmarks/h3/p256_child_campaign.py": "5fc72acef298678e5449059bb57c40e22254cc5ca4aa5540081df480381e7e2b",
+    "tests/test_h3_p256_child_campaign.py": "7085290880fc90710f3f21a4604638dfd862b686aaaacabe899980ecdf7a0ed0"
+  },
+  "status": "passed",
+  "thread_environment": {
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  }
+}

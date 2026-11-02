@@ -1,0 +1,242 @@
+{
+  "XML_distinct_cases_observed": 76,
+  "all_checks_passed": true,
+  "assertions": 48,
+  "checks": [
+    "final source",
+    "final tests",
+    "final policy",
+    "frozen gate",
+    "passing exact gate",
+    "pytest.log",
+    "pytest.xml",
+    "76 complete distinct XML cases",
+    "current protected:/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/classical_tst.py",
+    "current protected:/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/mixing_analysis.py",
+    "current protected:/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/mixing_sampling.py",
+    "current protected:/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/pes.py",
+    "current protected:/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_isolated_continuation.py",
+    "current protected:/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_sampling_analyze.py",
+    "current protected:/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_sampling_campaign.py",
+    "current protected:/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_sampling_scheduler.py",
+    "current protected:/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/raw-archive/freeze_stage.py",
+    "current protected:/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/implementation-policy-v2.json",
+    "current protected:/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/analysis/fes.py",
+    "current protected:/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/bias.py",
+    "current protected:/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/constants.py",
+    "current protected:/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/cv.py",
+    "current protected:/workspace/scratch/a5e4820daedd/PyRPMD/tests/test_h3_quantum_isolated_continuation.py",
+    "current protected:/workspace/scratch/a5e4820daedd/launch_umbrella_stage100k.py",
+    "current protected:/workspace/scratch/a5e4820daedd/run_complete_umbrella_100000_analysis.py",
+    "initial source retained",
+    "initial tests retained",
+    "initial independent nonapproval retained",
+    "unchanged AST:identity",
+    "unchanged AST:bound",
+    "unchanged AST:read_bound",
+    "unchanged AST:write_new",
+    "unchanged AST:verify_guards",
+    "unchanged AST:module_at",
+    "unchanged AST:runtime",
+    "unchanged AST:validate_runtime",
+    "unchanged AST:validate_cpus",
+    "unchanged AST:storage_admission",
+    "unchanged AST:validate_terminal",
+    "unchanged AST:validate_receipts",
+    "unchanged AST:safe_member",
+    "unchanged AST:extract_archive",
+    "unchanged AST:verify_seed",
+    "unchanged AST:verify_complete",
+    "unchanged AST:prepare",
+    "unchanged AST:AdmissionAlarmMask",
+    "unchanged AST:exclusive_owner",
+    "one unchanged scientific entrypoint call"
+  ],
+  "created_utc": "2026-11-01T22:22:33.038048+00:00",
+  "gate": {
+    "bytes": 4329,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate-v2/gate.json",
+    "sha256": "48da0165fc94a8237b2a20f69a8a0be5666b2e1034ddb1c882bd425e849bf64c"
+  },
+  "inputs": [
+    {
+      "bytes": 59669,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_isolated_continuation.py",
+      "sha256": "a7ec140dbe953a3e068cb491b24f0769e395cd4d2c449e9d2daf20aa45b4a2b7"
+    },
+    {
+      "bytes": 24074,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/tests/test_h3_quantum_isolated_continuation.py",
+      "sha256": "6230db68a84e780fe7933bdb3a50760c3dd2764ec339fc2d7944718e67ff24f1"
+    },
+    {
+      "bytes": 5222,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/implementation-policy-v2.json",
+      "sha256": "a8cbef299f4bda18fbdab495fdabcae26982ea08aca25aca257f83866366c5da"
+    },
+    {
+      "bytes": 4329,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate-v2/gate.json",
+      "sha256": "48da0165fc94a8237b2a20f69a8a0be5666b2e1034ddb1c882bd425e849bf64c"
+    },
+    {
+      "bytes": 179,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate-v2/pytest.log",
+      "sha256": "9eb2cec6f132119d94d3fda9ce7e97160787b45db53ee91cd28d5ef05eea598f"
+    },
+    {
+      "bytes": 11757,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate-v2/pytest.xml",
+      "sha256": "0a0a9348e6647f6bdb8a9d8bbfbde6ec6bcc1216c74354ac8b8290c356dfce0c"
+    },
+    {
+      "bytes": 7765,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/classical_tst.py",
+      "sha256": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be"
+    },
+    {
+      "bytes": 10532,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/mixing_analysis.py",
+      "sha256": "47bd4c33043dee36196c4c4828fb3993e174d735a80e22df4112ae93f20878dc"
+    },
+    {
+      "bytes": 17299,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/mixing_sampling.py",
+      "sha256": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0"
+    },
+    {
+      "bytes": 9908,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/pes.py",
+      "sha256": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892"
+    },
+    {
+      "bytes": 59669,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_isolated_continuation.py",
+      "sha256": "a7ec140dbe953a3e068cb491b24f0769e395cd4d2c449e9d2daf20aa45b4a2b7"
+    },
+    {
+      "bytes": 13976,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_sampling_analyze.py",
+      "sha256": "4a3476d0ccf12cea1bd9791c4a8ccd7ebcf482b8801e61c87738cd3970e72ea4"
+    },
+    {
+      "bytes": 6128,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_sampling_campaign.py",
+      "sha256": "29a70de601253ba2262fd1be3a65e65d4bc7cef26652cbe2ff2d30ccccf9df50"
+    },
+    {
+      "bytes": 30117,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_sampling_scheduler.py",
+      "sha256": "1fa4d02c5a9ed5884e81fd0de1203cec47570d9a514a512d636524583e59ed98"
+    },
+    {
+      "bytes": 15143,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/raw-archive/freeze_stage.py",
+      "sha256": "ce6ecef585434c1b0796f0825b2dd12fbdeb10fbefb8b94ec4abca2f2f88fa48"
+    },
+    {
+      "bytes": 5222,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/implementation-policy-v2.json",
+      "sha256": "a8cbef299f4bda18fbdab495fdabcae26982ea08aca25aca257f83866366c5da"
+    },
+    {
+      "bytes": 62426,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/analysis/fes.py",
+      "sha256": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c"
+    },
+    {
+      "bytes": 25355,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/bias.py",
+      "sha256": "3a2ee4fc125aaa8a9f0103e140b4f8b325c4561327604506b3f47dd5ce3a0df6"
+    },
+    {
+      "bytes": 940,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/constants.py",
+      "sha256": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+    },
+    {
+      "bytes": 34870,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/cv.py",
+      "sha256": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52"
+    },
+    {
+      "bytes": 24074,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/tests/test_h3_quantum_isolated_continuation.py",
+      "sha256": "6230db68a84e780fe7933bdb3a50760c3dd2764ec339fc2d7944718e67ff24f1"
+    },
+    {
+      "bytes": 4335,
+      "path": "/workspace/scratch/a5e4820daedd/launch_umbrella_stage100k.py",
+      "sha256": "955de8875a5eed1915963801e538bcd148caa8cf95fd7265c8f38696930ac3b2"
+    },
+    {
+      "bytes": 5425,
+      "path": "/workspace/scratch/a5e4820daedd/run_complete_umbrella_100000_analysis.py",
+      "sha256": "341a00ea0a17d93e6c91b1ba040dccc37000df03516303b9372a61be469bbf8c"
+    },
+    {
+      "bytes": 47016,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/initial-candidate/quantum_isolated_continuation.py",
+      "sha256": "403300a6ca82a040c98a1e847a78c47f45ee494a16a2c146afcf106fd1e208b4"
+    },
+    {
+      "bytes": 18025,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/initial-candidate/test_h3_quantum_isolated_continuation.py",
+      "sha256": "cf738c22badbd7c51073181e8cecaea8b6b0959799c5d2385d638737b372e052"
+    },
+    {
+      "bytes": 3802,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/initial-review/findings.json",
+      "sha256": "98b0a2a073ae86884baff1bd4fe41401757623d9a9ccf7dca939a4a71c2503cd"
+    },
+    {
+      "bytes": 557,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/owned-resource-observability-probe.json",
+      "sha256": "b61b1b98737ade12743a4155c383376cbb0786fbe70ce9bfeed008e214693bd8"
+    },
+    {
+      "bytes": 1993,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/synthetic-AS-layout-probe.json",
+      "sha256": "b0fba866f8ff531d0bbbdecb9c5a9ff0971915a6ecd6cb9f8b09c2c423773351"
+    }
+  ],
+  "policy": {
+    "bytes": 5222,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/implementation-policy-v2.json",
+    "sha256": "a8cbef299f4bda18fbdab495fdabcae26982ea08aca25aca257f83866366c5da"
+  },
+  "reviewer_test_reruns": 0,
+  "schema": "pyrpmd.h3.isolated300k-final-independent-static-checks.v1",
+  "scope": "Read-only source/AST/hash/JSON/JUnit review. No actual archive restore, raw checkpoint decoding, PES, sampling, random draw, subprocess test or scientific execution. Author supplied inert/probe evidence is explicitly observed evidence, not a reviewer rerun.",
+  "source": {
+    "bytes": 59669,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_isolated_continuation.py",
+    "sha256": "a7ec140dbe953a3e068cb491b24f0769e395cd4d2c449e9d2daf20aa45b4a2b7"
+  },
+  "tests": {
+    "bytes": 24074,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/tests/test_h3_quantum_isolated_continuation.py",
+    "sha256": "6230db68a84e780fe7933bdb3a50760c3dd2764ec339fc2d7944718e67ff24f1"
+  },
+  "unchanged_existing_function_class_ASTs": [
+    "identity",
+    "bound",
+    "read_bound",
+    "write_new",
+    "verify_guards",
+    "module_at",
+    "runtime",
+    "validate_runtime",
+    "validate_cpus",
+    "storage_admission",
+    "validate_terminal",
+    "validate_receipts",
+    "safe_member",
+    "extract_archive",
+    "verify_seed",
+    "verify_complete",
+    "prepare",
+    "AdmissionAlarmMask",
+    "exclusive_owner"
+  ]
+}

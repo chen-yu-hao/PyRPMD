@@ -1,0 +1,45 @@
+{
+  "schema": "pyrpmd.historical-relative-link-context.v1",
+  "source": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/initial-design-review/README.md",
+  "source_sha256": "46fcb9d88645dd7dc01f864ee1a68f561d22c515b60c7a2d58eb45b04321a4ae",
+  "original_document_location": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/README.md",
+  "reason": "This is an immutable snapshot relocated one level below its authoring location. Preserve its bytes and audit its links relative to the recorded original directory. Current documents are checked at their actual paths.",
+  "unresolvable_from_relocated_snapshot_count": 7,
+  "links": [
+    {
+      "target": "../hch4-reference-feasibility/README.md",
+      "resolved_from_original_directory": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/README.md",
+      "target_sha256": "f1906030514d5162aba7072704f511a8a08761de6aff30f5130b36e089a3b85f"
+    },
+    {
+      "target": "../hch4-reference-feasibility/pilot-design/README.md",
+      "resolved_from_original_directory": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/pilot-design/README.md",
+      "target_sha256": "cb2ded20a210b10a169d0c44b9b287a156723dda608989ee8fab703a5b1062f5"
+    },
+    {
+      "target": "../hch4-reference-pilot/README.md",
+      "resolved_from_original_directory": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/README.md",
+      "target_sha256": "b87f56958d108a62a8057760ae8cabdc6a5bcb06af63de39376c31b3ebe6e834"
+    },
+    {
+      "target": "saved-pilot-diagnosis.json",
+      "resolved_from_original_directory": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/saved-pilot-diagnosis.json",
+      "target_sha256": "5e05fa4c6c169d26acc7b9ff1ab4815e55b0d5f229635fe3e28adefea9e21df8"
+    },
+    {
+      "target": "diagnose_saved_pilot.py",
+      "resolved_from_original_directory": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/diagnose_saved_pilot.py",
+      "target_sha256": "0d9b19fa6adbee41471933db1845ad51abdb14468ca538f30ae2d4dd2a8de87c"
+    },
+    {
+      "target": "initial-diagnosis-schema-failure.json",
+      "resolved_from_original_directory": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/initial-diagnosis-schema-failure.json",
+      "target_sha256": "fc6c0e342ae79ed6f270e11d9ff578f6412b57fcbd6f7afcad53b7d71d2f879b"
+    },
+    {
+      "target": "../../../../../benchmarks/hch4/pes.py",
+      "resolved_from_original_directory": "benchmarks/hch4/pes.py",
+      "target_sha256": "4ba178e3cd8d4167b69e947a0c3dd8cacbe45498959a149c8c61a56752df232c"
+    }
+  ]
+}

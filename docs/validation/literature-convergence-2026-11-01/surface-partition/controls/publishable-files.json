@@ -1,0 +1,1480 @@
+{
+  "schema": "pyrpmd.h3.surface-partition-publishable-inventory.v1",
+  "frozen_utc": "2026-11-01T17:21:44.178726+00:00",
+  "scope": "All agent-owned surface-partition code/tests and text/image evidence; previously committed files may be unchanged.",
+  "files": [
+    {
+      "path": "benchmarks/h3/surface_partition.py",
+      "sha256": "23d2805270a82c91eff7b9a70f89621a356d7625aeaf76246f00896147b7a5db",
+      "bytes": 40251,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "benchmarks/h3/surface_partition_campaign.py",
+      "sha256": "4fd14ce2ca9b1044758b787107717a91334f3c9f6024d5c99dc8c4dcde72ac0d",
+      "bytes": 12695,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "benchmarks/h3/surface_partition_controls.py",
+      "sha256": "4440394a6358221bca6c304afa9aa10571abdc23d1c692980ffd37cbc56c9d76",
+      "bytes": 17908,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/README.md",
+      "sha256": "07b40acaa6636d39b25e4e133176e3e2ee98c81474c12951b1f527b6b79bac55",
+      "bytes": 21628,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibrate.py",
+      "sha256": "0df664ef2f1dcb6ed1b2a20c775ce05e6d6fe268f3854201bbbd30d7ec10e7f7",
+      "bytes": 6857,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration-protocol.json",
+      "sha256": "8edecd167e684bc9a26c487493253f38bc472e0fd5eff316c7a1c61aee4c715d",
+      "bytes": 3979,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration-reactant/progress.json",
+      "sha256": "55e49e537d20a6114c179c640cdd1b00fc03a791a762fdc65a601232925a9e1f",
+      "bytes": 261,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration-reactant/reference-domain.json",
+      "sha256": "86c321a0b7834428f70951badd442a3d9ddd322585a72a33178da3f9bdb2a4ad",
+      "bytes": 488,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration-reactant/reference.json",
+      "sha256": "85fbaa364409315f01e96dd660a809d2605efe55b34c6f3120e3f40e9244c229",
+      "bytes": 607,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration-reactant/report.json",
+      "sha256": "4fe009bce1dd089e7a20b46411426c828d8fcfb781cbf5e73ba5c9901e3f6aa8",
+      "bytes": 17052,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration-reactant/settings.json",
+      "sha256": "b5c93e7d8d40c5ef1d4a4b57eadc3a859bb71120222575416dd13297a96b84db",
+      "bytes": 3018,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration-summary.json",
+      "sha256": "ed5cbcf6c28d7700d313785bcccfb2d1d9ad839ea70d07b46ef463ce2f8c9a16",
+      "bytes": 3294,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration-test-gate.json",
+      "sha256": "ef7142126ad6b6a88531a66e34282bf074cc112df43eb8836bf7c06eaa0d7c09",
+      "bytes": 1126,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration-tests.log",
+      "sha256": "6c4343d8622e034dd5fef93c774ab9db9c33d376b977c993d8a7dfe5efc096a0",
+      "bytes": 99,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration-tests.xml",
+      "sha256": "325cce762d6509b22e622ce3a8673e9deeb7113a61b70142d451168a4cd47fb6",
+      "bytes": 4521,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration-ts/progress.json",
+      "sha256": "1e86e5e6192775489aee9f12f66901552e14d1a8837c3f915be6be23ca502298",
+      "bytes": 291,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration-ts/reference-domain.json",
+      "sha256": "c65df106b392d979bb5e6ec96659b291d79ddbc8b944b4e3067899524ff498dd",
+      "bytes": 492,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration-ts/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "bytes": 603,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration-ts/report.json",
+      "sha256": "d0050b5827c012930b7f4e1af4fc470bf03e810dea52b2347804015f2718a2f8",
+      "bytes": 17709,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration-ts/settings.json",
+      "sha256": "8a7d482f3716f98699a885fb2bcaa8e4b996c544aa66138ec273c4d60c9a4a9f",
+      "bytes": 3012,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration.log",
+      "sha256": "a3acfe55557f7e76f54bf614fac2e91c8be7347133a29c17372e4877275e8184",
+      "bytes": 4361,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/ci-status.json",
+      "sha256": "486fc0bef3052db7087be8bddc1f35303a32a8fc8b55c518774d398eea8286e8",
+      "bytes": 8319,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/control-test-gate.json",
+      "sha256": "c05bb5560f82826eaf242db655fd659679dc8f8398db59291d427dab4a6cc59b",
+      "bytes": 660,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/control-tests.log",
+      "sha256": "52e792555e2da86918bbae48e759d8edc07889dbd5c60a6036a8326a049d19b1",
+      "bytes": 98,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/control-tests.xml",
+      "sha256": "f067b55959bb724b5ffd8e15512d0cac337fe378f67ee93970f581ca762baaf9",
+      "bytes": 857,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/comparison-plot-data.csv",
+      "sha256": "53c26b6264cf0170daf0e14eb64d4422fb5c3324062dab1f3ad9d48cd769e509",
+      "bytes": 536,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/comparison.json",
+      "sha256": "059d38bda91ce7d17429ae3fe93009ba31013f1532eab2bb8e8baaa574ef987b",
+      "bytes": 16558,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/comparison.png",
+      "sha256": "a4864f8e2bd797c92290d22021d40229bbefe979fb9961b492ca0264e0f4aaa9",
+      "bytes": 139504,
+      "git_blob_encoding": "base64"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/comparison.svg",
+      "sha256": "7bdbde139f7d79bcd2573de77ec033bac17a45f6da471851b6d55adb24064b68",
+      "bytes": 18048,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/controls.log",
+      "sha256": "96cc36581032eab89b4fa614de036d8312b6ce88e9878e588c875f2d24f426f6",
+      "bytes": 875,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/cutoff04-case-assessment.json",
+      "sha256": "7f1760415acf640d707d9e3ec1652877da0e305ee00edec6ec74047b17ddadf1",
+      "bytes": 4300,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/cutoff06-case-assessment.json",
+      "sha256": "a314856ffee35a3ba463896c1cc677e99022ad86802ff5b6b7d6d8be5dd0e1e0",
+      "bytes": 4284,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/figure-metadata.json",
+      "sha256": "107a519bd1d1e6737b1b0e3bc244f9185805d1d7e845b10cc16b55b629639f15",
+      "bytes": 860,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/manifest.json",
+      "sha256": "6c7df5a2de19337ebc949093035c5c8d3977e49c15a324eb5be6701de6eec75c",
+      "bytes": 21416,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820401/progress.json",
+      "sha256": "a9cb1b6d6124f20f5e2a794d5def219f9595301f5af658a93b7099b9ceaf7998",
+      "bytes": 305,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820401/reference-domain.json",
+      "sha256": "fa92132f2378d4f3072de22bf779a2b33b65973fc3d0e239cb97af6e04b23f45",
+      "bytes": 493,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820401/reference.json",
+      "sha256": "19ac98806c0bd4bde6f59e95f8887de106597cd7797c12f2b4e0c42309d6858e",
+      "bytes": 604,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820401/report.json",
+      "sha256": "7f4a9f5fc0900d83d3971264b9148513710a19cefa0c207fc351e8839c7839cb",
+      "bytes": 8646,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820401/settings.json",
+      "sha256": "0da44629d07eb9689746f1c16c0d42f472a0d65658d83b4f66192b6cc8a274a1",
+      "bytes": 2891,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820401.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820403/progress.json",
+      "sha256": "c32fb973aa4ff1fdd1f4d5665b302f65ae5c4f93eedd8159083aa76ae55d3b17",
+      "bytes": 304,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820403/reference-domain.json",
+      "sha256": "cda52b2dc376d68f15b1d6f17859a02104f1bdd10c1bc884f79f6be9e4b2b9d5",
+      "bytes": 495,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820403/reference.json",
+      "sha256": "19ac98806c0bd4bde6f59e95f8887de106597cd7797c12f2b4e0c42309d6858e",
+      "bytes": 604,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820403/report.json",
+      "sha256": "8ee52c74c318971639a49c8023fa005d61cecb254cb7b5b8db0469ff76350c93",
+      "bytes": 8702,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820403/settings.json",
+      "sha256": "e17805649e2e34b18f6fae0a8717dea8eece6b9ac706c5d31ff25868330159c7",
+      "bytes": 2891,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820403.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820407/progress.json",
+      "sha256": "c670508b7739dfcedbf1862d38463b4099eede2288973f31d6a844bbf86b9499",
+      "bytes": 305,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820407/reference-domain.json",
+      "sha256": "cdcb244253ed5be33c789f66b5e721a0ac8c81293638107b192514e60ad093df",
+      "bytes": 496,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820407/reference.json",
+      "sha256": "19ac98806c0bd4bde6f59e95f8887de106597cd7797c12f2b4e0c42309d6858e",
+      "bytes": 604,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820407/report.json",
+      "sha256": "3c85d2c8c8e706c7a5c32cced6c243a72e8c371e5ec34c540c2d9b85e1a629b4",
+      "bytes": 8735,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820407/settings.json",
+      "sha256": "19a51864b0431ec18a30bb287ec6dd28b69572979fe26ae8c1f64aa690933fb3",
+      "bytes": 2891,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820407.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820409/progress.json",
+      "sha256": "c356233bb31a986e1d1f6886b6b7d3ee697603dc5740b424323c0d0c82850081",
+      "bytes": 305,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820409/reference-domain.json",
+      "sha256": "8be9655a3916d4066a5cc23f85780a13302b5f2f7a5a8c6f8ee528aff227efc4",
+      "bytes": 496,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820409/reference.json",
+      "sha256": "19ac98806c0bd4bde6f59e95f8887de106597cd7797c12f2b4e0c42309d6858e",
+      "bytes": 604,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820409/report.json",
+      "sha256": "468febe97db0eaf4ca6c6ea04872c41989b5799cf080e453677ce331219fbccb",
+      "bytes": 8699,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820409/settings.json",
+      "sha256": "524d1381e6c91657c67e6dd9027c0702fe358a6ba3da5eb93c7fa22193682bfb",
+      "bytes": 2891,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820409.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820601/progress.json",
+      "sha256": "72f92dadf30c1354d06cf9b7b2324bbfe54c64552118fc666024e05979c0addc",
+      "bytes": 303,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820601/reference-domain.json",
+      "sha256": "561108bca2be50f546948bd32ef8b8e6d9a84f4c443258c672e5e988cbce0575",
+      "bytes": 495,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820601/reference.json",
+      "sha256": "1b8da237198b53972a2a7d5516ed060f7c42e1382d46c1bb7827740f353db874",
+      "bytes": 602,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820601/report.json",
+      "sha256": "8189636590b4f09868e834cc9c238524c931573badab799a0dd6ba75f8a88b0e",
+      "bytes": 8625,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820601/settings.json",
+      "sha256": "99cdd2ce200b795adec02603ec3b314d57e80b353ce8c3a88efce027a0f36d9a",
+      "bytes": 2891,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820601.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820603/progress.json",
+      "sha256": "bb4af0b219a01fb4ac8953cc810515b489d102915f41a053008869d62755877c",
+      "bytes": 304,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820603/reference-domain.json",
+      "sha256": "63124067bb62d70b180c3d2f3f06e560f24378a6f108bce5e25a120d4c27fa75",
+      "bytes": 490,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820603/reference.json",
+      "sha256": "1b8da237198b53972a2a7d5516ed060f7c42e1382d46c1bb7827740f353db874",
+      "bytes": 602,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820603/report.json",
+      "sha256": "b864285e920eea2da376774ed639af2a8791afb6f954688934549bcfb3d06727",
+      "bytes": 8672,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820603/settings.json",
+      "sha256": "6e8d73dc1ce58fb21094093ed4bf93f37c7dd05cef8786e8111dcf2eff444302",
+      "bytes": 2891,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820603.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820607/progress.json",
+      "sha256": "91bc2f3ddcbc86ac8a3c5ae74ffdecb1811b0cf8f7de0cd88788d19320e570fc",
+      "bytes": 304,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820607/reference-domain.json",
+      "sha256": "5d50a6694d55f9e50741c64f7b0f33ae0981d2ef590fefba39681af5197ac6e1",
+      "bytes": 496,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820607/reference.json",
+      "sha256": "1b8da237198b53972a2a7d5516ed060f7c42e1382d46c1bb7827740f353db874",
+      "bytes": 602,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820607/report.json",
+      "sha256": "76424096a75cf672dc69bbcd7d922ee5fb323be60eb4ddb8ae940d181167862b",
+      "bytes": 8654,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820607/settings.json",
+      "sha256": "9d8c85edbdef4e407e2dba7cf7529d10e77cee0beddd2c88a5ad61f98f71730f",
+      "bytes": 2891,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820607.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820609/progress.json",
+      "sha256": "0b4bdd9eb584ec957a4f59a70f0a18b572ce0e6561f045435ef06fe927b6c59d",
+      "bytes": 304,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820609/reference-domain.json",
+      "sha256": "3a9a395863a2c463a4f5768adacaa36d0458a4cedaf20e638c89ced66cac456e",
+      "bytes": 495,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820609/reference.json",
+      "sha256": "1b8da237198b53972a2a7d5516ed060f7c42e1382d46c1bb7827740f353db874",
+      "bytes": 602,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820609/report.json",
+      "sha256": "9aa170ce75602c8f8900f0e40d4a3dab6e2b1348a5277358545dcb84e71525c8",
+      "bytes": 8655,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820609/settings.json",
+      "sha256": "ad2705f388467d7c86354c3d172e74df863c7fe96f89f7b6a7c1ce0986667cad",
+      "bytes": 2891,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820609.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-case-assessment.json",
+      "sha256": "0084e36d84bfd0301c148d61597d216c96c95cfb6414dae1028b4fe6076e055b",
+      "bytes": 4389,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/progress.json",
+      "sha256": "8cbb4582de84ecbce750b5582a3e2f296edd02b0124b52e81bb0f223de8bbd06",
+      "bytes": 303,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/reference-domain.json",
+      "sha256": "f9bad9ab1d3f83eb18f65f09cd8755fc9f138ba6ef5bfd379e54f075c4354449",
+      "bytes": 495,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "bytes": 603,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/report.json",
+      "sha256": "b7f133d2748e1c50162b9df9bd3b69e95e1ce7e7b867de7f350384affccdc9ca",
+      "bytes": 8704,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/settings.json",
+      "sha256": "8f244e633b79b7dd988a1bd209126a7b71dbdadfbe9926ac57e9bac7a513b21d",
+      "bytes": 2891,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/progress.json",
+      "sha256": "7deea19760806c1d09f1893a4ca458a0fd6fbadeb699db1a65b5a44add8769b3",
+      "bytes": 304,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/reference-domain.json",
+      "sha256": "1fdde72830859c42d49b14862a88c5ed2ec60774195fe1cd3ce6ec99acafc60b",
+      "bytes": 495,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "bytes": 603,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/report.json",
+      "sha256": "d341d6f77ace62f1df89530e60014874c2ec48f10935996dda0b39034e127a85",
+      "bytes": 8707,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/settings.json",
+      "sha256": "1c175cb52de13430ac05e9b1cdb2409f3a5b24f63f98c8af0805ab977aec9713",
+      "bytes": 2891,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/progress.json",
+      "sha256": "a3d2f856060709c90ba1d523d2cf79f309b1582aca69aa4a45cc0a548a208b18",
+      "bytes": 305,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/reference-domain.json",
+      "sha256": "e536d350bf464890ff956ef295add3aede1a9e1760938e9ae7afc2b4f0610ead",
+      "bytes": 495,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "bytes": 603,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/report.json",
+      "sha256": "f9ce9de57eb0ecd3e9b11ea9ddc6bf304356eb15ca0b4ab87f0fcea9fd938513",
+      "bytes": 8689,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/settings.json",
+      "sha256": "59cb3d80a4dddd18caf26d856d09233eb2197f1492c76ef3ef6397c85c9517a5",
+      "bytes": 2891,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/progress.json",
+      "sha256": "50ff9eb21abbfe358341364fc9290e9ee51b9dbe23f214096dd89f9e7fb6315c",
+      "bytes": 304,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/reference-domain.json",
+      "sha256": "36c7dc9bd309797409c71c742f9bb862d9e634b264472201e25f9552f1f0d224",
+      "bytes": 494,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "bytes": 603,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/report.json",
+      "sha256": "176eea850477ea511f7b9b5f88e8947d13047535776e50060dd0d98237b7b62c",
+      "bytes": 8712,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/settings.json",
+      "sha256": "64050597dcbf5a313de032b0e5f91cc71b00b8fc0a0fba698424bb094cbf1a3f",
+      "bytes": 2891,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-case-assessment.json",
+      "sha256": "cd13be21adcbb5cc1f71a0d7694eb0454c6664e65c9556d8fc2faf8977f415ba",
+      "bytes": 4423,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826401/progress.json",
+      "sha256": "61ae8ff9ea0ef8bc40744771a729240982c73feae3e38b65bd28c833aac554ed",
+      "bytes": 304,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826401/reference-domain.json",
+      "sha256": "858636cfb175c96a1a655b03718dec90319cb1bbbf84cc873c8fc46acca38ec5",
+      "bytes": 495,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826401/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "bytes": 603,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826401/report.json",
+      "sha256": "3daf6091caf7b49e5f1bc86b96a95d496271d1e56ad521e64dc9afb08d77f81e",
+      "bytes": 8672,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826401/settings.json",
+      "sha256": "e87f129a228f3387a9c71faa7595b5f0ba6b3a109ebfff6b561a2c4d813dc9ec",
+      "bytes": 2890,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826401.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826403/progress.json",
+      "sha256": "1b633b5d1126ed0a63a793dee35643f7cc9044ed9a10c1a6a3f11fc2c0b73e8e",
+      "bytes": 303,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826403/reference-domain.json",
+      "sha256": "01f1b7beb559e9bd8e42c92d2d6fa86bb2654a5f820b67d4807f1f990c1c38d5",
+      "bytes": 497,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826403/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "bytes": 603,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826403/report.json",
+      "sha256": "f1882fefae0a61837c0b609616633f788f5a2feeacf81d9c8b557720ff180322",
+      "bytes": 8698,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826403/settings.json",
+      "sha256": "9eae97477e08e688394ec650f6d974a9ff9ace2f45202dbd34a69fd62d536ae1",
+      "bytes": 2890,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826403.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826407/progress.json",
+      "sha256": "cf939d4576e1e141cb2e4c15d3059bf6cb670e14875d86f1666bff4ca8970239",
+      "bytes": 304,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826407/reference-domain.json",
+      "sha256": "9cc634d50fdc5e0e8bd81025d2c2ae7293afa615bdcfb3893daaa591a9630e3b",
+      "bytes": 494,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826407/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "bytes": 603,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826407/report.json",
+      "sha256": "33e3d6c9e4fd94dc7cd223fda8f57c7b94647bd514551ff356421f9f20e9d7e1",
+      "bytes": 8634,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826407/settings.json",
+      "sha256": "dc7dfbd581b96e915ed59fcda34c7382eff3365324d987b326083373dfd82c60",
+      "bytes": 2890,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826407.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826409/progress.json",
+      "sha256": "00f5d42cd1807245b19f0ea05da20fd95a42d726146f2e0ce0b2bea75893046e",
+      "bytes": 305,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826409/reference-domain.json",
+      "sha256": "554eec74517a526145e1d5e4865ae4073144612af648763c33e402a96425d261",
+      "bytes": 495,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826409/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "bytes": 603,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826409/report.json",
+      "sha256": "f90083d41eb9d20ef1cf3cc518e19d41e3604f7ec1afbbca7ee74029c1837c8e",
+      "bytes": 8660,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826409/settings.json",
+      "sha256": "c10e87eaf8497d75cf0213d2d32242487e1b50538530a395d2b894300f2873d6",
+      "bytes": 2890,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826409.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/plot_controls.py",
+      "sha256": "b07375ef1d8b0f410b5b1d47c787ad29b7b18db119d469f190f6a6ed715ab7bc",
+      "bytes": 6446,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/protocol.json",
+      "sha256": "0b3cbbff1aa90f8ec0f9c77d0d5c68786f0f368e26d8b93bc6c35604b736eb56",
+      "bytes": 15910,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/scan_short_distance.py",
+      "sha256": "6fab7a602be9a73064f4525ee99c7860162c9176c3458baadef811ec98b22ea9",
+      "bytes": 4345,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/short-distance-domain-check.json",
+      "sha256": "0e3f36c22582d63820c2a5d8dd58470dbf64a3a21ec804ffa03987c91d3c0b13",
+      "bytes": 5862,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/verify_controls.py",
+      "sha256": "ca2a9a766b4f5c40cd2367e8c17b1064f7207eb09540dd6ede7de93dacf095bb",
+      "bytes": 7717,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/efficiency-protocol.json",
+      "sha256": "c1d559efcc8c35da94569dfeef9a8c676ba25a5035b36a9889a93a26d12fc9a5",
+      "bytes": 2603,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/efficiency-reactant/progress.json",
+      "sha256": "fe7a224e720781e4b1a4303e60fc0f54c6db93eb9e75a3af7889e11c14ef3547",
+      "bytes": 271,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/efficiency-reactant/reference-domain.json",
+      "sha256": "2b31cc4565d76b4a063358b93f8472e970ad08523a7c647ebf9a23049f6e2147",
+      "bytes": 486,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/efficiency-reactant/reference.json",
+      "sha256": "85fbaa364409315f01e96dd660a809d2605efe55b34c6f3120e3f40e9244c229",
+      "bytes": 607,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/efficiency-reactant/report.json",
+      "sha256": "791dd341c4ca7d7f2019ae8dab774642af3a1d74d8ea085db7a7b79794e354eb",
+      "bytes": 8101,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/efficiency-reactant/settings.json",
+      "sha256": "2326c41601946dc0ddc2f9f13d0af396e688e0cadb923d790ff99f6874fb125d",
+      "bytes": 2893,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/efficiency-summary.json",
+      "sha256": "8d3fcf9dfbea2c6e6d7210169f9214975d773d299c844477abe2fd1d808362f2",
+      "bytes": 833,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/efficiency-ts/progress.json",
+      "sha256": "a684ce0c34a6b518a9400bb50069b69ca5a262bd513346a1d1ce7b6e6f6e8938",
+      "bytes": 288,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/efficiency-ts/reference-domain.json",
+      "sha256": "faa7ab4ea0fc53a2596d80383dc467d5040e08107b8a3b7f82fd5ffe7f462ab3",
+      "bytes": 486,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/efficiency-ts/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "bytes": 603,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/efficiency-ts/report.json",
+      "sha256": "4f434614ad63985bb883893e2f07e0292eec49b97352db6c441a335ff96f47f5",
+      "bytes": 8102,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/efficiency-ts/settings.json",
+      "sha256": "924f4e316b179121250fad86c0897f6c29cd9aefd9a068db6316f298fa1c743f",
+      "bytes": 2888,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/efficiency.log",
+      "sha256": "96bb0b4781cd73da5dcecbf060d1e83205fc6941b1595b49dcb116f211b6d2aa",
+      "bytes": 518,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/efficiency_calibrate.py",
+      "sha256": "6dd4b96a9d664dd346fdf99c62c11150680a13c970a4afe383c681bd6e7015fd",
+      "bytes": 3427,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721401/progress.json",
+      "sha256": "ae6a5d678eeabed0e9dceda4dc2ddc06a0a30ecbda9246d642d364cd3f66976d",
+      "bytes": 275,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721401/reference-domain.json",
+      "sha256": "51db0704d3d1d54fc9c65340d0ca2c09b6bd94d0cbb59713ae164e6f386b4972",
+      "bytes": 495,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721401/reference.json",
+      "sha256": "85fbaa364409315f01e96dd660a809d2605efe55b34c6f3120e3f40e9244c229",
+      "bytes": 607,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721401/report.json",
+      "sha256": "6f76526a64c81035195b494301f502350f570ccf4e7de4d5854e5fb0a221f475",
+      "bytes": 8367,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721401/settings.json",
+      "sha256": "36f9dd4f0f7dd4b329f04119864399b9a5f7067845294e223f070fe0fa1a38b9",
+      "bytes": 2898,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721401.log",
+      "sha256": "7f07116ae426b1ba65e3899390071b03b279c96bdd3b22db41ad5ae727f9c3ba",
+      "bytes": 247,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721403/progress.json",
+      "sha256": "164388acd252ca779e269596b87404333e304b23710cf8503b6c61b594d86f13",
+      "bytes": 274,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721403/reference-domain.json",
+      "sha256": "8ddc4ea1b62f6588d15dac29bbcda4485178a92e8c6532bc30749e3cee194a23",
+      "bytes": 494,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721403/reference.json",
+      "sha256": "85fbaa364409315f01e96dd660a809d2605efe55b34c6f3120e3f40e9244c229",
+      "bytes": 607,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721403/report.json",
+      "sha256": "2bbbbf327ae7db1d53874083bf4f99daed94f2f96393544c38e42b13a7376add",
+      "bytes": 8358,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721403/settings.json",
+      "sha256": "220aae2c586d6cbca49e11e3b7f992937df36c087129f8328f809d53bd0424c3",
+      "bytes": 2898,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721403.log",
+      "sha256": "00f9867db9966a66273192bf4d6d358fc7f159f22a9cf7dfbf82c06a79607bdf",
+      "bytes": 247,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721407/progress.json",
+      "sha256": "47cf4c0c53435539bb0881de122855b1d9330d35f92a5402585e46c696041cc8",
+      "bytes": 274,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721407/reference-domain.json",
+      "sha256": "0c48c792304ecbc0f0b8d6c70525312f671e02a89d7d2dfe09107a0ed66585a4",
+      "bytes": 494,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721407/reference.json",
+      "sha256": "85fbaa364409315f01e96dd660a809d2605efe55b34c6f3120e3f40e9244c229",
+      "bytes": 607,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721407/report.json",
+      "sha256": "666c659b21c73d135beceb39dea706be4c593f48fc370f39840717c1935eaaff",
+      "bytes": 8344,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721407/settings.json",
+      "sha256": "3b7799bb55f1a8b5d851e9cca9f7c99f2076c7b417cf4b5892871f78a915c1e2",
+      "bytes": 2898,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721407.log",
+      "sha256": "e13303d3e6305690118e7198f51b8d98b76d0ee4cb800030f148c9344dc862bf",
+      "bytes": 247,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721409/progress.json",
+      "sha256": "724813542e4c8684bf308536833029334d9ab8ca5ed8ffe00c5bb94c5b24555f",
+      "bytes": 275,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721409/reference-domain.json",
+      "sha256": "3b53472e0d43e743f61be24df17ceb45af83c481fc041cbf07b4427847de8c62",
+      "bytes": 494,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721409/reference.json",
+      "sha256": "85fbaa364409315f01e96dd660a809d2605efe55b34c6f3120e3f40e9244c229",
+      "bytes": 607,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721409/report.json",
+      "sha256": "6cb1a850250f6b7bc5a8b7edefc3e2125a279d4c667b4852eafbc72b017fd9ad",
+      "bytes": 8373,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721409/settings.json",
+      "sha256": "ff5c8aa62cf51bb089ee298b8e5dee49ff2f9327d35ba66c3f46344f3edb22cc",
+      "bytes": 2898,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721409.log",
+      "sha256": "5687008077e2c60d885ef8ea28eb21895be9dddb033246c9a96a6dbda191b2e2",
+      "bytes": 247,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721301/progress.json",
+      "sha256": "4f23eb6eca7f6d1e9606621340150de6c005b91a008423cafa7f04426a0295e8",
+      "bytes": 305,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721301/reference-domain.json",
+      "sha256": "2fce3b883b4ad0b509e1d044bff93cbe08065a93c4fbbe8e4bb2cfa42bb646e2",
+      "bytes": 491,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721301/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "bytes": 603,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721301/report.json",
+      "sha256": "d0849e64cbeb5f1ba3c654c9999c57095c7645c227ef415fed6b69fe5fde4bfa",
+      "bytes": 8654,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721301/settings.json",
+      "sha256": "7ebb1dcefb2abdc3d91586fdd3a397573293bf425167f22ed2213e04b2e7798a",
+      "bytes": 2893,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721301.log",
+      "sha256": "969672c8c533284304ea459dad6e0707f5cb05b602ac65e539a9ad12575890cd",
+      "bytes": 237,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721303/progress.json",
+      "sha256": "ae453d6c5894876d552a2a82564c117183c84120186dfeab7932535c43e587f5",
+      "bytes": 303,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721303/reference-domain.json",
+      "sha256": "04edc9c6b31084630b9595f44cbcc78070c5b167cec7c0999a1c0ddead443b71",
+      "bytes": 495,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721303/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "bytes": 603,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721303/report.json",
+      "sha256": "e46d5420e9a5b1390fef7ad967aa87fe07976f40acf4d209f64b77edf20cff22",
+      "bytes": 8698,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721303/settings.json",
+      "sha256": "acb58ecb3dfba08f2188c958e88d259b6ff355bbf65e9b732aef9e544d0d5d3d",
+      "bytes": 2893,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721303.log",
+      "sha256": "df324a8079511758fc3a458e497d21aceb935645ae8a41b7dc5f387e099fe1c5",
+      "bytes": 237,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721307/progress.json",
+      "sha256": "5ffc041ae9247631959bacc0e41d98cc6802a6b7a5a2a7a0ce9fe0c2398f30e8",
+      "bytes": 305,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721307/reference-domain.json",
+      "sha256": "bfa317465c2b3e877fb98d9478ac57a55325fcf2c3e09a4aa000cb969233f45a",
+      "bytes": 495,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721307/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "bytes": 603,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721307/report.json",
+      "sha256": "c2cebae072d51a03f0ce47b590775d8b3292373cfdac0de26142d16281c9a9e1",
+      "bytes": 8695,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721307/settings.json",
+      "sha256": "88c37c59cad156f1a395418ead315de50f25f4d32833ab83ccfa976529a24b71",
+      "bytes": 2893,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721307.log",
+      "sha256": "decd2eda01e9b695ef353f891b530a390bcc0a045555d88f974f85329493ddd9",
+      "bytes": 237,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721309/progress.json",
+      "sha256": "9536c0221618f068a17815d20b33939f1dfe9cbeda562db3a63f51bf3ab80b27",
+      "bytes": 305,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721309/reference-domain.json",
+      "sha256": "afb5896ae911f831aa8b79f5eaf306b2e5793ada370f3a901d978b79ec7afb26",
+      "bytes": 488,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721309/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "bytes": 603,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721309/report.json",
+      "sha256": "2a0e3c71cd6aca33cf33106695cac81cd44b316ce7fb9d3fcaca5c277892a07a",
+      "bytes": 8665,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721309/settings.json",
+      "sha256": "82dc90c8a3e1fbe716144718b8ce9e00e60118b3963056b1f10a1eb3064f4d76",
+      "bytes": 2893,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721309.log",
+      "sha256": "9ac4ee388d90c0c4a19842eab70f28683f470ae13bf4f25adedc14294d8ed0da",
+      "bytes": 237,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721313/progress.json",
+      "sha256": "cb65ab68530f83e605099735b109d9ff38a9da22a204ae68ca115eaa3e61317b",
+      "bytes": 303,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721313/reference-domain.json",
+      "sha256": "73e25a0a5a4e9705efd12a6200ff4cd31bac4932a0cc5a5b7ffbf2fda1c2ac3f",
+      "bytes": 495,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721313/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "bytes": 603,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721313/report.json",
+      "sha256": "af0569bf5e2ef86436c5d922aa9a44b6e22a5f38363841d7468e027c16ef619b",
+      "bytes": 8637,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721313/settings.json",
+      "sha256": "4ccb943c13734aebbcc48427b7a0d69747141850e3723eeffb7028a4ac998af7",
+      "bytes": 2893,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721313.log",
+      "sha256": "86c6bb75968e1e806230305ec984b5fe277344f00102c168734642ee6d17354a",
+      "bytes": 237,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721317/progress.json",
+      "sha256": "c5b7e65fdc0b496e68473e755cbea17772584d3266d09b08d435831dcabaab19",
+      "bytes": 305,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721317/reference-domain.json",
+      "sha256": "e7aaf0a8375fcff00d0c1a8b95d818e02075920c0c4f8037dbbe6ac4400026ed",
+      "bytes": 494,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721317/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "bytes": 603,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721317/report.json",
+      "sha256": "b99e2996efdb6550d64a863cb1540f043819f41415ed2bc36662439a659bc45a",
+      "bytes": 8707,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721317/settings.json",
+      "sha256": "12f6497afe191cf971488cca9ba3eedf9e56f0ecde6e10461ca052e27c732d89",
+      "bytes": 2893,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721317.log",
+      "sha256": "571309703599f8399b8020bd772fe3ec612d9d04e7e74b2e627cdd214783b8f7",
+      "bytes": 237,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721321/progress.json",
+      "sha256": "ffdc8ce7f042175af3879b00682ac6f63d1a38369434cb47a4a552659a0b94fb",
+      "bytes": 304,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721321/reference-domain.json",
+      "sha256": "cbdaeaa9ff70a1124e00fa1011e906b22945a5655ef0d31a6d0661526bc58429",
+      "bytes": 495,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721321/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "bytes": 603,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721321/report.json",
+      "sha256": "8ca26884df01d061a56ab379dca4af20c2702bd7eea856d73aac96638a4ecb78",
+      "bytes": 8663,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721321/settings.json",
+      "sha256": "c2a92347474317ea0bc91ca38928caa2d1bba88299fc665742001f5ac5744dc4",
+      "bytes": 2893,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721321.log",
+      "sha256": "6c5d314ec6ebfe1d6f2f0b6fe007edbf6e8ad529fc80382950b87bd833077208",
+      "bytes": 237,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721323/progress.json",
+      "sha256": "9db9dbfc13d746a5530741c80947a3cfab57da23c2ef179106c10ee25e3eb15a",
+      "bytes": 305,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721323/reference-domain.json",
+      "sha256": "f31e1ae01491e99c512760efb610a79b4481bd679ba8a4bb84aaa4bbe48e9478",
+      "bytes": 495,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721323/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "bytes": 603,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721323/report.json",
+      "sha256": "ccd31b2149bbefe42d71495fd55933a190db43b4d4a6f75d5b7aef2ce43bda6f",
+      "bytes": 8688,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721323/settings.json",
+      "sha256": "22b3bf6a4a82116009351050e55266587b7b65ee4cb82d94851667d649055982",
+      "bytes": 2893,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721323.log",
+      "sha256": "9156536648340382d6cee3b9f1263c6a88f093ae49c106deea692903520264e5",
+      "bytes": 237,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary-manifest.json",
+      "sha256": "f3bb687647dd362375ae22d1dea0d87a27247b306cba25888cd89db356f7f5b7",
+      "bytes": 15129,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary-protocol.json",
+      "sha256": "4657032eb8e10d59061a52a45adba6cac9d4d0d87213461af11e5589de49c99c",
+      "bytes": 6528,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary-summary.json",
+      "sha256": "830cb6f9bf615724b07ad69b26c0a58e1e96b5b3a11dd45d59345e6fc7de4ed8",
+      "bytes": 11861,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary.log",
+      "sha256": "b9392963fb3ee7cc5e4e37ecb565f8898d9e8546368a2b0a9d3709f0a5a9138b",
+      "bytes": 2681,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/reactant-control.json",
+      "sha256": "db98f30830a52a12e1095deb7f0ac9de6b0bab706a1aa200184bc79765d3a17f",
+      "bytes": 3585,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/reactant-grid-efficiency.json",
+      "sha256": "3b5b730a261c5d36749fc6caccb1e756f4f62951c3b95d890a1f6628d38e5273",
+      "bytes": 582,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/reactant-importance.json",
+      "sha256": "f7e5a11afc412195db7e2e10d2c29b589899aede526c7579cb9eec56cbabf6e7",
+      "bytes": 2892,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/reactant-reference-quadrature.json",
+      "sha256": "c65f5418f0491516586ffd132a94e1fbc7993b5cca1eb1d09503a3d3fed63f91",
+      "bytes": 2136,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/reactant-refined-reference-domain.json",
+      "sha256": "53fd263f26e69a493eac97b84090db4c0f44153818d89261dc7fa7e1b127cd35",
+      "bytes": 487,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/surface_partition.calibration-v1.py.txt",
+      "sha256": "64b0f0cd6b2382db139afd69e1308f01628b6761a9a8f9561d9bf088ff67cf6f",
+      "bytes": 38082,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/test-gate.json",
+      "sha256": "e0a11e838f0341cc4256d858f85968bd8345646b16c4d42d434d9daf871835e9",
+      "bytes": 1571,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/test_h3_surface_partition.calibration-v1.py.txt",
+      "sha256": "1256e542d53ee4c1076ba0b0040ca27b34b04856716679aab0a2b6baeba11531",
+      "bytes": 14267,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/tests.log",
+      "sha256": "8692ae5d41ff7e27355dcfb7f5eaa5429a24d31ee883ee3ac78d5143ba42f08e",
+      "bytes": 99,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/tests.xml",
+      "sha256": "32a1e9eb44e9c46916cf772f531ef43b39acc3deb93a290e2ab40d28a96f83f6",
+      "bytes": 5068,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/ts-grid-efficiency.json",
+      "sha256": "5791c71a3a3d0baa8e946b72ba009afd83e944b49f14c28f4c3d80793b7654fc",
+      "bytes": 2638,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/ts-importance.json",
+      "sha256": "21e233c71b34ce08ed5f2bab569d03d19ca3763a38db3c47173fb5fd2c7f11a0",
+      "bytes": 2886,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/ts-reference-quadrature.json",
+      "sha256": "0b53c7e6cd8bac493b34a43ecb6603e0027f7b561b6010b7a5354018f6f4a40c",
+      "bytes": 2120,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/ts-refined-reference-domain.json",
+      "sha256": "9bd86ab2300ad56c46656f7bb8bf53ae374e3125218d13e8c70cf7c1c0762b0a",
+      "bytes": 490,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "tests/test_h3_surface_partition.py",
+      "sha256": "109c9bd6412122cbba57e3174ba133d54316f91402f9488e508ef57437aeb228",
+      "bytes": 17073,
+      "git_blob_encoding": "utf-8"
+    },
+    {
+      "path": "tests/test_h3_surface_partition_controls.py",
+      "sha256": "394f21d90082ed65410310f1b8645e75f53669cfb529474226df7170d29bf03b",
+      "bytes": 3414,
+      "git_blob_encoding": "utf-8"
+    }
+  ],
+  "include_this_inventory_file": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/publishable-files.json",
+  "inventory_self_checksum_omitted": true,
+  "excluded_raw_NPZ_count": 35,
+  "excluded_raw_NPZ_bytes": 82902442,
+  "raw_file_policy": "No NPZ content is in this publishable list; raw checkpoint SHA references remain in text manifests. No upload or external availability is asserted.",
+  "complete_control_chains": 16,
+  "immutable_primary_files_reverified": 72,
+  "individual_control_equivalence": {
+    "p64-cutoff05": false,
+    "p256-cutoff05": true,
+    "p128-cutoff04": true,
+    "p128-cutoff06": true
+  },
+  "aggregate_equivalence_passed": false,
+  "all_listed_JSON_XML_and_Python_syntax_checked": true
+}

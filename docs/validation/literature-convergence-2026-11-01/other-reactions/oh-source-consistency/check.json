@@ -1,0 +1,74 @@
+{
+  "schema": "pyrpmd.oh-h2.source-consistency.v1",
+  "checked_utc": "2026-11-01T19:33:55.510890+00:00",
+  "scope": "Source-only audit; no registry mutation, model execution, fitting, dynamics or source-code substitution.",
+  "sources": [
+    {
+      "id": "oh2017",
+      "doi": "10.1039/C7CP05266A",
+      "url": "https://www.researchgate.net/publication/320300566_A_ring_polymer_molecular_dynamics_study_of_the_OH_H_2_D_2_reaction",
+      "location": "Author manuscript Table 2 and Eq.3",
+      "access": "Public author-uploaded extracted text; linked PDF returned404 and was not retried",
+      "rate_300K_cm3_molecule_s": 1.25e-14,
+      "rate_1000K_cm3_molecule_s": 3.75e-12,
+      "observable_label": "final RPMD rate",
+      "beads_per_table2_entry": null,
+      "electronic_correction": "Divide uncorrected rate by1+exp(-hc*140cm^-1/kBT)"
+    },
+    {
+      "id": "oh2018",
+      "doi": "10.1039/C8CP06037A",
+      "url": "https://arxiv.org/pdf/1805.11924",
+      "version": "v3,2018-11-15",
+      "location": "Table1,PDF page11",
+      "access": "Public author PDF, extracted text and rendered page visually checked",
+      "rows": [
+        {
+          "T_K": 300,
+          "P": 128,
+          "qtst_cm3_molecule_s": 2.37e-14,
+          "kappa": 0.528,
+          "rate_cm3_molecule_s": 1.25e-14
+        },
+        {
+          "T_K": 1000,
+          "P": 16,
+          "qtst_cm3_molecule_s": 3.72e-12,
+          "kappa": 0.599,
+          "rate_cm3_molecule_s": 2.23e-12
+        }
+      ]
+    },
+    {
+      "id": "NN1",
+      "doi": "10.1063/1.4801658",
+      "url": "https://doi.org/10.1063/1.4801658",
+      "access": "Indexed primary publisher abstract identifies NN1; direct open failed; source and weights not obtained"
+    }
+  ],
+  "comparison": {
+    "same_300K_printed_uncorrected_rate": true,
+    "relative_2018_minus_2017_at1000K": -0.4053333333333333,
+    "cause_established": false,
+    "typo_claimed": false,
+    "registry_values_changed": false,
+    "cross_paper_automatic_equivalence_allowed": false
+  },
+  "retrieval_limits": [
+    {
+      "url": "https://pubs.rsc.org/en/content/articlehtml/2018/cp/c8cp06037a",
+      "status": "403; not retried; independent author arXiv manuscript used"
+    },
+    {
+      "url": "https://github.com/QDBinZhao/ABR",
+      "discovered_from": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8440216/",
+      "status": "GitHub connector404; relevance to NN1 not established; no model used"
+    }
+  ],
+  "exact_NN1_source_and_weights_obtained": false,
+  "alternative_PES_substituted": false,
+  "model_calls": 0,
+  "dynamics_steps": 0,
+  "full_copyrighted_papers_in_git": false,
+  "conclusion": "Preserve source-specific numeric references and unresolved1000K discrepancy. Exact-model availability remains a separate blocker, not a numerical reproduction failure."
+}

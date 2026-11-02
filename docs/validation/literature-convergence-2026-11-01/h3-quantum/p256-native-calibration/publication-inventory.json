@@ -1,0 +1,159 @@
+{
+  "actual_report_sha256": "ea075cd029804fa4dbc691ad90db3ffc075deaa22471d51573d50b6b356abb53",
+  "all_checks_passed": true,
+  "created_utc": "2026-11-01T20:27:25.999549+00:00",
+  "executed_source_sha256": "9eb0bfc88b210d6abf432b91f8ee54274ec3f0d94de8c573433d76400b5220c8",
+  "file_count": 28,
+  "files": [
+    {
+      "bytes": 1473,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/README.md",
+      "sha256": "fde3376571470b304ab6c534706a9183cd7154c4b8e1c432121df8fabfbd5687"
+    },
+    {
+      "bytes": 4198,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/RESULTS.md",
+      "sha256": "f885044db9dd4a3a3154ac77311f86ad11207d8079e85991056c369ccab187b6"
+    },
+    {
+      "bytes": 17089,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/candidate-gate/p256_native_calibration.py",
+      "sha256": "bb686afb30db75702ac90a62bfec6c667d2752f6d0f24643e16fa8635e3321ec"
+    },
+    {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/candidate-gate/pytest.log",
+      "sha256": "ff73c3b52ec6f9e718effa95c0d20b197d8448ce77ac3ccff7acce737a494962"
+    },
+    {
+      "bytes": 2505,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/candidate-gate/pytest.xml",
+      "sha256": "518243bde39590bcab0ed62b59decb38cde2cf4e697d9eae68a4abb3e57017b0"
+    },
+    {
+      "bytes": 2050,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/candidate-gate/synthetic-gate.json",
+      "sha256": "cd56768bd135273bf8b2909b25610c183030c63793d5886ffe73ef466821f107"
+    },
+    {
+      "bytes": 6108,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/candidate-gate/test_h3_p256_native_calibration.py",
+      "sha256": "a48436ef363c85c873b2fafcc83d0c2d1f6625b6dcdb15a59402321e3b56d476"
+    },
+    {
+      "bytes": 984,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/execution-launch.json",
+      "sha256": "234818abb8f0931e36407549b82d7ac18a21ce9027f02a1a5618902a5707a2e6"
+    },
+    {
+      "bytes": 614,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/execution.json",
+      "sha256": "35903da0e0a03e6a10b649a8d28c453ff959458da6af0b6c00c2a4a1474f2bc0"
+    },
+    {
+      "bytes": 147,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/execution.log",
+      "sha256": "02bdefda53aa027e557917e094b5d020806a90e162c9f6cbe040a1d3e27e7d83"
+    },
+    {
+      "bytes": 17345,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/finiteness-gate/p256_native_calibration.py",
+      "sha256": "9eb0bfc88b210d6abf432b91f8ee54274ec3f0d94de8c573433d76400b5220c8"
+    },
+    {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/finiteness-gate/pytest.log",
+      "sha256": "055ec9ad5ed6c669d4523fdd0dd3f40f50f12200e9becc9ec3d0ee5ccc7e6327"
+    },
+    {
+      "bytes": 2649,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/finiteness-gate/pytest.xml",
+      "sha256": "2c9ff0b0b21ac06b8547a679d3cbcfd2212090e900647a64b8207fcba5614eab"
+    },
+    {
+      "bytes": 2318,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/finiteness-gate/synthetic-gate.json",
+      "sha256": "91d8e9e8a6736c36db53fa9e0ecd6fa14f13cc4faa2d7ac13c63f22a4801dcfc"
+    },
+    {
+      "bytes": 6368,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/finiteness-gate/test_h3_p256_native_calibration.py",
+      "sha256": "0a51ca8b6407b5e0a5bb56e3c3f8d4ee3f8e0e083c2c9ed30d480ac7e12f5fa4"
+    },
+    {
+      "bytes": 8635,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/independent-review.json",
+      "sha256": "158e15c60217782eb4ce8d749ded50b921dbe34759d9eace55de092012965912"
+    },
+    {
+      "bytes": 638,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/proposal-inventory.json",
+      "sha256": "f8f849ba1c948e811ef0b3c73ea0d0ba01397e4173bb423b763f4aca69d769fd"
+    },
+    {
+      "bytes": 12057,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/proposal.json",
+      "sha256": "d33f221b2ce8e869b9f7c3577021726bba0ac25b23f0deac3c08e30c5d47c196"
+    },
+    {
+      "bytes": 6647,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/raw-data-index.json",
+      "sha256": "d1652738063284d435f607ca7196be6387ff7717c752ab618959d74af4dfe077"
+    },
+    {
+      "bytes": 1236,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/raw-verification.json",
+      "sha256": "ec9e21118483f33f63f4240c678c2b0ff8fdc60968e751dcebafb32e4acc7673"
+    },
+    {
+      "bytes": 633,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/result/RUN_ONCE.json",
+      "sha256": "af154ddd73364f8a9a748638786a117ffe7653736fec6acbbed24d06f33ac4d1"
+    },
+    {
+      "bytes": 1750,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/result/checks-0.05.json",
+      "sha256": "bb70937ca9f910937c3793d27d2c3dbf0e91534ff72ae14ebdc7b38035c93ebc"
+    },
+    {
+      "bytes": 1746,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/result/checks-0.1.json",
+      "sha256": "f6cbf8da08144548f1d7e2a7a587d545d66fd8d6fd6cdf2a9636b1cbc4a4fcde"
+    },
+    {
+      "bytes": 7574,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/result/initial-ledger.json",
+      "sha256": "ea9a773922e6243f0a611641a6aa5191b0126dffbd2e1a6c433e8ccef8b00edf"
+    },
+    {
+      "bytes": 19478,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/result/report.json",
+      "sha256": "ea075cd029804fa4dbc691ad90db3ffc075deaa22471d51573d50b6b356abb53"
+    },
+    {
+      "bytes": 1365,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/root-adoption.json",
+      "sha256": "1b144c16b2bebe019ef736693b3a2442a8c8310b8468e141a6676fb8054f64e5"
+    },
+    {
+      "bytes": 17345,
+      "path": "benchmarks/h3/p256_native_calibration.py",
+      "sha256": "9eb0bfc88b210d6abf432b91f8ee54274ec3f0d94de8c573433d76400b5220c8"
+    },
+    {
+      "bytes": 6368,
+      "path": "tests/test_h3_p256_native_calibration.py",
+      "sha256": "0a51ca8b6407b5e0a5bb56e3c3f8d4ee3f8e0e083c2c9ed30d480ac7e12f5fa4"
+    }
+  ],
+  "raw_index_sha256": "d1652738063284d435f607ca7196be6387ff7717c752ab618959d74af4dfe077",
+  "schema": "pyrpmd.h3.p256-native-calibration.publishable.v1",
+  "scope": "Excluded 360-step P256 map/restart calibration, additive reviewed source/tests, exact reports and raw archive index; no primary-rate data or raw NPZ in this publication list.",
+  "tests": {
+    "failed": 0,
+    "passed": 16,
+    "runtime": "original Python3.12; no cross-version claim",
+    "skipped": 0
+  },
+  "total_bytes": 149518
+}

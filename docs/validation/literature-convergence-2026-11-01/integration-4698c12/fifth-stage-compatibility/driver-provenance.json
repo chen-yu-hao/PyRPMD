@@ -1,0 +1,9 @@
+{
+  "changes": [
+    "Audit exact three newly collected test modules instead of the previously selected parent-archive test.",
+    "Use separate gate/evidence/temp identities; preserve the same runtime/native/dependency/source guards."
+  ],
+  "new_sha256": "210bc1d6cc77bd7e46a4bc0ab9ae2f2e64356e0f079f7bce39300a3309403c8f",
+  "parent_path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/auxiliary-proof-compatibility-v2/run_checks.py",
+  "parent_sha256": "33e97eb543d88b43ea7205484e03a0088b6c2db8f8e5cdf6d62cbfb22c02313d"
+}

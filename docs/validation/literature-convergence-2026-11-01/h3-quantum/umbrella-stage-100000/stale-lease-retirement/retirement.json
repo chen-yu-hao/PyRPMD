@@ -1,0 +1,45 @@
+{
+  "actual_operation": "renameat2 RENAME_NOREPLACE",
+  "actual_returncode": 0,
+  "after_metadata": {
+    "directory": {
+      "ctime_ns": 1793568363069482337,
+      "device": 27,
+      "inode": 530697,
+      "mode": 16877,
+      "mtime_ns": 1793558091123781806,
+      "size": 4096
+    },
+    "owner": {
+      "ctime_ns": 1793567758720821670,
+      "device": 27,
+      "inode": 530698,
+      "mode": 33152,
+      "mtime_ns": 1793558091123781806,
+      "size": 68
+    }
+  },
+  "completed_utc": "2026-11-01T21:26:03.070839+00:00",
+  "directory_and_owner_inode_preserved": true,
+  "existing_authorized_waiter": 1094,
+  "new_sampling_or_analyzer_launched_by_this_action": false,
+  "old_lease_path_absent": true,
+  "owner_original_bytes_preserved": true,
+  "quarantined_owner": {
+    "bytes": 68,
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/retired-leases/umbrella-stage100000-owner-6e0835f4f471/owner.json",
+    "sha256": "6e0835f4f471796640551c601603e7886a906fff20dbb18afd37f661b8893dff"
+  },
+  "root_adoption": {
+    "bytes": 2497,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-retirement/root-adoption.json",
+    "sha256": "3b14ff43e39e91776d1f400a5c74d5f114ac6ce840dab00a0088ceb7a4f1702a"
+  },
+  "schema": "pyrpmd.h3.umbrella100000-completed-lease-retirement.v1",
+  "source_driver": {
+    "bytes": 6893,
+    "path": "/workspace/scratch/a5e4820daedd/retire_completed_umbrella_lease.py",
+    "sha256": "166b27797b15e1d9c43b2eda68a9d916271085d3a8f584f745f1aa4ee01a9a24"
+  },
+  "source_launch_global_and_journal_guards_unchanged": true
+}

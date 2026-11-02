@@ -1,0 +1,52 @@
+{
+  "archive": {
+    "all_members_stream_verified_against_SHA256": true,
+    "bytes": 1476697324,
+    "members": 1685,
+    "name": "pyrpmd-water-classical-eight-chain-2026-11-01-raw.tar.gz",
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-water-classical-eight-chain-2026-11-01-raw.tar.gz",
+    "raw_data_only": true,
+    "sha256": "b3dc0faf5ddb84d06182ebf788edc73dfa1a0ec674069f01e61eaa62918d21af",
+    "top_level_directory": "pyrpmd-water-classical-eight-chain-2026-11-01",
+    "uploaded": false
+  },
+  "archive_creation": {
+    "CPU_seconds": 41.800728134,
+    "elapsed_wall_seconds": 42.019799546993454,
+    "original_leases_held_during_sealing_and_then_released": true,
+    "peak_RSS_KiB": 52604,
+    "started_utc": "2026-11-01T20:47:39.760656+00:00"
+  },
+  "category_counts": {
+    "actual_execution_log": 12,
+    "data_readme": 1,
+    "data_summary": 1,
+    "excluded_cadence_metadata": 1,
+    "excluded_dense_cadence_trajectory": 4,
+    "fixed_input_or_analysis_definition": 6,
+    "fixed_seed_configuration": 8,
+    "observed_writer_exit": 1,
+    "original_committed_trajectory_checkpoint": 1600,
+    "original_run_metadata": 8,
+    "scheduler_history": 22,
+    "serialized_model_or_historical_metadata": 18,
+    "source_hash_references": 1
+  },
+  "created_utc": "2026-11-01T20:49:52.136459+00:00",
+  "documentation_revision": {
+    "CPU_seconds": 40.910755861999995,
+    "all_members_reverified": true,
+    "elapsed_wall_seconds": 41.54753224599699,
+    "initial_unpublished_working_archive_sha256": "9d1b2be1a122f81c0b2fb621baa7fb8a050097e0f1858bea2b661bbeeba28362",
+    "raw_trajectory_bytes_changed": false,
+    "reason": "Replay instructions point to the Git-backed frozen protocol and companion source patch, consistent with excluding code from the data archive."
+  },
+  "no_Git_backed_code_redistributed": true,
+  "no_third_party_source_or_binary_downloads_redistributed": true,
+  "original_normal_exit_sha256": "f6834a23019049903ed962dfd8b96ca210b9facecdb25917431e91bd8b807744",
+  "original_report_sha256": "f544d5de9202a73f7013ee5191fed4e53e330a9eeb41c87770bfaaa3f7d4d1f8",
+  "payload_manifest_repo_path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/raw-file-manifest.json",
+  "payload_manifest_sha256": "b867b097369759f09e71a4d073b88cb3a07f095d1f328e9495e9c314099cd3b0",
+  "schema": "pyrpmd.water-complete-original-cohort-raw-archive.v1",
+  "source_provenance_sha256": "122f25e6a488d86676d88b9c5b198bf178f9a8ef85de9f79156e950147a3f9c5"
+}

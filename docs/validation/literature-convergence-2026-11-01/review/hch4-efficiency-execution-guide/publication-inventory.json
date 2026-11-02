@@ -1,0 +1,26 @@
+{
+  "created_utc": "2026-11-01T21:15:05.504584+00:00",
+  "execution_authorized": false,
+  "files": [
+    {
+      "bytes": 9669,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-efficiency-execution-guide/README.md",
+      "sha256": "0f2832a5216237e3a3a8ad322247965ba7d43f6d93178d6a658d6b0732ec3153"
+    },
+    {
+      "bytes": 4278,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-efficiency-execution-guide/input-identities.json",
+      "sha256": "9e33d9ed6e653fcc26dfa3d92b61eaa83d115e3faa7f33660b909bd8c4b0e105"
+    },
+    {
+      "bytes": 500,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-efficiency-execution-guide/static-review.json",
+      "sha256": "206db6306093a5d277f360921be7860ecde5a80ba62fe9de7ef431a628d7e6c5"
+    }
+  ],
+  "inventory_self_excluded": true,
+  "listed_bytes": 14447,
+  "listed_file_count": 3,
+  "schema": "pyrpmd.hch4.efficiency-execution-guide.publication-inventory.v1",
+  "scope": "Read-only future root review procedure and exact input identities; no adoption, plan, registration or execution."
+}

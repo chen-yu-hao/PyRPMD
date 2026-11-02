@@ -1,0 +1,30 @@
+{
+  "created_utc": "2026-11-01T19:14:24.405160+00:00",
+  "excluded_raw_files": [],
+  "file_count": 4,
+  "files": [
+    {
+      "bytes": 13367,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-dynamics-readiness/README.md",
+      "sha256": "39eab9aebbc37b62edb2e3b8e6cfc4acfe3ea59f20b20ac4e8a484a7e3a6f201"
+    },
+    {
+      "bytes": 14113,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-dynamics-readiness/audit_inputs.py",
+      "sha256": "bc1ae2a282006c1fd500ee5cd1a569852f5cba1524af4964eab087ee2d81ff35"
+    },
+    {
+      "bytes": 59169,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-dynamics-readiness/input-audit.json",
+      "sha256": "a765acc61d761056bad2e5c0d011c72444b11b430a3c38b8cbc71f29c8a338a4"
+    },
+    {
+      "bytes": 34000,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-dynamics-readiness/proposal.json",
+      "sha256": "7b9268b682008f3e77b3f4201c0d0e7ddeb48dad130ee5909debf9d025191665"
+    }
+  ],
+  "schema": "pyrpmd.publication-inventory.v1",
+  "scope": "Unlaunched four-chain P256 availability, deterministic-history replay and independent4-vs8 dynamics feasibility/cost proposal. No raw checkpoint, model, binary, source modification or new simulation. A separate eight-chain proposal is required before adopting an actual control.",
+  "total_bytes": 120649
+}

@@ -1,0 +1,23 @@
+{
+  "blocking_phase_or_normalization_issue_found": false,
+  "confirmed": [
+    "Exact pre-segment checkpoint restored; one COM-projected Maxwell draw from saved RNG; one stored canonical q,p shared by both branches.",
+    "native.set_state uses each new integrator time step for the corresponding half-step velocity.",
+    "Common801-frame5fs grid; branch restart restores raw state without another draw.",
+    "All16 branches are validated before any D calculation; uncertainty uses eight paired chain differences and df7.",
+    "Equivalence requires the whole nominal95% t interval within the fixed margin."
+  ],
+  "interpretation_limits": [
+    "Nominal small-sample t inference is conditional on the eight original preparations and shared starting history.",
+    "This numerical control cannot repair failed stationarity or establish physical diffusion agreement.",
+    "No live64ps control was executed."
+  ],
+  "recorded_utc": "2026-11-01T19:19:17.797535+00:00",
+  "reviewer": "independent collaboration agent /root/distribution",
+  "schema": "pyrpmd.water-paired-timestep-independent-review.v1",
+  "scope": "read-only implementation and statistical/phase contract; no OpenMM/PES/tests executed by reviewer",
+  "source_test_sha256": {
+    "benchmarks/water/paired_timestep.py": "e51bfafb6a091087ac8eeda1f71fc323744c3a556e7118b02acf04028d850c0d",
+    "tests/test_water_paired_timestep.py": "18d0e35879b114411607310d731d6fc36b9bd5732c38e4cd3a33dceec174a4c1"
+  }
+}

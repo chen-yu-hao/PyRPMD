@@ -1,0 +1,34 @@
+{
+  "CPU_affinity": [
+    5
+  ],
+  "Git_helper_CPU_hard_seconds": 1,
+  "Git_helpers_max": 20,
+  "all_attempts_combined_CPU_budget_note": "Attempt1 wall<1s on one CPU; attempt2 nominal295CPU seconds reserves20 one-second Git readers and275 main CPU seconds.",
+  "correct_python_executable": "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+  "created_utc": "2026-11-01T21:36:30.643940+00:00",
+  "data_root_new": "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2",
+  "exclusion": "Acquire original11 plus control.lock nonblocking only after bound actual root exit0. Read-only flock FDs; release all before extracted-data replay.",
+  "integration_tree_modified": false,
+  "main_CPU_hard_seconds": 275,
+  "new_PES_calls": 0,
+  "new_RNG_draws": 0,
+  "new_dynamics_steps": 0,
+  "nice_increment": 10,
+  "original_access_prohibition": "Audit hook rejects all original control/raw/execution reads during replay; all96 numerical NPZ reads must resolve under actual extracted payloads.",
+  "original_registration_sha256": "0d73545ac4751b84bdf64a99d693dee23a7f683bb3cd38e2cff5b7d8055e8365",
+  "original_report_sha256": "6d657d7dc11d98dd78ac8a2659a9907c8b94eedba0aa013dcd2d3d5db54aa370",
+  "prior_failures_preserved": true,
+  "root_actual_exit_observation_sha256": "ecf9be6d574c79159fc3a0af4c5b450e5f864c49244312ffdc287a43bcc44978",
+  "schema": "pyrpmd.water-complete-paired-control-offline-archive-plan.v1",
+  "scientific_comparison": "Every report field and curve bit pattern must agree after substituting only the path-relocated registration SHA. Paired eight-chain statistics are also recomputed with math.fsum and df7 Student t.",
+  "source": {
+    "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/archive_and_replay.py",
+    "sha256": "bdd4af495563cc73f3d4b1b1a2d91fef821ae5ba8b006e7690ebcdac46900d69"
+  },
+  "source_code_in_raw_archive": false,
+  "source_edits": false,
+  "supersedes_only_operational_attempt": "attempt-1-failure.json",
+  "threads": 1,
+  "wall_limit_seconds": 600
+}

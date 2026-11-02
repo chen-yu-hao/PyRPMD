@@ -1,0 +1,30 @@
+{
+  "CPU_accounting": {
+    "measured_supervisor_CPU_seconds_before_receipt": 0.67336529,
+    "measured_worker_entire_process_CPU_seconds": 1.040043,
+    "prepare_CPU_seconds_before_registration_write": 0.715043672,
+    "three_enforced_caps": {
+      "created_utc": "2026-11-01T19:38:12.290134+00:00",
+      "hard_caps_requested": true,
+      "measured_supervisor_CPU_seconds_at_allocation": 0.660938033,
+      "preparation_hard_CPU_seconds": 2,
+      "registration_sha256": "c74d63139ff3badf13812f26b29ea2fd920da071a0975b557ff5ce9366b123c6",
+      "soft_total_CPU_admission_seconds": 55,
+      "sum_hard_CPU_caps_seconds": 60,
+      "supervisor_PID": 4,
+      "supervisor_hard_CPU_seconds": 3,
+      "supervisor_process_token": "5bbd8d0381174988a234ebd1a9817a0b",
+      "worker_hard_CPU_seconds": 55
+    },
+    "unmeasured_finalization_bounded_by_allocated_reserves": true
+  },
+  "child_PID": 6,
+  "complete_cost_pilot": true,
+  "no_retry_or_budget_extension": true,
+  "registration_sha256": "c74d63139ff3badf13812f26b29ea2fd920da071a0975b557ff5ce9366b123c6",
+  "report_status": "complete_cost_pilot",
+  "status": "worker_exited",
+  "supervisor_process_token": "5bbd8d0381174988a234ebd1a9817a0b",
+  "wall_seconds": 2.060053291999793,
+  "worker_exit_code": 0
+}

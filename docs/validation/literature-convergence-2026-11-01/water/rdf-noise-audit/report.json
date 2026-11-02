@@ -1,0 +1,85 @@
+{
+  "bin_noise_sha256": "3a17e332ac115f8924f4abb6b5bcc7215e296324681ffeb5b1bb317fa0144212",
+  "cases": [
+    {
+      "all_chains_independent_bins_and_chains_false_alarm_probability": 0.9871720081839707,
+      "all_chains_union_bound": 1.0,
+      "case": "uniform_g1_200_independent_frames",
+      "g_in_every_assessed_shell": 1.0,
+      "independent_frames_per_window": 200,
+      "interpretation": "Every recorded frame is independent; uniform g=1 in the assessed shells.",
+      "maximum_difference_standard_deviation": 0.045614522824238196,
+      "maximum_single_bin_false_alarm_probability": 0.027745904317936665,
+      "minimum_difference_standard_deviation": 0.017590956241612138,
+      "one_chain_independent_bins_false_alarm_probability": 0.4198773338209353,
+      "one_chain_union_bound": 0.5403405683281695
+    },
+    {
+      "all_chains_independent_bins_and_chains_false_alarm_probability": 1.0,
+      "all_chains_union_bound": 1.0,
+      "case": "uniform_g1_20_independent_frames",
+      "g_in_every_assessed_shell": 1.0,
+      "independent_frames_per_window": 20,
+      "interpretation": "Illustrative tenfold lower independent-count exposure; not an estimated effective sample size.",
+      "maximum_difference_standard_deviation": 0.14424578650632908,
+      "maximum_single_bin_false_alarm_probability": 0.5003072109336464,
+      "minimum_difference_standard_deviation": 0.05562748794384958,
+      "one_chain_independent_bins_false_alarm_probability": 1.0,
+      "one_chain_union_bound": 1.0
+    },
+    {
+      "all_chains_independent_bins_and_chains_false_alarm_probability": 1.0,
+      "all_chains_union_bound": 1.0,
+      "case": "uniform_g3_200_independent_frames",
+      "g_in_every_assessed_shell": 3.0,
+      "independent_frames_per_window": 200,
+      "interpretation": "Synthetic high-occupancy shell model g=3; not a fitted or physically validated liquid RDF.",
+      "maximum_difference_standard_deviation": 0.07900667109459075,
+      "maximum_single_bin_false_alarm_probability": 0.20383093819728448,
+      "minimum_difference_standard_deviation": 0.03046842996419308,
+      "one_chain_independent_bins_false_alarm_probability": 0.9999302455525081,
+      "one_chain_union_bound": 1.0
+    }
+  ],
+  "counts_are_excluded_analytic_fixture": true,
+  "created_utc": "2026-11-01T18:32:20.363743+00:00",
+  "design": {
+    "bin_count": 185,
+    "bin_width_angstrom": 0.02,
+    "box_angstrom": 18.642822871774577,
+    "chains": 8,
+    "frames_per_window": 200,
+    "margin": 0.1,
+    "molecules": 216,
+    "range_angstrom": [
+      2.3,
+      6.0
+    ],
+    "recording_interval_ps": 0.5,
+    "window_ps": 100
+  },
+  "equations": {
+    "exposure": "A_i = F*N*(N-1)/2 * (4*pi/3)*(r_hi^3-r_lo^3)/V",
+    "independent_familywise": "P(any false alarm in all chains)=1-product_i(1-p_i)^chains",
+    "null": "X_1i and X_2i independently Poisson(A_i*g_i); estimated g_ji=X_ji/A_i",
+    "strict_single_bin_tail": "P(|g_2i-g_1i|>d) = 2*Skellam.sf(floor(d*A_i), A_i*g_i, A_i*g_i)",
+    "variance_of_difference": "Var(g_2i-g_1i)=2*g_i/A_i"
+  },
+  "limitations": [
+    "The exact Skellam probabilities apply only to the stated independent-Poisson-count null.",
+    "Liquid pair structure, mutual pair/bin dependencies and time correlations are not modeled or estimated.",
+    "The g=1 calculation is not a lower bound for water: depleted core bins reduce noise and peaks increase it.",
+    "The 20-frame case is a hypothetical exposure change, not an inference of an autocorrelation time.",
+    "Products over bins and chains require extra independence; union bounds use only the toy null marginals.",
+    "No lack of a significant change, and no noisy interval including zero, establishes structural equivalence."
+  ],
+  "primary_implementation_reference": "https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.skellam.html",
+  "proposal_adopted": false,
+  "proposal_path": "docs/validation/literature-convergence-2026-11-01/water/equilibration-extension-proposal.json",
+  "proposal_sha256": "a5a9c85a2e2093839f3fd688516d65adef825e162b21351708fe5fa547acb1d6",
+  "real_trajectory_or_diffusion_values_read": false,
+  "recommendation_before_adoption": "Retain every per-seed RDF curve and the descriptive maximum difference, but do not adopt the new 0.1 all-bin maximum as a mandatory equilibrium pass gate on the strength of the proposed sample count. Predeclare correlation-aware block and simultaneous uncertainty assessment, with insufficient precision reported as unresolved. Preserve the original temperature, energy, OH and HOH thresholds unchanged.",
+  "schema": "pyrpmd.water-rdf-analytic-noise-audit.v1",
+  "scipy_version": "1.18.1",
+  "source_sha256": "57f5489bb84755489cf88bab312b430b19a5fb9f6bdd06a5223fa4a54fc42819"
+}

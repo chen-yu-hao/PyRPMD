@@ -1,0 +1,31 @@
+{
+  "authoritative_fixed_design": {
+    "bytes": 70005,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-fixed-eight-chain-design/proposal.json",
+    "sha256": "c668c15fd89ca0a535afc4082521e3f42ba9e84f5736b5b481bc1d7c376d791d"
+  },
+  "correct_relative_directories": {
+    "825601": "history-replay/seed-825601",
+    "825603": "history-replay/seed-825603",
+    "825607": "history-replay/seed-825607",
+    "825609": "history-replay/seed-825609",
+    "825613": "new-independent/seed-825613",
+    "825617": "new-independent/seed-825617",
+    "825621": "new-independent/seed-825621",
+    "825623": "new-independent/seed-825623"
+  },
+  "created_utc": "2026-11-01T20:04:55.417749+00:00",
+  "frozen_source_or_prior_contract_modified": false,
+  "incorrect_documentation_field": {
+    "relative_directory_template": "seed-{seed}"
+  },
+  "prior_contract": {
+    "bytes": 5339,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/parent-output-contract.json",
+    "sha256": "19f5c764134632f3bccdfa0dba579636946368bf145cab7713ebb1f0a41b23a5"
+  },
+  "resolution": "Resolve each seed through design.parent_generation.cohorts[].relative_directory and verify the actual manifest files map. There is no common bare seed-{seed} directory at the parent root.",
+  "root_adapter_and_child_coordinator_status": "Root and distribution confirmed current code already resolves the design/file-map routes; nested-route fixtures exist. This is an additive documentation correction.",
+  "schema": "pyrpmd.h3.p256-parent-manifest-path-correction.v1",
+  "scientific_driver_and_data_correct": true
+}

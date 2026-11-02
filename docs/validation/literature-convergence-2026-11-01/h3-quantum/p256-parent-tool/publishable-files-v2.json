@@ -1,0 +1,190 @@
+{
+  "created_utc": "2026-11-01T19:43:37.709200+00:00",
+  "excluded": "No third-party source/model, binary or scientific raw data.",
+  "file_count": 35,
+  "files": [
+    {
+      "bytes": 35195,
+      "path": "benchmarks/h3/p256_parent_campaign.py",
+      "sha256": "af6ce9c9dbb21fa689cafc8142ed079825f10391788bed231c39035d6ee5cbf6"
+    },
+    {
+      "bytes": 22755,
+      "path": "tests/test_h3_p256_parent_campaign.py",
+      "sha256": "f60368a386f95cc8fa3c4bf4969794d70e3cb70b2c5108bd839ca004014baa42"
+    },
+    {
+      "bytes": 8548,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/README.md",
+      "sha256": "13490799970e5005bf32de8919f111588f3be6a80c011c5e500ec02489a6ca93"
+    },
+    {
+      "bytes": 2198,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/README.md",
+      "sha256": "ba482f4e37fd66d0efac02e55af4100966ea18b6a5ca8742200e1b8d2af30125"
+    },
+    {
+      "bytes": 2867,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/execution-authorization.schema.json",
+      "sha256": "cf87130b5bc3ecc945f813708c7c6294a4711fc6c0a32531a17f1bc6d5bfa764"
+    },
+    {
+      "bytes": 1366,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/final/preflight-receipt.json",
+      "sha256": "f37acd338c40572a441a024b98ec2da5dcf0cbc12c5b5d9ec3025b0b55429bd8"
+    },
+    {
+      "bytes": 327,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/final/preflight.log",
+      "sha256": "626c3d92e3720d4b11459e59dedc18a896973be2035cbf8a010cab2b62818573"
+    },
+    {
+      "bytes": 1981,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/final/synthetic-gate.json",
+      "sha256": "ddd0e0b863e2fc3e0bab3fd0a33a0270187d3424074c3d13385965c8f019b112"
+    },
+    {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/final/synthetic-pytest.log",
+      "sha256": "47d20905760d78a027fe5d2b7efb3ffc001ee1cf06488d262f17f368924b7387"
+    },
+    {
+      "bytes": 9424,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/final/synthetic-pytest.xml",
+      "sha256": "89151f4fad1f1c5b19c57ac6ddb269d1397d2ba73dd1764d907bb6e250484f44"
+    },
+    {
+      "bytes": 2100,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/freeze.json",
+      "sha256": "169dc18386b0c754c0cfa51b8de7168e5a7716b5dc3ad90d3a0ec4f383f7bd0a"
+    },
+    {
+      "bytes": 34562,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/initial-source/p256_parent_campaign.py",
+      "sha256": "a84b3a77ad86e7bec2285ce592ee096410fe202b9c4f04804733fb0cd1520923"
+    },
+    {
+      "bytes": 19942,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/initial-source/test_h3_p256_parent_campaign.py",
+      "sha256": "aa8266bfb11fa7e836e3cf27c726be0cb6325b254c8116e042bd93944aa66183"
+    },
+    {
+      "bytes": 5339,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/parent-output-contract.json",
+      "sha256": "b9f52014d327456a332215f109fd5dfad3f9d4246836964ce0c298f99db30b99"
+    },
+    {
+      "bytes": 1259,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/revision.json",
+      "sha256": "8bb0711d0de700115b08a7a4326832b398aab02f7023ae953c80a29bda371077"
+    },
+    {
+      "bytes": 34396,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/before-finalization-reserve/p256_parent_campaign.py",
+      "sha256": "ff41236e1dcfcb0ed2de36b885ae09b3ca70d3a06cd8bc54c267b710f9310714"
+    },
+    {
+      "bytes": 1412,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/before-finalization-reserve/preflight-receipt.json",
+      "sha256": "6b2e2f15e13b610e2df83c1d54736af06b9ea8c2d3b0a4d4aa786f889f489826"
+    },
+    {
+      "bytes": 327,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/before-finalization-reserve/preflight.log",
+      "sha256": "626c3d92e3720d4b11459e59dedc18a896973be2035cbf8a010cab2b62818573"
+    },
+    {
+      "bytes": 1910,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/before-finalization-reserve/synthetic-gate.json",
+      "sha256": "6f1248f1846fcb772c60bd67c15d97a4318e45094271bb4b3708fedc272dced1"
+    },
+    {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/before-finalization-reserve/synthetic-pytest.log",
+      "sha256": "aa33b1d22a81311a7d85e9aff8bc9b7bfe4c69ee31d8d28a5490f2ee22fd0a00"
+    },
+    {
+      "bytes": 8872,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/before-finalization-reserve/synthetic-pytest.xml",
+      "sha256": "e0384473b0123c075d6cee469f823a31f3b10407ad42768c87fdb48bce701c96"
+    },
+    {
+      "bytes": 19783,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/before-finalization-reserve/test_h3_p256_parent_campaign.py",
+      "sha256": "67a77b73cbc40e8dc2f8cafc47ef310766a9dad8cdc67a4b5766a2417ba0c6e9"
+    },
+    {
+      "bytes": 2867,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/execution-authorization.schema.json",
+      "sha256": "d940f99cfdfdf8ed17ffb4b669104401692e2deb3f21316a1e7a27777b49f7c1"
+    },
+    {
+      "bytes": 1418,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/final/preflight-receipt.json",
+      "sha256": "2bc39d33d456280c6825cb4a91e93be1523a21e9d3ffbc3abb60f7146eebd369"
+    },
+    {
+      "bytes": 327,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/final/preflight.log",
+      "sha256": "626c3d92e3720d4b11459e59dedc18a896973be2035cbf8a010cab2b62818573"
+    },
+    {
+      "bytes": 2072,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/final/synthetic-gate.json",
+      "sha256": "7cdeff4154d60d4dfb5ff392ef027509253469a5d968ef1197d20a87c2aab500"
+    },
+    {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/final/synthetic-pytest.log",
+      "sha256": "db4371c69a0dcb9c95913dd4982abea57146ef6bb31403a6a4b5bca1a03bc3a4"
+    },
+    {
+      "bytes": 8872,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/final/synthetic-pytest.xml",
+      "sha256": "1f5a80a3c1f1fc0c97e64d6683cdd2a06dd19e98f4ca3ab6087ac5c9f2e0809d"
+    },
+    {
+      "bytes": 5339,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/parent-output-contract.json",
+      "sha256": "9368115cbc2f97d4187d9149d5628c23b9121250c00eeb9afa9fad505cf6057c"
+    },
+    {
+      "bytes": 1412,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/preflight-receipt.json",
+      "sha256": "6b2e2f15e13b610e2df83c1d54736af06b9ea8c2d3b0a4d4aa786f889f489826"
+    },
+    {
+      "bytes": 327,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/preflight.log",
+      "sha256": "626c3d92e3720d4b11459e59dedc18a896973be2035cbf8a010cab2b62818573"
+    },
+    {
+      "bytes": 5685,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/publishable-files.json",
+      "sha256": "9efee79d76e48e04f0f7ea8f34747f600d178b7dfee5c87098ef47a3cbb875e5"
+    },
+    {
+      "bytes": 1910,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/synthetic-gate.json",
+      "sha256": "6f1248f1846fcb772c60bd67c15d97a4318e45094271bb4b3708fedc272dced1"
+    },
+    {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/synthetic-pytest.log",
+      "sha256": "aa33b1d22a81311a7d85e9aff8bc9b7bfe4c69ee31d8d28a5490f2ee22fd0a00"
+    },
+    {
+      "bytes": 8872,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/synthetic-pytest.xml",
+      "sha256": "e0384473b0123c075d6cee469f823a31f3b10407ad42768c87fdb48bce701c96"
+    }
+  ],
+  "historical_source_mapping": {
+    "current_source_identity": "admission-review/freeze.json",
+    "historical_source_directory": "admission-review/initial-source",
+    "initial_inventory": "publishable-files.json"
+  },
+  "schema": "pyrpmd.h3.p256-parent-tool-publishable-inventory.v2",
+  "scope": "Final reviewed-admission candidate, standard tests, compact zero-PES gates and all prior candidate bytes. No parent campaign/data.",
+  "total_bytes": 254060
+}

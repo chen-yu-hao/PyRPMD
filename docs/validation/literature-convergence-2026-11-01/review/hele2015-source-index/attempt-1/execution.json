@@ -1,0 +1,25 @@
+{
+  "schema": "pyrpmd.source-audit.execution.v1",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/literature/hele2015_digitization.py",
+    "--source-dir",
+    "/workspace/scratch/a5e4820daedd/source-reading-hele2015",
+    "--output",
+    "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/review/hele2015-source-index/attempt-1/digitization.json"
+  ],
+  "observed_utc": "2026-11-01T22:05:51.833853+00:00",
+  "exit_code": 0,
+  "elapsed_wall_seconds": 0.7177837630006252,
+  "child_cpu_seconds": 0.694892,
+  "source_before_sha256": "6ab81f9de930197bd2ea73ec6993297beb618de55bea67e295f7149885cb9c11",
+  "source_after_sha256": "6ab81f9de930197bd2ea73ec6993297beb618de55bea67e295f7149885cb9c11",
+  "log_sha256": "50a69c6706493e26cb907d472edbf6a02757d9395f821f40388bd0578475b211",
+  "CPU_affinity": [
+    8
+  ],
+  "CPU_cap_seconds": 40,
+  "wall_cap_seconds": 60,
+  "PES_calls": 0,
+  "random_draws": 0
+}

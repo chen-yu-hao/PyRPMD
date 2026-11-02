@@ -1,0 +1,445 @@
+{
+  "CPU_seconds_after_imports": 0.0025931120000000085,
+  "Gaussian_oracles": {
+    "dimensionless_mean_3D_speed": 1.5957691216057308,
+    "dimensionless_positive_flux": 0.39894228040143276,
+    "quadrature_error_estimates": [
+      4.434565503150144e-15,
+      4.480593503785547e-14
+    ],
+    "surface_area_flux_to_cross_section_speed_ratio": 1.0000000000000002
+  },
+  "RNG_draws": 0,
+  "constants": {
+    "Boltzmann_J_K": 1.380649e-23,
+    "atomic_mass_kg": 1.66053906892e-27,
+    "atomic_time_s": 2.4188843265864e-17,
+    "bohr_m": 5.29177210544e-11,
+    "electron_mass_kg": 9.1093837139e-31,
+    "hartree_J": 4.359744722206e-18
+  },
+  "converted_pilot_rates": 0,
+  "created_utc": "2026-11-01T21:52:34.513056+00:00",
+  "elapsed_wall_seconds_after_imports": 0.0030431660125032067,
+  "entry_prefactor": {
+    "SI_vs_atomic_relative_difference": -1.9484414082171497e-13,
+    "atomic_rate_unit_cm3_per_s": 6.12615946706698e-09,
+    "bohr3_per_atomic_time": 3.345036263813077,
+    "cm3_per_molecule_s": 2.049222557524084e-08,
+    "independent_SI_cm3_per_molecule_s": 2.0492225575236848e-08,
+    "positive_inward_speed_atomic_units": 0.00029576614233749806
+  },
+  "fixed_parameters": {
+    "Rinf_bohr": 30.0,
+    "beta_hartree_inverse": 1052.5834160132904,
+    "carbon_electron_masses": 21874.661835393123,
+    "hydrogen_electron_masses": 1837.1526471479567,
+    "methane_electron_masses": 29223.27242398495,
+    "reduced_mass_electron_masses": 1728.4892968817192,
+    "temperature_K": 300.0
+  },
+  "inputs": [
+    {
+      "bytes": 10459,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/pilot-design/proposal.json",
+      "sha256": "85de4292058f9ac4fce9b8c5327d3aba0bea0204e02ede17fb629fa20ee23029"
+    },
+    {
+      "bytes": 15380,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/proposal.json",
+      "sha256": "8c9c576f37714cead7beb6a788a1262f88b7a1f34914029f041643774b78d962"
+    },
+    {
+      "bytes": 36870,
+      "path": "benchmarks/hch4/reference_pilot.py",
+      "sha256": "a164ff9ab148e24b5175d7087224efd95a95435665b90f4a353b2ddf0778a65a"
+    },
+    {
+      "bytes": 65143,
+      "path": "benchmarks/hch4/efficiency_pilot.py",
+      "sha256": "8630f0ac4106d826beb4ccb471eb57ab0382443cd9a6bca1fb474400877d91fb"
+    },
+    {
+      "bytes": 9776,
+      "path": "benchmarks/hch4/reproduction_protocol.json",
+      "sha256": "5a84e3923ca4fb087459872f465b85b07154068392f670798bbab5fb8ad316c5"
+    },
+    {
+      "bytes": 6173,
+      "path": "benchmarks/hch4/reproduction_input.py",
+      "sha256": "31c72794a26266cf7fc128846b66f00a636331c8c35fb1e79bdfc4f4615ec4e4"
+    },
+    {
+      "bytes": 1629,
+      "path": "benchmarks/hch4/geometries.json",
+      "sha256": "8e54d6bb16e21f3c34c7ef92bf0ca0863d1ec55f2c029a57289c23ff73363609"
+    },
+    {
+      "bytes": 34870,
+      "path": "src/pyrpmd/cv.py",
+      "sha256": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52"
+    },
+    {
+      "bytes": 25355,
+      "path": "src/pyrpmd/bias.py",
+      "sha256": "3a2ee4fc125aaa8a9f0103e140b4f8b325c4561327604506b3f47dd5ce3a0df6"
+    },
+    {
+      "bytes": 940,
+      "path": "src/pyrpmd/constants.py",
+      "sha256": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+    },
+    {
+      "bytes": 60151,
+      "path": "src/pyrpmd/workflows/rate.py",
+      "sha256": "44acdf9c2b0ab54551de9b5362f8c4e958c03b61450760474096feef54a6a587"
+    }
+  ],
+  "inputs_unchanged": true,
+  "metric_checks": [
+    {
+      "COM_conditioned_metric": 0.000578539885554426,
+      "alpha": 0.0,
+      "closed_form_metric": 0.000578539885554426,
+      "full_Cartesian_metric": 0.000578539885554426,
+      "translation_gradient_sum": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "unit_vectors_ub_u_uR": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    {
+      "COM_conditioned_metric": 0.0027629425402751983,
+      "alpha": 0.999,
+      "closed_form_metric": 0.002762942540275198,
+      "full_Cartesian_metric": 0.0027629425402751983,
+      "translation_gradient_sum": [
+        0.0,
+        0.0,
+        3.1360547839143216e-17
+      ],
+      "unit_vectors_ub_u_uR": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    {
+      "COM_conditioned_metric": 0.002767317907541149,
+      "alpha": 1.0,
+      "closed_form_metric": 0.002767317907541149,
+      "full_Cartesian_metric": 0.002767317907541149,
+      "translation_gradient_sum": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "unit_vectors_ub_u_uR": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    {
+      "COM_conditioned_metric": 0.00279806804997204,
+      "alpha": 1.007,
+      "closed_form_metric": 0.00279806804997204,
+      "full_Cartesian_metric": 0.00279806804997204,
+      "translation_gradient_sum": [
+        0.0,
+        0.0,
+        2.3418766925686896e-17
+      ],
+      "unit_vectors_ub_u_uR": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    {
+      "COM_conditioned_metric": 0.000578539885554426,
+      "alpha": 0.0,
+      "closed_form_metric": 0.000578539885554426,
+      "full_Cartesian_metric": 0.000578539885554426,
+      "translation_gradient_sum": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "unit_vectors_ub_u_uR": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "COM_conditioned_metric": 0.0005888566728689827,
+      "alpha": 0.999,
+      "closed_form_metric": 0.0005888566728689827,
+      "full_Cartesian_metric": 0.0005888566728689827,
+      "translation_gradient_sum": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "unit_vectors_ub_u_uR": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "COM_conditioned_metric": 0.0005900355754444105,
+      "alpha": 1.0,
+      "closed_form_metric": 0.0005900355754444105,
+      "full_Cartesian_metric": 0.0005900355754444105,
+      "translation_gradient_sum": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "unit_vectors_ub_u_uR": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "COM_conditioned_metric": 0.000598353333698221,
+      "alpha": 1.007,
+      "closed_form_metric": 0.000598353333698221,
+      "full_Cartesian_metric": 0.000598353333698221,
+      "translation_gradient_sum": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "unit_vectors_ub_u_uR": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "COM_conditioned_metric": 0.000578539885554426,
+      "alpha": 0.0,
+      "closed_form_metric": 0.000578539885554426,
+      "full_Cartesian_metric": 0.000578539885554426,
+      "translation_gradient_sum": [
+        2.7755575615628914e-17,
+        1.3877787807814457e-17,
+        -2.7755575615628914e-17
+      ],
+      "unit_vectors_ub_u_uR": [
+        [
+          0.2672612419124244,
+          0.5345224838248488,
+          0.8017837257372732
+        ],
+        [
+          -0.5345224838248488,
+          0.8017837257372732,
+          0.2672612419124244
+        ],
+        [
+          0.8017837257372732,
+          -0.2672612419124244,
+          0.5345224838248488
+        ]
+      ]
+    },
+    {
+      "COM_conditioned_metric": 0.002217976170059472,
+      "alpha": 0.999,
+      "closed_form_metric": 0.002217976170059472,
+      "full_Cartesian_metric": 0.002217976170059472,
+      "translation_gradient_sum": [
+        3.7283002206345284e-17,
+        -2.344722723271464e-16,
+        1.3587763726674584e-16
+      ],
+      "unit_vectors_ub_u_uR": [
+        [
+          0.2672612419124244,
+          0.5345224838248488,
+          0.8017837257372732
+        ],
+        [
+          -0.5345224838248488,
+          0.8017837257372732,
+          0.2672612419124244
+        ],
+        [
+          0.8017837257372732,
+          -0.2672612419124244,
+          0.5345224838248488
+        ]
+      ]
+    },
+    {
+      "COM_conditioned_metric": 0.0022229973245169645,
+      "alpha": 1.0,
+      "closed_form_metric": 0.0022229973245169645,
+      "full_Cartesian_metric": 0.0022229973245169645,
+      "translation_gradient_sum": [
+        0.0,
+        -1.1102230246251565e-16,
+        0.0
+      ],
+      "unit_vectors_ub_u_uR": [
+        [
+          0.2672612419124244,
+          0.5345224838248488,
+          0.8017837257372732
+        ],
+        [
+          -0.5345224838248488,
+          0.8017837257372732,
+          0.2672612419124244
+        ],
+        [
+          0.8017837257372732,
+          -0.2672612419124244,
+          0.5345224838248488
+        ]
+      ]
+    },
+    {
+      "COM_conditioned_metric": 0.002258334690036768,
+      "alpha": 1.007,
+      "closed_form_metric": 0.002258334690036768,
+      "full_Cartesian_metric": 0.002258334690036768,
+      "translation_gradient_sum": [
+        3.3285006695304986e-17,
+        -2.516839818153538e-16,
+        -5.17435486818707e-17
+      ],
+      "unit_vectors_ub_u_uR": [
+        [
+          0.2672612419124244,
+          0.5345224838248488,
+          0.8017837257372732
+        ],
+        [
+          -0.5345224838248488,
+          0.8017837257372732,
+          0.2672612419124244
+        ],
+        [
+          0.8017837257372732,
+          -0.2672612419124244,
+          0.5345224838248488
+        ]
+      ]
+    }
+  ],
+  "molecular_geometries_evaluated": 0,
+  "new_PES_calls": 0,
+  "passed": true,
+  "pilot_data_files_read": 0,
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "schema": "pyrpmd.hch4.absolute-normalization-algebra-check.v1",
+  "scipy": "1.18.1",
+  "scope": "Known thermal prefactor and algebra only; no physical rate estimate or pilot-data conversion."
+}

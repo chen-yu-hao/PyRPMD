@@ -1,0 +1,39 @@
+{
+  "created_utc": "2026-11-01T18:15:20.234300+00:00",
+  "scope": "Reviewed cleanup of exactly six generated ABI-discovery symlinks after both217-test gates; native products retained in temporary build directories; original checkout and all cp312 binaries untouched.",
+  "links": [
+    {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_electronic.cpython-313-x86_64-linux-gnu.so",
+      "removed_owned_symlink": true,
+      "absent_after_cleanup": true
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_native.cpython-313-x86_64-linux-gnu.so",
+      "removed_owned_symlink": true,
+      "absent_after_cleanup": true
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_thermal.cpython-313-x86_64-linux-gnu.so",
+      "removed_owned_symlink": true,
+      "absent_after_cleanup": true
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_electronic.cpython-314-x86_64-linux-gnu.so",
+      "removed_owned_symlink": true,
+      "absent_after_cleanup": true
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_native.cpython-314-x86_64-linux-gnu.so",
+      "removed_owned_symlink": true,
+      "absent_after_cleanup": true
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_thermal.cpython-314-x86_64-linux-gnu.so",
+      "removed_owned_symlink": true,
+      "absent_after_cleanup": true
+    }
+  ],
+  "cp312_sha256": "61dc8ec076a86176e3826415444e64428272441ae3ebe50779acc69bebd51f6f",
+  "separate_process_postcheck_remaining": [],
+  "cleanup_confirmed_across_tool_processes": true
+}

@@ -1,0 +1,9 @@
+{
+  "time_ns": 1793568476188338495,
+  "before": {
+    "owner_inode": 3064413,
+    "dir_inode": 3064317
+  },
+  "old_absent_immediately": true,
+  "new_exists_immediately": true
+}

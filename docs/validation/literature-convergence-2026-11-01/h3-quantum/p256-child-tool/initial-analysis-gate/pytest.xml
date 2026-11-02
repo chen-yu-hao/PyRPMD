@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="5" skipped="0" tests="22" time="0.835" timestamp="2026-11-01T14:47:28.766966-05:00" hostname="13d968332fed"><testcase classname="tests.test_h3_p256_recrossing_analysis" name="test_independent_welch_interval_matches_scipy_unequal_variance_oracle" time="0.003"><failure message="assert np.False_ is False">def test_independent_welch_interval_matches_scipy_unequal_variance_oracle():
+        first = np.array([.02, .05, -.04, .01, .09, -.07, .03, .04])
+        second = np.array([.005, -.003, .012, -.006, .009, -.010, .013, -.008])
+        expected = stats.ttest_ind(first, second, equal_var=False).confidence_interval(.95)
+        observed = analysis.independent_difference(first, second, np.log(1.05))
+        np.testing.assert_allclose(observed['CI95'], [expected.low, expected.high], rtol=1e-13, atol=1e-15)
+        assert observed['groups_paired_by_index'] is False
+        assert 7 &lt; observed['Welch_df'] &lt; 14
+&gt;       assert observed['CI95_wholly_within_margin'] is False
+E       assert np.False_ is False
+
+tests/test_h3_p256_recrossing_analysis.py:21: AssertionError</failure></testcase><testcase classname="tests.test_h3_p256_recrossing_analysis" name="test_group_reordering_does_not_artificially_pair_independent_seeds" time="0.001" /><testcase classname="tests.test_h3_p256_recrossing_analysis" name="test_full_interval_equivalence_and_degenerate_observation_are_explicit[0.0-True]" time="0.001"><failure message="assert np.True_ is True">shift = 0.0, passes = True
+
+    @pytest.mark.parametrize('shift,passes', [(0., True), (.04, True), (.06, False)])
+    def test_full_interval_equivalence_and_degenerate_observation_are_explicit(shift, passes):
+        result = analysis.independent_difference(np.full(8, shift), np.zeros(8), np.log(1.05))
+        assert result['degenerate_observed_variance'] is True
+&gt;       assert result['CI95_wholly_within_margin'] is passes
+E       assert np.True_ is True
+
+tests/test_h3_p256_recrossing_analysis.py:36: AssertionError</failure></testcase><testcase classname="tests.test_h3_p256_recrossing_analysis" name="test_full_interval_equivalence_and_degenerate_observation_are_explicit[0.04-True]" time="0.001"><failure message="assert np.True_ is True">shift = 0.04, passes = True
+
+    @pytest.mark.parametrize('shift,passes', [(0., True), (.04, True), (.06, False)])
+    def test_full_interval_equivalence_and_degenerate_observation_are_explicit(shift, passes):
+        result = analysis.independent_difference(np.full(8, shift), np.zeros(8), np.log(1.05))
+        assert result['degenerate_observed_variance'] is True
+&gt;       assert result['CI95_wholly_within_margin'] is passes
+E       assert np.True_ is True
+
+tests/test_h3_p256_recrossing_analysis.py:36: AssertionError</failure></testcase><testcase classname="tests.test_h3_p256_recrossing_analysis" name="test_full_interval_equivalence_and_degenerate_observation_are_explicit[0.06-False]" time="0.001"><failure message="assert np.False_ is False">shift = 0.06, passes = False
+
+    @pytest.mark.parametrize('shift,passes', [(0., True), (.04, True), (.06, False)])
+    def test_full_interval_equivalence_and_degenerate_observation_are_explicit(shift, passes):
+        result = analysis.independent_difference(np.full(8, shift), np.zeros(8), np.log(1.05))
+        assert result['degenerate_observed_variance'] is True
+&gt;       assert result['CI95_wholly_within_margin'] is passes
+E       assert np.False_ is False
+
+tests/test_h3_p256_recrossing_analysis.py:36: AssertionError</failure></testcase><testcase classname="tests.test_h3_p256_recrossing_analysis" name="test_incomplete_or_nonfinite_groups_cannot_form_primary_interval[a0-b0]" time="0.000" /><testcase classname="tests.test_h3_p256_recrossing_analysis" name="test_incomplete_or_nonfinite_groups_cannot_form_primary_interval[a1-b1]" time="0.000" /><testcase classname="tests.test_h3_p256_recrossing_analysis" name="test_incomplete_or_nonfinite_groups_cannot_form_primary_interval[a2-b2]" time="0.000" /><testcase classname="tests.test_h3_p256_recrossing_analysis" name="test_incomplete_or_nonfinite_groups_cannot_form_primary_interval[a3-b3]" time="0.000" /><testcase classname="tests.test_h3_p256_recrossing_analysis" name="test_joint_chain_rate_retains_partition_transmission_covariance" time="0.001"><failure message="assert np.True_ is True">def test_joint_chain_rate_retains_partition_transmission_covariance():
+        delta = np.arange(8)*.005
+        log_ts = -2.1+delta
+        kappa = .77*np.exp(-delta)
+        old = baseline(log_ts, kappa)
+        result = analysis.full_rate_statistics(log_ts, kappa, 0., 1., old)
+        assert result['positive_finite_kappa_for_every_chain'] is True
+        statistics = result['statistics']
+        assert statistics['log_rate_statistics']['standard_error'] &lt; 1e-14
+        assert statistics['same_chain_log_partition_log_kappa_covariance_of_mean'][0][1] &lt; 0
+        assert statistics['incorrect_independence_log_rate_variance_for_comparison_only'] &gt; 1e-5
+&gt;       assert result['bead_comparison']['CI95_wholly_within_margin'] is True
+E       assert np.True_ is True
+
+tests/test_h3_p256_recrossing_analysis.py:63: AssertionError</failure></testcase><testcase classname="tests.test_h3_p256_recrossing_analysis" name="test_nonpositive_or_nonfinite_chain_retained_without_lograte_inference[0.0]" time="0.000" /><testcase classname="tests.test_h3_p256_recrossing_analysis" name="test_nonpositive_or_nonfinite_chain_retained_without_lograte_inference[-0.01]" time="0.000" /><testcase classname="tests.test_h3_p256_recrossing_analysis" name="test_nonpositive_or_nonfinite_chain_retained_without_lograte_inference[nan]" time="0.000" /><testcase classname="tests.test_h3_p256_recrossing_analysis" name="test_nonpositive_or_nonfinite_chain_retained_without_lograte_inference[inf]" time="0.000" /><testcase classname="tests.test_h3_p256_recrossing_analysis" name="test_P256_uses_its_own_finite_P_normalization" time="0.001" /><testcase classname="tests.test_h3_p256_recrossing_analysis" name="test_mismatched_reactant_reference_rejected[mass]" time="0.001" /><testcase classname="tests.test_h3_p256_recrossing_analysis" name="test_mismatched_reactant_reference_rejected[temperature]" time="0.001" /><testcase classname="tests.test_h3_p256_recrossing_analysis" name="test_mismatched_reactant_reference_rejected[kernel]" time="0.001" /><testcase classname="tests.test_h3_p256_recrossing_analysis" name="test_mismatched_reactant_reference_rejected[domain]" time="0.001" /><testcase classname="tests.test_h3_p256_recrossing_analysis" name="test_mismatched_reactant_reference_rejected[PES]" time="0.001" /><testcase classname="tests.test_h3_p256_recrossing_analysis" name="test_mismatched_reactant_reference_rejected[duplicate]" time="0.001" /><testcase classname="tests.test_h3_p256_recrossing_analysis" name="test_mismatched_reactant_reference_rejected[unconverged]" time="0.001" /></testsuite></testsuites>

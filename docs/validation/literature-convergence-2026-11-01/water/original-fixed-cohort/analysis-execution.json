@@ -1,0 +1,51 @@
+{
+  "child_CPU_seconds": 21.417112,
+  "child_peak_RSS_KiB": 195452,
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/analyze_native.py",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1101",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1102",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1103",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1104",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1105",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1106",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1107",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1108",
+    "--protocol",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/protocol.json",
+    "--output",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/analysis"
+  ],
+  "completed_utc": "2026-11-01T20:42:20.314640+00:00",
+  "elapsed_wall_seconds": 21.644802691000223,
+  "log_sha256": "6f22e7eb0d3bdd3070ad70d67229e2293ef3e0f2b218315406b1263093f8a2bf",
+  "original_normal_exit_sha256": "f6834a23019049903ed962dfd8b96ca210b9facecdb25917431e91bd8b807744",
+  "returncode": 0,
+  "schema": "pyrpmd.water-complete-original-cohort-analysis-execution.v1",
+  "scope": "Offline streaming full8-cohort analysis of the frozen original experiment; no new dynamics or RNG draws.",
+  "source_after_sha256": {
+    "benchmarks/water/analyze_campaign.py": "c6d0c1047653c2dea961053287572fccdbcd3e7074c75a6266031e691bae304e",
+    "benchmarks/water/analyze_native.py": "323b3e8506ffbd0c509150f3a6c7c137369c75e5775cdb4e338cdb2bd3c3c718",
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/native_reference.py": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2",
+    "benchmarks/water/plot_native_campaign.py": "f08bc32ec90ef1172a7032fb74ddab2de9e5185df4e075ab95b0b75ce64b6362",
+    "benchmarks/water/plot_preparation_diagnostics.py": "1505c570c41bf67b7f51a767ee2a5e1dfb610d9562872ee303c6dbb3bbc34b15",
+    "benchmarks/water/plot_production_stability.py": "0e5f56d0126bf86396ad34d5579349c7ad653802dc857f21025ab5ffa2be6e56",
+    "src/pyrpmd/analysis/diffusion.py": "bd3593fa4ad2b9e87ba1a4d2d612cb5875b98cba5b16d95187fd48cbe439926e",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+  },
+  "source_before_sha256": {
+    "benchmarks/water/analyze_campaign.py": "c6d0c1047653c2dea961053287572fccdbcd3e7074c75a6266031e691bae304e",
+    "benchmarks/water/analyze_native.py": "323b3e8506ffbd0c509150f3a6c7c137369c75e5775cdb4e338cdb2bd3c3c718",
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/native_reference.py": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2",
+    "benchmarks/water/plot_native_campaign.py": "f08bc32ec90ef1172a7032fb74ddab2de9e5185df4e075ab95b0b75ce64b6362",
+    "benchmarks/water/plot_preparation_diagnostics.py": "1505c570c41bf67b7f51a767ee2a5e1dfb610d9562872ee303c6dbb3bbc34b15",
+    "benchmarks/water/plot_production_stability.py": "0e5f56d0126bf86396ad34d5579349c7ad653802dc857f21025ab5ffa2be6e56",
+    "src/pyrpmd/analysis/diffusion.py": "bd3593fa4ad2b9e87ba1a4d2d612cb5875b98cba5b16d95187fd48cbe439926e",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+  },
+  "source_unchanged": true,
+  "started_utc": "2026-11-01T20:41:58.669845+00:00"
+}

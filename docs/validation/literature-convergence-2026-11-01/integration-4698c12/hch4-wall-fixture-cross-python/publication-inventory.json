@@ -1,0 +1,40 @@
+{
+  "created_utc": "2026-11-01T21:05:17.081852+00:00",
+  "files": [
+    {
+      "bytes": 1204,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-cross-python/README.md",
+      "sha256": "bc3985dbc9241e47a34170871986bbb8cb1e338b217cf2cf1fd5fa1d85781e39"
+    },
+    {
+      "bytes": 7551,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-cross-python/cross-python.json",
+      "sha256": "87e216d635df1e83820820624b84539dbb423e05a4b8e59dd881edc94aa4e311"
+    },
+    {
+      "bytes": 153,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-cross-python/py312.log",
+      "sha256": "80a1418657f03b1dae29911603641b9507e721d12df4006b8c4d9a1eaaea560b"
+    },
+    {
+      "bytes": 387,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-cross-python/py312.xml",
+      "sha256": "2a32433087bbc5762db35ae808ed57dc2a0c91ebf5b93bb81c1a05b980a1005f"
+    },
+    {
+      "bytes": 153,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-cross-python/py313.log",
+      "sha256": "584328762b0788459ea9f8bd92504737864680fe52517060543a94bab649e7f7"
+    },
+    {
+      "bytes": 387,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-cross-python/py313.xml",
+      "sha256": "10575bbf5c99cbe59d4f95bc9bc95b27eaaa2e323692788c7f0601b886fb48b0"
+    }
+  ],
+  "inventory_self_excluded": true,
+  "listed_bytes": 9835,
+  "listed_file_count": 6,
+  "schema": "pyrpmd.hch4.wall-fixture.cross-python.publication-inventory.v1",
+  "scope": "Two additional interpreter executions of the same existing synthetic wall fixture; no new distinct tests or science."
+}

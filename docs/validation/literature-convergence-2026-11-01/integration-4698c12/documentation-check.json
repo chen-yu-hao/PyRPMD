@@ -1,0 +1,28 @@
+{
+  "schema": "pyrpmd.convergence.documentation-check.v1",
+  "created_utc": "2026-11-01T17:50:06.815534+00:00",
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "-m",
+    "sphinx",
+    "-W",
+    "--keep-going",
+    "-b",
+    "html",
+    "docs",
+    "/workspace/scratch/a5e4820daedd/convergence-docs-html"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 1.1247721959953196,
+  "log_sha256": "bd366523174c472156a99deedbc78d58b47461e2507c4575f96916353a9c1778",
+  "scope": "Strict English HTML manual including changed literature-validation.md; historical evidence pages outside Sphinx include patterns have separately checked local targets. No full project suite or translated manual rebuild.",
+  "aggregate_local_links_checked": 63,
+  "aggregate_local_links_missing": [],
+  "source_hashes": {
+    "docs/literature-validation.md": "4c64b26b368861ff2dbe8f5d6703ba0ef35c9a95be41a86e53391c84f8edf965",
+    "docs/validation/literature-convergence-2026-11-01/README.md": "16a326d2943ed7d1a105ca60f128d86677d7cc4584180bf5a7c0c13d33ffd1df",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/README.md": "48cb2445cc928b359878eb6423bbeb7cf4c6e0c5a6834102725d3e556c1fbf89",
+    "docs/validation/literature-convergence-2026-11-01/integration-4698c12/README.md": "67deb3e280a7ad8ccef4845066973358e3e826c37c288d8b1e493c8b6ccaa748"
+  },
+  "aggregate_sources_unchanged_during_build": true
+}

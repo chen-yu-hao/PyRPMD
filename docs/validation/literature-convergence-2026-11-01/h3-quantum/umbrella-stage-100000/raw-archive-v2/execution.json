@@ -1,0 +1,480 @@
+{
+  "Git_mutated": false,
+  "all8_state_RNG_and_prefixes_equal": true,
+  "all_original_archived_extracted_bytes_verified": true,
+  "archive": {
+    "bytes": 474212366,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-umbrella-stage-100000-2026-11-01.tar.gz",
+    "sha256": "f02c799907993143533a570e1862bbb2772f9b8994344c50982b102b02d5603d"
+  },
+  "automatic300000_continuation": false,
+  "complete_archive": true,
+  "created_utc": "2026-11-01T21:40:19.364963+00:00",
+  "exact_drain_journal": {
+    "active_workers": 0,
+    "all_owned_workers_drained": true,
+    "completed": [
+      211017,
+      211019,
+      211021,
+      211023,
+      211027,
+      211031,
+      211033,
+      211039
+    ],
+    "events": 20,
+    "submitted": [
+      211017,
+      211019,
+      211021,
+      211023,
+      211027,
+      211031,
+      211033,
+      211039
+    ]
+  },
+  "exact_scientific_replay": true,
+  "frozen_predecessor": {
+    "bytes": 29706,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_umbrella_archive.py",
+    "sha256": "af1288ec403880899a42202ae7e5c1ab6c1f44c419dad6f1c73678d7ffb9738f"
+  },
+  "lease_anomaly_cause": "unexplained",
+  "member_inventory": {
+    "bytes": 47244,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-umbrella-stage-100000-2026-11-01.members.json",
+    "sha256": "295d48f75c8ac35ac25baedd8ad32f641efeaf9f7a12d2779cb3d494188ee8ae"
+  },
+  "new_PES_or_dynamics_calls": 0,
+  "original_analysis_stdout_scope": "Complete retained redirected stdout/stderr of the original complete-cohort analysis waiter.",
+  "original_data_modified": false,
+  "original_lease_absence_claimed": false,
+  "original_lease_modified": false,
+  "original_lease_observations": [
+    {
+      "leases": {
+        "current_old_path": {
+          "directory": {
+            "ctime_ns": 1793568373130252631,
+            "device": 27,
+            "inode": 537353,
+            "mode": 16877,
+            "mtime_ns": 1793558091123781806,
+            "size": 4096
+          },
+          "members": [
+            "owner.json"
+          ],
+          "owner": {
+            "ctime_ns": 1793568372938248514,
+            "device": 27,
+            "inode": 537354,
+            "mode": 33152,
+            "mtime_ns": 1793558091123781806,
+            "size": 68
+          },
+          "owner_identity": {
+            "bytes": 68,
+            "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/.quantum-scheduler-lock/owner.json",
+            "sha256": "6e0835f4f471796640551c601603e7886a906fff20dbb18afd37f661b8893dff"
+          },
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/.quantum-scheduler-lock"
+        },
+        "quarantined_original": {
+          "directory": {
+            "ctime_ns": 1793568363069482337,
+            "device": 27,
+            "inode": 530697,
+            "mode": 16877,
+            "mtime_ns": 1793558091123781806,
+            "size": 4096
+          },
+          "members": [
+            "owner.json"
+          ],
+          "owner": {
+            "ctime_ns": 1793567758720821670,
+            "device": 27,
+            "inode": 530698,
+            "mode": 33152,
+            "mtime_ns": 1793558091123781806,
+            "size": 68
+          },
+          "owner_identity": {
+            "bytes": 68,
+            "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/retired-leases/umbrella-stage100000-owner-6e0835f4f471/owner.json",
+            "sha256": "6e0835f4f471796640551c601603e7886a906fff20dbb18afd37f661b8893dff"
+          },
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/retired-leases/umbrella-stage100000-owner-6e0835f4f471"
+        }
+      },
+      "phase": "pre_raw"
+    },
+    {
+      "leases": {
+        "current_old_path": {
+          "directory": {
+            "ctime_ns": 1793568373130252631,
+            "device": 27,
+            "inode": 537353,
+            "mode": 16877,
+            "mtime_ns": 1793558091123781806,
+            "size": 4096
+          },
+          "members": [
+            "owner.json"
+          ],
+          "owner": {
+            "ctime_ns": 1793568372938248514,
+            "device": 27,
+            "inode": 537354,
+            "mode": 33152,
+            "mtime_ns": 1793558091123781806,
+            "size": 68
+          },
+          "owner_identity": {
+            "bytes": 68,
+            "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/.quantum-scheduler-lock/owner.json",
+            "sha256": "6e0835f4f471796640551c601603e7886a906fff20dbb18afd37f661b8893dff"
+          },
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/.quantum-scheduler-lock"
+        },
+        "quarantined_original": {
+          "directory": {
+            "ctime_ns": 1793568363069482337,
+            "device": 27,
+            "inode": 530697,
+            "mode": 16877,
+            "mtime_ns": 1793558091123781806,
+            "size": 4096
+          },
+          "members": [
+            "owner.json"
+          ],
+          "owner": {
+            "ctime_ns": 1793567758720821670,
+            "device": 27,
+            "inode": 530698,
+            "mode": 33152,
+            "mtime_ns": 1793558091123781806,
+            "size": 68
+          },
+          "owner_identity": {
+            "bytes": 68,
+            "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/retired-leases/umbrella-stage100000-owner-6e0835f4f471/owner.json",
+            "sha256": "6e0835f4f471796640551c601603e7886a906fff20dbb18afd37f661b8893dff"
+          },
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/retired-leases/umbrella-stage100000-owner-6e0835f4f471"
+        }
+      },
+      "phase": "pre_pack"
+    },
+    {
+      "leases": {
+        "current_old_path": {
+          "directory": {
+            "ctime_ns": 1793568373130252631,
+            "device": 27,
+            "inode": 537353,
+            "mode": 16877,
+            "mtime_ns": 1793558091123781806,
+            "size": 4096
+          },
+          "members": [
+            "owner.json"
+          ],
+          "owner": {
+            "ctime_ns": 1793568372938248514,
+            "device": 27,
+            "inode": 537354,
+            "mode": 33152,
+            "mtime_ns": 1793558091123781806,
+            "size": 68
+          },
+          "owner_identity": {
+            "bytes": 68,
+            "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/.quantum-scheduler-lock/owner.json",
+            "sha256": "6e0835f4f471796640551c601603e7886a906fff20dbb18afd37f661b8893dff"
+          },
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/.quantum-scheduler-lock"
+        },
+        "quarantined_original": {
+          "directory": {
+            "ctime_ns": 1793568363069482337,
+            "device": 27,
+            "inode": 530697,
+            "mode": 16877,
+            "mtime_ns": 1793558091123781806,
+            "size": 4096
+          },
+          "members": [
+            "owner.json"
+          ],
+          "owner": {
+            "ctime_ns": 1793567758720821670,
+            "device": 27,
+            "inode": 530698,
+            "mode": 33152,
+            "mtime_ns": 1793558091123781806,
+            "size": 68
+          },
+          "owner_identity": {
+            "bytes": 68,
+            "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/retired-leases/umbrella-stage100000-owner-6e0835f4f471/owner.json",
+            "sha256": "6e0835f4f471796640551c601603e7886a906fff20dbb18afd37f661b8893dff"
+          },
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/retired-leases/umbrella-stage100000-owner-6e0835f4f471"
+        }
+      },
+      "phase": "post_extract"
+    },
+    {
+      "leases": {
+        "current_old_path": {
+          "directory": {
+            "ctime_ns": 1793568373130252631,
+            "device": 27,
+            "inode": 537353,
+            "mode": 16877,
+            "mtime_ns": 1793558091123781806,
+            "size": 4096
+          },
+          "members": [
+            "owner.json"
+          ],
+          "owner": {
+            "ctime_ns": 1793568372938248514,
+            "device": 27,
+            "inode": 537354,
+            "mode": 33152,
+            "mtime_ns": 1793558091123781806,
+            "size": 68
+          },
+          "owner_identity": {
+            "bytes": 68,
+            "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/.quantum-scheduler-lock/owner.json",
+            "sha256": "6e0835f4f471796640551c601603e7886a906fff20dbb18afd37f661b8893dff"
+          },
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/.quantum-scheduler-lock"
+        },
+        "quarantined_original": {
+          "directory": {
+            "ctime_ns": 1793568363069482337,
+            "device": 27,
+            "inode": 530697,
+            "mode": 16877,
+            "mtime_ns": 1793558091123781806,
+            "size": 4096
+          },
+          "members": [
+            "owner.json"
+          ],
+          "owner": {
+            "ctime_ns": 1793567758720821670,
+            "device": 27,
+            "inode": 530698,
+            "mode": 33152,
+            "mtime_ns": 1793558091123781806,
+            "size": 68
+          },
+          "owner_identity": {
+            "bytes": 68,
+            "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/retired-leases/umbrella-stage100000-owner-6e0835f4f471/owner.json",
+            "sha256": "6e0835f4f471796640551c601603e7886a906fff20dbb18afd37f661b8893dff"
+          },
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/retired-leases/umbrella-stage100000-owner-6e0835f4f471"
+        }
+      },
+      "phase": "pre_replay"
+    },
+    {
+      "leases": {
+        "current_old_path": {
+          "directory": {
+            "ctime_ns": 1793568373130252631,
+            "device": 27,
+            "inode": 537353,
+            "mode": 16877,
+            "mtime_ns": 1793558091123781806,
+            "size": 4096
+          },
+          "members": [
+            "owner.json"
+          ],
+          "owner": {
+            "ctime_ns": 1793568372938248514,
+            "device": 27,
+            "inode": 537354,
+            "mode": 33152,
+            "mtime_ns": 1793558091123781806,
+            "size": 68
+          },
+          "owner_identity": {
+            "bytes": 68,
+            "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/.quantum-scheduler-lock/owner.json",
+            "sha256": "6e0835f4f471796640551c601603e7886a906fff20dbb18afd37f661b8893dff"
+          },
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/.quantum-scheduler-lock"
+        },
+        "quarantined_original": {
+          "directory": {
+            "ctime_ns": 1793568363069482337,
+            "device": 27,
+            "inode": 530697,
+            "mode": 16877,
+            "mtime_ns": 1793558091123781806,
+            "size": 4096
+          },
+          "members": [
+            "owner.json"
+          ],
+          "owner": {
+            "ctime_ns": 1793567758720821670,
+            "device": 27,
+            "inode": 530698,
+            "mode": 33152,
+            "mtime_ns": 1793558091123781806,
+            "size": 68
+          },
+          "owner_identity": {
+            "bytes": 68,
+            "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/retired-leases/umbrella-stage100000-owner-6e0835f4f471/owner.json",
+            "sha256": "6e0835f4f471796640551c601603e7886a906fff20dbb18afd37f661b8893dff"
+          },
+          "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/retired-leases/umbrella-stage100000-owner-6e0835f4f471"
+        }
+      },
+      "phase": "pre_publish"
+    }
+  ],
+  "original_registered_primary_qtst_gates_passed": false,
+  "original_scientific_criteria": {
+    "bin_refinement": true,
+    "complete_registered_cohort": true,
+    "independent_seed_consistency": true,
+    "local_fit_refinement": true,
+    "paper_point_agreement": true,
+    "statistical_precision": false,
+    "temporal_half_consistency": true,
+    "wham_residual_and_overlap": true
+  },
+  "owned_replay_drained": true,
+  "permanent_attempt_claim_retained": true,
+  "physical_rate_or_dynamic_bead_validation_claimed": false,
+  "policy": {
+    "bytes": 8887,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation-v2/policy.json",
+    "sha256": "e73a940695fdfe86460c76b1d3ade84555867d85f4ca115fe103b44c233dbfe0"
+  },
+  "replay_comparison": [
+    {
+      "exact_scientific_JSON_equal": true,
+      "file": "campaign-comparison.json",
+      "ignored_top_level_fields": [
+        "created_utc",
+        "elapsed_seconds"
+      ]
+    },
+    {
+      "exact_scientific_JSON_equal": true,
+      "file": "seed-211017.json",
+      "ignored_top_level_fields": []
+    },
+    {
+      "exact_scientific_JSON_equal": true,
+      "file": "seed-211019.json",
+      "ignored_top_level_fields": []
+    },
+    {
+      "exact_scientific_JSON_equal": true,
+      "file": "seed-211021.json",
+      "ignored_top_level_fields": []
+    },
+    {
+      "exact_scientific_JSON_equal": true,
+      "file": "seed-211023.json",
+      "ignored_top_level_fields": []
+    },
+    {
+      "exact_scientific_JSON_equal": true,
+      "file": "seed-211027.json",
+      "ignored_top_level_fields": []
+    },
+    {
+      "exact_scientific_JSON_equal": true,
+      "file": "seed-211031.json",
+      "ignored_top_level_fields": []
+    },
+    {
+      "exact_scientific_JSON_equal": true,
+      "file": "seed-211033.json",
+      "ignored_top_level_fields": []
+    },
+    {
+      "exact_scientific_JSON_equal": true,
+      "file": "seed-211039.json",
+      "ignored_top_level_fields": []
+    },
+    {
+      "all_array_dtype_shape_bytes_equal": true,
+      "file": "pooled-wham.npz"
+    },
+    {
+      "all_array_dtype_shape_bytes_equal": true,
+      "file": "seed-211017-wham.npz"
+    },
+    {
+      "all_array_dtype_shape_bytes_equal": true,
+      "file": "seed-211019-wham.npz"
+    },
+    {
+      "all_array_dtype_shape_bytes_equal": true,
+      "file": "seed-211021-wham.npz"
+    },
+    {
+      "all_array_dtype_shape_bytes_equal": true,
+      "file": "seed-211023-wham.npz"
+    },
+    {
+      "all_array_dtype_shape_bytes_equal": true,
+      "file": "seed-211027-wham.npz"
+    },
+    {
+      "all_array_dtype_shape_bytes_equal": true,
+      "file": "seed-211031-wham.npz"
+    },
+    {
+      "all_array_dtype_shape_bytes_equal": true,
+      "file": "seed-211033-wham.npz"
+    },
+    {
+      "all_array_dtype_shape_bytes_equal": true,
+      "file": "seed-211039-wham.npz"
+    }
+  ],
+  "replay_invocations": 1,
+  "resources": {
+    "elapsed_wall_seconds": 59.71590742599801,
+    "maximum_observed_parent_peak_plus_active_child_RSS_bytes": 195125248,
+    "whole_parent_and_owned_child_CPU_seconds": 59.22000500000001
+  },
+  "root_no_writer_attestation": {
+    "all_owned_sampling_workers_drained": true,
+    "complete_sampling_and_analysis_exits_observed": true,
+    "future_300000_only_new_isolated_restore_from_verified100000_archive": true,
+    "lease_anomaly_cause_not_assumed": true,
+    "no_300000_admitted": true,
+    "no_existing_or_pending_new_legacy_or_direct_sampler": true,
+    "no_writers_admitted_until_archive_attempt_finishes": true,
+    "original_campaign_remains_unchanged": true
+  },
+  "schema": "pyrpmd.h3.quantum-umbrella100000-readonly-archive-execution.v2",
+  "source": {
+    "bytes": 22139,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_umbrella_archive_v2.py",
+    "sha256": "d7004587d6643f8a36f3b40d9d591b0d048a6d53b2233092c2e03c1c373166ad"
+  },
+  "upload_performed": false
+}

@@ -1,0 +1,13 @@
+{
+  "completed_sweeps": 22000,
+  "production_sweeps": 20000,
+  "elapsed_this_call_seconds": 459.61075877900294,
+  "acceptance_per_move": [
+    0.6058737373737373,
+    0.5015707070707071,
+    0.7808333333333333,
+    0.7863737373737373
+  ],
+  "physical_converged": false,
+  "literature_reproduced": false
+}

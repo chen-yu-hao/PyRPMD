@@ -1,0 +1,145 @@
+{
+  "Git_mutation": false,
+  "created_utc": "2026-11-01T21:22:29.047394+00:00",
+  "file_count": 26,
+  "files": [
+    {
+      "bytes": 29706,
+      "path": "benchmarks/h3/quantum_umbrella_archive.py",
+      "sha256": "af1288ec403880899a42202ae7e5c1ab6c1f44c419dad6f1c73678d7ffb9738f"
+    },
+    {
+      "bytes": 12642,
+      "path": "tests/test_h3_quantum_umbrella_archive.py",
+      "sha256": "452df37ca98be80239857b5eff8da8c52f7fbeafa7225da7de9b4bea328ba835"
+    },
+    {
+      "bytes": 8165,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/README.md",
+      "sha256": "e678adc108ab2dfa45828a03a24fd0778b5bae24ce38d51192e1d5c0c824b2b9"
+    },
+    {
+      "bytes": 1899,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/final-source-gate/execution.json",
+      "sha256": "ca6c3d6a753df88c8a4cdebdb6b2d66be1f110b0c8a43b7f15a2c0004b7fc73c"
+    },
+    {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/final-source-gate/pytest.log",
+      "sha256": "72a4afff7c4fb00a63f086ffb31fd0e66def6b5dfdde45a3ee1ea8a93e8073c8"
+    },
+    {
+      "bytes": 4724,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/final-source-gate/pytest.xml",
+      "sha256": "b74b255b635ec98c2a5c6218a0a6f071a62c1767fadc6d47854d5551ed8000bc"
+    },
+    {
+      "bytes": 29706,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/final-source-gate/quantum_umbrella_archive.py",
+      "sha256": "af1288ec403880899a42202ae7e5c1ab6c1f44c419dad6f1c73678d7ffb9738f"
+    },
+    {
+      "bytes": 12642,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/final-source-gate/test_h3_quantum_umbrella_archive.py",
+      "sha256": "452df37ca98be80239857b5eff8da8c52f7fbeafa7225da7de9b4bea328ba835"
+    },
+    {
+      "bytes": 5790,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/independent-review.json",
+      "sha256": "c9326e71bb74a626c2f6575b06a18f2acb8ee6214fcfa840dbfc6cdd40792293"
+    },
+    {
+      "bytes": 1671,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/initial-gate/execution.json",
+      "sha256": "8b4559d52ede357dae7f49f5cae37c631809d7d63501e7d14e7521008806200b"
+    },
+    {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/initial-gate/pytest.log",
+      "sha256": "f2a8ce02b42cc30701feff1a09e68203a567b1e4f46c1861cb179bdb4da53bd1"
+    },
+    {
+      "bytes": 4223,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/initial-gate/pytest.xml",
+      "sha256": "fc3cf8d611ea780fef33728067a780b509ccc769318e1952c0a924c82c852cad"
+    },
+    {
+      "bytes": 28830,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/initial-gate/quantum_umbrella_archive.py",
+      "sha256": "8423a01fe5a2bd7e5822eaf4e459a94e64890a178b784613f574ae0fd60275da"
+    },
+    {
+      "bytes": 10239,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/initial-gate/test_h3_quantum_umbrella_archive.py",
+      "sha256": "ad7f40dd229e3026f7e6e600c260a4f515531e73fc60666d0624853766b2a1f8"
+    },
+    {
+      "bytes": 15048,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/plan.json",
+      "sha256": "d06a07fed6d6e69f2ddd09c614d9fc17b336c669c5f4013d3cf65ac45e7d2fa4"
+    },
+    {
+      "bytes": 1873,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/portable-fixture-gate/execution.json",
+      "sha256": "decae3975cdc916d9e848ad0bc819405c06b2badec14f425b1259732115da4d0"
+    },
+    {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/portable-fixture-gate/pytest.log",
+      "sha256": "ca353677ff9c39fc0b3f1bd3a8c9661fe22c2a2e9a3e014d1b0c916fc4184ba4"
+    },
+    {
+      "bytes": 4223,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/portable-fixture-gate/pytest.xml",
+      "sha256": "48b1901447ce9e85a4ec7d094c53245863312c30c5222d5b75e257bf709aa43b"
+    },
+    {
+      "bytes": 28830,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/portable-fixture-gate/quantum_umbrella_archive.py",
+      "sha256": "8423a01fe5a2bd7e5822eaf4e459a94e64890a178b784613f574ae0fd60275da"
+    },
+    {
+      "bytes": 10977,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/portable-fixture-gate/test_h3_quantum_umbrella_archive.py",
+      "sha256": "1e255600db6b0229e33ae81708a8762392d92cd671245a1f5fb570391acf2d77"
+    },
+    {
+      "bytes": 2412,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/root-adoption-template.json",
+      "sha256": "9635feb8ee8a17e94c74df99096398e4746ef79cf5e59fe65dee017cbfff4e49"
+    },
+    {
+      "bytes": 1905,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/thread-admission-gate/execution.json",
+      "sha256": "5243fd221062a5ca2de73b562823f2c21db189575a5793e1123fb76539de2303"
+    },
+    {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/thread-admission-gate/pytest.log",
+      "sha256": "578ee4bb380e5e08775f958fcbe34f2d1e5ad46ef4e748acbaf45feccce4d263"
+    },
+    {
+      "bytes": 4383,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/thread-admission-gate/pytest.xml",
+      "sha256": "dd3bffa612d7d43a9f16f19c2a50cf2e017e3f704c865f3bd404e3a83c310e17"
+    },
+    {
+      "bytes": 29074,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/thread-admission-gate/quantum_umbrella_archive.py",
+      "sha256": "62a7e7e451ef4e9215e1fd7d8c3f93206c74939e67bfae265e3363e4a99de3f2"
+    },
+    {
+      "bytes": 11560,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/thread-admission-gate/test_h3_quantum_umbrella_archive.py",
+      "sha256": "f8cc179bab92b4461f6a31f0a276b647009952137855faf3489d5aa1785dabd8"
+    }
+  ],
+  "inventory_excludes_itself": true,
+  "original_scientific_sources_modified": false,
+  "raw_NPZ_files_included": 0,
+  "root_adoption_required_for_actual_run": true,
+  "schema": "pyrpmd.publication-inventory.v1",
+  "scope": "Additive fixed100000 umbrella complete-cohort archive/extraction/exact-replay tooling and inert gates only; no actual complete raw read/copy/replay performed at preparation freeze.",
+  "source_root": "/workspace/scratch/a5e4820daedd/PyRPMD",
+  "total_bytes": 260918
+}

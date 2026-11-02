@@ -1,0 +1,21 @@
+{
+  "blocking_phase_cohort_or_lease_issue_found_after_revision": false,
+  "recorded_utc": "2026-11-01T18:57:14.748993+00:00",
+  "remaining_scope": [
+    "Only coordinator-PID signals have the graceful-stop contract; process-group signals may reach the frozen native runner directly.",
+    "No live cohort registration or long preparation was adopted or run.",
+    "RDF/coordination hard gates remain unadopted; preparation data are not diffusion evidence."
+  ],
+  "review_driven_change": {
+    "initial_finding": "Without explicit signal handling, a main-thread interruption could enter pool shutdown while workers continued admitting queue successors; inherited leases alone only protected writer exclusion.",
+    "revision": "Coordinator-PID SIGINT/SIGTERM record an admission-stop request, persist a stop marker/event in the main loop, drain started children, and restore handlers after the pool closes. Main-thread errors latch before exceptional shutdown.",
+    "validation": "Three isolated fixtures use actual coordinator-only signals and real bounded Python stub children, including a signal during exceptional shutdown. No molecular dynamics."
+  },
+  "reviewed_source_test_sha256": {
+    "benchmarks/water/native_preparation_coordinator.py": "f51c63e1ba8edbca91ef6247bcd9e10fd9eb281c3e1cec986835e9d961d1bd02",
+    "tests/test_water_preparation_coordinator.py": "4443d33480628f5e1940929e93272b378fb1a280c922c14adb2ba113a4f88441"
+  },
+  "reviewer": "independent collaboration agent /root/distribution",
+  "schema": "pyrpmd.water-preparation-coordinator-independent-review.v1",
+  "scope": "read-only coordinator/fixtures/cohort and lease contract; no extra dynamics or tests executed by reviewer"
+}

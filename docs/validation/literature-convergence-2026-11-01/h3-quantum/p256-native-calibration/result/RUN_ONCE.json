@@ -1,0 +1,21 @@
+{
+  "CPU_affinity": [
+    6
+  ],
+  "CPU_limit": [
+    60,
+    60
+  ],
+  "PID": 5,
+  "created_utc": "2026-11-01T20:24:57.952403+00:00",
+  "proposal_sha256": "d33f221b2ce8e869b9f7c3577021726bba0ac25b23f0deac3c08e30c5d47c196",
+  "review_sha256": "158e15c60217782eb4ce8d749ded50b921dbe34759d9eace55de092012965912",
+  "root_adoption_sha256": "1b144c16b2bebe019ef736693b3a2442a8c8310b8468e141a6676fb8054f64e5",
+  "source_sha256": "9eb0bfc88b210d6abf432b91f8ee54274ec3f0d94de8c573433d76400b5220c8",
+  "threads": {
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  }
+}

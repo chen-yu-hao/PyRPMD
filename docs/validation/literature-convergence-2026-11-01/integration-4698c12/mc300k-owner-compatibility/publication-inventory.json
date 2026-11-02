@@ -1,0 +1,153 @@
+{
+  "created_utc": "2026-11-01T22:32:01.289203+00:00",
+  "files": [
+    {
+      "bytes": 24058,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/before-test_h3_quantum_isolated_continuation.py",
+      "sha256": "69df0a97c06992db5c24e074abee9866474ae4f02a90b8e9f6fe73d1d073ef05"
+    },
+    {
+      "bytes": 15450,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/copy-receipt.json",
+      "sha256": "4b00c7a5df9628c6b2e56955943e9e8bbca7ff489913885577be40da7edf4a2f"
+    },
+    {
+      "bytes": 3248,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/execution.json",
+      "sha256": "e39fc412e7130d78b42b9f17fa10f53ac0f29f68bd6be56d875456e22a56c7fd"
+    },
+    {
+      "bytes": 313330,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/guard-before.json",
+      "sha256": "aaa3e5d9785287ff4e49d38376d765cf7e54d609e0d733e541729a6576ade5f4"
+    },
+    {
+      "bytes": 1280,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/pidfd-availability.json",
+      "sha256": "1ace6ee807cce57b43cea880dee05880b3958b7ea9f16e917f8120aff0c792ce"
+    },
+    {
+      "bytes": 5854,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/prepare_gate.py",
+      "sha256": "c8cdff30850e53aa15ccf83332c51f875138c403376f720d79ebf6ccd1c7b76f"
+    },
+    {
+      "bytes": 5235,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/py312/child-import.json",
+      "sha256": "776a5012853f7d69cc1bc28e4237af3b500df6d06c84c0c161a7909c5d0d5b26"
+    },
+    {
+      "bytes": 0,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/py312/child-import.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 11178,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/py312/compatibility.json",
+      "sha256": "b0804d7bc97663bca85cbb0972191e0eef7d82cd7756969cea160d91ec0ad193"
+    },
+    {
+      "bytes": 3507,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/py312/environment-after.json",
+      "sha256": "eea91c0dc20a59fef35f3735bfeb18ca7d3287b9c2252818cf7907d8decebd4c"
+    },
+    {
+      "bytes": 3507,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/py312/environment-before.json",
+      "sha256": "eea91c0dc20a59fef35f3735bfeb18ca7d3287b9c2252818cf7907d8decebd4c"
+    },
+    {
+      "bytes": 1301,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/py312/launch-receipt.json",
+      "sha256": "eedb689ebfce14f4b846feeea913d8cf78a5031b7b3895710fdb56b1f57c02d3"
+    },
+    {
+      "bytes": 7612,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/py312/pytest-runtime-finish.json",
+      "sha256": "f8043a8f1c4f5dab1ef5a710288e277069a1c6b011311dff042ac3f06c22c1df"
+    },
+    {
+      "bytes": 5235,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/py312/pytest-runtime-start.json",
+      "sha256": "776a5012853f7d69cc1bc28e4237af3b500df6d06c84c0c161a7909c5d0d5b26"
+    },
+    {
+      "bytes": 179,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/py312/pytest.log",
+      "sha256": "7a5714c08aa0eea3925265c9619e1978b0d627894492ee53a4794d3674b35695"
+    },
+    {
+      "bytes": 11757,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/py312/pytest.xml",
+      "sha256": "8c53a43e77a004637033d37bcff36c58fc1d2269f036a649880a380713d0ca37"
+    },
+    {
+      "bytes": 3225,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/py313/child-import.json",
+      "sha256": "4ca9423199641bc0055d776ff04262956e444656133694269bf98e4a7e6cf00f"
+    },
+    {
+      "bytes": 0,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/py313/child-import.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 11197,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/py313/compatibility.json",
+      "sha256": "c671f745f9e497820d8a5e488641fa4b40a9a4137a6523b333addcfd8c2a003b"
+    },
+    {
+      "bytes": 1547,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/py313/environment-after.json",
+      "sha256": "4be2598d743a42c2e3114f6601526afc865599f88a686f883072824b3d581efe"
+    },
+    {
+      "bytes": 1547,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/py313/environment-before.json",
+      "sha256": "4be2598d743a42c2e3114f6601526afc865599f88a686f883072824b3d581efe"
+    },
+    {
+      "bytes": 1320,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/py313/launch-receipt.json",
+      "sha256": "b6411a505a2e315fde4959f37e5bc9df3f9be5567eecec91f2c9add611d81442"
+    },
+    {
+      "bytes": 5677,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/py313/pytest-runtime-finish.json",
+      "sha256": "34cccd0c9e54363af142b9f3c238a1418864db15590bd1eb58ed3d56d1656125"
+    },
+    {
+      "bytes": 3225,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/py313/pytest-runtime-start.json",
+      "sha256": "4ca9423199641bc0055d776ff04262956e444656133694269bf98e4a7e6cf00f"
+    },
+    {
+      "bytes": 17978,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/py313/pytest.log",
+      "sha256": "6f9dc4559654df5a447f24bed4d0a3ee8edaa7cf372dd542a3a8bd099e5c08a0"
+    },
+    {
+      "bytes": 29217,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/py313/pytest.xml",
+      "sha256": "250145580d8884daffb894576cabbe9daa4c23cbb457bdfd1f6930976cf2cb03"
+    },
+    {
+      "bytes": 9629,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/run_checks.py",
+      "sha256": "6dc6101951ada8d4741d1f72c3b462740e97c7f9ef7bc7b048225d03c5fbddd8"
+    },
+    {
+      "bytes": 3617,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/run_sequential.py",
+      "sha256": "f48870495883aaed285fa91694f2a49169fed1192a1365b6e029cb84bd3207c6"
+    },
+    {
+      "bytes": 3853,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/selection.json",
+      "sha256": "21abe0a76ec2080fcc5b17b1fb3c9ab419773c82231258e55744279c5f0db21c"
+    }
+  ],
+  "listed_bytes": 504763,
+  "schema": "pyrpmd.mc300k-compact-publication-inventory.v1",
+  "scope": "Retained initial local full3.12 pass and unsupported-interface3.13 failures; no physical work."
+}
