@@ -39,9 +39,11 @@ def _exchange_statistics_options(table):
     return dict(block_size=block, minimum_average_sign=minimum, sign_sigma=sigma)
 
 
-def _exchange_history(value, count, method, pbc):
+def _exchange_history(value, count, method, pbc, *, volumes=None, pressure_au=None):
     """Validate stored signed numerators; no division by instantaneous sign."""
     required = EXCHANGE_COLUMNS | ({"virial_internal_energy_numerator_hartree"} if not any(pbc) else set())
+    if volumes is not None:
+        required |= {"pressure_numerator_au", "volume_numerator_bohr3", "enthalpy_numerator_hartree"}
     allowed = required | ({"pressure_numerator_au"} if all(pbc) else set())
     if (not isinstance(value, list) or len(value) != count
             or any(not isinstance(row, dict) or not required <= set(row)
@@ -56,7 +58,31 @@ def _exchange_history(value, count, method, pbc):
                                      + row["kinetic_energy_numerator_hartree"], rtol=1e-12, atol=1e-14)
                    for row in value)):
         raise ValueError("invalid exchange estimator checkpoint history")
+    if volumes is not None:
+        volumes = np.asarray(volumes)
+        if (volumes.shape != (count,) or not np.isfinite(volumes).all()
+                or np.any(volumes <= 0) or pressure_au is None
+                or not np.isfinite(pressure_au)
+                or any(not np.isclose(row["volume_numerator_bohr3"], volume * row["sign"],
+                                      rtol=1e-12, atol=1e-14)
+                       or not np.isclose(row["enthalpy_numerator_hartree"],
+                                         row["internal_energy_numerator_hartree"]
+                                         + pressure_au * row["volume_numerator_bohr3"],
+                                         rtol=1e-12, atol=1e-14)
+                       for row, volume in zip(value, volumes))):
+            raise ValueError("invalid exchange NPT estimator/cell checkpoint history")
     return value
+
+
+def _make_barostat(action, system, nbeads, settings):
+    """Select the coordinate measure required by the sampling action."""
+    if settings is None:
+        return None
+    if isinstance(action, BosonicExchangePotential):
+        from ..exchange_barostat import ExchangeBZPBarostat
+        return ExchangeBZPBarostat(action, system, action.beta, nbeads, **settings)
+    from ..barostat import BZPBarostat
+    return BZPBarostat(action, system, action.beta, nbeads, **settings)
 
 
 def resolve_path_integral(config, system):
@@ -66,9 +92,11 @@ def resolve_path_integral(config, system):
     method = table.get("method", "suzuki_chin")
     fields = {
         "suzuki_chin": {"method", "alpha", "fd_step", "beta_fd_step"},
-        "bosonic": {"method", "groups", "periodic_mode", "block_size"},
+        "bosonic": {"method", "groups", "periodic_mode", "block_size",
+                    "winding_tolerance", "winding_max_terms"},
         "fermionic": {"method", "groups", "periodic_mode", "block_size",
-                      "minimum_average_sign", "sign_sigma"},
+                      "minimum_average_sign", "sign_sigma",
+                      "winding_tolerance", "winding_max_terms"},
         "pigs": {"method", "projection_time", "trial"},
     }
     if not isinstance(method, str) or method not in fields or set(table) - fields[method]:
@@ -84,12 +112,17 @@ def resolve_path_integral(config, system):
         raise ValueError("PIGS workflow requires a nonperiodic fixed-cell system")
     if method in EXCHANGE_METHODS:
         _exchange_statistics_options(table)
-        if "barostat" in config:
-            raise ValueError("exchange + BZP NPT is unsupported: centroid-only cell dilation does not "
-                "preserve the all-bead minimum-image measure; use fixed-cell exchange sampling")
+        if ({"winding_tolerance", "winding_max_terms"}.intersection(table)
+                and table.get("periodic_mode") != "full_winding"):
+            raise ValueError("winding controls require periodic_mode='full_winding'")
         if any(system.pbc) and loop_options(config)["integrator"] != "velocity-verlet":
             raise ValueError("periodic exchange requires dynamics.integrator='velocity-verlet' "
                 "and sampling.thermostat='andersen'; raw normal-mode springs are not lattice invariant")
+        if "barostat" in config and "gamma_centroid" in config.get("sampling", {}):
+            raise ValueError("exchange NPT uses Andersen sampling; sampling.gamma_centroid is inactive")
+        if ("barostat" in config
+                and config.get("native", config.get("dynamics", {}).get("native", True)) == "required"):
+            raise ValueError("exchange NPT requires the Python propagation loop; native='required' is unsupported")
     if method == "suzuki_chin" and any(system.pbc) and not all(system.pbc):
         raise ValueError("periodic SC requires a fully periodic 3D cell")
     if config.get("sampling", {}).get("engine", "legacy") != "legacy":
@@ -138,7 +171,8 @@ def _action(config, system, provider):
             fd_step=parse_quantity(table.get("fd_step", "1e-4 bohr"), "length"))
     if method in EXCHANGE_METHODS:
         action = BosonicExchangePotential(*args, groups=table.get("groups"), statistics=method,
-            cell=system.cell, pbc=system.pbc, periodic_mode=table.get("periodic_mode"))
+            cell=system.cell, pbc=system.pbc, periodic_mode=table.get("periodic_mode"),
+            **{key: table[key] for key in ("winding_tolerance", "winding_max_terms") if key in table})
         for group in action.groups:
             if len({system.symbols[i] for i in group}) != 1:
                 raise ValueError("each boson group must contain identical elements")
@@ -174,10 +208,7 @@ def run_path_integral(config, system, output):
                 threads=config.get("parallel", {}).get("threads_per_rank", 1),
                 **loop_options(config))
             state = State(np.repeat(system.geometry[None], config["beads"], axis=0), dynamics.sample_momenta())
-            piston = None
-            if options["barostat"] is not None:
-                from ..barostat import BZPBarostat
-                piston = BZPBarostat(action, system, action.beta, config["beads"], **options["barostat"])
+            piston = _make_barostat(action, system, config["beads"], options["barostat"])
             positions, values, steps, cells, estimator_values = [], [], [], [], []
             elapsed = 0
             total = options["neq"] + options["nprod"]
@@ -205,18 +236,18 @@ def run_path_integral(config, system, output):
                         raise ValueError("path-integral checkpoint samples disagree with clock/system")
                     if piston is not None:
                         if "barostat" not in saved or "cells" not in saved:
-                            raise ValueError("SC-NPT checkpoint is missing the piston/cell history")
+                            raise ValueError("path-integral NPT checkpoint is missing the piston/cell history")
                         piston.restore(json.loads(str(saved["barostat"])))
                         saved_cells = np.asarray(saved["cells"])
                         if saved_cells.shape != (len(expected), 3, 3):
-                            raise ValueError("SC-NPT checkpoint cell history disagrees with samples")
+                            raise ValueError("path-integral NPT checkpoint cell history disagrees with samples")
                         from ..barostat import validate_bzp_snapshot
                         for cell in saved_cells:
                             validate_bzp_snapshot({"method": "bzp", "cell": cell, "momentum": 0.0}, system.cell)
                         cells = list(saved_cells)
                         if len(expected) and expected[-1] == elapsed and not np.array_equal(cells[-1], piston.cell):
-                            raise ValueError("SC-NPT last sampled cell differs from the piston")
-                    elif "barostat" in saved:
+                            raise ValueError("path-integral NPT last sampled cell differs from the piston")
+                    elif "barostat" in saved or "cells" in saved:
                         raise ValueError("unexpected pressure state in fixed-cell checkpoint")
                     if method == "suzuki_chin" and "sc_estimators" in saved:
                         estimator_values = json.loads(str(saved["sc_estimators"]))
@@ -237,7 +268,10 @@ def run_path_integral(config, system, output):
                     if method in EXCHANGE_METHODS:
                         if "exchange_estimators" in saved:
                             estimator_values = _exchange_history(
-                                json.loads(str(saved["exchange_estimators"])), len(expected), method, system.pbc)
+                                json.loads(str(saved["exchange_estimators"])), len(expected), method, system.pbc,
+                                **({"volumes": np.abs(np.linalg.det(np.asarray(cells).reshape(-1, 3, 3))),
+                                    "pressure_au": piston.pressure_au}
+                                   if piston is not None else {}))
                         elif method == "fermionic" or any(system.pbc):
                             raise ValueError("exchange checkpoint is missing its estimator history")
                     dynamics.rng.bit_generator.state = json.loads(str(saved["rng"]))
@@ -251,9 +285,16 @@ def run_path_integral(config, system, output):
                     require_pressure=piston is not None).items()}
 
             def observe_exchange(q, physical_result=None):
-                volume = float(abs(np.linalg.det(system.cell))) if all(system.pbc) else None
-                return {key: float(value) for key, value in action.estimators(
-                    q, volume=volume, physical_result=physical_result).items()}
+                volume = piston.volume if piston is not None else (
+                    float(abs(np.linalg.det(system.cell))) if all(system.pbc) else None)
+                row = {key: float(value) for key, value in action.estimators(
+                    q, volume=volume, require_pressure=piston is not None,
+                    physical_result=physical_result).items()}
+                if piston is not None:
+                    row["volume_numerator_bohr3"] = volume * row["sign"]
+                    row["enthalpy_numerator_hartree"] = (row["internal_energy_numerator_hartree"]
+                        + piston.pressure_au * row["volume_numerator_bohr3"])
+                return row
 
             # Older fixed-cell SC checkpoints contain the full paths. Rebuild
             # their newly available estimators without propagating or drawing
@@ -265,6 +306,8 @@ def run_path_integral(config, system, output):
             if method in EXCHANGE_METHODS and len(estimator_values) != len(positions):
                 # Legacy nonperiodic bosonic checkpoints already store all
                 # paths. Reanalysis changes neither identity nor RNG state.
+                if piston is not None:
+                    raise ValueError("exchange NPT checkpoint is missing its estimator history")
                 estimator_values = [observe_exchange(q) for q in positions]
 
             def save():
@@ -290,9 +333,10 @@ def run_path_integral(config, system, output):
                 try:
                     if piston is not None:
                         piston.step(state, dynamics, thermostat=options["thermostat"],
-                                    gamma_centroid=options["gamma_centroid"],
-                                    andersen_interval=options["andersen_interval"],
-                                    method=options["sampling_method"] if options["thermostat"] == "pile-l" else None)
+                            andersen_interval=options["andersen_interval"],
+                            **({} if method in EXCHANGE_METHODS else {
+                                "gamma_centroid": options["gamma_centroid"],
+                                "method": options["sampling_method"] if options["thermostat"] == "pile-l" else None}))
                     elif options["thermostat"] == "pile-l":
                         dynamics.sample_step(state, gamma_centroid=options["gamma_centroid"],
                                              method=options["sampling_method"])
@@ -314,7 +358,9 @@ def run_path_integral(config, system, output):
                             estimators = observe_sc(state.q)
                         elif method in EXCHANGE_METHODS:
                             estimators = observe_exchange(state.q, physical_result)
-                            _exchange_history([estimators], 1, method, system.pbc)
+                            _exchange_history([estimators], 1, method, system.pbc,
+                                **({"volumes": [piston.volume], "pressure_au": piston.pressure_au}
+                                   if piston is not None else {}))
                             if estimator_values and set(estimators) != set(estimator_values[0]):
                                 raise ValueError("exchange estimator columns changed during sampling; "
                                                  "physical virial availability must remain consistent")
@@ -361,6 +407,17 @@ def run_path_integral(config, system, output):
                 if method == "fermionic":
                     summary["bosonic_sampling_potential_energy_hartree"] = summary["potential_energy_hartree"]
                     summary["potential_energy_hartree"] = summary["thermodynamics"]["potential_energy_hartree"]
+                if piston is not None:
+                    summary["barostat"] = piston.snapshot()
+                    summary["mean_volume_bohr3"] = summary["thermodynamics"]["volume_bohr3"]
+                    if method == "fermionic":
+                        summary["bosonic_sampling_mean_volume_bohr3"] = float(np.mean(np.abs(np.linalg.det(cells))))
+                if action.periodic_mode == "full_winding":
+                    summary["winding_sum"] = {
+                        "plan_scope": "final_cell" if piston is not None else "fixed_cell",
+                        "cell_bohr": action.cell.tolist(),
+                        "kernels": copy.deepcopy(action.metadata["winding_kernels"]),
+                    }
             summaries.append(summary)
         finally:
             physical.close()
@@ -376,6 +433,10 @@ def run_path_integral(config, system, output):
         **({"physical_converged": False,
             "sampling_statistics": "bosonic",
             "periodic_exchange": config["path_integral"].get("periodic_mode"),
+            "barostat_coordinate_scaling": "all_beads" if options["barostat"] is not None else None,
+            **({"winding_tolerance": action.winding_tolerance,
+                "winding_max_terms": action.winding_max_terms}
+               if config["path_integral"].get("periodic_mode") == "full_winding" else {}),
             "warnings": [dict(warning, replica=row["replica"]) for row in summaries
                          for warning in row["thermodynamics"]["warnings"]]}
            if method in EXCHANGE_METHODS else {}),
@@ -387,8 +448,12 @@ def run_path_integral(config, system, output):
             ["symmetric equilibrium observables only; no real-time dynamics or heat capacity",
              "fermionic ratios require a resolved positive mean sign; unresolved conclusions are withheld",
              "block errors are conditional; sampling, time-step and bead convergence remain unestablished",
-             "periodic_mode='minimum_image' is an explicit approximation without a winding sum",
-             "centroid BZP NPT is rejected because its pressure is not invariant under independent bead images"]
+             *( ["periodic_mode='minimum_image' is an explicit approximation without a winding sum"]
+                if config["path_integral"].get("periodic_mode") == "minimum_image" else []),
+             *( ["periodic Gaussian image sums are evaluated to the declared numerical tolerance"]
+                if config["path_integral"].get("periodic_mode") == "full_winding" else []),
+             *( ["exchange NPT uses all-bead BZP dilation and the dV measure; no centroid-only piston"]
+                if options["barostat"] is not None else [])]
             if method in EXCHANGE_METHODS else
             ["potential energy only; not a total-energy or heat-capacity estimator",
              "sampling, time-step and bead/projection convergence must be established separately",

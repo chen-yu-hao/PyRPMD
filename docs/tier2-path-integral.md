@@ -247,13 +247,13 @@ measure. See [condensed-phase validation](condensed-phase-nqe.md) for the
 coupled crystal and anharmonic FCC solid evidence, bead/timestep comparisons
 and retained sampling uncertainties.
 
-## Fermionic reweighting and periodic minimum-image exchange (T08)
+## Fermionic and periodic exchange, including isotropic NPT (T08)
 
 This extension supersedes the nonperiodic-only exchange restriction above.
-It adds fermionic estimators from positive bosonic sampling and an explicitly
-selected periodic **minimum-image approximation**. Exchange with the existing
-centroid BZP NPT propagator remains unsupported. Suzuki–Chin and PIGS behavior
-is unchanged.
+It adds fermionic estimators from positive bosonic sampling, periodic Gaussian
+image sums, and a separate all-bead isotropic BZP propagator for the periodic
+coordinate measure. The explicitly selected **minimum-image approximation**
+remains available. Suzuki–Chin and PIGS behavior is unchanged.
 
 ### Selecting statistics and reporting uncertainty
 
@@ -330,10 +330,11 @@ bead convergence and the sign problem require separate assessment.
 The nonperiodic example is `examples/path_integral/fermionic.inp`. Its short
 run illustrates configuration and reporting, not a converged physical result.
 
-### Periodic exchange, affine virial and fixed-cell pressure
+### Periodic exchange and numerical winding sums
 
-For a periodic system, set `periodic_mode="minimum_image"` explicitly in the
-exchange table. Both statistics are supported. The workflow requires
+For a periodic system, explicitly select `periodic_mode="full_winding"` or
+`periodic_mode="minimum_image"` in the exchange table. Both statistics are
+supported. The workflow requires
 `dynamics.integrator="velocity-verlet"` with the Andersen thermostat: the
 existing analytic normal-mode spring propagation assumes unwrapped quadratic
 springs and is not invariant under independent bead-image changes.
@@ -350,18 +351,72 @@ andersen_interval = 10
 [path_integral]
 method = "bosonic"
 groups = [[0, 1]]
-periodic_mode = "minimum_image"
+periodic_mode = "full_winding"
+winding_tolerance = 1e-12
+winding_max_terms = 100000
 ```
 
-Every interior and exchange endpoint displacement uses the existing exact
-nearest-image geometry, including skew cells and partial periodicity. The
-class caches the cell geometry. Periodic particles outside the exchange
-groups also receive minimum-image distinguishable springs. Thus the total
-sampling action, its forces, and the exchange affine virial are invariant
-under independent lattice translations of the beads. Derivatives at an
-exact nearest-image tie are not defined. The wrapper subtracts the engine's
-ordinary unwrapped springs once; the wrapper's correction by itself need
-not be image invariant, but the complete sampling Hamiltonian is.
+In full-winding mode each interior and possible exchange-endpoint connection
+uses the periodic Gaussian kernel
+
+```text
+K(d) = sum_{n in Z^k} exp(-a * |d + n*B|^2)
+a = mass*P/(2*beta)
+```
+
+Here `B` contains the `k` periodic lattice vectors. The algorithm sums the
+individual connection kernels before the exchange recursion, so the
+permutation and winding weights remain coupled. The free energy of a link
+is `-P/beta*log(K)`. Its conditional displacement and displacement-square
+moments supply forces, affine virials and beta derivatives. In particular,
+the quadratic spring moment is distinct from the link free energy.
+
+Real-space Gaussian sums and their Poisson reciprocal representation are
+selected according to the kernel width. Orthogonal periodic directions
+factor into one-dimensional sums; skew cells use the multidimensional
+lattice. Both full and partial periodicity are supported. Sums are chunked
+to bound temporary memory instead of allocating all links times all images.
+The work is quadratic in particle count at fixed lattice-sum cost.
+
+`winding_tolerance` controls the per-link truncation error of the kernel and
+scaled moments. It is a numerical summation tolerance, independent of bead,
+timestep and sampling convergence, and excludes floating-point roundoff.
+`winding_max_terms` limits the lattice-sum work per link. A cell or requested
+tolerance that exceeds the budget raises an error; it never silently changes
+to MIC. The two controls are accepted only in full-winding mode and enter
+the scientific identity. Small cells use the reciprocal representation to
+avoid a growing direct-image count. The construction follows
+[Higer, Feldman and Hirshberg (2025)](https://doi.org/10.1063/5.0265906).
+
+`ExchangeResult.winding_diagnostics` reports the representations, cutoffs,
+term counts and the three link truncation bounds. Its representative-weight
+bound combines the link errors over `N*P` connections. Preflight reports the
+initial plans, and each replica summary retains its fixed-cell or explicitly
+labeled final-cell plans. NPT validates the requested budget at every cell
+update. The implementation caps `winding_max_terms` at 1,000,000 to bound
+cached lattice data. Link batches target at most 262,144 link-term pairs;
+one link with more terms is evaluated alone. The reported
+`working_pair_budget` is the larger of that target and the actual term count,
+and is therefore at most 1,000,000.
+
+MIC retains only the exact nearest image for each displacement, including
+skew cells and partial periodicity. Derivatives at an exact MIC image tie
+are not defined. Periodic particles outside the exchange groups receive
+the same selected periodic treatment with distinguishable connections.
+For either mode the complete sampling action, forces and affine virial are
+invariant under independent lattice translations of beads, up to the
+declared numerical precision. The ordinary unwrapped engine springs are
+subtracted once by `evaluate`; the wrapper correction alone need not be
+image invariant. `evaluate_sampling` instead returns the complete sampling
+action directly, including all springs, for the all-bead NPT propagator.
+
+`examples/path_integral/bosonic_periodic.inp` demonstrates fixed-cell MIC;
+`examples/path_integral/fermionic_winding.inp` demonstrates full periodic
+fermionic reweighting. Full-winding mode sums the periodic free-density
+matrix images to numerical tolerance. It does not introduce a superfluid
+estimator or remove finite-bead errors of an interacting physical potential.
+
+### Affine virial and thermodynamic pressure
 
 `ExchangeResult.virial` is the negative affine strain derivative of the
 bosonic spring free energy. When the physical provider supplies its own
@@ -370,7 +425,7 @@ exchange correction, with the subtracted ordinary spring contribution
 handled consistently. A missing physical virial is never replaced by
 Cartesian `q dot F`.
 
-For a fully periodic fixed cell, `estimators(q, volume=Vbox,
+For a fully periodic current cell, `estimators(q, volume=Vbox,
 require_pressure=True)` returns a signed primitive pressure numerator:
 
 ```text
@@ -379,40 +434,86 @@ A_p = (N*P/(beta*Vbox) + trace(sum(W_physical))/(3*P*Vbox))*s
 p = mean_B(A_p) / mean_B(s)
 ```
 
-It requires the physical provider's virial and the matching fixed-cell
+It requires the physical provider's virial and the matching current-cell
 volume. With optional pressure reporting, the field is absent if the provider
-has no virial. This pressure is consistent with the declared MIC action;
-it is not a winding-complete periodic quantum result. A periodic free-particle
-example is `examples/path_integral/bosonic_periodic.inp`.
+has no virial. Pressure is consistent with the selected periodic action;
+MIC therefore retains its image approximation, whereas full-winding mode
+uses all images to the specified tolerance. NPT requires physical virials
+and explicit `set_cell` support from the physical provider.
 
-MIC retains one nearest image for each link. It does **not** sum winding
-sectors or all periodic free-density-matrix images, and it does not provide a
-superfluid estimator. Increasing sampling alone cannot remove this
-approximation. Compare cell size, temperature and bead number, and consult
-the MIC validity analysis of
-[Higer, Feldman and Hirshberg (2025)](https://doi.org/10.1063/5.0265906).
-Full winding summation remains future work.
+### Exchange with isotropic all-bead BZP NPT
 
-### Why exchange + centroid BZP NPT still fails explicitly
+Add the ordinary pressure-control table to a fully periodic exchange input:
 
-Adding an affine exchange virial does not suffice for the existing barostat.
-Its centroid pressure contains `sum((q-q_centroid)*F)`, and it dilates only
-the particle centroids. For the all-bead MIC domain, independently changing a
-bead's lattice image leaves the action, force and affine virial unchanged,
-but changes this centroid-offset term. The all-bead torus measure has `NP`
-coordinate volume factors, while the existing centroid generator assumes
-unbounded internal offsets and `N` centroid factors. A consistent periodic
-barostat measure or explicit winding representation is needed.
+```toml
+[barostat]
+method = "bzp"
+pressure = "0.04 au"
+time_constant = "2 au"
+```
 
-Both workflow validation and `BosonicExchangePotential.set_cell` therefore
-reject BZP NPT with an actionable explanation. The fixed-cell pressure
-estimator does not advertise NPT support. A dedicated regression demonstrates
-this image-dependence of the unsupported centroid expression.
+The workflow selects
+`pyrpmd.exchange_barostat.ExchangeBZPBarostat`. This class scales all bead
+coordinates, all bead momenta, and the cell, using the full sampling-action
+force and strain virial. Its target density is
+
+```text
+exp[-beta/P * (H_P + P*p_ext*Vbox + piston_momentum^2/(2*piston_mass))]
+    * dq * dp * dVbox * d(piston_momentum)
+```
+
+All bead coordinates live on the periodic cell; in fractional coordinates
+their Jacobian is `Vbox**(N*P)`. No center-of-mass constraint is imposed.
+The piston drive is
+`2*K_all + trace(W_sampling) - 3*P*p_ext*Vbox + 3*P/beta`.
+The last term accounts for the `dVbox` measure. The corresponding
+deterministic extended invariant is
+`H_P + P*p_ext*Vbox + piston_momentum^2/(2*piston_mass)
+- P/beta*log(Vbox)`; stochastic thermostat heat is not included.
+
+The reversible step uses exact force/piston and drift/dilation subflows,
+including the quadratic and cubic piston terms during a force kick. It
+requires two full-action PES evaluations per step and becomes velocity
+Verlet when the piston rate is zero. A Langevin piston and Andersen particle
+collisions provide thermostatting. The piston mass is
+`3*N*P*time_constant**2/beta`. Existing Dynamics constraints, specialized
+operators or thermostats cannot be silently bypassed by this propagator.
+Direct callers must use plain `Dynamics` with velocity-Verlet and the Python
+loop; specialized subclasses and composed operators are rejected. The
+workflow rejects `native="required"` during preflight. Andersen is the
+supported particle thermostat; `thermostat=None` is a low-level deterministic
+validation option when piston friction is also zero.
+The construction adapts the BZP equations of
+[Bussi, Zykova-Timan and Parrinello (2009)](https://doi.org/10.1063/1.3073889)
+and the exact subflows of
+[Ceriotti, More and Manolopoulos (2014)](https://doi.org/10.1016/j.cpc.2013.10.027)
+to this unconstrained all-bead coordinate domain.
+
+The older centroid BZP class remains incompatible with periodic exchange:
+its `sum((q-q_centroid)*F)` correction depends on independent bead-image
+choices. Calling `BosonicExchangePotential.set_cell` without the explicit
+`barostat_coupling="all_beads"` contract still fails, so a direct caller
+cannot accidentally select that old generator. The workflow chooses the
+new class automatically and records `barostat_coordinate_scaling="all_beads"`.
+
+NPT reports signed volume and enthalpy numerators in addition to energy and
+pressure. Their ratios and uncertainties use the same sign gate and joint
+jackknife. A fermionic run exposes an unweighted volume only as
+`bosonic_sampling_mean_volume_bohr3`; `mean_volume_bohr3` is the gated
+fermionic estimate. See `examples/path_integral/bosonic_winding_npt.inp`.
+
+For a finite periodic free Bose gas the zero-momentum ground state gives
+`Z(Vbox -> 0) -> 1`. Its NPT mean pressure consequently has a volume-boundary
+term and need not equal the external pressure. Validation instead compares
+the full `Z(Vbox)*exp(-beta*p_ext*Vbox)` distribution and moment identities.
+This boundary effect is separate from integration and sampling errors.
 
 ### Restart and independent checks
 
 Atomic checkpoints now also contain `exchange_estimators`, with signed
-numerators, sign and any applicable optional estimator columns. The full
+numerators, sign and any applicable optional estimator columns. NPT stores
+the all-bead piston coupling tag and a matching cell for every saved frame;
+volume and enthalpy numerators are checked against that history. The full
 position, momentum, clock and RNG state remain present. Invalid histories or
 changed physics are rejected. Legacy nonperiodic bosonic checkpoints without
 the new history reconstruct it from saved paths without consuming RNG or
@@ -430,6 +531,16 @@ finite bead counts. Independent Gaussian determinants over all permutations
 check the analytic partition functions. Independent Gaussian-mixture samples
 from the positive recursive density then check the production estimators and
 average sign within measured sampling errors.
+
+`test_exchange_winding.py` independently checks lattice sums, truncation
+bounds, forces, affine virials and periodic image invariance.
+`test_exchange_periodic_reference.py` uses reciprocal-lattice occupation
+energies and independent torus Brownian bridges for one, two and three
+particles at multiple bead counts, plus an independent NPT volume integral.
+`test_exchange_barostat.py` verifies the complete physical-plus-exchange
+pressure, reversible subflows, second-order invariant errors and atomic
+rollback. `test_exchange_npt_workflows.py` checks coupled cell/piston/RNG
+restart, scientific identities, and signed volume/enthalpy reporting.
 
 For an isotropic trap of frequency `omega`, the finite-`P` cycle factor is
 `z_k = [2*sinh(k*P*asinh(beta*omega/(2*P)))]**(-3)`. A length-`k` cycle has

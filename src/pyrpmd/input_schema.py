@@ -31,7 +31,7 @@ _ROOT = set(
     "schema_version task preset temperature beads seed system potential dynamics sampling reaction preparation collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics opes adaptive_umbrella pcet diffusion site_rate surface nonadiabatic replica_exchange barostat electronic_friction initial_ensemble fes path_integral active_learning".split()
 )
 _SECTIONS = {
-    "path_integral": set("method alpha fd_step beta_fd_step groups projection_time trial periodic_mode block_size minimum_average_sign sign_sigma".split()),
+    "path_integral": set("method alpha fd_step beta_fd_step groups projection_time trial periodic_mode block_size minimum_average_sign sign_sigma winding_tolerance winding_max_terms".split()),
     "active_learning": set("interval_steps force_threshold energy_threshold directory max_frames".split()),
     "electronic_friction": set("method provider gamma tensor factory params".split()),
     "initial_ensemble": set("method beta fragments".split()),
