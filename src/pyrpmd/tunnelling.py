@@ -13,7 +13,8 @@ import numpy as np
 from scipy.optimize import minimize, root
 
 from .constants import WAVENUMBER_TO_AU
-from .instanton import InstantonError, _mask_and_masses, _physical_hessians, _positive
+from .instanton import (InstantonError, _CountingPotential, _mask_and_masses,
+                       _physical_hessians, _positive)
 from .low_temperature import HarmonicState, _complement, _integer
 from .potentials.base import coordinates, validate_result
 
@@ -52,6 +53,7 @@ def tunnelling_splitting(potential, masses, initial_path, imaginary_time_au, *,
     tolerance = _positive(gradient_tolerance, "gradient_tolerance")
     phase_limit = _positive(phase_tolerance, "phase_tolerance")
     max_iterations = _integer(max_iterations, "max_iterations")
+    potential = _CountingPotential(potential)
     intervals, d = len(q)-1, len(mass)
     n = intervals-1
     if n*d > 4096:
@@ -106,6 +108,7 @@ def tunnelling_splitting(potential, masses, initial_path, imaginary_time_au, *,
                         method="L-BFGS-B", options={"gtol": tolerance, "ftol": 1e-15,
                                                    "maxiter": max_iterations})
     x = solution.x
+    refinement = None
     if np.max(np.abs(evaluate(x)[1])) > tolerance:
         # Refine the nearly-flat phase direction without artificially pinning a
         # centroid or a particular barrier-crossing bead.
@@ -147,6 +150,18 @@ def tunnelling_splitting(potential, masses, initial_path, imaginary_time_au, *,
             "log_prefactor_au": log_prefactor, "log_determinant_ratio": log_ratio,
             "gradient_max": residual, "phase_mode_relative_residual": phase_residual,
             "imaginary_time_au": duration, "nintervals": intervals,
+            "time_step_au": dtau,
+            "energy_reference_hartree": reference,
+            "endpoint_positive_frequencies_au": [np.sqrt(left).tolist(), np.sqrt(right).tolist()],
+            "ground_state_duration_parameter": duration * math.sqrt(float(left[0])),
+            "splitting_to_smallest_frequency_ratio": splitting / math.sqrt(float(left[0])),
+            "optimizer_diagnostics": dict(potential.statistics,
+                                          method="L-BFGS-B",
+                                          iterations=int(solution.nit),
+                                          gradient_evaluations=int(solution.nfev),
+                                          newton_refinement=refinement is not None,
+                                          refinement_gradient_evaluations=(int(refinement.nfev)
+                                                                           if refinement is not None else 0)),
             "path_bohr": path.tolist(), "numerical_converged": True,
             "physical_converged": False,
             "limitations": ["symmetry-equivalent bound/constrained wells; one tunnelling path",
