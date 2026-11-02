@@ -82,6 +82,29 @@ def _matrix_root(a: np.ndarray, label: str) -> np.ndarray:
     return np.ascontiguousarray((vectors * np.sqrt(np.maximum(values, 0))) @ vectors.T)
 
 
+def _validate_piglet_npt(spec: dict, beads: int):
+    """The centroid bath must preserve the canonical piston-coupled momentum.
+
+    PIGLET internal modes deliberately violate the classical fluctuation--
+    dissipation relation. The zero-frequency centroid, however, must have a
+    unit physical variance and no physical/auxiliary covariance. Otherwise
+    the thermostat does not preserve the extended centroid/piston measure.
+    This checks that necessary condition, not the accuracy of a fitted set.
+    """
+    a = _array(spec.get("A"))
+    if a.ndim != 3 or a.shape[0] != beads or a.shape[1] != a.shape[2]:
+        raise ValueError("PIGLET requires explicitly calibrated per-mode matrices")
+    cov = _array(spec.get("C", np.eye(a.shape[-1])))
+    if cov.ndim == 2:
+        cov = np.repeat(cov[None], beads, axis=0)
+    if cov.shape != a.shape:
+        raise ValueError("GLE covariance dimensions differ from A")
+    if (not math.isclose(float(cov[0, 0, 0]), 1.0, rel_tol=1e-10, abs_tol=1e-12)
+            or not np.allclose(cov[0, 0, 1:], 0, atol=1e-12, rtol=0)
+            or not np.allclose(cov[0, 1:, 0], 0, atol=1e-12, rtol=0)):
+        raise ValueError("PIGLET NPT requires a canonical centroid with zero physical/auxiliary covariance")
+
+
 def _gle_matrices(spec: dict, mode: str, beads: int, beta: float,
                   dt: float) -> tuple[int, np.ndarray, np.ndarray, np.ndarray]:
     """One-time matrix preparation; no Python linear algebra during propagation."""
@@ -311,6 +334,8 @@ class NativeEnsemble:
         self.dt = dt
         from .engine import PropagationPlan
         self.plan = PropagationPlan(integrator, thermostat, barostat)
+        if (getattr(potential, "metadata", {}) or {}).get("action") == "suzuki_chin":
+            raise ValueError("NativeEnsemble observable rows use primitive estimators; use SuzukiChinPotential with Dynamics and an external BZPBarostat")
         integrator = self.plan.integrator
         if integrator not in ("cayley-bcb", "normal-mode-bab"):
             raise ValueError("native ensembles support Cayley BCOCB or exact-normal-mode BAOAB, not Verlet")
@@ -374,7 +399,9 @@ class NativeEnsemble:
             if "gle" not in t:
                 raise ValueError("GLE requires an explicit drift matrix")
             if mode == "piglet" and bmode != "none":
-                raise ValueError("PIGLET NPT is not validated by this implementation")
+                if bmode != "bzp":
+                    raise ValueError("PIGLET NPT supports only the isotropic BZP barostat")
+                _validate_piglet_npt(t["gle"], self.beads)
             cfg["gle_size"], cfg["gle_T"], cfg["gle_S"], cfg["gle_Croot"] = _gle_matrices(
                 dict(t["gle"]), mode, self.beads, beta, dt if bmode == "none" else dt / 2,
             )

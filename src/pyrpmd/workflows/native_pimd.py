@@ -86,12 +86,15 @@ def resolve_native_pimd(config, system):
     if "barostat" in config and ("mode" not in b or set(b) - native_barostat_fields):
         raise ValueError("native PIMD barostat requires explicit mode and native pressure/tau/gamma controls; legacy method/time_constant/friction controls use sampling.engine='legacy'")
     if b.get("mode", "none") not in ("none", "bzp", "mttk", "mtk", "rgb", "scr", "isotropic", "flexible", "anisotropic", "stochastic-rescaling"):
-        raise ValueError("unsupported native PIMD barostat; Suzuki-Chin action is not implemented")
+        raise ValueError("unsupported native PIMD barostat; select Suzuki-Chin through the legacy path_integral workflow")
     if b.get("mode", "none") != "none":
         if not all(system.pbc) or system.fixed_atoms:
             raise ValueError("native NPT requires 3D PBC and all atoms mobile")
         if mode == "piglet":
-            raise ValueError("PIGLET NPT is not validated")
+            if b.get("mode") not in ("bzp", "isotropic"):
+                raise ValueError("PIGLET NPT supports only the isotropic BZP barostat")
+            from ..native_ensemble import _validate_piglet_npt
+            _validate_piglet_npt(s.get("thermostat_params", {}).get("gle", {}), config["beads"])
     spec = config.get("potential", {})
     kind = spec.get("provider", spec.get("type", "builtin"))
     if kind not in ("builtin", "free", "harmonic", "periodic_cosine", "cabi", "native", "rpmdrate", "f2py", "native_periodic"):
@@ -309,7 +312,15 @@ def _summary(streams, config, system, output, return_data=False):
     if system.cell is not None:
         summary.update(initial_cell_bohr=system.cell.tolist(), pbc=list(map(bool,system.pbc)),
                        volume_mean_bohr3=float(np.mean([s["volume_mean_bohr3"] for s in streams])),
-                       pressure_mean_au=float(np.mean([s["pressure_mean_au"] for s in streams])))
+                       pressure_mean_au=float(np.mean([s["pressure_mean_au"] for s in streams])),
+                       pressure_estimator={
+                           "name": "instantaneous_centroid_momentum_virial",
+                           "sample_column": "pressure", "summary_field": "pressure_mean_au",
+                           "role": "piston_feedback" if bmode != "none" else "fixed_cell_diagnostic",
+                           "uses_configured_temperature_kinetic_term": False,
+                           "configured_temperature_cv_mean_equivalence":
+                               "justified by canonical centroid kinetic moments conditional on coordinates and volume; not assumed for PIGLET",
+                       })
     write_json(Path(output)/"summary.json", summary)
     return {"summary": summary, "streams": streams} if return_data else summary
 

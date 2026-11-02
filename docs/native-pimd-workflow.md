@@ -70,8 +70,13 @@ and `hartree/bohr^3`. NPT requires 3D PBC and all atoms mobile; SCR requires
 one bead. Flexible-cell row lattice vectors must be lower triangular with
 positive diagonal. RGB requires a symmetric external `stress` and a
 `reference_cell`; `reference_cell_unit` defaults to bohr for resolved systems.
-PIGLET/NPT and Suzuki-Chin NPT are explicitly rejected. Frozen atoms work in
-native NVT, not NPT. No calibrated PIGLET parameter set is bundled.
+PIGLET/NPT supports isotropic BZP when the supplied calibrated matrices have a
+canonical centroid momentum and zero covariance with its auxiliary variables.
+The general native input driver does not infer a Suzuki–Chin action: use
+the legacy `[path_integral]` SC workflow for SC-NPT. Frozen atoms work in
+native NVT, not NPT. The [condensed-phase benchmark](condensed-phase-nqe.md)
+contains an explicitly sourced PIGLET parameter set; it is not an automatic
+preset or a guarantee of transferability to another system.
 
 The existing Python BZP route remains available with the default/`legacy`
 sampling engine and its `method`, `time_constant`, and `friction` controls.
@@ -142,6 +147,26 @@ Propagation uses O(P*N) state memory, independent of trajectory length.
 Offline correlation diagnostics still retain scalar time series, but do not
 assemble full coordinate histories or transfer them through MPI.
 
+`pressure_mean_au` retains the mean of the recorded `pressure` column. The
+`pressure_estimator` metadata identifies it as an
+`instantaneous_centroid_momentum_virial`, using the sampled centroid momenta;
+for NPT it is the piston feedback pressure. It is not the pressure with the
+kinetic term fixed to the configured temperature. For the all-mobile, fully
+periodic case, the latter can be reconstructed from each saved centroid
+velocity `vbar_i` and its **same-frame** volume:
+
+\[
+p_{\mathrm{CV},T}=p_{\mathrm{recorded}}+
+\frac{3N/\beta-\sum_i m_i|\bar v_i|^2}{3V}.
+\]
+
+Apply this correction before averaging. The usual equality of ensemble means
+follows from canonical conditional centroid kinetic moments.
+PIGLET's noncanonical internal baths mean this
+equivalence cannot be assumed from its centroid bath parameters alone.
+Assess the configured-temperature pressure separately from piston feedback;
+see [the pressure definitions](native-ensembles.md#meaning-of-the-reported-pressure).
+
 `H_P` is the particle ring-polymer Hamiltonian, **not** the NPT conserved
 quantity: piston energy and thermostat heat are not included. Statistical and
 real-system convergence remain separate from implementation tests.
@@ -164,6 +189,7 @@ an expensive electronic-structure or machine-learning potential.
 ## Scope remaining
 
 This follow-up integrates PIMD only. Diffusion, rate, FES and metadynamics retain
-their previous workflow dispatch. Surface/frozen-atom NPT, calibrated PIGLET
-datasets, Suzuki-Chin action, native socket/GPU/bead-MPI backends and real-material
-accuracy validation remain outside this change.
+their previous workflow dispatch. Surface/frozen-atom NPT, inferred
+Suzuki–Chin actions, and native socket/GPU/bead-MPI backends remain outside
+this workflow. The separately documented condensed-phase benchmark reports
+the evidence and limits of the SC, PIGLET-NPT and RPC additions.

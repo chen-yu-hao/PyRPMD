@@ -75,7 +75,7 @@ potential and convergence studies.
 | `gle` | Cartesian extended OU; explicit drift/covariance matrices in `gle` |
 | `nm-gle` | Extended OU separately in each real normal mode |
 | `nm-gle-g` | Normal-mode GLE plus centroid SVR; `gle`, `tau` |
-| `piglet` | Per-mode GLE with supplied calibrated matrices and provenance; NVT only |
+| `piglet` | Per-mode GLE with supplied calibrated matrices and provenance; NVT or isotropic BZP NPT with a canonical centroid |
 | `trpmd` | Internal-mode PILE with exactly zero centroid friction; `pile_scale`; NVT only |
 | `ffl` | Fast-forward Langevin **rescale variant**: preserve direction, update speed; `gamma` |
 | `nhc` | Global Nosé–Hoover chain with three-stage Suzuki–Yoshida composition; `tau` (alias `tdamp`), `chain_length`, `substeps` |
@@ -133,7 +133,10 @@ string records the source but does not certify its validity. Tests verify matrix
 routing, covariance and restart; they do **not** establish reduced-bead PIGLET
 accuracy for a molecular observable. Obtain parameter sets appropriate to the
 temperature, bead count and target observables, document their units/normalization
-and compare against converged conventional PIMD. PIGLET and TRPMD NPT are rejected.
+and compare against converged conventional PIMD. PIGLET supports isotropic BZP
+NPT when the centroid physical momentum has unit normalized variance and zero
+covariance with its auxiliary variables. The Python API and native kernel
+both check that condition. TRPMD and flexible-cell PIGLET NPT remain unsupported.
 
 ## Barostats
 
@@ -160,15 +163,52 @@ internal-coordinate force correction and the ensemble-measure term. For BZP,
 centroid kinetic-pressure polynomial. Cell exponentials and `sinh(x)/x` use
 scaling/Taylor/squaring, including zero/repeated eigenvalues and pure shear.
 
+### Meaning of the reported pressure
+
+The `pressure` column of `NativeEnsemble.run()` uses the **instantaneous
+centroid momenta**. With a pressure controller this is its feedback pressure;
+the same column is a diagnostic when the cell is fixed. It does not replace
+the kinetic contribution with the configured temperature.
+
+For an all-mobile, fully periodic system, let `pbar_i` denote the average
+momentum over the P beads, and define
+`R = Tr(sum_j W_j) - sum_ji (q_ji-qbar_i) dot F_ji`. Then
+
+\[
+p_{\mathrm{control}}=
+\frac{P\sum_i |\bar p_i|^2/m_i+R}{3PV},\qquad
+p_{\mathrm{CV},T}=\frac{N}{\beta V}+\frac{R}{3PV}.
+\]
+
+Their pointwise difference is
+
+\[
+p_{\mathrm{control}}-p_{\mathrm{CV},T}
+=\frac{\sum_i |\bar p_i|^2/m_i-3N/\beta}{3V}.
+\]
+
+The usual equality of ensemble means follows from canonical centroid kinetic
+moments conditional on coordinates and volume. A PIGLET centroid **bath covariance** satisfying the
+required canonical conditions does not establish this property for the
+coupled anharmonic steady state, because its internal-mode baths are
+noncanonical. Check both pressure definitions, timestep refinement and
+sampling uncertainty. Agreement of piston feedback with the target alone
+does not establish agreement of the configured-temperature estimator. The
+BZP stationary piston force instead contains the volume-weighted combination
+`V*(p_control-p_external) + 1/beta`.
+
 SCR uses the square-root-volume stochastic proposal and a symmetric drift/rescale
 map. It has finite-time-step bias and is **not** Metropolized. Reduce the time step
 and check the distribution; successful execution is not proof of exact NPT
 sampling at arbitrary time steps. RGB uses the reference-cell strain-energy
 model; it is not an interchangeable hydrostatic-pressure shortcut.
 
-`sc-isotropic` / `suzuki-chin` raises `NotImplementedError`. Implementing that name
-without a Suzuki-Chin action and the corresponding force/virial derivatives
-would give the wrong ensemble. High-order path integrals remain outside this PR.
+The barostat names `sc-isotropic` / `suzuki-chin` do not infer a high-order action.
+Use an explicit `SuzukiChinPotential` with the Python `BZPBarostat` or the legacy
+SC-NPT input workflow described in [path-integral actions](tier2-path-integral.md).
+Direct `NativeEnsemble` SC providers remain unsupported because its observation
+rows use primitive estimators. SC observations must use the method-specific
+energy/heat-capacity/pressure functions rather than reinterpret those rows.
 
 ## Native potentials and the callback boundary
 

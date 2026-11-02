@@ -31,6 +31,10 @@ metadynamics、PIMD、扩散、表面跃迁和电化学 PCET；积分器内核�
 
 ## Tier 2 方法扩展
 
+[凝聚相核量子效应](docs/condensed-phase-nqe.md)现支持 Suzuki–Chin 的能量、Cv/Cp 与压力估计量、
+各向同性 SC-NPT、PIGLET-NPT 及 RPC 晶胞 virial。可复现的耦合晶体与 FCC Lennard–Jones 固体算例
+分别记录珠子数、时间步和采样误差；验证范围与参数来源见报告。
+
 [覆盖范围与限制](docs/tier2-methods.md)列出每项功能的实际入口：PA-CMD、二次质心势拟合与相对 Raman/SFG 谱，
 主引擎中的 Suzuki–Chin 力、二次复杂度玻色交换及 PIGS，更多 CV、共享 MetaD 与 OPES 变体，
 直接绝热电子结构接口、双态 MASH、热 NRPMD 速率命令，以及委员会不确定度、候选数据收集和 Δ-learning/RPC。

@@ -65,8 +65,6 @@ def resolve_materials(config, system):
     """Validate the scientific choices also for direct resolved-workflow calls."""
     from ..potentials.lifecycle import active_learning_options
     active_learning_options(config)
-    if _rpc_details(config) is not None and "barostat" in config:
-        raise ValueError("delta RPC does not provide a pressure virial; use fixed-cell sampling")
     if system.bond_constraints:
         from ..bond_constraints import BondConstraints
         BondConstraints(system.masses, system.bond_constraints, cell=system.cell, pbc=system.pbc)
@@ -240,8 +238,12 @@ def _rpc_details(config):
             "approximate_hamiltonian": contracted < beads,
             "potential_energy": "U_RPC/P; U_RPC=sum_j V_reference(q_j)+(P/Pc)sum_a delta_V((Tq)_a)",
             "force": "negative_gradient_of_U_RPC_on_the_full_ring",
+            "virial": "W_RPC=sum_j W_reference(q_j)+(P/Pc)sum_a delta_W((Tq)_a)",
+            "virial_scope": "rpc_contracted_hamiltonian" if contracted < beads else "full_bead_hamiltonian",
+            "pressure_scope": "rpc_contracted_hamiltonian" if contracted < beads else "full_bead_hamiltonian",
             "full_target_recomputed": False,
-            "per_bead_physical_energies_available": contracted == beads}
+            "per_bead_physical_energies_available": contracted == beads,
+            "per_bead_physical_virials_available": contracted == beads}
 
 
 def quantum_observables(state, potential, masses, beta, mobile_mask=None):
@@ -258,6 +260,8 @@ def quantum_observables(state, potential, masses, beta, mobile_mask=None):
     the full-bead target PES, and the distributed energy rows are never used
     as physical bead energies. Workflow exports label this scope explicitly.
     """
+    if (getattr(potential, "metadata", {}) or {}).get("action") == "suzuki_chin":
+        raise ValueError("primitive quantum_observables do not apply to Suzuki-Chin; use action.estimators")
     q, p = state.q, state.p
     result = validate_result(potential.evaluate(q), q.shape)
     beads, natoms, _ = q.shape

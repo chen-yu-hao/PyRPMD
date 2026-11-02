@@ -15,7 +15,7 @@ DL_POLY Quantum, or application-level validation on a molecular material.
 | QCMD / h-CMD | `ibi_update` is a general distribution-matching helper only | Constrained quasicentroid dynamics, molecular reconstruction and a complete h-CMD/f-QCMD fitting workflow remain unimplemented; these method names are rejected |
 | Raman / SFG | Relative Raman invariants and causal complex tensor-component SFG in the spectroscopy workflow | No absolute experimental intensity, optical/Fresnel factors or automatic interface alignment |
 | ML property models | Python and TorchScript dipole/polarizability contract with unit conversion and chunked trajectory evaluation | User supplies the trained model, atom order and physical property convention |
-| Suzuki–Chin | `task="pimd"` + `[path_integral] method="suzuki_chin"` | Force-bearing finite-difference action; CLI alpha=0 and even-bead potential observable; no SC total-energy/pressure estimator |
+| Suzuki–Chin | `task="pimd"` + `[path_integral] method="suzuki_chin"` | TD energy, Cv/Cp and pressure; isotropic BZP SC-NPT; CLI alpha=0, general-alpha Python estimators; canonical unconstrained sampling |
 | Bosonic exchange | `method="bosonic"`; `bosonic_exchange` | Quadratic Feldman–Hirshberg recurrence for identical groups, no periodic winding sectors |
 | PIGS | `method="pigs"`; `PIGSPotential` | Positive endpoint trial, primitive open chain, midpoint potential observable; no fermion nodes or combined exchange/projection action |
 | Extra CVs | Dihedral, coordination, aligned RMSD, path `(s,z)`, TorchScript via `[[cvs]]` and Python | Analytic/autograd complete-ring Jacobians; singular geometries fail explicitly |
@@ -35,6 +35,7 @@ The main guides give the equations, units, checkpoint contracts and examples:
 
 - [Spectroscopy and property surfaces](tier2-spectroscopy.md)
 - [Main-engine path-integral methods](tier2-path-integral.md)
+- [Condensed-phase nuclear quantum effects and validation](condensed-phase-nqe.md)
 - [Collective variables, OPES, exchange and kinetics](tier2-sampling.md)
 - [Shared-walker metadynamics](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/enhanced-sampling.md#shared-multiple-walkers)
 - [PLUMED input workflow](plumed.md)

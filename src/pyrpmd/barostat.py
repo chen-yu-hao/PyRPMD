@@ -50,10 +50,13 @@ def validate_bzp_snapshot(snapshot, reference_cell):
 class BZPBarostat:
     """Isotropic NPT PIMD with a Langevin cell piston, in atomic units.
 
-    ``potential`` must support ``set_cell(cell_bohr)`` and return a physical
+    ``potential`` must support ``set_cell(cell_bohr)`` and return a
     per-bead configurational virial ``W = -V * stress``. The virial includes
     explicit cell derivatives and excludes kinetic and ring-spring terms.
     A missing virial is an error; Cartesian ``q dot F`` is not substituted.
+    An SC or RPC sampling Hamiltonian must provide its own consistent force
+    and strain virial. Its effective energy is not a physical energy
+    estimator; use the method-specific estimator when reporting observables.
 
     The system has a fully periodic, constant-shape 3D cell and all atoms are
     mobile. Cell vectors are rows. The input System remains the immutable run

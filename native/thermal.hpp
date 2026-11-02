@@ -481,7 +481,8 @@ public:
         if(c.barostat!=Barostat::None){
             require(c.has_cell&&c.pbc==std::array<int32_t,3>{1,1,1}&&mobile==c.atoms,"NPT requires 3D PBC and all atoms mobile");
             require(c.baro_tau>0&&c.baro_gamma>=0&&std::isfinite(baro_mass)&&baro_mass>0&&std::isfinite(c.baro_gamma)&&std::isfinite(c.pressure),"invalid barostat parameters");
-            require(c.thermostat!=Thermostat::Piglet&&c.thermostat!=Thermostat::TRPMD,"PIGLET/TRPMD NPT is not validated; use canonical PIMD");
+            require(c.thermostat!=Thermostat::TRPMD,"TRPMD NPT is unsupported; use equilibrium PIMD");
+            if(c.thermostat==Thermostat::Piglet)require(c.barostat==Barostat::BZP,"PIGLET NPT requires isotropic BZP");
             if(c.barostat==Barostat::SCR)require(c.beads==1&&c.compressibility>0&&std::isfinite(c.compressibility),"SCR requires P=1 and positive compressibility");
             if(c.barostat==Barostat::MTK||c.barostat==Barostat::RGB){
                 require(cell[0]>0&&cell[4]>0&&cell[8]>0&&cell[1]==0&&cell[2]==0&&cell[5]==0,"flexible cell requires lower-triangular ROW lattice vectors with positive diagonal");
@@ -495,6 +496,15 @@ public:
             require(c.gle_T.size()==blocks*n*n&&c.gle_S.size()==blocks*n*n&&c.gle_Croot.size()==blocks*n*n,"GLE matrix dimensions differ");
             require(finite(c.gle_T)&&finite(c.gle_S)&&finite(c.gle_Croot),"nonfinite GLE matrices");
             require(l<=std::numeric_limits<size_t>::max()/n,"GLE state size overflow");
+            if(c.thermostat==Thermostat::Piglet&&c.barostat!=Barostat::None){
+                // The centroid momentum is canonical and uncorrelated with
+                // its auxiliaries. Internal PIGLET modes are noncanonical.
+                for(size_t i=0;i<n;++i){
+                    double covariance=0;
+                    for(size_t j=0;j<n;++j)covariance+=c.gle_Croot[j]*c.gle_Croot[i*n+j];
+                    require(std::abs(covariance-(i==0?1.:0.))<1.e-9,"PIGLET NPT requires canonical centroid covariance");
+                }
+            }
         }
         s.q=std::move(q);s.p=std::move(p);s.cell=cell;s.rng.seed(c.seed);
         s.energy.resize(c.beads);s.force.resize(l);s.virial.resize(9*c.beads);

@@ -131,7 +131,7 @@ def normalize_barostat(spec=None):
     mode = {"isotropic": "bzp", "flexible": "mttk", "mtk": "mttk",
             "anisotropic": "rgb", "stochastic-rescaling": "scr"}.get(mode, mode)
     if mode in ("sc-isotropic", "suzuki-chin"):
-        raise NotImplementedError("Suzuki-Chin NPT requires the high-order action and its force/virial derivatives")
+        raise NotImplementedError("select the SC action explicitly: use SuzukiChinPotential with an external BZPBarostat, or the path_integral workflow")
     fields = {
         "none": set(), "bzp": {"pressure", "tau", "gamma"},
         "mttk": {"pressure", "tau", "gamma", "cell_mask"},
@@ -262,6 +262,9 @@ class _Composition:
     def validate_binding(self):
         """Check physical compatibility before any force calls or RNG draws."""
         d = self.dynamics
+        if ((getattr(d.potential, "metadata", {}) or {}).get("action") == "suzuki_chin"
+                and self.plan.thermostat_spec["mode"] == "piglet"):
+            raise ValueError("primitive PIGLET parameters cannot thermostat a Suzuki-Chin action; use canonical PILE-L")
         if getattr(d, "bond_constraints", ()) and self.plan.active:
             raise ValueError(
                 "bond constraints require velocity-verlet RATTLE and legacy Andersen sampling; "
@@ -288,8 +291,14 @@ class _Composition:
         if d.fixed_atoms:
             raise ValueError("pressure control requires all atoms mobile")
         _real(d.dt, "pressure-control timestep")
-        if self.plan.thermostat_spec["mode"] in ("piglet", "trpmd"):
-            raise ValueError("PIGLET/TRPMD NPT is not validated; use canonical PIMD")
+        thermostat = self.plan.thermostat_spec
+        if thermostat["mode"] == "trpmd":
+            raise ValueError("TRPMD NPT is not supported; use equilibrium PIMD")
+        if thermostat["mode"] == "piglet":
+            if mode != "bzp":
+                raise ValueError("PIGLET NPT supports only the isotropic BZP barostat")
+            from .native_ensemble import _validate_piglet_npt
+            _validate_piglet_npt(thermostat["gle"], d.nbeads)
         from .geometry import validate_cell_pbc
         cell, flags = validate_cell_pbc(barostat.cell if external else d.cell, d.pbc)
         if cell is None or not flags.all():

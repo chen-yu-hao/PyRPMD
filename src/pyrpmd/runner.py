@@ -614,6 +614,7 @@ def prepare(job, *, numerical=False):
         method, options = resolve_path_integral(config, system)
         result["path_integral_preparation"] = {
             "method": method, "equilibrium_only": True,
+            "ensemble": "npt" if options["barostat"] is not None else "fixed_cell",
             "trajectory_storage": options["storage"],
             "sampling_thermostat": options["thermostat"],
             "replicas": options["replicas"],
@@ -702,6 +703,18 @@ def prepare(job, *, numerical=False):
                     "auxiliary_beta_au": action.beta,
                     "force_max_au": float(np.max(np.abs(checked.forces))),
                 }
+                if config["path_integral"].get("method", "suzuki_chin") == "suzuki_chin":
+                    volume = None if system.cell is None else float(abs(np.linalg.det(system.cell)))
+                    result["pes_check"]["initial_sc_estimators"] = action.estimators(
+                        q, volume=volume,
+                        finite_difference_step=config["path_integral"].get("beta_fd_step", 1e-3),
+                        require_pressure=options["barostat"] is not None)
+                    if options["barostat"] is not None:
+                        from .barostat import BZPBarostat
+                        from .dynamics import State
+                        piston = BZPBarostat(action, system, action.beta, config["beads"], **options["barostat"])
+                        result["pes_check"]["initial_action_virial_hartree"] = checked.virial.tolist()
+                        result["pes_check"]["initial_configurational_pressure_au"] = piston.pressure(State(q, np.zeros_like(q)))
             elif "nonadiabatic" in config:
                 evaluated = provider.evaluate(x)
                 from .nonadiabatic import validate_diabatic_result

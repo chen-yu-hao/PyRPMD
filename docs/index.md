@@ -45,6 +45,7 @@ go straight to your task:
 | Higher-order equilibrium sampling and quantum estimators | Python API | [Quantum statistics](quantum-statistics.md) |
 | PA-CMD and relative IR/Raman/SFG spectra | `spectroscopy` | [Spectroscopy](tier2-spectroscopy.md) |
 | Suzuki–Chin, bosonic exchange and PIGS | `pimd` + `[path_integral]` | [Path-integral actions](tier2-path-integral.md) |
+| Condensed-phase SC energy/Cv/Cp/pressure, SC-NPT, PIGLET-NPT and RPC virial | SC workflow, native PIGLET or Python RPC | [Condensed-phase NQE validation](condensed-phase-nqe.md) |
 | Thermal nonadiabatic population-flux calculation | `nonadiabatic-rate` command | [Direct data and rates](tier2-nonadiabatic.md) |
 | Method coverage, ML lifecycle and remaining gaps | Input / Python APIs | [Tier 2 overview](tier2-methods.md) |
 
@@ -120,6 +121,7 @@ Propagation stack <propagation-stack>
 Expensive potentials <performance-dynamics>
 Trajectory batching <batched-dynamics>
 RPC/MTS <rpc-mts>
+Condensed-phase nuclear quantum effects <condensed-phase-nqe>
 TRPMD and spectra <trpmd-spectroscopy>
 Output and analysis <manual/results>
 Standard trajectory formats <trajectory-export>
