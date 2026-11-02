@@ -1,6 +1,7 @@
 """Worker lifetime, actual plugin identity and independent-job equivalence."""
 import json
 import os
+import pickle
 from pathlib import Path
 from unittest.mock import patch
 
@@ -8,7 +9,7 @@ import numpy as np
 import pytest
 
 from pyrpmd.parallel import run_tasks, task_potential, execution_plan
-from pyrpmd.parallel.execution import _context, ProcessBeadPotential
+from pyrpmd.parallel.execution import _context, _dynamic_worker, ProcessBeadPotential
 from pyrpmd.potentials import HarmonicPotential
 from pyrpmd.system import System
 
@@ -150,3 +151,85 @@ def test_bead_pool_creation_failure_is_cleaned_up():
             with pytest.raises(RuntimeError):
                 with task_potential({"provider": "free"}, None):
                     pass
+
+
+class DynamicControl:
+    """A deterministic coordinator transcript for one dynamic worker."""
+
+    def __init__(self, count, log):
+        self.indices = iter([*range(count), None])
+        self.log = log
+        self.results = []
+        self.events_at_send = []
+
+    def recv(self, **kwargs):
+        return next(self.indices)
+
+    def send(self, packet, **kwargs):
+        self.results.append(pickle.loads(packet))
+        self.events_at_send.append(
+            [json.loads(line)[0] for line in self.log.read_text().splitlines()])
+
+
+@pytest.mark.parametrize("stateful,reuse,opens", [(False, True, 1),
+                                               (True, True, 3),
+                                               (False, False, 3)])
+def test_dynamic_worker_reuses_only_eligible_potentials(tmp_path, stateful, reuse, opens):
+    log = tmp_path / "dynamic-lifecycle.jsonl"
+    jobs = [(_logged_spec(log, stateful=stateful), i / 10, reuse) for i in range(3)]
+    control = DynamicControl(len(jobs), log)
+    plan = execution_plan({"backend": "mpi", "scheduling": "dynamic"})
+    _dynamic_worker(_evaluate_job, jobs, plan, 0, None, control)
+    assert [index for index, _, _ in control.results] == [0, 1, 2]
+    assert all(error is None for _, _, error in control.results)
+    np.testing.assert_allclose([value[1] for _, value, _ in control.results],
+                               [0, .012, .048], rtol=1e-15, atol=1e-15)
+    events = [json.loads(line)[0] for line in log.read_text().splitlines()]
+    assert events.count("open") == events.count("close") == opens
+    if opens == 1:
+        assert control.events_at_send == [["open"]] * 3
+    else:
+        assert control.events_at_send == [["open", "close"] * i for i in (1, 2, 3)]
+
+
+@pytest.mark.parametrize("failure", ["lease", "after-lease", "serialization"])
+def test_dynamic_failure_releases_cache_before_reporting(tmp_path, failure):
+    log = tmp_path / "dynamic-failure.jsonl"
+    spec = _logged_spec(log)
+
+    def failed_job(_):
+        with task_potential(spec, None):
+            if failure == "lease":
+                raise RuntimeError("failure in lease")
+        if failure == "after-lease":
+            raise RuntimeError("failure after lease")
+        return lambda: None
+
+    control = DynamicControl(1, log)
+    plan = execution_plan({"backend": "mpi", "scheduling": "dynamic"})
+    _dynamic_worker(failed_job, [None], plan, 0, None, control)
+    index, value, error = control.results[0]
+    assert index == 0 and value is None
+    assert ("serialization failed" if failure == "serialization" else "failure") in error
+    assert control.events_at_send == [["open", "close"]]
+    assert [json.loads(line)[0] for line in log.read_text().splitlines()] == ["open", "close"]
+
+
+def test_dynamic_queue_end_reports_cached_close_failure(tmp_path):
+    log = tmp_path / "dynamic-close-failure.jsonl"
+    provider = LoggedPotential(str(log))
+
+    def fail_close():
+        provider._log("close")
+        raise RuntimeError("cached close failure")
+
+    control = DynamicControl(2, log)
+    plan = execution_plan({"backend": "mpi", "scheduling": "dynamic"})
+    jobs = [({"provider": "harmonic"}, 0.2, True)] * 2
+    with patch("pyrpmd.potentials.make_potential", return_value=provider), \
+            patch.object(provider, "close", side_effect=fail_close):
+        with pytest.raises(RuntimeError, match="cached close failure"):
+            _dynamic_worker(_evaluate_job, jobs, plan, 0, None, control)
+    assert len(control.results) == 2
+    assert all(error is None for _, _, error in control.results)
+    assert [json.loads(line)[0] for line in log.read_text().splitlines()] == ["open", "close"]

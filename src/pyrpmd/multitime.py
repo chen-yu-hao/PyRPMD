@@ -24,12 +24,13 @@ class MTSDynamics(Dynamics):
     def __init__(self, potential, masses, beta, nbeads, dt, *, inner_steps=1,
                  native=True, threads=1, integrator="normal-mode-bab", seed=0,
                  thermostat=None, fixed_atoms=(), fixed_positions=None,
-                 loop_backend="auto"):
+                 loop_backend="auto", sampling_integrator=None):
         if not isinstance(potential, SplitPotential):
             raise TypeError("MTSDynamics requires an explicit SplitPotential")
         super().__init__(potential, masses, beta, nbeads, dt, seed=seed,
                          native=native, threads=threads, integrator=integrator,
                          loop_backend=loop_backend, thermostat=thermostat,
+                         sampling_integrator=sampling_integrator,
                          fixed_atoms=fixed_atoms, fixed_positions=fixed_positions,
                          force_splitting=ForceSplitting(inner_steps))
 

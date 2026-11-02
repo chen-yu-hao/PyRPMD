@@ -261,14 +261,14 @@ def run_drpmd(config, system, output, executor=None):
     worker = _initial_ensemble_task if state_selected else _parent_task
     # Independent selected states already sample and propagate in one task;
     # only thermal parents need a separate collision queue after sampling.
-    dynamic = ((plan.backend == "mpi" and plan.scheduling == "dynamic"
-                or batch_size > 1) and not state_selected)
+    split_collisions = plan.scheduling == "dynamic" or batch_size > 1
+    dynamic = split_collisions and not state_selected
     if dynamic:
         for task in tasks:
             task["sample_only"] = True
     work = ([dict(task, trajectory_ids=[trajectory_id])
              for task in tasks for trajectory_id in task["trajectory_ids"]]
-            if batch_size > 1 and state_selected else tasks)
+            if split_collisions and state_selected else tasks)
     results = map_trajectory_tasks(worker, work, config, executor)
     if dynamic:
         collisions = root_call(_deferred_collision_tasks, tasks, results)

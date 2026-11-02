@@ -373,3 +373,14 @@ and a physically meaningful time plateau need independent convergence studies.
    machine-learning enhanced grand canonical constant potential approach*,
    Nature Communications 16, 3600 (2025),
    [doi:10.1038/s41467-025-58871-7](https://doi.org/10.1038/s41467-025-58871-7).
+
+## Primary sources and reproduction tasks
+
+Cite thermal mapping, the restrained-path/string ingredient, MBAR and the chosen electrode model separately. This adaptive signed workflow is a package-specific composition; it is not a published full Γ_W SM-NRPMD or a complete grand-canonical DFT calculation.
+
+- [J. O. Richardson and M. Thoss (2013), Communication: Nonadiabatic ring-polymer molecular dynamics](references.md#na-nrpmd2013). [DOI](https://doi.org/10.1063/1.4816124).
+- [L. Maragliano; A. Fischer; E. Vanden-Eijnden; G. Ciccotti (2006), String method in collective variables: Minimum free energy paths and isocommittor surfaces](references.md#samp-stringcv2006). [DOI](https://doi.org/10.1063/1.2212942).
+- [M. R. Shirts; J. D. Chodera (2008), Statistically optimal analysis of samples from multiple equilibrium states](references.md#samp-mbar2008). [DOI](https://doi.org/10.1063/1.2978177).
+- [M. Sun; B. Jin; X. Yang; S. Xu (2025), Probing nuclear quantum effects in electrocatalysis via a machine-learning enhanced grand canonical constant potential approach](references.md#gc2025). [DOI](https://doi.org/10.1038/s41467-025-58871-7).
+
+Calculation tasks: [na-adaptive-thermal](reproduction.md#task-na-adaptive-thermal) · [na-thermal-nrpmd](reproduction.md#task-na-thermal-nrpmd) · [samp-string](reproduction.md#task-samp-string) · [gc](reproduction.md#task-gc).

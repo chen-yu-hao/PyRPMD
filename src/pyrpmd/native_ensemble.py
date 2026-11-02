@@ -82,6 +82,29 @@ def _matrix_root(a: np.ndarray, label: str) -> np.ndarray:
     return np.ascontiguousarray((vectors * np.sqrt(np.maximum(values, 0))) @ vectors.T)
 
 
+def _validate_piglet_npt(spec: dict, beads: int):
+    """The centroid bath must preserve the canonical piston-coupled momentum.
+
+    PIGLET internal modes deliberately violate the classical fluctuation--
+    dissipation relation. The zero-frequency centroid, however, must have a
+    unit physical variance and no physical/auxiliary covariance. Otherwise
+    the thermostat does not preserve the extended centroid/piston measure.
+    This checks that necessary condition, not the accuracy of a fitted set.
+    """
+    a = _array(spec.get("A"))
+    if a.ndim != 3 or a.shape[0] != beads or a.shape[1] != a.shape[2]:
+        raise ValueError("PIGLET requires explicitly calibrated per-mode matrices")
+    cov = _array(spec.get("C", np.eye(a.shape[-1])))
+    if cov.ndim == 2:
+        cov = np.repeat(cov[None], beads, axis=0)
+    if cov.shape != a.shape:
+        raise ValueError("GLE covariance dimensions differ from A")
+    if (not math.isclose(float(cov[0, 0, 0]), 1.0, rel_tol=1e-10, abs_tol=1e-12)
+            or not np.allclose(cov[0, 0, 1:], 0, atol=1e-12, rtol=0)
+            or not np.allclose(cov[0, 1:, 0], 0, atol=1e-12, rtol=0)):
+        raise ValueError("PIGLET NPT requires a canonical centroid with zero physical/auxiliary covariance")
+
+
 def _gle_matrices(spec: dict, mode: str, beads: int, beta: float,
                   dt: float) -> tuple[int, np.ndarray, np.ndarray, np.ndarray]:
     """One-time matrix preparation; no Python linear algebra during propagation."""
@@ -293,7 +316,7 @@ class NativeEnsemble:
                  thermostat: str | dict = "pile-l", barostat: str | dict = "none",
                  integrator: str = "cayley-bcb", cell=None, pbc=None,
                  fixed_atoms=(), seed: int = 0, fuse_modes: bool = True,
-                 allow_python: bool = False):
+                 allow_python: bool = False, sampling_integrator: str | None = None):
         try:
             from . import _thermal
         except ImportError as exc:
@@ -310,8 +333,11 @@ class NativeEnsemble:
         dt = _scalar(dt, "dt", positive=True)
         self.dt = dt
         from .engine import PropagationPlan
-        self.plan = PropagationPlan(integrator, thermostat, barostat)
-        integrator = self.plan.integrator
+        self.plan = PropagationPlan(integrator, thermostat, barostat,
+                                    sampling_integrator=sampling_integrator)
+        if (getattr(potential, "metadata", {}) or {}).get("action") == "suzuki_chin":
+            raise ValueError("NativeEnsemble observable rows use primitive estimators; use SuzukiChinPotential with Dynamics and an external BZPBarostat")
+        integrator = self.plan.ring_integrator
         if integrator not in ("cayley-bcb", "normal-mode-bab"):
             raise ValueError("native ensembles support Cayley BCOCB or exact-normal-mode BAOAB, not Verlet")
         fixed = np.zeros(self.natoms)
@@ -336,6 +362,12 @@ class NativeEnsemble:
         mode, bmode = t["mode"], b["mode"]
         if mode not in _THERMOSTATS or bmode not in _BAROSTATS:
             raise ValueError("requested operator is unavailable in the native executor")
+        middle_npt = sampling_integrator is not None and bmode != "none"
+        if middle_npt:
+            if bmode != "bzp" or mode != "pile-l":
+                raise ValueError("explicit middle NPT requires isotropic BZP and PILE-L")
+            if getattr(_thermal, "MIDDLE_BZP_API", 0) < 1:
+                raise RuntimeError("rebuild the native extension for middle BZP sampling")
         cell_mask = _array(b.get("cell_mask", [[1, 1, 1], [0, 1, 1], [0, 0, 1]]), (3, 3), allow_bool=True)
         external = _array(b.get("stress", np.zeros((3, 3))), (3, 3))
         if not np.allclose(external, external.T, atol=1e-12, rtol=1e-12):
@@ -362,6 +394,8 @@ class NativeEnsemble:
             "external_stress": external.ravel(),
             "potential": 0, "address": 0, "context": 0, "parameters": np.ones(3),
         }
+        if middle_npt:
+            cfg["middle_npt"] = True  # Scientific/checkpoint-significant, absent on legacy maps.
         if mode == "nhc":
             if "tau" in t and "tdamp" in t:
                 raise ValueError("specify only one of NHC tau and tdamp")
@@ -374,7 +408,9 @@ class NativeEnsemble:
             if "gle" not in t:
                 raise ValueError("GLE requires an explicit drift matrix")
             if mode == "piglet" and bmode != "none":
-                raise ValueError("PIGLET NPT is not validated by this implementation")
+                if bmode != "bzp":
+                    raise ValueError("PIGLET NPT supports only the isotropic BZP barostat")
+                _validate_piglet_npt(t["gle"], self.beads)
             cfg["gle_size"], cfg["gle_T"], cfg["gle_S"], cfg["gle_Croot"] = _gle_matrices(
                 dict(t["gle"]), mode, self.beads, beta, dt if bmode == "none" else dt / 2,
             )
@@ -386,6 +422,8 @@ class NativeEnsemble:
             cfg["gamma0"] = 0.0
         self.thermostat, self.barostat = mode, bmode
         self.splitting = ("BCOCB" if cfg["cayley"] else "BAOAB") if bmode == "none" else "OBABO"
+        if middle_npt:
+            self.splitting = "BZP-BCOCB" if cfg["cayley"] else "BZP-BAOAB"
         if mode == "nhc" and bmode == "none":
             self.splitting = "OBCBO" if cfg["cayley"] else "OBABO"
         self._binding = None
@@ -772,7 +810,7 @@ def ensemble_from_config(config: dict, *, base_directory: str | Path = ".",
 
     spec = dict(config)
     _unknown(spec, {"schema_version", "positions", "q", "masses", "beads", "temperature",
-                    "beta", "timestep", "integrator", "cell", "geometry_unit", "cell_unit",
+                    "beta", "timestep", "integrator", "sampling_integrator", "cell", "geometry_unit", "cell_unit",
                     "pbc", "fixed_atoms", "seed", "p", "potential", "thermostat", "barostat", "run"}, "native input")
     if spec.get("schema_version", "native-ensembles/1") != "native-ensembles/1":
         raise ValueError("expected schema_version='native-ensembles/1'")
@@ -834,6 +872,7 @@ def ensemble_from_config(config: dict, *, base_directory: str | Path = ".",
                           p=spec.get("p"), potential=potential, potential_identity=potential_identity,
                           thermostat=t, barostat=b,
                           integrator=spec.get("integrator", "cayley-bcb"), cell=cell,
+                          sampling_integrator=spec.get("sampling_integrator"),
                           pbc=spec.get("pbc"), fixed_atoms=spec.get("fixed_atoms", ()), seed=spec.get("seed", 0))
 
 

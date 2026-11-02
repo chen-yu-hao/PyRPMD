@@ -200,7 +200,9 @@ def run_shared_metadynamics(config, system, output, *, return_data=False):
                 active = total_bias if elapsed >= options["neq"] or config["metadynamics"].get("walls_during_equilibration",True) else bias
                 for dyn,state in zip(dynamics,states):
                     if sampling.get("thermostat","andersen") == "pile-l":
-                        dyn.sample_step(state,active,gamma_centroid=parse_quantity(sampling.get("gamma_centroid","0.01 fs^-1"),"frequency"))
+                        dyn.sample_step(state,active,
+                            gamma_centroid=parse_quantity(sampling.get("gamma_centroid","0.01 fs^-1"),"frequency"),
+                            method=sampling.get("integrator"))
                     else:
                         if state.step % sampling.get("andersen_interval",10) == 0:
                             state.p[:]=dyn.sample_momenta()

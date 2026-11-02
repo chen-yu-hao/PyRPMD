@@ -24,6 +24,10 @@ recursive-include benchmarks/fes_methods *.py *.md *.c
 include benchmarks/pmf_accuracy/render_validation.py
 recursive-include benchmarks/loop_native *.py *.md *.c *.cpp *.h *.f90
 recursive-include benchmarks/materials *.py *.md *.json
+recursive-include benchmarks/condensed_phase *.py *.cpp *.md *.json *.txt *.png *.pdf
+# Raw observations are public in Git and also supplied in the review archive.
+# Keep raw CSV/NPZ files out of the Python sdist to control package size.
+recursive-exclude benchmarks/condensed_phase/results *.csv *.npz
 recursive-include benchmarks/efficiency *.py *.md
 recursive-include benchmarks/surface *.py *.md
 include benchmarks/batched_dynamics.py benchmarks/rpc_mts.py benchmarks/tier1_recrossing.py
@@ -65,3 +69,10 @@ recursive-include benchmarks/torch_literature *.md *.json *.gz
 include benchmarks/torch_bcocb_validation.py
 
 include benchmarks/rpmdrate_normal_modes.py benchmarks/rpmdrate_normal_modes_validation.py
+
+include benchmarks/mixed_sampling_validation.py
+
+# Existing paper regressions require their checked-in reference files in source archives.
+include benchmarks/paper_validation/dac_spin_statistical.py benchmarks/paper_validation/dac_p*_liu2024_reference.csv
+
+recursive-include examples/nonadiabatic/data *.csv

@@ -15,6 +15,18 @@ PyRPMD 分开配置任务传输方式 `parallel.backend` 和单条轨迹的势�
 | `backend="mpi"` | G 个轨迹组，每组 B 个 rank | 单机多 rank 或跨节点 MPI |
 | `mode="gpu"` | 每个轨迹进程独立加载 GPU 模型，一次批处理全部珠子 | 单卡、多卡，每卡一条或多条并发轨迹 |
 
+`parallel.trajectory_batch_size` 另行控制每个 worker 内多少条独立轨迹合并一次
+PES 请求。固定晶胞、默认 `legacy` 引擎的材料 `pimd` / `diffusion` 已接入此路径；
+`sampling.replicas=8`、`trajectory_workers=2`、`trajectory_batch_size=4` 表示
+两个 worker 分别运行一组最多 4 条轨迹，统计副本总数仍为 8。这条路径要求
+`bead_workers=1`，以及势能明确支持无历史依赖的独立 frame。详见
+[批处理契约](../batched-dynamics.md)与[真实 Ni–H 验收](../../benchmarks/materials/batch_acceptance.md)。
+
+本地 GPU 队列不足以填满配置 slots 时，先分散到不同 GPU，再给同一卡分配第二个
+进程。例如 `[0,1]`、每卡 2 个 slots、实际仅有 2 个任务/批组时，两张卡各得到一个
+进程；满额映射和 MPI 的 node-local 布局不变。动态 MPI 的 worker 也会在整条任务
+队列内复用合格的 `task_potential` 缓存；显式 opt-out/stateful 势仍逐任务构造和关闭。
+
 `threads_per_rank` 控制已编译的 OpenMP 动力学内核；要求真正可用的 OpenMP
 构建。本地 task batch 使用 `threadpoolctl` 将已加载的 BLAS 线程池限制为 1，
 同时在任务作用域内设置 OpenBLAS、MKL、BLIS、Accelerate 的线程环境变量，

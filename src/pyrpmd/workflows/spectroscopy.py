@@ -29,7 +29,7 @@ from .fes import _fingerprint, write_json
 
 
 SPECTROSCOPY_FIELDS = {
-    "method", "target_frequency", "friction_scale", "spectra", "sfg_component",
+    "method", "integrator", "target_frequency", "friction_scale", "spectra", "sfg_component",
     "max_lag", "window", "sfg_window", "normalize", "laser_wavenumber_cm1",
 }
 PROPERTY_FIELDS = {
@@ -105,8 +105,15 @@ def resolve_spectroscopy(config, system):
         raise ValueError("spectroscopy uses the NumPy reference engine")
     if sampling.get("thermostat", "pile-l") != "pile-l":
         raise ValueError("spectroscopy equilibration uses a normal-mode Langevin thermostat")
-    if sampling.get("integrator", "baoab") != "baoab":
-        raise ValueError("spectroscopy equilibration requires sampling.integrator='baoab'")
+    from .sampling import middle_sampling_method
+    sampling_method = middle_sampling_method("normal-mode-bab", sampling.get("integrator", "baoab"))
+    if method == "pa-cmd" and sampling_method != "baoab":
+        raise ValueError("PA-CMD fictitious-mass sampling requires sampling.integrator='baoab'")
+    production_method = table.get("integrator")
+    if production_method is not None:
+        if method != "trpmd":
+            raise ValueError("spectroscopy.integrator applies only to TRPMD real-time splitting")
+        production_method = middle_sampling_method("normal-mode-bab", production_method)
     options = {
         "method": method,
         "equilibration_steps": _integer(sampling.get("equilibration_steps", 100), "equilibration_steps", 0),
@@ -119,6 +126,12 @@ def resolve_spectroscopy(config, system):
         "friction_scale": _scalar(table.get("friction_scale", 1.), "friction_scale", positive=False),
         "checkpoint_steps": _integer(config.get("output", {}).get("checkpoint_steps", 1000), "checkpoint_steps"),
     }
+    # Add new identity fields only for the new explicit choices. Default trace
+    # fingerprints and old trajectory/RNG histories remain unchanged.
+    if sampling_method != "baoab":
+        options["sampling_integrator"] = sampling_method
+    if production_method is not None:
+        options["production_integrator"] = production_method
     if method == "pa-cmd":
         # Wavenumber is an energy unit; hbar=1 converts it to angular frequency.
         value = table.get("target_frequency", "14000 cm^-1")
@@ -332,9 +345,23 @@ def _sample_replica(config, system, output, replica, options):
             record()
         while state.step < total:
             if state.step < options["equilibration_steps"]:
-                sampler.sample_step(state, gamma_centroid=options["gamma_centroid"])
+                sampler.sample_step(
+                    state, gamma_centroid=options["gamma_centroid"],
+                    **({"method": options["sampling_integrator"]}
+                       if "sampling_integrator" in options else {}),
+                )
+                if (state.step == options["equilibration_steps"]
+                        and "sampling_integrator" in options):
+                    # This is part of the final equilibration step before its
+                    # first trace/checkpoint. Reloading that boundary never
+                    # consumes a second draw; earlier checkpoints replay it.
+                    state.p[:] = production.sample_momenta()
             elif options["method"] == "trpmd":
-                production.trpmd_step(state, friction_scale=options["friction_scale"])
+                production.trpmd_step(
+                    state, friction_scale=options["friction_scale"],
+                    **({"method": options["production_integrator"]}
+                       if "production_integrator" in options else {}),
+                )
             else:
                 production.step(state)
             production_step = state.step - options["equilibration_steps"]
@@ -355,6 +382,11 @@ def _trace_physics(config, options):
     fields = ("method", "equilibration_steps", "production_steps", "sample_interval",
               "replicas", "dt", "sampling_dt", "gamma_centroid")
     settings = {key: options[key] for key in fields}
+    for key in ("sampling_integrator", "production_integrator"):
+        if key in options:
+            settings[key] = options[key]
+    if "sampling_integrator" in options:
+        settings["launch_momenta"] = "maxwell_after_equilibration"
     if options["method"] in ("pa-cmd", "trpmd"):
         settings["friction_scale"] = options["friction_scale"]
     if options["method"] == "pa-cmd":

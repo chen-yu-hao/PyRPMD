@@ -137,3 +137,24 @@ its implementation. The fitted surface describes two doublet states of neutral
 NaH2. It is a specific molecular potential, not a general electronic-structure
 model or a fitted SOC Hamiltonian.
 
+## Numerical PIGLET reference parameters from i-PI
+
+`benchmarks/condensed_phase/piglet_4_750K.json` contains numerical A/C matrices
+from the i-PI developers' CP2K NPT example,
+`examples/clients/cp2k/npt_piglet/input.xml`, Git blob
+`87d27b7d1f3c42c3ad5a241dced2e359d932b30f`:
+https://api.github.com/repos/i-pi/i-pi/git/blobs/87d27b7d1f3c42c3ad5a241dced2e359d932b30f.
+The A entries are unchanged; C was divided by P*T=3000 K for PyRPMD's
+dimensionless covariance convention. The associated benchmark scales A by
+the explicit temperature ratio; it performs no parameter fitting. No i-PI
+integrator, thermostat or estimator implementation is redistributed.
+
+i-PI's `licenses/LICENSE.md` (blob
+`8ec3be6733d9c8b03101a803cf75935dd5843f2d`) explicitly offers GPL or MIT at
+the user's choice. These parameter data are used under the MIT option.
+The complete upstream MIT permission/warranty text (blob
+`3a85b00ea712eda2ef237d599d7cd5219d1720ee`) is retained unchanged in
+`benchmarks/condensed_phase/ipi_MIT_license.txt`. Attribution: i-PI developers,
+https://github.com/i-pi/i-pi. Cite Ceriotti and Manolopoulos, PRL 109, 100604
+(2012), https://doi.org/10.1103/PhysRevLett.109.100604, when using PIGLET.
+

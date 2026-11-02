@@ -70,8 +70,7 @@ def test_dynamic_topology_is_explicit_and_static_defaults_unchanged():
     assert execution_plan().scheduling == "static"
     plan = execution_plan({"backend": "mpi", "scheduling": "dynamic", "trajectory_groups": 2})
     assert plan.coordinator_ranks == 1
-    for extra in ({"coordinator_ranks": 0}, {"coordinator_ranks": 2},
-                  {"backend": "process"}, {"backend": "serial"}):
+    for extra in ({"coordinator_ranks": 0}, {"coordinator_ranks": 2}):
         with pytest.raises(ValueError):
             execution_plan({"backend": "mpi", "scheduling": "dynamic", **extra})
 

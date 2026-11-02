@@ -167,3 +167,14 @@ identity, bead number and time step, equilibration and production lengths, indep
 window or fitting scheme, every diagnostic and every missing quantity. When comparing two results,
 state which scientific parameters changed and which were reanalysis settings. Run the convergence
 series in [Scientific conventions](science.md) before reporting physical predictions.
+
+## Primary sources and reproduction tasks
+
+Statistical analysis cites MBAR, autocorrelation and block-resampling foundations; the synchronized treatment of shared histories is a package implementation choice. H5MD is a data-format source. A report or export cannot promote an unconverged physical result.
+
+- [M. R. Shirts; J. D. Chodera (2008), Statistically optimal analysis of samples from multiple equilibrium states](references.md#samp-mbar2008). [DOI](https://doi.org/10.1063/1.2978177).
+- [C. J. Geyer (1992), Practical Markov Chain Monte Carlo](references.md#samp-geyer1992). [DOI](https://doi.org/10.1214/ss/1177011137).
+- [D. N. Politis; J. P. Romano (1992), A Circular Block-Resampling Procedure for Stationary Data](references.md#samp-cblock1992).
+- [P. de Buyl; P. H. Colberg; F. Höfling (2014), H5MD: A structured, efficient, and portable file format for molecular data](references.md#h5md2014). [DOI](https://doi.org/10.1016/j.cpc.2014.01.018).
+
+Calculation tasks: [samp-statistics](reproduction.md#task-samp-statistics) · [samp-mbar](reproduction.md#task-samp-mbar) · [h5md-export](reproduction.md#task-h5md-export) · [engineering](reproduction.md#task-engineering).

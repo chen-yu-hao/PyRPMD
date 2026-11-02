@@ -1,0 +1,48 @@
+# Short SC-NPT integration and restart demonstration in analytic periodic wells.
+# Use the condensed-phase benchmark for convergence evidence; this is not a
+# fitted material or a statistically converged heat-capacity calculation.
+task = "pimd"
+temperature = "300 K"
+beads = 8
+seed = 615
+
+[system]
+symbols = ["H", "H"]
+geometry = [[0.4, 0.3, 0.2], [2.6, 2.5, 2.4]]
+geometry_unit = "bohr"
+cell = [[4.4, 0.0, 0.0], [0.0, 4.4, 0.0], [0.0, 0.0, 4.4]]
+cell_unit = "bohr"
+pbc = [true, true, true]
+
+[potential]
+provider = "python"
+factory = "./periodic_well.py:build"
+
+[dynamics]
+integrator = "normal-mode-bab"
+timestep = "0.1 fs"
+
+[sampling]
+thermostat = "pile-l"
+gamma_centroid = "0.02 fs^-1"
+equilibration_steps = 20
+production_steps = 80
+sample_interval = 4
+
+[path_integral]
+method = "suzuki_chin"
+alpha = 0.0
+fd_step = "1e-4 bohr"
+# Relative beta displacement: compare this setting with half its value.
+# Each frame also records the h versus h/2 sensitivity.
+beta_fd_step = 1e-3
+
+[barostat]
+method = "bzp"
+pressure = "1 GPa"
+time_constant = "50 fs"
+
+[output]
+directory = "runs/suzuki-chin-npt"
+trajectory_storage = "memory"
+checkpoint_steps = 20

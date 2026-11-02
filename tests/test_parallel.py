@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import patch
 
 import numpy as np
+import pytest
 
 from pyrpmd.parallel import execution_plan, run_tasks, ProcessBeadPotential
 from pyrpmd.parallel.execution import _context, make_task_potential
@@ -10,6 +11,48 @@ from pyrpmd.potentials import HarmonicPotential
 
 def square(x):
     return x * x
+
+
+def _gpu_device_for_task(task):
+    """Exercise real spawn placement without requiring CUDA or a model."""
+    class Provider:
+        def __init__(self, device):
+            self.metadata = {"execution_device": device}
+
+    with patch("pyrpmd.potentials.make_potential",
+               side_effect=lambda spec, system: Provider(spec["device"])):
+        potential = make_task_potential({"provider": "torch"}, None)
+        return task, potential.metadata["execution_device"]
+
+
+@pytest.mark.parametrize("devices,per_gpu,task_count,expected", [
+    ([0, 2], 2, 2, [0, 2]),
+    ([0, 2, 5], 2, 4, [0, 2, 5, 0]),
+    ([0, 2], 3, 5, [0, 2, 0, 2, 0]),
+    ([0, 2, 5], 1, 2, [0, 2]),
+    ([5], 3, 2, [5, 5]),
+    ([2, 5], 2, 1, [2]),
+    # Full slots retain their established contiguous-per-card ordering.
+    ([0, 2], 2, 4, [0, 0, 2, 2]),
+    ([0, 2], 2, 9, [0, 0, 2, 2, 0, 0, 2, 2, 0]),
+])
+def test_gpu_tasks_spread_underfilled_slots_and_keep_full_layout(
+        devices, per_gpu, task_count, expected):
+    result = run_tasks(_gpu_device_for_task, range(task_count), {
+        "backend": "process", "mode": "gpu", "devices": devices,
+        "trajectories_per_gpu": per_gpu,
+    })
+    assert result == list(enumerate(f"cuda:{device}" for device in expected))
+
+
+def test_mpi_gpu_slots_keep_node_local_contiguous_layout():
+    plan = execution_plan({"backend": "mpi", "mode": "gpu", "devices": [0, 2],
+                           "trajectories_per_gpu": 3, "trajectory_groups": 6})
+    result = []
+    for slot in range(6):
+        with _context(plan, slot):
+            result.append(_gpu_device_for_task(slot)[1])
+    assert result == ["cuda:0"] * 3 + ["cuda:2"] * 3
 
 
 class ParallelTests(unittest.TestCase):

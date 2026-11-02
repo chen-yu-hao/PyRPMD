@@ -31,6 +31,48 @@ The fixed System supplies atom identities, cell, PBC, charge and multiplicity.
 `D` and `T` map to the chemical element `H` in potential engines; isotope masses
 remain in PyRPMD dynamics. Do not repeat System fields inside `potential.params`.
 
+## Independent trajectory batching
+
+The `ase`, `mace`, `nequip` and `fairchem` adapters accept an explicit
+**caller-audited** declaration:
+
+```toml
+[potential]
+provider = "ase"
+factory = "ase.calculators.eam:EAM"
+trajectory_batch_safe = true
+params = {potential = "/models/NiAlH_jea.eam.alloy"}
+
+[parallel]
+trajectory_batch_size = 4
+bead_workers = 1
+```
+
+The declaration promises independent, history-independent energies, forces and
+virials: changing the frame order or count, interleaving replicas, or using a
+new calculator instance must not change any frame's physical result. Audit the
+actual calculator/model, including its convergence and warm-start behavior.
+The [Ni–H example](../benchmarks/materials/batch_acceptance.md) checks these
+properties for a checksum-pinned EAM table and compares against ASE directly.
+
+Without an explicit declaration in the input or calculator metadata, ASE is
+not assumed safe for cross-trajectory batching. A calculator's explicit
+`trajectory_batch_safe=false`, `batch_independent=false`, `stateful=true`,
+`capabilities.stateful=true`, `coupled_frames=true` or
+`ring_polymer_coupled=true` veto cannot be overridden by the input. The adapter
+preserves these declarations through named models and transparent Python
+wrappers. The flag must be a boolean and is accepted only for these four
+ASE-backed provider kinds; custom Python/Torch models use their existing
+provider metadata contract.
+
+This execution declaration is excluded from the scientific checkpoint
+identity, so an otherwise compatible scalar checkpoint can acquire the flag
+and resume batched. Model parameters and files remain part of that identity;
+the separate ASE force-consistent energy convention is unchanged. ASE still
+loops through frames with `native_batch=false`. A larger PyRPMD request reduces
+dispatch calls but neither creates a fused GPU forward pass nor guarantees
+better throughput. Benchmark the intended provider, workload and device.
+
 ## OpenMM
 
 An OpenMM `System` XML file defines the force field, particle order, charges,

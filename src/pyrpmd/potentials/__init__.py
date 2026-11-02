@@ -23,7 +23,8 @@ import numpy as np
 
 _PHYSICAL_SPEC_FIELDS = frozenset(
     "provider type name library manifest factory module function initializer initializer_params "
-    "with_dimensions model weights device dtype units derivative params abi_version periodic virial".split()
+    "with_dimensions model weights device dtype units derivative params abi_version periodic virial "
+    "trajectory_batch_safe".split()
 )
 _LIFECYCLE_SPEC_FIELDS = {
     "committee": frozenset({"provider", "type", "members"}),
@@ -71,6 +72,14 @@ def validate_periodic_spec(config, system=None, *, _nested=False):
     _, pbc = validate_cell_pbc(get("cell"), get("pbc"))
     periodic = bool(pbc.any())
     kind = config.get("provider", config.get("type", "builtin"))
+    if "trajectory_batch_safe" in config:
+        if kind not in ("ase", "mace", "nequip", "fairchem"):
+            raise PotentialError(
+                "potential.trajectory_batch_safe is an explicit ASE-calculator contract; "
+                "other providers must declare their capabilities in provider metadata"
+            )
+        if not isinstance(config["trajectory_batch_safe"], (bool, np.bool_)):
+            raise PotentialError("potential.trajectory_batch_safe must be a boolean")
     if _nested or kind in _LIFECYCLE_SPEC_FIELDS:
         unknown = set(config) - _potential_spec_fields(kind)
         if unknown:
@@ -123,6 +132,8 @@ def make_potential(config, system=None):
     validate_periodic_spec(config, system)
     provider = _make_potential(config, system)
     try:
+        if isinstance(config, dict) and "trajectory_batch_safe" in config:
+            provider._declare_trajectory_batch_safe(config["trajectory_batch_safe"])
         bind = getattr(provider, "bind_system", None)
         if callable(bind) and system is not None:
             bind(system)

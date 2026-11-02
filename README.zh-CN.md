@@ -31,6 +31,10 @@ metadynamics、PIMD、扩散、表面跃迁和电化学 PCET；积分器内核�
 
 ## Tier 2 方法扩展
 
+[凝聚相核量子效应](docs/condensed-phase-nqe.md)现支持 Suzuki–Chin 的能量、Cv/Cp 与压力估计量、
+各向同性 SC-NPT、PIGLET-NPT 及 RPC 晶胞 virial。可复现的耦合晶体与 FCC Lennard–Jones 固体算例
+分别记录珠子数、时间步和采样误差；验证范围与参数来源见报告。
+
 [覆盖范围与限制](docs/tier2-methods.md)列出每项功能的实际入口：PA-CMD、二次质心势拟合与相对 Raman/SFG 谱，
 主引擎中的 Suzuki–Chin 力、二次复杂度玻色交换及 PIGS，更多 CV、共享 MetaD 与 OPES 变体，
 直接绝热电子结构接口、双态 MASH、热 NRPMD 速率命令，以及委员会不确定度、候选数据收集和 Δ-learning/RPC。
@@ -40,6 +44,40 @@ metadynamics、PIMD、扩散、表面跃迁和电化学 PCET；积分器内核�
 多种子实际轨迹、珠子数与时间步收敛、统计区间，以及真实 PLUMED、TorchScript、量化软件和 MPI 测试记录。
 跨程序逐点对照发现并修复了 OPES 首核权重的初始化问题；报告保留未收敛结果，明确区分模型校验与完整论文复现。
 
+
+## 方法出处与论文复现
+
+完整的[原始论文—实现对照表](docs/zh/manual/references.md)覆盖 **111 个功能条目与 170 条文献记录**，
+逐项给出源码、原始方法和实现范围；[复现计算清单](docs/zh/manual/reproduction.md)给出原文体系、应该算什么、
+现有入口、缺口和优先级。核查版本为 `cb60679`（2026-11-02）。
+复现建议先完成 **H + H₂/BKMP2、NRPMD 2013 两态模型、q-TIP4P/F 水**三条主线。
+
+| 功能族 | 原始方法 / 模型出处 |
+| --- | --- |
+| PIMD / RPMD 关联函数 | [Chandler–Wolynes 1981](docs/zh/manual/references.md#cw81) · [Craig–Manolopoulos 2004](docs/zh/manual/references.md#rpm04) |
+| Bennett–Chandler 与双分子 RPMD 速率 | [Bennett 1977](docs/zh/manual/references.md#bennett1977) · [Chandler 1978](docs/zh/manual/references.md#chandler1978) · [Craig–Manolopoulos 2005](docs/zh/manual/references.md#rate05) · [Collepardo-Guevara et al. 2009](docs/zh/manual/references.md#bimol09) |
+| dRPMD 与初态选择散射 | [Suleimanov et al. 2018](docs/zh/manual/references.md#drpmd18) · [Marjollet et al. 2020](docs/zh/manual/references.md#state20) · [2022 extension](docs/zh/manual/references.md#state22) |
+| Cayley / BCOCB 与 PILE / PIGLET | [Cayley 2019](docs/zh/manual/references.md#cayley19) · [BCOCB 2020](docs/zh/manual/references.md#bcocb20) · [PILE 2010](docs/zh/manual/references.md#pile10) · [PIGLET 2012](docs/zh/manual/references.md#piglet12) |
+| PA-CMD / f-CMD / TRPMD 与 SFG | [PA-CMD 2006](docs/zh/manual/references.md#pacmd06) · [f-CMD 2005](docs/zh/manual/references.md#fcmd05) · [TRPMD 2014](docs/zh/manual/references.md#trpmd14) · [Morita–Hynes 2002](docs/zh/manual/references.md#sfg02) |
+| TI / Suzuki–Chin、玻色交换与 PIGS | [TI 1984](docs/zh/manual/references.md#ti84) · [SC 2016](docs/zh/manual/references.md#sc16) · [Bosons 2019](docs/zh/manual/references.md#bose19) · [Quadratic scaling 2023](docs/zh/manual/references.md#bose23) · [PIGS 2000](docs/zh/manual/references.md#pigs00) |
+| 同位素估计器与瞬子 | [Isotopes 2013](docs/zh/manual/references.md#iso13) · [Fractionation 2014](docs/zh/manual/references.md#iso14) · [RPI 2009](docs/zh/manual/references.md#rpi09) · [Splittings 2011](docs/zh/manual/references.md#split11) |
+| 伞形采样 / MBAR / UI | [Torrie–Valleau 1977](docs/zh/manual/references.md#samp-us1977) · [Shirts–Chodera 2008](docs/zh/manual/references.md#samp-mbar2008) · [Kästner–Thiel 2005](docs/zh/manual/references.md#samp-ui2005) |
+| MetaD / WT-MetaD / OPES | [Laio–Parrinello 2002](docs/zh/manual/references.md#samp-meta2002) · [Barducci et al. 2008](docs/zh/manual/references.md#samp-wt2008) · [OPES 2020](docs/zh/manual/references.md#samp-opes2020) · [Explore 2022](docs/zh/manual/references.md#samp-explore2022) |
+| REUS、TIS / RETIS 与 committor | [REUS 2000](docs/zh/manual/references.md#samp-reus2000) · [TIS 2003](docs/zh/manual/references.md#samp-tis2003) · [RETIS 2007](docs/zh/manual/references.md#samp-retis2007) · [Committor 2000](docs/zh/manual/references.md#samp-comm2000) |
+| P-RFO / CI-NEB、路径 CV 与 string | [P-RFO 1985](docs/zh/manual/references.md#samp-prfo1985) · [CI-NEB 2000](docs/zh/manual/references.md#samp-cineb2000) · [Path CV 2007](docs/zh/manual/references.md#samp-path2007) · [CV string 2006](docs/zh/manual/references.md#samp-stringcv2006) |
+| 热平衡 / focused / 自旋映射 NRPMD | [Richardson–Thoss 2013](docs/zh/manual/references.md#na-nrpmd2013) · [Chowdhury–Huo 2019](docs/zh/manual/references.md#na-focused2019) · [Bossion et al. 2021](docs/zh/manual/references.md#na-sm2021) |
+| MASH / CA-RP-MASH 与表面跳跃 | [MASH 2023](docs/zh/manual/references.md#na-mash2023) · [CA-RP-MASH v1 2025](docs/zh/manual/references.md#na-carp2025) · [Tully 1990](docs/zh/manual/references.md#na-tully1990) · [RPSH 2017](docs/zh/manual/references.md#na-rpsh2017) · [BA/DM 2023](docs/zh/manual/references.md#na-rpshdm2023) · [DBOC 2025](docs/zh/manual/references.md#na-dboc2025) |
+| MV-RPMD / KC-RPMD / isomorphic / QD | [MV 2013](docs/zh/manual/references.md#na-mv2013) · [KC 2014](docs/zh/manual/references.md#na-kc2014) · [Isomorphic 2018](docs/zh/manual/references.md#na-iso2018) · [QD 2018](docs/zh/manual/references.md#na-qd2018) |
+| 恒压、材料扩散与表面速率 | [BZP 2009](docs/zh/manual/references.md#bzp2009) · [MTK 1994](docs/zh/manual/references.md#mtk1994) · [SCR 2020](docs/zh/manual/references.md#scr2020) · [H/Ni(100) 2012](docs/zh/manual/references.md#ni2012) · [Surface rates 2025](docs/zh/manual/references.md#sds2025) |
+| PCET、恒电位模型与电子摩擦 | [PCET 2008](docs/zh/manual/references.md#pcet2008) · [Au/TEAH+ 2019](docs/zh/manual/references.md#gold2019) · [GC approach 2025](docs/zh/manual/references.md#gc2025) · [EF-RPMD 2024](docs/zh/manual/references.md#efrpmd2024) |
+| QMDFF / dE-EVB / TREQ / PIP-NN / JaxPIP | [QMDFF 2014](docs/zh/manual/references.md#qmdff2014) · [dE-EVB 2015](docs/zh/manual/references.md#deevb2015) · [TREQ 2019](docs/zh/manual/references.md#treq2019) · [PIP-NN 2013](docs/zh/manual/references.md#pipnn2013) · [JaxPIP 2026](docs/zh/manual/references.md#jaxpip2026) |
+| ML 工作流与受力引擎接口 | [Committee 2020](docs/zh/manual/references.md#committee2020) · [Delta 2015](docs/zh/manual/references.md#delta2015) · [ASE 2017](docs/zh/manual/references.md#ase2017) · [OpenMM 2017](docs/zh/manual/references.md#openmm2017) · [i-PI 2014](docs/zh/manual/references.md#ipi2014) |
+
+引用方法时，还要引用实际使用的势能面、参数数据和上游软件，并记录 PyRPMD 提交。
+软件论文、综述、接口支持和短时回归不能替代原始算法引用或收敛复现证据。
+自适应 umbrella、signed NRPMD/电极等组合流程分别引用其组成方法；工程辅助功能不虚构唯一原论文。
+SM-NRPMD 的 focused 实现、正界面 RETIS、当前 isomorphic 动力学消费者等范围差别详见逐项目录。
+可下载 [BibTeX](docs/references.bib) 和 [结构化目录](docs/method-references.json)。
 
 ## 安装
 
@@ -95,7 +133,7 @@ pyrpmd resume my-first-run/run
 
 | 任务 | `task` | 示例 | 时间 |
 | --- | --- | --- | --- |
-| 从 TS 出发的双分子 RPMD 速率 | `rate` | `pyrpmd prepare examples/rate/pilot.inp --pilot`，再 `pyrpmd run examples/rate/pilot.inp` | ~15 s |
+| 从 TS 出发的双分子 RPMD 速率 | `rate` | `pyrpmd prepare examples/rate/research.inp --pilot`，再 `pyrpmd run examples/rate/research.inp` | — |
 | 直接碰撞（dRPMD） | `drpmd` | `examples/drpmd/free_scattering.inp` | ~2 s |
 | 多入口多 TS 速率矩阵 | `network` | `examples/network/two_entrances.py` | ~25 s |
 | 一至三维伞形自由能面 | `fes` | `examples/fes/harmonic2d.inp` | ~6 s |
@@ -132,7 +170,7 @@ mpiexec -n 4 pyrpmd run examples/drpmd/mpi.py --output runs/mpi
 | 方面 | PyRPMD 提供 |
 | --- | --- |
 | 输入 | Python `build()` 返回 `JobSpec` 或字典，或 TOML，严格检查字段、单位、原子索引和路径；命令行可覆盖 PES、温度、珠子数和 worker 数 |
-| RPMD 速率 | TS + PES → 数值 Hessian 与双向下降 → 通道识别 → PMF（Gaussian UI 或直方图 MBAR）→ 受约束母链 → 成对回穿子轨迹；同一抽样上的 UI/MBAR 配对比较 |
+| RPMD 速率 | TS + PES → 数值 Hessian 与双向下降 → 通道识别 → PMF → 受约束母链 → 成对回穿子轨迹；可选伞形 UI/MBAR、冻结偏置 MetaD/OPES 重加权或兼容的外部 PMF（[选择指南](docs/zh/rate-pmf-selection.md)） |
 | 等价通道 | 由原子置换得到等价 TS，按 RPMDrate 的 `min_bond(max_TS(s1))` 组合；区分 H + H₂ 的两个交换出口 |
 | 反应网络 | 同一原子与同位素组成下的不同入口、TS 和 PES；每条路径填入速率矩阵，按入口、通道和 TS 分别报告 |
 | dRPMD | 两个反应物 XYZ 和初始质心距离；常驻母链按设定间隔发射碰撞 |
@@ -140,7 +178,7 @@ mpiexec -n 4 pyrpmd run examples/drpmd/mpi.py --output runs/mpi
 | 自由能 | 带完整 CV Jacobian 的一至三维伞抽样、MBAR、重叠图、相关块 bootstrap、未采样区域 mask 与离线重分析；一至三维可依据 MBAR 重叠、有效样本数及可选覆盖目标自适应插入窗口 |
 | Metadynamics | Standard 与 well-tempered，1–3 维 CV、周期/固定层体系、NHC/PILE-L/Andersen、软墙、可选 1D/2D 偏置网格、独立历史或同步共享偏置 multiple-walker、统一 FESResult 与有限时间 FES |
 | 副本交换伞抽样 | 同温固定窗口 REUS、PILE-L 或 Andersen、同步集合续跑与跨窗口联合 bootstrap（[指南](docs/replica-exchange.md)） |
-| OPES | 固定带宽加权概率估计、可选冻结偏置重加权与可续跑的独立历史（[指南](docs/opes.md)） |
+| OPES | OPES_METAD / explore、可选自适应宽度、冻结偏置重加权与可续跑的独立历史；变体与 PLUMED 的差别见指南（[指南](docs/opes.md)） |
 | PLUMED 与路径抽样 | 可选的质心偏置 PLUMED 桥接；无偏双向 shooting 的跃迁界面集合与独立通量归一化（[PLUMED](docs/plumed.md)、[TIS](docs/transition-interface-sampling.md)） |
 | 速率后处理 | 离线二维分界面通量积分与带符号的通道贡献，显式归一化与严格平台检查（[指南](docs/rate-postprocessing.md)） |
 | 材料与表面 | 固定晶胞或各向同性 BZP 恒压 PIMD、固定层、primitive 与 centroid-virial 估计量、流式轨迹；普通或质心电子摩擦扩散；盆地归一化的位点/表面速率与源 FES 投影（[详情](docs/surface-catalysis.md)） |
@@ -163,9 +201,14 @@ PIMD 与固定晶胞扩散支持冻结基底原子；各向同性 BZP 恒压 PIM
 
 ## 最小输入
 
-一个过渡态和一个势能就是完整的速率输入：
+速率研究建议从 [research.inp](examples/rate/research.inp) 开始：显式给出反应物片段与成断键，
+独立控制 TS 检查，用分区表指定窗口密度和力常数，并分别设置伞采样、母链和子轨迹。
+[输入指南](docs/zh/rate-input-v2.md)说明 RPMDrate 风格的 `k/T` 力常数约定及旧输入兼容规则。
+
+也可以显式选择自动推断的便捷模式，只提供 TS 结构和势能：
 
 ```toml
+schema_version = 2
 task = "rate"
 
 [system]
@@ -174,7 +217,17 @@ transition_state = "ts.xyz"
 [potential]
 provider = "cabi"
 library = "libpes.so"
+
+[reaction]
+definition = "infer"
+
+[preparation]
+ts_action = "validate"
+check_channel = true
 ```
+
+`validate` 检查驻点和一阶鞍点而不移动坐标；需要 P-RFO 细化时改为 `ts_action="refine"`。
+反应定义、鞍点有效性和双向下降的通道一致性分别记录。
 
 `[potential]` 也可以在命令行用 `--pes ./libpes.so` 给出。`.so` 实现 PyRPMD PES v1 ABI；f2py 模块使用
 `provider='rpmdrate'`，普通 `.o` 另加 `--pes-manifest`，写明编译器、wrapper 和链接依赖。
@@ -336,6 +389,7 @@ GitHub **Documentation** 工作流构建两个版本、运行入门示例，并�
 - [恒电位电极模型与 HER 后处理](docs/electrochemistry.md)
 - [自适应受限反应路径、恒电势矩阵与有符号热 NRPMD](docs/zh/manual/adaptive-nrpmd.md)
 - [统一 FES、自适应伞抽样与共享偏置 metadynamics](docs/zh/enhanced-sampling.md)
+- [速率 PMF 方法选择与独立采样设置](docs/zh/rate-pmf-selection.md)
 - [电化学 PCET 模型](docs/pcet.md)、[可运行 PCET 示例](examples/pcet/README.md)
 - [固定晶胞、PIMD、材料扩散与位点速率](docs/materials.md)
 - [表面催化与周期 slab](docs/surface-catalysis.md)

@@ -1,0 +1,4787 @@
+{
+  "schema": "pyrpmd.materials-batch-convergence.v1",
+  "physical_converged": false,
+  "convergence_checks_passed": false,
+  "all_arms_complete": true,
+  "source_at_start": {
+    "benchmarks/materials/batch_acceptance.py": "64cef4760aa53e6a5801e7377f12b880143de5a92a70900d73f11efec419413e",
+    "benchmarks/materials/ni_h_eam.py": "4ba896f6b3669490fa2fd8dcedd3006bc26c0007ef333daf5c1810bbb7faf030",
+    "src/pyrpmd/electronic_friction.py": "c399ab13ea786db88c8ccdd2007140516de4e431f81464ac870efc8da1675005",
+    "src/pyrpmd/cmd.py": "7600dbb204b585bfe205ea4b8cd90b8083a621f248c289e5f675509d98f2db90",
+    "src/pyrpmd/multitime.py": "7ffaaeac84bf4f641974a279da3c1e4566af23096c24e01261f8634287c0e85b",
+    "src/pyrpmd/input_schema.py": "063523c4f775f5a755e501473c0bcd2b1580bf1a79930e5f852cd10775d2ee85",
+    "src/pyrpmd/thermostats.py": "c28be43ec2f16e0b427f891db8c0d8fc5be81a5a999fd2a386256d41a1f96bf7",
+    "src/pyrpmd/instanton.py": "b849eb38e03b6b2b144c59b8c9043bc415bf7b09ccda0ea1289389d28348b9da",
+    "src/pyrpmd/nonadiabatic_ensemble.py": "86f88128376fec1c6bcfef20fe9d176b90d3423f9e0dd1a508dad11a0918a14c",
+    "src/pyrpmd/transition_interface.py": "da1375ba7ed3a4257c8bac5e1c571d5f0738801806ff2f6923ddeb21ee081584",
+    "src/pyrpmd/propagation.py": "cc3cfc011b5d199b838dd65a63826a76d3de23acc5e4ae128de226a1dbc6f10c",
+    "src/pyrpmd/adaptive_nrpmd.py": "facf20d510b05b8e8f206a178e4433101cda490610005fd8b1bd83ce6f8db8fb",
+    "src/pyrpmd/nonadiabatic_sampling.py": "eaa7bde6f936232b4315b416c67d73141aedb88d2b898328102e8306080f7085",
+    "src/pyrpmd/tunnelling.py": "c6ce46c625ef1a7db06c2d4796127f04ee61949b096fa2fdf9d33ea8580a35e1",
+    "src/pyrpmd/batched_nonadiabatic.py": "8c652eb56462c43ec457cc19a8cf26a5b33991d246fb226e1a3bf78b03b0083f",
+    "src/pyrpmd/properties.py": "0a8088e858f3ef6f5aef03aab7bb9abf0a664189630f96991796229b4e793fd3",
+    "src/pyrpmd/system.py": "0a26f036da0215cc6f3f1bc5925f28fc3fb05b0fe677f01796f68dddddd5e2ce",
+    "src/pyrpmd/geometry.py": "b7d24a3dd828102bfe2683237569006945e63e32ddab1d0c8d26011e61e280aa",
+    "src/pyrpmd/adaptive_string.py": "67c6bebb4c7a8df5ac95fb5e4ece090e63eb6d38d5b4c9f53840c6e31171e598",
+    "src/pyrpmd/cv.py": "640d9ee61d76f847e0260acb2456723ff76c1b9fd11dd61dcdf16de3fc58a114",
+    "src/pyrpmd/spectroscopy_input.py": "4a53388579596df6734c61656d2bbd79ec7b49c96e4b371395e69ed2c136af38",
+    "src/pyrpmd/path_integral.py": "a998d7d0c163e26663616db456789bc115538132a11308bc4909596df18829e5",
+    "src/pyrpmd/opes.py": "1db8fc7207296b480a69ec925829c2e9fd6a6b7d4c8d4dd02478f6b1354a9b8d",
+    "src/pyrpmd/scaffold.py": "60c937e0b1aa0e54b78fb4ef0a4ef5e481e410a08eece5908e9d15ee49dc9c27",
+    "src/pyrpmd/nonadiabatic.py": "d8cf4212bfc65ea306ee9f50f70a6d5fef1bdf70d8d107fdb70a7dabd5a90e1e",
+    "src/pyrpmd/trajectory_export.py": "aa9a2b58fdbe95bc7c3c8e2d4b05388685d537c478b520fadcaeae94ce9ffc3d",
+    "src/pyrpmd/validation.py": "6bd219b3761c2afb4309b1e7a1564062927287a734beb8dec6012e10c1c64d12",
+    "src/pyrpmd/checkpoint.py": "058a4be46de68b812a27ab37960b3dcf57fcf18b5bd89d55e3e9472268100aec",
+    "src/pyrpmd/nonadiabatic_input.py": "72fb5a53deb41a86c945d1a8c94f4ae7d77741f0839c0b6694272a544592cfdc",
+    "src/pyrpmd/rp_mash.py": "d80bf44021bae96b33ec3d696ca5977180f6daa21e0899c3c6412bccf4ca8017",
+    "src/pyrpmd/thermal_nrpmd.py": "36e64008f84ff296d43b28b599ae4248b4c3a609cf2521ffbbb15f910cb46dc2",
+    "src/pyrpmd/bias.py": "0a0ab4a074da0be7626c1519142ab5216999f54cc21f91a50b55e58145a38cb1",
+    "src/pyrpmd/input.py": "e6828805abc42818064d9808a85a741eea1f369cbb1db2de7cfd5c3b4bc57a8d",
+    "src/pyrpmd/reactions.py": "d1c992821aac44e441b72661aca661112a2ccfea87dbf83b4ce9f0ae026103f1",
+    "src/pyrpmd/native_ensemble.py": "b908298a18d1027e80e3679915c7197d77616bdc15a53fa9dbfe29b94c16946c",
+    "src/pyrpmd/bond_constraints.py": "3a09282f3e6b90f10664a1bb69aad1d2c504d7753f4d880775c39193215445cc",
+    "src/pyrpmd/torch_normal_modes.py": "5b31af409c6c021c76c3a04f5127cd2a263dc28f004a5611e35f2ccdd960faf6",
+    "src/pyrpmd/electronic_backends.py": "98d6d10d7d4de85f4747bdfc5077f007885fe05d5ec20479054c6e502e518c8f",
+    "src/pyrpmd/advanced_surface_hopping.py": "4905732d56d469241fc195f6ff4d430e3175ddc8fe45440d07066643dfa0df2f",
+    "src/pyrpmd/rate_artifacts.py": "6a900310cf7ff79217375c6c964329ab79aa04f58c1d4e317752bfebc48c914f",
+    "src/pyrpmd/low_temperature.py": "c82241b5bde9f87fe0ed5982962e1708115270ef48efeaf5948a73391389e4c1",
+    "src/pyrpmd/shared_metadynamics.py": "9bccc0e5ff415cadda36f1742f102e7df90a8a958aaccc22dbf1cc5e75886fa6",
+    "src/pyrpmd/mv_rpmd.py": "c8e3f1264cf4dded599a1af966a7d2e119ff7d66bb17beb3c096f5a3fbe0902f",
+    "src/pyrpmd/adiabatic.py": "c0e8df840173416c3af3b71de100e718903df5905a27d45190850b02f09379d2",
+    "src/pyrpmd/quantum_statistics.py": "5d504d8d35233c1905cff50476bf62a6b3a814c9985d6c04d107bed85e748515",
+    "src/pyrpmd/engine.py": "09fa42490c62d5e63c576f7769211e5f4283434b924903b633416e013a29b7bc",
+    "src/pyrpmd/input_tasks.py": "2beaf7ad350f1c0b79cc3bd53518e866b01a021e9c4d51f59460e0ee1b647f74",
+    "src/pyrpmd/covalent.py": "6c344bed774688b863bb77d46458b615704321dfdaed8eaf67b99acfcef391fe",
+    "src/pyrpmd/barostat.py": "ccb56efeb97cb0901aa2674df98c692a2592314b20796cbb990c8a5a8ad2ffb8",
+    "src/pyrpmd/input_options.py": "03d94c9b788e618c71abc376b6776ab511eaba61b355a861fad984cc3e301681",
+    "src/pyrpmd/units.py": "5623c2700b3efb4d1f3fbc656569cfd4ea847d0bfe805abbaeae48a419853eb2",
+    "src/pyrpmd/cv_periodic.py": "6f43a669405102325e4f2bfad9da8000b2e59813669f9428eb99f737cdc678d2",
+    "src/pyrpmd/input_paths.py": "0da1a22fa1ed040339c7c8f160ebf60731300b2bf73c932978878d50c4d8e1fc",
+    "src/pyrpmd/studies.py": "b646542a2fdecf133ea91783bde151e97e8495c6b138e0cb2083d6a1bbd4c0b9",
+    "src/pyrpmd/trajectory_batch.py": "b23c522d4c0731dff46fad3786a6ced48d233feb29c7e4a377eb6632cd6c29d1",
+    "src/pyrpmd/__main__.py": "307299fda7b77d22c64cb51430ec75e5f59d78e9c948786afb3b2544fe45e4b7",
+    "src/pyrpmd/retis.py": "c5c819633563720863e373024881949729e923ef51e3971b3a022615bb96aa4a",
+    "src/pyrpmd/mash.py": "40092556c6cbfe4c6929a780ddd601302b93fc112c43766bff3b922142bcd1d1",
+    "src/pyrpmd/cli.py": "199b0935beb7ffd110a1ebb1ac022562336ac9120eea78661fd5050bde70f9c0",
+    "src/pyrpmd/input_system.py": "d9b24d265f83f6878ade2cd0f9453cb5a622c60e7fa51af35be1ae25d9c803f5",
+    "src/pyrpmd/io.py": "e1e8f3e62f1c87bdf20dc28119b46f85a1c0fe6c8e3312cc2e5c82555c4ef07f",
+    "src/pyrpmd/replica_exchange.py": "5290c931d6264c3179a6b791aba44e6f5a7da155e5a2a471b3675b44d0de0153",
+    "src/pyrpmd/dynamics.py": "89b635e4748af845ec8e8898ae4e9576a4e37e29831641d0e50e438fcfb798db",
+    "src/pyrpmd/input_runtime.py": "7aa55f1605339b9392827d84a431fe6f1feda2cbc41cf0092487dbc8d1cfddac",
+    "src/pyrpmd/initial_states.py": "3b2ee6e1b119312e225895cc5b09893e3f3a509c6e5514906304f56b48bd230a",
+    "src/pyrpmd/trajectory.py": "73d1442bc1b5fb4857717751c279dfd08be30cf881c89f65fb93f3002fe72552",
+    "src/pyrpmd/biased_kinetics.py": "6fa5d89555a90816714696d1d5d614b019c87747441035a8312e9003d8bfe6a9",
+    "src/pyrpmd/kc_rpmd.py": "5609609de754dff79005d8634811bb42373d1e95ed79c8a8b78c8a5554835ed2",
+    "src/pyrpmd/runner.py": "719995b30ebd0d6ff92f398345b70c2907b3e074994de235411ba7a45256006c",
+    "src/pyrpmd/_matrix_path.py": "0a30c8ffd432c333ba5d3dee298c226ef403607e87b8242910a59d5e2d3b5777",
+    "src/pyrpmd/batched.py": "d487c5f5ee3108624d80a19d8bc8f51922ca24fc8258eff160100f3643f41fba",
+    "src/pyrpmd/torch_backend.py": "9394c0379bcb29674a4a3b4b77126245661a5e8852a2885f5d16c32fd8389337",
+    "src/pyrpmd/block_propagation.py": "740daa76e6606605f8cd241b85c05d7300147201399d39080096c9bbbf313432",
+    "src/pyrpmd/nonadiabatic_registry.py": "529e69b8b74d6185446a4fc9d75990ad76ee52d241b99f4e24a10dc71e0816b6",
+    "src/pyrpmd/surface_hopping.py": "3018d533a897092e24ea4530b56aadacd004177be07bdebe6cb3c7de349d5eeb",
+    "src/pyrpmd/input_fes.py": "7776a5740b9077b6b3ae1fc9efcfed40c634842c909a46fc3157c5ed130bb77f",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "src/pyrpmd/isomorphic.py": "ec6f1343f015a3cb7d3ee220dd24c4b88260e2daf974f57ebc5619891437aea5",
+    "src/pyrpmd/spin_mapping.py": "b502ed10411a80087c1593da917c2015d83c8a0dc4ec08bfd1bd1b60d8cc27dd",
+    "src/pyrpmd/__init__.py": "710c6ae512fe037d6be448a9db653678d65e2a291b0e8217bc8b4b3365da4577",
+    "src/pyrpmd/pcet_input.py": "4ad51710ec9370e360ab1841ed4488ca8b75d3a4e47bfc5994f7d523834a2755",
+    "src/pyrpmd/pimd_methods.py": "9b83444dc878ca918f9d0cda36f5f87db1fc20b3d4b28a60d6f4e627ec6448bc",
+    "src/pyrpmd/plumed.py": "4cbd2c6a52a7fc4f05b742730412b3b0ebd2a165d5632972e8beaec275ebb897",
+    "src/pyrpmd/advanced_cv.py": "e8f61b91916c832a40e4aee6d01e6471a6a913b5ae72ac5b1e94cc392f0a36a0",
+    "src/pyrpmd/pcet.py": "e9b42d25210c91042dc82858f85854833cefa27a8d7c7c82388ef68a7ac01379",
+    "src/pyrpmd/committor.py": "7ee73c934d466c0aa863a7468ad5c3365352664a42263f691a7d33775ba568e5",
+    "src/pyrpmd/workflows/rate_recrossing.py": "69c428ec7120ffa432235444825717ec26d09008ae1d47114b37dc244bca0a6c",
+    "src/pyrpmd/workflows/nonadiabatic_extensions.py": "1d352bd301a95f3263e482d07087cc050eb0a395ca1aa0c475835a6c9e6bca93",
+    "src/pyrpmd/workflows/rate_analysis.py": "3e914821fbcfa16db9891e393bb9801abcb95c524a6e0eae42f7ee9dfe1b3ef1",
+    "src/pyrpmd/workflows/common.py": "a2682076b262e97852e7392f54b7fd5d2103188908ebc39e0ff3603ca7a20e12",
+    "src/pyrpmd/workflows/surface.py": "2362bfab31ecec863b6cfa64cea91653560278d49fbcf962c29ce5c899abe248",
+    "src/pyrpmd/workflows/fes.py": "eabbbda8c7ddfa4060ef2e17b84fea60c90208deeb4eab1cb03af0d7bca9be6f",
+    "src/pyrpmd/workflows/rate_extend.py": "7bafa4ecc1fb2b3f901576f90da68e86a6d96ee5664f70859d65b3beb1c72279",
+    "src/pyrpmd/workflows/rate_options.py": "1558854cbdc90e51acaab6c0f571668767da199e2fe60961cd3bedfd5c7960f4",
+    "src/pyrpmd/workflows/native_pimd.py": "a167b3b515da9d78b4dc842ead3c1dad3bde8ae637d62756a6dae789cf442f37",
+    "src/pyrpmd/workflows/path_integral.py": "09002b07b3e009da9d3ac8a5a94f55f3d8e5bfda1cb53783bb43e6b37185d17b",
+    "src/pyrpmd/workflows/opes.py": "3a3e539bb91b6a4abafa31d3378da2b71e1a72e2e2f71e43c6d2efb5ad289bb6",
+    "src/pyrpmd/workflows/network.py": "b47152432d6fe21d8afebfd2382db573acfca08263416c51b721bbdcbfc8dca7",
+    "src/pyrpmd/workflows/drpmd_persistence.py": "9401af68451b3a5f5096559ddc668d5d6f965072b662e3dbabdcb35fb221b7b0",
+    "src/pyrpmd/workflows/nonadiabatic.py": "659d29b1a04c53782598c36f6ac705d86d2e713e48ed6bd2c888b9e4e281f673",
+    "src/pyrpmd/workflows/drpmd.py": "0bdfbdfe7c8f20f04bd4fddf1f8b32764303f9fedef9ccf758a4971cdf1e1e69",
+    "src/pyrpmd/workflows/site_rate.py": "f1c107f25f3885f21a500673eda73734fb28a2ce0c5af4d10398a612732b4bdf",
+    "src/pyrpmd/workflows/drpmd_trajectory.py": "45a7e53576c56a56cd1cc0a63940b0c84d5007f157357e383460611cc4fa1ff2",
+    "src/pyrpmd/workflows/drpmd_classification.py": "a0eb4b59c8d6ab3473b61408fe5e79e130c17f55cc237f9e9f1fd881f4c71910",
+    "src/pyrpmd/workflows/rate_pmf.py": "bc73f5c5c6abed5ae67e3e43840684f803fd3573849bda03bc790d8bd21ae485",
+    "src/pyrpmd/workflows/materials.py": "ec4d383d1d001612f13dddf2e01a47f80dc5261812ae2410a866cd5ea904fae4",
+    "src/pyrpmd/workflows/shared_metadynamics.py": "1f3930c37d6332b08cf102a8b8396e5e93f4fbd5a567e8ae83b9c6f53602a9c0",
+    "src/pyrpmd/workflows/drpmd_sampling.py": "0c07aefca072e4f7821f7ad6b5e877c887e92d961b4cb46cb22ef73a64a38baa",
+    "src/pyrpmd/workflows/biased_sampling.py": "ee035e5c51578e5d300b394051dc6315e62d1631fa6b6b337f87319d64d2bdeb",
+    "src/pyrpmd/workflows/extend.py": "60c3fd645fc21e570249dcf60b9c162461e995ea4b5a22d1c3a6663863af1f6a",
+    "src/pyrpmd/workflows/neb.py": "08b0fddf59c01a1d4854b426a39e2b3ae046e33ee8bb14ef9bc371db46f7e823",
+    "src/pyrpmd/workflows/saddle.py": "58147ea231368606f809aac0e9aac2f9ff59b85c60534987198b81dfdae23c37",
+    "src/pyrpmd/workflows/spectroscopy.py": "0fc25b2307c862c9ce3e7cbbc820866f74c1d7172da75613c0687765e41b12d0",
+    "src/pyrpmd/workflows/prepare.py": "e2f342baa97bb62df735e1ec25433d28175d5e5e2077fda591d71c1031fd81b9",
+    "src/pyrpmd/workflows/replica_exchange.py": "cca45d4d9c93a8c17b09334b72c653faa74136e6cd7736f48a16e357a5d60a05",
+    "src/pyrpmd/workflows/batched_recrossing.py": "564e6d6cb7bd195785cd4fa0fc5caaf28a66fe5ef8db428e48ac4414951428fa",
+    "src/pyrpmd/workflows/state_selected.py": "f8adaad6375a2990e2216a94780c3885b1817f54d42aae6ad1fa9c05232aaaf9",
+    "src/pyrpmd/workflows/rate.py": "d057b814fcee94e141d517b2a384e1090511ddd0fdff432c553933309107edf8",
+    "src/pyrpmd/workflows/drpmd_analysis.py": "fce6c3e2a57986abd450a08e89abb70ee5297a1c3bd6949965014a53a35be236",
+    "src/pyrpmd/workflows/sampling.py": "86c999da0f9f4ab9747ee2b32588c37ba58eb34f970aa5bc8a1f2caf228ff988",
+    "src/pyrpmd/workflows/metadynamics.py": "0aff440ad6557262c0d3f6e50c92287dc1f6ae3b2f1650dc6efed565864d93ec",
+    "src/pyrpmd/workflows/fes_dispatch.py": "06f4b38ef2f4317cae08f0b12c203d126158ce5a54f3bf0c96fd0ca839d2d12b",
+    "src/pyrpmd/workflows/surface_source.py": "3dcf50df6ca510e4a97b3cebe52d9f3cf4bf63301e3f15e8dadf0bb7bbc19bc8",
+    "src/pyrpmd/workflows/nonadiabatic_rate.py": "a87ffae6af82c9105b7fc11e06d574190d0a87991c4e90227b8d2e9c0cfc7a53",
+    "src/pyrpmd/workflows/__init__.py": "0dfda51b1d63474796b42bd9be6bf4464ec77964d419840642bff86e5c7cdd49",
+    "src/pyrpmd/workflows/rate_source.py": "bef4ec53f077b0fd1ccdf9b1f86bbe91e477e18607944a8267b72509b7d37471",
+    "src/pyrpmd/workflows/adaptive_umbrella.py": "4e150e535c9caae7ce52a2e1f37386b641b643a370b1acafceeba827ff4351d2",
+    "src/pyrpmd/workflows/rate_constraints.py": "a31b8e5860d1f05f6a8ba5fb92b52528ad370a814f5d767952a2c6f29250b1fe",
+    "src/pyrpmd/workflows/plumed.py": "d312d211df8761bc5aff14d09513d2bbe660fc3d544c92ba80ae8ea43e410949",
+    "src/pyrpmd/workflows/pcet.py": "7d27c54156e5f9db1b06128bbe23102d502485ce777d68a53a247d037177d4c6",
+    "src/pyrpmd/potentials/base.py": "5399de666b55975ee3ee801e8dc3c0ce598f684613a95ce0282b22c67362b7b3",
+    "src/pyrpmd/potentials/contraction.py": "fc62923c0ac89ba649a1af46effd38c1809e0cc75b246b441fa7e90af2d07797",
+    "src/pyrpmd/potentials/optional.py": "7d0157da93afdd1993d675e8cd53131fcdd6e119bbde2c1ee3c56a8919e4ac6d",
+    "src/pyrpmd/potentials/cabi.py": "79c876b666967c678ebf5117e67236f47605d5bd54d47c9f387634c2c48ce02a",
+    "src/pyrpmd/potentials/builtin.py": "d4a70399bd95738c8d284f11a41a267ca108e57887bf6019096272fdf064ae46",
+    "src/pyrpmd/potentials/openmm.py": "6fadd87629013ea734962dd99fe14f14b182da4d628d2f025b0e460294d13f82",
+    "src/pyrpmd/potentials/cache.py": "b1e328b62f722381ab19f6d9444b457552f23afca6fc520faa3dcbcbc7dad1f8",
+    "src/pyrpmd/potentials/multistate_external.py": "b57027795d2a5b0f37f6aec871586cde8b60d352d9768a7f589ff9d4994c9846",
+    "src/pyrpmd/potentials/adapters.py": "e3b065756038f04a0b90c70844ba7a942660128a68f7ed98209bdd546c00211d",
+    "src/pyrpmd/potentials/socket.py": "64297c0356c5e66cf83b723c7b6f2c94a741107d6c0ae88d7c0634c0b21c1c08",
+    "src/pyrpmd/potentials/lifecycle.py": "cc57022369b6c04cac6a2a1474ddfd7075dcd2d2caa30c2a2c12d70580f60cf2",
+    "src/pyrpmd/potentials/python.py": "8b040203cedcc1cac4acc814e2004f78ba4a3ab180c027600d59699c9d5732c9",
+    "src/pyrpmd/potentials/native.py": "eb4e4dbe4230dd66152e0c33b1b5800080d22ccc574f067db3231dddfd5d873b",
+    "src/pyrpmd/potentials/lammps.py": "c7bd00faf6a2d5eaad31be0b4fb0b85ef99ed3f8dd2e29ceb29e98bf86c45fba",
+    "src/pyrpmd/potentials/nah2_leps.py": "402b2e8c431a1966b7afe76fe1fd250d75ce3ae5966e1c8576f3ec9db7653835",
+    "src/pyrpmd/potentials/diabatic.py": "3103030dc78d5a84687261178d1938ada5705cdc2c17ffed00c8f9555afe3bec",
+    "src/pyrpmd/potentials/nonadiabatic_models.py": "fd7dbcc94d311a0571df2f65905b3215d2f6f70d371ea3d13693e14b17c29012",
+    "src/pyrpmd/potentials/__init__.py": "f870f1e0f59ec7ef79dc8eafd6b70a5f41815a35a4e8a5f0ba218eb95e5a9821",
+    "src/pyrpmd/parallel/execution.py": "a465a3df14cd3c9dfbdc596bc57703308ff7b7c61adbb762af6d4677180e33bc",
+    "src/pyrpmd/parallel/__init__.py": "e821466b2fbd4481e5279717f4369d0236e3ff09a86cce134d0b33e004fbecf5",
+    "src/pyrpmd/analysis/umbrella.py": "2c3f493b391399e422a7074f238a1eba95b2a09ec59bc6a58b3ecfa475f78901",
+    "src/pyrpmd/analysis/quantum_reference.py": "d7c86e586840158d64e4d319ae4a10949263f5e11b3d6075bdfdee766430a773",
+    "src/pyrpmd/analysis/surface.py": "03483e081055a6afa4d1481b03f08d8f4b8b06b4f06e6033f6c3c7824c532bd2",
+    "src/pyrpmd/analysis/fes.py": "6c2cb1f30d6a64dbcd0ea65a740dacaa1924e4a6ec8b95d20f04e9cc848a5d55",
+    "src/pyrpmd/analysis/diagnostics.py": "e5c414154a8886ed5405c3f0fccdf047301a3297f157108902cfe2dc193f9a24",
+    "src/pyrpmd/analysis/rate_io.py": "9e7815d3abd088205ce82bf02fe6bdc88893335928364fc1bb46e13be119765c",
+    "src/pyrpmd/analysis/bond_rate.py": "cb9e7fed948fbd3554f16f54bb7e8dc43c53b83a25bbda02c06f3e8a546e9896",
+    "src/pyrpmd/analysis/recrossing.py": "078e61febd4f7e17fef0b9d7ee2f9240e07bf6bbb8ab78b1f27e87f335a93f45",
+    "src/pyrpmd/analysis/report_compare.py": "a94bc716696d05ad5f02b10cf7bfcd9920420f179bcf907ab61b633d37473b29",
+    "src/pyrpmd/analysis/report_sampling.py": "3f36babc468e7cbca1eeb5b95956427d8132b10907ab47d8fee6df6138767006",
+    "src/pyrpmd/analysis/report_render.py": "e9d8c0a26f5d74de4d2f97fd791bc2050f9b0e1a39f6d3e21d87fb58a0f8c656",
+    "src/pyrpmd/analysis/mbar.py": "4cc85883422dd1003b1132477603d3c796a426c60b206f62882451b92a4a8683",
+    "src/pyrpmd/analysis/fes_result.py": "ea4b56439e3ea025b48f21e90a9502b842b8ae9652136fc4581181c52897617c",
+    "src/pyrpmd/analysis/reporting.py": "9254a5821e253cf34bafff12dc2395a528879a967d083e5b7ad2dec78a565833",
+    "src/pyrpmd/analysis/rate_pmf.py": "22253c7efec7f756e9477771a3681096633f23436ae10e3d237df4f90631d224",
+    "src/pyrpmd/analysis/scattering.py": "d39596c5e0281b05e1101464f50e9173d10a25a9d30682c2f6ea7afa02363953",
+    "src/pyrpmd/analysis/report_observables.py": "f661556737582551f64b2906b5c715518a32aae1ee4ffc6d85ea0a9afb77e98b",
+    "src/pyrpmd/analysis/entrance.py": "e54044a43b2af62e56b0978c5fb05daf0ec1f1bb720d2fb1cb6faa5be5b5269e",
+    "src/pyrpmd/analysis/bond_flux.py": "27dd1dff9e6e74cc4da93f998c3624cc4b5b4fada34c413de52f4c9c7b0f00c3",
+    "src/pyrpmd/analysis/rate_postprocess.py": "a6170350a155f14e2d7286c2a3f55684b2ad2ff6cd91cda220155baf405e58d2",
+    "src/pyrpmd/analysis/spectroscopy.py": "7763753bc680487b488fee90854a609985ba06c7ae610bb1e6dcab9e48d14b71",
+    "src/pyrpmd/analysis/projection.py": "c3921aa541ae95f7907fffa5c7fd62bce7b3cf7a84191af5aba6e65ace840dd0",
+    "src/pyrpmd/analysis/diffusion.py": "92ca98ff236bf0a3547ae3cfda795dc6a4a997a8f4254c3d028d8a4615b09e72",
+    "src/pyrpmd/analysis/fes_statistics.py": "5af387f6fb972a5528a3a56c82f793e8c8f6df5d27e4b3450773a00ed6466013",
+    "src/pyrpmd/analysis/metadynamics.py": "f2a8aeeb1ecf3d7135abe9f0b830f7bb3cbef21277ccadc137109b8d47e80330",
+    "src/pyrpmd/analysis/__init__.py": "a133fc41807e52b9bf708911434127c16f8c2439f4998eacbdce5b188baa7819",
+    "src/pyrpmd/electrochemistry/nonadiabatic.py": "5b4656c36b861cdec7fc94e39dcc315f0b0ec8d76b0cd6555cc5f83f00f5a7b8",
+    "src/pyrpmd/electrochemistry/reservoir.py": "56f435652a4ee1a7e01a1b15b001d635067f8ced13b31dd9ecdfd33dfd7cc2e9",
+    "src/pyrpmd/electrochemistry/potentials.py": "52acf0af9263b95bec48c4d0ca8392ac4339fab92fca83312c5eeb0cd5566dbe",
+    "src/pyrpmd/electrochemistry/kinetics.py": "825d4daccfab9d1b7effed67f8f0adebb431bf0fb300cf5ebcc8cd50f47c1af5",
+    "src/pyrpmd/electrochemistry/diabatic.py": "e3370a235a65794148ad80bbfe7603a862b0978e088384c46c641ec1110cbb72",
+    "src/pyrpmd/electrochemistry/sampling.py": "f332ace96f59e9b7d4eda80a52e4285b1db3d1310390ad2245cc4fe238049128",
+    "src/pyrpmd/electrochemistry/__init__.py": "67ee2eda1961f275f13054b6a946a7d22fe94f03f537eb065ef749204c19ac20",
+    "src/pyrpmd/pesgen/jaxpip_fit.py": "a2e791e566381239435181dfd61a6b2b5b7aec91fd9d198dc21ca05667ed1654",
+    "src/pyrpmd/pesgen/formats.py": "4112a9e7cae57d4674f0e4e7e180e9dfd93c74832e5f0642d96f066d75362ff7",
+    "src/pyrpmd/pesgen/workflow.py": "e52775d627de60be0a2155538f72b2a4f3d6768dbf1e10a8d5af450b4373210a",
+    "src/pyrpmd/pesgen/jaxpip_export.py": "f6435ce61ddb52a654f9c7a93e75674bf1c4a943fdac20ad51c05171f05c1c75",
+    "src/pyrpmd/pesgen/build.py": "6494bbf9e53c2792b8469965095cda4d77281253c7078baa031fff9a50f43d06",
+    "src/pyrpmd/pesgen/jaxpip_data.py": "7efb523ff37418bc433ba7b66165d06fcbece752c230b8b770861de14ff3ff3f",
+    "src/pyrpmd/pesgen/__main__.py": "68215945ac4766cdb44195a9cbe5a96ae750e67be9d4ca71913d9e3e78843bb7",
+    "src/pyrpmd/pesgen/reference.py": "1ac169c5194d9f2fc58c1b50d6a54c714f2c412f5fa5ca1c177d56c6bedd125b",
+    "src/pyrpmd/pesgen/__init__.py": "aecf8efceb06a458bde426e34c182fdece689168ccdbc9fa325645448396c907",
+    "native/fused.hpp": "50b35e0eb186cdfc523c793984cc038a53cf618897f7f05627484c6df7c3e6cd",
+    "native/ring_fft.h": "19211dadf85d0271b90df555c09a9d53cad4f67f1d0948dde3ee62eba8f159b0",
+    "native/fixed_atoms.hpp": "c04149e12917225e603bb137ecad09cdd0038bc8623e30dceef9f605376a48e3",
+    "native/cayley.cpp": "094cd0a33ca14339dbda7693f23d8428645a3d7a81c373fd6a412aa806f66070",
+    "native/thermal.hpp": "60890d93319d7098b1f841028a86df198151badf33e1a648958fa7df4fb2e5a7",
+    "native/thermal.cpp": "5584cb886eb3975280810896106bdc3795a9244c1b3ea6244e801ad8c8e91a58",
+    "native/propagation.h": "278e83ea3704c846ba8afc49940448d8afc2963b1973de1ceb656a1c755bd639",
+    "native/electronic.cpp": "f4dd6bdcd7a752d1df15466a6a94cd0c1604a897f49a45da734b4adb40c32be2",
+    "native/onnx/onnx_pes.cpp": "cbe0d688eba30cce046c91a52a27d582c0e018844c8853c871b4c3e138b009a1",
+    "native/onnx/context_test.cpp": "ff69cbea4ec453441a543dd09adba1a62c9a42ccb87a30274fffc0a92a17e1fe",
+    "native/include/pyrpmd/thermal_pes.h": "40d1cbeec480eaf828499db46c20db4644c7d72c1e17d3132f13f5dea012a961",
+    "native/include/pyrpmd/pes_api_v1.h": "c2669601c9ee7f851a14f25d83bc257ccca5414f9374dffa83d84134eeb08077",
+    "native/include/pyrpmd/pes_api_v2.h": "717e649954355e182eedb7b3974b8cb35eea3e6c4c5e584c334f845ea0189af7",
+    "benchmarks/materials/batch_convergence.py": "225b805fdd6a43d223aa93df30cc085e3897ab8c3a3b68b38b06160f1076da15",
+    "loaded_native_extension": {
+      "path": "/workspace/scratch/2b8fa6c24a7c/PyRPMD-work/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "0dcdad6ea35955ec407fdb063c2d6a890825d9536deb33ca7b785c3903b00413"
+    }
+  },
+  "arms": {
+    "base": {
+      "configuration": {
+        "task": "pimd",
+        "preset": "pilot",
+        "temperature": "600 K",
+        "beads": 2,
+        "seed": 8261,
+        "system": {
+          "symbols": [
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              8.0
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              0.0,
+              0.0,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              11.52
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              12.42
+            ]
+          ],
+          "geometry_unit": "angstrom",
+          "cell": [
+            [
+              7.467047609329942,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              7.467047609329942,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              19.52
+            ]
+          ],
+          "cell_unit": "angstrom",
+          "pbc": [
+            true,
+            true,
+            false
+          ]
+        },
+        "potential": {
+          "provider": "ase",
+          "factory": "ase.calculators.eam:EAM",
+          "params": {
+            "potential": "/workspace/scratch/2b8fa6c24a7c/models/NiAlH_jea.eam.alloy"
+          },
+          "trajectory_batch_safe": true
+        },
+        "dynamics": {
+          "timestep": "0.10000000000000001 fs",
+          "integrator": "cayley-bcb",
+          "loop_backend": "python",
+          "block_steps": 3
+        },
+        "sampling": {
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.1 fs^-1",
+          "equilibration_steps": 16,
+          "production_steps": 64,
+          "sample_interval": 2,
+          "replicas": 4
+        },
+        "parallel": {
+          "mode": "serial",
+          "bead_workers": 1,
+          "threads_per_rank": 1,
+          "backend": "process",
+          "trajectory_workers": 2,
+          "trajectory_batch_size": 2
+        },
+        "output": {
+          "checkpoint_steps": 200,
+          "trajectory_storage": "stream",
+          "chunk_frames": 128
+        }
+      },
+      "measurement": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 27.705377776001114,
+        "cpu_seconds_including_spawn_children": 53.961835,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 27.350591716000054,
+            "self_cpu_seconds": 0.489967,
+            "children_cpu_seconds": 53.471868,
+            "self_peak_rss_bytes": 84643840,
+            "largest_child_peak_rss_bytes": 74051584
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 320,
+        "pes_frames": 1280,
+        "pes_frames_per_wall_second": 46.20041676922227,
+        "shapes": [
+          {
+            "shape": [
+              4,
+              28,
+              3
+            ],
+            "calls": 320
+          }
+        ],
+        "committed_replica_steps_advanced": 320,
+        "committed_replica_steps_per_wall_second": 11.550104192305568,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-convergence-diagnostic/evidence/base"
+      },
+      "observations": {
+        "potential_eV_per_atom": {
+          "replica_means": [
+            -3.8688132115788005,
+            -3.8695100900071524,
+            -3.8676211515568366,
+            -3.8687252424458674
+          ],
+          "independent_replica_statistics": {
+            "available": true,
+            "replicas": 4,
+            "mean": -3.8686674238971643,
+            "standard_error": 0.00039044515361190147,
+            "CI95": [
+              -3.8699099946336926,
+              -3.867424853160636
+            ],
+            "halfwidth": 0.0012425707365281255
+          },
+          "production_half_difference": {
+            "available": true,
+            "replicas": 4,
+            "mean": 0.0033265179583963356,
+            "standard_error": 0.0003164720002875808,
+            "CI95": [
+              0.0023193628103553793,
+              0.004333673106437292
+            ],
+            "halfwidth": 0.001007155148040956
+          },
+          "precision_passed": true,
+          "stationarity_passed": true,
+          "correlation_diagnostics": [
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.31024728981581,
+              "effective_samples": 2.4792927795751463,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.15500566106573,
+              "effective_samples": 2.508550801895023,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.337205077475751,
+              "effective_samples": 2.474281516127493,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 12.636639163189818,
+              "effective_samples": 2.611453850492787,
+              "block_length_frames": 13,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            }
+          ],
+          "effective_sampling_passed": false
+        },
+        "internal_energy_eV_per_atom": {
+          "replica_means": [
+            -3.7905549161584706,
+            -3.791041976453141,
+            -3.7893789317241757,
+            -3.790394943260503
+          ],
+          "independent_replica_statistics": {
+            "available": true,
+            "replicas": 4,
+            "mean": -3.7903426918990726,
+            "standard_error": 0.0003494760248481676,
+            "CI95": [
+              -3.791454880583136,
+              -3.789230503215009
+            ],
+            "halfwidth": 0.0011121886840632883
+          },
+          "production_half_difference": {
+            "available": true,
+            "replicas": 4,
+            "mean": 0.0037490471968623096,
+            "standard_error": 0.0002902777753761067,
+            "CI95": [
+              0.0028252537631106448,
+              0.004672840630613974
+            ],
+            "halfwidth": 0.0009237934337516649
+          },
+          "precision_passed": true,
+          "stationarity_passed": true,
+          "correlation_diagnostics": [
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.255370218758424,
+              "effective_samples": 2.489557021447793,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.146946140729305,
+              "effective_samples": 2.5100886279411943,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.35480927572194,
+              "effective_samples": 2.4710199388613936,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 12.691616078547789,
+              "effective_samples": 2.600141683751275,
+              "block_length_frames": 13,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            }
+          ],
+          "effective_sampling_passed": false
+        },
+        "hydrogen_ring_radius_squared_bohr2": {
+          "replica_means": [
+            0.017798024933300877,
+            0.025320463297242513,
+            0.06509734818251124,
+            0.021630313186465907
+          ],
+          "independent_replica_statistics": {
+            "available": true,
+            "replicas": 4,
+            "mean": 0.032461537399880135,
+            "standard_error": 0.01098645036927244,
+            "CI95": [
+              -0.0025022509859937703,
+              0.06742532578575404
+            ],
+            "halfwidth": 0.034963788385873905
+          },
+          "production_half_difference": {
+            "available": true,
+            "replicas": 4,
+            "mean": 0.016132985560292246,
+            "standard_error": 0.01750619984597895,
+            "CI95": [
+              -0.039579555459101676,
+              0.07184552657968617
+            ],
+            "halfwidth": 0.05571254101939392
+          },
+          "precision_passed": false,
+          "stationarity_passed": false,
+          "correlation_diagnostics": [
+            {
+              "samples": 33,
+              "statistical_inefficiency": 12.831023943661908,
+              "effective_samples": 2.5718913895645006,
+              "block_length_frames": 13,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 8.378479041193856,
+              "effective_samples": 3.9386623559898295,
+              "block_length_frames": 9,
+              "complete_blocks": 3,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.385997937136763,
+              "effective_samples": 2.4652625941655146,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 8.668083906059419,
+              "effective_samples": 3.807069746628937,
+              "block_length_frames": 9,
+              "complete_blocks": 3,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            }
+          ],
+          "effective_sampling_passed": false
+        }
+      }
+    },
+    "beads": {
+      "configuration": {
+        "task": "pimd",
+        "preset": "pilot",
+        "temperature": "600 K",
+        "beads": 4,
+        "seed": 9270,
+        "system": {
+          "symbols": [
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              8.0
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              0.0,
+              0.0,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              11.52
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              12.42
+            ]
+          ],
+          "geometry_unit": "angstrom",
+          "cell": [
+            [
+              7.467047609329942,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              7.467047609329942,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              19.52
+            ]
+          ],
+          "cell_unit": "angstrom",
+          "pbc": [
+            true,
+            true,
+            false
+          ]
+        },
+        "potential": {
+          "provider": "ase",
+          "factory": "ase.calculators.eam:EAM",
+          "params": {
+            "potential": "/workspace/scratch/2b8fa6c24a7c/models/NiAlH_jea.eam.alloy"
+          },
+          "trajectory_batch_safe": true
+        },
+        "dynamics": {
+          "timestep": "0.10000000000000001 fs",
+          "integrator": "cayley-bcb",
+          "loop_backend": "python",
+          "block_steps": 3
+        },
+        "sampling": {
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.1 fs^-1",
+          "equilibration_steps": 16,
+          "production_steps": 64,
+          "sample_interval": 2,
+          "replicas": 4
+        },
+        "parallel": {
+          "mode": "serial",
+          "bead_workers": 1,
+          "threads_per_rank": 1,
+          "backend": "process",
+          "trajectory_workers": 2,
+          "trajectory_batch_size": 2
+        },
+        "output": {
+          "checkpoint_steps": 200,
+          "trajectory_storage": "stream",
+          "chunk_frames": 128
+        }
+      },
+      "measurement": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 60.342087791002996,
+        "cpu_seconds_including_spawn_children": 117.725204,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 59.95967016599752,
+            "self_cpu_seconds": 0.5483549999999999,
+            "children_cpu_seconds": 117.176849,
+            "self_peak_rss_bytes": 89886720,
+            "largest_child_peak_rss_bytes": 74317824
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 320,
+        "pes_frames": 2560,
+        "pes_frames_per_wall_second": 42.4247833264678,
+        "shapes": [
+          {
+            "shape": [
+              8,
+              28,
+              3
+            ],
+            "calls": 320
+          }
+        ],
+        "committed_replica_steps_advanced": 320,
+        "committed_replica_steps_per_wall_second": 5.303097915808475,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-convergence-diagnostic/evidence/beads"
+      },
+      "observations": {
+        "potential_eV_per_atom": {
+          "replica_means": [
+            -3.8695941269129617,
+            -3.867995696601179,
+            -3.8699953886713407,
+            -3.8662754379268343
+          ],
+          "independent_replica_statistics": {
+            "available": true,
+            "replicas": 4,
+            "mean": -3.8684651625280786,
+            "standard_error": 0.0008481079293379915,
+            "CI95": [
+              -3.871164220474282,
+              -3.865766104581875
+            ],
+            "halfwidth": 0.002699057946203507
+          },
+          "production_half_difference": {
+            "available": true,
+            "replicas": 4,
+            "mean": 0.0030680333282596672,
+            "standard_error": 0.000719230970326754,
+            "CI95": [
+              0.0007791193840976729,
+              0.0053569472724216615
+            ],
+            "halfwidth": 0.0022889139441619943
+          },
+          "precision_passed": false,
+          "stationarity_passed": false,
+          "correlation_diagnostics": [
+            {
+              "samples": 33,
+              "statistical_inefficiency": 12.749316036070427,
+              "effective_samples": 2.5883741454550377,
+              "block_length_frames": 13,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 12.776392330889774,
+              "effective_samples": 2.582888748666175,
+              "block_length_frames": 13,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 12.558629957548844,
+              "effective_samples": 2.627675161347046,
+              "block_length_frames": 13,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.149126281355102,
+              "effective_samples": 2.5096724522900495,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            }
+          ],
+          "effective_sampling_passed": false
+        },
+        "internal_energy_eV_per_atom": {
+          "replica_means": [
+            -3.7909053943312756,
+            -3.7893238627379096,
+            -3.7913992511689756,
+            -3.7877435953697307
+          ],
+          "independent_replica_statistics": {
+            "available": true,
+            "replicas": 4,
+            "mean": -3.789843025901973,
+            "standard_error": 0.0008280299265861737,
+            "CI95": [
+              -3.7924781866825015,
+              -3.7872078651214443
+            ],
+            "halfwidth": 0.0026351607805285083
+          },
+          "production_half_difference": {
+            "available": true,
+            "replicas": 4,
+            "mean": 0.0034069778699616915,
+            "standard_error": 0.0007637341565454698,
+            "CI95": [
+              0.0009764349252445923,
+              0.00583752081467879
+            ],
+            "halfwidth": 0.002430542944717099
+          },
+          "precision_passed": false,
+          "stationarity_passed": false,
+          "correlation_diagnostics": [
+            {
+              "samples": 33,
+              "statistical_inefficiency": 12.250003527609099,
+              "effective_samples": 2.6938767752698594,
+              "block_length_frames": 13,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 12.755715523929409,
+              "effective_samples": 2.587075569229559,
+              "block_length_frames": 13,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 12.302191205848674,
+              "effective_samples": 2.6824489595244816,
+              "block_length_frames": 13,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.179607289570264,
+              "effective_samples": 2.503868231803438,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            }
+          ],
+          "effective_sampling_passed": false
+        },
+        "hydrogen_ring_radius_squared_bohr2": {
+          "replica_means": [
+            0.04299321909181477,
+            0.04646833414955191,
+            0.0483582690019239,
+            0.09844617289403472
+          ],
+          "independent_replica_statistics": {
+            "available": true,
+            "replicas": 4,
+            "mean": 0.05906649878433133,
+            "standard_error": 0.01317348659966346,
+            "CI95": [
+              0.01714258502752792,
+              0.10099041254113475
+            ],
+            "halfwidth": 0.04192391375680341
+          },
+          "production_half_difference": {
+            "available": true,
+            "replicas": 4,
+            "mean": 0.025689719370545882,
+            "standard_error": 0.011863522456511408,
+            "CI95": [
+              -0.012065303838829148,
+              0.06344474257992092
+            ],
+            "halfwidth": 0.03775502320937503
+          },
+          "precision_passed": false,
+          "stationarity_passed": false,
+          "correlation_diagnostics": [
+            {
+              "samples": 33,
+              "statistical_inefficiency": 6.74060683259641,
+              "effective_samples": 4.895701651135874,
+              "block_length_frames": 7,
+              "complete_blocks": 4,
+              "conditional_standard_error": 0.005724866778661492,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": null
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 11.599122630350317,
+              "effective_samples": 2.84504277191208,
+              "block_length_frames": 12,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 11.958334687425095,
+              "effective_samples": 2.759581569054216,
+              "block_length_frames": 12,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.086260070055177,
+              "effective_samples": 2.521728883832343,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            }
+          ],
+          "effective_sampling_passed": false
+        }
+      }
+    },
+    "timestep": {
+      "configuration": {
+        "task": "pimd",
+        "preset": "pilot",
+        "temperature": "600 K",
+        "beads": 2,
+        "seed": 10279,
+        "system": {
+          "symbols": [
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              8.0
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              0.0,
+              0.0,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              11.52
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              12.42
+            ]
+          ],
+          "geometry_unit": "angstrom",
+          "cell": [
+            [
+              7.467047609329942,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              7.467047609329942,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              19.52
+            ]
+          ],
+          "cell_unit": "angstrom",
+          "pbc": [
+            true,
+            true,
+            false
+          ]
+        },
+        "potential": {
+          "provider": "ase",
+          "factory": "ase.calculators.eam:EAM",
+          "params": {
+            "potential": "/workspace/scratch/2b8fa6c24a7c/models/NiAlH_jea.eam.alloy"
+          },
+          "trajectory_batch_safe": true
+        },
+        "dynamics": {
+          "timestep": "0.050000000000000003 fs",
+          "integrator": "cayley-bcb",
+          "loop_backend": "python",
+          "block_steps": 3
+        },
+        "sampling": {
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.1 fs^-1",
+          "equilibration_steps": 32,
+          "production_steps": 128,
+          "sample_interval": 4,
+          "replicas": 4
+        },
+        "parallel": {
+          "mode": "serial",
+          "bead_workers": 1,
+          "threads_per_rank": 1,
+          "backend": "process",
+          "trajectory_workers": 2,
+          "trajectory_batch_size": 2
+        },
+        "output": {
+          "checkpoint_steps": 200,
+          "trajectory_storage": "stream",
+          "chunk_frames": 128
+        }
+      },
+      "measurement": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 57.797162686001684,
+        "cpu_seconds_including_spawn_children": 113.72439500000002,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 57.437948167003924,
+            "self_cpu_seconds": 0.530359,
+            "children_cpu_seconds": 113.19403600000001,
+            "self_peak_rss_bytes": 90038272,
+            "largest_child_peak_rss_bytes": 74317824
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 640,
+        "pes_frames": 2560,
+        "pes_frames_per_wall_second": 44.292831707118125,
+        "shapes": [
+          {
+            "shape": [
+              4,
+              28,
+              3
+            ],
+            "calls": 640
+          }
+        ],
+        "committed_replica_steps_advanced": 640,
+        "committed_replica_steps_per_wall_second": 11.073207926779531,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-convergence-diagnostic/evidence/timestep"
+      },
+      "observations": {
+        "potential_eV_per_atom": {
+          "replica_means": [
+            -3.8700550237126303,
+            -3.8691521586831303,
+            -3.8689257511963677,
+            -3.8691291303349633
+          ],
+          "independent_replica_statistics": {
+            "available": true,
+            "replicas": 4,
+            "mean": -3.869315515981773,
+            "standard_error": 0.00025169649187998047,
+            "CI95": [
+              -3.8701165265524096,
+              -3.8685145054111367
+            ],
+            "halfwidth": 0.0008010105706363146
+          },
+          "production_half_difference": {
+            "available": true,
+            "replicas": 4,
+            "mean": 0.0028974759630059355,
+            "standard_error": 0.00020580117445583392,
+            "CI95": [
+              0.002242524775735919,
+              0.0035524271502759518
+            ],
+            "halfwidth": 0.0006549511872700164
+          },
+          "precision_passed": true,
+          "stationarity_passed": true,
+          "correlation_diagnostics": [
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.091305764269968,
+              "effective_samples": 2.520756950774668,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 12.760354494943842,
+              "effective_samples": 2.5861350492320496,
+              "block_length_frames": 13,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.309323447410305,
+              "effective_samples": 2.479464875160206,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.067341369007636,
+              "effective_samples": 2.525379805127575,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            }
+          ],
+          "effective_sampling_passed": false
+        },
+        "internal_energy_eV_per_atom": {
+          "replica_means": [
+            -3.791976507784457,
+            -3.7906739937733276,
+            -3.7905798966303745,
+            -3.7909261682882427
+          ],
+          "independent_replica_statistics": {
+            "available": true,
+            "replicas": 4,
+            "mean": -3.7910391416191005,
+            "standard_error": 0.0003208916237588468,
+            "CI95": [
+              -3.7920603619815285,
+              -3.7900179212566725
+            ],
+            "halfwidth": 0.0010212203624278317
+          },
+          "production_half_difference": {
+            "available": true,
+            "replicas": 4,
+            "mean": 0.0033954485896449116,
+            "standard_error": 0.0001708897623098936,
+            "CI95": [
+              0.0028516010969709795,
+              0.003939296082318844
+            ],
+            "halfwidth": 0.0005438474926739319
+          },
+          "precision_passed": true,
+          "stationarity_passed": true,
+          "correlation_diagnostics": [
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.266926755574133,
+              "effective_samples": 2.4873884214469615,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 12.78457468052006,
+              "effective_samples": 2.5812356550493867,
+              "block_length_frames": 13,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.355547129141417,
+              "effective_samples": 2.470883422514002,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.066235624604763,
+              "effective_samples": 2.525593518140632,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            }
+          ],
+          "effective_sampling_passed": false
+        },
+        "hydrogen_ring_radius_squared_bohr2": {
+          "replica_means": [
+            0.003839114785328614,
+            0.026314783194343834,
+            0.034246900102860446,
+            0.0032032193460019872
+          ],
+          "independent_replica_statistics": {
+            "available": true,
+            "replicas": 4,
+            "mean": 0.01690100435713372,
+            "standard_error": 0.00789378238771261,
+            "CI95": [
+              -0.008220534237355883,
+              0.04202254295162332
+            ],
+            "halfwidth": 0.025121538594489602
+          },
+          "production_half_difference": {
+            "available": true,
+            "replicas": 4,
+            "mean": 0.011496040781396686,
+            "standard_error": 0.008049190322430249,
+            "CI95": [
+              -0.014120075220746837,
+              0.03711215678354021
+            ],
+            "halfwidth": 0.025616116002143523
+          },
+          "precision_passed": false,
+          "stationarity_passed": false,
+          "correlation_diagnostics": [
+            {
+              "samples": 33,
+              "statistical_inefficiency": 3.0139287266514785,
+              "effective_samples": 10.949164029059013,
+              "block_length_frames": 4,
+              "complete_blocks": 8,
+              "conditional_standard_error": 0.0006528592320808573,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": null
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 8.05360637124722,
+              "effective_samples": 4.097543197270698,
+              "block_length_frames": 9,
+              "complete_blocks": 3,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 12.81109978358046,
+              "effective_samples": 2.575891262848093,
+              "block_length_frames": 13,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 5.219710558371675,
+              "effective_samples": 6.322189636946954,
+              "block_length_frames": 6,
+              "complete_blocks": 5,
+              "conditional_standard_error": 0.0010039822069739888,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": null
+            }
+          ],
+          "effective_sampling_passed": false
+        }
+      }
+    },
+    "cell_size": {
+      "configuration": {
+        "task": "pimd",
+        "preset": "pilot",
+        "temperature": "600 K",
+        "beads": 2,
+        "seed": 11288,
+        "system": {
+          "symbols": [
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              8.0
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              0.0,
+              0.0,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              11.52
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              12.42
+            ],
+            [
+              0.0,
+              7.467047609329942,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              7.467047609329942,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              7.467047609329942,
+              8.0
+            ],
+            [
+              0.0,
+              9.95606347910659,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              9.95606347910659,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              9.95606347910659,
+              8.0
+            ],
+            [
+              0.0,
+              12.445079348883237,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              12.445079348883237,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              12.445079348883237,
+              8.0
+            ],
+            [
+              1.2445079348883237,
+              8.711555544218266,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              8.711555544218266,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              8.711555544218266,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              11.200571413994913,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              11.200571413994913,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              11.200571413994913,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              13.68958728377156,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              13.68958728377156,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              13.68958728377156,
+              9.76
+            ],
+            [
+              0.0,
+              7.467047609329942,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              7.467047609329942,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              7.467047609329942,
+              11.52
+            ],
+            [
+              0.0,
+              9.95606347910659,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              9.95606347910659,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              9.95606347910659,
+              11.52
+            ],
+            [
+              0.0,
+              12.445079348883237,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              12.445079348883237,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              12.445079348883237,
+              11.52
+            ],
+            [
+              1.2445079348883237,
+              8.711555544218266,
+              12.42
+            ],
+            [
+              7.467047609329942,
+              0.0,
+              8.0
+            ],
+            [
+              9.95606347910659,
+              0.0,
+              8.0
+            ],
+            [
+              12.445079348883237,
+              0.0,
+              8.0
+            ],
+            [
+              7.467047609329942,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              9.95606347910659,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              12.445079348883237,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              7.467047609329942,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              9.95606347910659,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              12.445079348883237,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              8.711555544218266,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              11.200571413994913,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              13.68958728377156,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              8.711555544218266,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              11.200571413994913,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              13.68958728377156,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              8.711555544218266,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              11.200571413994913,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              13.68958728377156,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              7.467047609329942,
+              0.0,
+              11.52
+            ],
+            [
+              9.95606347910659,
+              0.0,
+              11.52
+            ],
+            [
+              12.445079348883237,
+              0.0,
+              11.52
+            ],
+            [
+              7.467047609329942,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              9.95606347910659,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              12.445079348883237,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              7.467047609329942,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              9.95606347910659,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              12.445079348883237,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              8.711555544218266,
+              1.2445079348883237,
+              12.42
+            ],
+            [
+              7.467047609329942,
+              7.467047609329942,
+              8.0
+            ],
+            [
+              9.95606347910659,
+              7.467047609329942,
+              8.0
+            ],
+            [
+              12.445079348883237,
+              7.467047609329942,
+              8.0
+            ],
+            [
+              7.467047609329942,
+              9.95606347910659,
+              8.0
+            ],
+            [
+              9.95606347910659,
+              9.95606347910659,
+              8.0
+            ],
+            [
+              12.445079348883237,
+              9.95606347910659,
+              8.0
+            ],
+            [
+              7.467047609329942,
+              12.445079348883237,
+              8.0
+            ],
+            [
+              9.95606347910659,
+              12.445079348883237,
+              8.0
+            ],
+            [
+              12.445079348883237,
+              12.445079348883237,
+              8.0
+            ],
+            [
+              8.711555544218266,
+              8.711555544218266,
+              9.76
+            ],
+            [
+              11.200571413994913,
+              8.711555544218266,
+              9.76
+            ],
+            [
+              13.68958728377156,
+              8.711555544218266,
+              9.76
+            ],
+            [
+              8.711555544218266,
+              11.200571413994913,
+              9.76
+            ],
+            [
+              11.200571413994913,
+              11.200571413994913,
+              9.76
+            ],
+            [
+              13.68958728377156,
+              11.200571413994913,
+              9.76
+            ],
+            [
+              8.711555544218266,
+              13.68958728377156,
+              9.76
+            ],
+            [
+              11.200571413994913,
+              13.68958728377156,
+              9.76
+            ],
+            [
+              13.68958728377156,
+              13.68958728377156,
+              9.76
+            ],
+            [
+              7.467047609329942,
+              7.467047609329942,
+              11.52
+            ],
+            [
+              9.95606347910659,
+              7.467047609329942,
+              11.52
+            ],
+            [
+              12.445079348883237,
+              7.467047609329942,
+              11.52
+            ],
+            [
+              7.467047609329942,
+              9.95606347910659,
+              11.52
+            ],
+            [
+              9.95606347910659,
+              9.95606347910659,
+              11.52
+            ],
+            [
+              12.445079348883237,
+              9.95606347910659,
+              11.52
+            ],
+            [
+              7.467047609329942,
+              12.445079348883237,
+              11.52
+            ],
+            [
+              9.95606347910659,
+              12.445079348883237,
+              11.52
+            ],
+            [
+              12.445079348883237,
+              12.445079348883237,
+              11.52
+            ],
+            [
+              8.711555544218266,
+              8.711555544218266,
+              12.42
+            ]
+          ],
+          "geometry_unit": "angstrom",
+          "cell": [
+            [
+              14.934095218659884,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              14.934095218659884,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              19.52
+            ]
+          ],
+          "cell_unit": "angstrom",
+          "pbc": [
+            true,
+            true,
+            false
+          ]
+        },
+        "potential": {
+          "provider": "ase",
+          "factory": "ase.calculators.eam:EAM",
+          "params": {
+            "potential": "/workspace/scratch/2b8fa6c24a7c/models/NiAlH_jea.eam.alloy"
+          },
+          "trajectory_batch_safe": true
+        },
+        "dynamics": {
+          "timestep": "0.10000000000000001 fs",
+          "integrator": "cayley-bcb",
+          "loop_backend": "python",
+          "block_steps": 3
+        },
+        "sampling": {
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.1 fs^-1",
+          "equilibration_steps": 16,
+          "production_steps": 64,
+          "sample_interval": 2,
+          "replicas": 4
+        },
+        "parallel": {
+          "mode": "serial",
+          "bead_workers": 1,
+          "threads_per_rank": 1,
+          "backend": "process",
+          "trajectory_workers": 2,
+          "trajectory_batch_size": 2
+        },
+        "output": {
+          "checkpoint_steps": 200,
+          "trajectory_storage": "stream",
+          "chunk_frames": 128
+        }
+      },
+      "measurement": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 94.13536813500104,
+        "cpu_seconds_including_spawn_children": 187.32446699999997,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 93.81003786699875,
+            "self_cpu_seconds": 0.513523,
+            "children_cpu_seconds": 186.81094399999998,
+            "self_peak_rss_bytes": 90038272,
+            "largest_child_peak_rss_bytes": 79028224
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 320,
+        "pes_frames": 1280,
+        "pes_frames_per_wall_second": 13.597439786545811,
+        "shapes": [
+          {
+            "shape": [
+              4,
+              112,
+              3
+            ],
+            "calls": 320
+          }
+        ],
+        "committed_replica_steps_advanced": 320,
+        "committed_replica_steps_per_wall_second": 3.399359946636453,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-convergence-diagnostic/evidence/cell_size"
+      },
+      "observations": {
+        "potential_eV_per_atom": {
+          "replica_means": [
+            -3.869767464431697,
+            -3.869776619864544,
+            -3.869142626089512,
+            -3.8685769106034775
+          ],
+          "independent_replica_statistics": {
+            "available": true,
+            "replicas": 4,
+            "mean": -3.869315905247308,
+            "standard_error": 0.0002875619361803802,
+            "CI95": [
+              -3.8702310556686457,
+              -3.8684007548259705
+            ],
+            "halfwidth": 0.0009151504213374804
+          },
+          "production_half_difference": {
+            "available": true,
+            "replicas": 4,
+            "mean": 0.0024693196838564413,
+            "standard_error": 0.00017573466864903873,
+            "CI95": [
+              0.0019100535369040513,
+              0.0030285858308088313
+            ],
+            "halfwidth": 0.0005592661469523899
+          },
+          "precision_passed": true,
+          "stationarity_passed": true,
+          "correlation_diagnostics": [
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.341382315858194,
+              "effective_samples": 2.4735068090189314,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 12.994200362102104,
+              "effective_samples": 2.5395945175853445,
+              "block_length_frames": 13,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.33127214063595,
+              "effective_samples": 2.475382668050896,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.132925491018085,
+              "effective_samples": 2.512768386797707,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            }
+          ],
+          "effective_sampling_passed": false
+        },
+        "internal_energy_eV_per_atom": {
+          "replica_means": [
+            -3.79139221871898,
+            -3.791563505946991,
+            -3.790922296022843,
+            -3.790336238709709
+          ],
+          "independent_replica_statistics": {
+            "available": true,
+            "replicas": 4,
+            "mean": -3.791053564849631,
+            "standard_error": 0.00027485066580231436,
+            "CI95": [
+              -3.791928262335518,
+              -3.7901788673637435
+            ],
+            "halfwidth": 0.0008746974858873424
+          },
+          "production_half_difference": {
+            "available": true,
+            "replicas": 4,
+            "mean": 0.002873638469147677,
+            "standard_error": 0.00016613637854578372,
+            "CI95": [
+              0.002344918365071432,
+              0.0034023585732239217
+            ],
+            "halfwidth": 0.0005287201040762448
+          },
+          "precision_passed": true,
+          "stationarity_passed": true,
+          "correlation_diagnostics": [
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.338432489409639,
+              "effective_samples": 2.47405383100309,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.013132284702547,
+              "effective_samples": 2.535899833954106,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.334232159590616,
+              "effective_samples": 2.4748331666225583,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.075030551329077,
+              "effective_samples": 2.5238946762266306,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            }
+          ],
+          "effective_sampling_passed": false
+        },
+        "hydrogen_ring_radius_squared_bohr2": {
+          "replica_means": [
+            0.05356780609905133,
+            0.030017036309827553,
+            0.03623913945540021,
+            0.023026401780189974
+          ],
+          "independent_replica_statistics": {
+            "available": true,
+            "replicas": 4,
+            "mean": 0.035712595911117265,
+            "standard_error": 0.006534936238268053,
+            "CI95": [
+              0.014915512224376488,
+              0.05650967959785804
+            ],
+            "halfwidth": 0.020797083686740776
+          },
+          "production_half_difference": {
+            "available": true,
+            "replicas": 4,
+            "mean": 0.0213169771330066,
+            "standard_error": 0.008926082331856397,
+            "CI95": [
+              -0.007089800604667972,
+              0.049723754870681175
+            ],
+            "halfwidth": 0.028406777737674572
+          },
+          "precision_passed": false,
+          "stationarity_passed": false,
+          "correlation_diagnostics": [
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.257845775081348,
+              "effective_samples": 2.4890921617164095,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 7.585232237141877,
+              "effective_samples": 4.350558950378879,
+              "block_length_frames": 8,
+              "complete_blocks": 4,
+              "conditional_standard_error": 0.0034657537051095335,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": null
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 9.151416796819635,
+              "effective_samples": 3.6059990198969403,
+              "block_length_frames": 10,
+              "complete_blocks": 3,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.750052395283472,
+              "effective_samples": 2.3999908546762794,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            }
+          ],
+          "effective_sampling_passed": false
+        }
+      }
+    },
+    "preparation": {
+      "configuration": {
+        "task": "pimd",
+        "preset": "pilot",
+        "temperature": "600 K",
+        "beads": 2,
+        "seed": 12297,
+        "system": {
+          "symbols": [
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              8.0
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              0.0,
+              0.0,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              11.52
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              12.42
+            ]
+          ],
+          "geometry_unit": "angstrom",
+          "cell": [
+            [
+              7.467047609329942,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              7.467047609329942,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              19.52
+            ]
+          ],
+          "cell_unit": "angstrom",
+          "pbc": [
+            true,
+            true,
+            false
+          ]
+        },
+        "potential": {
+          "provider": "ase",
+          "factory": "ase.calculators.eam:EAM",
+          "params": {
+            "potential": "/workspace/scratch/2b8fa6c24a7c/models/NiAlH_jea.eam.alloy"
+          },
+          "trajectory_batch_safe": true
+        },
+        "dynamics": {
+          "timestep": "0.10000000000000001 fs",
+          "integrator": "cayley-bcb",
+          "loop_backend": "python",
+          "block_steps": 3
+        },
+        "sampling": {
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.1 fs^-1",
+          "equilibration_steps": 32,
+          "production_steps": 64,
+          "sample_interval": 2,
+          "replicas": 4
+        },
+        "parallel": {
+          "mode": "serial",
+          "bead_workers": 1,
+          "threads_per_rank": 1,
+          "backend": "process",
+          "trajectory_workers": 2,
+          "trajectory_batch_size": 2
+        },
+        "output": {
+          "checkpoint_steps": 200,
+          "trajectory_storage": "stream",
+          "chunk_frames": 128
+        }
+      },
+      "measurement": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 35.08461155400437,
+        "cpu_seconds_including_spawn_children": 69.004021,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 34.75110618699546,
+            "self_cpu_seconds": 0.459158,
+            "children_cpu_seconds": 68.54486299999999,
+            "self_peak_rss_bytes": 91348992,
+            "largest_child_peak_rss_bytes": 74043392
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 384,
+        "pes_frames": 1536,
+        "pes_frames_per_wall_second": 43.779877614882395,
+        "shapes": [
+          {
+            "shape": [
+              4,
+              28,
+              3
+            ],
+            "calls": 384
+          }
+        ],
+        "committed_replica_steps_advanced": 384,
+        "committed_replica_steps_per_wall_second": 10.944969403720599,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-convergence-diagnostic/evidence/preparation"
+      },
+      "observations": {
+        "potential_eV_per_atom": {
+          "replica_means": [
+            -3.866822983879772,
+            -3.8673759166966364,
+            -3.8692718015910503,
+            -3.867840272212677
+          ],
+          "independent_replica_statistics": {
+            "available": true,
+            "replicas": 4,
+            "mean": -3.8678277435950337,
+            "standard_error": 0.0005243368902439232,
+            "CI95": [
+              -3.8694964175941142,
+              -3.866159069595953
+            ],
+            "halfwidth": 0.0016686739990807223
+          },
+          "production_half_difference": {
+            "available": true,
+            "replicas": 4,
+            "mean": 0.0030660074858880337,
+            "standard_error": 0.0003021127084511593,
+            "CI95": [
+              0.002104550013098388,
+              0.0040274649586776795
+            ],
+            "halfwidth": 0.0009614574727896458
+          },
+          "precision_passed": true,
+          "stationarity_passed": true,
+          "correlation_diagnostics": [
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.059437150752721,
+              "effective_samples": 2.5269082900787914,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.408503030567514,
+              "effective_samples": 2.4611248492668816,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.222565228554371,
+              "effective_samples": 2.495733575867404,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.10013178180129,
+              "effective_samples": 2.519058628543235,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            }
+          ],
+          "effective_sampling_passed": false
+        },
+        "internal_energy_eV_per_atom": {
+          "replica_means": [
+            -3.78836984969618,
+            -3.7890344693037172,
+            -3.7908384649518645,
+            -3.7895824113780203
+          ],
+          "independent_replica_statistics": {
+            "available": true,
+            "replicas": 4,
+            "mean": -3.7894562988324454,
+            "standard_error": 0.0005231793377052443,
+            "CI95": [
+              -3.791121288982726,
+              -3.7877913086821646
+            ],
+            "halfwidth": 0.001664990150280832
+          },
+          "production_half_difference": {
+            "available": true,
+            "replicas": 4,
+            "mean": 0.0033898280215736154,
+            "standard_error": 0.0002966117746129403,
+            "CI95": [
+              0.0024458769753530197,
+              0.0043337790677942115
+            ],
+            "halfwidth": 0.0009439510462205958
+          },
+          "precision_passed": true,
+          "stationarity_passed": true,
+          "correlation_diagnostics": [
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.081132901167699,
+              "effective_samples": 2.522717279101585,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.550938020694094,
+              "effective_samples": 2.4352557697190105,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.383181886723515,
+              "effective_samples": 2.4657813275882403,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 12.923231730390745,
+              "effective_samples": 2.553540839354911,
+              "block_length_frames": 13,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            }
+          ],
+          "effective_sampling_passed": false
+        },
+        "hydrogen_ring_radius_squared_bohr2": {
+          "replica_means": [
+            0.07579974819160941,
+            0.026340170417971098,
+            0.022172660372255536,
+            0.029903017072587152
+          ],
+          "independent_replica_statistics": {
+            "available": true,
+            "replicas": 4,
+            "mean": 0.0385538990136058,
+            "standard_error": 0.012515361177970875,
+            "CI95": [
+              -0.0012755659265187638,
+              0.07838336395373036
+            ],
+            "halfwidth": 0.03982946494012456
+          },
+          "production_half_difference": {
+            "available": true,
+            "replicas": 4,
+            "mean": 0.0014880675639238252,
+            "standard_error": 0.015509680665876484,
+            "CI95": [
+              -0.047870658367324945,
+              0.0508467934951726
+            ],
+            "halfwidth": 0.04935872593124877
+          },
+          "precision_passed": false,
+          "stationarity_passed": false,
+          "correlation_diagnostics": [
+            {
+              "samples": 33,
+              "statistical_inefficiency": 11.285147890096125,
+              "effective_samples": 2.9241973894698257,
+              "block_length_frames": 12,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 9.680880639722734,
+              "effective_samples": 3.4087807946514608,
+              "block_length_frames": 10,
+              "complete_blocks": 3,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 9.737811684864123,
+              "effective_samples": 3.388851732601611,
+              "block_length_frames": 10,
+              "complete_blocks": 3,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 14.07306765011717,
+              "effective_samples": 2.3449045240484754,
+              "block_length_frames": 15,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            }
+          ],
+          "effective_sampling_passed": false
+        }
+      }
+    },
+    "production_length": {
+      "configuration": {
+        "task": "pimd",
+        "preset": "pilot",
+        "temperature": "600 K",
+        "beads": 2,
+        "seed": 13306,
+        "system": {
+          "symbols": [
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              8.0
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              0.0,
+              0.0,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              11.52
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              12.42
+            ]
+          ],
+          "geometry_unit": "angstrom",
+          "cell": [
+            [
+              7.467047609329942,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              7.467047609329942,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              19.52
+            ]
+          ],
+          "cell_unit": "angstrom",
+          "pbc": [
+            true,
+            true,
+            false
+          ]
+        },
+        "potential": {
+          "provider": "ase",
+          "factory": "ase.calculators.eam:EAM",
+          "params": {
+            "potential": "/workspace/scratch/2b8fa6c24a7c/models/NiAlH_jea.eam.alloy"
+          },
+          "trajectory_batch_safe": true
+        },
+        "dynamics": {
+          "timestep": "0.10000000000000001 fs",
+          "integrator": "cayley-bcb",
+          "loop_backend": "python",
+          "block_steps": 3
+        },
+        "sampling": {
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.1 fs^-1",
+          "equilibration_steps": 16,
+          "production_steps": 128,
+          "sample_interval": 2,
+          "replicas": 4
+        },
+        "parallel": {
+          "mode": "serial",
+          "bead_workers": 1,
+          "threads_per_rank": 1,
+          "backend": "process",
+          "trajectory_workers": 2,
+          "trajectory_batch_size": 2
+        },
+        "output": {
+          "checkpoint_steps": 200,
+          "trajectory_storage": "stream",
+          "chunk_frames": 128
+        }
+      },
+      "measurement": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 51.919836804001534,
+        "cpu_seconds_including_spawn_children": 102.581551,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 51.5919842229996,
+            "self_cpu_seconds": 0.508641,
+            "children_cpu_seconds": 102.07291000000001,
+            "self_peak_rss_bytes": 91348992,
+            "largest_child_peak_rss_bytes": 74694656
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 576,
+        "pes_frames": 2304,
+        "pes_frames_per_wall_second": 44.376102503897464,
+        "shapes": [
+          {
+            "shape": [
+              4,
+              28,
+              3
+            ],
+            "calls": 576
+          }
+        ],
+        "committed_replica_steps_advanced": 576,
+        "committed_replica_steps_per_wall_second": 11.094025625974366,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-convergence-diagnostic/evidence/production_length"
+      },
+      "observations": {
+        "potential_eV_per_atom": {
+          "replica_means": [
+            -3.8628005644964896,
+            -3.868131450667557,
+            -3.865621156416168,
+            -3.8681324986107457
+          ],
+          "independent_replica_statistics": {
+            "available": true,
+            "replicas": 4,
+            "mean": -3.86617141754774,
+            "standard_error": 0.0012699411525901039,
+            "CI95": [
+              -3.870212937076728,
+              -3.8621298980187517
+            ],
+            "halfwidth": 0.00404151952898811
+          },
+          "production_half_difference": {
+            "available": true,
+            "replicas": 4,
+            "mean": 0.006982486950503741,
+            "standard_error": 0.0014544611325345421,
+            "CI95": [
+              0.0023537424930904303,
+              0.011611231407917052
+            ],
+            "halfwidth": 0.004628744457413311
+          },
+          "precision_passed": false,
+          "stationarity_passed": false,
+          "correlation_diagnostics": [
+            {
+              "samples": 65,
+              "statistical_inefficiency": 26.81313841749481,
+              "effective_samples": 2.424184703331459,
+              "block_length_frames": 27,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 65,
+              "statistical_inefficiency": 26.78958760768956,
+              "effective_samples": 2.426315811645518,
+              "block_length_frames": 27,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 65,
+              "statistical_inefficiency": 25.09344638445012,
+              "effective_samples": 2.590317766804608,
+              "block_length_frames": 26,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 65,
+              "statistical_inefficiency": 25.178097108124053,
+              "effective_samples": 2.581608916705102,
+              "block_length_frames": 26,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            }
+          ],
+          "effective_sampling_passed": false
+        },
+        "internal_energy_eV_per_atom": {
+          "replica_means": [
+            -3.78422715835989,
+            -3.7895052568975705,
+            -3.787337015102695,
+            -3.7895480200326843
+          ],
+          "independent_replica_statistics": {
+            "available": true,
+            "replicas": 4,
+            "mean": -3.78765436259821,
+            "standard_error": 0.0012536010300534346,
+            "CI95": [
+              -3.7916438805646036,
+              -3.7836648446318164
+            ],
+            "halfwidth": 0.003989517966393403
+          },
+          "production_half_difference": {
+            "available": true,
+            "replicas": 4,
+            "mean": 0.007386405076510116,
+            "standard_error": 0.0014365723853406772,
+            "CI95": [
+              0.0028145905965100753,
+              0.011958219556510157
+            ],
+            "halfwidth": 0.004571814480000041
+          },
+          "precision_passed": false,
+          "stationarity_passed": false,
+          "correlation_diagnostics": [
+            {
+              "samples": 65,
+              "statistical_inefficiency": 26.95829876205864,
+              "effective_samples": 2.411131376416141,
+              "block_length_frames": 27,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 65,
+              "statistical_inefficiency": 26.76566473623994,
+              "effective_samples": 2.4284844273638333,
+              "block_length_frames": 27,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 65,
+              "statistical_inefficiency": 24.745578420258987,
+              "effective_samples": 2.626731891091504,
+              "block_length_frames": 25,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 65,
+              "statistical_inefficiency": 25.58948017708996,
+              "effective_samples": 2.5401063073643027,
+              "block_length_frames": 26,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            }
+          ],
+          "effective_sampling_passed": false
+        },
+        "hydrogen_ring_radius_squared_bohr2": {
+          "replica_means": [
+            0.02313705382005853,
+            0.028263679806408027,
+            0.02819112498549129,
+            0.022131664642378993
+          ],
+          "independent_replica_statistics": {
+            "available": true,
+            "replicas": 4,
+            "mean": 0.02543088081358421,
+            "standard_error": 0.0016276303747795372,
+            "CI95": [
+              0.020251034540999534,
+              0.030610727086168885
+            ],
+            "halfwidth": 0.0051798462725846746
+          },
+          "production_half_difference": {
+            "available": true,
+            "replicas": 4,
+            "mean": 0.0026174800680997296,
+            "standard_error": 0.009475903565131377,
+            "CI95": [
+              -0.027539074221977333,
+              0.032774034358176794
+            ],
+            "halfwidth": 0.03015655429007706
+          },
+          "precision_passed": false,
+          "stationarity_passed": false,
+          "correlation_diagnostics": [
+            {
+              "samples": 65,
+              "statistical_inefficiency": 14.11651895156567,
+              "effective_samples": 4.604534603964161,
+              "block_length_frames": 15,
+              "complete_blocks": 4,
+              "conditional_standard_error": 0.00658185952101476,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": null
+            },
+            {
+              "samples": 65,
+              "statistical_inefficiency": 17.871834389556383,
+              "effective_samples": 3.6370077398425043,
+              "block_length_frames": 18,
+              "complete_blocks": 3,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 65,
+              "statistical_inefficiency": 19.446307686808243,
+              "effective_samples": 3.3425368479638906,
+              "block_length_frames": 20,
+              "complete_blocks": 3,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 65,
+              "statistical_inefficiency": 9.547756309911188,
+              "effective_samples": 6.807882175682029,
+              "block_length_frames": 10,
+              "complete_blocks": 6,
+              "conditional_standard_error": 0.004230663275464141,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": null
+            }
+          ],
+          "effective_sampling_passed": false
+        }
+      }
+    },
+    "replica_count": {
+      "configuration": {
+        "task": "pimd",
+        "preset": "pilot",
+        "temperature": "600 K",
+        "beads": 2,
+        "seed": 14315,
+        "system": {
+          "symbols": [
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              8.0
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              0.0,
+              0.0,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              11.52
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              12.42
+            ]
+          ],
+          "geometry_unit": "angstrom",
+          "cell": [
+            [
+              7.467047609329942,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              7.467047609329942,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              19.52
+            ]
+          ],
+          "cell_unit": "angstrom",
+          "pbc": [
+            true,
+            true,
+            false
+          ]
+        },
+        "potential": {
+          "provider": "ase",
+          "factory": "ase.calculators.eam:EAM",
+          "params": {
+            "potential": "/workspace/scratch/2b8fa6c24a7c/models/NiAlH_jea.eam.alloy"
+          },
+          "trajectory_batch_safe": true
+        },
+        "dynamics": {
+          "timestep": "0.10000000000000001 fs",
+          "integrator": "cayley-bcb",
+          "loop_backend": "python",
+          "block_steps": 3
+        },
+        "sampling": {
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.1 fs^-1",
+          "equilibration_steps": 16,
+          "production_steps": 64,
+          "sample_interval": 2,
+          "replicas": 8
+        },
+        "parallel": {
+          "mode": "serial",
+          "bead_workers": 1,
+          "threads_per_rank": 1,
+          "backend": "process",
+          "trajectory_workers": 2,
+          "trajectory_batch_size": 2
+        },
+        "output": {
+          "checkpoint_steps": 200,
+          "trajectory_storage": "stream",
+          "chunk_frames": 128
+        }
+      },
+      "measurement": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 58.83741895100684,
+        "cpu_seconds_including_spawn_children": 115.182215,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 58.46320401999401,
+            "self_cpu_seconds": 0.540515,
+            "children_cpu_seconds": 114.6417,
+            "self_peak_rss_bytes": 91348992,
+            "largest_child_peak_rss_bytes": 74227712
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 640,
+        "pes_frames": 2560,
+        "pes_frames_per_wall_second": 43.50972638911437,
+        "shapes": [
+          {
+            "shape": [
+              4,
+              28,
+              3
+            ],
+            "calls": 640
+          }
+        ],
+        "committed_replica_steps_advanced": 640,
+        "committed_replica_steps_per_wall_second": 10.877431597278592,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-convergence-diagnostic/evidence/replica_count"
+      },
+      "observations": {
+        "potential_eV_per_atom": {
+          "replica_means": [
+            -3.86989958019388,
+            -3.8682282282349343,
+            -3.8705052006216674,
+            -3.869735165159574,
+            -3.8693426846315444,
+            -3.8699126105745325,
+            -3.8689314245888613,
+            -3.8679093742123487
+          ],
+          "independent_replica_statistics": {
+            "available": true,
+            "replicas": 8,
+            "mean": -3.869308033527168,
+            "standard_error": 0.00031612479701641135,
+            "CI95": [
+              -3.870055549888723,
+              -3.868560517165613
+            ],
+            "halfwidth": 0.0007475163615548524
+          },
+          "production_half_difference": {
+            "available": true,
+            "replicas": 8,
+            "mean": 0.002482130213366962,
+            "standard_error": 0.0002752408449676989,
+            "CI95": [
+              0.0018312890363274515,
+              0.003132971390406473
+            ],
+            "halfwidth": 0.0006508411770395105
+          },
+          "precision_passed": true,
+          "stationarity_passed": true,
+          "correlation_diagnostics": [
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.324495206351067,
+              "effective_samples": 2.4766416655147045,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.465530940468591,
+              "effective_samples": 2.450701732140658,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 12.23651754204796,
+              "effective_samples": 2.6968457231890643,
+              "block_length_frames": 13,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.50877217659712,
+              "effective_samples": 2.4428570982320577,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.370823064770683,
+              "effective_samples": 2.4680604806556814,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 12.431306297413624,
+              "effective_samples": 2.6545882798226734,
+              "block_length_frames": 13,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 12.719330295998923,
+              "effective_samples": 2.594476220998892,
+              "block_length_frames": 13,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.367769264232408,
+              "effective_samples": 2.4686242968224135,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            }
+          ],
+          "effective_sampling_passed": false
+        },
+        "internal_energy_eV_per_atom": {
+          "replica_means": [
+            -3.7916492205806933,
+            -3.790008905833945,
+            -3.7923042006203485,
+            -3.791697733985574,
+            -3.790809626170584,
+            -3.791753539440648,
+            -3.7905167574889345,
+            -3.7896945571314014
+          ],
+          "independent_replica_statistics": {
+            "available": true,
+            "replicas": 8,
+            "mean": -3.791054317656516,
+            "standard_error": 0.00033030537845048935,
+            "CI95": [
+              -3.7918353657648316,
+              -3.7902732695482007
+            ],
+            "halfwidth": 0.0007810481083155597
+          },
+          "production_half_difference": {
+            "available": true,
+            "replicas": 8,
+            "mean": 0.002918539419594135,
+            "standard_error": 0.00029610084078557694,
+            "CI95": [
+              0.002218372190555546,
+              0.003618706648632724
+            ],
+            "halfwidth": 0.000700167229038589
+          },
+          "precision_passed": true,
+          "stationarity_passed": true,
+          "correlation_diagnostics": [
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.35168793053895,
+              "effective_samples": 2.4715976116038485,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.406668506946708,
+              "effective_samples": 2.4614616213491773,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 12.603874946907792,
+              "effective_samples": 2.6182424166383966,
+              "block_length_frames": 13,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.374822118315466,
+              "effective_samples": 2.467322533943075,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.499098258674112,
+              "effective_samples": 2.4446077336162215,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 12.262559835684813,
+              "effective_samples": 2.691118366979784,
+              "block_length_frames": 13,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 12.799657566609797,
+              "effective_samples": 2.5781939734142902,
+              "block_length_frames": 13,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.472627435305366,
+              "effective_samples": 2.449410863505559,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            }
+          ],
+          "effective_sampling_passed": false
+        },
+        "hydrogen_ring_radius_squared_bohr2": {
+          "replica_means": [
+            0.035564451896806515,
+            0.023096726387455222,
+            0.026675837549278006,
+            0.07415649522931288,
+            0.014895423551495646,
+            0.030501719623258844,
+            0.014897436788362804,
+            0.007753648377073056
+          ],
+          "independent_replica_statistics": {
+            "available": true,
+            "replicas": 8,
+            "mean": 0.02844271742538037,
+            "standard_error": 0.007284341001961988,
+            "CI95": [
+              0.011217988035269372,
+              0.04566744681549137
+            ],
+            "halfwidth": 0.017224729390110997
+          },
+          "production_half_difference": {
+            "available": true,
+            "replicas": 8,
+            "mean": 0.015639464794782176,
+            "standard_error": 0.004501269025018125,
+            "CI95": [
+              0.004995654895280912,
+              0.02628327469428344
+            ],
+            "halfwidth": 0.010643809899501264
+          },
+          "precision_passed": false,
+          "stationarity_passed": false,
+          "correlation_diagnostics": [
+            {
+              "samples": 33,
+              "statistical_inefficiency": 12.879750047812923,
+              "effective_samples": 2.562161523127046,
+              "block_length_frames": 13,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 6.049353165694036,
+              "effective_samples": 5.455128688327117,
+              "block_length_frames": 7,
+              "complete_blocks": 4,
+              "conditional_standard_error": 0.0030180484312242756,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": null
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 5.26021700954952,
+              "effective_samples": 6.2735054352493504,
+              "block_length_frames": 6,
+              "complete_blocks": 5,
+              "conditional_standard_error": 0.0027976193861538297,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": null
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 7.238883484384912,
+              "effective_samples": 4.55871407119409,
+              "block_length_frames": 8,
+              "complete_blocks": 4,
+              "conditional_standard_error": 0.014018952036715783,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": null
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 12.109619452116084,
+              "effective_samples": 2.725106278565463,
+              "block_length_frames": 13,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 6.6951937206974765,
+              "effective_samples": 4.9289089123715755,
+              "block_length_frames": 7,
+              "complete_blocks": 4,
+              "conditional_standard_error": 0.0022628782326197198,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": null
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 8.363798344229668,
+              "effective_samples": 3.9455757589812386,
+              "block_length_frames": 9,
+              "complete_blocks": 3,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            },
+            {
+              "samples": 33,
+              "statistical_inefficiency": 13.724675792800006,
+              "effective_samples": 2.404428381274541,
+              "block_length_frames": 14,
+              "complete_blocks": 2,
+              "conditional_standard_error": null,
+              "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+              "reason": "fewer_than_four_complete_blocks"
+            }
+          ],
+          "effective_sampling_passed": false
+        }
+      }
+    }
+  },
+  "comparisons": {
+    "beads": {
+      "potential_eV_per_atom": {
+        "passed": true,
+        "difference_control_minus_base": 0.00020226136908574333,
+        "CI95": [
+          -0.0023382471045493005,
+          0.002742769842720787
+        ],
+        "margin": 0.005,
+        "method": "independent-seed Welch t interval",
+        "degrees_of_freedom": 4.216987760606463
+      },
+      "internal_energy_eV_per_atom": {
+        "passed": true,
+        "difference_control_minus_base": 0.0004996659970997186,
+        "CI95": [
+          -0.001986952902035774,
+          0.002986284896235211
+        ],
+        "margin": 0.005,
+        "method": "independent-seed Welch t interval",
+        "degrees_of_freedom": 4.035922884901671
+      },
+      "hydrogen_ring_radius_squared_bohr2": {
+        "passed": false,
+        "difference_control_minus_base": 0.026604961384451196,
+        "CI95": [
+          -0.015698450061296443,
+          0.06890837283019884
+        ],
+        "margin": 0.002,
+        "method": "independent-seed Welch t interval",
+        "degrees_of_freedom": 5.812561290987373
+      }
+    },
+    "timestep": {
+      "potential_eV_per_atom": {
+        "passed": true,
+        "difference_control_minus_base": -0.000648092084608809,
+        "CI95": [
+          -0.0018334456256159,
+          0.000537261456398282
+        ],
+        "margin": 0.005,
+        "method": "independent-seed Welch t interval",
+        "degrees_of_freedom": 5.126190076819968
+      },
+      "internal_energy_eV_per_atom": {
+        "passed": true,
+        "difference_control_minus_base": -0.0006964497200279141,
+        "CI95": [
+          -0.0018594347885503913,
+          0.0004665353484945632
+        ],
+        "margin": 0.005,
+        "method": "independent-seed Welch t interval",
+        "degrees_of_freedom": 5.956835185871553
+      },
+      "hydrogen_ring_radius_squared_bohr2": {
+        "passed": false,
+        "difference_control_minus_base": -0.015560533042746415,
+        "CI95": [
+          -0.04949720569035841,
+          0.018376139604865577
+        ],
+        "margin": 0.002,
+        "method": "independent-seed Welch t interval",
+        "degrees_of_freedom": 5.445674509706306
+      }
+    },
+    "cell_size": {
+      "potential_eV_per_atom": {
+        "passed": true,
+        "difference_control_minus_base": -0.0006484813501437259,
+        "CI95": [
+          -0.0018607949441197854,
+          0.0005638322438323337
+        ],
+        "margin": 0.005,
+        "method": "independent-seed Welch t interval",
+        "degrees_of_freedom": 5.5146807334316605
+      },
+      "internal_energy_eV_per_atom": {
+        "passed": true,
+        "difference_control_minus_base": -0.0007108729505582723,
+        "CI95": [
+          -0.0018136085399753953,
+          0.0003918626388588508
+        ],
+        "margin": 0.005,
+        "method": "independent-seed Welch t interval",
+        "degrees_of_freedom": 5.684238344410461
+      },
+      "hydrogen_ring_radius_squared_bohr2": {
+        "passed": false,
+        "difference_control_minus_base": 0.00325105851123713,
+        "CI95": [
+          -0.029839463680275104,
+          0.036341580702749364
+        ],
+        "margin": 0.002,
+        "method": "independent-seed Welch t interval",
+        "degrees_of_freedom": 4.886674855125261
+      }
+    },
+    "preparation": {
+      "potential_eV_per_atom": {
+        "passed": true,
+        "difference_control_minus_base": 0.0008396803021306631,
+        "CI95": [
+          -0.0007923593289015413,
+          0.0024717199331628676
+        ],
+        "margin": 0.005,
+        "method": "independent-seed Welch t interval",
+        "degrees_of_freedom": 5.544601412765986
+      },
+      "internal_energy_eV_per_atom": {
+        "passed": true,
+        "difference_control_minus_base": 0.0008863930666271891,
+        "CI95": [
+          -0.0007095350373686503,
+          0.0024823211706230287
+        ],
+        "margin": 0.005,
+        "method": "independent-seed Welch t interval",
+        "degrees_of_freedom": 5.232698733664604
+      },
+      "hydrogen_ring_radius_squared_bohr2": {
+        "passed": false,
+        "difference_control_minus_base": 0.006092361613725665,
+        "CI95": [
+          -0.03482347256836677,
+          0.0470081957958181
+        ],
+        "margin": 0.002,
+        "method": "independent-seed Welch t interval",
+        "degrees_of_freedom": 5.90094532931674
+      }
+    },
+    "production_length": {
+      "potential_eV_per_atom": {
+        "passed": false,
+        "difference_control_minus_base": 0.0024960063494243734,
+        "CI95": [
+          -0.0013786948849596184,
+          0.006370707583808365
+        ],
+        "margin": 0.005,
+        "method": "independent-seed Welch t interval",
+        "degrees_of_freedom": 3.562135279883931
+      },
+      "internal_energy_eV_per_atom": {
+        "passed": false,
+        "difference_control_minus_base": 0.002688329300862602,
+        "CI95": [
+          -0.0011567516877128412,
+          0.006533410289438045
+        ],
+        "margin": 0.005,
+        "method": "independent-seed Welch t interval",
+        "degrees_of_freedom": 3.46350254597126
+      },
+      "hydrogen_ring_radius_squared_bohr2": {
+        "passed": false,
+        "difference_control_minus_base": -0.007030656586295925,
+        "CI95": [
+          -0.04155030464555956,
+          0.02748899147296771
+        ],
+        "margin": 0.002,
+        "method": "independent-seed Welch t interval",
+        "degrees_of_freedom": 3.131625146857838
+      }
+    },
+    "replica_count": {
+      "potential_eV_per_atom": {
+        "passed": true,
+        "difference_control_minus_base": -0.0006406096300035635,
+        "CI95": [
+          -0.0018305002709742995,
+          0.0005492810109671725
+        ],
+        "margin": 0.005,
+        "method": "independent-seed Welch t interval",
+        "degrees_of_freedom": 6.94360653915972
+      },
+      "internal_energy_eV_per_atom": {
+        "passed": true,
+        "difference_control_minus_base": -0.0007116257574435458,
+        "CI95": [
+          -0.001820192629650585,
+          0.00039694111476349324
+        ],
+        "margin": 0.005,
+        "method": "independent-seed Welch t interval",
+        "degrees_of_freedom": 8.013262130553032
+      },
+      "hydrogen_ring_radius_squared_bohr2": {
+        "passed": false,
+        "difference_control_minus_base": -0.0040188199744997655,
+        "CI95": [
+          -0.03662868372709427,
+          0.028591043778094738
+        ],
+        "margin": 0.002,
+        "method": "independent-seed Welch t interval",
+        "degrees_of_freedom": 5.741853309584168
+      }
+    }
+  },
+  "source_at_end": {
+    "benchmarks/materials/batch_acceptance.py": "64cef4760aa53e6a5801e7377f12b880143de5a92a70900d73f11efec419413e",
+    "benchmarks/materials/ni_h_eam.py": "4ba896f6b3669490fa2fd8dcedd3006bc26c0007ef333daf5c1810bbb7faf030",
+    "src/pyrpmd/electronic_friction.py": "c399ab13ea786db88c8ccdd2007140516de4e431f81464ac870efc8da1675005",
+    "src/pyrpmd/cmd.py": "7600dbb204b585bfe205ea4b8cd90b8083a621f248c289e5f675509d98f2db90",
+    "src/pyrpmd/multitime.py": "7ffaaeac84bf4f641974a279da3c1e4566af23096c24e01261f8634287c0e85b",
+    "src/pyrpmd/input_schema.py": "063523c4f775f5a755e501473c0bcd2b1580bf1a79930e5f852cd10775d2ee85",
+    "src/pyrpmd/thermostats.py": "c28be43ec2f16e0b427f891db8c0d8fc5be81a5a999fd2a386256d41a1f96bf7",
+    "src/pyrpmd/instanton.py": "b849eb38e03b6b2b144c59b8c9043bc415bf7b09ccda0ea1289389d28348b9da",
+    "src/pyrpmd/nonadiabatic_ensemble.py": "86f88128376fec1c6bcfef20fe9d176b90d3423f9e0dd1a508dad11a0918a14c",
+    "src/pyrpmd/transition_interface.py": "da1375ba7ed3a4257c8bac5e1c571d5f0738801806ff2f6923ddeb21ee081584",
+    "src/pyrpmd/propagation.py": "cc3cfc011b5d199b838dd65a63826a76d3de23acc5e4ae128de226a1dbc6f10c",
+    "src/pyrpmd/adaptive_nrpmd.py": "facf20d510b05b8e8f206a178e4433101cda490610005fd8b1bd83ce6f8db8fb",
+    "src/pyrpmd/nonadiabatic_sampling.py": "eaa7bde6f936232b4315b416c67d73141aedb88d2b898328102e8306080f7085",
+    "src/pyrpmd/tunnelling.py": "c6ce46c625ef1a7db06c2d4796127f04ee61949b096fa2fdf9d33ea8580a35e1",
+    "src/pyrpmd/batched_nonadiabatic.py": "8c652eb56462c43ec457cc19a8cf26a5b33991d246fb226e1a3bf78b03b0083f",
+    "src/pyrpmd/properties.py": "0a8088e858f3ef6f5aef03aab7bb9abf0a664189630f96991796229b4e793fd3",
+    "src/pyrpmd/system.py": "0a26f036da0215cc6f3f1bc5925f28fc3fb05b0fe677f01796f68dddddd5e2ce",
+    "src/pyrpmd/geometry.py": "b7d24a3dd828102bfe2683237569006945e63e32ddab1d0c8d26011e61e280aa",
+    "src/pyrpmd/adaptive_string.py": "67c6bebb4c7a8df5ac95fb5e4ece090e63eb6d38d5b4c9f53840c6e31171e598",
+    "src/pyrpmd/cv.py": "640d9ee61d76f847e0260acb2456723ff76c1b9fd11dd61dcdf16de3fc58a114",
+    "src/pyrpmd/spectroscopy_input.py": "4a53388579596df6734c61656d2bbd79ec7b49c96e4b371395e69ed2c136af38",
+    "src/pyrpmd/path_integral.py": "a998d7d0c163e26663616db456789bc115538132a11308bc4909596df18829e5",
+    "src/pyrpmd/opes.py": "1db8fc7207296b480a69ec925829c2e9fd6a6b7d4c8d4dd02478f6b1354a9b8d",
+    "src/pyrpmd/scaffold.py": "60c937e0b1aa0e54b78fb4ef0a4ef5e481e410a08eece5908e9d15ee49dc9c27",
+    "src/pyrpmd/nonadiabatic.py": "d8cf4212bfc65ea306ee9f50f70a6d5fef1bdf70d8d107fdb70a7dabd5a90e1e",
+    "src/pyrpmd/trajectory_export.py": "aa9a2b58fdbe95bc7c3c8e2d4b05388685d537c478b520fadcaeae94ce9ffc3d",
+    "src/pyrpmd/validation.py": "6bd219b3761c2afb4309b1e7a1564062927287a734beb8dec6012e10c1c64d12",
+    "src/pyrpmd/checkpoint.py": "058a4be46de68b812a27ab37960b3dcf57fcf18b5bd89d55e3e9472268100aec",
+    "src/pyrpmd/nonadiabatic_input.py": "72fb5a53deb41a86c945d1a8c94f4ae7d77741f0839c0b6694272a544592cfdc",
+    "src/pyrpmd/rp_mash.py": "d80bf44021bae96b33ec3d696ca5977180f6daa21e0899c3c6412bccf4ca8017",
+    "src/pyrpmd/thermal_nrpmd.py": "36e64008f84ff296d43b28b599ae4248b4c3a609cf2521ffbbb15f910cb46dc2",
+    "src/pyrpmd/bias.py": "0a0ab4a074da0be7626c1519142ab5216999f54cc21f91a50b55e58145a38cb1",
+    "src/pyrpmd/input.py": "e6828805abc42818064d9808a85a741eea1f369cbb1db2de7cfd5c3b4bc57a8d",
+    "src/pyrpmd/reactions.py": "d1c992821aac44e441b72661aca661112a2ccfea87dbf83b4ce9f0ae026103f1",
+    "src/pyrpmd/native_ensemble.py": "b908298a18d1027e80e3679915c7197d77616bdc15a53fa9dbfe29b94c16946c",
+    "src/pyrpmd/bond_constraints.py": "3a09282f3e6b90f10664a1bb69aad1d2c504d7753f4d880775c39193215445cc",
+    "src/pyrpmd/torch_normal_modes.py": "5b31af409c6c021c76c3a04f5127cd2a263dc28f004a5611e35f2ccdd960faf6",
+    "src/pyrpmd/electronic_backends.py": "98d6d10d7d4de85f4747bdfc5077f007885fe05d5ec20479054c6e502e518c8f",
+    "src/pyrpmd/advanced_surface_hopping.py": "4905732d56d469241fc195f6ff4d430e3175ddc8fe45440d07066643dfa0df2f",
+    "src/pyrpmd/rate_artifacts.py": "6a900310cf7ff79217375c6c964329ab79aa04f58c1d4e317752bfebc48c914f",
+    "src/pyrpmd/low_temperature.py": "c82241b5bde9f87fe0ed5982962e1708115270ef48efeaf5948a73391389e4c1",
+    "src/pyrpmd/shared_metadynamics.py": "9bccc0e5ff415cadda36f1742f102e7df90a8a958aaccc22dbf1cc5e75886fa6",
+    "src/pyrpmd/mv_rpmd.py": "c8e3f1264cf4dded599a1af966a7d2e119ff7d66bb17beb3c096f5a3fbe0902f",
+    "src/pyrpmd/adiabatic.py": "c0e8df840173416c3af3b71de100e718903df5905a27d45190850b02f09379d2",
+    "src/pyrpmd/quantum_statistics.py": "5d504d8d35233c1905cff50476bf62a6b3a814c9985d6c04d107bed85e748515",
+    "src/pyrpmd/engine.py": "09fa42490c62d5e63c576f7769211e5f4283434b924903b633416e013a29b7bc",
+    "src/pyrpmd/input_tasks.py": "2beaf7ad350f1c0b79cc3bd53518e866b01a021e9c4d51f59460e0ee1b647f74",
+    "src/pyrpmd/covalent.py": "6c344bed774688b863bb77d46458b615704321dfdaed8eaf67b99acfcef391fe",
+    "src/pyrpmd/barostat.py": "ccb56efeb97cb0901aa2674df98c692a2592314b20796cbb990c8a5a8ad2ffb8",
+    "src/pyrpmd/input_options.py": "03d94c9b788e618c71abc376b6776ab511eaba61b355a861fad984cc3e301681",
+    "src/pyrpmd/units.py": "5623c2700b3efb4d1f3fbc656569cfd4ea847d0bfe805abbaeae48a419853eb2",
+    "src/pyrpmd/cv_periodic.py": "6f43a669405102325e4f2bfad9da8000b2e59813669f9428eb99f737cdc678d2",
+    "src/pyrpmd/input_paths.py": "0da1a22fa1ed040339c7c8f160ebf60731300b2bf73c932978878d50c4d8e1fc",
+    "src/pyrpmd/studies.py": "b646542a2fdecf133ea91783bde151e97e8495c6b138e0cb2083d6a1bbd4c0b9",
+    "src/pyrpmd/trajectory_batch.py": "b23c522d4c0731dff46fad3786a6ced48d233feb29c7e4a377eb6632cd6c29d1",
+    "src/pyrpmd/__main__.py": "307299fda7b77d22c64cb51430ec75e5f59d78e9c948786afb3b2544fe45e4b7",
+    "src/pyrpmd/retis.py": "c5c819633563720863e373024881949729e923ef51e3971b3a022615bb96aa4a",
+    "src/pyrpmd/mash.py": "40092556c6cbfe4c6929a780ddd601302b93fc112c43766bff3b922142bcd1d1",
+    "src/pyrpmd/cli.py": "199b0935beb7ffd110a1ebb1ac022562336ac9120eea78661fd5050bde70f9c0",
+    "src/pyrpmd/input_system.py": "d9b24d265f83f6878ade2cd0f9453cb5a622c60e7fa51af35be1ae25d9c803f5",
+    "src/pyrpmd/io.py": "e1e8f3e62f1c87bdf20dc28119b46f85a1c0fe6c8e3312cc2e5c82555c4ef07f",
+    "src/pyrpmd/replica_exchange.py": "5290c931d6264c3179a6b791aba44e6f5a7da155e5a2a471b3675b44d0de0153",
+    "src/pyrpmd/dynamics.py": "89b635e4748af845ec8e8898ae4e9576a4e37e29831641d0e50e438fcfb798db",
+    "src/pyrpmd/input_runtime.py": "7aa55f1605339b9392827d84a431fe6f1feda2cbc41cf0092487dbc8d1cfddac",
+    "src/pyrpmd/initial_states.py": "3b2ee6e1b119312e225895cc5b09893e3f3a509c6e5514906304f56b48bd230a",
+    "src/pyrpmd/trajectory.py": "73d1442bc1b5fb4857717751c279dfd08be30cf881c89f65fb93f3002fe72552",
+    "src/pyrpmd/biased_kinetics.py": "6fa5d89555a90816714696d1d5d614b019c87747441035a8312e9003d8bfe6a9",
+    "src/pyrpmd/kc_rpmd.py": "5609609de754dff79005d8634811bb42373d1e95ed79c8a8b78c8a5554835ed2",
+    "src/pyrpmd/runner.py": "719995b30ebd0d6ff92f398345b70c2907b3e074994de235411ba7a45256006c",
+    "src/pyrpmd/_matrix_path.py": "0a30c8ffd432c333ba5d3dee298c226ef403607e87b8242910a59d5e2d3b5777",
+    "src/pyrpmd/batched.py": "d487c5f5ee3108624d80a19d8bc8f51922ca24fc8258eff160100f3643f41fba",
+    "src/pyrpmd/torch_backend.py": "9394c0379bcb29674a4a3b4b77126245661a5e8852a2885f5d16c32fd8389337",
+    "src/pyrpmd/block_propagation.py": "740daa76e6606605f8cd241b85c05d7300147201399d39080096c9bbbf313432",
+    "src/pyrpmd/nonadiabatic_registry.py": "529e69b8b74d6185446a4fc9d75990ad76ee52d241b99f4e24a10dc71e0816b6",
+    "src/pyrpmd/surface_hopping.py": "3018d533a897092e24ea4530b56aadacd004177be07bdebe6cb3c7de349d5eeb",
+    "src/pyrpmd/input_fes.py": "7776a5740b9077b6b3ae1fc9efcfed40c634842c909a46fc3157c5ed130bb77f",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "src/pyrpmd/isomorphic.py": "ec6f1343f015a3cb7d3ee220dd24c4b88260e2daf974f57ebc5619891437aea5",
+    "src/pyrpmd/spin_mapping.py": "b502ed10411a80087c1593da917c2015d83c8a0dc4ec08bfd1bd1b60d8cc27dd",
+    "src/pyrpmd/__init__.py": "710c6ae512fe037d6be448a9db653678d65e2a291b0e8217bc8b4b3365da4577",
+    "src/pyrpmd/pcet_input.py": "4ad51710ec9370e360ab1841ed4488ca8b75d3a4e47bfc5994f7d523834a2755",
+    "src/pyrpmd/pimd_methods.py": "9b83444dc878ca918f9d0cda36f5f87db1fc20b3d4b28a60d6f4e627ec6448bc",
+    "src/pyrpmd/plumed.py": "4cbd2c6a52a7fc4f05b742730412b3b0ebd2a165d5632972e8beaec275ebb897",
+    "src/pyrpmd/advanced_cv.py": "e8f61b91916c832a40e4aee6d01e6471a6a913b5ae72ac5b1e94cc392f0a36a0",
+    "src/pyrpmd/pcet.py": "e9b42d25210c91042dc82858f85854833cefa27a8d7c7c82388ef68a7ac01379",
+    "src/pyrpmd/committor.py": "7ee73c934d466c0aa863a7468ad5c3365352664a42263f691a7d33775ba568e5",
+    "src/pyrpmd/workflows/rate_recrossing.py": "69c428ec7120ffa432235444825717ec26d09008ae1d47114b37dc244bca0a6c",
+    "src/pyrpmd/workflows/nonadiabatic_extensions.py": "1d352bd301a95f3263e482d07087cc050eb0a395ca1aa0c475835a6c9e6bca93",
+    "src/pyrpmd/workflows/rate_analysis.py": "3e914821fbcfa16db9891e393bb9801abcb95c524a6e0eae42f7ee9dfe1b3ef1",
+    "src/pyrpmd/workflows/common.py": "a2682076b262e97852e7392f54b7fd5d2103188908ebc39e0ff3603ca7a20e12",
+    "src/pyrpmd/workflows/surface.py": "2362bfab31ecec863b6cfa64cea91653560278d49fbcf962c29ce5c899abe248",
+    "src/pyrpmd/workflows/fes.py": "eabbbda8c7ddfa4060ef2e17b84fea60c90208deeb4eab1cb03af0d7bca9be6f",
+    "src/pyrpmd/workflows/rate_extend.py": "7bafa4ecc1fb2b3f901576f90da68e86a6d96ee5664f70859d65b3beb1c72279",
+    "src/pyrpmd/workflows/rate_options.py": "1558854cbdc90e51acaab6c0f571668767da199e2fe60961cd3bedfd5c7960f4",
+    "src/pyrpmd/workflows/native_pimd.py": "a167b3b515da9d78b4dc842ead3c1dad3bde8ae637d62756a6dae789cf442f37",
+    "src/pyrpmd/workflows/path_integral.py": "09002b07b3e009da9d3ac8a5a94f55f3d8e5bfda1cb53783bb43e6b37185d17b",
+    "src/pyrpmd/workflows/opes.py": "3a3e539bb91b6a4abafa31d3378da2b71e1a72e2e2f71e43c6d2efb5ad289bb6",
+    "src/pyrpmd/workflows/network.py": "b47152432d6fe21d8afebfd2382db573acfca08263416c51b721bbdcbfc8dca7",
+    "src/pyrpmd/workflows/drpmd_persistence.py": "9401af68451b3a5f5096559ddc668d5d6f965072b662e3dbabdcb35fb221b7b0",
+    "src/pyrpmd/workflows/nonadiabatic.py": "659d29b1a04c53782598c36f6ac705d86d2e713e48ed6bd2c888b9e4e281f673",
+    "src/pyrpmd/workflows/drpmd.py": "0bdfbdfe7c8f20f04bd4fddf1f8b32764303f9fedef9ccf758a4971cdf1e1e69",
+    "src/pyrpmd/workflows/site_rate.py": "f1c107f25f3885f21a500673eda73734fb28a2ce0c5af4d10398a612732b4bdf",
+    "src/pyrpmd/workflows/drpmd_trajectory.py": "45a7e53576c56a56cd1cc0a63940b0c84d5007f157357e383460611cc4fa1ff2",
+    "src/pyrpmd/workflows/drpmd_classification.py": "a0eb4b59c8d6ab3473b61408fe5e79e130c17f55cc237f9e9f1fd881f4c71910",
+    "src/pyrpmd/workflows/rate_pmf.py": "bc73f5c5c6abed5ae67e3e43840684f803fd3573849bda03bc790d8bd21ae485",
+    "src/pyrpmd/workflows/materials.py": "ec4d383d1d001612f13dddf2e01a47f80dc5261812ae2410a866cd5ea904fae4",
+    "src/pyrpmd/workflows/shared_metadynamics.py": "1f3930c37d6332b08cf102a8b8396e5e93f4fbd5a567e8ae83b9c6f53602a9c0",
+    "src/pyrpmd/workflows/drpmd_sampling.py": "0c07aefca072e4f7821f7ad6b5e877c887e92d961b4cb46cb22ef73a64a38baa",
+    "src/pyrpmd/workflows/biased_sampling.py": "ee035e5c51578e5d300b394051dc6315e62d1631fa6b6b337f87319d64d2bdeb",
+    "src/pyrpmd/workflows/extend.py": "60c3fd645fc21e570249dcf60b9c162461e995ea4b5a22d1c3a6663863af1f6a",
+    "src/pyrpmd/workflows/neb.py": "08b0fddf59c01a1d4854b426a39e2b3ae046e33ee8bb14ef9bc371db46f7e823",
+    "src/pyrpmd/workflows/saddle.py": "58147ea231368606f809aac0e9aac2f9ff59b85c60534987198b81dfdae23c37",
+    "src/pyrpmd/workflows/spectroscopy.py": "0fc25b2307c862c9ce3e7cbbc820866f74c1d7172da75613c0687765e41b12d0",
+    "src/pyrpmd/workflows/prepare.py": "e2f342baa97bb62df735e1ec25433d28175d5e5e2077fda591d71c1031fd81b9",
+    "src/pyrpmd/workflows/replica_exchange.py": "cca45d4d9c93a8c17b09334b72c653faa74136e6cd7736f48a16e357a5d60a05",
+    "src/pyrpmd/workflows/batched_recrossing.py": "564e6d6cb7bd195785cd4fa0fc5caaf28a66fe5ef8db428e48ac4414951428fa",
+    "src/pyrpmd/workflows/state_selected.py": "f8adaad6375a2990e2216a94780c3885b1817f54d42aae6ad1fa9c05232aaaf9",
+    "src/pyrpmd/workflows/rate.py": "d057b814fcee94e141d517b2a384e1090511ddd0fdff432c553933309107edf8",
+    "src/pyrpmd/workflows/drpmd_analysis.py": "fce6c3e2a57986abd450a08e89abb70ee5297a1c3bd6949965014a53a35be236",
+    "src/pyrpmd/workflows/sampling.py": "86c999da0f9f4ab9747ee2b32588c37ba58eb34f970aa5bc8a1f2caf228ff988",
+    "src/pyrpmd/workflows/metadynamics.py": "0aff440ad6557262c0d3f6e50c92287dc1f6ae3b2f1650dc6efed565864d93ec",
+    "src/pyrpmd/workflows/fes_dispatch.py": "06f4b38ef2f4317cae08f0b12c203d126158ce5a54f3bf0c96fd0ca839d2d12b",
+    "src/pyrpmd/workflows/surface_source.py": "3dcf50df6ca510e4a97b3cebe52d9f3cf4bf63301e3f15e8dadf0bb7bbc19bc8",
+    "src/pyrpmd/workflows/nonadiabatic_rate.py": "a87ffae6af82c9105b7fc11e06d574190d0a87991c4e90227b8d2e9c0cfc7a53",
+    "src/pyrpmd/workflows/__init__.py": "0dfda51b1d63474796b42bd9be6bf4464ec77964d419840642bff86e5c7cdd49",
+    "src/pyrpmd/workflows/rate_source.py": "bef4ec53f077b0fd1ccdf9b1f86bbe91e477e18607944a8267b72509b7d37471",
+    "src/pyrpmd/workflows/adaptive_umbrella.py": "4e150e535c9caae7ce52a2e1f37386b641b643a370b1acafceeba827ff4351d2",
+    "src/pyrpmd/workflows/rate_constraints.py": "a31b8e5860d1f05f6a8ba5fb92b52528ad370a814f5d767952a2c6f29250b1fe",
+    "src/pyrpmd/workflows/plumed.py": "d312d211df8761bc5aff14d09513d2bbe660fc3d544c92ba80ae8ea43e410949",
+    "src/pyrpmd/workflows/pcet.py": "7d27c54156e5f9db1b06128bbe23102d502485ce777d68a53a247d037177d4c6",
+    "src/pyrpmd/potentials/base.py": "5399de666b55975ee3ee801e8dc3c0ce598f684613a95ce0282b22c67362b7b3",
+    "src/pyrpmd/potentials/contraction.py": "fc62923c0ac89ba649a1af46effd38c1809e0cc75b246b441fa7e90af2d07797",
+    "src/pyrpmd/potentials/optional.py": "7d0157da93afdd1993d675e8cd53131fcdd6e119bbde2c1ee3c56a8919e4ac6d",
+    "src/pyrpmd/potentials/cabi.py": "79c876b666967c678ebf5117e67236f47605d5bd54d47c9f387634c2c48ce02a",
+    "src/pyrpmd/potentials/builtin.py": "d4a70399bd95738c8d284f11a41a267ca108e57887bf6019096272fdf064ae46",
+    "src/pyrpmd/potentials/openmm.py": "6fadd87629013ea734962dd99fe14f14b182da4d628d2f025b0e460294d13f82",
+    "src/pyrpmd/potentials/cache.py": "b1e328b62f722381ab19f6d9444b457552f23afca6fc520faa3dcbcbc7dad1f8",
+    "src/pyrpmd/potentials/multistate_external.py": "b57027795d2a5b0f37f6aec871586cde8b60d352d9768a7f589ff9d4994c9846",
+    "src/pyrpmd/potentials/adapters.py": "e3b065756038f04a0b90c70844ba7a942660128a68f7ed98209bdd546c00211d",
+    "src/pyrpmd/potentials/socket.py": "64297c0356c5e66cf83b723c7b6f2c94a741107d6c0ae88d7c0634c0b21c1c08",
+    "src/pyrpmd/potentials/lifecycle.py": "cc57022369b6c04cac6a2a1474ddfd7075dcd2d2caa30c2a2c12d70580f60cf2",
+    "src/pyrpmd/potentials/python.py": "8b040203cedcc1cac4acc814e2004f78ba4a3ab180c027600d59699c9d5732c9",
+    "src/pyrpmd/potentials/native.py": "eb4e4dbe4230dd66152e0c33b1b5800080d22ccc574f067db3231dddfd5d873b",
+    "src/pyrpmd/potentials/lammps.py": "c7bd00faf6a2d5eaad31be0b4fb0b85ef99ed3f8dd2e29ceb29e98bf86c45fba",
+    "src/pyrpmd/potentials/nah2_leps.py": "402b2e8c431a1966b7afe76fe1fd250d75ce3ae5966e1c8576f3ec9db7653835",
+    "src/pyrpmd/potentials/diabatic.py": "3103030dc78d5a84687261178d1938ada5705cdc2c17ffed00c8f9555afe3bec",
+    "src/pyrpmd/potentials/nonadiabatic_models.py": "fd7dbcc94d311a0571df2f65905b3215d2f6f70d371ea3d13693e14b17c29012",
+    "src/pyrpmd/potentials/__init__.py": "f870f1e0f59ec7ef79dc8eafd6b70a5f41815a35a4e8a5f0ba218eb95e5a9821",
+    "src/pyrpmd/parallel/execution.py": "a465a3df14cd3c9dfbdc596bc57703308ff7b7c61adbb762af6d4677180e33bc",
+    "src/pyrpmd/parallel/__init__.py": "e821466b2fbd4481e5279717f4369d0236e3ff09a86cce134d0b33e004fbecf5",
+    "src/pyrpmd/analysis/umbrella.py": "2c3f493b391399e422a7074f238a1eba95b2a09ec59bc6a58b3ecfa475f78901",
+    "src/pyrpmd/analysis/quantum_reference.py": "d7c86e586840158d64e4d319ae4a10949263f5e11b3d6075bdfdee766430a773",
+    "src/pyrpmd/analysis/surface.py": "03483e081055a6afa4d1481b03f08d8f4b8b06b4f06e6033f6c3c7824c532bd2",
+    "src/pyrpmd/analysis/fes.py": "6c2cb1f30d6a64dbcd0ea65a740dacaa1924e4a6ec8b95d20f04e9cc848a5d55",
+    "src/pyrpmd/analysis/diagnostics.py": "e5c414154a8886ed5405c3f0fccdf047301a3297f157108902cfe2dc193f9a24",
+    "src/pyrpmd/analysis/rate_io.py": "9e7815d3abd088205ce82bf02fe6bdc88893335928364fc1bb46e13be119765c",
+    "src/pyrpmd/analysis/bond_rate.py": "cb9e7fed948fbd3554f16f54bb7e8dc43c53b83a25bbda02c06f3e8a546e9896",
+    "src/pyrpmd/analysis/recrossing.py": "078e61febd4f7e17fef0b9d7ee2f9240e07bf6bbb8ab78b1f27e87f335a93f45",
+    "src/pyrpmd/analysis/report_compare.py": "a94bc716696d05ad5f02b10cf7bfcd9920420f179bcf907ab61b633d37473b29",
+    "src/pyrpmd/analysis/report_sampling.py": "3f36babc468e7cbca1eeb5b95956427d8132b10907ab47d8fee6df6138767006",
+    "src/pyrpmd/analysis/report_render.py": "e9d8c0a26f5d74de4d2f97fd791bc2050f9b0e1a39f6d3e21d87fb58a0f8c656",
+    "src/pyrpmd/analysis/mbar.py": "4cc85883422dd1003b1132477603d3c796a426c60b206f62882451b92a4a8683",
+    "src/pyrpmd/analysis/fes_result.py": "ea4b56439e3ea025b48f21e90a9502b842b8ae9652136fc4581181c52897617c",
+    "src/pyrpmd/analysis/reporting.py": "9254a5821e253cf34bafff12dc2395a528879a967d083e5b7ad2dec78a565833",
+    "src/pyrpmd/analysis/rate_pmf.py": "22253c7efec7f756e9477771a3681096633f23436ae10e3d237df4f90631d224",
+    "src/pyrpmd/analysis/scattering.py": "d39596c5e0281b05e1101464f50e9173d10a25a9d30682c2f6ea7afa02363953",
+    "src/pyrpmd/analysis/report_observables.py": "f661556737582551f64b2906b5c715518a32aae1ee4ffc6d85ea0a9afb77e98b",
+    "src/pyrpmd/analysis/entrance.py": "e54044a43b2af62e56b0978c5fb05daf0ec1f1bb720d2fb1cb6faa5be5b5269e",
+    "src/pyrpmd/analysis/bond_flux.py": "27dd1dff9e6e74cc4da93f998c3624cc4b5b4fada34c413de52f4c9c7b0f00c3",
+    "src/pyrpmd/analysis/rate_postprocess.py": "a6170350a155f14e2d7286c2a3f55684b2ad2ff6cd91cda220155baf405e58d2",
+    "src/pyrpmd/analysis/spectroscopy.py": "7763753bc680487b488fee90854a609985ba06c7ae610bb1e6dcab9e48d14b71",
+    "src/pyrpmd/analysis/projection.py": "c3921aa541ae95f7907fffa5c7fd62bce7b3cf7a84191af5aba6e65ace840dd0",
+    "src/pyrpmd/analysis/diffusion.py": "92ca98ff236bf0a3547ae3cfda795dc6a4a997a8f4254c3d028d8a4615b09e72",
+    "src/pyrpmd/analysis/fes_statistics.py": "5af387f6fb972a5528a3a56c82f793e8c8f6df5d27e4b3450773a00ed6466013",
+    "src/pyrpmd/analysis/metadynamics.py": "f2a8aeeb1ecf3d7135abe9f0b830f7bb3cbef21277ccadc137109b8d47e80330",
+    "src/pyrpmd/analysis/__init__.py": "a133fc41807e52b9bf708911434127c16f8c2439f4998eacbdce5b188baa7819",
+    "src/pyrpmd/electrochemistry/nonadiabatic.py": "5b4656c36b861cdec7fc94e39dcc315f0b0ec8d76b0cd6555cc5f83f00f5a7b8",
+    "src/pyrpmd/electrochemistry/reservoir.py": "56f435652a4ee1a7e01a1b15b001d635067f8ced13b31dd9ecdfd33dfd7cc2e9",
+    "src/pyrpmd/electrochemistry/potentials.py": "52acf0af9263b95bec48c4d0ca8392ac4339fab92fca83312c5eeb0cd5566dbe",
+    "src/pyrpmd/electrochemistry/kinetics.py": "825d4daccfab9d1b7effed67f8f0adebb431bf0fb300cf5ebcc8cd50f47c1af5",
+    "src/pyrpmd/electrochemistry/diabatic.py": "e3370a235a65794148ad80bbfe7603a862b0978e088384c46c641ec1110cbb72",
+    "src/pyrpmd/electrochemistry/sampling.py": "f332ace96f59e9b7d4eda80a52e4285b1db3d1310390ad2245cc4fe238049128",
+    "src/pyrpmd/electrochemistry/__init__.py": "67ee2eda1961f275f13054b6a946a7d22fe94f03f537eb065ef749204c19ac20",
+    "src/pyrpmd/pesgen/jaxpip_fit.py": "a2e791e566381239435181dfd61a6b2b5b7aec91fd9d198dc21ca05667ed1654",
+    "src/pyrpmd/pesgen/formats.py": "4112a9e7cae57d4674f0e4e7e180e9dfd93c74832e5f0642d96f066d75362ff7",
+    "src/pyrpmd/pesgen/workflow.py": "e52775d627de60be0a2155538f72b2a4f3d6768dbf1e10a8d5af450b4373210a",
+    "src/pyrpmd/pesgen/jaxpip_export.py": "f6435ce61ddb52a654f9c7a93e75674bf1c4a943fdac20ad51c05171f05c1c75",
+    "src/pyrpmd/pesgen/build.py": "6494bbf9e53c2792b8469965095cda4d77281253c7078baa031fff9a50f43d06",
+    "src/pyrpmd/pesgen/jaxpip_data.py": "7efb523ff37418bc433ba7b66165d06fcbece752c230b8b770861de14ff3ff3f",
+    "src/pyrpmd/pesgen/__main__.py": "68215945ac4766cdb44195a9cbe5a96ae750e67be9d4ca71913d9e3e78843bb7",
+    "src/pyrpmd/pesgen/reference.py": "1ac169c5194d9f2fc58c1b50d6a54c714f2c412f5fa5ca1c177d56c6bedd125b",
+    "src/pyrpmd/pesgen/__init__.py": "aecf8efceb06a458bde426e34c182fdece689168ccdbc9fa325645448396c907",
+    "native/fused.hpp": "50b35e0eb186cdfc523c793984cc038a53cf618897f7f05627484c6df7c3e6cd",
+    "native/ring_fft.h": "19211dadf85d0271b90df555c09a9d53cad4f67f1d0948dde3ee62eba8f159b0",
+    "native/fixed_atoms.hpp": "c04149e12917225e603bb137ecad09cdd0038bc8623e30dceef9f605376a48e3",
+    "native/cayley.cpp": "094cd0a33ca14339dbda7693f23d8428645a3d7a81c373fd6a412aa806f66070",
+    "native/thermal.hpp": "60890d93319d7098b1f841028a86df198151badf33e1a648958fa7df4fb2e5a7",
+    "native/thermal.cpp": "5584cb886eb3975280810896106bdc3795a9244c1b3ea6244e801ad8c8e91a58",
+    "native/propagation.h": "278e83ea3704c846ba8afc49940448d8afc2963b1973de1ceb656a1c755bd639",
+    "native/electronic.cpp": "f4dd6bdcd7a752d1df15466a6a94cd0c1604a897f49a45da734b4adb40c32be2",
+    "native/onnx/onnx_pes.cpp": "cbe0d688eba30cce046c91a52a27d582c0e018844c8853c871b4c3e138b009a1",
+    "native/onnx/context_test.cpp": "ff69cbea4ec453441a543dd09adba1a62c9a42ccb87a30274fffc0a92a17e1fe",
+    "native/include/pyrpmd/thermal_pes.h": "40d1cbeec480eaf828499db46c20db4644c7d72c1e17d3132f13f5dea012a961",
+    "native/include/pyrpmd/pes_api_v1.h": "c2669601c9ee7f851a14f25d83bc257ccca5414f9374dffa83d84134eeb08077",
+    "native/include/pyrpmd/pes_api_v2.h": "717e649954355e182eedb7b3974b8cb35eea3e6c4c5e584c334f845ea0189af7",
+    "benchmarks/materials/batch_convergence.py": "225b805fdd6a43d223aa93df30cc085e3897ab8c3a3b68b38b06160f1076da15",
+    "loaded_native_extension": {
+      "path": "/workspace/scratch/2b8fa6c24a7c/PyRPMD-work/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "0dcdad6ea35955ec407fdb063c2d6a890825d9536deb33ca7b785c3903b00413"
+    }
+  }
+}

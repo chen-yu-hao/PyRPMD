@@ -5,6 +5,7 @@ on:
       - 'src/pyrpmd/**'
       - 'native/**'
       - 'tests/test_materials*'
+      - 'tests/mpi_materials*'
       - 'tests/test_periodic_materials.py'
       - 'benchmarks/materials/**'
       - '.github/workflows/real-materials.yml'
@@ -14,7 +15,7 @@ permissions:
 jobs:
   ni-h-eam:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     env:
       OMP_NUM_THREADS: '1'
       OPENBLAS_NUM_THREADS: '1'
@@ -23,7 +24,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python -m pip install -e '.[test,ase]'
+      - run: sudo apt-get update && sudo apt-get install -y libopenmpi-dev openmpi-bin
+      - run: python -m pip install -e '.[test,ase,mpi]'
       - name: Source-pinned EAM and four-case finite integration pilot
         run: >-
           python benchmarks/materials/ni_h_eam.py
@@ -32,10 +34,20 @@ jobs:
       - name: Optional real-PES regression
         env:
           PYRPMD_NIALH_POTENTIAL: ${{ runner.temp }}/NiAlH_jea.eam.alloy
-        run: python -m pytest -q tests/test_materials_eam.py
+        run: python -m pytest -q tests/test_materials_eam.py tests/test_materials_batch_acceptance.py
+      - name: Real fixed-cell materials, process and static/dynamic MPI batch acceptance
+        run: >-
+          python benchmarks/materials/batch_acceptance.py --quick
+          --model "$RUNNER_TEMP/NiAlH_jea.eam.alloy"
+          --output "$RUNNER_TEMP/materials-batch-acceptance"
+          --modes serial,process,batch,process_batch,mpi,mpi_batch,mpi_dynamic,mpi_dynamic_batch
+          --mpi-command "mpiexec --map-by :OVERSUBSCRIBE -n 2"
+          --mpi-dynamic-command "mpiexec --map-by :OVERSUBSCRIBE -n 3"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: ni-h-eam-finite-pilot
-          path: ${{ runner.temp }}/ni-h-results
+          path: |
+            ${{ runner.temp }}/ni-h-results
+            ${{ runner.temp }}/materials-batch-acceptance
           if-no-files-found: warn

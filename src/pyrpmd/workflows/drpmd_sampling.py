@@ -260,13 +260,23 @@ def _parent_task(task, services):
     andersen = _integer(s.get("andersen_interval", 10), "sampling.andersen_interval")
     options = loop_options(config)
     method = options["integrator"]
-    if s.get("thermostat", "andersen") != "andersen" or s.get(
-        "integrator", method + "-andersen"
-    ) not in (method + "-andersen", method):
-        raise ValueError(
-            f"dRPMD parent sampling requires {method}-andersen with Andersen thermostat; "
-            "sampling and production must use the same selected integrator"
-        )
+    thermostat = s.get("thermostat", "andersen")
+    thermal_options = {}
+    if thermostat == "pile-l":
+        from .sampling import middle_sampling_method
+        from pyrpmd.units import parse_quantity
+        sampling_method = middle_sampling_method(method, s.get("integrator"))
+        if s.get("thermostat_params") or options["loop_backend"] == "native":
+            raise ValueError("fragment PILE requires gamma_centroid and auto/python scheduling")
+        gamma = parse_quantity(s.get("gamma_centroid", "0.01 fs^-1"), "frequency")
+        if not math.isfinite(gamma) or gamma <= 0:
+            raise ValueError("fragment PILE gamma_centroid must be positive and finite")
+        thermal_options = {"thermostat": "pile-l", "method": sampling_method,
+                           "gamma_centroid": gamma,
+                           "fragment_reference": np.asarray(_field(system, "geometry"), dtype=float)}
+    elif thermostat != "andersen" or s.get(
+            "integrator", method + "-andersen") not in (method + "-andersen", method):
+        raise ValueError("dRPMD Andersen parents require the same selected integrator; alternatively select fragment-constrained PILE-L")
     potential = make_trajectory_potential(task, factory=services.potential)
     plan = execution_plan(config.get("parallel"))
     seed = int(config.get("seed", 0))
@@ -313,6 +323,10 @@ def _parent_task(task, services):
             )
         parent = State(arrays["q"], arrays["p"], meta["step"], meta["time"])
         _restore_rng(dynamics, meta["rng"])
+        if thermostat == "pile-l":
+            if "operators" not in meta:
+                raise ValueError("fragment PILE parent checkpoint omits operator state")
+            dynamics.load_operator_state_dict(meta["operators"])
         burn_done, next_index, pending, records = (
             meta["burn_done"],
             meta["next_index"],
@@ -340,6 +354,10 @@ def _parent_task(task, services):
                 "pending": pending,
                 "records": records,
                 "hamiltonian_convention": "sum_beads_beta_over_P",
+                **({"operators": dynamics.operator_state_dict(),
+                    "sampling_integrator": sampling_method,
+                    "launch_momenta": "independent_maxwell_then_fragment_flux"}
+                   if thermostat == "pile-l" else {}),
             },
             q=parent.q,
             p=parent.p,
@@ -362,7 +380,8 @@ def _parent_task(task, services):
             count = min(checkpoint_steps, equil - burn_done)
             start = time.perf_counter()
             dynamics.thermalize(
-                parent, count, interval=andersen, fragments=fragments, resample=False
+                parent, count, interval=andersen, fragments=fragments, resample=False,
+                **thermal_options,
             )
             thermal_seconds += time.perf_counter() - start
             burn_done += count
@@ -377,6 +396,7 @@ def _parent_task(task, services):
                     interval=andersen,
                     fragments=fragments,
                     resample=False,
+                    **thermal_options,
                 )
                 thermal_seconds += time.perf_counter() - start
                 if classifier is not None and hasattr(classifier, "validate_reactants"):
@@ -386,8 +406,18 @@ def _parent_task(task, services):
             launch_rng = np.random.default_rng(
                 np.random.SeedSequence([seed, 2, trajectory_id])
             )
+            launch_parent = parent
+            if thermostat == "pile-l":
+                # Middle-split endpoint momenta are not Maxwellian. Draw from a
+                # trajectory-indexed stream, without disturbing the parent bath
+                # or the collision geometry stream on restart/rescheduling.
+                launch_parent = parent.copy()
+                momentum_rng = np.random.default_rng(np.random.SeedSequence([seed, 6, trajectory_id]))
+                launch_parent.p[:] = momentum_rng.normal(size=parent.p.shape) * np.sqrt(
+                    masses[None, :, None] * beads / beta)
+                dynamics._fix_fragments(launch_parent, dynamics._fragment_data(parent, fragments))
             child, launch = services.launch(
-                parent,
+                launch_parent,
                 masses,
                 fragments,
                 beta,
@@ -398,6 +428,10 @@ def _parent_task(task, services):
                 energy=config["collision"].get("energy_au"),
                 orientation=config["collision"].get("orientation", "isotropic"),
             )
+            if thermostat == "pile-l":
+                launch["momentum_refresh"] = "independent_maxwell_then_fragment_flux"
+                launch["momentum_rng_stream"] = [seed, 6, trajectory_id]
+                launch["parent_sampling_integrator"] = sampling_method
             if na:
                 mapping_rng = np.random.default_rng(np.random.SeedSequence([seed, 4, trajectory_id]))
                 child = NRPMDState.from_nuclear(child, na["nstates"], na["initial_state"], mapping_rng)

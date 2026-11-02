@@ -15,7 +15,7 @@ from unittest.mock import patch
 import numpy as np
 from mpi4py import MPI
 
-from pyrpmd.parallel import make_task_potential, root_call, run_tasks
+from pyrpmd.parallel import make_task_potential, root_call, run_tasks, task_potential
 from pyrpmd.potentials import PESResult
 from pyrpmd.workflows.drpmd import run_drpmd
 from mpi_integration import SYSTEM, config
@@ -39,6 +39,101 @@ class TrackingPotential:
 
 def tracking_factory(directory):
     return TrackingPotential(directory)
+
+
+class CachedTrackingPotential(TrackingPotential):
+    def __init__(self, directory, stateful=False, fail_close=False):
+        super().__init__(directory)
+        self.metadata = {"stateful": stateful}
+        self.fail_close = fail_close
+        self._record("open")
+
+    def _record(self, operation):
+        with (Path(self.directory) / f"lifecycle-{MPI.COMM_WORLD.Get_rank()}").open("a") as out:
+            out.write(operation + "\n")
+
+    def close(self):
+        self._record("close")
+        if self.fail_close and MPI.COMM_WORLD.Get_rank() == 2:
+            raise RuntimeError("controlled cached close failure")
+
+
+def cached_tracking_factory(directory, stateful=False, fail_close=False):
+    return CachedTrackingPotential(directory, stateful, fail_close)
+
+
+def cached_task(task):
+    from pyrpmd.parallel import execution
+
+    # Any directly constructed provider left by the preceding task must already
+    # be closed; only leases in the worker cache may survive a task boundary.
+    context = execution._CONTEXT
+    cached = {id(potential) for potential in context.potentials.values()}
+    assert all(id(potential) in cached for potential in context.providers)
+    spec = {"provider": "python", "factory": "mpi_dynamic_integration:cached_tracking_factory",
+            "params": {"directory": str(Path(task["directory"]) / "cached"),
+                       "stateful": task.get("stateful", False),
+                       "fail_close": task.get("fail_close", False)}}
+    q = np.full((3, 2, 3), task["index"], dtype=float)
+    with task_potential(spec, SYSTEM, reuse=task.get("reuse", True)) as potential:
+        result = potential.evaluate(q)
+        np.testing.assert_allclose(result.forces, -2 * q)
+        if task.get("failure") == "lease" and task["index"] == 0:
+            raise ValueError("controlled cached task failure")
+    if task.get("leave_owned", False):
+        owned_spec = copy.deepcopy(spec)
+        owned_spec["params"]["directory"] = str(Path(task["directory"]) / "owned")
+        # Match the executor's documented cleanup when a task omits close().
+        owned = make_task_potential(owned_spec, SYSTEM)
+        owned.evaluate(q)
+    if task.get("failure") == "after-lease" and task["index"] == 0:
+        raise ValueError("controlled cached task failure")
+    return float(result.energy.sum()), MPI.COMM_WORLD.Get_rank()
+
+
+def check_dynamic_cache(directory):
+    for name, options in (("reuse", {}), ("stateful", {"stateful": True}),
+                          ("opt-out", {"reuse": False}),
+                          ("owned", {"leave_owned": True})):
+        path = Path(directory) / name
+        root_call(lambda: (path / "cached").mkdir(parents=True))
+        root_call(lambda: (path / "owned").mkdir())
+        tasks = [dict(index=i, directory=str(path), **options) for i in range(6)]
+        results = run_tasks(cached_task, tasks, PARALLEL)
+
+        def verify():
+            np.testing.assert_allclose([row[0] for row in results], 18 * np.arange(6.0) ** 2)
+            reusable = not options.get("stateful", False) and options.get("reuse", True)
+            for rank in range(1, 5):
+                leader = rank if rank % 2 else rank - 1
+                assigned = sum(row[1] == leader for row in results)
+                expected = 1 if reusable else assigned
+                events = (path / "cached" / f"lifecycle-{rank}").read_text().splitlines()
+                assert events == ["open", "close"] * expected, (name, rank, events)
+                if options.get("leave_owned", False):
+                    owned = (path / "owned" / f"lifecycle-{rank}").read_text().splitlines()
+                    assert owned == ["open", "close"] * assigned
+
+        root_call(verify)
+
+    for failure, options, message in (
+        ("lease", {"failure": "lease"}, "controlled cached task failure"),
+        ("after-lease", {"failure": "after-lease"}, "controlled cached task failure"),
+        ("close", {"fail_close": True}, "controlled cached close failure"),
+    ):
+        path = Path(directory) / ("failed-" + failure)
+        root_call(lambda: (path / "cached").mkdir(parents=True))
+        tasks = [dict(index=i, directory=str(path), **options) for i in range(2)]
+        try:
+            run_tasks(cached_task, tasks, PARALLEL)
+        except RuntimeError as exc:
+            assert message in str(exc), str(exc)
+        else:
+            raise AssertionError("Cached provider failure was not collective")
+        root_call(lambda: check(
+            all((path / "cached" / f"lifecycle-{rank}").read_text().splitlines()
+                == ["open", "close"] for rank in range(1, 5)),
+            "A failed dynamic task must release every bead provider exactly once"))
 
 
 def evaluate(task):
@@ -176,6 +271,7 @@ def main():
         })
         root_call(lambda: check(routing == ["cuda:0", "cuda:0", "cuda:1", "cuda:1"],
                                 "Coordinator must not consume a GPU slot"))
+        check_dynamic_cache(directory)
 
         c = config()
         c["sampling"]["parents"] = 2
@@ -199,6 +295,7 @@ def main():
         check_selected_ensembles(directory)
         root_call(lambda: print("Dynamic MPI C=1 G=2 B=2: availability dispatch, ordered forces, "
                                 "failure drain/cleanup, empty/underfilled queues, serialization failure, "
+                                "worker cache reuse/opt-out/statefulness and collective cache cleanup, "
                                 "mock GPU placement, exact thermal/selected dRPMD static equivalence "
                                 "and resume passed", flush=True))
     finally:

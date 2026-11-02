@@ -28,7 +28,8 @@ For a first run without locating repository files, use `pyrpmd init my-first-run
 | `examples/nonadiabatic/rpsh_population.inp` | Centroid RPSH on Tully I with optional energy-based decoherence | — | [Nonadiabatic populations](nonadiabatic.md) |
 | `examples/nonadiabatic/extensions/` | SM-NRPMD, CA-RP-MASH, BA/DM RPSH, DBOC and complex SOC inputs | — | [Extended methods](../nonadiabatic-workflow.md) |
 | `examples/nonadiabatic/extensions/nah2_sm_nrpmd.inp` | Published NaH2 molecular two-state PES with Cartesian gradients | — | [Molecular potentials](../molecular-nonadiabatic.md) |
-| `examples/rate/pilot.inp` | TS preparation, PMF and recrossing on an analytic reaction potential | ~15 s | [Gas phase and free energy](workflows.md) |
+| `examples/rate/research.inp` | Explicit reaction, independent TS checks, regional windows and separate parent/child stages | — | [Rate input guide](../rate-input-v2.md) |
+| `examples/rate/pilot.inp` | Legacy schema-1 TS preparation, PMF and recrossing | ~15 s | [Gas phase and free energy](workflows.md) |
 | `examples/rate/general_coordinate.inp` | `site_rate` along a smooth nonlinear centroid coordinate | — | [General-coordinate rates](../general-coordinate-rates.md) |
 | `examples/studies/site_rate.json`, `drpmd.json` | `pyrpmd study` temperature/isotope/convergence scans; inspect with `--plan` | — | [Rate studies](../rate-studies.md) |
 | `examples/network/two_entrances.py` | Two entrances, four TS/PES paths | ~25 s | [Gas phase and free energy](workflows.md) |
@@ -47,8 +48,9 @@ pyrpmd run examples/fes/harmonic2d.inp --output runs/tutorial-fes2d
 pyrpmd analyze runs/tutorial-fes2d --recompute --bins 20 20 --bootstrap 50
 ```
 
-`examples/rate/minimal.inp` (TS only) and `examples/drpmd/minimal.inp` (two reactants and a
-separation) show the smallest valid inputs, with every other setting at its pilot default.
+`examples/rate/minimal.inp` explicitly selects TS-based channel inference as a convenience
+mode; research inputs should declare the fragments and bond changes as in `research.inp`.
+`examples/drpmd/minimal.inp` uses two reactants and a separation. Other settings use pilot defaults.
 
 `examples/plumed/centroid_metadynamics.py` demonstrates optional PLUMED centroid metadynamics
 with explicit kernel updates. It requires a working PLUMED installation; follow the

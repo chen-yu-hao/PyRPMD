@@ -1,0 +1,1013 @@
+{
+  "base_commit": "4698c1202d0726bce7d63742e7cd31a6f137a847",
+  "full_measurements_sha256": "b3972622965194e4b6e92d9485ddba4300e3b57a32b321d3ae2b36642d062703",
+  "protocol": "benchmarks/mixed_sampling_validation.py",
+  "measurements": {
+    "npt": {
+      "environment": {
+        "python": "3.13.5",
+        "torch": "2.10.0+cpu",
+        "numpy": "2.3.5",
+        "cuda_available": false,
+        "torch_threads": 1
+      },
+      "source_hashes": {
+        "<class 'pyrpmd.dynamics.Dynamics'>": "a47494e19ca3869dbc7055cc09539f008f38bf43ae99849d15964ff2866f5f50",
+        "<class 'pyrpmd.torch_backend.TorchDynamics'>": "496214563ffb00170dfa4ae1f963d9fb1275311d0a5c9a768afa613a820f4d3e"
+      },
+      "scope": "CPU numerical validation; no chemistry or GPU performance claim",
+      "npt": {
+        "reference": "Gamma(shape=N+1, scale=1/(beta*pressure)); no removed COM DOF",
+        "rows": [
+          {
+            "method": "bcocb",
+            "beads": 1,
+            "dt": 0.04,
+            "beta": 2.0,
+            "pressure": 0.1,
+            "atoms": 2,
+            "burn_time": 80.0,
+            "production_time": 400.0,
+            "volume": {
+              "mean": 14.990930189196117,
+              "se": 0.03791165268351318,
+              "ci95": [
+                14.915169796604687,
+                15.066690581787547
+              ],
+              "independent_replicas": 64
+            },
+            "volume_second_moment": {
+              "mean": 299.8468611231419,
+              "se": 1.5625182096156962,
+              "ci95": [
+                296.7244176364399,
+                302.96930460984385
+              ],
+              "independent_replicas": 64
+            },
+            "exact_volume": 15.0,
+            "exact_second_moment": 299.99999999999994
+          },
+          {
+            "method": "bcocb",
+            "beads": 1,
+            "dt": 0.02,
+            "beta": 2.0,
+            "pressure": 0.1,
+            "atoms": 2,
+            "burn_time": 80.0,
+            "production_time": 400.0,
+            "volume": {
+              "mean": 15.003110249473988,
+              "se": 0.04100683438107963,
+              "ci95": [
+                14.921164629809843,
+                15.085055869138133
+              ],
+              "independent_replicas": 64
+            },
+            "volume_second_moment": {
+              "mean": 299.825363104758,
+              "se": 1.5584777735896072,
+              "ci95": [
+                296.71099378517647,
+                302.9397324243396
+              ],
+              "independent_replicas": 64
+            },
+            "exact_volume": 15.0,
+            "exact_second_moment": 299.99999999999994
+          },
+          {
+            "method": "bcocb",
+            "beads": 4,
+            "dt": 0.04,
+            "beta": 2.0,
+            "pressure": 0.1,
+            "atoms": 2,
+            "burn_time": 80.0,
+            "production_time": 400.0,
+            "volume": {
+              "mean": 14.992812237858534,
+              "se": 0.040502204220308764,
+              "ci95": [
+                14.911875041103636,
+                15.07374943461343
+              ],
+              "independent_replicas": 64
+            },
+            "volume_second_moment": {
+              "mean": 300.3750604439815,
+              "se": 1.595929495365183,
+              "ci95": [
+                297.1858498303886,
+                303.56427105757444
+              ],
+              "independent_replicas": 64
+            },
+            "exact_volume": 15.0,
+            "exact_second_moment": 299.99999999999994
+          },
+          {
+            "method": "bcocb",
+            "beads": 4,
+            "dt": 0.02,
+            "beta": 2.0,
+            "pressure": 0.1,
+            "atoms": 2,
+            "burn_time": 80.0,
+            "production_time": 400.0,
+            "volume": {
+              "mean": 14.973438265957107,
+              "se": 0.046254555446920365,
+              "ci95": [
+                14.881005912531252,
+                15.065870619382961
+              ],
+              "independent_replicas": 64
+            },
+            "volume_second_moment": {
+              "mean": 299.4496805209627,
+              "se": 1.8222055339066807,
+              "ci95": [
+                295.8082933257513,
+                303.0910677161741
+              ],
+              "independent_replicas": 64
+            },
+            "exact_volume": 15.0,
+            "exact_second_moment": 299.99999999999994
+          },
+          {
+            "method": "baoab",
+            "beads": 1,
+            "dt": 0.04,
+            "beta": 2.0,
+            "pressure": 0.1,
+            "atoms": 2,
+            "burn_time": 80.0,
+            "production_time": 400.0,
+            "volume": {
+              "mean": 14.990930189196117,
+              "se": 0.03791165268351318,
+              "ci95": [
+                14.915169796604687,
+                15.066690581787547
+              ],
+              "independent_replicas": 64
+            },
+            "volume_second_moment": {
+              "mean": 299.8468611231419,
+              "se": 1.5625182096156962,
+              "ci95": [
+                296.7244176364399,
+                302.96930460984385
+              ],
+              "independent_replicas": 64
+            },
+            "exact_volume": 15.0,
+            "exact_second_moment": 299.99999999999994
+          },
+          {
+            "method": "baoab",
+            "beads": 1,
+            "dt": 0.02,
+            "beta": 2.0,
+            "pressure": 0.1,
+            "atoms": 2,
+            "burn_time": 80.0,
+            "production_time": 400.0,
+            "volume": {
+              "mean": 15.003110249473988,
+              "se": 0.04100683438107963,
+              "ci95": [
+                14.921164629809843,
+                15.085055869138133
+              ],
+              "independent_replicas": 64
+            },
+            "volume_second_moment": {
+              "mean": 299.825363104758,
+              "se": 1.5584777735896072,
+              "ci95": [
+                296.71099378517647,
+                302.9397324243396
+              ],
+              "independent_replicas": 64
+            },
+            "exact_volume": 15.0,
+            "exact_second_moment": 299.99999999999994
+          },
+          {
+            "method": "baoab",
+            "beads": 4,
+            "dt": 0.04,
+            "beta": 2.0,
+            "pressure": 0.1,
+            "atoms": 2,
+            "burn_time": 80.0,
+            "production_time": 400.0,
+            "volume": {
+              "mean": 14.992812237858534,
+              "se": 0.04050220422030874,
+              "ci95": [
+                14.911875041103636,
+                15.07374943461343
+              ],
+              "independent_replicas": 64
+            },
+            "volume_second_moment": {
+              "mean": 300.3750604439815,
+              "se": 1.595929495365183,
+              "ci95": [
+                297.1858498303886,
+                303.56427105757444
+              ],
+              "independent_replicas": 64
+            },
+            "exact_volume": 15.0,
+            "exact_second_moment": 299.99999999999994
+          },
+          {
+            "method": "baoab",
+            "beads": 4,
+            "dt": 0.02,
+            "beta": 2.0,
+            "pressure": 0.1,
+            "atoms": 2,
+            "burn_time": 80.0,
+            "production_time": 400.0,
+            "volume": {
+              "mean": 14.973438265957107,
+              "se": 0.04625455544692036,
+              "ci95": [
+                14.881005912531252,
+                15.065870619382961
+              ],
+              "independent_replicas": 64
+            },
+            "volume_second_moment": {
+              "mean": 299.4496805209627,
+              "se": 1.8222055339066818,
+              "ci95": [
+                295.8082933257513,
+                303.0910677161741
+              ],
+              "independent_replicas": 64
+            },
+            "exact_volume": 15.0,
+            "exact_second_moment": 299.99999999999994
+          }
+        ]
+      },
+      "elapsed_seconds": 19.85976317399991
+    },
+    "periodic-npt": {
+      "environment": {
+        "python": "3.13.5",
+        "torch": "2.10.0+cpu",
+        "numpy": "2.3.5",
+        "cuda_available": false,
+        "torch_threads": 1
+      },
+      "source_hashes": {
+        "<class 'pyrpmd.dynamics.Dynamics'>": "a47494e19ca3869dbc7055cc09539f008f38bf43ae99849d15964ff2866f5f50",
+        "<class 'pyrpmd.torch_backend.TorchDynamics'>": "496214563ffb00170dfa4ae1f963d9fb1275311d0a5c9a768afa613a820f4d3e"
+      },
+      "scope": "CPU numerical validation; no chemistry or GPU performance claim",
+      "periodic-npt": {
+        "reference": "Gamma volume and analytic modified-Bessel fractional cosine partition, P=1 only",
+        "rows": [
+          {
+            "method": "bcocb",
+            "beads": 1,
+            "dt": 0.04,
+            "beta": 2.0,
+            "pressure": 0.1,
+            "atoms": 2,
+            "heights": [
+              0.2,
+              0.3,
+              0.4
+            ],
+            "burn_time": 80.0,
+            "production_time": 400.0,
+            "volume": {
+              "mean": 15.03146641494823,
+              "se": 0.032973732334805404,
+              "ci95": [
+                14.965573668785362,
+                15.097359161111099
+              ],
+              "independent_replicas": 64
+            },
+            "potential": {
+              "mean": 0.7573127384957644,
+              "se": 0.0023088710682715764,
+              "ci95": [
+                0.7526988278325841,
+                0.7619266491589447
+              ],
+              "independent_replicas": 64
+            },
+            "exact_volume": 15.0,
+            "exact_potential": 0.7571565849157567
+          },
+          {
+            "method": "bcocb",
+            "beads": 1,
+            "dt": 0.02,
+            "beta": 2.0,
+            "pressure": 0.1,
+            "atoms": 2,
+            "heights": [
+              0.2,
+              0.3,
+              0.4
+            ],
+            "burn_time": 80.0,
+            "production_time": 400.0,
+            "volume": {
+              "mean": 14.964139673431585,
+              "se": 0.036966054119213124,
+              "ci95": [
+                14.890268908788146,
+                15.038010438075025
+              ],
+              "independent_replicas": 64
+            },
+            "potential": {
+              "mean": 0.7579474802358969,
+              "se": 0.0022984924782187585,
+              "ci95": [
+                0.7533543095299934,
+                0.7625406509418003
+              ],
+              "independent_replicas": 64
+            },
+            "exact_volume": 15.0,
+            "exact_potential": 0.7571565849157567
+          },
+          {
+            "method": "baoab",
+            "beads": 1,
+            "dt": 0.04,
+            "beta": 2.0,
+            "pressure": 0.1,
+            "atoms": 2,
+            "heights": [
+              0.2,
+              0.3,
+              0.4
+            ],
+            "burn_time": 80.0,
+            "production_time": 400.0,
+            "volume": {
+              "mean": 15.03146641494823,
+              "se": 0.032973732334805404,
+              "ci95": [
+                14.965573668785362,
+                15.097359161111099
+              ],
+              "independent_replicas": 64
+            },
+            "potential": {
+              "mean": 0.7573127384957644,
+              "se": 0.0023088710682715764,
+              "ci95": [
+                0.7526988278325841,
+                0.7619266491589447
+              ],
+              "independent_replicas": 64
+            },
+            "exact_volume": 15.0,
+            "exact_potential": 0.7571565849157567
+          },
+          {
+            "method": "baoab",
+            "beads": 1,
+            "dt": 0.02,
+            "beta": 2.0,
+            "pressure": 0.1,
+            "atoms": 2,
+            "heights": [
+              0.2,
+              0.3,
+              0.4
+            ],
+            "burn_time": 80.0,
+            "production_time": 400.0,
+            "volume": {
+              "mean": 14.964139673431585,
+              "se": 0.036966054119213124,
+              "ci95": [
+                14.890268908788146,
+                15.038010438075025
+              ],
+              "independent_replicas": 64
+            },
+            "potential": {
+              "mean": 0.7579474802358969,
+              "se": 0.0022984924782187585,
+              "ci95": [
+                0.7533543095299934,
+                0.7625406509418003
+              ],
+              "independent_replicas": 64
+            },
+            "exact_volume": 15.0,
+            "exact_potential": 0.7571565849157567
+          }
+        ]
+      },
+      "elapsed_seconds": 5.31150038099986
+    },
+    "mts": {
+      "environment": {
+        "python": "3.13.5",
+        "torch": "2.10.0+cpu",
+        "numpy": "2.3.5",
+        "cuda_available": false,
+        "torch_threads": 1
+      },
+      "source_hashes": {
+        "<class 'pyrpmd.dynamics.Dynamics'>": "a47494e19ca3869dbc7055cc09539f008f38bf43ae99849d15964ff2866f5f50",
+        "<class 'pyrpmd.torch_backend.TorchDynamics'>": "496214563ffb00170dfa4ae1f963d9fb1275311d0a5c9a768afa613a820f4d3e"
+      },
+      "scope": "CPU numerical validation; no chemistry or GPU performance claim",
+      "mts": {
+        "rows": [
+          {
+            "beads": 8,
+            "contracted": 1,
+            "beta": 4.0,
+            "mass": 1.7,
+            "dt": 0.16,
+            "inner": 4,
+            "steps": 250,
+            "seed": 302,
+            "measured_q2": {
+              "mean": 0.4236301938296115,
+              "se": 0.003487447362047655,
+              "ci95": [
+                0.41679290170450584,
+                0.4304674859547171
+              ],
+              "independent_replicas": 4096
+            },
+            "finite_time_q2": 0.41655683899099966,
+            "stationary_q2": 0.41655683899099966,
+            "contracted_Gibbs_q2": 0.4165008939752939,
+            "z_finite_time": 2.0282327170262153,
+            "spectral_radius": 0.9231163463866389,
+            "force_evaluations": {
+              "fast": 1001,
+              "slow": 251
+            }
+          },
+          {
+            "beads": 8,
+            "contracted": 1,
+            "beta": 4.0,
+            "mass": 1.7,
+            "dt": 0.08,
+            "inner": 4,
+            "steps": 500,
+            "seed": 302,
+            "measured_q2": {
+              "mean": 0.4162790091642896,
+              "se": 0.003341422136737618,
+              "ci95": [
+                0.4097280058399683,
+                0.4228300124886109
+              ],
+              "independent_replicas": 4096
+            },
+            "finite_time_q2": 0.41651486848445707,
+            "stationary_q2": 0.41651486848445707,
+            "contracted_Gibbs_q2": 0.4165008939752939,
+            "z_finite_time": -0.0705865079345327,
+            "spectral_radius": 0.96078943915232,
+            "force_evaluations": {
+              "fast": 2001,
+              "slow": 501
+            }
+          },
+          {
+            "beads": 8,
+            "contracted": 1,
+            "beta": 4.0,
+            "mass": 1.7,
+            "dt": 0.04,
+            "inner": 4,
+            "steps": 1000,
+            "seed": 302,
+            "measured_q2": {
+              "mean": 0.41969378040592975,
+              "se": 0.0033557386081987228,
+              "ci95": [
+                0.4131147090170849,
+                0.4262728517947746
+              ],
+              "independent_replicas": 4096
+            },
+            "finite_time_q2": 0.4165043868678715,
+            "stationary_q2": 0.4165043868678715,
+            "contracted_Gibbs_q2": 0.4165008939752939,
+            "z_finite_time": 0.9504296700183799,
+            "spectral_radius": 0.9801986733067664,
+            "force_evaluations": {
+              "fast": 4001,
+              "slow": 1001
+            }
+          },
+          {
+            "beads": 8,
+            "contracted": 3,
+            "beta": 4.0,
+            "mass": 1.7,
+            "dt": 0.16,
+            "inner": 4,
+            "steps": 250,
+            "seed": 302,
+            "measured_q2": {
+              "mean": 0.4215661018082451,
+              "se": 0.0034829064135290374,
+              "ci95": [
+                0.4147377124100694,
+                0.4283944912064208
+              ],
+              "independent_replicas": 4096
+            },
+            "finite_time_q2": 0.4145256444166865,
+            "stationary_q2": 0.4145256444166865,
+            "contracted_Gibbs_q2": 0.4144462756687425,
+            "z_finite_time": 2.02143168826202,
+            "spectral_radius": 0.9231163463866389,
+            "force_evaluations": {
+              "fast": 1001,
+              "slow": 251
+            }
+          },
+          {
+            "beads": 8,
+            "contracted": 3,
+            "beta": 4.0,
+            "mass": 1.7,
+            "dt": 0.08,
+            "inner": 4,
+            "steps": 500,
+            "seed": 302,
+            "measured_q2": {
+              "mean": 0.41428085814126636,
+              "se": 0.0033369456184206645,
+              "ci95": [
+                0.40773863122566434,
+                0.4208230850568684
+              ],
+              "independent_replicas": 4096
+            },
+            "finite_time_q2": 0.41446609640190013,
+            "stationary_q2": 0.41446609640190013,
+            "contracted_Gibbs_q2": 0.4144462756687425,
+            "z_finite_time": -0.05551132137461677,
+            "spectral_radius": 0.9607894391523206,
+            "force_evaluations": {
+              "fast": 2001,
+              "slow": 501
+            }
+          },
+          {
+            "beads": 8,
+            "contracted": 3,
+            "beta": 4.0,
+            "mass": 1.7,
+            "dt": 0.04,
+            "inner": 4,
+            "steps": 1000,
+            "seed": 302,
+            "measured_q2": {
+              "mean": 0.4176339851761148,
+              "se": 0.0033510767552341826,
+              "ci95": [
+                0.4110640535526209,
+                0.42420391679960867
+              ],
+              "independent_replicas": 4096
+            },
+            "finite_time_q2": 0.4144512294761316,
+            "stationary_q2": 0.4144512294761316,
+            "contracted_Gibbs_q2": 0.4144462756687425,
+            "z_finite_time": 0.9497710534418196,
+            "spectral_radius": 0.9801986733067662,
+            "force_evaluations": {
+              "fast": 4001,
+              "slow": 1001
+            }
+          },
+          {
+            "beads": 8,
+            "contracted": 8,
+            "beta": 4.0,
+            "mass": 1.7,
+            "dt": 0.16,
+            "inner": 4,
+            "steps": 250,
+            "seed": 302,
+            "measured_q2": {
+              "mean": 0.42123446645021495,
+              "se": 0.003482626776713331,
+              "ci95": [
+                0.41440662529217004,
+                0.42806230760825986
+              ],
+              "independent_replicas": 4096
+            },
+            "finite_time_q2": 0.414187309026286,
+            "stationary_q2": 0.414187309026286,
+            "contracted_Gibbs_q2": 0.41409293062940955,
+            "z_finite_time": 2.023517843212475,
+            "spectral_radius": 0.9231163463866398,
+            "force_evaluations": {
+              "fast": 1001,
+              "slow": 251
+            }
+          },
+          {
+            "beads": 8,
+            "contracted": 8,
+            "beta": 4.0,
+            "mass": 1.7,
+            "dt": 0.08,
+            "inner": 4,
+            "steps": 500,
+            "seed": 302,
+            "measured_q2": {
+              "mean": 0.41393262460016667,
+              "se": 0.0033366418710004068,
+              "ci95": [
+                0.4073909931945836,
+                0.4204742560057497
+              ],
+              "independent_replicas": 4096
+            },
+            "finite_time_q2": 0.4141164963611618,
+            "stationary_q2": 0.4141164963611618,
+            "contracted_Gibbs_q2": 0.41409293062940955,
+            "z_finite_time": -0.05510683139033697,
+            "spectral_radius": 0.9607894391523197,
+            "force_evaluations": {
+              "fast": 2001,
+              "slow": 501
+            }
+          },
+          {
+            "beads": 8,
+            "contracted": 8,
+            "beta": 4.0,
+            "mass": 1.7,
+            "dt": 0.04,
+            "inner": 4,
+            "steps": 1000,
+            "seed": 302,
+            "measured_q2": {
+              "mean": 0.41728385725481815,
+              "se": 0.003350807517294983,
+              "ci95": [
+                0.4107144534840057,
+                0.4238532610256306
+              ],
+              "independent_replicas": 4096
+            },
+            "finite_time_q2": 0.414098819813402,
+            "stationary_q2": 0.414098819813402,
+            "contracted_Gibbs_q2": 0.41409293062940955,
+            "z_finite_time": 0.9505283204053818,
+            "spectral_radius": 0.9801986733067685,
+            "force_evaluations": {
+              "fast": 4001,
+              "slow": 1001
+            }
+          }
+        ],
+        "uncertainty": "independent trajectories; Cartesian observations averaged within each trajectory"
+      },
+      "elapsed_seconds": 211.28591016500013
+    },
+    "fragments": {
+      "environment": {
+        "python": "3.13.5",
+        "torch": "2.10.0+cpu",
+        "numpy": "2.3.5",
+        "cuda_available": false,
+        "torch_threads": 1
+      },
+      "source_hashes": {
+        "<class 'pyrpmd.dynamics.Dynamics'>": "a47494e19ca3869dbc7055cc09539f008f38bf43ae99849d15964ff2866f5f50",
+        "<class 'pyrpmd.torch_backend.TorchDynamics'>": "496214563ffb00170dfa4ae1f963d9fb1275311d0a5c9a768afa613a820f4d3e"
+      },
+      "scope": "CPU numerical validation; no chemistry or GPU performance claim",
+      "fragments": {
+        "rows": [
+          {
+            "method": "bcocb",
+            "n": 128,
+            "steps": 600,
+            "dt": 0.04,
+            "beta": 3.0,
+            "masses": [
+              1.0,
+              2.0,
+              5.0
+            ],
+            "fragments": [
+              [
+                0,
+                1
+              ],
+              [
+                2
+              ]
+            ],
+            "q2": {
+              "mean": 0.31073992890996194,
+              "se": 0.01500742473974018,
+              "ci95": [
+                0.28104294366938115,
+                0.3404369141505427
+              ],
+              "independent_replicas": 128
+            },
+            "p2": {
+              "mean": 2.7208831312669384,
+              "se": 0.07969582407766464,
+              "ci95": [
+                2.5631794777478136,
+                2.878586784786063
+              ],
+              "independent_replicas": 128
+            },
+            "finite_time_q2": 0.30455006933424905,
+            "finite_time_p2": 2.814545170422782,
+            "max_mass_weighted_q_constraint": 1.3322676295501878e-15,
+            "max_p_constraint": 1.2212453270876722e-15,
+            "seed_start": 8100,
+            "covariance_residual": 9.547918011776346e-15
+          },
+          {
+            "method": "baoab",
+            "n": 128,
+            "steps": 600,
+            "dt": 0.04,
+            "beta": 3.0,
+            "masses": [
+              1.0,
+              2.0,
+              5.0
+            ],
+            "fragments": [
+              [
+                0,
+                1
+              ],
+              [
+                2
+              ]
+            ],
+            "q2": {
+              "mean": 0.31075610182519653,
+              "se": 0.015007341734669742,
+              "ci95": [
+                0.28105928083667064,
+                0.3404529228137224
+              ],
+              "independent_replicas": 128
+            },
+            "p2": {
+              "mean": 2.720848171770952,
+              "se": 0.07969871296170261,
+              "ci95": [
+                2.563138801671659,
+                2.8785575418702445
+              ],
+              "independent_replicas": 128
+            },
+            "finite_time_q2": 0.30455638014047737,
+            "finite_time_p2": 2.8145450185894174,
+            "max_mass_weighted_q_constraint": 8.881784197001252e-16,
+            "max_p_constraint": 1.7763568394002505e-15,
+            "seed_start": 8100,
+            "covariance_residual": 8.659739592076221e-15
+          }
+        ],
+        "reference": "independent projected Cartesian Gaussian map, cold-start finite-time covariance"
+      },
+      "elapsed_seconds": 112.0989916450003
+    },
+    "quartic": {
+      "environment": {
+        "python": "3.13.5",
+        "torch": "2.10.0+cpu",
+        "numpy": "2.3.5",
+        "cuda_available": false,
+        "torch_threads": 1
+      },
+      "source_hashes": {
+        "<class 'pyrpmd.dynamics.Dynamics'>": "a47494e19ca3869dbc7055cc09539f008f38bf43ae99849d15964ff2866f5f50",
+        "<class 'pyrpmd.torch_backend.TorchDynamics'>": "496214563ffb00170dfa4ae1f963d9fb1275311d0a5c9a768afa613a820f4d3e"
+      },
+      "scope": "CPU numerical validation; no chemistry or GPU performance claim",
+      "quartic": {
+        "reference": [
+          {
+            "beads": 16,
+            "beta": 1.0,
+            "points": 256,
+            "extent": 6.0,
+            "retained_eigenvalues": 117,
+            "q2": 0.696665053455829,
+            "potential": 0.29053890878898525,
+            "kinetic_virial": 0.581077817577965,
+            "kinetic_primitive": 0.5810778175781195
+          },
+          {
+            "beads": 16,
+            "beta": 1.0,
+            "points": 512,
+            "extent": 6.0,
+            "retained_eigenvalues": 117,
+            "q2": 0.6966650534558295,
+            "potential": 0.29053890878898575,
+            "kinetic_virial": 0.5810778175779653,
+            "kinetic_primitive": 0.5810778175780058
+          }
+        ],
+        "rows": [
+          {
+            "dt": 0.02,
+            "inner": 1,
+            "beads": 16,
+            "beta": 1.0,
+            "n": 256,
+            "seed": 2201,
+            "burn_time": 16.0,
+            "production_time": 64.0,
+            "sample_interval": 0.16,
+            "observables": {
+              "q2": {
+                "mean": 0.6896402814707014,
+                "se": 0.00533420605239312,
+                "ci": [
+                  0.6791355731099665,
+                  0.7001449898314364
+                ],
+                "n": 256
+              },
+              "potential": {
+                "mean": 0.28700930788076096,
+                "se": 0.0038255022647519107,
+                "ci": [
+                  0.2794757058358004,
+                  0.2945429099257215
+                ],
+                "n": 256
+              },
+              "kinetic_virial": {
+                "mean": 0.5808376209146775,
+                "se": 0.0006965318224902408,
+                "ci": [
+                  0.5794659334344107,
+                  0.5822093083949443
+                ],
+                "n": 256
+              },
+              "kinetic_primitive": {
+                "mean": 0.5792843851668372,
+                "se": 0.009264972111298498,
+                "ci": [
+                  0.5610387776586928,
+                  0.5975299926749816
+                ],
+                "n": 256
+              }
+            },
+            "force_evaluations": {
+              "fast": 4401,
+              "slow": 4401
+            }
+          },
+          {
+            "dt": 0.08,
+            "inner": 4,
+            "beads": 16,
+            "beta": 1.0,
+            "n": 256,
+            "seed": 2201,
+            "burn_time": 16.0,
+            "production_time": 64.0,
+            "sample_interval": 0.16,
+            "observables": {
+              "q2": {
+                "mean": 0.6896029131195727,
+                "se": 0.005334818604334071,
+                "ci": [
+                  0.6790969984538259,
+                  0.7001088277853195
+                ],
+                "n": 256
+              },
+              "potential": {
+                "mean": 0.2873347030482901,
+                "se": 0.003832677513889557,
+                "ci": [
+                  0.2797869707093615,
+                  0.29488243538721876
+                ],
+                "n": 256
+              },
+              "kinetic_virial": {
+                "mean": 0.5811035395619788,
+                "se": 0.0007009219345745487,
+                "ci": [
+                  0.5797232065875815,
+                  0.5824838725363761
+                ],
+                "n": 256
+              },
+              "kinetic_primitive": {
+                "mean": 0.5726614442344535,
+                "se": 0.009267771498102791,
+                "ci": [
+                  0.5544103238642863,
+                  0.5909125646046207
+                ],
+                "n": 256
+              }
+            },
+            "force_evaluations": {
+              "fast": 4401,
+              "slow": 1401
+            }
+          },
+          {
+            "dt": 0.04,
+            "inner": 4,
+            "beads": 16,
+            "beta": 1.0,
+            "n": 256,
+            "seed": 2201,
+            "burn_time": 16.0,
+            "production_time": 64.0,
+            "sample_interval": 0.16,
+            "observables": {
+              "q2": {
+                "mean": 0.6904003532301928,
+                "se": 0.005272756355999417,
+                "ci": [
+                  0.68001665840608,
+                  0.7007840480543055
+                ],
+                "n": 256
+              },
+              "potential": {
+                "mean": 0.2852516923255233,
+                "se": 0.003745961893113406,
+                "ci": [
+                  0.2778747299751602,
+                  0.29262865467588633
+                ],
+                "n": 256
+              },
+              "kinetic_virial": {
+                "mean": 0.580845731461489,
+                "se": 0.000663606250249056,
+                "ci": [
+                  0.5795388846586551,
+                  0.5821525782643229
+                ],
+                "n": 256
+              },
+              "kinetic_primitive": {
+                "mean": 0.5919904975520844,
+                "se": 0.010146786465784366,
+                "ci": [
+                  0.5720083237150057,
+                  0.6119726713891632
+                ],
+                "n": 256
+              }
+            },
+            "force_evaluations": {
+              "fast": 8401,
+              "slow": 2401
+            }
+          }
+        ],
+        "split": "Vfast=x^2/2; Vslow=x^4/4-x^2/2; Pc=P",
+        "uncertainty": "Student-t over independent trajectory time means, not individual time points"
+      },
+      "elapsed_seconds": 29.07141658799992
+    }
+  }
+}

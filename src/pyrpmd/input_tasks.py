@@ -71,10 +71,19 @@ def validate_task_sections(d):
         raise InputError("[pcet] requires task='pcet'")
     if "network" in d:
         raise InputError("[network] requires task='network'")
-    if "metadynamics" in d and method != "metadynamics":
-        raise InputError("[metadynamics] requires fes.method='metadynamics'")
-    if "opes" in d and method != "opes":
-        raise InputError("[opes] requires fes.method='opes'")
+    # A rate's PMF selector allows its method table without changing the
+    # standalone FES validation and analysis defaults below.
+    rate_pmf_method = None
+    if task == "rate" and any(name in d for name in ("metadynamics", "opes")):
+        from .input_rate_pmf import rate_pmf_spec
+
+        pmf = rate_pmf_spec(d)
+        if pmf is not None:
+            rate_pmf_method = pmf["method"]
+    if "metadynamics" in d and method != "metadynamics" and rate_pmf_method != "metadynamics":
+        raise InputError("[metadynamics] requires fes.method='metadynamics' or rate.pmf.method='metadynamics'")
+    if "opes" in d and method != "opes" and rate_pmf_method != "opes":
+        raise InputError("[opes] requires fes.method='opes' or rate.pmf.method='opes'")
     if method == "metadynamics":
         options = d.get("metadynamics", {})
         if options.get("shared_walkers", False) and options.get("multiple_walkers", False):
@@ -280,6 +289,20 @@ def validate_workflow(resolved, system, *, materials, source_pmf):
             from .workflows.fes import validate_fes_request
 
             validate_fes_request(resolved, system)
+        if task == "rate" and resolved.get("reaction", {}).get("definition"):
+            from .input_rate_pmf import rate_pmf_stage
+            from .workflows.prepare import prepare_rate
+            from .workflows.rate_pmf import configure_rate_umbrella
+            from .workflows.fes import validate_fes_request
+
+            # Knowing the channel is enough to validate a window plan, but is
+            # not evidence that the supplied geometry is a valid saddle. This
+            # structural preparation never constructs or evaluates a PES.
+            reaction = prepare_rate(resolved, system, numerical=False)["reaction"]
+            if all(reaction.get(key) for key in ("fragments", "forming_bonds", "breaking_bonds")):
+                planned = configure_rate_umbrella(resolved, system, reaction)
+                if rate_pmf_options(planned)["source"] is None and rate_pmf_stage(planned, system) is None:
+                    validate_fes_request(planned, system)
         if task in ("rate", "surface_rate"):
             from .workflows.rate import _recrossing_options
 

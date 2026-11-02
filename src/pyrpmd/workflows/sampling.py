@@ -173,6 +173,16 @@ def checkpoint_cv_config(config):
     return canonical
 
 
+def middle_sampling_method(scheme, requested=None):
+    """Resolve a deliberately selected PILE middle map, not the NVE kernel."""
+    scheme = normalize_integrator(scheme)
+    default = {"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}.get(scheme)
+    selected = default if requested is None else requested
+    if default is None or selected not in ("bcocb", "baoab"):
+        raise ValueError("PILE-L requires BCOCB or BAOAB with Cayley or normal-mode dynamics")
+    return selected
+
+
 @dataclass(frozen=True)
 class FESSampler:
     thermostat: str
@@ -183,8 +193,9 @@ class FESSampler:
 
     def step(self, dynamics, state, bias):
         if self.thermostat_spec is not None:
+            options = {"method": self.integrator} if self.thermostat == "pile-l" else {}
             return dynamics.sample_step(state, bias,
-                                        thermostat=copy.deepcopy(self.thermostat_spec))
+                                        thermostat=copy.deepcopy(self.thermostat_spec), **options)
         if self.thermostat == "pile-l":
             return dynamics.sample_step(state, bias, method=self.integrator,
                                         gamma_centroid=self.gamma_centroid)
@@ -281,9 +292,9 @@ def fes_sampler(config):
                 if nhc else {"cayley-bcb": "bcocb", "normal-mode-bab": "baoab", "velocity-verlet": "obabo"}).get(scheme)
     if thermostat == "pile-l" and scheme == "velocity-verlet":
         expected = None
-    if expected is None or sampling.get("integrator", expected) != expected:
-        if thermostat == "pile-l":
-            raise ValueError("PILE-L requires BCOCB with Cayley or BAOAB with normal-mode dynamics")
+    if thermostat == "pile-l":
+        expected = middle_sampling_method(scheme, sampling.get("integrator"))
+    elif expected is None or sampling.get("integrator", expected) != expected:
         raise ValueError(f"{thermostat} sampling.integrator must be {expected}")
     if thermostat != "pile-l" or sampling.get("thermostat_params"):
         spec = thermostat_spec(sampling)

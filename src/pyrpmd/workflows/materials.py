@@ -19,11 +19,14 @@ import numpy as np
 from ..checkpoint import atomic_savez, load_checkpoint
 from ..constants import FS_TO_AU
 from ..dynamics import Dynamics, State
-from ..parallel import make_task_potential, root_call, run_tasks
+from ..parallel import make_task_potential, root_call
 from ..potentials.base import validate_result
 from ..potentials.cache import StepEvaluationCache
 from ..propagation import loop_options
 from ..trajectory import TrajectoryStream, _descriptor, _walk_reverse, materialize_stream
+from ..trajectory_batch import (
+    make_trajectory_potential, map_trajectory_tasks, trajectory_batch_size,
+)
 from ..units import parse_quantity
 from .common import _fingerprint, checked_integer, write_json
 
@@ -63,10 +66,11 @@ def _indices(value, size, name, *, default=None):
 
 def resolve_materials(config, system):
     """Validate the scientific choices also for direct resolved-workflow calls."""
+    batch_size = trajectory_batch_size(config)
+    if batch_size > 1 and "active_learning" in config:
+        raise ValueError("materials trajectory batching does not support active-learning uncertainty callbacks")
     from ..potentials.lifecycle import active_learning_options
     active_learning_options(config)
-    if _rpc_details(config) is not None and "barostat" in config:
-        raise ValueError("delta RPC does not provide a pressure virial; use fixed-cell sampling")
     if system.bond_constraints:
         from ..bond_constraints import BondConstraints
         BondConstraints(system.masses, system.bond_constraints, cell=system.cell, pbc=system.pbc)
@@ -148,7 +152,10 @@ def resolve_materials(config, system):
         raise ValueError("PILE-L sampling needs loop_backend='auto' or 'python'")
     expected_sampler = ({"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}[loop["integrator"]]
                         if thermostat == "pile-l" else loop["integrator"] + "-andersen")
-    if sampling.get("integrator", expected_sampler) != expected_sampler:
+    if thermostat == "pile-l":
+        from .sampling import middle_sampling_method
+        expected_sampler = middle_sampling_method(loop["integrator"], sampling.get("integrator"))
+    elif sampling.get("integrator", expected_sampler) != expected_sampler:
         raise ValueError(f"materials sampling.integrator must be {expected_sampler} for the selected method")
     gamma = sampling.get("gamma_centroid", 1.0 / (100.0 * FS_TO_AU))
     if not isinstance(gamma, (int, float, np.number)) or isinstance(gamma, (bool, np.bool_)) or not np.isfinite(gamma) or gamma <= 0:
@@ -157,7 +164,7 @@ def resolve_materials(config, system):
     sample_dt = float(sampling.get("dt_au", dt))
     if not np.isfinite(dt) or dt <= 0 or not np.isfinite(sample_dt) or sample_dt <= 0:
         raise ValueError("materials timesteps must be positive and finite")
-    options.update(thermostat=thermostat, gamma_centroid=float(gamma), sample_dt=sample_dt,
+    options.update(thermostat=thermostat, sampling_method=expected_sampler, gamma_centroid=float(gamma), sample_dt=sample_dt,
                    electronic_friction=friction_spec,
                    production_dt=sample_dt if task == "pimd" else dt)
     if options["nprod"] // options["interval"] < (3 if task == "diffusion" else 1):
@@ -240,8 +247,12 @@ def _rpc_details(config):
             "approximate_hamiltonian": contracted < beads,
             "potential_energy": "U_RPC/P; U_RPC=sum_j V_reference(q_j)+(P/Pc)sum_a delta_V((Tq)_a)",
             "force": "negative_gradient_of_U_RPC_on_the_full_ring",
+            "virial": "W_RPC=sum_j W_reference(q_j)+(P/Pc)sum_a delta_W((Tq)_a)",
+            "virial_scope": "rpc_contracted_hamiltonian" if contracted < beads else "full_bead_hamiltonian",
+            "pressure_scope": "rpc_contracted_hamiltonian" if contracted < beads else "full_bead_hamiltonian",
             "full_target_recomputed": False,
-            "per_bead_physical_energies_available": contracted == beads}
+            "per_bead_physical_energies_available": contracted == beads,
+            "per_bead_physical_virials_available": contracted == beads}
 
 
 def quantum_observables(state, potential, masses, beta, mobile_mask=None):
@@ -258,6 +269,8 @@ def quantum_observables(state, potential, masses, beta, mobile_mask=None):
     the full-bead target PES, and the distributed energy rows are never used
     as physical bead energies. Workflow exports label this scope explicitly.
     """
+    if (getattr(potential, "metadata", {}) or {}).get("action") == "suzuki_chin":
+        raise ValueError("primitive quantum_observables do not apply to Suzuki-Chin; use action.estimators")
     q, p = state.q, state.p
     result = validate_result(potential.evaluate(q), q.shape)
     beads, natoms, _ = q.shape
@@ -540,7 +553,7 @@ def _sample_replica(task):
             kind = CHECKPOINT_KIND
         atomic_savez(checkpoint, kind=kind, **payload)
         return _read_stream(config, system, output, replica, options, materialize=materialize)
-    provider = StepEvaluationCache(make_task_potential(config["potential"], system))
+    provider = StepEvaluationCache(make_trajectory_potential(task, factory=make_task_potential))
     friction_provider = None
     try:
         monitor = None
@@ -688,9 +701,11 @@ def _sample_replica(task):
                     if piston is not None:
                         piston.step(state, dynamics, thermostat=options["thermostat"],
                                     gamma_centroid=options["gamma_centroid"],
-                                    andersen_interval=options["andersen_interval"])
+                                    andersen_interval=options["andersen_interval"],
+                                    method=options["sampling_method"] if options["thermostat"] == "pile-l" else None)
                     elif is_sampling and options["thermostat"] == "pile-l":
-                        dynamics.sample_step(state, gamma_centroid=options["gamma_centroid"])
+                        dynamics.sample_step(state, gamma_centroid=options["gamma_centroid"],
+                                             method=options["sampling_method"])
                         dynamics._record_python_steps(1)
                         reasons = dynamics.propagation_stats["fallback_reasons"]
                         reason = "PILE-L sampling uses Python/NumPy"
@@ -701,6 +716,10 @@ def _sample_replica(task):
                                           else dynamics.sample_momenta())
                         dynamics.propagate(state, 1, record_centroids=False)
                     prospective = elapsed + 1
+                    expected = {"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}.get(sampling.integrator_name)
+                    if (config["task"] == "diffusion" and prospective == options["neq"]
+                            and options["thermostat"] == "pile-l" and options["sampling_method"] != expected):
+                        state.p[:] = sampling.sample_momenta()
                     record = prospective >= options["neq"] and (prospective - options["neq"]) % options["interval"] == 0
                     observation = observe() if record else None
                     if monitor is not None:
@@ -922,6 +941,25 @@ def _analyze(streams, config, system, output, return_data=False, *, stream_data_
     return {"summary": result, "streams": streams} if return_data else result
 
 
+def _completed_batch_replicas(tasks, options):
+    """Replay committed replicas before opening a shared PES context.
+
+    Run on the root rank only: a completed storage migration writes its own
+    checkpoint, whereas other ranks must only receive the resulting descriptor.
+    Active replicas retain their ordinary worker-side checkpoint validation.
+    """
+    completed = {}
+    for task in tasks:
+        config, system, output, replica = task["config"], task["system"], task["output"], task["replica"]
+        if not _checkpoint_path(output, replica).exists():
+            continue
+        saved = _read_stream(config, system, output, replica, options, materialize=False)
+        if saved["complete"]:
+            completed[replica] = (_sample_replica(task)
+                                  if saved["storage"] != options["storage"] else saved)
+    return completed
+
+
 def run_materials(config, system, output, executor=None, return_data=False):
     """Execute independent replica streams via serial/process/MPI task groups."""
     from .sampling import validate_andersen_schedule
@@ -933,8 +971,13 @@ def run_materials(config, system, output, executor=None, return_data=False):
     tasks = [{"config": copy.deepcopy(config), "system": system, "output": str(output), "replica": replica,
               "materialize": False}
              for replica in range(options["replicas"])]
-    streams = executor.map(_sample_replica, tasks) if executor is not None else run_tasks(
-        _sample_replica, tasks, config.get("parallel", {}))
+    completed = {}
+    if trajectory_batch_size(config) > 1:
+        completed = root_call(_completed_batch_replicas, tasks, options)
+        tasks = [task for task in tasks if task["replica"] not in completed]
+    streams = map_trajectory_tasks(_sample_replica, tasks, config, executor)
+    if streams is not None:
+        streams = sorted([*completed.values(), *streams], key=lambda stream: stream["replica"])
     return root_call(_analyze, streams, config, system, str(output), return_data)
 
 

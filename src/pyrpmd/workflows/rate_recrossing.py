@@ -15,16 +15,13 @@ from ..propagation import PropagationError, loop_options
 from ..io import fingerprint as _fingerprint
 from ..validation import checked_integer
 from .rate_constraints import rate_coordinate, _normal, project_positions, project_momenta
-from .rate_options import _pmf_method, _recrossing_spec, _recrossing_dynamics
-from .sampling import AndersenSchedule, validate_andersen_schedule
+from .rate_options import _pmf_method, _recrossing_spec, _recrossing_dynamics, _parent_thermostat
+from .sampling import AndersenSchedule
 
 
 def _parent_task(task):
     config, system = task["config"], task["system"]
-    collision_clock = AndersenSchedule(
-        checked_integer(config["sampling"].get("andersen_interval", 10), "sampling.andersen_interval"),
-        validate_andersen_schedule(config),
-    )
+    collision_clock = AndersenSchedule(*_parent_thermostat(config))
     options = task["options"]
     surface = rate_coordinate(config, system).dividing_surface(task["xi_star"])
     chain = int(task["chain"])
@@ -189,9 +186,12 @@ def _child_task(task):
     chain, parent, pair = task["chain"], task["parent"], task["pair"]
     method = _pmf_method(config)
     child_dynamics, friction_scale = _recrossing_dynamics(config)
+    child_method = _recrossing_spec(config).get("integrator")
     dynamics_metadata = ({"dynamics": "trpmd", "friction_scale": friction_scale,
                           "energy_conservation_applicable": False}
                          if child_dynamics == "trpmd" else {})
+    if child_method is not None:
+        dynamics_metadata["sampling_integrator"] = child_method
     checkpoint = (
         Path(task["output"])
         / "checkpoints"
@@ -294,7 +294,8 @@ def _child_task(task):
             else:
                 for step in range(nsteps):
                     if child_dynamics == "trpmd":
-                        dyn.trpmd_step(state, friction_scale=friction_scale)
+                        options = {} if child_method is None else {"method": child_method}
+                        dyn.trpmd_step(state, friction_scale=friction_scale, **options)
                     else:
                         dyn.step(state)
                     dyn._record_python_steps(1)

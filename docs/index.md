@@ -45,11 +45,15 @@ go straight to your task:
 | Higher-order equilibrium sampling and quantum estimators | Python API | [Quantum statistics](quantum-statistics.md) |
 | PA-CMD and relative IR/Raman/SFG spectra | `spectroscopy` | [Spectroscopy](tier2-spectroscopy.md) |
 | Suzuki–Chin, bosonic exchange and PIGS | `pimd` + `[path_integral]` | [Path-integral actions](tier2-path-integral.md) |
+| Condensed-phase SC energy/Cv/Cp/pressure, SC-NPT, PIGLET-NPT and RPC virial | SC workflow, native PIGLET or Python RPC | [Condensed-phase NQE validation](condensed-phase-nqe.md) |
 | Thermal nonadiabatic population-flux calculation | `nonadiabatic-rate` command | [Direct data and rates](tier2-nonadiabatic.md) |
 | Method coverage, ML lifecycle and remaining gaps | Input / Python APIs | [Tier 2 overview](tier2-methods.md) |
 
 The examples use analytic model potentials so they run in seconds. Before a production study,
 work through [Scientific conventions and convergence](manual/science.md).
+
+For method attribution and research planning, use the [original-paper catalog](manual/references.md)
+and [reproduction checklist](manual/reproduction.md), including source systems, target observables and implementation gaps.
 
 ## The basic cycle
 
@@ -79,8 +83,8 @@ Python equivalents are `prepare`, `run`, `analyze_run` and `resume_run`; see the
 | Getting started | [Installation](manual/installation.md) · [Quickstart](manual/quickstart.md) · [Input and CLI](manual/input.md) · [Scientific conventions](manual/science.md) |
 | Tasks | [Gas phase and free energy](manual/workflows.md) · [Materials and surfaces](manual/periodic.md) · [PCET](manual/pcet.md) · [Electrode models](manual/electrochemistry.md) · [Nonadiabatic NRPMD](manual/nonadiabatic.md) · [Examples](manual/examples.md) |
 | Models and runs | [Potentials and plugins](manual/potentials.md) · [PES generation](manual/pes-generation.md) · [JaxPIP fitting](manual/jaxpip-generation.md) · [Execution, parallelism and restart](manual/execution.md) · [Output and analysis](manual/results.md) · [Automatic analysis and figures](manual/analysis-reports.md) |
-| Dynamics extensions | [Common propagation stack](propagation-stack.md) · [Expensive potentials](performance-dynamics.md) · [Trajectory batching](batched-dynamics.md) · [RPC/MTS](rpc-mts.md) · [TRPMD and spectra](trpmd-spectroscopy.md) |
-| Reference | [Python API](manual/api.md) · [Troubleshooting](manual/troubleshooting.md) · [Developer guide](manual/development.md) |
+| Dynamics extensions | [Common propagation stack](propagation-stack.md) · [Expensive potentials](performance-dynamics.md) · [Trajectory batching](batched-dynamics.md) · [RPC/MTS](rpc-mts.md) · [Mixed sampling](mixed-sampling.md) · [TRPMD and spectra](trpmd-spectroscopy.md) |
+| Reference | [Original papers](manual/references.md) · [Reproduction checklist](manual/reproduction.md) · [Python API](manual/api.md) · [Troubleshooting](manual/troubleshooting.md) · [Developer guide](manual/development.md) |
 
 ```{toctree}
 :maxdepth: 2
@@ -99,6 +103,8 @@ Science <manual/science>
 :hidden:
 
 Gas phase <manual/workflows>
+Rate PMF selection <rate-pmf-selection>
+Explicit rate input and regional umbrellas <rate-input-v2>
 Transition-state search <transition-state-search>
 Materials and surfaces <manual/periodic>
 PCET <manual/pcet>
@@ -120,6 +126,8 @@ Propagation stack <propagation-stack>
 Expensive potentials <performance-dynamics>
 Trajectory batching <batched-dynamics>
 RPC/MTS <rpc-mts>
+Mixed sampling <mixed-sampling>
+Condensed-phase nuclear quantum effects <condensed-phase-nqe>
 TRPMD and spectra <trpmd-spectroscopy>
 Output and analysis <manual/results>
 Standard trajectory formats <trajectory-export>
@@ -160,6 +168,8 @@ Extended CVs and sampling methods <tier2-sampling>
 :caption: Reference and development
 :hidden:
 
+Original papers and implementation <manual/references>
+Paper systems and reproduction <manual/reproduction>
 Python API <manual/api>
 Troubleshooting <manual/troubleshooting>
 Developer guide <manual/development>

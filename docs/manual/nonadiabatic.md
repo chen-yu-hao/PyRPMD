@@ -11,6 +11,8 @@ for the gas-phase `rate` workflow.
 | NRPMD/RPSH Python ensemble API | `run_nonadiabatic_ensemble` | Original focused NRPMD and real centroid RPSH; custom complete matrix providers |
 | W-spin SM-NRPMD | `SMNRPMDDynamics`, `method="sm-nrpmd"` | Two-state complex Hermitian matrices, signed W estimator, focused nonequilibrium preparation |
 | CA-RP-MASH | `RPMASHDynamics`, `method="rp-mash"` | Two real states, deterministic centroid-equator events and population importance sampling |
+| Classical-nuclei MASH API | `MASHDynamics` | Original two-state setting at `P=1`; experimental centroid extension at `P>1`, distinct from `RPMASHDynamics` |
+| Quasi-diabatic/adiabatic API | `QDNRPMDDynamics`, `AdiabaticRPSHDynamics` | Provider-supplied energies, gradients, derivative couplings and electronic overlaps |
 | Thermal NRPMD | `ThermalNRPMDSampler`, `ThermalNRPMDDynamics` | Signed SEO thermal preparation, finite-time flux/population rate curves; real matrices |
 | Electronic friction | `[electronic_friction]` on `diffusion`, `ElectronicFrictionDynamics` | Markovian centroid bath, tensor friction, periodic/fixed slabs |
 | Original centroid RPSH | `RPSHDynamics`, `method="rpsh"` | Real matrices, original hopping/rescaling policy and optional EDC |
@@ -26,6 +28,39 @@ Detailed contracts and executable examples are in the
 [spin-method guide](../nonadiabatic-spin-methods.md),
 [hopping-extension guide](../nonadiabatic-hopping-extensions.md),
 and [method guide](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/nonadiabatic-methods.md).
+
+## Original papers and reproduction scope
+
+The [method-to-paper catalog](references.md) gives full citations and code
+locations; the [reproduction plan](reproduction.md) specifies the original
+systems, observables, runnable entries and remaining work. Cite the method,
+initial-state preparation and physical model used in a calculation. A generic
+LVC or discrete spin-boson provider still needs a citation for its parameters
+and bath discretization.
+
+| Implemented component | Original sources | Scope of the attribution |
+| --- | --- | --- |
+| Focused NRPMD and its MInt subflow | [Richardson–Thoss 2013](https://doi.org/10.1063/1.4816124); [Chowdhury–Huo 2019](https://doi.org/10.1063/1.5096276); [Church et al. 2018](https://doi.org/10.1063/1.5005557) | The 2019 paper supplies the focused preparation; the Church citation is for the integrator component, not a complete MQC-IVR implementation. |
+| Signed thermal NRPMD | [Richardson–Thoss 2013](https://doi.org/10.1063/1.4816124) | SEO thermal sampling and correlations; the dedicated paper benchmark uses the original lowest-adiabatic split, while the library defaults to a trace split. |
+| Two-state SM-NRPMD | [Bossion et al. 2021](https://doi.org/10.1063/5.0051456) | Focused spin propagation is implemented; the paper's equilibrium correlations additionally require its thermal trace and phase-weighted estimators. |
+| MASH and CA-RP-MASH | [Mannouch–Richardson 2023](https://doi.org/10.1063/5.0139734); [Cao et al., ChemRxiv v1, 2025](https://doi.org/10.26434/chemrxiv-2025-xps2g) | `MASHDynamics(P=1)` follows the first; `RPMASHDynamics`/`rp-mash` follows the CA variant of the second. |
+| FSSH and centroid RPSH | [Tully 1990](https://doi.org/10.1063/1.459170); [Shushkov et al. 2012](https://doi.org/10.1063/1.4766449); [Shakib–Huo 2017](https://doi.org/10.1021/acs.jpclett.7b01343) | Match the chosen paper's preparation, momentum-rescaling policy and amplitude/active-state observables. |
+| RPSH-BA and RPSH-DM | [Y. Shakya et al. 2023](https://doi.org/10.1103/PhysRevA.107.062810) | BA has one common amplitude vector; DM averages bead wavefunctions in a common centroid basis. Both keep one active surface. |
+| EDC and DBOC | [Granucci–Persico 2007](https://doi.org/10.1063/1.2715585); [Limbu et al. 2025](https://doi.org/10.1063/5.0301249) | Separate extensions with stated ring conventions; reproducing the DBOC donor population requires its mixed active-state/coherence estimator. |
+| Complex hopping and geometric force | [Miao et al. 2019](https://doi.org/10.1063/1.5088770) | Local nondegenerate NAC/rescaling and Berry-force prescription, adapted to the ring. |
+| MV-RPMD and KC-RPMD | [Ananth 2013](https://doi.org/10.1063/1.4821590); [Menzeleev et al. 2014](https://doi.org/10.1063/1.4863919) | Separate model APIs with their own thermal weights; KC also requires crossing calibration and auxiliary mass. |
+| Isomorphic potential | [Tao et al. 2018](https://doi.org/10.1063/1.5005544) | The two-state trace construction is paired with Ehrenfest here; the paper's QCLE/iso-surface-hopping calculations need different propagators. |
+| Quasi-diabatic transport | [Mandal et al. 2018](https://doi.org/10.1021/acs.jctc.7b01178); [Zhou et al. 2019](https://doi.org/10.1021/acs.jpclett.9b02747) | QD-NRPMD reuses the local-basis strategy; the original PLDM/SQC and ethylene calculations are not provided by the analytic interface demo. |
+| Tully models and NaH₂ PES | [Tully 1990](https://doi.org/10.1063/1.459170); [Halvick–Truhlar 1992](https://doi.org/10.1063/1.461986), [1994 erratum](https://doi.org/10.1063/1.467282) | Cite the physical potential independently of the dynamics used with it. |
+| Independent 1D quantum reference | [Feit et al. 1982](https://doi.org/10.1016/0021-9991(82)90091-2) | Fourier spectral propagation on a finite periodic grid; converge domain, grid and timestep. |
+
+For a first quantitative paper comparison, use
+`examples/nonadiabatic/published_nrpmd_benchmark.py` for Richardson–Thoss
+Fig. 1(c), with `--potential-split lowest_adiabatic`. Other short population and
+molecular examples establish workflow operation; their synthetic parameters
+and initial distributions must be replaced where the reproduction plan calls
+for a published system. The CA-RP-MASH citation records the implemented v1
+source; a journal successor was not verified in the 2026-11-02 review.
 
 ## Population ensembles
 

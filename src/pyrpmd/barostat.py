@@ -50,10 +50,13 @@ def validate_bzp_snapshot(snapshot, reference_cell):
 class BZPBarostat:
     """Isotropic NPT PIMD with a Langevin cell piston, in atomic units.
 
-    ``potential`` must support ``set_cell(cell_bohr)`` and return a physical
+    ``potential`` must support ``set_cell(cell_bohr)`` and return a
     per-bead configurational virial ``W = -V * stress``. The virial includes
     explicit cell derivatives and excludes kinetic and ring-spring terms.
     A missing virial is an error; Cartesian ``q dot F`` is not substituted.
+    An SC or RPC sampling Hamiltonian must provide its own consistent force
+    and strain virial. Its effective energy is not a physical energy
+    estimator; use the method-specific estimator when reporting observables.
 
     The system has a fully periodic, constant-shape 3D cell and all atoms are
     mobile. Cell vectors are rows. The input System remains the immutable run
@@ -186,7 +189,7 @@ class BZPBarostat:
         self.momentum = decay * self.momentum + amplitude * float(rng.normal())
 
     def step(self, state, dynamics, *, thermostat="pile-l", gamma_centroid=1.0,
-             andersen_interval=10):
+             andersen_interval=10, method=None):
         """Advance one pressure-controlled step, restoring every state on error.
 
         The palindrome is piston OU/2, pressure kick/2, dilation/2,
@@ -202,6 +205,9 @@ class BZPBarostat:
             raise ValueError("BZP and Dynamics must share the potential, masses, beta and bead count")
         if dynamics.fixed_atoms:
             raise ValueError("BZP requires all atoms mobile")
+        pressure_plan = dynamics.plan.barostat_spec
+        if not isinstance(pressure_plan, dict) or pressure_plan.get("mode", "none") != "none":
+            raise ValueError("use the configured pressure plan through Dynamics.step; do not attach a second piston")
         if dynamics.loop_backend == "native":
             raise ValueError("BZP requires loop_backend='auto' or 'python'")
         if thermostat not in ("pile-l", "andersen", None):
@@ -209,18 +215,23 @@ class BZPBarostat:
         if (isinstance(andersen_interval, (bool, np.bool_))
                 or not isinstance(andersen_interval, (int, np.integer)) or andersen_interval < 1):
             raise ValueError("andersen_interval must be a positive integer")
+        if method is not None:
+            if thermostat != "pile-l":
+                raise ValueError("an explicit middle method requires PILE-L")
+            dynamics._sampling_kernel(method)  # Reject before moving the cell or drawing noise.
         dt = _real(dynamics.dt, "BZP timestep", positive=True)
         self._check_state(state)
         saved_state = state.copy()
         saved_piston = self.snapshot()
         saved_rng = copy.deepcopy(dynamics.rng.bit_generator.state)
+        saved_operators = dynamics.operator_state_dict()
         saved_stats = copy.deepcopy(dynamics.propagation_stats)
         try:
             self._thermostat(dynamics.rng, dt / 2)
             self._piston_kick(state, dt / 2)
             self._dilate(state, dt / 2)
             if thermostat == "pile-l":
-                dynamics.sample_step(state, gamma_centroid=gamma_centroid)
+                dynamics.sample_step(state, gamma_centroid=gamma_centroid, method=method)
             else:
                 if thermostat == "andersen" and state.step % andersen_interval == 0:
                     state.p[:] = dynamics.sample_momenta()
@@ -239,6 +250,10 @@ class BZPBarostat:
             state.step, state.time = saved_state.step, saved_state.time
             dynamics.rng.bit_generator.state = saved_rng
             dynamics.propagation_stats = saved_stats
+            dynamics.load_operator_state_dict(saved_operators)
+            # Fixed-cell operator restore may reset the shared provider to
+            # Dynamics' reference cell. This standalone piston owns its
+            # evolving cell, so restore that physical cell last.
             self.restore(saved_piston)
             raise
         return state

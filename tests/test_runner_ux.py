@@ -241,7 +241,9 @@ class ResumeParallelTests(unittest.TestCase):
             ({"workers": 2, "trajectory_groups": 3}, "disagree"),
             ({"trajectory_workers": 2, "trajectory_groups": 3}, "disagree"),
             ({"backend": "typo"}, "backend"),
-            ({"scheduling": "dynamic"}, "Dynamic scheduling"),
+            ({"scheduling": "dynamic", "coordinator_ranks": 1}, "Dynamic local scheduling"),
+            ({"backend": "mpi", "scheduling": "dynamic", "coordinator_ranks": 0},
+             "Dynamic MPI scheduling"),
             ({"threads_per_rank": 0}, "threads_per_rank"),
             ({1: 2}, "string field names"),
             ([2], "mapping"),
@@ -251,6 +253,33 @@ class ResumeParallelTests(unittest.TestCase):
                     resume_run(self.output, parallel=overrides)
                 dispatch.assert_not_called()
                 self.assert_saved_files_unchanged()
+
+    def test_local_dynamic_resume_uses_no_coordinator(self):
+        for overrides in (
+            {"scheduling": "dynamic"},
+            {"backend": "process", "workers": 2, "scheduling": "dynamic"},
+        ):
+            with self.subTest(overrides=overrides), mock.patch("pyrpmd.runner.run_resolved") as dispatch:
+                resume_run(self.output, parallel=overrides)
+                parallel = dispatch.call_args.args[0]["parallel"]
+                self.assertEqual(parallel["scheduling"], "dynamic")
+                self.assertEqual(parallel["coordinator_ranks"], 0)
+                self.assertTrue(dispatch.call_args.kwargs["resume"])
+                self.assert_saved_files_unchanged()
+
+    def test_backend_override_updates_inherited_dynamic_coordinator(self):
+        from pyrpmd.runner import _resume_parallel
+
+        for before, after, coordinators in (("process", "mpi", 1), ("mpi", "process", 0),
+                                             ("mpi", "serial", 0)):
+            with self.subTest(before=before, after=after):
+                current = {"backend": before, "scheduling": "dynamic",
+                           "coordinator_ranks": int(before == "mpi")}
+                saved = copy.deepcopy(current)
+                result = _resume_parallel(current, {"backend": after})
+                self.assertEqual(result["coordinator_ranks"], coordinators)
+                self.assertEqual(result["scheduling"], "dynamic")
+                self.assertEqual(current, saved)
 
     def test_mpi_worker_groups_and_scheduling_are_normalized_together(self):
         with mock.patch("pyrpmd.runner.run_resolved") as dispatch:
@@ -262,11 +291,13 @@ class ResumeParallelTests(unittest.TestCase):
         self.assert_saved_files_unchanged()
 
     def test_real_worker_override_resumes_without_changing_input_or_checkpoints(self):
-        result = resume_run(self.output, parallel={"workers": 2})
-        self.assertEqual(result["samples"], 10)
-        for path, data in self.saved.items():
-            if path.parts[0] in ("input", "checkpoints") or path.name == "manifest.json":
-                self.assertEqual((self.output / path).read_bytes(), data)
+        for overrides in ({"workers": 2}, {"workers": 2, "scheduling": "dynamic"}):
+            with self.subTest(overrides=overrides):
+                result = resume_run(self.output, parallel=overrides)
+                self.assertEqual(result["samples"], 10)
+                for path, data in self.saved.items():
+                    if path.parts[0] in ("input", "checkpoints") or path.name == "manifest.json":
+                        self.assertEqual((self.output / path).read_bytes(), data)
 
 
 if __name__ == "__main__":

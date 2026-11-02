@@ -107,7 +107,7 @@ def test_pile_is_available_in_both_adaptive_stages(tmp_path):
 
 @pytest.mark.parametrize("change", [
     {"dynamics": {"integrator": "velocity-verlet"}}, {"dynamics": {"loop_backend": "native"}},
-    {"sampling": {"integrator": "baoab"}}, {"sampling": {"gamma_centroid": 0.0}},
+    {"sampling": {"integrator": "not-a-splitting"}}, {"sampling": {"gamma_centroid": 0.0}},
     {"sampling": {"gamma_centroid": float("nan")}}, {"sampling": {"thermostat": "unknown"}},
     {"task": "rate"},
 ])

@@ -141,9 +141,11 @@ estimator = "centroid"
 
 ## OPES-explore and adaptive widths
 
-The existing `task="opes"` workflow now accepts these additional `[opes]`
-fields: `mode="metad"|"explore"`, `adaptive_sigma=true|false`, and
-`sigma_min` (or `sigma_min_au`). Existing inputs retain fixed-bandwidth OPES.
+The `task="fes"`, `[fes] method="opes"` workflow accepts these additional
+`[fes.opes]` fields: `mode="metad"|"explore"`,
+`adaptive_sigma=true|false`, and `sigma_min` (or `sigma_min_au`).
+The legacy `task="opes"` and `[opes]` table remain supported. Existing inputs
+retain fixed-bandwidth OPES.
 The modes have different estimators:
 
 | Mode | KDE weights | Bias prefactor multiplying log(p/Z+ε) |
@@ -151,7 +153,11 @@ The modes have different estimators:
 | `metad` | exp(β V before deposition) | (1−1/γ)/β |
 | `explore` | One for every kernel | (γ−1)/β |
 
-These are the OPES and OPES-explore density/bias equations documented by
+The density/bias equations follow OPES by
+[Invernizzi and Parrinello (2020)](https://doi.org/10.1021/acs.jpclett.0c00497)
+and OPES-explore by
+[Invernizzi and Parrinello (2022)](https://doi.org/10.1021/acs.jctc.2c00152).
+Version-specific conventions are also documented by
 [PLUMED OPES_METAD](https://www.plumed.org/doc-v2.10/user-doc/html/_o_p_e_s__m_e_t_a_d.html)
 and [OPES_METAD_EXPLORE](https://www.plumed.org/doc-v2.10/user-doc/html/_o_p_e_s__m_e_t_a_d__e_x_p_l_o_r_e.html).
 The explore KDE estimates the sampled target density. Its direct FES output
@@ -295,7 +301,11 @@ treated as complete first passages. Outputs always retain `converged=False`.
 `pyrpmd.retis.ReplicaExchangeTIS` extends the existing two-way canonical
 transition-interface sampler with exchanges between its positive ensembles.
 It follows the path-swapping principle of
-[van Erp (2007)](https://arxiv.org/abs/0704.3317).
+[van Erp (2007), *Reaction rate calculation by parallel path swapping*,
+PRL **98**, 268301](https://doi.org/10.1103/PhysRevLett.98.268301)
+([author preprint](https://arxiv.org/abs/0704.3317)). The original paper studies
+DNA denaturation in the Peyrard–Bishop–Dauxois model; the package's double-well
+checks do not reproduce that application.
 Each sweep attempts one shooting move in each ensemble, then neighboring path
 swaps. Since every ensemble has the same underlying dynamics and canonical
 path measure, a swap is accepted when both trajectories meet the destination
@@ -308,7 +318,8 @@ shooting acceptance, swap counts and the full walker-label history. Statistics
 across interface slots are correlated and should be resampled jointly.
 
 The implementation covers **positive-ensemble RETIS with a separate flux
-estimate**. The minus-interface flux ensemble, asynchronous/infinite swapping,
+estimate**, rather than the complete original RETIS construction. The
+minus-interface flux ensemble, asynchronous/infinite swapping,
 MPI execution and persistent ensemble restart are not implemented. Use
 `combine_tis_rate(result.interfaces, matching_flux)` with a separately validated
 effective flux. The existing finite path-length cutoff also applies: increasing

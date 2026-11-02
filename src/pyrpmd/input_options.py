@@ -74,7 +74,19 @@ def rate_pmf_options(config):
     rate = config.get("rate", {})
     if not isinstance(rate, Mapping):
         raise InputError("rate must be a table")
+    from .input_rate_pmf import rate_pmf_spec, rate_pmf_analysis
+
+    spec = rate_pmf_spec(config)
     source = rate.get("pmf_source")
+    sampler = "umbrella"
+    if spec is not None:
+        sampler = spec["method"]
+        if sampler == "external":
+            saved = rate.get("pmf_stage", {})
+            source = saved.get("source") if isinstance(saved, Mapping) else None
+            if source is None:
+                source = {"directory": spec["directory"],
+                          "allow_non_umbrella": spec.get("allow_non_umbrella", False)}
     if source == "umbrella":
         source = None
     if source is not None:
@@ -95,8 +107,8 @@ def rate_pmf_options(config):
                 raise InputError("rate.pmf_source.allow_non_umbrella must be boolean")
         else:
             raise InputError("rate.pmf_source must be a FES directory or a table")
-    method = rate.get("pmf_method", "ui")
-    if method not in ("ui", "mbar"):
+    method = spec.get("estimator", "ui") if spec is not None else rate.get("pmf_method", "ui")
+    if method not in (("ui", "mbar", "reweighted_histogram") if spec is not None else ("ui", "mbar")):
         raise InputError("rate.pmf_method must be 'ui' or 'mbar'")
     if "recrossing" in config and "recrossing" in rate:
         raise InputError("Use either [recrossing] or [rate.recrossing], not both")
@@ -146,9 +158,10 @@ def rate_pmf_options(config):
     compare_ui = rate.get("compare_ui", method == "mbar")
     if not isinstance(compare_ui, bool):
         raise InputError("rate.compare_ui must be boolean")
-    if method == "ui" and compare_ui:
-        raise InputError("rate.compare_ui requires rate.pmf_method='mbar'")
-    analysis = config.get("analysis", {})
+    if method != "mbar" and compare_ui:
+        selector = "rate.pmf.estimator" if spec is not None else "rate.pmf_method"
+        raise InputError(f"rate.compare_ui requires {selector}='mbar'")
+    analysis = rate_pmf_analysis(config)
     if not isinstance(analysis, Mapping):
         raise InputError("analysis must be a table")
     nboot = _integer(
@@ -189,6 +202,7 @@ def rate_pmf_options(config):
         )
     return {
         "method": method,
+        "sampler": sampler if source is None or spec is not None else "external",
         "source": source,
         "xi_star": xi_star,
         "search_range": search_range,

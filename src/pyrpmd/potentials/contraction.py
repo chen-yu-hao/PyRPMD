@@ -11,7 +11,35 @@ from __future__ import annotations
 import numpy as np
 
 from ..validation import positive_integer as _positive_integer
-from .base import PESResult, Potential, coordinates, validate_result
+from .base import PESResult, Potential, PotentialError, coordinates, validate_result
+
+
+def _set_component_cells(owner, providers, cell):
+    """Forward a common cell to borrowed providers, retaining a rollback cell.
+
+    Providers must implement the same explicit AU cell-update contract as an
+    ordinary NPT potential. Check all callbacks before changing any component.
+    A provider remains responsible for side effects of its own failed callback.
+    """
+    from ..geometry import validate_cell_pbc
+    cell, _ = validate_cell_pbc(cell, [True, True, True])
+    if cell is None:
+        raise PotentialError("composite NPT potential requires a finite periodic cell")
+    unique = list({id(provider): provider for provider in providers}.values())
+    if any(not callable(getattr(provider, "set_cell", None)) for provider in unique):
+        raise PotentialError("every composite NPT component must implement set_cell(cell_bohr)")
+    previous = getattr(owner, "_cell", None)
+    changed = []
+    try:
+        for provider in unique:
+            changed.append(provider)
+            provider.set_cell(cell.copy())
+    except BaseException:
+        if previous is not None:
+            for provider in reversed(changed):
+                provider.set_cell(previous.copy())
+        raise
+    owner._cell = cell.copy()
 
 
 def _component(provider, name, *, _allow_callable=False):
@@ -121,6 +149,10 @@ class DifferencePotential(Potential):
             "units": {"energy": "hartree", "length": "bohr"},
         }
 
+    def set_cell(self, cell):
+        """Update both physical providers; ownership remains with the caller."""
+        _set_component_cells(self, (self.target, self.reference), cell)
+
     def evaluate(self, positions):
         q = coordinates(positions)
         high = validate_result(self.target.evaluate(q), q.shape)
@@ -143,9 +175,10 @@ class SplitPotential(Potential):
 
     ``slow`` must be the additive correction, not another full potential unless
     that is intentionally the Hamiltonian being modelled.  Pc defaults to P
-    (no contraction).  Providers remain owned by the caller.  Only total energy
-    and forces are defined: no bead-resolved physical energy or virial/pressure
-    estimator is exported for contracted terms.
+    (no contraction). Providers remain owned by the caller. If both components
+    provide virials, the returned sum is the affine cell derivative of this
+    contracted Hamiltonian. Contracted energy/virial rows are bookkeeping, not
+    bead-resolved physical observables of the uncontracted target potential.
     """
 
     def __init__(self, fast, slow, nbeads, contracted_beads=None):
@@ -163,8 +196,14 @@ class SplitPotential(Potential):
             "contracted_beads": self.contracted_beads,
             "approximate_hamiltonian": self.contracted_beads != self.nbeads,
             "energy_convention": "sum_beads; contracted_energy_distributed_uniformly",
-            "virial": False,
+            "virial_requires": "both_components",
+            "virial_scope": "rpc_contracted_hamiltonian",
+            "virial_convention": "sum_beads; contracted_virial_distributed_uniformly",
         }
+
+    def set_cell(self, cell):
+        """Bind both components to the same cell before a pressure evaluation."""
+        _set_component_cells(self, (self.fast, self.slow), cell)
 
     def _coordinates(self, positions):
         q = coordinates(positions)
@@ -183,19 +222,28 @@ class SplitPotential(Potential):
         forces = self.contraction.lift_forces(result.forces)
         if self.nbeads == self.contracted_beads:
             energy = result.energy.copy()
+            virial = None if result.virial is None else result.virial.copy()
         else:
             # Only the sum has a physical meaning for the coupled Hamiltonian.
             energy = np.full(self.nbeads, float(np.mean(result.energy)))
-        return validate_result(PESResult(energy, forces), q.shape)
+            # T is independent of the cell and commutes with affine strain.
+            # Consequently sum Wslow_RPC = (P/Pc) sum Wslow(Tq). There is
+            # no force-lifting transform on a cell derivative. Uniform rows
+            # preserve that sum without claiming individual physical virials.
+            virial = (None if result.virial is None else np.broadcast_to(
+                result.virial.mean(axis=0), (self.nbeads, 3, 3)).copy())
+        return validate_result(PESResult(energy, forces, virial=virial), q.shape)
 
     def evaluate(self, positions):
         q = self._coordinates(positions)
         fast = self.evaluate_fast(q)
         energy, forces = fast.energy.copy(), fast.forces.copy()
+        virial = None if fast.virial is None else fast.virial.copy()
         slow = self.evaluate_slow(q)
         energy += slow.energy
         forces += slow.forces
-        return validate_result(PESResult(energy, forces), q.shape)
+        virial = None if virial is None or slow.virial is None else virial + slow.virial
+        return validate_result(PESResult(energy, forces, virial=virial), q.shape)
 
 
 __all__ = ["RingPolymerContraction", "DifferencePotential", "SplitPotential"]

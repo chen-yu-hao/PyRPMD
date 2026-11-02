@@ -1,14 +1,19 @@
-# 输入规范 v1
+# 输入规范
 
 **中文** · [English](../input.md)
 
 `.inp` 和 `.toml` 使用 TOML 语法；`.py` 执行模块内的 `build()`，返回 `JobSpec` 或字典。两种入口经同一个解析器产生规范配置。输入中相对路径以**输入文件所在目录**为基准；命令行 `--pes`、`--pes-manifest`、`--output` 以启动目录为基准。`module:object` 和 `file.py:object` 均可作为插件入口。
 
+新速率研究建议使用 [schema 2 速率布局](rate-input-v2.md)和
+[`research.inp`](../../examples/rate/research.inp)：显式声明片段与成断键，独立检查 TS，
+用分区表设置窗口间距及力常数，并分别设置伞采样、回穿母链和子轨迹。
+下文的 schema 1 平铺语法继续支持旧输入和检查点。
+
 ## 通用字段
 
 | 字段 | 类型、单位与含义 |
 | --- | --- |
-| `schema_version` | 当前为整数 1 |
+| `schema_version` | 1（旧版、缺省）；2 启用新的显式反应默认值。专用模型 schema 不变。 |
 | `task` | `rate`、`drpmd`、`fes`、`surface_rate`、`network`、`metadynamics`、`pcet`、`pimd`、`diffusion`、`site_rate` |
 | `preset` | `pilot`（缺省）或 `production` |
 | `temperature` | 正温度，例如 `"300 K"`；数值也按 K 解释 |
@@ -31,6 +36,9 @@
 预设；其 `temperature` 也接受温度列表以运行扫描。
 
 时间数量必须是步长的整数倍。需要非整除的时间时请先选择实际整数步数，例如 `equilibration_steps=333`。纯数值的内部单位是 bohr、hartree、原子时间、电子质量；XYZ 坐标缺省为 angstrom。力常数支持 `"10 kcal/mol/angstrom^2"` 等组合单位。所有原子索引均为 **0-based**。
+新 `force_constant`/`force_matrix` 裸数值表示温度归一化的 `k/T`，即原子单位力常数每 Kelvin，
+不改变旧 `stiffness`/`kappa` 数值的物理含义。无量纲 xi 的 `"0.1 1/T"` 会解析为
+`0.1 * T` hartree，与 RPMDrate 的 `kforce = 0.1 * T` 约定一致。
 
 ## 系统
 
@@ -159,6 +167,11 @@ electronic_weight = 1.0
 `[recrossing]` 的主要字段是 `parent_replicas`、`parent_samples`、`equilibration`、`parent_interval`、`child_pairs`、`child_time`、`dividing_surface`、`plateau_fraction`、`plateau_tolerance`、`bootstrap`。时间也可用相应 `_steps` 字段。每个 child pair 以相反动量传播，禁止以未计算的 κ=1 替代回穿。完整可运行语法见 `examples/rate/pilot.inp`。
 
 ### 速率 PMF 后端与分割面
+
+统一的 `[rate.pmf]` 接口可选择伞形采样、冻结偏置重加权的 MetaD／OPES 或已有结果，
+并独立配置 PMF 的动力学和采样参数。完整示例、阶段时间预算和兼容规则见
+[为速率选择 PMF 方法](rate-pmf-selection.md)。下文的旧选择字段仍可使用，
+但不要在同一输入中与 `[rate.pmf]` 混用。
 
 默认 `rate.pmf_method = "ui"` 保留 Gaussian umbrella integration。
 它假设每窗分布接近高斯；偏斜、多峰及尾部外推可能产生统计误差条之外的偏差。

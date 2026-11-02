@@ -82,11 +82,18 @@ def execution_plan(config=None):
     scheduling = c.get("scheduling", "static")
     if scheduling not in ("static", "dynamic"):
         raise ValueError("parallel.scheduling must be static or dynamic")
-    coordinators = _int(c.get("coordinator_ranks", int(scheduling == "dynamic")),
+    default_coordinators = int(scheduling == "dynamic" and backend == "mpi")
+    coordinators = _int(c.get("coordinator_ranks", default_coordinators),
                         "coordinator_ranks", 0)
     if scheduling == "dynamic":
-        if backend != "mpi" or coordinators != 1:
-            raise ValueError("Dynamic scheduling requires backend='mpi' and coordinator_ranks=1")
+        if backend == "mpi":
+            if coordinators != 1:
+                raise ValueError("Dynamic MPI scheduling requires coordinator_ranks=1")
+        elif coordinators != 0 or mode != "serial" or beads != 1:
+            raise ValueError(
+                "Dynamic local scheduling requires mode='serial', bead_workers=1 "
+                "and coordinator_ranks=0; use static or MPI scheduling for GPU/bead pools"
+            )
     elif coordinators != 0:
         raise ValueError("Static scheduling requires coordinator_ranks=0")
     raw_devices = c.get("devices", c.get("gpus", [0] if mode == "gpu" else []))
@@ -604,6 +611,20 @@ def _execute_batch(payload):
         return [(index, function(task)) for index, task in indexed_tasks]
 
 
+def _process_dynamic_init(plan):
+    """Keep CPU worker context/BLAS limits alive across dynamically assigned tasks."""
+    resources = ExitStack()
+    try:
+        resources.enter_context(_blas_thread_limit())
+        # Local dynamic scheduling is CPU-only: no slot-dependent GPU mapping.
+        resources.enter_context(_context(plan, 0))
+    except BaseException:
+        resources.close()
+        raise
+    # multiprocessing exits do not reliably run ordinary atexit handlers.
+    Finalize(None, resources.close, exitpriority=10)
+
+
 _TASK_TAG = 4101
 _RESULT_TAG = 4102
 
@@ -646,26 +667,59 @@ def _dynamic_dispatch(control, leaders, count, mpi):
     return [results[i] for i in sorted(results)], errors
 
 
+def _close_uncached_mpi_potentials(context):
+    """End a task's owned MPI providers without closing worker-cache leases."""
+    cached = {id(provider) for provider in context.potentials.values()}
+    errors = []
+    for provider in tuple(context.providers):
+        if not provider.closed and id(provider) not in cached:
+            try:
+                provider.close()
+            except Exception as exc:
+                errors.append(_result_error(exc))
+    if errors:
+        raise RuntimeError("MPI PES cleanup failed: " + "; ".join(errors))
+
+
 def _dynamic_worker(function, tasks, plan, slot, group, control):
-    while True:
-        index = control.recv(source=0, tag=_TASK_TAG)
-        if index is None:
-            return
-        try:
-            with _context(plan, slot, group):
+    # A worker owns its cache for the whole queue, just as a static slot does.
+    # The bead service stays alive until _mpi_run sends its final finish command.
+    with _context(plan, slot, group) as context:
+        while True:
+            index = control.recv(source=0, tag=_TASK_TAG)
+            if index is None:
+                return
+            try:
                 value = function(tasks[index])
-        except Exception as exc:
-            value, error = None, _result_error(exc)
-        else:
-            error = None
-        try:
-            packet = pickle.dumps((index, value, error), protocol=pickle.HIGHEST_PROTOCOL)
-        except Exception as exc:
-            # Serialize before send: an unpicklable task result must become a
-            # collective error, rather than strand the coordinator in recv.
-            packet = pickle.dumps((index, None, "Task result serialization failed: " + _result_error(exc)),
-                                  protocol=pickle.HIGHEST_PROTOCOL)
-        control.send(packet, dest=0, tag=_RESULT_TAG)
+            except Exception as exc:
+                value, error = None, _result_error(exc)
+            else:
+                error = None
+            try:
+                # make_task_potential still gives the task ownership. Omitted
+                # close() calls must not accumulate across the longer context.
+                _close_uncached_mpi_potentials(context)
+            except Exception as exc:
+                error = "; ".join(e for e in (error, _result_error(exc)) if e)
+                value = None
+            try:
+                packet = pickle.dumps((index, value, error), protocol=pickle.HIGHEST_PROTOCOL)
+            except Exception as exc:
+                # Serialize before send: an unpicklable task result must become
+                # a collective error, rather than strand the coordinator in recv.
+                error = "Task result serialization failed: " + _result_error(exc)
+            if error is not None:
+                # Release cached engines before reporting failure and waiting
+                # for STOP. No failed task may leave a reusable damaged model.
+                try:
+                    context.cleanup.close()
+                except Exception as exc:
+                    error += "; Cached PES cleanup failed: " + _result_error(exc)
+                finally:
+                    context.potentials.clear()
+                    context.releases.clear()
+                packet = pickle.dumps((index, None, error), protocol=pickle.HIGHEST_PROTOCOL)
+            control.send(packet, dest=0, tag=_RESULT_TAG)
 
 
 def _mpi_run(function, tasks, plan):
@@ -753,8 +807,9 @@ def _mpi_run(function, tasks, plan):
 def run_tasks(function, tasks, parallel_config=None):
     """Run importable ``function(task)``; MPI returns data on rank zero only.
 
-    Static process slots own task batches, keeping GPU placement fixed. MPI
-    dynamic scheduling uses one coordinator and refills complete trajectory
+    Static process slots own task batches, keeping GPU placement fixed. Local
+    dynamic CPU scheduling refills a bounded first-free-worker process queue.
+    MPI dynamic scheduling uses one coordinator and refills complete trajectory
     groups; each group's bead ranks remain attached to that group.
     """
     tasks = list(tasks)
@@ -769,13 +824,26 @@ def run_tasks(function, tasks, parallel_config=None):
     if not tasks:
         return []
     count = min(plan.trajectory_workers, len(tasks))
+    if plan.scheduling == "dynamic" and count > 1:
+        from .process_queue import ordered_process_map
+
+        return ordered_process_map(
+            function, tasks, max_workers=count,
+            initializer=_process_dynamic_init, initargs=(plan,),
+        )
     batches = [
         [(i, tasks[i]) for i in range(slot, len(tasks), count)] for slot in range(count)
     ]
     if count == 1:
         values = _execute_batch((function, batches[0], plan, 0))
     else:
-        payloads = [(function, batch, plan, slot) for slot, batch in enumerate(batches)]
+        slots = list(range(count))
+        if plan.mode == "gpu" and count < plan.trajectory_workers:
+            # Fill distinct devices before using a second process on any card.
+            # Preserve the existing full-occupancy and MPI node-local slot layouts.
+            slots = [(slot % len(plan.devices)) * plan.trajectories_per_gpu
+                     + slot // len(plan.devices) for slot in slots]
+        payloads = [(function, batch, plan, slots[slot]) for slot, batch in enumerate(batches)]
         with ProcessPoolExecutor(
             max_workers=count, mp_context=mp.get_context("spawn")
         ) as pool:

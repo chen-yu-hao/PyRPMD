@@ -157,6 +157,62 @@ def test_checkpoint_resume_and_force_failure_restore_full_state(thermostat):
     assert other_b.snapshot() == barostat.snapshot()
 
 
+@pytest.mark.parametrize("thermostat, method", [
+    ("pile-l", "bcocb"), ("pile-l", "baoab"), ("andersen", None), (None, None),
+])
+@pytest.mark.parametrize("failure_offset", [3, 4])
+def test_failed_step_after_dilation_restores_provider_cell_and_exact_retry(
+        thermostat, method, failure_offset):
+    def initialized():
+        piston, old_dynamics, state, system, model = make(friction=.5)
+        dynamics = Dynamics(old_dynamics.potential, system.masses, 4., 4, .02,
+                            native=False, seed=91, loop_backend="python",
+                            integrator="normal-mode-bab", cell=system.cell, pbc=system.pbc)
+        state.p[:] = dynamics.sample_momenta()
+        return piston, dynamics, state, model
+
+    piston, dynamics, state, model = initialized()
+    reference_piston, reference_dynamics, reference, _ = initialized()
+    options = dict(thermostat=thermostat, method=method, andersen_interval=1)
+    piston.step(state, dynamics, **options)
+    reference_piston.step(reference, reference_dynamics, **options)
+    # Standalone BZP owns the evolving provider cell. The fixed-cell Dynamics
+    # operator identity still records its original cell after this accepted step.
+    assert not np.array_equal(piston.cell, dynamics._initial_cell)
+    before, saved_piston = state.copy(), piston.snapshot()
+    operators = dynamics.operator_state_dict()
+    rng = copy.deepcopy(dynamics.rng.bit_generator.state)
+    stats = copy.deepcopy(dynamics.propagation_stats)
+
+    # Fail after particle noise or after the second cell dilation, so rollback
+    # must recover the previously accepted cell rather than the original one.
+    model.fail_at = model.calls + failure_offset
+    with pytest.raises(RuntimeError, match="injected force failure"):
+        piston.step(state, dynamics, **options)
+    np.testing.assert_array_equal(state.q, before.q)
+    np.testing.assert_array_equal(state.p, before.p)
+    assert (state.step, state.time) == (before.step, before.time)
+    assert piston.snapshot() == saved_piston
+    assert dynamics.operator_state_dict() == operators
+    assert dynamics.rng.bit_generator.state == rng
+    assert dynamics.propagation_stats == stats
+    np.testing.assert_array_equal(dynamics.potential.cell, saved_piston["cell"])
+
+    model.fail_at = None
+    observed = dynamics.potential.evaluate(state.q)
+    expected = reference_dynamics.potential.evaluate(reference.q)
+    for field in ("energy", "forces", "virial"):
+        np.testing.assert_array_equal(getattr(observed, field), getattr(expected, field))
+    piston.step(state, dynamics, **options)
+    reference_piston.step(reference, reference_dynamics, **options)
+    np.testing.assert_array_equal(state.q, reference.q)
+    np.testing.assert_array_equal(state.p, reference.p)
+    np.testing.assert_array_equal(dynamics.potential.cell, reference_dynamics.potential.cell)
+    assert (state.step, state.time) == (reference.step, reference.time)
+    assert piston.snapshot() == reference_piston.snapshot()
+    assert dynamics.operator_state_dict() == reference_dynamics.operator_state_dict()
+
+
 def test_cell_change_invalidates_same_geometry_cache():
     barostat, dynamics, state, _, _ = make()
     state.q[:] = 0.

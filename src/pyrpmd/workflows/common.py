@@ -59,6 +59,20 @@ def fes_method(config):
     return method
 
 
+def _selected_metadynamics_pile_map(config, method):
+    """Identify mixed MetaD inputs whose historical loop ignored the map."""
+    sampling = config.get("sampling", {})
+    selected = sampling.get("integrator")
+    if (method != "metadynamics" or sampling.get("thermostat") != "pile-l"
+            or selected not in ("bcocb", "baoab")):
+        return False
+    from .sampling import legacy_metadynamics_sampling, middle_sampling_method
+
+    scheme = config.get("dynamics", {}).get("integrator", "cayley-bcb")
+    return (legacy_metadynamics_sampling(sampling)
+            and selected != middle_sampling_method(scheme))
+
+
 def _fingerprint(config, system, extras):
     """Hash physical settings, normalizing FES aliases and recording the method."""
     if config.get("task", "fes") not in ("fes", "metadynamics", "opes"):
@@ -73,6 +87,10 @@ def _fingerprint(config, system, extras):
     # A separate method tag cannot collide with any former scientific setting.
     identity = {"schema": 2, "method": method,
                 "physics_fingerprint": _legacy_fingerprint(canonical, system, extras)}
+    if _selected_metadynamics_pile_map(config, method):
+        # Old legacy MetaD loops silently used the dynamics kernel instead.
+        # Their mixed-input histories cannot seed the corrected sampling map.
+        identity["metadynamics_pile_map"] = 1
     return hashlib.sha256(json.dumps(identity, sort_keys=True,
                                     separators=(",", ":")).encode()).hexdigest()
 
@@ -92,6 +110,8 @@ def fingerprint_matches(saved, config, system, extras):
     legacy = dict(config)
     legacy.pop("fes", None)
     method = fes_method(config)
+    if _selected_metadynamics_pile_map(config, method):
+        return False
     legacy["task"] = "fes" if method == "umbrella" else method
     if saved == _legacy_fingerprint(legacy, system, extras):
         return True

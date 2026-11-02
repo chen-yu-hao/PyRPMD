@@ -18,7 +18,8 @@ from pathlib import Path
 import numpy as np
 
 from ..analysis.metadynamics import bias_fes
-from ..bias import CompositeBias, GridMetadynamicsBias, MetadynamicsBias, WallBias
+from ..analysis.frozen_bias import frozen_bias_fes
+from ..bias import CompositeBias, FluxMetricBias, GridMetadynamicsBias, MetadynamicsBias, WallBias
 from ..checkpoint import load_checkpoint
 from ..cv import RPMDrateCoordinate, make_cvs
 from ..dynamics import Dynamics, State
@@ -29,13 +30,13 @@ from ..units import parse_quantity
 from ..thermostats import NoseHooverChain, nhc_options
 from .common import (_atomic_npz, _fingerprint, _dimension, checked_integer,
                      fingerprint_matches, resolve_cvs)
-from .sampling import (fes_sampler, legacy_metadynamics_sampling,
+from .sampling import (fes_sampler, legacy_metadynamics_sampling, middle_sampling_method,
                        read_operator_checkpoint, validate_andersen_schedule)
 from .biased_sampling import SamplingRuntime, run_biased_sampling, dispatch_replicas, dispatch_tasks
 from ..analysis.fes_result import FESResult, write_fes_result
 
 
-METADYNAMICS_FIELDS = {"cvs", "mode", "sigma", "sigma_au", "height", "height_au", "pace", "bias_factor", "walls", "walls_during_equilibration", "grid", "shared_walkers", "multiple_walkers", "block_steps"}
+METADYNAMICS_FIELDS = {"cvs", "mode", "sigma", "sigma_au", "height", "height_au", "pace", "bias_factor", "walls", "walls_during_equilibration", "grid", "shared_walkers", "multiple_walkers", "block_steps", "freeze_after_steps", "freeze_equilibration_steps"}
 
 
 def resolve_walls(config, system):
@@ -142,17 +143,46 @@ def resolve_metadynamics(config, system):
     if config.get("dynamics", {}).get("loop_backend", "auto") == "native":
         raise ValueError("history-dependent metadynamics bias requires loop_backend='auto' or 'python'")
     analysis = config.get("analysis", {})
-    if analysis.get("method", "bias_estimate") != "bias_estimate":
-        raise ValueError("metadynamics analysis.method must be bias_estimate; evolving hills are not fixed-umbrella MBAR data")
-    if analysis.get("measure", "cv_density") not in ("cv_density", "equilibrium"):
-        raise ValueError("metadynamics estimates CV-density free energies, not rate_flux")
+    method = analysis.get("method", "bias_estimate")
+    if method not in ("bias_estimate", "reweighted_histogram"):
+        raise ValueError("metadynamics analysis.method must be bias_estimate or reweighted_histogram; evolving hills are not fixed-umbrella MBAR data")
+    measure = analysis.get("measure", "cv_density")
+    if measure not in ("cv_density", "equilibrium", "rate_flux"):
+        raise ValueError("metadynamics analysis.measure must be cv_density or rate_flux")
+    if measure == "rate_flux":
+        if method != "reweighted_histogram":
+            raise ValueError("rate_flux metadynamics requires frozen-bias reweighted_histogram, not a raw bias estimate")
+        if (cv.dimension != 1 or len(cv.cvs) != 1
+                or not isinstance(cv.cvs[0], RPMDrateCoordinate)):
+            raise ValueError("rate_flux metadynamics requires one centroid RPMDrate coordinate")
+        if any(system.pbc) or system.fixed_atoms:
+            raise ValueError("rate_flux metadynamics requires a nonperiodic system with all atoms mobile")
+        if table.get("walls") or table.get("shared_walkers") or table.get("multiple_walkers"):
+            raise ValueError("rate_flux metadynamics does not combine static walls or shared walkers")
+        FluxMetricBias(cv.cvs[0], system.masses, config["beta"])
+    if config.get("replica_exchange", {}).get("enabled") or config.get("adaptive_umbrella", {}).get("enabled"):
+        raise ValueError("metadynamics does not combine replica exchange or adaptive umbrellas")
     for key in ("bootstrap", "bootstrap_replicates", "bootstrap_samples"):
         if checked_integer(analysis.get(key, 0), "analysis." + key, 0) != 0:
-            raise ValueError("bootstrap of time-dependent metadynamics histories is not implemented; use independent replicas")
+            raise ValueError("metadynamics bootstrap is not implemented; frozen-bias replica spread is not a standard error")
     sampling = config.get("sampling", {})
     neq = checked_integer(sampling.get("equilibration_steps", 0), "sampling.equilibration_steps", 0)
     nprod = checked_integer(sampling["production_steps"], "sampling.production_steps")
     interval = checked_integer(sampling.get("sample_interval", sampling.get("interval_steps", 1)), "sampling.sample_interval")
+    freeze = (checked_integer(table["freeze_after_steps"], "metadynamics.freeze_after_steps")
+              if "freeze_after_steps" in table else None)
+    relax = checked_integer(table.get("freeze_equilibration_steps", 0), "metadynamics.freeze_equilibration_steps", 0)
+    if freeze is not None and (freeze % options["pace"] or freeze < options["pace"] or freeze > nprod):
+        raise ValueError("metadynamics.freeze_after_steps must be a multiple of pace within production_steps")
+    if relax and freeze is None:
+        raise ValueError("metadynamics.freeze_equilibration_steps requires freeze_after_steps")
+    if freeze is not None and (table.get("shared_walkers") or table.get("multiple_walkers")):
+        raise ValueError("frozen-bias metadynamics currently requires independent histories, not shared walkers")
+    if method == "reweighted_histogram":
+        if freeze is None or nprod // interval - (freeze + relax) // interval < 2:
+            raise ValueError("reweighted_histogram requires at least two saved frozen-bias samples after freeze_after_steps + freeze_equilibration_steps")
+    options.update(method=method, measure="rate_flux" if measure == "rate_flux" else "cv_density",
+                   freeze=freeze, freeze_equilibration_steps=relax)
     checked_integer(sampling.get("andersen_interval", 10), "sampling.andersen_interval")
     checked_integer(sampling.get("replicas", 1), "sampling.replicas")
     checked_integer(config.get("output", {}).get("checkpoint_steps", 1000), "output.checkpoint_steps")
@@ -164,6 +194,7 @@ def resolve_metadynamics(config, system):
     if thermostat == "pile-l" and legacy_metadynamics_sampling(sampling):
         if loop_options(config)["integrator"] == "velocity-verlet":
             raise ValueError("PILE-L requires Cayley or normal-mode dynamics")
+        middle_sampling_method(loop_options(config)["integrator"], sampling.get("integrator"))
         gamma = parse_quantity(sampling.get("gamma_centroid", "0.01 fs^-1"), "frequency")
         if gamma <= 0:
             raise ValueError("sampling.gamma_centroid must be positive")
@@ -241,7 +272,8 @@ class _MetadynamicsUpdate:
         self.bias, self.options, self.walker = bias, options, walker
 
     def due(self, production):
-        return production % self.options["pace"] == 0
+        return (production % self.options["pace"] == 0
+                and (self.options.get("freeze") is None or production <= self.options["freeze"]))
 
     def snapshot(self):
         return self.bias.hill_count
@@ -493,7 +525,10 @@ def _read_stream(config, system, output, replica, cv, options):
                 raise ValueError("metadynamics grid checkpoint requires a complete integrity-verified cache")
             cached_grid = {"values": data["grid_values"], "metadata": json.loads(str(data["grid_metadata"]))}
         bias = _new_bias(cv, options, config["beta"], hills, cached_grid)
-        expected_hills = max(0, elapsed - options["neq"]) // options["pace"]
+        adaptation = max(0, elapsed - options["neq"])
+        if options.get("freeze") is not None:
+            adaptation = min(adaptation, options["freeze"])
+        expected_hills = adaptation // options["pace"]
         if len(hills) != expected_hills or any(
             h["step"] != options["neq"] + (i + 1) * options["pace"] for i, h in enumerate(hills)
         ):
@@ -600,7 +635,13 @@ def _sample_replica(task):
                 configurations = list(saved["sample_configurations"])
         else:
             state = State(np.repeat(system.geometry[None], config["beads"], axis=0), dynamics.sample_momenta())
-        total_bias = CompositeBias(bias, walls) if walls is not None else bias
+        metric = (FluxMetricBias(cv.cvs[0], system.masses, config["beta"])
+                  if options["measure"] == "rate_flux" else None)
+
+        def total_bias(current, include_walls=True):
+            active_walls = walls if include_walls else None
+            return (current if active_walls is None and metric is None
+                    else CompositeBias(current, active_walls, metric))
 
         runtime = SamplingRuntime(state, elapsed, samples, sample_steps, sample_bias, energies, chain,
                                   configurations if options["store_configurations"] else None,
@@ -631,8 +672,9 @@ def _sample_replica(task):
                             checkpoint_steps=config.get("output", {}).get("checkpoint_steps", 1000),
                             update=update, sampler=sampler,
                             save=None if shared else save, stop=task.get("stop"),
-                            active_bias=lambda elapsed, current: total_bias if elapsed >= options["neq"] or config["metadynamics"].get("walls_during_equilibration", True) else current,
-                            energy_bias=lambda current: total_bias,
+                            active_bias=lambda elapsed, current: total_bias(
+                                current, elapsed >= options["neq"] or config["metadynamics"].get("walls_during_equilibration", True)),
+                            energy_bias=total_bias,
                             fallback_reason="history-dependent metadynamics bias")
         if shared:
             observations = {}
@@ -663,15 +705,29 @@ def _analyze(streams, config, system, output, return_data):
         raise ValueError("metadynamics analysis requires at least one replica")
     cv, _, options = resolve_metadynamics(config, system)
     biases = [_new_bias(cv, options, config["beta"], s["hills"], s.get("grid_state")) for s in streams]
-    data = bias_fes(biases, [s["samples"] for s in streams], bins=options["bins"],
-                    ranges=options["ranges"], min_count=options["min_count"], max_grid_points=options["max_grid_points"])
+    reweighted = options["method"] == "reweighted_histogram"
+    if reweighted:
+        data = frozen_bias_fes(
+            streams, config["beta"], bins=options["bins"], ranges=options["ranges"],
+            periods=cv.periods, widths=options["sigma"],
+            equilibration_steps=options["neq"], freeze_after_steps=options["freeze"],
+            freeze_equilibration_steps=options["freeze_equilibration_steps"],
+            min_count=options["min_count"], final_biases=biases,
+        )
+        cutoff = options["neq"] + options["freeze"] + options["freeze_equilibration_steps"]
+        observed = [s["samples"][s["sample_steps"] > cutoff] for s in streams]
+    else:
+        data = bias_fes(biases, [s["samples"] for s in streams], bins=options["bins"],
+                        ranges=options["ranges"], min_count=options["min_count"], max_grid_points=options["max_grid_points"])
+        observed = [s["samples"] for s in streams]
     output = Path(output)
     warnings = list(config.get("_warnings", [])) + [
-        "Finite-time bias estimate only: CV sufficiency, deposition width/pace, sampling, bead and timestep convergence remain unverified.",
+        ("Only fixed-bias production after adaptation and relaxation is reweighted; equilibrium, CV, bead and timestep convergence remain unverified."
+         if reweighted else "Finite-time bias estimate only: CV sufficiency, deposition width/pace, sampling, bead and timestep convergence remain unverified."),
         "Biased trajectory times do not provide reaction rates; no infrequent-metadynamics rate estimator or time-dependent reweighting is implemented.",
         "Unsampled bins are masked. Replica spread is descriptive, not a calibrated free-energy error bar.",
     ]
-    if options["mode"] == "standard":
+    if options["mode"] == "standard" and not reweighted:
         warnings.append("Constant-height metadynamics continues depositing hills; -V can oscillate about the free energy and has finite-width/deposition error.")
     if options["grid"] is not None:
         warnings.append("The applied bias uses Hermite grid interpolation. Refine grid bins independently of FES analysis bins to assess interpolation error.")
@@ -679,34 +735,37 @@ def _analyze(streams, config, system, output, return_data):
         warnings.append("No common sampled bin between all replica histories; their relative gauges cannot be aligned and aggregate FES is masked.")
     coverage = [float(np.mean(~mask)) for mask in data["mask_per_replica"]]
     common_coverage = float(np.mean(~data["mask"]))
-    in_range = [float(count.sum() / len(s["samples"]))
-                for count, s in zip(data["raw_count_per_replica"], streams)]
+    in_range = [float(count.sum() / len(values))
+                for count, values in zip(data["raw_count_per_replica"], observed)]
     if options["ranges"] is not None and common_coverage < 0.5:
         warnings.append("Less than half of the requested FES grid has common sampled support; inspect CV coverage and increase exploration before interpreting the bias estimate.")
     if options["ranges"] is not None and min(in_range) < 0.5:
         warnings.append("A replica spends more than half its saved samples outside analysis.ranges. Analysis ranges only select output bins; they do not confine dynamics.")
     if any(isinstance(component, RPMDrateCoordinate) for component in cv.cvs):
-        warnings.append("RPMDrate xi can have a pole outside the reaction corridor and is unsuitable for unconstrained global exploration. This cv_density estimate is not the rate_flux PMF used for RPMD rates.")
+        warnings.append("RPMDrate xi can have a pole outside the reaction corridor and is unsuitable for unconstrained global exploration. "
+                        + ("The rate_flux metric is sampled explicitly; sufficient stationary coverage must still be established."
+                           if options["measure"] == "rate_flux" else "This cv_density estimate is not the rate_flux PMF used for RPMD rates."))
     summary = {
-        "task": "metadynamics", "beta": config["beta"], "status": "bias_estimate" if all(s["complete"] for s in streams) else "partial_bias_estimate",
-        "estimator": "bias_estimate", "mode": options["mode"], "bias_factor": options["bias_factor"],
+        "task": "metadynamics", "beta": config["beta"], "status": options["method"] if all(s["complete"] for s in streams) else "partial_" + options["method"],
+        "estimator": options["method"], "mode": options["mode"], "bias_factor": options["bias_factor"],
         "bias_backend": "grid" if options["grid"] is not None else "direct",
         "bias_grid": options["grid"], "fixed_atoms": list(system.fixed_atoms),
-        "fes_formula": "F=-V+C" if options["mode"] == "standard" else "F=-gamma/(gamma-1)*V+C",
-        "fes_factor": data["fes_factor"], "measure": "cv_density", "energy_unit": "hartree",
+        "fes_formula": ("F=-log(reweighted bin mass / bin volume)/beta+C" if reweighted
+                        else "F=-V+C" if options["mode"] == "standard" else "F=-gamma/(gamma-1)*V+C"),
+        "fes_factor": data.get("fes_factor"), "measure": options["measure"], "energy_unit": "hartree",
         "dimension": cv.dimension, "units": cv.units, "replicas": len(streams),
         "thermostat": config["sampling"].get("thermostat", "andersen"),
         "fixed_atoms": list(system.fixed_atoms), "pbc": list(system.pbc),
         "wall_ensemble": bool(config.get("metadynamics", {}).get("walls")),
         "hills_per_replica": [len(s["hills"]) for s in streams],
-        "samples": sum(len(s["samples"]) for s in streams), "common_support": data["common_support"],
+        "samples": sum(len(values) for values in observed), "common_support": data["common_support"],
         "reference_bin": data["reference_bin"], "converged": False,
         "sampling_diagnostics": {
             "supported_grid_fraction_per_replica": coverage,
             "common_supported_grid_fraction": common_coverage,
             "samples_in_grid_fraction_per_replica": in_range,
-            "sampled_cv_min_per_replica": [np.min(s["samples"], axis=0).tolist() for s in streams],
-            "sampled_cv_max_per_replica": [np.max(s["samples"], axis=0).tolist() for s in streams],
+            "sampled_cv_min_per_replica": [np.min(values, axis=0).tolist() for values in observed],
+            "sampled_cv_max_per_replica": [np.max(values, axis=0).tolist() for values in observed],
             "deposited_height_per_replica": [sum(h["height"] for h in s["hills"]) for s in streams],
             "last_hill_height_per_replica": [s["hills"][-1]["height"] if s["hills"] else None for s in streams],
             "coverage_note": "Grid coverage is not equilibration or FES convergence; automatically chosen ranges describe only the visited domain.",
@@ -718,6 +777,17 @@ def _analyze(streams, config, system, output, return_data):
                   "hills": [str(_hills_path(output, s["replica"])) for s in streams],
                   "checkpoints": [s["checkpoint"] for s in streams]},
     }
+    if options["freeze"] is not None:
+        summary.update(freeze_after_steps=options["freeze"],
+                       freeze_equilibration_steps=options["freeze_equilibration_steps"])
+    if reweighted:
+        summary.update(reweighted=True,
+                       retained_samples_per_replica=data["retained_samples_per_replica"],
+                       weight_effective_sample_size=data["weight_effective_sample_size"],
+                       uncertainty_note="Replica spread and weight-only ESS do not account for autocorrelation; PMF standard error is unavailable.",
+                       sample_bias_convention=("physical frozen V; H_P contains P*V"
+                           + (" - P*log(flux_metric)/beta" if options["measure"] == "rate_flux" else " plus any static walls")
+                           + "; log weights are beta*V and preserve the declared target measure"))
     if options["multiple_walkers"]:
         walkers = streams[0]["shared_walkers"]
         summary.update(multiple_walkers=True, walkers=len(walkers), independent_histories=1,

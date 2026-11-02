@@ -11,9 +11,15 @@ independent probability estimate and random stream.
 
 ## Method and conventions
 
-The implemented method is **OPES_METAD with fixed bandwidth and no kernel
-compression**. It reconstructs an unbiased probability density and derives
-the bias from that estimate. For physical inverse temperature `beta`,
+The default is **OPES_METAD with fixed bandwidth and no kernel compression**.
+Optional `mode="explore"` follows
+[Invernizzi and Parrinello (2022)](https://doi.org/10.1021/acs.jctc.2c00152),
+and `adaptive_sigma=true` enables an explicit package-specific width rule.
+Both options are described in
+[extended sampling](tier2-sampling.md#opes-explore-and-adaptive-widths).
+In the default `mode="metad"`, the method reconstructs an unbiased probability
+density and derives the bias from that estimate. For physical inverse
+temperature `beta` and fixed width `sigma`,
 
 \[
  P_n(s)=\frac{\sum_{k=1}^n w_k G_\sigma(s-s_k)}{\sum_{k=1}^n w_k},
@@ -36,8 +42,9 @@ not an exact geometric volume integral.
 
 Kernels integrate to one. Periodic CV dimensions use a wrapped Gaussian,
 including smooth derivatives across the periodic boundary. This differs from
-PLUMED's truncated-kernel implementation. Automatic bandwidth selection,
-compression, OPES_EXPLORE and shared walkers are not implemented; numerical
+PLUMED's truncated-kernel implementation. Optional adaptive widths use a
+Welford/Scott-ESS rule, which differs from PLUMED's diffusion-window rule.
+Kernel compression and shared OPES walkers are not implemented; numerical
 identity with PLUMED is not claimed. Force evaluation, each update and stored
 history grow linearly with the number of kernels. Freezing the bias also
 stops that growth. The incremental `Z` update avoids a complete pairwise
@@ -46,7 +53,14 @@ pairwise normalization in bounded memory.
 
 `barrier` is a physical energy. The bias has lower bound `-barrier`; this
 is not a guarantee that its total maximum-to-minimum range equals `barrier`.
-The ring Hamiltonian receives `P*V`, while probability weights use `beta*V`.
+New runs use the empty-density initial bias `-barrier`, giving the first
+METAD kernel log-weight `-beta*barrier`. This initialization is stored in
+bias state schema 2; recognized schema-1 histories retain their original
+zero-initial-bias convention on restart. See the
+[initialization and restart details](tier2-sampling.md#opes-explore-and-adaptive-widths)
+before comparing histories or another implementation.
+The ring Hamiltonian receives `P*V`. METAD probability weights use `beta*V`;
+explore mode uses unit kernel weights to estimate the sampled target density.
 Updates occur after completed integration steps. The two kicks in a step
 see the same probability history, and observations on update steps precede
 the update. A force evaluation never changes history.
@@ -65,8 +79,11 @@ The example is a short harmonic model check. It retains `converged=false`.
 | Input | Meaning |
 | --- | --- |
 | `opes.cvs` | CV names; defaults to all configured CVs. |
-| `opes.sigma` | Required fixed positive width per CV, with explicit units supported. Numeric values use the declared CV input units. |
-| `opes.sigma_au` | Alternative widths in canonical CV units. |
+| `opes.mode` | `"metad"` (default) or `"explore"`; their KDE weights and bias prefactors differ. |
+| `opes.sigma` | Required positive initial width per CV; fixed unless `adaptive_sigma=true`. Explicit units are supported; numeric values use the declared CV input units. |
+| `opes.sigma_au` | Alternative initial widths in canonical CV units. |
+| `opes.adaptive_sigma` | Enable the explicit Welford/Scott-ESS width rule; default false. |
+| `opes.sigma_min` / `opes.sigma_min_au` | Optional positive per-CV width floors for adaptive mode, no greater than the initial widths; default one percent of `sigma`. Use input CV units or canonical CV units, respectively. |
 | `opes.barrier` | Required positive physical energy; explicit energy units supported. |
 | `opes.barrier_au` | Alternative barrier in hartree. |
 | `opes.bias_factor` | Finite `gamma > 1`; default 10. |
@@ -90,13 +107,17 @@ replica exchange, MetaD or another bias is rejected.
 
 ## Free-energy estimates
 
-`analysis.method = "kde"` reports `-log(P_n)/beta` from each final probability
-estimate. Fixed bandwidth smooths the FES, and adaptation creates additional
-finite-time error. The regularized OPES bias is **not** converted into a FES
-using the unregularized well-tempered relation near its barrier floor.
+With `analysis.method = "kde"`, `mode="metad"` reports `-log(P_n)/beta`
+from the final unbiased-density estimate. In `mode="explore"`, the KDE estimates
+the sampled target density and reports `-gamma*log(P_target)/beta`; this is a
+physical FES only after convergence to the well-tempered target. Finite kernel
+widths smooth both estimates, and adaptation creates additional finite-time
+error. The regularized OPES bias is **not** converted into a FES using the
+unregularized well-tempered relation near its barrier floor.
 
 `analysis.method = "reweighted_histogram"` requires `freeze_after_steps` and
 uses only samples strictly after the freeze plus the requested relaxation.
+This estimator is available in both modes.
 The retained configurations share a fixed bias. Histogram weights are
 `exp(beta*V)` and are normalized in log space separately for each independent
 history, so arbitrary between-history bias offsets cannot change their
@@ -145,3 +166,12 @@ physics. A failed integration/update event rolls back the whole event.
 Completed resumes and saved-data reanalysis do not instantiate a potential.
 The exported `fes.npz`, `fes.csv` and `summary.json` are derived results;
 the checkpoint is the authoritative restart state.
+
+## Original method references
+
+- M. Invernizzi and M. Parrinello, *Rethinking Metadynamics: From Bias Potentials
+  to Probability Distributions*, J. Phys. Chem. Lett. **11**, 2731–2736 (2020),
+  [doi:10.1021/acs.jpclett.0c00497](https://doi.org/10.1021/acs.jpclett.0c00497).
+- M. Invernizzi and M. Parrinello, *Exploration vs Convergence Speed in
+  Adaptive-Bias Enhanced Sampling*, J. Chem. Theory Comput. **18**, 3988–3996
+  (2022), [doi:10.1021/acs.jctc.2c00152](https://doi.org/10.1021/acs.jctc.2c00152).

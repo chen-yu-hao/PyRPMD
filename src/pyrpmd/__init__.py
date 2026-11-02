@@ -15,6 +15,8 @@ _TIER2_EXPORTS = {
         "analysis.spectroscopy": ("relative_raman_spectrum", "relative_sfg_spectrum"),
         "pimd_methods": ("SuzukiChinPotential", "BosonicExchangePotential", "ExchangeResult",
                          "bosonic_exchange", "GaussianTrialWavefunction", "PIGSPotential"),
+        "suzuki_chin": ("suzuki_chin_estimators", "suzuki_chin_estimators_batch",
+                        "suzuki_chin_thermodynamics"),
         "advanced_cv": ("Dihedral", "CoordinationNumber", "RMSD", "PathCV", "TorchScriptCV"),
         "opes": ("OPESExploreBias",),
         "shared_metadynamics": ("SharedMetadynamicsBias",),

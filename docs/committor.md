@@ -8,6 +8,10 @@ At P>1 it is a committor of RPMD's approximate real-time dynamics, **not** an
 exact quantum committor. It is not a rate coefficient or a new TIS sampler.
 
 This first version exposes only a Python API (no new `task="committor"`).
+The classical molecular reaction-coordinate diagnostic is illustrated by
+[Bolhuis, Dellago and Chandler (2000)](https://doi.org/10.1073/pnas.100127697)
+for alanine dipeptide in vacuum and water. That application does not derive
+the fixed-ring RPMD extension used here.
 
 ## Minimal use
 
@@ -99,6 +103,10 @@ upper bound on the not-A-by-deadline probability. Each uses a two-sided
 to each tail; their union gives conservative coverage of the *eventual*
 B-before-A probability without assuming that unresolved shots are missing at
 random. If all shots are unresolved the bounds are `[0,1]`.
+The binomial limits follow
+[Clopper and Pearson (1934)](https://doi.org/10.1093/biomet/26.4.404);
+combining the two limits into this unresolved-shot envelope is a PyRPMD
+construction, not a claim that the original paper studied RPMD trajectories.
 This envelope covers *independent canonical momentum sampling at one fixed
 configuration*, not uncertainty from the potential, bead count, timestep or
 choice of basins. The `converged` flag remains false in all cases.
@@ -137,6 +145,13 @@ The API has no cross-version or cross-process checkpoint guarantees.
 
 ## References
 
-- Swenson et al., *OpenPathSampling*, JCTC 15, 813–831 (2019),
+- P. G. Bolhuis, C. Dellago and D. Chandler, *Reaction coordinates of
+  biomolecular isomerization*, PNAS **97**, 5877–5882 (2000),
+  [doi:10.1073/pnas.100127697](https://doi.org/10.1073/pnas.100127697).
+- C. J. Clopper and E. S. Pearson, *The use of confidence or fiducial limits
+  illustrated in the case of the binomial*, Biometrika **26**, 404–413 (1934),
+  [doi:10.1093/biomet/26.4.404](https://doi.org/10.1093/biomet/26.4.404).
+- D. W. H. Swenson et al., *OpenPathSampling: A Python Framework for Path
+  Sampling Simulations. 1. Basics*, JCTC **15**, 813–836 (2019),
   [doi:10.1021/acs.jctc.8b00626](https://doi.org/10.1021/acs.jctc.8b00626).
 - [SciPy binomtest exact confidence intervals](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binomtest.html).
