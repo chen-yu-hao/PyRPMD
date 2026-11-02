@@ -1,0 +1,7 @@
+{
+  "qutip_without_terminator": 7.865383350542033e-11,
+  "qutip_with_terminator": 1.1512301365086208e-10,
+  "isolated_rabi_max_population_error": 1.3322676295501878e-15,
+  "qutip_version": "5.3.1",
+  "physical_converged": false
+}

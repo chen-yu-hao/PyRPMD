@@ -1,0 +1,188 @@
+{
+  "paper": {
+    "title": "QuTiP-BoFiN: A bosonic and fermionic numerical hierarchical-equations-of-motion library with applications in light-harvesting, quantum control, and single-molecule electronics",
+    "authors": "N. Lambert et al.",
+    "journal": "Physical Review Research 5, 013181 (2023)",
+    "doi": "10.1103/PhysRevResearch.5.013181",
+    "html": "https://arxiv.org/html/2010.10806v3",
+    "pdf": "https://arxiv.org/pdf/2010.10806v3",
+    "pdf_sha256": "f93671a5ad76b2ca4fab72a936ffed32653579833e927e57a6c6d1f307b47c6f",
+    "figure": "Figure 1, upper panel, PDF page 7",
+    "notebook": "https://raw.githubusercontent.com/qutip/qutip-notebooks/8c3c58a4e84a331a7aac69c4a2ecaa7f2a1369bc/examples/heom/heom-1a-spin-bath-model-basic.ipynb",
+    "notebook_commit": "8c3c58a4e84a331a7aac69c4a2ecaa7f2a1369bc",
+    "notebook_sha256": "5e8af32e0ac2727005b13e595e6f4788ae9faa8dd8ca8aca80c3ff69287c1e1f",
+    "source_parameters": "Figure caption: epsilon=.5 Delta, lambda=.1 Delta, gamma=.5 Delta, T=.5 Delta. Eqs.13-15: H=(epsilon sigma_z+Delta sigma_x)/2, Q=sigma_z, J=2 lambda gamma omega/(omega^2+gamma^2). Author notebook: NC=5, Nk=2, rho0=|0><0|, tlist=linspace(0,50,1000)."
+  },
+  "parameters": {
+    "epsilon": 0.5,
+    "delta": 1.0,
+    "reorganization_energy": 0.1,
+    "cutoff": 0.5,
+    "beta": 2.0,
+    "coupling_scale": 1.0,
+    "matsubara_terms": 2
+  },
+  "initial_density": [
+    [
+      1,
+      0
+    ],
+    [
+      0,
+      0
+    ]
+  ],
+  "initial_bath": "factorized free thermal bath; all higher ADOs zero",
+  "published_hierarchy_depth": 5,
+  "extraction": {
+    "method": "PDF vector-line vertices, affine axis calibration from labelled tick marks",
+    "page_zero_based": 6,
+    "pixel_digitization": false,
+    "x_at_t_0": 83.64217376708984,
+    "x_at_t_40": 254.34829711914062,
+    "y_at_population_1": 60.286529541015625,
+    "y_at_population_0_6": 128.53404235839844,
+    "precision_note": "PDF plotting coordinates are rounded and paths are simplified; comparison is at retained vertices, not all 1000 original time samples. Differences below about 1e-6 cannot be interpreted as solver accuracy."
+  },
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.18.1",
+    "processor": "AMD EPYC 9V74 80-Core Processor (shared host; VM exposes 9 vCPUs)",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "timing_note": "Representative shared-host wall times; other project validation was running concurrently."
+  },
+  "curves": [
+    {
+      "name": "blue Matsubara K=2 without terminator",
+      "pdf_drawing_index": 24,
+      "terminator": false,
+      "published_vertex_count": 218,
+      "time_range": [
+        0.0,
+        50.00000312852056
+      ],
+      "runs": [
+        {
+          "max_depth": 3,
+          "ado_count": 20,
+          "run_identity": "282deab1b4d6eafce5609b860533c0f016921ef7c24c4d562cd6d34d62ef3ee5",
+          "elapsed_seconds": 0.6186629240037291,
+          "max_population_error_vs_published": 0.00438450834268489,
+          "rms_population_error_vs_published": 0.0015611855125290887,
+          "final_population": 0.30063464381259836,
+          "max_trace_error": 7.993605777301127e-15,
+          "max_hermiticity_error": 0.0,
+          "min_density_eigenvalue": 0.0,
+          "max_population_difference_vs_depth9": 0.004517582359761185
+        },
+        {
+          "max_depth": 5,
+          "ado_count": 56,
+          "run_identity": "f0707a44835b300a959de444d91da480c980582f7a04843482e9f005280ac32c",
+          "elapsed_seconds": 0.8505962250055745,
+          "max_population_error_vs_published": 5.696350889872193e-07,
+          "rms_population_error_vs_published": 1.7348228402869704e-07,
+          "final_population": 0.30000032126874976,
+          "max_trace_error": 7.66053886991358e-15,
+          "max_hermiticity_error": 0.0,
+          "min_density_eigenvalue": 0.0,
+          "max_population_difference_vs_depth9": 0.00014996204322292872
+        },
+        {
+          "max_depth": 7,
+          "ado_count": 120,
+          "run_identity": "0c74b4b437974b834bb2faddc6e54d3c84dfb18ff38ee877c8335dc095e9fb7c",
+          "elapsed_seconds": 0.9241623529960634,
+          "max_population_error_vs_published": 0.00014750785305417402,
+          "rms_population_error_vs_published": 5.0752992748577264e-05,
+          "final_population": 0.300005873936943,
+          "max_trace_error": 1.5210055437364645e-14,
+          "max_hermiticity_error": 0.0,
+          "min_density_eigenvalue": 0.0,
+          "max_population_difference_vs_depth9": 2.7341859428764437e-06
+        },
+        {
+          "max_depth": 9,
+          "ado_count": 220,
+          "run_identity": "8a4eb95320ba7700b574db38b656e387539b413af1f99753d1b3d66378e2454d",
+          "elapsed_seconds": 1.7392978989955736,
+          "max_population_error_vs_published": 0.00015009948866362421,
+          "rms_population_error_vs_published": 5.170933464678845e-05,
+          "final_population": 0.3000058632343301,
+          "max_trace_error": 1.4432899320127035e-14,
+          "max_hermiticity_error": 0.0,
+          "min_density_eigenvalue": 0.0,
+          "max_population_difference_vs_depth9": 0.0
+        }
+      ]
+    },
+    {
+      "name": "green Matsubara K=2 with terminator",
+      "pdf_drawing_index": 25,
+      "terminator": true,
+      "published_vertex_count": 204,
+      "time_range": [
+        0.0,
+        50.00000312852056
+      ],
+      "runs": [
+        {
+          "max_depth": 3,
+          "ado_count": 20,
+          "run_identity": "261b2e544d77c56da79cd21d45ae04b451e0cf3bed8e4e8bcd61005496fabc80",
+          "elapsed_seconds": 0.6780395850000787,
+          "max_population_error_vs_published": 0.004072633807767234,
+          "rms_population_error_vs_published": 0.0014366461861876688,
+          "final_population": 0.31535059676345156,
+          "max_trace_error": 9.547918011776346e-15,
+          "max_hermiticity_error": 0.0,
+          "min_density_eigenvalue": 0.0,
+          "max_population_difference_vs_depth9": 0.004195672935839334
+        },
+        {
+          "max_depth": 5,
+          "ado_count": 56,
+          "run_identity": "7b40339062c9be855a39994726050bf23f2ccae0e310e6767f63f39976311ac6",
+          "elapsed_seconds": 0.6012396439982695,
+          "max_population_error_vs_published": 4.953682475328236e-07,
+          "rms_population_error_vs_published": 1.6703208908193153e-07,
+          "final_population": 0.31489593391601994,
+          "max_trace_error": 2.55351295663786e-15,
+          "max_hermiticity_error": 0.0,
+          "min_density_eigenvalue": 0.0,
+          "max_population_difference_vs_depth9": 0.00013719513322052457
+        },
+        {
+          "max_depth": 7,
+          "ado_count": 120,
+          "run_identity": "185b75471faa2e332821faff8e914866579ef886ff5085be6bfa0c7ffa5263c9",
+          "elapsed_seconds": 1.1128268360043876,
+          "max_population_error_vs_published": 0.00013503175284174107,
+          "rms_population_error_vs_published": 4.631701010003654e-05,
+          "final_population": 0.3149019277213448,
+          "max_trace_error": 1.4210854715202004e-14,
+          "max_hermiticity_error": 0.0,
+          "min_density_eigenvalue": 0.0,
+          "max_population_difference_vs_depth9": 2.494642326211771e-06
+        },
+        {
+          "max_depth": 9,
+          "ado_count": 220,
+          "run_identity": "51cdd3308e5e17e191cc48474af9141f771744a33f0396fb082a72f737cf6503",
+          "elapsed_seconds": 1.4655339320015628,
+          "max_population_error_vs_published": 0.00013743186362108473,
+          "rms_population_error_vs_published": 4.7163328172784116e-05,
+          "final_population": 0.31490188641921135,
+          "max_trace_error": 1.3100631690576847e-14,
+          "max_hermiticity_error": 0.0,
+          "min_density_eigenvalue": 0.0,
+          "max_population_difference_vs_depth9": 0.0
+        }
+      ]
+    }
+  ],
+  "physical_converged": false,
+  "interpretation": "Reproduction of the paper's specified finite K=2,L=5 approximation, with and without its Matsubara-tail terminator. Agreement is not a claim that either curve is the fully converged continuum-bath answer; the paper itself demonstrates sensitivity to the tail approximation."
+}
