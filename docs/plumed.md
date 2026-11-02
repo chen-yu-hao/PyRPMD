@@ -147,10 +147,12 @@ numerical environment for continuation; the API version is also checked.
 
 The profile appends `FLUSH STRIDE=1`, as documented by
 [FLUSH](https://www.plumed.org/doc-v2.10/user-doc/html/_f_l_u_s_h.html), so no
-buffered HILLS/COLVAR prefix is omitted. It sets `FMT=%.17g` on METAD and PRINT
-unless `FMT=%.17g` or `FMT=%.17e` is already specified. Lower precision is
-rejected because rounded hill centers or heights would change the reconstructed
-bias. These explicit profile semantics are recorded in the checkpoint identity.
+buffered HILLS/COLVAR prefix is omitted. It sets `FMT=%25.17g` on METAD and
+PRINT unless a padded round-trip format (`%W.17g` with `W>=25` or `%W.17e` with
+`W>=26`) is already specified. Lower precision is rejected because rounded hill
+centers or heights would change the reconstructed bias. Unpadded `%.17g` is
+also rejected: METAD writes HILLS fields with the format verbatim, so adjacent
+fields would run together and PLUMED could not read the history on restart. These explicit profile semantics are recorded in the checkpoint identity.
 Old inputs receive no new defaults and retain their previous identity.
 
 ### Supported restart profile

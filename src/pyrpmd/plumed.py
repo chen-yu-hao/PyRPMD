@@ -39,6 +39,19 @@ class PlumedFileRestartPlan:
     files: tuple[str, ...]
 
 
+# PLUMED's PRINT prefixes each field with a space, but METAD writes HILLS
+# fields with FMT verbatim. %.17g needs at most 24 characters (sign, 17
+# digits, point, e-308) and %.17e at most 25, so these minimum widths always
+# leave a separating space while keeping full round-trip precision.
+_ROUND_TRIP_FORMAT = "%25.17g"
+_ROUND_TRIP_MIN_WIDTH = {"g": 25, "e": 26}
+
+
+def _padded_round_trip_format(value):
+    match = re.fullmatch(r"%(\d+)\.17([ge])", value or "")
+    return bool(match) and int(match.group(1)) >= _ROUND_TRIP_MIN_WIDTH[match.group(2)]
+
+
 def file_restart_plan(input_lines):
     """Validate the fixed-hill restart profile before constructing a kernel.
 
@@ -150,10 +163,13 @@ def file_restart_plan(input_lines):
             files.append(name)
             if "FILE" not in options:
                 tokens.append("FILE=" + name)
-            if "FMT" in options and options["FMT"] not in {"%.17g", "%.17e"}:
-                raise ValueError("PLUMED file restart requires round-trip FMT=%.17g or FMT=%.17e")
+            if "FMT" in options and not _padded_round_trip_format(options["FMT"]):
+                raise ValueError(
+                    "PLUMED file restart requires a padded round-trip FMT such as %25.17g or %26.17e; "
+                    "METAD writes HILLS fields verbatim, so an unpadded %.17g/%.17e joins adjacent "
+                    "fields and PLUMED cannot read the history back on restart")
             if "FMT" not in options:
-                tokens.append("FMT=%.17g")
+                tokens.append("FMT=" + _ROUND_TRIP_FORMAT)
         normalized.append(" ".join(tokens))
     if not normalized:
         raise ValueError("PLUMED restart input contains no actions")

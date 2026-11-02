@@ -45,7 +45,7 @@ class FileKernel:
         elif name == "readInputLines":
             self.values[name] = value
             assert "FLUSH STRIDE=1" in value
-            assert value.count("FMT=%.17g") == 2
+            assert value.count("FMT=%25.17g") == 2
             if self.values["setRestart"]:
                 self.hills = [tuple(map(float, line.split())) for line in Path("HILLS").read_text().splitlines()
                               if line and not line.startswith("#")]
@@ -222,9 +222,24 @@ def test_multiline_fixed_hills_are_normalized_and_full_precision(tmp_path):
                "PRINT ARG=d,m.bias FILE=history/COLVAR\nFLUSH STRIDE=10\n")
     plan = file_restart_plan(program)
     assert plan.files == ("HILLS", "history/COLVAR")
-    assert "m: METAD ARG=d SIGMA=0.1 HEIGHT=0.01 PACE=5 FILE=HILLS FMT=%.17g" in plan.input_lines
+    assert "m: METAD ARG=d SIGMA=0.1 HEIGHT=0.01 PACE=5 FILE=HILLS FMT=%25.17g" in plan.input_lines
     assert plan.input_lines.count("FLUSH") == 1
     assert plan.input_lines.endswith("FLUSH STRIDE=1\n")
+
+
+@pytest.mark.parametrize("fmt,accepted", [
+    ("%25.17g", True), ("%30.17g", True), ("%26.17e", True),
+    # Real PLUMED 2.9 METAD writes these without separators between fields.
+    ("%.17g", False), ("%.17e", False), ("%24.17g", False), ("%25.17e", False),
+    ("%25.16g", False), ("%14.9f", False),
+])
+def test_restart_formats_must_keep_hills_fields_separated(fmt, accepted):
+    program = f"d: DISTANCE ATOMS=1,2\nm: METAD ARG=d SIGMA=0.1 HEIGHT=0.01 PACE=5 FMT={fmt}\n"
+    if accepted:
+        assert f"FMT={fmt}" in file_restart_plan(program).input_lines
+    else:
+        with pytest.raises(ValueError, match="padded round-trip FMT"):
+            file_restart_plan(program)
 
 
 @pytest.mark.parametrize("invalid", [True, False, "auto", 1, None])
