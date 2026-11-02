@@ -10,12 +10,37 @@ import math
 import sys
 
 import numpy as np
+from scipy.linalg.blas import dsyr2
 from scipy.optimize import minimize, root
 
 from .constants import WAVENUMBER_TO_AU
 from .instanton import InstantonError, _mask_and_masses, _physical_hessians, _positive
-from .low_temperature import HarmonicState, _complement, _integer
+from .low_temperature import HarmonicState, _integer
 from .potentials.base import coordinates, validate_result
+
+
+def _phase_projected_spectrum(operator, tangent):
+    """Restrict a symmetric fluctuation operator to the phase complement.
+
+    A Householder reflection sends the geometric phase tangent to the first
+    coordinate. Removing that coordinate gives the same spectrum as Q.T @ H @ Q
+    for any orthonormal complement Q. The reflection costs O(D**2) work without
+    constructing Q or multiplying dense D-by-D matrices. The final symmetric
+    eigensolve is still dense and costs O(D**3).
+
+    Write R = I - 2*u*u.T and w = H*u - (u.T*H*u)*u. Then
+    R*H*R = H - 2*(u*w.T + w*u.T). A symmetric rank-two BLAS update computes
+    only the lower triangle consumed by eigvalsh, using one owned matrix and
+    O(D) vector storage. Neither input is modified.
+    """
+    vector = tangent / np.linalg.norm(tangent)
+    vector[0] += 1.0 if vector[0] >= 0.0 else -1.0
+    vector /= np.linalg.norm(vector)
+    product = operator @ vector
+    product -= float(vector @ product) * vector
+    reduced = np.array(operator[1:, 1:], order="F", copy=True)
+    reduced = dsyr2(-2.0, vector[1:], product[1:], a=reduced, lower=1, overwrite_a=1)
+    return np.linalg.eigvalsh(reduced, UPLO="L")
 
 
 def tunnelling_splitting(potential, masses, initial_path, imaginary_time_au, *,
@@ -125,8 +150,7 @@ def tunnelling_splitting(potential, masses, initial_path, imaginary_time_au, *,
     phase_residual = float(np.linalg.norm(operator@tangent)/scale)
     if phase_residual > phase_limit:
         raise InstantonError("open-path phase mode unresolved; increase duration and/or beads")
-    complement = _complement(tangent[:, None])
-    spectrum = np.linalg.eigvalsh(complement.T@operator@complement)
+    spectrum = _phase_projected_spectrum(operator, tangent)
     if np.any(spectrum <= scale*1e-8):
         raise InstantonError("splitting kink must have no negative or extra zero fluctuation modes")
     # Dirichlet harmonic reference: use the SAME grid and number of modes.
