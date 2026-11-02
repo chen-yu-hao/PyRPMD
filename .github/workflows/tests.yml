@@ -51,7 +51,7 @@ jobs:
       - run: python -m pip install -e '.[test]'
       - run: python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
       - run: sudo apt-get update && sudo apt-get install -y libfftw3-double3
-      - run: python -m pytest -q tests/test_potentials.py tests/test_torch_periodic.py tests/test_electronic_backends.py tests/test_batched_nonadiabatic.py tests/test_spin_mapping.py tests/test_advanced_cv.py tests/test_tier2_spectroscopy.py tests/test_ml_lifecycle.py tests/test_spectroscopy_workflow.py tests/test_torch_backend.py tests/test_torch_paper_validation.py tests/test_torch_observable_validation.py tests/test_torch_bcocb.py tests/test_rpmdrate_normal_modes.py
+      - run: python -m pytest -q tests/test_potentials.py tests/test_torch_periodic.py tests/test_electronic_backends.py tests/test_batched_nonadiabatic.py tests/test_spin_mapping.py tests/test_advanced_cv.py tests/test_tier2_spectroscopy.py tests/test_ml_lifecycle.py tests/test_spectroscopy_workflow.py tests/test_torch_backend.py tests/test_torch_paper_validation.py tests/test_torch_observable_validation.py tests/test_torch_bcocb.py tests/test_rpmdrate_normal_modes.py tests/test_bcocb_mts.py tests/test_mixed_sampling.py tests/test_mixed_workflows.py
       - run: python benchmarks/nonadiabatic/electronic_backends.py --backends numpy native torch --torch-device cpu --output "$RUNNER_TEMP/electronic-backends-torch-cpu.json"
       - uses: actions/upload-artifact@v4
         with:
@@ -71,9 +71,12 @@ jobs:
           roots = list((destination / "unpacked").iterdir())
           assert len(roots) == 1, roots
           root = roots[0]
+          subprocess.run([sys.executable, "setup.py", "build_ext", "--inplace"],
+                         cwd=root, check=True)
           tests = ["tests/test_torch_backend.py", "tests/test_torch_paper_validation.py",
                    "tests/test_torch_observable_validation.py", "tests/test_torch_bcocb.py",
-                   "tests/test_rpmdrate_normal_modes.py"]
+                   "tests/test_rpmdrate_normal_modes.py", "tests/test_bcocb_mts.py",
+                   "tests/test_mixed_sampling.py", "tests/test_mixed_workflows.py"]
           subprocess.run([sys.executable, "-m", "pytest", "-q", *tests], cwd=root,
                          env={**os.environ, "PYTHONPATH": str(root / "src")}, check=True)
           PY
