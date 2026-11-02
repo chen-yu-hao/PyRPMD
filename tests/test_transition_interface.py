@@ -236,6 +236,24 @@ def test_guards_reject_changed_overridden_or_stateful_dynamics():
         sampler(potential=potential)
 
 
+def test_configured_stochastic_composition_and_bond_constraints_are_rejected():
+    stochastic = Dynamics(FreePotential(), [1.], 1., 1, .1, native=False,
+                          thermostat={"mode": "langevin", "gamma": 1.})
+    with pytest.raises(ValueError, match="thermostat"):
+        TransitionInterfaceSampler(stochastic, Cartesian(0), basin_a=-1, basin_b=1, interfaces=[0])
+    constrained = Dynamics(FreePotential(), [1., 1.], 1., 1, .1, native=False,
+                           integrator="velocity-verlet", bond_constraints=[(0, 1, 1.)])
+    with pytest.raises(ValueError, match="bond constraints"):
+        TransitionInterfaceSampler(constrained, Cartesian(0), basin_a=-1, basin_b=1, interfaces=[0])
+
+
+def test_sampler_rejects_changed_execution_or_cell_before_continuing():
+    tis = sampler()
+    tis.dynamics.cell = np.eye(3)
+    with pytest.raises(ValueError, match="Dynamics changed"):
+        tis.generate_path(shooting())
+
+
 @pytest.mark.parametrize("interfaces", [[], [0, 0], [0.5, -0.5], [-2], [1], [np.nan], [True]])
 def test_invalid_interfaces(interfaces):
     with pytest.raises(ValueError):
