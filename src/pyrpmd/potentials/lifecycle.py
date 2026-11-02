@@ -1,11 +1,13 @@
-"""Committee diagnostics, candidate collection and additive delta potentials.
+"""Committees, acquisition, immutable reference labels and delta potentials.
 
 Disagreement is an epistemic diagnostic, not a calibrated error bound.  Candidate
-files contain model predictions, explicitly not quantum-chemistry labels.  No
-provider is refitted or replaced during a trajectory.
+files contain model predictions, explicitly not quantum-chemistry labels.
+Reference labelling writes separate datasets. No provider is refitted or
+replaced during a trajectory.
 """
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 import hashlib
 import json
@@ -13,7 +15,7 @@ from pathlib import Path
 
 import numpy as np
 
-from .base import Potential, PESResult, coordinates, validate_result
+from .base import Potential, PESResult, PotentialError, coordinates, validate_result
 from .contraction import SplitPotential, _component
 from ..checkpoint import atomic_savez, load_checkpoint
 from ..path_integral import _integer, _positive
@@ -282,7 +284,311 @@ class ActiveLearningMonitor:
         return {"step": step, "selected": len(selected), "record": str(path)}
 
 
-__all__ = ["CommitteePotential", "CommitteeResult", "DeltaLearningPotential", "ActiveLearningMonitor"]
+def _label_json(value, name):
+    """Canonical, finite JSON without lossy conversion of dictionary keys."""
+    def check(item):
+        if isinstance(item, dict):
+            if any(not isinstance(key, str) for key in item):
+                raise ValueError(f"{name} must have string JSON object keys")
+            for child in item.values():
+                check(child)
+        elif isinstance(item, (tuple, list)):
+            for child in item:
+                check(child)
+
+    check(value)
+    try:
+        return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    except (ValueError, TypeError) as error:
+        raise ValueError(f"{name} must be finite JSON data") from error
+
+
+def _reference_json(identity):
+    if isinstance(identity, Mapping):
+        identity = dict(identity)
+        if not identity:
+            raise ValueError("reference_identity must be a nonempty mapping or string")
+    elif not isinstance(identity, str) or not identity.strip():
+        raise ValueError("reference_identity must be a nonempty mapping or string")
+    return _label_json(identity, "reference_identity")
+
+
+def _label_positions(positions):
+    q = np.asarray(positions)
+    if (q.dtype.kind not in "fiu" or q.ndim != 3 or q.shape[-1] != 3
+            or q.shape[1] < 1 or not np.isfinite(q).all()):
+        raise ValueError("label positions must be finite real [batch,atom,3] coordinates")
+    with np.errstate(over="ignore"):
+        result = np.array(q, dtype="<f8", order="C", copy=True)
+    if not np.isfinite(result).all():
+        raise ValueError("label positions must be representable as finite float64 coordinates")
+    return result
+
+
+def _frozen_array(value, dtype):
+    """A bytes-backed array cannot be made writable with setflags()."""
+    array = np.asarray(value, dtype=dtype, order="C")
+    return np.frombuffer(array.tobytes(), dtype=dtype).reshape(array.shape)
+
+
+def _label_provenance(provenance, count):
+    if provenance is None:
+        return ("{}",) * count
+    elif isinstance(provenance, Mapping):
+        return (_label_json(dict(provenance), "provenance"),) * count
+    else:
+        try:
+            provenance = list(provenance)
+        except TypeError as error:
+            raise ValueError("label provenance must be a mapping or one mapping per frame") from error
+    if len(provenance) != count or any(not isinstance(row, Mapping) for row in provenance):
+        raise ValueError("label provenance must be a mapping or one mapping per frame")
+    return tuple(_label_json(dict(row), "provenance") for row in provenance)
+
+
+@dataclass(frozen=True, init=False)
+class LabelledDataset:
+    """Immutable reference labels, including failed attempts, in atomic units.
+
+    ``reference_identity`` is a required nonempty JSON mapping or string. The
+    caller must include all scientifically relevant reference settings, software
+    versions, and hashes of external parameter files; provider metadata alone
+    generally does not identify a calculation. ``reference_hash`` hashes that
+    declaration, while ``sha256`` also covers every geometry, result, status,
+    message and provenance entry. Neither digest depends on archive timestamps.
+
+    ``provenance`` is one JSON mapping shared by all rows, or a sequence of JSON
+    mappings with one entry per row (for example source, round and model hash).
+    Failed rows retain coordinates/status/messages, with canonical NaN labels.
+    Only ``successful()`` is suitable for training. Empty datasets are allowed
+    provided their coordinate shape still specifies the atom count.
+    """
+
+    positions: np.ndarray
+    energy: np.ndarray
+    forces: np.ndarray
+    status: np.ndarray
+    messages: tuple[str, ...]
+    _reference_json: str
+    _provenance_json: tuple[str, ...]
+    reference_hash: str
+    sha256: str
+
+    def __init__(self, positions, energy, forces, status=None, messages=None, *,
+                 reference_identity, provenance=None):
+        q = _label_positions(positions)
+        n = len(q)
+        energy, forces = np.asarray(energy), np.asarray(forces)
+        if (energy.dtype.kind not in "fiu" or energy.shape != (n,)
+                or forces.dtype.kind not in "fiu" or forces.shape != q.shape):
+            raise ValueError("label energy/forces must be real arrays with shape [B] and [B,N,3]")
+        if status is None:
+            status = np.zeros(n, dtype=np.int32)
+        status = np.asarray(status)
+        if (status.dtype.kind not in "iu" or status.shape != (n,)
+                or np.any(status < 0) or np.any(status > np.iinfo(np.int32).max)):
+            raise ValueError("label status must be nonnegative int32 values with shape [B]")
+        if isinstance(messages, str):
+            raise ValueError("label messages must contain one string per frame")
+        messages = ("",) * n if messages is None else tuple(messages)
+        if len(messages) != n or any(not isinstance(message, str) for message in messages):
+            raise ValueError("label messages must contain one string per frame")
+        good = status == 0
+        if (not np.isfinite(energy[good]).all() or not np.isfinite(forces[good]).all()):
+            raise ValueError("successful reference labels must be finite")
+        with np.errstate(over="ignore"):
+            energy, forces = np.array(energy, dtype="<f8", copy=True), np.array(forces, dtype="<f8", copy=True)
+        if not np.isfinite(energy[good]).all() or not np.isfinite(forces[good]).all():
+            raise ValueError("successful reference labels must be representable as finite float64 values")
+        energy[~good], forces[~good] = np.nan, np.nan
+        reference_json = _reference_json(reference_identity)
+        provenance_json = _label_provenance(provenance, n)
+        for name, value, dtype in (("positions", q, "<f8"), ("energy", energy, "<f8"),
+                                    ("forces", forces, "<f8"), ("status", status, "<i4")):
+            object.__setattr__(self, name, _frozen_array(value, dtype))
+        object.__setattr__(self, "messages", messages)
+        object.__setattr__(self, "_reference_json", reference_json)
+        object.__setattr__(self, "_provenance_json", provenance_json)
+        object.__setattr__(self, "reference_hash", hashlib.sha256(reference_json.encode()).hexdigest())
+        digest = hashlib.sha256(b"PyRPMD.labelled-dataset.v1\0bohr,hartree,hartree/bohr\0")
+
+        def add(value):
+            digest.update(len(value).to_bytes(8, "little"))
+            digest.update(value)
+
+        add(reference_json.encode())
+        for name in ("positions", "energy", "forces", "status"):
+            value = getattr(self, name)
+            add(name.encode())
+            add(_label_json(list(value.shape), "array shape").encode())
+            add(value.tobytes())
+        add(_label_json(messages, "messages").encode())
+        add(("[" + ",".join(provenance_json) + "]").encode())
+        object.__setattr__(self, "sha256", digest.hexdigest())
+
+    def __len__(self):
+        return len(self.positions)
+
+    @property
+    def reference_identity(self):
+        """Return a detached copy of the reference-method declaration."""
+        return json.loads(self._reference_json)
+
+    @property
+    def provenance(self):
+        """Return detached per-frame provenance mappings."""
+        return tuple(json.loads(row) for row in self._provenance_json)
+
+    @property
+    def successful_mask(self):
+        return self.status == 0
+
+    def successful(self):
+        """Copy the successful subset; never expose failures as training labels."""
+        mask = self.successful_mask
+        return type(self)(self.positions[mask], self.energy[mask], self.forces[mask], self.status[mask],
+                          tuple(message for message, keep in zip(self.messages, mask) if keep),
+                          reference_identity=self.reference_identity,
+                          provenance=[row for row, keep in zip(self.provenance, mask) if keep])
+
+    def append(self, other):
+        """Return a new ordered dataset for the same reference and atom count."""
+        if not isinstance(other, LabelledDataset):
+            raise TypeError("can only append another LabelledDataset")
+        if self._reference_json != other._reference_json:
+            raise ValueError("cannot append labels with a different reference identity")
+        if self.positions.shape[1:] != other.positions.shape[1:]:
+            raise ValueError("cannot append labels with a different atom count")
+        return type(self)(np.concatenate((self.positions, other.positions)),
+                          np.concatenate((self.energy, other.energy)),
+                          np.concatenate((self.forces, other.forces)),
+                          np.concatenate((self.status, other.status)), self.messages + other.messages,
+                          reference_identity=self.reference_identity,
+                          provenance=self.provenance + other.provenance)
+
+    def save(self, path):
+        """Atomically commit the complete dataset with container/content hashes."""
+        atomic_savez(path, kind="PyRPMD.labelled-dataset.v1", positions=self.positions,
+                     energy=self.energy, forces=self.forces, status=self.status,
+                     messages=np.asarray(self.messages, dtype=str),
+                     reference_identity=self._reference_json, reference_hash=self.reference_hash,
+                     provenance=np.asarray(self._provenance_json, dtype=str), sha256=self.sha256,
+                     units='{"energy":"hartree","forces":"hartree/bohr","positions":"bohr"}')
+
+    @classmethod
+    def load(cls, path):
+        """Verify both the NPZ integrity envelope and semantic dataset digest."""
+        with load_checkpoint(path, expected_kind="PyRPMD.labelled-dataset.v1", require_integrity=True) as data:
+            required = {"positions", "energy", "forces", "status", "messages", "reference_identity",
+                        "reference_hash", "provenance", "sha256", "units"}
+            if set(data.files) != required:
+                raise ValueError("labelled dataset has missing or unknown fields")
+            for name in ("reference_identity", "reference_hash", "sha256", "units"):
+                value = data[name]
+                if value.shape != () or value.dtype.kind != "U":
+                    raise ValueError("invalid labelled dataset scalar: " + name)
+            messages, provenance = data["messages"], data["provenance"]
+            if messages.ndim != 1 or provenance.ndim != 1 or messages.dtype.kind != "U" or provenance.dtype.kind != "U":
+                raise ValueError("invalid labelled dataset messages or provenance")
+            if json.loads(str(data["units"])) != {"energy": "hartree", "forces": "hartree/bohr", "positions": "bohr"}:
+                raise ValueError("labelled dataset units differ from atomic units")
+            energy, forces = data["energy"], data["forces"]
+            result = cls(data["positions"], energy, forces, data["status"], messages.tolist(),
+                         reference_identity=json.loads(str(data["reference_identity"])),
+                         provenance=[json.loads(row) for row in provenance])
+            failed = ~result.successful_mask
+            if not np.isnan(energy[failed]).all() or not np.isnan(forces[failed]).all():
+                raise ValueError("failed reference labels must be canonical NaNs")
+            if str(data["reference_hash"]) != result.reference_hash or str(data["sha256"]) != result.sha256:
+                raise ValueError("labelled dataset content or reference hash differs")
+            return result
+
+
+def label_candidates(reference, positions, *, reference_identity, batch_size=64, provenance=None):
+    """Evaluate reference labels in bounded batches, retaining every attempt.
+
+    Existing PySCF, tblite and i-PI providers satisfy the same ``evaluate`` PES
+    contract. The method declaration is required; it is never inferred from an
+    object repr. A provider exception records its entire submitted batch as
+    failed (status 1), without retrying single frames or changing method/device.
+    Returned per-frame nonzero statuses are preserved. Malformed returned data
+    still raise, and process interruptions are not swallowed.
+
+    Hidden electronic warm-start state and coupled ring potentials cannot be
+    reproduced by this stateless labelling API and are explicitly rejected.
+    An i-PI reference additionally requires a mapping identity containing
+    ``independent_frames=True``, a nonempty ``driver_identity`` mapping/string,
+    and ``driver_sha256`` (64 hexadecimal digits). This is the caller's audited
+    promise that the external driver has no hidden scientific state and will
+    reconnect with the same method and parameters; an endpoint is not a method
+    identity. It only permits i-PI's scheduling-affinity flag, never an explicit
+    stateful or coupled-frame declaration.
+    For interruption-safe progress, call this function for one batch at a time
+    and atomically save each returned dataset before submitting the next batch.
+    Providers are borrowed and remain owned by the caller.
+    """
+    if not callable(getattr(reference, "evaluate", None)):
+        raise TypeError("reference must implement evaluate(positions)")
+    metadata = getattr(reference, "metadata", {})
+    if not isinstance(metadata, Mapping):
+        raise ValueError("reference metadata must be a mapping")
+    capabilities = metadata.get("capabilities", {})
+    if not isinstance(capabilities, Mapping):
+        raise ValueError("reference capabilities must be a mapping")
+    if (metadata.get("batch_independent") is False or capabilities.get("stateful") is True
+            or getattr(reference, "warm_start", False)
+            or any(metadata.get(key) is True for key in
+                   ("stateful", "warm_start", "ring_polymer_coupled", "coupled_frames"))):
+        raise ValueError("reference labelling requires independent frames without hidden warm-start state")
+    if metadata.get("requires_bead_affinity") is True:
+        audited_ipi = metadata.get("provider") == "ipi" and isinstance(reference_identity, Mapping)
+        if audited_ipi:
+            driver_hash = reference_identity.get("driver_sha256")
+            audited_ipi = (reference_identity.get("independent_frames") is True
+                           and isinstance(driver_hash, str) and len(driver_hash) == 64
+                           and all(character in "0123456789abcdef" for character in driver_hash))
+            if audited_ipi:
+                try:
+                    _reference_json(reference_identity.get("driver_identity"))
+                except ValueError:
+                    audited_ipi = False
+        if not audited_ipi:
+            raise ValueError("reference labelling requires independent frames; i-PI needs independent_frames=True, "
+                             "driver_identity and driver_sha256 in reference_identity")
+    q = _label_positions(positions)
+    batch_size = _integer(batch_size, "batch_size")
+    # Validate all provenance/identity before an expensive reference call.
+    reference_json = _reference_json(reference_identity)
+    provenance_json = _label_provenance(provenance, len(q))
+    energy, forces = np.full(len(q), np.nan), np.full(q.shape, np.nan)
+    status, messages = np.zeros(len(q), dtype=np.int32), [""] * len(q)
+    for start in range(0, len(q), batch_size):
+        stop = min(start + batch_size, len(q))
+        batch = q[start:stop].copy()
+        try:
+            evaluated = reference.evaluate(batch)
+        except Exception as error:
+            status[start:stop] = 1
+            messages[start:stop] = [f"{type(error).__name__}: {error}"] * (stop - start)
+            continue
+        result = validate_result(evaluated, batch.shape, require_success=False)
+        # PESResult is mutable; a provider can invalidate its constructor's
+        # status guarantee. Never truncate a mutated float/overflowed status
+        # into a successful int32 while collecting the labels.
+        if (result.status.dtype.kind not in "iu" or np.any(result.status < 0)
+                or np.any(result.status > np.iinfo(np.int32).max)):
+            raise PotentialError("reference result status must be nonnegative int32 values")
+        if any(not isinstance(message, str) for message in result.messages):
+            raise PotentialError("reference result messages must be strings")
+        energy[start:stop], forces[start:stop] = result.energy, result.forces
+        status[start:stop], messages[start:stop] = result.status, result.messages
+    return LabelledDataset(q, energy, forces, status, messages,
+                           reference_identity=json.loads(reference_json),
+                           provenance=[json.loads(row) for row in provenance_json])
+
+
+__all__ = ["CommitteePotential", "CommitteeResult", "DeltaLearningPotential", "ActiveLearningMonitor",
+           "LabelledDataset", "label_candidates"]
 
 
 def active_learning_options(config):
