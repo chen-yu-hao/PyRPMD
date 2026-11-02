@@ -45,6 +45,61 @@ class SquaredX(CollectiveVariable):
         return q[0, 0] ** 2, gradient
 
 
+class SineX(CollectiveVariable):
+    def centroid_value_gradient(self, q):
+        gradient = np.zeros_like(q)
+        gradient[0, 0] = 20 * np.cos(20 * q[0, 0])
+        return np.sin(20 * q[0, 0]), gradient
+
+
+class ScaledY(CollectiveVariable):
+    def __init__(self, scale):
+        super().__init__()
+        self.scale = scale
+
+    def centroid_value_gradient(self, q):
+        gradient = np.zeros_like(q)
+        gradient[0, 1] = self.scale
+        return self.scale * q[0, 1], gradient
+
+
+@pytest.mark.parametrize("beads", [1, 4])
+@pytest.mark.parametrize("second", [Cartesian(0), SineX()], ids=["duplicate", "curved-dependent"])
+@pytest.mark.parametrize("operation", ["energy_force", "observe"])
+def test_eabf_rejects_rank_deficient_cvs_before_changing_history(beads, second, operation):
+    # A curved rank-one image may occupy neighboring bins in both axes; its
+    # histogram stencil does not establish the existence of a 2D CV density.
+    cv = CVStack([Cartesian(0), second])
+    extended = ExtendedABF(cv, [np.linspace(-1, 1, 10)] * 2, 2., [.1, -.2],
+                           momentum=[.3, -.4], coupling=3., mass=5., friction=.2)
+    before = copy.deepcopy(extended.state_dict())
+    q = np.broadcast_to([.21, -.3, .4], (beads, 1, 3)).copy()
+    coordinates = q.copy()
+    with pytest.raises(ValueError, match="rank|singular|metric"):
+        getattr(extended, operation)(q)
+    assert extended.state_dict() == before
+    np.testing.assert_array_equal(q, coordinates)
+
+
+@pytest.mark.parametrize("beads", [1, 4])
+@pytest.mark.parametrize("scale", [1e-15, 1e15])
+def test_eabf_full_rank_check_is_independent_of_cv_scale(beads, scale):
+    # Changing the second CV's units by 30 orders of magnitude across cases
+    # must preserve both its independent direction and the physical coupling.
+    cv = CVStack([Cartesian(0), ScaledY(scale)])
+    edges = [np.linspace(-1, 1, 5), scale * np.linspace(-1, 1, 5)]
+    extended = ExtendedABF(cv, edges, 2., [.1, scale * .2],
+                           coupling=[2., 3. / scale**2], mass=[5., 7. / scale**2], friction=.2)
+    q = np.broadcast_to([.3, -.4, .2], (beads, 1, 3)).copy()
+    energy, force = extended.energy_force(q)
+    assert energy == pytest.approx(beads * .5 * (2. * .2**2 + 3. * .6**2))
+    np.testing.assert_allclose(force, np.broadcast_to([-.4, 1.8, 0.], q.shape), atol=1e-14)
+    extended.observe(q)
+    assert extended.bias.observations == 1
+    assert extended.bias.grid.count.sum() == 1
+    assert extended.physical_grid.count.sum() == 1
+
+
 def test_two_dimensional_nonlinear_metric_includes_log_jacobian():
     cv = CVStack([SquaredX(), Cartesian(0, "y")])
     q = np.array([[[1.4, -.3, 0.]], [[1.2, .1, 0.]]])

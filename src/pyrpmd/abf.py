@@ -59,7 +59,21 @@ def _centroid_geometry(cv, q):
     g = jac.sum(axis=1)
     if not np.allclose(jac, g[:, None] / len(q), rtol=1e-11, atol=1e-13):
         raise ValueError("centroid CV Jacobian must be identical on every bead")
-    return value, g.reshape(cv.dimension, -1), jac
+    gradient = g.reshape(cv.dimension, -1)
+    # CZAR needs a regular D-dimensional physical CV density even though
+    # auxiliary-coordinate propagation itself does not invert a CV metric.
+    # A curved lower-dimensional support can fill every finite histogram bin,
+    # so the derivative stencil cannot diagnose redundant CVs.  Normalize rows
+    # first: changing one CV's unit must not look like rank loss.
+    scales = np.max(np.abs(gradient), axis=1)
+    error = "ABF/eABF CV Jacobian must have full rank for a regular density and metric"
+    if np.any(scales == 0) or not np.isfinite(scales).all():
+        raise ValueError(error)
+    normalized = gradient / scales[:, None]
+    eigenvalues = np.linalg.eigvalsh(normalized @ normalized.T)
+    if eigenvalues[0] <= 1e-12 * eigenvalues[-1]:
+        raise ValueError(error)
+    return value, gradient, jac
 
 
 def _dual(gradient, inverse_mass):

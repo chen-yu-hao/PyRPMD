@@ -712,6 +712,11 @@ These are implementation regressions, not claims of physical convergence.
 The additional `fes.method="abf"` and `"eabf"` selectors support one or two
 nonperiodic centroid CVs. They produce the same `FESResult` NPZ/CSV/JSON layout
 described above, with `measure="cv_density"` and `uncertainty_kind="replica_spread"`.
+The evaluated CV Jacobian must have full row rank; repeated or functionally
+dependent CVs do not define a regular density in the declared dimension.
+The current implementation also rejects isolated rank-deficient points rather
+than attempting a singular-coordinate estimator. Row normalization keeps this
+geometrical check independent of the chosen CV units.
 They require an unconstrained system with all atoms mobile, a canonical
 sampling thermostat, and `loop_backend="auto"` or `"python"`. Fixed atoms,
 periodic cells/CVs, pressure coupling, replica exchange and the rate-flux

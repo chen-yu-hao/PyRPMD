@@ -135,7 +135,8 @@ def resolve_abf(config, system):
         raise ValueError("ABF analysis uses the sampling grid; put bins/ranges in the method table")
     options["min_count"] = checked_integer(analysis.get("min_count", 1), "analysis.min_count")
     # Validate all allocation/bias controls before constructing a PES.
-    _new_bias(cv, options, config["beta"], np.repeat(system.geometry[None], config["beads"], axis=0))
+    initial = np.repeat(system.geometry[None], config["beads"], axis=0)
+    _new_bias(cv, options, config["beta"], initial).energy_force(initial)
     return cv, selected, options
 
 

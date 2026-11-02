@@ -113,3 +113,23 @@ def test_unsupported_options_fail_explicitly(mutation):
     mutation(raw)
     with pytest.raises((InputError, ValueError)):
         JobSpec.from_mapping(raw).resolve()
+
+
+@pytest.mark.parametrize("method", ["abf", "eabf"])
+def test_redundant_cvs_fail_before_pes_or_output(tmp_path, monkeypatch, method):
+    raw = job(method)
+    config, system = JobSpec.from_mapping(raw).resolve()
+    raw["fes"]["cvs"].append({"name": "also_x", "kind": "cartesian", "atom": 0, "axis": "x"})
+    raw["fes"][method]["ranges_au"] = [[-1., 1.], [-1., 1.]]
+    config["cvs"] = raw["fes"]["cvs"]
+    config[method]["ranges_au"] = raw["fes"][method]["ranges_au"]
+
+    def unexpected_provider(*args, **kwargs):
+        pytest.fail("rank-deficient CVs must be rejected before PES construction")
+
+    monkeypatch.setattr("pyrpmd.workflows.abf.make_task_potential", unexpected_provider)
+    with pytest.raises(InputError, match="full rank"):
+        prepare(raw)
+    with pytest.raises(ValueError, match="full rank"):
+        run_abf(config, system, tmp_path / "not_created")
+    assert not (tmp_path / "not_created").exists()
