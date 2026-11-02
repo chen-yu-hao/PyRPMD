@@ -95,7 +95,7 @@ pyrpmd resume my-first-run/run
 
 | 任务 | `task` | 示例 | 时间 |
 | --- | --- | --- | --- |
-| 从 TS 出发的双分子 RPMD 速率 | `rate` | `pyrpmd prepare examples/rate/pilot.inp --pilot`，再 `pyrpmd run examples/rate/pilot.inp` | ~15 s |
+| 从 TS 出发的双分子 RPMD 速率 | `rate` | `pyrpmd prepare examples/rate/research.inp --pilot`，再 `pyrpmd run examples/rate/research.inp` | — |
 | 直接碰撞（dRPMD） | `drpmd` | `examples/drpmd/free_scattering.inp` | ~2 s |
 | 多入口多 TS 速率矩阵 | `network` | `examples/network/two_entrances.py` | ~25 s |
 | 一至三维伞形自由能面 | `fes` | `examples/fes/harmonic2d.inp` | ~6 s |
@@ -163,9 +163,14 @@ PIMD 与固定晶胞扩散支持冻结基底原子；各向同性 BZP 恒压 PIM
 
 ## 最小输入
 
-一个过渡态和一个势能就是完整的速率输入：
+速率研究建议从 [research.inp](examples/rate/research.inp) 开始：显式给出反应物片段与成断键，
+独立控制 TS 检查，用分区表指定窗口密度和力常数，并分别设置伞采样、母链和子轨迹。
+[输入指南](docs/zh/rate-input-v2.md)说明 RPMDrate 风格的 `k/T` 力常数约定及旧输入兼容规则。
+
+也可以显式选择自动推断的便捷模式，只提供 TS 结构和势能：
 
 ```toml
+schema_version = 2
 task = "rate"
 
 [system]
@@ -174,7 +179,17 @@ transition_state = "ts.xyz"
 [potential]
 provider = "cabi"
 library = "libpes.so"
+
+[reaction]
+definition = "infer"
+
+[preparation]
+ts_action = "validate"
+check_channel = true
 ```
+
+`validate` 检查驻点和一阶鞍点而不移动坐标；需要 P-RFO 细化时改为 `ts_action="refine"`。
+反应定义、鞍点有效性和双向下降的通道一致性分别记录。
 
 `[potential]` 也可以在命令行用 `--pes ./libpes.so` 给出。`.so` 实现 PyRPMD PES v1 ABI；f2py 模块使用
 `provider='rpmdrate'`，普通 `.o` 另加 `--pes-manifest`，写明编译器、wrapper 和链接依赖。

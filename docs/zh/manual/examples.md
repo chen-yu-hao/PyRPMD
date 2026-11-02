@@ -23,7 +23,8 @@
 | `examples/nonadiabatic/exchange.inp` | 在耦合双态模型上从指定态出发的 NRPMD 散射 | 约 15 s | [非绝热 NRPMD](nonadiabatic.md) |
 | `examples/nonadiabatic/population.inp` | 从谐振 spin-boson 初态出发的 NRPMD 布居与相干性 | — | [非绝热动力学](nonadiabatic.md) |
 | `examples/nonadiabatic/rpsh_population.inp` | Tully I 上的质心 RPSH，含可选的能量退相干修正 | — | [非绝热动力学](nonadiabatic.md) |
-| `examples/rate/pilot.inp` | 解析反应势上的 TS 准备、PMF 与回穿 | 约 15 s | [气相与自由能](workflows.md) |
+| `examples/rate/research.inp` | 显式反应、独立 TS 检查、分区窗口与分开的母链/子轨迹 | — | [速率输入指南](../rate-input-v2.md) |
+| `examples/rate/pilot.inp` | 保留 schema 1 的 TS 准备、PMF 与回穿 | 约 15 s | [气相与自由能](workflows.md) |
 | `examples/rate/general_coordinate.inp` | 沿光滑非线性质心坐标的 `site_rate` | — | [一般坐标速率（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/general-coordinate-rates.md) |
 | `examples/studies/site_rate.json`、`drpmd.json` | `pyrpmd study` 温度/同位素/收敛扫描；用 `--plan` 查看算例 | — | [速率研究（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-studies.md) |
 | `examples/network/two_entrances.py` | 两个入口、四条 TS/PES 路径 | 约 25 s | [气相与自由能](workflows.md) |
@@ -42,8 +43,8 @@ pyrpmd run examples/fes/harmonic2d.inp --output runs/tutorial-fes2d
 pyrpmd analyze runs/tutorial-fes2d --recompute --bins 20 20 --bootstrap 50
 ```
 
-`examples/rate/minimal.inp`（只给 TS）和 `examples/drpmd/minimal.inp`（两个反应物与间距）展示了最小的有效输入，
-其余设置均取 pilot 缺省值。
+`examples/rate/minimal.inp` 显式选择从 TS 推断通道的便捷模式；研究输入应像 `research.inp` 一样声明片段和成断键。
+`examples/drpmd/minimal.inp` 使用两个反应物与间距，其余设置取 pilot 缺省值。
 
 `examples/plumed/centroid_metadynamics.py` 演示带显式 kernel 更新的可选 PLUMED 质心 metadynamics。
 它需要可用的 PLUMED 安装，运行前请按 [PLUMED 英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/plumed.md)准备环境。

@@ -126,7 +126,7 @@ All examples use analytic model potentials and run on one core. Times are wall t
 
 | Task | `task` | Example | Time |
 | --- | --- | --- | --- |
-| Bimolecular RPMD rate from a TS | `rate` | `pyrpmd prepare examples/rate/pilot.inp --pilot` then `pyrpmd run examples/rate/pilot.inp` | ~15 s |
+| Bimolecular RPMD rate from a TS | `rate` | `pyrpmd prepare examples/rate/research.inp --pilot` then `pyrpmd run examples/rate/research.inp` | — |
 | Direct collisions (dRPMD) | `drpmd` | `examples/drpmd/free_scattering.inp` | ~2 s |
 | Rate matrix over several entrances and TSs | `network` | `examples/network/two_entrances.py` | ~25 s |
 | 1D–3D umbrella free-energy surface | `fes` | `examples/fes/harmonic2d.inp` | ~6 s |
@@ -205,9 +205,15 @@ distinguishes the default materials workflow from the opt-in native PIMD engine 
 
 ## Minimal inputs
 
-A transition-state guess and a potential are a complete rate input:
+For rate studies, start with [research.inp](examples/rate/research.inp): explicit reactant
+fragments and bond changes, independent TS checks, regional window density/force constants,
+and separate umbrella/parent/child stages. The [input guide](docs/rate-input-v2.md) explains
+the RPMDrate-style `k/T` force-constant convention and schema-1 compatibility.
+
+A TS structure and potential can also be used with explicitly selected channel inference:
 
 ```toml
+schema_version = 2
 task = "rate"
 
 [system]
@@ -216,6 +222,13 @@ transition_state = "ts.xyz"
 [potential]
 provider = "cabi"
 library = "libpes.so"
+
+[reaction]
+definition = "infer"
+
+[preparation]
+ts_action = "validate"
+check_channel = true
 ```
 
 You can also start from complete, atom-mapped reactant and product geometries:
@@ -232,8 +245,8 @@ provider = "cabi"
 library = "libpes.so"
 ```
 
-Numerical preparation refines imperfect TS guesses with P-RFO, or searches the
-endpoint path with CI-NEB before P-RFO refinement. The final force, saddle-index
+With `ts_action="refine"`, numerical preparation refines imperfect TS guesses with P-RFO.
+The legacy endpoint example searches with CI-NEB before P-RFO refinement. Final force, saddle-index
 and connectivity checks must pass before sampling uses the optimized TS. See
 [transition-state search](docs/transition-state-search.md) for controls, limits
 and the runnable [endpoint example](examples/rate/from_endpoints.inp).

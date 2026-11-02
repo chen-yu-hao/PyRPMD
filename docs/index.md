@@ -99,6 +99,7 @@ Science <manual/science>
 :hidden:
 
 Gas phase <manual/workflows>
+Explicit rate input and regional umbrellas <rate-input-v2>
 Transition-state search <transition-state-search>
 Materials and surfaces <manual/periodic>
 PCET <manual/pcet>

@@ -25,21 +25,44 @@ FLUX_MEASURE = "delta(xi-x) * sqrt(grad(xi) M^-1 grad(xi)/(2*pi*beta))"
 
 
 def _prepare(config, system, output, return_system=False, *, _preparation=None, _write=True):
-    pmf_options = rate_pmf_options(config)
+    rate_pmf_options(config)
     prepared = (prepare_rate(config, system, numerical=True)
                 if _preparation is None else copy.deepcopy(_preparation))
     if _write:
         write_json(Path(output) / "preparation.json", prepared)
     if not prepared["ready"]:
         raise ValueError(
-            "Reaction preparation did not produce a validated TS and entrance channel: "
+            "Reaction preparation is not ready: "
             + "; ".join(prepared["diagnostics"])
-            + ". See preparation.json; inspect the path/TS search or specify reaction.fragments/forming_bonds/breaking_bonds."
+            + ". See preparation.json; inspect the reaction definition and TS validation/search results."
         )
     system = prepared_system(system, prepared)
+    result = configure_rate_umbrella(config, system, prepared["reaction"])
+    if rate_pmf_options(result)["source"] is not None:
+        from .rate_source import read_source
+
+        read_source(result, system)
+    elif result["reaction"].get("definition"):
+        from .fes import validate_fes_request
+
+        # In inference mode the coordinate was unavailable during structural
+        # input preflight. Validate its complete sampling plan now, before any
+        # production trajectory starts.
+        validate_fes_request(result, system)
+    return (result, system) if return_system else result
+
+
+def configure_rate_umbrella(config, system, reaction):
+    """Build and validate a rate window plan without evaluating the PES.
+
+    The caller must supply an explicitly defined or already inferred reaction.
+    Reaction definition and numerical TS validation are deliberately independent:
+    this function performs no preparation, numerical check, or output I/O.
+    """
     result = copy.deepcopy(config)
-    result["reaction"] = prepared["reaction"]
+    result["reaction"] = copy.deepcopy(reaction)
     reaction = result["reaction"]
+    rinf = reaction.get("rinf_au", reaction.get("rinf", reaction.get("Rinf", "12 angstrom")))
     result["cvs"] = [
         {
             "name": "xi",
@@ -48,7 +71,7 @@ def _prepare(config, system, output, return_system=False, *, _preparation=None, 
             "fragments": reaction["fragments"],
             "forming_bonds": reaction["forming_bonds"],
             "breaking_bonds": reaction["breaking_bonds"],
-            "rinf": reaction["rinf"],
+            "rinf": rinf,
         }
     ]
     if reaction.get("equivalent_paths"):
@@ -57,15 +80,20 @@ def _prepare(config, system, output, return_system=False, *, _preparation=None, 
         raise ValueError(
             "standard RPMD rate sampling requires analysis.measure='rate_flux'"
         )
+    pmf_options = rate_pmf_options(result)
     if pmf_options["source"] is not None:
-        from .rate_source import read_source
-
-        read_source(result, system)
-        return (result, system) if return_system else result
+        return result
     umbrella = result.setdefault("umbrella", {})
-    if not any(k in umbrella for k in ("centers", "centers_au", "grid", "start")):
+    new_input = (result.get("schema_version", 1) >= 2 or reaction.get("definition")
+                 or any(key in umbrella for key in ("coordinate", "regions", "windows", "force_constant", "force_matrix")))
+    if new_input and umbrella.get("cvs", ["xi"]) != ["xi"]:
+        raise ValueError("gas-phase rate umbrellas require the reaction coordinate xi")
+    selectors = ("centers", "centers_au", "grid", "start", "regions", "windows")
+    if new_input:
+        selectors += ("stop", "count")
+    if not any(k in umbrella for k in selectors):
         umbrella.update(start=-0.05, stop=1.05, count=23)
-    if not any(k in umbrella for k in ("stiffness", "stiffness_au", "kappa")):
+    if not any(k in umbrella for k in ("stiffness", "stiffness_au", "kappa", "force_constant", "force_matrix")):
         umbrella["kappa"] = 50.0 / result["beta"]
     umbrella["cvs"] = ["xi"]
     result.setdefault("analysis", {}).update(measure="rate_flux")
@@ -78,7 +106,7 @@ def _prepare(config, system, output, return_system=False, *, _preparation=None, 
     )
     _, _, centers, _ = resolve_umbrellas(result, system)
     _check_pmf_domain(centers[:, 0], pmf_options)
-    return (result, system) if return_system else result
+    return result
 
 
 def _check_pmf_domain(centers, options):

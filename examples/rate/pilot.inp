@@ -1,5 +1,7 @@
 # Runs the full TS preparation / PMF / constrained parent / child pipeline.
 # This analytic teaching PES does not predict the physical H + H2 rate.
+# Legacy schema-1 compatibility example; research.inp demonstrates explicit
+# reaction definitions, regional windows and independent sampling stages.
 task = "rate"
 preset = "pilot"
 temperature = "1000 K"

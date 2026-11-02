@@ -280,6 +280,19 @@ def validate_workflow(resolved, system, *, materials, source_pmf):
             from .workflows.fes import validate_fes_request
 
             validate_fes_request(resolved, system)
+        if task == "rate" and resolved.get("reaction", {}).get("definition"):
+            from .workflows.prepare import prepare_rate
+            from .workflows.rate_pmf import configure_rate_umbrella
+            from .workflows.fes import validate_fes_request
+
+            # Knowing the channel is enough to validate a window plan, but is
+            # not evidence that the supplied geometry is a valid saddle. This
+            # structural preparation never constructs or evaluates a PES.
+            reaction = prepare_rate(resolved, system, numerical=False)["reaction"]
+            if all(reaction.get(key) for key in ("fragments", "forming_bonds", "breaking_bonds")):
+                planned = configure_rate_umbrella(resolved, system, reaction)
+                if rate_pmf_options(planned)["source"] is None:
+                    validate_fes_request(planned, system)
         if task in ("rate", "surface_rate"):
             from .workflows.rate import _recrossing_options
 

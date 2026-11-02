@@ -1,8 +1,31 @@
-# RPMD rate from endpoints or a transition state
+# RPMD rate inputs
 
-Start with reactant/product structures or a TS guess and an analytic potential, then run the
-complete RPMDrate-style Bennett–Chandler calculation. The endpoint example first finds a saddle
-with CI-NEB and refines it with P-RFO:
+Start a rate study with [`research.inp`](research.inp). It explicitly declares the reactant
+fragments, product partition and forming/breaking bonds, then independently requests a TS
+validation and a downhill channel check. Its regional table gives 16 entrance windows and
+26 barrier windows with different force constants. Umbrella sampling, constrained parents
+and recrossing children have separate settings.
+
+```bash
+pyrpmd validate examples/rate/research.inp --check-pes
+pyrpmd prepare examples/rate/research.inp --pilot --output preparation.json
+pyrpmd run examples/rate/research.inp --output runs/rate
+pyrpmd analyze runs/rate
+pyrpmd resume runs/rate
+```
+
+The new `force_constant` defaults to the RPMDrate temperature-normalized coefficient `k/T`:
+`0.00016` at 1000 K means a physical spring of 0.16 hartree for dimensionless xi. Explicit
+physical units remain supported. See the complete [input guide](../../docs/rate-input-v2.md)
+([中文](../../docs/zh/rate-input-v2.md)) for the regional boundaries, units and migration rules.
+
+`minimal.inp` explicitly selects `reaction.definition="infer"` as a convenience mode.
+It uses the unstable TS mode and two downhill traces to infer the channel. `pilot.inp`
+retains the old schema-1 syntax for compatibility. In the new research layout,
+`ts_action="validate"` checks coordinates without changing them; use `"refine"` when
+P-RFO refinement is intended. Defining a reaction never substitutes for a requested TS check.
+
+The separate legacy endpoint example first finds a saddle with CI-NEB and refines it with P-RFO:
 
 ```bash
 python -m pyrpmd prepare examples/rate/from_endpoints.inp --pilot --output preparation.json
@@ -14,19 +37,10 @@ the same atom order and Cartesian frame. CI-NEB keeps these endpoints fixed. See
 [transition-state search](../../docs/transition-state-search.md) for refinement controls, path
 initialization, units, connectivity-radius overrides, and limitations.
 
-The existing TS example remains available:
-
-```bash
-pyrpmd prepare examples/rate/pilot.inp --pilot
-pyrpmd run examples/rate/pilot.inp --output runs/rate
-```
-
-`prepare --pilot` evaluates the PES, refines an imperfect TS when needed, forms a finite-difference
-mass-weighted Hessian, follows its unique unstable mode in both directions and identifies the
-equivalent A + BC / AB + C channels. After successful preparation, `run`
-performs umbrella sampling, the flux-metric PMF, constrained parent chains, paired recrossing
-trajectories and parent-cluster/block uncertainty estimates. `minimal.inp` shows the smallest
-valid input: the TS structure and the PES selection.
+After successful preparation, `run` performs umbrella sampling, the flux-metric PMF,
+constrained parent chains, paired recrossing trajectories and parent-cluster/block uncertainty
+estimates. The preparation report separates `saddle_valid`, `channel_consistent` and
+`refinement_performed`, and previews the resolved window and recrossing budgets.
 
 > **Scope.** `toy_exchange.py` is an analytic teaching potential with Morse reactant asymptotes.
 > The H labels supply convenient isotope masses and connectivity radii; these are not fitted H3

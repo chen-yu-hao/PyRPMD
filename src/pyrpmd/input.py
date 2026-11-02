@@ -21,6 +21,8 @@ from .input_schema import (
 )
 from .input_options import validate_nonadiabatic, rate_pmf_options
 from .input_fes import fes_method, normalize_fes_task, _normalize_fes_input
+from .input_reaction import normalize_reaction_input
+from .input_stages import normalize_stage_input
 from .input_paths import (
     _path, _plugin_paths, _initial_ensemble_spec, _nested_potential_paths,
     _cv_model_paths,
@@ -183,8 +185,13 @@ class JobSpec:
                 )
             return resolved, system
         d = deepcopy(self.data)
+        schema_version = _integer(d.get("schema_version", 1), "schema_version")
+        if schema_version not in (1, 2):
+            raise InputError("Supported schema_version values are 1 and 2")
         original_task = d.get("task")
         method, fes_notes = _normalize_fes_input(d)
+        normalize_stage_input(d)
+        normalize_reaction_input(d)
         unknown = set(d) - _ROOT
         if unknown:
             raise _unknown_fields(unknown, _ROOT, "top-level")
@@ -198,8 +205,6 @@ class JobSpec:
                 if unknown:
                     raise _unknown_fields(unknown, allowed, section)
         validate_input_preflight(d)
-        if _integer(d.get("schema_version", 1), "schema_version") != 1:
-            raise InputError("Supported schema_version is 1")
         task = d.get("task")
         if task not in ("rate", "drpmd", "fes", "metadynamics", "opes", "pimd", "diffusion", "site_rate", "surface_rate"):
             raise InputError("task must be rate, drpmd, fes, metadynamics, opes, network, pcet, pimd, diffusion, site_rate or surface_rate")
@@ -242,7 +247,7 @@ class JobSpec:
             raise InputError("output.store_configurations is supported only for metadynamics")
         resolved = {
             **d,
-            "schema_version": 1,
+            "schema_version": schema_version,
             "preset": runtime.preset,
             "temperature_K": runtime.temperature,
             "beta": runtime.beta,

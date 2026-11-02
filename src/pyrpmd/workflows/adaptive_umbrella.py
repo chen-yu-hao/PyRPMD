@@ -149,7 +149,8 @@ def _stage_config(config, centers, stiffness, seed, *, pilot=None):
     stage.pop("adaptive_umbrella", None)
     stage["seed"] = seed
     umbrella = stage.setdefault("umbrella", {})
-    for key in ("grid", "centers", "start", "stop", "count", "kappa", "stiffness"):
+    for key in ("grid", "centers", "start", "stop", "count", "kappa", "stiffness",
+                "regions", "windows", "force_constant", "force_matrix"):
         umbrella.pop(key, None)
     umbrella["centers_au"] = np.asarray(centers).tolist()
     umbrella["stiffness_au"] = np.asarray(stiffness).tolist()

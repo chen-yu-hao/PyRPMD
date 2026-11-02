@@ -556,6 +556,38 @@ def prepare(job, *, numerical=False):
         result["ready"] = result["reaction_preparation"].get("ready", False)
         system = prepared_system(system, result["reaction_preparation"])
         result["system"] = system.to_dict()
+        reaction = result["reaction_preparation"]["reaction"]
+        if config.get("reaction", {}).get("definition"):
+            from .workflows.rate_options import _recrossing_options, _parent_thermostat
+
+            options = _recrossing_options(config)
+            interval, schedule = _parent_thermostat(config)
+            configurations = options["parent_replicas"] * options["parent_samples"]
+            pairs = configurations * options["child_pairs"]
+            result["recrossing_preparation"] = {
+                **options,
+                "parent_refresh_interval_steps": interval,
+                "parent_refresh_schedule": schedule,
+                "planned_configurations": configurations,
+                "planned_pairs": pairs,
+                "planned_trajectories": 2 * pairs,
+            }
+            if all(reaction.get(key) for key in ("fragments", "forming_bonds", "breaking_bonds")):
+                from .input_options import rate_pmf_options
+                from .workflows.fes import validate_fes_request
+                from .workflows.rate_pmf import configure_rate_umbrella
+                from .workflows.umbrella_plan import plan_preview
+
+                planned = configure_rate_umbrella(config, system, reaction)
+                if rate_pmf_options(planned)["source"] is None:
+                    validate_fes_request(planned, system)
+                    preview = plan_preview(planned, system)
+                    result["umbrella_preparation"] = {
+                        "dimension": preview["dimension"],
+                        "cv_units": preview["cv_units"],
+                        "windows": len(preview["windows"]),
+                        "window_plan": preview["windows"],
+                    }
     elif config["task"] == "drpmd":
         result["ready"] = not (
             config["collision"].get("bmax_unvalidated", False)
@@ -581,6 +613,9 @@ def prepare(job, *, numerical=False):
                 "centers_au": centers,
                 "stiffness_au": stiffness,
             }
+            from .workflows.umbrella_plan import plan_preview
+
+            result["umbrella_preparation"]["window_plan"] = plan_preview(config, system)["windows"]
         if config["task"] == "surface_rate":
             from .workflows.surface import surface_definition
 

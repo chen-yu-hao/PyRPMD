@@ -27,7 +27,7 @@ from ..parallel import root_call, run_tasks
 from ..rate_artifacts import (EXTENSION_FORMAT, RECEIPT_FORMAT, generation_name,
                               read_generation)
 from . import fes, rate
-from .extend import _authenticate, _lock, _unlock
+from .extend import _authenticate, _lock as _extension_lock, _unlock
 
 
 def _now():
@@ -43,6 +43,29 @@ def _json(path):
 
 def _enabled(value):
     return bool(value) and (not isinstance(value, dict) or value.get("enabled", True))
+
+
+def _require_uniform_sampling(config):
+    umbrella = config.get("umbrella", {})
+    if any(
+        "sampling" in record
+        for source in ("windows", "regions")
+        for record in umbrella.get(source, ())
+    ):
+        # The authorization ledger currently owns one common burn-in and
+        # production budget. Do not mistake completed local budgets for
+        # incomplete checkpoints, or authorize a generation with wrong clocks.
+        raise InputError(
+            "Rate production extension does not yet support per-window or "
+            "per-region sampling overrides; ordinary run, analyze and resume "
+            "remain supported"
+        )
+
+
+def _lock(directory):
+    """Reject unsupported plans before creating the extension lock file."""
+    _require_uniform_sampling(_json(Path(directory) / "input" / "resolved.json"))
+    return _extension_lock(directory)
 
 
 def _pointer(request):
@@ -104,6 +127,7 @@ def _prepare_extension(directory, target):
     config = _json(path / "input" / "resolved.json")
     if config.get("task") != "rate":
         raise InputError("Production-step extension supports only fixed-window gas-phase rate runs")
+    _require_uniform_sampling(config)  # Repeat under the acquired run lock.
     if (_enabled(config.get("adaptive_umbrella"))
             or _enabled(config.get("replica_exchange"))):
         raise InputError("Rate production extension requires fixed windows without adaptive umbrellas or replica exchange")

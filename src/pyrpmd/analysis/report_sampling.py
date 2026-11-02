@@ -7,6 +7,7 @@ Custom CV factories and input files are never imported or executed here.
 from __future__ import annotations
 
 import json
+import hashlib
 from pathlib import Path
 import re
 
@@ -85,6 +86,54 @@ def _checkpoint_metadata(run, path, summary, dimension):
     if expected_plan:
         raise ValueError("Adaptive production requires adaptive-plan.json; the original input grid cannot identify production window centers")
     return _canonical_metadata(run["_config"], summary, dimension)
+
+
+def _saved_window_plan(run, path, summary, dimension):
+    """Read resolved window identities and clocks as data, never rebuild CVs."""
+    plan = _json(run, path)
+    if type(plan.get("dimension")) is not int or plan["dimension"] != dimension:
+        raise ValueError("Saved umbrella plan dimension does not match the FES")
+    units = plan.get("cv_units")
+    expected = summary.get("units")
+    if isinstance(expected, str):
+        expected = [expected]
+    if (not isinstance(units, list) or len(units) != dimension
+            or any(not isinstance(unit, str) for unit in units)):
+        raise ValueError("Saved umbrella plan CV units are invalid")
+    if expected is not None and units != expected:
+        raise ValueError("Saved umbrella plan CV units contradict the saved FES units")
+    windows = plan.get("windows")
+    if not isinstance(windows, list) or not windows:
+        raise ValueError("Saved umbrella plan requires nonempty window records")
+    result, indices = {}, set()
+    for window in windows:
+        if not isinstance(window, dict):
+            raise ValueError("Saved umbrella plan windows must be objects")
+        identifier = window.get("id")
+        if not isinstance(identifier, str) or not identifier or identifier in result:
+            raise ValueError("Saved umbrella plan window IDs must be unique nonempty strings")
+        for key, minimum in (("index", 0), ("chains", 1), ("equilibration_steps", 0),
+                             ("production_steps", 1), ("sample_stride_steps", 1),
+                             ("raw_samples_per_chain", 0)):
+            if type(window.get(key)) is not int or window[key] < minimum:
+                raise ValueError(f"Saved umbrella plan {key} must be an integer >= {minimum}")
+        if window["index"] in indices:
+            raise ValueError("Saved umbrella plan window indices must be unique")
+        indices.add(window["index"])
+        if window["raw_samples_per_chain"] != window["production_steps"] // window["sample_stride_steps"]:
+            raise ValueError("Saved umbrella plan sample count contradicts its sampling clock")
+        center = np.asarray(window.get("center_au"), dtype=float)
+        stiffness = np.asarray(window.get("stiffness_au"), dtype=float)
+        if (center.shape != (dimension,) or stiffness.shape != (dimension, dimension)
+                or not np.isfinite(center).all() or not np.isfinite(stiffness).all()):
+            raise ValueError("Saved umbrella plan center/stiffness dimensions are invalid")
+        result[identifier] = {**window, "center": center, "stiffness": stiffness,
+                              "sampling": {
+                                  "equilibration_steps": window["equilibration_steps"],
+                                  "production_steps": window["production_steps"],
+                                  "sample_interval": window["sample_stride_steps"],
+                              }}
+    return result
 
 
 def _canonical_metadata(config, summary, dimension):
@@ -241,6 +290,11 @@ def _hdf5_streams(run, path, dimension, summary):
                 if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)) or value < 0:
                     raise ValueError("Sampling HDF5 window/replica identities must be nonnegative integers")
                 data[key] = int(value)
+            if "window_id" in group.attrs:
+                identifier = group.attrs["window_id"]
+                if not isinstance(identifier, str) or not identifier:
+                    raise ValueError("Sampling HDF5 window_id must be a nonempty string")
+                data["window_id"] = identifier
             result.append(_stream_metadata(data, dimension))
     return result
 
@@ -266,11 +320,12 @@ def _checkpoint_chunk_directory(run, checkpoint):
     return directory
 
 
-def _rate_checkpoint_sample_count(run, saved):
+def _rate_checkpoint_sample_count(run, saved, *, sampling=None):
     """Do not combine the original result with a newer shared checkpoint."""
     if run.get("task") != "rate":
         return None
-    sampling = run["_config"].get("sampling", {})
+    if sampling is None:
+        sampling = run["_config"].get("sampling", {})
     production = run["_summary"].get("effective_production_steps", sampling.get("production_steps"))
     equilibration = sampling.get("equilibration_steps")
     interval = sampling.get("sample_interval", sampling.get("interval_steps", 1))
@@ -299,19 +354,77 @@ def _umbrella_streams(run, path, summary, dimension):
     checkpoints = sorted((path / "checkpoints").glob("window_*_replica_*.npz"))
     if not checkpoints:
         return []
+    plan = {}
+    plan_path = path / "umbrella-plan.json"
+    plan_exists = plan_path.exists()
+    plan_valid = not plan_exists or _guard(
+        run, "saved umbrella window plan",
+        lambda: plan.update(_saved_window_plan(run, plan_path, summary, dimension)),
+    )
     centers = stiffness = None
-    try:
-        centers, stiffness = _checkpoint_metadata(run, path, summary, dimension)
-    except (KeyError, TypeError, ValueError) as error:
-        _finding(run, "umbrella_metadata_missing", f"Checkpoint traces remain available, but center/K plots are unavailable: {error}")
+    legacy_metadata_read = False
+
+    def legacy_metadata():
+        nonlocal centers, stiffness, legacy_metadata_read
+        if not legacy_metadata_read:
+            legacy_metadata_read = True
+            try:
+                centers, stiffness = _checkpoint_metadata(run, path, summary, dimension)
+            except (KeyError, TypeError, ValueError) as error:
+                _finding(run, "umbrella_metadata_missing", f"Checkpoint traces remain available, but center/K plots are unavailable: {error}")
+
+    umbrella = run["_config"].get("umbrella", {})
+    adaptive = run["_config"].get("adaptive_umbrella", {})
+    adaptive_enabled = adaptive.get("enabled", bool(adaptive)) if isinstance(adaptive, dict) else bool(adaptive)
+    adaptive_metadata = (
+        adaptive_enabled or bool(summary.get("adaptive_umbrella"))
+        or (path / "adaptive-plan.json").exists() or (path / "adaptation").exists()
+    )
+    local_sampling = any(
+        isinstance(record, dict) and record.get("sampling")
+        for key in ("regions", "windows") for record in umbrella.get(key, [])
+    )
     for checkpoint in checkpoints:
         def read(checkpoint=checkpoint):
-            match = re.fullmatch(r"window_(\d+)_replica_(\d+)\.npz", checkpoint.name)
+            match = re.fullmatch(r"window_([0-9a-f]+)_replica_(\d+)\.npz", checkpoint.name)
             if match is None:
                 raise ValueError("Unrecognized umbrella checkpoint filename")
-            window, replica = map(int, match.groups())
+            token, replica = match[1], int(match[2])
             saved = _npz(run, checkpoint)
-            expected_samples = _rate_checkpoint_sample_count(run, saved)
+            identifier = None
+            planned = None
+            if "window_id" in saved:
+                raw_id = np.asarray(saved["window_id"])
+                if raw_id.ndim != 0 or raw_id.dtype.kind != "U" or not raw_id.item():
+                    raise ValueError("Saved umbrella window_id must be a scalar nonempty string")
+                identifier = str(raw_id.item())
+                if hashlib.sha256(identifier.encode()).hexdigest()[:24] != token:
+                    raise ValueError("Saved umbrella window_id does not match its checkpoint filename")
+                if not plan_valid:
+                    raise ValueError("Saved umbrella window plan is invalid")
+                planned = plan.get(identifier)
+                if plan_exists and planned is None:
+                    raise ValueError("Saved umbrella checkpoint window_id is absent from its plan")
+                if not {"center", "stiffness"}.issubset(saved):
+                    raise ValueError("Saved umbrella checkpoint lacks its window center/stiffness")
+                if planned is not None and (
+                    replica >= planned["chains"]
+                    or not np.array_equal(saved["center"], planned["center"])
+                    or not np.array_equal(saved["stiffness"], planned["stiffness"])
+                ):
+                    raise ValueError("Saved umbrella checkpoint identity or center/stiffness contradicts its plan")
+                window = planned["index"] if planned is not None else None
+            elif token.isdigit() and len(token) != 24:
+                if plan_exists:
+                    raise ValueError("Saved umbrella plan requires a stable checkpoint window_id")
+                window = int(token)
+            else:
+                raise ValueError("Hashed umbrella checkpoint lacks its window_id")
+            if run.get("task") == "rate" and local_sampling and planned is None:
+                raise ValueError("Per-window rate sampling clocks require saved umbrella-plan.json")
+            expected_samples = _rate_checkpoint_sample_count(
+                run, saved, sampling=planned["sampling"] if planned is not None else None,
+            )
             if "sample_stream" in saved:
                 from ..workflows.fes import read_fes_sample_history
 
@@ -328,10 +441,41 @@ def _umbrella_streams(run, path, summary, dimension):
                 if expected_samples is not None and len(samples) != expected_samples:
                     raise ValueError("Saved umbrella sample count differs from its checkpoint clock")
             stream = {"window": window, "replica": replica, "samples": samples}
-            if centers is not None and window < len(centers):
-                stream.update(center=centers[window], stiffness=stiffness)
+            if identifier is not None:
+                stream["window_id"] = identifier
+            if "center" in saved or "stiffness" in saved:
+                stream.update(center=saved.get("center"), stiffness=saved.get("stiffness"))
+                if adaptive_metadata:
+                    legacy_metadata()
+                    if centers is None:
+                        # Preserve the adaptive contract: raw traces survive,
+                        # but only a checksummed frozen plan owns production K.
+                        stream.pop("center")
+                        stream.pop("stiffness")
+                    else:
+                        if window is None:
+                            matches = np.flatnonzero(np.all(centers == saved["center"], axis=1))
+                            if len(matches) != 1:
+                                raise ValueError("Saved umbrella checkpoint center is absent or ambiguous in its frozen adaptive plan")
+                            stream["window"] = window = int(matches[0])
+                        if (window >= len(centers) or not np.array_equal(saved["center"], centers[window])
+                                or not np.array_equal(saved["stiffness"], stiffness)):
+                            raise ValueError("Saved umbrella checkpoint center/stiffness contradicts its frozen adaptive plan")
+            else:
+                legacy_metadata()
+                if centers is not None and window < len(centers):
+                    stream.update(center=centers[window], stiffness=stiffness)
             streams.append(_stream_metadata(stream, dimension))
         _guard(run, checkpoint.name, read)
+    unindexed = sorted({stream["window_id"] for stream in streams if stream["window"] is None})
+    if unindexed:
+        start = 1 + max((stream["window"] for stream in streams if stream["window"] is not None), default=-1)
+        indices = {identifier: start + offset for offset, identifier in enumerate(unindexed)}
+        for stream in streams:
+            if stream["window"] is None:
+                stream["window"] = indices[stream["window_id"]]
+        _finding(run, "umbrella_plan_missing",
+                 "Saved window IDs and physical center/stiffness come from the checkpoints. Without umbrella-plan.json, displayed window indices follow sorted stable IDs rather than the original input order.", "info")
     return streams
 
 
@@ -390,7 +534,8 @@ def _umbrella_diagnostics(run, streams, axes, energy_unit, prefix):
             item["mean"] = float(values.mean())
             item["sample_variance"] = float(values.var(ddof=1)) if len(values) > 1 else None
             diagnostics.append(item)
-        stream_records.append({"window": stream["window"], "replica": stream["replica"], "coordinates": diagnostics})
+        stream_records.append({"window": stream["window"], "replica": stream["replica"], "coordinates": diagnostics,
+                               **({"window_id": stream["window_id"]} if "window_id" in stream else {})})
     windows = sorted(groups)
     window_records = []
     for window in windows:
@@ -400,6 +545,7 @@ def _umbrella_diagnostics(run, streams, axes, energy_unit, prefix):
         if known and any(not np.array_equal(stream["center"], group[0]["center"]) or not np.array_equal(stream["stiffness"], group[0]["stiffness"]) for stream in group[1:]):
             raise ValueError("Replicas assigned to one window have inconsistent center/stiffness")
         window_records.append({"window": window, "samples": len(samples), "replicas": len(group),
+            **({"window_id": group[0]["window_id"]} if "window_id" in group[0] else {}),
             "center_atomic": group[0]["center"].tolist() if known else None,
             "stiffness_atomic": group[0]["stiffness"].tolist() if known else None,
             "mean": (samples.mean(axis=0) * [axis[1] for axis in axes]).tolist(),

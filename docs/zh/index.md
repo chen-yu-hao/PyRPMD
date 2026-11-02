@@ -89,6 +89,7 @@ pyrpmd report runs/job                  # 可选：由保存数据生成图、in
 :hidden:
 
 气相与自由能 <manual/workflows>
+显式速率输入与分区伞窗口 <rate-input-v2>
 统一增强采样 <enhanced-sampling>
 材料与表面 <manual/periodic>
 PCET <manual/pcet>

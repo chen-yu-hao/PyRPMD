@@ -1,4 +1,4 @@
-# Input specification v1
+# Input specification
 
 **English** · [中文](zh/input.md)
 
@@ -9,11 +9,17 @@ produce a normalized configuration. Relative paths inside an input are resolved 
 paths are relative to the launch directory. Plugin entry points accept both
 `module:object` and `file.py:object`.
 
+New rate studies should use [the schema-2 rate layout](rate-input-v2.md) and
+[`examples/rate/research.inp`](../examples/rate/research.inp): explicit fragments
+and bond changes, independent TS validation, regional window spacing/force
+constants, and separate umbrella/parent/child stages. The flat schema-1 forms
+below remain supported for old inputs and checkpoints.
+
 ## Common fields
 
 | Field | Type, units and meaning |
 | --- | --- |
-| `schema_version` | Currently the integer 1 |
+| `schema_version` | 1 (legacy, default); 2 selects the new explicit rate defaults. Dedicated model schemas remain separate. |
 | `task` | `rate`, `drpmd`, `fes`, `surface_rate`, `network`, `metadynamics`, `opes`, `pcet`, `pimd`, `diffusion`, `site_rate` |
 | `preset` | `pilot` (default) or `production` |
 | `temperature` | Positive temperature, for example `"300 K"`; bare numbers also mean K |
@@ -42,6 +48,10 @@ exact multiple, choose the actual integer step count explicitly, for example
 `equilibration_steps=333`. Internal units for bare numbers are bohr, hartree, atomic
 time and electron mass. XYZ coordinates default to angstrom. Force constants accept
 compound units such as `"10 kcal/mol/angstrom^2"`. All atom indices are **zero-based**.
+New `force_constant`/`force_matrix` bare numbers are temperature-normalized `k/T`
+coefficients (atomic stiffness per kelvin). This exception does not reinterpret
+legacy `stiffness`/`kappa` numbers. The dimensionless-xi shorthand `"0.1 1/T"`
+resolves to `0.1 * T` hartree, following RPMDrate's `kforce = 0.1 * T` convention.
 
 ## System
 
@@ -252,7 +262,8 @@ The main `[recrossing]` fields are `parent_replicas`, `parent_samples`,
 `equilibration`, `parent_interval`, `child_pairs`, `child_time`, `dividing_surface`,
 `plateau_fraction`, `plateau_tolerance` and `bootstrap`. Corresponding `_steps` fields
 can specify times. Each child pair propagates with opposite momenta; an uncomputed
-κ=1 is not a substitute for recrossing. See `examples/rate/pilot.inp` for runnable syntax.
+κ=1 is not a substitute for recrossing. See `examples/rate/research.inp` for the
+recommended stage-based syntax; `examples/rate/pilot.inp` retains the legacy form.
 
 ### Rate PMF backend and dividing surface
 

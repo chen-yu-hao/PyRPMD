@@ -28,7 +28,7 @@ def _unknown_fields(unknown, allowed, section):
 
 
 _ROOT = set(
-    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics opes adaptive_umbrella pcet diffusion site_rate surface nonadiabatic replica_exchange barostat electronic_friction initial_ensemble fes path_integral active_learning".split()
+    "schema_version task preset temperature beads seed system potential dynamics sampling reaction preparation collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics opes adaptive_umbrella pcet diffusion site_rate surface nonadiabatic replica_exchange barostat electronic_friction initial_ensemble fes path_integral active_learning".split()
 )
 _SECTIONS = {
     "path_integral": set("method alpha fd_step groups projection_time trial".split()),
@@ -57,19 +57,19 @@ _SECTIONS = {
         "directory checkpoint_interval checkpoint_steps trajectory_stride trajectory_storage chunk_frames diagnostics store_configurations".split()
     ),
     "reaction": set(
-        "fragments forming_bonds breaking_bonds electronic_weight rinf Rinf equivalent_paths symmetry_factor preparation entry_side".split()
+        "definition fragments product_fragments forming_bonds breaking_bonds electronic_weight rinf Rinf equivalent_paths symmetry_factor preparation entry_side".split()
     ),
     "analysis": set(
         "method measure flux_axis bins bootstrap_samples bootstrap_replicates bootstrap seed overlap_threshold ranges min_count max_grid_points".split()
     ),
     "umbrella": set(
-        "cvs grid centers centers_au kappa stiffness stiffness_au start stop count".split()
+        "cvs coordinate grid centers centers_au regions windows force_constant force_matrix kappa stiffness stiffness_au start stop count sampling analysis".split()
     ),
     "rate": set(
         "recrossing pmf_points pmf_method pmf_search_range dividing_surface compare_ui pmf_source".split()
     ),
     "recrossing": set(
-        "parent_replicas parent_samples equilibration equilibration_steps parent_interval parent_interval_steps child_pairs child_pairs_per_parent child_steps child_time dividing_surface plateau_fraction plateau_tolerance bootstrap constraint_tolerance child_batch_pairs dynamics friction_scale".split()
+        "parent_replicas parent_samples equilibration equilibration_steps parent_interval parent_interval_steps child_pairs child_pairs_per_parent child_steps child_time dividing_surface plateau_fraction plateau_tolerance bootstrap constraint_tolerance child_batch_pairs dynamics friction_scale parent children analysis parent_thermostat".split()
     ),
     "surface": set("reactant_basin dividing_surface product_side max_relative_standard_error normalization free_energy".split()),
     "metadynamics": set(

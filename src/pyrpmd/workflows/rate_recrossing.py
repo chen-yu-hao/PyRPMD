@@ -15,16 +15,13 @@ from ..propagation import PropagationError, loop_options
 from ..io import fingerprint as _fingerprint
 from ..validation import checked_integer
 from .rate_constraints import rate_coordinate, _normal, project_positions, project_momenta
-from .rate_options import _pmf_method, _recrossing_spec, _recrossing_dynamics
-from .sampling import AndersenSchedule, validate_andersen_schedule
+from .rate_options import _pmf_method, _recrossing_spec, _recrossing_dynamics, _parent_thermostat
+from .sampling import AndersenSchedule
 
 
 def _parent_task(task):
     config, system = task["config"], task["system"]
-    collision_clock = AndersenSchedule(
-        checked_integer(config["sampling"].get("andersen_interval", 10), "sampling.andersen_interval"),
-        validate_andersen_schedule(config),
-    )
+    collision_clock = AndersenSchedule(*_parent_thermostat(config))
     options = task["options"]
     surface = rate_coordinate(config, system).dividing_surface(task["xi_star"])
     chain = int(task["chain"])
