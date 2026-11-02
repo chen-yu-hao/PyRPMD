@@ -103,6 +103,8 @@ def normalize_thermostat(spec=None):
     if mode in ("gle", "nm-gle", "nm-gle-g", "piglet"):
         if not isinstance(result.get("gle"), dict):
             raise ValueError("GLE requires an explicit drift-matrix mapping")
+        from .gle_parameters import resolve_gle_parameters
+        result["gle"] = resolve_gle_parameters(result["gle"], mode=mode)
     if mode == "trpmd":
         if result.get("gamma_centroid", 0) != 0:
             raise ValueError("TRPMD requires gamma_centroid=0")
