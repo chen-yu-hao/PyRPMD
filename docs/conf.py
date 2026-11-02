@@ -31,7 +31,7 @@ include_patterns = [
     "plumed.md", "transition-interface-sampling.md", "transition-state-search.md", "rate-postprocessing.md",
     "general-coordinate-rates.md", "rate-studies.md", "instanton.md", "low-temperature.md",
     "quantum-statistics.md", "performance-dynamics.md", "batched-dynamics.md",
-    "rpc-mts.md", "trpmd-spectroscopy.md", "propagation-stack.md",
+    "rpc-mts.md", "mixed-sampling.md", "trpmd-spectroscopy.md", "propagation-stack.md",
     "nonadiabatic-workflow.md", "nonadiabatic-models.md",
     "nonadiabatic-ensembles.md", "nonadiabatic-comparison.md",
     "nonadiabatic-spin-methods.md", "nonadiabatic-hopping-extensions.md",
