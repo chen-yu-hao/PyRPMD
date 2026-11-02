@@ -30,7 +30,7 @@ from ..units import parse_quantity
 from ..thermostats import NoseHooverChain, nhc_options
 from .common import (_atomic_npz, _fingerprint, _dimension, checked_integer,
                      fingerprint_matches, resolve_cvs)
-from .sampling import (fes_sampler, legacy_metadynamics_sampling,
+from .sampling import (fes_sampler, legacy_metadynamics_sampling, middle_sampling_method,
                        read_operator_checkpoint, validate_andersen_schedule)
 from .biased_sampling import SamplingRuntime, run_biased_sampling, dispatch_replicas, dispatch_tasks
 from ..analysis.fes_result import FESResult, write_fes_result
@@ -194,6 +194,7 @@ def resolve_metadynamics(config, system):
     if thermostat == "pile-l" and legacy_metadynamics_sampling(sampling):
         if loop_options(config)["integrator"] == "velocity-verlet":
             raise ValueError("PILE-L requires Cayley or normal-mode dynamics")
+        middle_sampling_method(loop_options(config)["integrator"], sampling.get("integrator"))
         gamma = parse_quantity(sampling.get("gamma_centroid", "0.01 fs^-1"), "frequency")
         if gamma <= 0:
             raise ValueError("sampling.gamma_centroid must be positive")

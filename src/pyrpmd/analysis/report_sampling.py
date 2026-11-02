@@ -33,6 +33,24 @@ def _selected(items, limit):
     return [items[i] for i in indices]
 
 
+def _sampling_config(run):
+    """Read the saved PMF stage without resolving inputs or constructing CVs."""
+    config = run["_config"]
+    if run.get("task") != "rate":
+        return config
+    rate = config.get("rate", {})
+    if "pmf_stage" not in rate:
+        if "pmf" in rate:
+            raise ValueError("Independent rate PMF sampling requires saved resolved stage settings")
+        return config
+    stage = rate["pmf_stage"]
+    if (not isinstance(stage, dict) or stage.get("schema_version") != 1
+            or stage.get("sampler") not in ("umbrella", "metadynamics", "opes")
+            or not isinstance(stage.get("config"), dict)):
+        raise ValueError("Saved rate PMF stage has invalid local sampling settings")
+    return stage["config"]
+
+
 def _read_adaptive_plan(run, path, *, require_frozen=False):
     """Read one immutable snapshot; frozen production metadata needs integrity."""
     cache = run.setdefault("_sampling_plan_cache", {})
@@ -69,7 +87,8 @@ def _read_adaptive_plan(run, path, *, require_frozen=False):
 def _checkpoint_metadata(run, path, summary, dimension):
     """Adaptive input grids describe pilots; only the frozen plan owns production."""
     plan_path = path / "adaptive-plan.json"
-    adaptive = run["_config"].get("adaptive_umbrella", {})
+    config = _sampling_config(run)
+    adaptive = config.get("adaptive_umbrella", {})
     enabled = adaptive.get("enabled", bool(adaptive)) if isinstance(adaptive, dict) else bool(adaptive)
     expected_plan = enabled or bool(summary.get("adaptive_umbrella")) or (path / "adaptation").exists()
     if plan_path.exists():
@@ -85,7 +104,7 @@ def _checkpoint_metadata(run, path, summary, dimension):
         return centers, stiffness
     if expected_plan:
         raise ValueError("Adaptive production requires adaptive-plan.json; the original input grid cannot identify production window centers")
-    return _canonical_metadata(run["_config"], summary, dimension)
+    return _canonical_metadata(config, summary, dimension)
 
 
 def _saved_window_plan(run, path, summary, dimension):
@@ -325,7 +344,7 @@ def _rate_checkpoint_sample_count(run, saved, *, sampling=None):
     if run.get("task") != "rate":
         return None
     if sampling is None:
-        sampling = run["_config"].get("sampling", {})
+        sampling = _sampling_config(run).get("sampling", {})
     production = run["_summary"].get("effective_production_steps", sampling.get("production_steps"))
     equilibration = sampling.get("equilibration_steps")
     interval = sampling.get("sample_interval", sampling.get("interval_steps", 1))
@@ -373,8 +392,9 @@ def _umbrella_streams(run, path, summary, dimension):
             except (KeyError, TypeError, ValueError) as error:
                 _finding(run, "umbrella_metadata_missing", f"Checkpoint traces remain available, but center/K plots are unavailable: {error}")
 
-    umbrella = run["_config"].get("umbrella", {})
-    adaptive = run["_config"].get("adaptive_umbrella", {})
+    config = _sampling_config(run)
+    umbrella = config.get("umbrella", {})
+    adaptive = config.get("adaptive_umbrella", {})
     adaptive_enabled = adaptive.get("enabled", bool(adaptive)) if isinstance(adaptive, dict) else bool(adaptive)
     adaptive_metadata = (
         adaptive_enabled or bool(summary.get("adaptive_umbrella"))
@@ -503,7 +523,7 @@ def _traces(run, streams, axes, prefix, *, biased=False):
     caption += "Linear-coordinate running means do not prove equilibration and are not circular averages."
     for j, (label, factor) in enumerate(axes):
         raw, running = [], []
-        clocks = [_time(stream, run["_config"]) for stream in chosen]
+        clocks = [_time(stream, _sampling_config(run)) for stream in chosen]
         # Mixed clock availability must not combine fs and indices on one axis.
         common_clock = len({clock[1] for clock in clocks}) == 1
         xlabel = clocks[0][1] if common_clock else "Saved sample index"

@@ -139,6 +139,35 @@ def test_frozen_methods_get_flux_measure_and_zero_bootstrap(method):
 
 
 @pytest.mark.parametrize("method", ["metadynamics", "opes"])
+def test_selected_frozen_pmf_accepts_equivalent_top_level_method_table(method):
+    nested = configuration()
+    nested["rate"] = {"pmf": frozen_pmf(method)}
+    top = copy.deepcopy(nested)
+    top[method] = top["rate"]["pmf"].pop(method)
+    expected, expected_system = JobSpec.from_mapping(nested).resolve()
+    actual, actual_system = JobSpec.from_mapping(top).resolve()
+    assert rate_pmf_stage(actual, actual_system) == rate_pmf_stage(expected, expected_system)
+    assert actual["analysis"] == expected["analysis"]
+    assert rate_pmf_options(actual) == rate_pmf_options(expected)
+
+
+@pytest.mark.parametrize("method", ["metadynamics", "opes"])
+@pytest.mark.parametrize("selector", ["absent", "umbrella", "other", "duplicate"])
+def test_top_level_frozen_table_requires_its_explicit_unique_pmf_selection(method, selector):
+    raw = configuration()
+    raw[method] = frozen_pmf(method)[method]
+    if selector == "umbrella":
+        raw["rate"] = {"pmf": {"method": "umbrella"}}
+    elif selector == "other":
+        other = "opes" if method == "metadynamics" else "metadynamics"
+        raw["rate"] = {"pmf": frozen_pmf(other)}
+    elif selector == "duplicate":
+        raw["rate"] = {"pmf": frozen_pmf(method)}
+    with pytest.raises(InputError, match="requires|does not accept|not both"):
+        JobSpec.from_mapping(raw).resolve()
+
+
+@pytest.mark.parametrize("method", ["metadynamics", "opes"])
 def test_explicit_nonzero_bootstrap_requires_local_override(method):
     raw = configuration()
     raw["analysis"]["bootstrap"] = 20

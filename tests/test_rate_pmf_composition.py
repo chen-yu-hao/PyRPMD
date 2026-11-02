@@ -8,6 +8,7 @@ reaction rate or convergence of an enhanced-sampling calculation.
 import importlib
 import inspect
 import json
+from copy import deepcopy
 from pathlib import Path
 
 import numpy as np
@@ -18,7 +19,7 @@ from pyrpmd.analysis.frozen_bias import frozen_bias_fes
 from pyrpmd.checkpoint import load_checkpoint
 from pyrpmd.dynamics import Dynamics, State
 from pyrpmd.input import JobSpec
-from pyrpmd.runner import run_resolved
+from pyrpmd.runner import prepare, run_resolved
 from pyrpmd.units import parse_quantity
 from pyrpmd.workflows.rate_curve import estimate_fes_curve
 
@@ -147,6 +148,28 @@ def test_actual_enhanced_rate_sampling_with_insufficient_support_stops_before_re
         assert float(saved["time"]) == pytest.approx(34*parse_quantity("0.05 fs", "time"))
     resumed = run_resolved(config, system, output=output, resume=True)
     assert resumed["pmf"] == result["pmf"]
+
+
+@pytest.mark.parametrize("method", ["metadynamics", "opes"])
+def test_top_level_frozen_pmf_table_preserves_preparation_and_actual_sampling(method, tmp_path):
+    nested = _spec(method)
+    top = deepcopy(nested)
+    top.data[method] = top.data["rate"]["pmf"].pop(method)
+    expected_plan = prepare(nested, numerical=True)
+    actual_plan = prepare(top, numerical=True)
+    assert actual_plan["ready"] and expected_plan["ready"]
+    assert actual_plan["pmf_plan"] == expected_plan["pmf_plan"]
+    nested_config, nested_system = nested.resolve()
+    top_config, top_system = top.resolve()
+    expected = run_resolved(nested_config, nested_system, output=tmp_path / "nested")
+    actual = run_resolved(top_config, top_system, output=tmp_path / "top")
+    assert actual["pmf"] == expected["pmf"]
+    checkpoint = Path("pmf/checkpoints") / (method + "_0000.npz")
+    expected_arrays = _arrays(tmp_path / "nested" / checkpoint)
+    actual_arrays = _arrays(tmp_path / "top" / checkpoint)
+    assert actual_arrays.keys() == expected_arrays.keys()
+    for key in expected_arrays:
+        np.testing.assert_array_equal(actual_arrays[key], expected_arrays[key], err_msg=key)
 
 
 def _complete_frozen_sampler(method):

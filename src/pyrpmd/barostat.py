@@ -250,8 +250,11 @@ class BZPBarostat:
             state.step, state.time = saved_state.step, saved_state.time
             dynamics.rng.bit_generator.state = saved_rng
             dynamics.propagation_stats = saved_stats
-            self.restore(saved_piston)
             dynamics.load_operator_state_dict(saved_operators)
+            # Fixed-cell operator restore may reset the shared provider to
+            # Dynamics' reference cell. This standalone piston owns its
+            # evolving cell, so restore that physical cell last.
+            self.restore(saved_piston)
             raise
         return state
 

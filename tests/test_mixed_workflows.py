@@ -1,5 +1,6 @@
 """Selected splitting, phase handoff, and checkpoint identity end to end."""
 import copy
+import hashlib
 import json
 from pathlib import Path
 import numpy as np
@@ -211,3 +212,165 @@ def test_mixed_spectroscopy_frontend_keeps_pacmd_mass_contract(tmp_path):
     c['spectroscopy']['method']='rpmd'
     from pyrpmd.workflows.spectroscopy import resolve_spectroscopy
     with pytest.raises(ValueError,match='only to TRPMD'):resolve_spectroscopy(c,s)
+
+
+def _metadynamics_checkpoint(directory, shared):
+    name = 'shared_metadynamics.npz' if shared else 'metadynamics_0000.npz'
+    with load_checkpoint(directory / 'checkpoints' / name, require_integrity=True) as saved:
+        return {key: saved[key] for key in saved.files}
+
+
+def _pile_metadynamics_config(shared, base):
+    from test_shared_metadynamics import config
+
+    value = config(thermostat='pile-l')
+    value['dynamics'] = {'integrator': base, 'loop_backend': 'python'}
+    if not shared:
+        value['metadynamics'].pop('shared_walkers')
+        value['sampling']['replicas'] = 1
+    return value
+
+
+@pytest.mark.parametrize('shared', [False, True])
+@pytest.mark.parametrize('base,method', [('normal-mode-bab', 'bcocb'), ('cayley-bcb', 'baoab')])
+@pytest.mark.parametrize('native', [False, True])
+def test_mixed_metadynamics_uses_selected_map_and_resumes(tmp_path, monkeypatch, shared, base, method, native):
+    from test_shared_metadynamics import system
+    from pyrpmd.workflows.metadynamics import run_metadynamics
+
+    cfg = _pile_metadynamics_config(shared, base)
+    if native:
+        pytest.importorskip('pyrpmd._native')
+        cfg['native'] = True
+        cfg['dynamics']['loop_backend'] = 'auto'
+    cfg['sampling']['integrator'] = method
+    paired = copy.deepcopy(cfg)
+    paired['dynamics']['integrator'] = {'bcocb': 'cayley-bcb', 'baoab': 'normal-mode-bab'}[method]
+    run_metadynamics(paired, system(), tmp_path / 'paired')
+    run_metadynamics(cfg, system(), tmp_path / 'mixed')
+    expected = _metadynamics_checkpoint(tmp_path / 'paired', shared)
+    actual = _metadynamics_checkpoint(tmp_path / 'mixed', shared)
+    assert actual.keys() == expected.keys()
+    np.testing.assert_array_equal(actual['q'], expected['q'])
+    np.testing.assert_array_equal(actual['p'], expected['p'])
+    for key in expected.keys() - {'fingerprint'}:
+        np.testing.assert_array_equal(actual[key], expected[key], err_msg=key)
+
+    original = Dynamics.sample_step
+    calls = 0
+
+    def interrupted(self, state, *args, **kwargs):
+        nonlocal calls
+        result = original(self, state, *args, **kwargs)
+        calls += 1
+        if state.step == 6 and (not shared or calls % 3 == 2):
+            raise RuntimeError('mixed MetaD interruption')
+        return result
+
+    with monkeypatch.context() as patch:
+        patch.setattr(Dynamics, 'sample_step', interrupted)
+        with pytest.raises(RuntimeError, match='mixed MetaD interruption'):
+            run_metadynamics(cfg, system(), tmp_path / 'resumed')
+    assert int(_metadynamics_checkpoint(tmp_path / 'resumed', shared)['elapsed']) == 5
+    run_metadynamics(cfg, system(), tmp_path / 'resumed')
+    resumed = _metadynamics_checkpoint(tmp_path / 'resumed', shared)
+    for key in actual:
+        np.testing.assert_array_equal(resumed[key], actual[key], err_msg=key)
+
+
+@pytest.mark.parametrize('shared', [False, True])
+@pytest.mark.parametrize('base', ['cayley-bcb', 'normal-mode-bab'])
+@pytest.mark.parametrize('nhc_parameters', [False, True])
+@pytest.mark.parametrize('explicit_pairing', [False, True])
+def test_default_metadynamics_retains_legacy_rng_and_checkpoint(tmp_path, monkeypatch, shared, base, nhc_parameters, explicit_pairing):
+    from test_shared_metadynamics import system
+    from pyrpmd.workflows.metadynamics import run_metadynamics
+
+    cfg = _pile_metadynamics_config(shared, base)
+    if explicit_pairing:
+        cfg['sampling']['integrator'] = {'cayley-bcb': 'bcocb', 'normal-mode-bab': 'baoab'}[base]
+    if nhc_parameters:
+        # Historical PILE jobs can retain an ignored NHC parameter table.
+        cfg['sampling']['thermostat_params'] = {'chain_length': 4, 'substeps': 2}
+    original = Dynamics.sample_step
+
+    def legacy_call(self, state, *args, **kwargs):
+        kwargs.pop('method', None)
+        return original(self, state, *args, **kwargs)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(Dynamics, 'sample_step', legacy_call)
+        run_metadynamics(cfg, system(), tmp_path / 'legacy')
+    run_metadynamics(cfg, system(), tmp_path / 'current')
+    legacy = _metadynamics_checkpoint(tmp_path / 'legacy', shared)
+    current = _metadynamics_checkpoint(tmp_path / 'current', shared)
+    assert str(current['fingerprint']) == _historical_metadynamics_fingerprint(cfg, system(), shared)
+    assert current.keys() == legacy.keys()
+    for key in legacy:
+        np.testing.assert_array_equal(current[key], legacy[key], err_msg=key)
+    run_metadynamics(cfg, system(), tmp_path / 'legacy')
+    restored = _metadynamics_checkpoint(tmp_path / 'legacy', shared)
+    for key in legacy:
+        np.testing.assert_array_equal(restored[key], legacy[key], err_msg=key)
+
+
+def _historical_metadynamics_fingerprint(config, system, shared, schema=2):
+    from pyrpmd.workflows.common import _legacy_fingerprint
+
+    canonical = {**config, 'task': 'fes'}
+    extras = {'shared_metadynamics': 1} if shared else {'metadynamics_replica': 0}
+    if schema == 1:
+        return _legacy_fingerprint(config, system, extras)
+    identity = {'schema': 2, 'method': 'metadynamics',
+                'physics_fingerprint': _legacy_fingerprint(canonical, system, extras)}
+    return hashlib.sha256(json.dumps(identity, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+
+
+@pytest.mark.parametrize('shared', [False, True])
+@pytest.mark.parametrize('base,method', [('normal-mode-bab', 'bcocb'), ('cayley-bcb', 'baoab')])
+@pytest.mark.parametrize('schema', [1, 2])
+def test_mixed_metadynamics_rejects_old_ignored_map_history(tmp_path, shared, base, method, schema):
+    from test_shared_metadynamics import system
+    from pyrpmd.checkpoint import atomic_savez
+    from pyrpmd.workflows.metadynamics import run_metadynamics
+
+    cfg = _pile_metadynamics_config(shared, base)
+    cfg['sampling']['integrator'] = method
+    run_metadynamics(cfg, system(), tmp_path)
+    saved = _metadynamics_checkpoint(tmp_path, shared)
+    old = _historical_metadynamics_fingerprint(cfg, system(), shared, schema)
+    assert str(saved['fingerprint']) != old
+    saved['fingerprint'] = old
+    name = 'shared_metadynamics.npz' if shared else 'metadynamics_0000.npz'
+    path = tmp_path / 'checkpoints' / name
+    atomic_savez(path, kind='PyRPMD.shared-metadynamics.v1' if shared else 'arrays', **saved)
+    before = path.read_bytes()
+    with pytest.raises(ValueError, match='physics'):
+        run_metadynamics(cfg, system(), tmp_path)
+    assert path.read_bytes() == before
+
+
+@pytest.mark.parametrize('shared', [False, True])
+def test_metadynamics_rejects_invalid_pile_map_before_creating_output(tmp_path, shared):
+    from test_shared_metadynamics import system
+    from pyrpmd.workflows.metadynamics import run_metadynamics
+
+    cfg = _pile_metadynamics_config(shared, 'normal-mode-bab')
+    cfg['sampling']['integrator'] = 'obcbo'
+    output = tmp_path / 'invalid'
+    with pytest.raises(ValueError, match='BCOCB or BAOAB'):
+        run_metadynamics(cfg, system(), output)
+    assert not output.exists()
+
+
+@pytest.mark.parametrize('base,method', [('normal-mode-bab', 'bcocb'), ('cayley-bcb', 'baoab')])
+def test_composed_metadynamics_keeps_existing_mixed_checkpoint_identity(base, method):
+    from test_shared_metadynamics import system
+    from pyrpmd.workflows.common import _fingerprint, fingerprint_matches
+
+    cfg = _pile_metadynamics_config(False, base)
+    cfg['sampling'].update(integrator=method, thermostat_params={'pile_scale': 1.})
+    identity = {'metadynamics_replica': 0}
+    assert _fingerprint(cfg, system(), identity) == _historical_metadynamics_fingerprint(cfg, system(), False)
+    assert fingerprint_matches(_historical_metadynamics_fingerprint(cfg, system(), False, 1),
+                               cfg, system(), identity)

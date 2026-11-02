@@ -151,7 +151,8 @@ def _history_step(runtime, dynamics, cv, update, *, neq, interval, sampling,
             runtime.chain.step(state, force_bias)
         elif thermostat == "pile-l":
             gamma = parse_quantity(sampling.get("gamma_centroid", "0.01 fs^-1"), "frequency")
-            dynamics.sample_step(state, force_bias, gamma_centroid=gamma)
+            dynamics.sample_step(state, force_bias, gamma_centroid=gamma,
+                                 method=sampling.get("integrator"))
         else:
             dynamics.step(state, force_bias)
         value = cv.value(state.q) if record or due else None
