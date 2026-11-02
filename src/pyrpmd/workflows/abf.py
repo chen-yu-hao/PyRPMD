@@ -159,6 +159,54 @@ def _checkpoint(output, method, replica):
     return Path(output) / "checkpoints" / f"{method}_{replica:04d}.npz"
 
 
+def _validate_operator_checkpoint(config, system, options, elapsed, operators):
+    """Validate the active bath before even a completed stream is accepted.
+
+    A lazily initialized composition can restore an empty bath, which is valid
+    only before its first step.  Bind the actual sampler without a PES to check
+    both its key and the required duration, then reuse the operator loaders for
+    the Python-chain or native-bath identity, auxiliaries and checksums.
+    """
+    if (not isinstance(operators, dict) or set(operators) != {"version", "rng", "composition", "sampling"}
+            or type(operators["version"]) is not int or operators["version"] != 1
+            or not isinstance(operators["composition"], dict) or not isinstance(operators["sampling"], dict)):
+        raise ValueError("invalid ABF propagation operator checkpoint")
+    candidate = Dynamics(None, system.masses, config["beta"], config["beads"], options["dt"],
+                         native=False, **loop_options(config))
+    # Every ABF/eABF step carries a Python bias, so a full native executor is
+    # never selected.  Andersen and legacy PILE draw from the main RNG and do
+    # not create persistent bath helpers in either composition.
+    if operators["composition"] != candidate.operator_state_dict()["composition"]:
+        raise ValueError("ABF checkpoint base propagation operator state differs")
+    sampler = fes_sampler(config)
+    if elapsed == 0 or sampler.thermostat_spec is None:
+        if operators["sampling"]:
+            raise ValueError("ABF checkpoint contains an unexpected sampling operator")
+    else:
+        method = sampler.integrator if sampler.thermostat == "pile-l" else None
+        expected = {"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}.get(candidate.integrator_name)
+        composition_method = None if method == expected else method
+        candidate._sample_composition(sampler.thermostat_spec, composition_method)
+        keys = set(candidate.operator_state_dict()["sampling"])
+        if not operators["sampling"]:
+            raise ValueError("ABF checkpoint is missing thermostat auxiliary state")
+        if set(operators["sampling"]) != keys:
+            raise ValueError("ABF checkpoint sampling operator key differs from the current sampler")
+        saved = operators["sampling"][next(iter(keys))]
+        if not isinstance(saved, dict):
+            raise ValueError("invalid ABF sampling operator checkpoint")
+        half = sampler.thermostat == "nhc" or candidate.integrator_name == "velocity-verlet"
+        duration = options["dt"] * (0.5 if half else 1.0)
+        if not isinstance(saved.get("baths"), dict) or set(saved["baths"]) != {float(duration).hex()}:
+            raise ValueError("ABF checkpoint is missing thermostat auxiliary state for the current duration")
+        if saved.get("native") is not None or saved.get("native_seed") is not None:
+            raise ValueError("ABF checkpoint contains an unexpected native executor")
+    try:
+        candidate.load_operator_state_dict(operators)
+    except (KeyError, TypeError) as exc:
+        raise ValueError("invalid ABF thermostat auxiliary state") from exc
+
+
 def _read(config, system, output, replica, cv, options):
     path = _checkpoint(output, options["method"], replica)
     with load_checkpoint(path, expected_kind="abf_stream", require_integrity=True) as data:
@@ -182,13 +230,7 @@ def _read(config, system, output, replica, cv, options):
         if adaptive.observations != production or adaptive.refreshes != production // options["pace"]:
             raise ValueError("ABF checkpoint adaptation clock differs")
         operators = json.loads(str(data["operators"]))
-        if (not isinstance(operators, dict) or set(operators) != {"version", "rng", "composition", "sampling"}
-                or type(operators["version"]) is not int or operators["version"] != 1
-                or not isinstance(operators["composition"], dict) or not isinstance(operators["sampling"], dict)):
-            raise ValueError("invalid ABF propagation operator checkpoint")
-        if elapsed > 0 and fes_sampler(config).operator_checkpoint and not operators["sampling"]:
-            raise ValueError("ABF checkpoint is missing thermostat auxiliary state")
-        np.random.default_rng().bit_generator.state = operators["rng"]
+        _validate_operator_checkpoint(config, system, options, elapsed, operators)
         samples, clocks = data["samples"].copy(), data["sample_steps"].copy()
         count = production // options["interval"]
         if (samples.shape != (count, cv.dimension) or not np.isfinite(samples).all()
