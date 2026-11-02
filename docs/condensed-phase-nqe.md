@@ -195,10 +195,15 @@ physical virials consistently. See [Markland and Manolopoulos, JCP 129,
 ## Reproducing the model-solid validation
 
 The checked-in driver, models, matrix data, figures and summaries are under
-[benchmarks/condensed_phase](https://github.com/chen-yu-hao/PyRPMD/tree/codex/condensed-phase-nqe-20261102/benchmarks/condensed_phase). Complete raw time
-series are supplied as an accompanying review archive and can also be
-regenerated with the driver. Summary filenames/checksums refer to that archive;
-the public source distribution excludes the raw CSVs. All model parameters,
+[benchmarks/condensed_phase](https://github.com/chen-yu-hao/PyRPMD/tree/codex/condensed-phase-nqe-20261102/benchmarks/condensed_phase).
+All **76 raw observation CSVs** are public in this PR's
+[results directory](https://github.com/chen-yu-hao/PyRPMD/tree/codex/condensed-phase-nqe-20261102/benchmarks/condensed_phase/results),
+alongside their summaries and provenance sidecars. The accompanying review
+archive remains available, and the driver can regenerate the observations.
+Summary filenames and checksums identify the same CSVs in the repository and
+archive. Python source distributions built with `setup.py sdist` omit the raw
+CSVs to control package size; obtain them from the Git repository or the
+accompanying archive when reanalyzing an sdist checkout. All model parameters,
 seeds, bead counts and timesteps are explicit. The LJ potential requires a
 C++ compiler and builds its local callback into the output folder.
 
@@ -418,7 +423,7 @@ volume-weighted pressure balances; the
 [PIGLET diagnostic](../benchmarks/condensed_phase/results/piglet_pressure_diagnostic.json)
 records both pressure definitions, source identities and raw-file hashes.
 The [integrity manifest](../benchmarks/condensed_phase/results/integrity_manifest.json)
-links these summaries to the accompanying raw-data archive, and the
+links these summaries to the public raw CSVs and their accompanying archive, and the
 [software validation record](../benchmarks/condensed_phase/results/software_validation.json)
 states the executed regression and source-package checks.
 

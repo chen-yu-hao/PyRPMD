@@ -28,7 +28,7 @@ def write_integrity_manifest(directory):
               "source_identity_at_seal":numerical_source_identity(),
               "analysis_source_sha256_at_seal":{str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(analysis)},
               "first_campaign_source_capture":"mixed; inspect per-trajectory provenance and summary notes",
-              "data_distribution":"Complete raw CSVs are supplied in the accompanying private review archive. Source, summaries, trajectory provenance sidecars and figures are public; public source distribution excludes raw CSVs.",
+              "data_distribution":"All 76 raw observation CSVs are public in the Git repository under benchmarks/condensed_phase/results, alongside source, summaries, trajectory provenance sidecars and figures. The accompanying review archive remains available. Python source distributions exclude raw CSVs to control package size.",
               "files":{str(p.relative_to(directory)):hashlib.sha256(p.read_bytes()).hexdigest()
                        for p in sorted(directory.iterdir()) if p.is_file() and p.name!="integrity_manifest.json"}}
     (directory/"integrity_manifest.json").write_text(json.dumps(manifest,indent=2)+"\n")

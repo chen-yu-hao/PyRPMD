@@ -25,7 +25,8 @@ include benchmarks/pmf_accuracy/render_validation.py
 recursive-include benchmarks/loop_native *.py *.md *.c *.cpp *.h *.f90
 recursive-include benchmarks/materials *.py *.md *.json
 recursive-include benchmarks/condensed_phase *.py *.cpp *.md *.json *.txt *.png *.pdf
-# Full first-campaign time series are supplied as a separate review archive.
+# Raw observations are public in Git and also supplied in the review archive.
+# Keep raw CSV/NPZ files out of the Python sdist to control package size.
 recursive-exclude benchmarks/condensed_phase/results *.csv *.npz
 recursive-include benchmarks/efficiency *.py *.md
 recursive-include benchmarks/surface *.py *.md

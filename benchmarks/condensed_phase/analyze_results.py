@@ -95,7 +95,7 @@ def main():
             "piglet_pressure_diagnostic":diagnostic}
     (args.directory/"comparisons.json").write_text(json.dumps(output,indent=2)+"\n")
     lines=["# Executed model-solid validation", "", "All energies below are total-cell values in reduced units.",
-           "Complete raw CSVs are supplied as an accompanying review archive and are reproducible with the driver. Public summaries retain the raw filenames and SHA256 checksums; the CSVs are not part of the public source distribution.",
+           "All 76 raw observation CSVs are public in [this PR's results directory](https://github.com/chen-yu-hao/PyRPMD/tree/codex/condensed-phase-nqe-20261102/benchmarks/condensed_phase/results), alongside the summaries and provenance sidecars. The accompanying review archive remains available. Summary filenames and SHA256 checksums identify the same CSVs in both locations. Python source distributions omit the raw CSVs to control package size.",
            "Intervals are 95% Student intervals across four independent trajectories; they do not include bead, timestep, cell-size or model error.", "",
            "## Fixed-volume FCC solid", "", "| Method | P | dt | E, 95% interval | Pressure, 95% interval |", "| --- | ---: | ---: | ---: | ---: |"]
     def fmt(c,field):
@@ -154,14 +154,17 @@ def main():
                   ". This is a retained pointwise drift diagnostic, not proof of stationarity for other cases or an independently corrected estimate.", "",
                   "![Convergence and pressure sampling](validation.png)","",
                   "Gaussian sample markers are shifted horizontally by 4% for visibility; the simulations use the bead counts stated in the table. [PDF figure](validation.pdf).", "",
-                  "## Reanalyzing the accompanying archive", "",
-                  "Extract the private validation archive into the repository checkout containing the public summaries and sidecars. The archive paths start with benchmarks/condensed_phase/results, with no additional enclosing directory. From the repository root:", "",
-                  "```bash", "unzip /path/to/PyRPMD-condensed-phase-validation-20261102.zip",
+                  "## Reanalyzing the public observations", "",
+                  "Use a checkout of [PR #75's branch](https://github.com/chen-yu-hao/PyRPMD/tree/codex/condensed-phase-nqe-20261102), which contains all 76 CSVs under benchmarks/condensed_phase/results together with their summaries and sidecars. From the repository root:", "",
+                  "```bash",
                   "export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=src",
                   "NQE_RESULTS=benchmarks/condensed_phase/results",
                   "python benchmarks/condensed_phase/analyze_results.py \"$NQE_RESULTS\"",
                   "python benchmarks/condensed_phase/plot_validation.py \"$NQE_RESULTS\"", "```", "",
-                  "This uses the supplied summaries and raw series without running dynamics. The scientific guide gives complete commands to regenerate the trajectories. The public repository contains no raw-CSV download links.", "",
+                  "This uses the committed summaries and raw series without running dynamics. The scientific guide gives complete commands to regenerate the trajectories.", "",
+                  "The accompanying review archive is another way to obtain the observations. For a Python source-distribution checkout, which omits raw CSVs, extract just those files at the repository root; the archive paths start with benchmarks/condensed_phase/results, with no additional enclosing directory:", "",
+                  "```bash", "unzip /path/to/PyRPMD-condensed-phase-validation-20261102.zip 'benchmarks/condensed_phase/results/*.csv'", "```", "",
+                  "Then run the same analysis commands above. The Git repository includes the public raw observations; the sdist exclusion only controls the Python package's size.", "",
                   "See [the scientific guide](../../../docs/condensed-phase-nqe.md) for models, equations, parameter provenance and scope."])
     (args.directory/"RESULTS.md").write_text("\n".join(lines)+"\n")
 

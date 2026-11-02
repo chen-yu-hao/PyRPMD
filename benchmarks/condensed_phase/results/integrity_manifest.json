@@ -1,6 +1,6 @@
 {
   "schema": "PyRPMD.condensed-campaign-integrity.v1",
-  "sealed_utc": "2026-11-02T12:43:59.802783+00:00",
+  "sealed_utc": "2026-11-02T13:05:54.329662+00:00",
   "source_identity_at_seal": {
     "benchmarks/condensed_phase/models.py": "28bf3db58ef7595de42de35827cfaa9ac60b197bac2dc1da1a44491cc6d8ff65",
     "benchmarks/condensed_phase/lj.cpp": "828581643bef84ac5a2b3272247c405dbd843f4002c4aca42a3e972172847f12",
@@ -18,20 +18,20 @@
     "pyrpmd._native compiled binary": "7e423db35fb279646fcaadd6f969091d6ce67b1870f9422d4319eaf97084ab6f"
   },
   "analysis_source_sha256_at_seal": {
-    "benchmarks/condensed_phase/analyze_results.py": "4dcfbbb305efcd049e40e703b9136735a68e7fe96a6d03ca698d8df30a5a7a33",
+    "benchmarks/condensed_phase/analyze_results.py": "153d2ef1e7981eab4787c27b76814a38cab9c8c7ffb81fa55162150f268a6ff7",
     "benchmarks/condensed_phase/failure_replay.py": "41fb4dd69b6da239523009b9ab14a2850e633667a229aa79cc7d22cf969fee26",
     "benchmarks/condensed_phase/models.py": "28bf3db58ef7595de42de35827cfaa9ac60b197bac2dc1da1a44491cc6d8ff65",
     "benchmarks/condensed_phase/piglet_pressure_diagnostic.py": "1a8c03413795da1bca3cce4bf3dfbb098834637bc7fc905177eb6b2f6149a2ce",
     "benchmarks/condensed_phase/piglet_reference.py": "5199255b2d203a522a49fcc9065265f0ec0e0613933c45eba05a183cce0ce917",
     "benchmarks/condensed_phase/plot_validation.py": "9e665cbebb587e40971568b1298bbc281cef6ca51d554430b003c5e7c351abfa",
-    "benchmarks/condensed_phase/seal_results.py": "1b0e2401243f658374896fc42a04d95df3e0af1acba6ce01a299083162a918ed",
+    "benchmarks/condensed_phase/seal_results.py": "056db13e116e1098163ad2039bcee74dba58d30bbc7b057e3a10762402f50c03",
     "benchmarks/condensed_phase/validate.py": "597194c161fc72ce9d6aa805c5939d86207551579ea5752c8cf3139c8b11a98e",
-    "docs/condensed-phase-nqe.md": "2bf8ef654bb460ded11ce26dfebb65bc67a91a062057b4ac55f3ee7988e0dc02"
+    "docs/condensed-phase-nqe.md": "d975b25a79599763ec32317cb8d2d0f1f72459c48e65428face341759047be70"
   },
   "first_campaign_source_capture": "mixed; inspect per-trajectory provenance and summary notes",
-  "data_distribution": "Complete raw CSVs are supplied in the accompanying private review archive. Source, summaries, trajectory provenance sidecars and figures are public; public source distribution excludes raw CSVs.",
+  "data_distribution": "All 76 raw observation CSVs are public in the Git repository under benchmarks/condensed_phase/results, alongside source, summaries, trajectory provenance sidecars and figures. The accompanying review archive remains available. Python source distributions exclude raw CSVs to control package size.",
   "files": {
-    "RESULTS.md": "9fe8ef42de9f672086f9c0150c7fc6c8a4a37295a02ed96dfe0983b87fbaaea1",
+    "RESULTS.md": "b5d543cf21157c575df3cd291694d5ea39777eab532ab0d0fd3f764ffdc15069",
     "comparisons.json": "800095feb45cea0126fdf6afee4422be56cc6c3c695ef53b882fdc7cc0477c6e",
     "crystal_sc_npt_p8_dt0.02_seed18017.csv": "18e1ff8883f920a9e495a78a610455af78f460888c2a8106a5fd4970efaf063f",
     "crystal_sc_npt_p8_dt0.02_seed18018.csv": "715cab0e4d03c07fe118e721d97fa1d1c80f27a0ea972614e3a00d73640cd356",
