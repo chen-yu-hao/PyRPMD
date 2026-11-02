@@ -1,0 +1,2 @@
+{"engine": "lammps", "atoms": 256, "median_seconds": {"serial": 0.03719486600311939, "serial_current": 0.023835626998334192, "persistent": 0.03243006500269985}}
+{"engine": "lammps", "atoms": 2048, "median_seconds": {"serial": 0.12364588800119236, "serial_current": 0.13053924099949654, "persistent": 0.11674005700479029}}

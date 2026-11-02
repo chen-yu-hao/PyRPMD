@@ -17,8 +17,8 @@ hartree/bohr. Cell vectors are rows; trajectories remain unwrapped.
 | `tblite` / `xtb` | `pip install 'pyrpmd[tblite]'` | Full, partial, or no PBC | Reused tblite xTB calculator; sequential electronic calculations |
 | `pyscf` | `pip install 'pyrpmd[pyscf]'` | Isolated molecules | Reused HF/DFT object with fresh geometry and analytic gradients |
 | `torch` | `pip install 'pyrpmd[gpu]'` | Explicit periodic model contract below | Native tensor batch |
-| `openmm` | `pip install 'pyrpmd[openmm]'` | All or no PBC; reduced lower-triangular cells | Reused OpenMM Context, including virtual-site force redistribution |
-| `lammps` | Matching LAMMPS Python module and shared library, or `pip install 'pyrpmd[lammps]'` | Full, partial, or no PBC; restricted-triclinic cells | Reused one-rank library instance; `run 0` energies, forces and physical virial |
+| `openmm` | `pip install 'pyrpmd[openmm]'` | All or no PBC; reduced lower-triangular cells | Reused Context or explicit concurrent Context pool; virtual-site forces redistributed |
+| `lammps` | Matching LAMMPS Python module and shared library, or `pip install 'pyrpmd[lammps]'` | Full, partial, or no PBC; restricted-triclinic cells | Reused library instances, optional bead affinity and neighbor reuse; private MPI subgroups |
 
 ASE-backed models accept a batch at the PyRPMD interface but call the calculator
 once per frame. They do not advertise native GPU batching. This choice reuses
@@ -111,9 +111,9 @@ physical virial, so it is a fixed-cell force route rather than an NPT provider.
 `device="cuda:0"` selects CUDA device 0 and defaults to double precision;
 `device="opencl:0"` selects OpenCL. `params.properties` accepts the installed
 platform's string properties. Conflicting platform/device choices fail.
-PyRPMD CUDA worker routing supports this provider; frames are still evaluated
-sequentially in one reused Context, not as a native multi-frame batch. GPU
-availability and force accuracy must be checked on the intended hardware.
+PyRPMD CUDA worker routing supports this provider. The default evaluates frames
+sequentially in one reused Context. GPU availability and force accuracy must be
+checked on the intended hardware.
 
 OpenMM constraints must also appear with the same pairs and lengths in
 `system.bond_constraints`. `bind_system` checks them; the force provider never
@@ -122,16 +122,72 @@ Remove OpenMM barostats, Andersen thermostats and center-of-mass removers from
 the force-only model. XML/source files and dependency versions enter the run
 provenance; the adapter also reports its serialized-model SHA256.
 
+### Persistent OpenMM copies
+
+For many beads or a combined bead/trajectory batch, explicitly select a pool:
+
+```toml
+[potential]
+provider = "openmm"
+model = "water-system.xml"
+device = "cpu"
+params = {platform = "CPU", properties = {Threads = "1"}, batch_mode = "contexts", max_workers = 4}
+
+[parallel]
+backend = "serial"
+bead_workers = 1
+```
+
+Every input row gets its own persistent Context, including positions, virtual
+sites, force kernels and neighbor state. Contexts are allocated lazily up to
+the largest batch seen and retained until `close()`. For P beads and T
+independent trajectories this can require P×T Contexts; `max_workers` bounds
+simultaneous evaluations, **not** the number of resident copies. A smaller
+later batch reuses the leading copies. Input order is preserved and no Context
+is accessed by two workers at once. Cell changes reach every copy and roll back
+on failure; a failed evaluation returns no partial batch.
+
+Start with `Threads="1"` and `max_workers` no larger than the allocated CPU
+cores. Benchmark the complete batch before selecting a worker count: Context
+memory and cache pressure can outweigh concurrency for small models. The
+adapter does not change OpenMM thread counts, precision or device properties.
+On CUDA/OpenCL all copies use the explicitly selected device and precision;
+ensure enough device memory for the largest expected batch. The pool never
+calls an OpenMM integration step and does not introduce springs, a thermostat
+or constraint projection.
+
+This is concurrent evaluation through the public Context API. It still uploads
+each changed configuration and retrieves each copy's state; it does not claim
+a fused native batch or a single host/device transfer (`native_batch=false`).
+The legacy `batch_mode="serial"` remains the default, with unchanged metadata.
+Its `max_workers` must be 1. New mode/worker parameters stay in the ordinary
+potential input and therefore in the run identity; existing inputs acquire
+no new scientific options.
+
+The `RPMDIntegrator` copy API was also evaluated. Its force-only `getState`
+path copies a replica into a Context and evaluates that Context, so it does
+not remove the per-copy state requests. It also cannot preserve the adapter's
+general constraint/virtual-site contract without extra handling. OpenMM's
+force-group contraction is not enabled: PyRPMD's
+[`SplitPotential`](../src/pyrpmd/potentials/contraction.py) requires one complete
+ring and a specific coordinate projection, lifted force scaling and energy
+bookkeeping, while this adapter accepts arbitrary independent rows, including
+multiple trajectories. No ring topology is inferred from the batch dimension.
+Use PyRPMD's explicit contraction wrapper with suitable force components when
+that approximation is intended.
+
 Upstream contracts: [Context evaluation and virtual sites](https://docs.openmm.org/latest/api-python/generated/openmm.openmm.Context.html),
 [periodic boxes, serialization and virtual sites](https://docs.openmm.org/latest/userguide/theory/05_other_features.html),
-[platform properties](https://docs.openmm.org/latest/userguide/library/04_platform_specifics.html).
+[platform properties](https://docs.openmm.org/latest/userguide/library/04_platform_specifics.html),
+and [RPMD copy evaluation implementation](https://github.com/openmm/openmm/blob/8.6.1/plugins/rpmd/openmmapi/src/RPMDIntegrator.cpp).
 
 ## LAMMPS as a library
 
 A LAMMPS setup script supplies atoms, IDs, types, charges, topology and force
 field. It must create a complete three-dimensional system and contain no fixes
-or dumps. PyRPMD evaluates `run 0 pre yes post no`, without a LAMMPS integration
-step. Standard static force fields can use the installed KSPACE package for
+or dumps. The default evaluates `run 0 pre yes post no`, without a LAMMPS integration
+step. The explicit persistent mode below refreshes forces without advancing
+physical coordinates. Standard static force fields can use the installed KSPACE package for
 Ewald/PPPM and the accelerator packages available in that LAMMPS build.
 The initial adapter accepts standalone LJ, Buckingham/Born, Coulomb, Morse,
 soft/table, EAM/MEAM, Tersoff/SW/EDIP, AIREBO/REBO/BOP and selected static ML
@@ -166,8 +222,10 @@ without remapping the caller's positions.
 
 Alternatively, `factory="potential.py:build_engine"` calls
 `build_engine(comm=..., **factory_kwargs)`. It must return a fully configured
-`lammps.lammps` instance and honor the supplied communicator. PyRPMD supplies
-`MPI.COMM_SELF` inside a multi-rank job and requires one rank per provider.
+`lammps.lammps` instance and honor the supplied communicator. By default PyRPMD
+supplies `MPI.COMM_SELF` inside a multi-rank job. The explicit MPI subgroup
+configuration below allows several ranks per provider without passing
+`MPI.COMM_WORLD` to LAMMPS.
 An MPI-enabled LAMMPS wheel requires its matching runtime, such as MPICH; a
 successful Python import alone does not establish that the shared library loads.
 Do not call `lammps.finalize()` in a factory: provider cleanup uses `close()` and
@@ -192,10 +250,256 @@ the public workflow. These are coordinate-only force providers: no LAMMPS
 thermostat, SHAKE, charge-equilibration fix, driven or velocity-dependent force
 can be substituted for a PyRPMD potential.
 
+### Bead affinity and safe neighbor reuse
+
+```toml
+[potential]
+provider = "lammps"
+model = "potential.in"
+# neighbor_skin is in bohr; 3.77945225 bohr is approximately 2 angstrom.
+params = {type_map = ["Ar"], batch_mode = "persistent", neighbor_skin = 3.77945225}
+```
+
+`batch_mode="persistent"` keeps one configured instance for each input row,
+up to the largest batch seen. The first frame for a slot uses full setup;
+later evaluations retain that slot's neighbor list while every atom remains
+strictly within half the skin distance of its last rebuild position. The
+comparison is against the last rebuild, not just the preceding evaluation.
+At the threshold, after a cell change, or after cache invalidation, full setup
+is required. A wrapped coordinate crossing a periodic face also forces a
+conservative rebuild, even when its true unwrapped displacement is small: the
+existing ghost images must remain consistent with the coordinates written to
+the engine. Periodic wrapping is confined to the engine; PyRPMD input arrays
+remain unwrapped. Changing frame order can cost a rebuild but does not change
+the potential or its results.
+
+The adapter sets `neighbor <skin> bin` for this mode. The default skin is
+2 angstrom, expressed internally in bohr; an explicit `neighbor_skin` must be
+finite and positive. The legacy serial mode retains the setup script's
+neighbor settings. It does not silently switch to persistent mode.
+
+**`run 0 pre no` is not a force refresh:** it skips the initial force evaluation
+as well as setup and can return stale forces. On a valid retained list the
+adapter instead executes `run 1 pre no post no` with no integration or force
+modifying fixes. This invokes communication and force/virial kernels, while
+positions and velocities stay unchanged. Only LAMMPS' private evaluation
+counter advances; it is not PyRPMD's physical time and is not checkpoint state.
+The force engine remains restricted to static, coordinate-only force fields.
+Every restarted provider reconstructs its cache and begins with full setup.
+Do not mutate an exposed engine's force parameters, neighbor configuration,
+computes or fixes between evaluations; create a new provider for a changed
+model. `set_cell` is the supported cell-update entry point.
+
+`batch_stats` reports resident instances, full rebuilds and reused-list
+evaluations. This cache uses memory proportional to the largest batch; include
+model, neighbor and accelerator memory when choosing bead/trajectory batch
+sizes. Failed batches are never returned partially; provider failures close
+the affected provider instead of reusing uncertain engine state.
+
+### Several MPI ranks per bead worker
+
+The existing G×B hierarchy can give each bead worker a private group of R
+LAMMPS ranks through `parallel.pes_ranks`:
+
+```toml
+[parallel]
+backend = "mpi"
+mode = "bead"
+trajectory_groups = 2
+bead_workers = 4
+pes_ranks = 2
+threads_per_rank = 1
+scheduling = "static"
+```
+
+Launch this example with 16 ranks: `mpiexec -n 16 pyrpmd run simulation.inp`.
+Static execution needs `G * B * R` ranks; dynamic scheduling adds one dedicated
+coordinator, for `1 + G * B * R`. Members of a private bead subgroup evaluate
+the same chunk collectively, LAMMPS decomposes atoms within that subgroup, and
+only its leader contributes the result to the bead assembly. Unrelated bead
+groups never share a LAMMPS communicator. `pes_ranks=1` keeps the previous
+topology and behavior. This option is restricted to the MPI LAMMPS path;
+process workers and PyRPMD's GPU scheduler reject multi-rank engine groups.
+
+For direct Python use, `LAMMPSPotential(..., communicator=private_comm)` accepts
+an explicit non-null intracommunicator. The provider duplicates and owns it;
+the caller retains ownership of the original. Pass a communicator obtained by
+`Split` or `Dup`, never `MPI.COMM_WORLD` itself, and call construction,
+evaluation, cell updates and close collectively on its members. MPI objects
+are runtime resources and are not placed in the serializable input or run
+identity. The factory must honor the supplied communicator; a mismatching
+engine fails validation.
+
 Upstream contracts: [Python library](https://docs.lammps.org/Python_module.html),
 [units](https://docs.lammps.org/units.html),
 [configurational pressure](https://docs.lammps.org/compute_pressure.html),
-and [populated-box changes](https://docs.lammps.org/change_box.html).
+[populated-box changes](https://docs.lammps.org/change_box.html),
+[run setup semantics](https://docs.lammps.org/run.html),
+and [neighbor skin/rebuild conditions](https://docs.lammps.org/neighbor.html).
+
+### Choosing the direct adapter or an i-PI socket client
+
+| Workload | Suggested route | Starting configuration |
+|---|---|---|
+| Small systems, few frames, or limited memory | Direct serial OpenMM/LAMMPS | One reused engine; measure before adding copies |
+| Many water beads on a multicore CPU | OpenMM Context pool | `batch_mode="contexts"`, `Threads="1"`, explicit worker count |
+| Static LJ/EAM/ML forces with small per-step displacements | Direct persistent LAMMPS | One instance per stable batch slot; measure rebuild/reuse counts |
+| Larger systems needing atom decomposition inside each bead worker | Direct MPI LAMMPS | `pes_ranks>1` with explicit G×B×R rank budget |
+| Separately managed MPI/GPU LAMMPS executables, incompatible Python/MPI libraries, or engines on other nodes | i-PI socket provider | Multiple independent clients, each with its own MPI partition/job |
+
+The existing socket provider serves one geometry per protocol request and
+dispatches a batch over persistent clients. It avoids linking LAMMPS into the
+PyRPMD Python process and lets each client use its own MPI/runtime and
+accelerator configuration. Network copies and latency remain; it is most
+useful when force calculations are sufficiently expensive to amortize them.
+Do not add LAMMPS `fix pimd/langevin` to either route: PyRPMD already propagates
+the ring polymer.
+
+A server configuration for four independent MPI clients is:
+
+```toml
+[potential]
+provider = "ipi"
+params = {host = "127.0.0.1", port = 31415, clients = 4, timeout = 300.0}
+
+[parallel]
+backend = "serial"
+mode = "serial"
+bead_workers = 1
+```
+
+Run PyRPMD first so the listening socket exists. Configure a LAMMPS client
+with the same atom order, force field and boundary conventions, then add
+`fix force_client all ipi 127.0.0.1 31415` and a sufficiently long `run` command.
+A single `mpiexec -n 16 lmp -partition 4x4 -in force-client.in` can provide four
+clients with four ranks each; four separate four-rank jobs can connect to the
+same server as well. This is a socket-client script, not a script for the
+direct adapter (which refuses fixes). Use a Unix socket on one host when
+supported, or an explicitly reachable TCP address across nodes.
+LAMMPS' `fix force_client all ipi name 31415 unix` connects to `/tmp/ipi_name`; set
+PyRPMD's `params.unix` to that full path, rather than just `name`.
+
+For long-range forces under substantial cell changes, follow the LAMMPS
+[`fix ipi reset` contract](https://docs.lammps.org/fix_ipi.html) to reinitialize
+box-dependent electrostatics. Select and record this choice consistently with
+the intended Hamiltonian. PyRPMD expects atomic units on the i-PI wire; LAMMPS
+handles conversion from its supported unit style. List and checksum client
+models/configuration in the run's external provenance: a socket connection
+alone cannot authenticate a remote force field.
+
+### Reproducing the force-engine benchmark
+
+The source-distributed
+[`force_engine_adapters.py`](../benchmarks/efficiency/force_engine_adapters.py)
+compares the actual pre-change adapter source against the new modes:
+
+```bash
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 OPENMM_CPU_THREADS=1 \
+  python benchmarks/efficiency/force_engine_adapters.py \
+  --legacy-ref 8cc402fb12391e4fb644d3e186e5e58d1699759a \
+  --rpmd-copy --warmup 2 --repeats 7 --output force-engine-timings.json
+```
+
+The historical commit must be available in the local checkout. Install matching
+OpenMM/LAMMPS/MPI runtimes first; `--engine openmm` or `--engine lammps` selects
+one engine. The default has P=32, q-TIP4P/F water with 192 and 2187 physical
+atoms, and FCC Lennard-Jones systems with 256 and 2048 atoms. The water model
+comes from the existing `benchmarks/water` factory, with PME tolerance `1e-6`;
+the cutoff is `min(9 angstrom, 0.45 * box side)` so the small box is valid too.
+These are perturbed initial grids used for evaluator timing, not equilibrated
+liquid configurations or evidence of physical convergence.
+
+Each timed call returns the complete batch's energies and forces, plus LAMMPS
+virials. Coordinates change between calls and match exactly across modes.
+Construction and the first evaluation are reported separately from warmup and
+steady-state samples. The JSON includes every sample, medians, the 95th
+percentile, maximum absolute and relative-infinity-norm differences, source
+hashes, dependency versions, CPU quota and thread settings. CPU comparisons
+include serial OpenMM with 1/4/8 internal threads and resident Context pools
+with 1/4/8 workers at one internal thread each. This exposes both concurrency
+gains and the overhead of retaining many copies. LAMMPS records neighbor
+rebuild/reuse counts and rejects results exceeding `1e-10` relative error.
+The optional `--rpmd-copy` control loads all copies through `RPMDIntegrator`
+and queries them without ever calling `step()`. Its water-only probe explicitly
+fills the model's three-parent average virtual sites; it is not a production
+adapter for arbitrary Systems and does not apply ring-polymer contraction.
+
+On a machine with a CUDA platform, repeat with `--engine openmm --device cuda:0`.
+The adapter retains its default double precision; it never switches to CPU or
+a lower precision to make the benchmark run. CPU PME agreement is assessed at
+OpenMM CPU precision. Exact restart tests use controlled Reference/LJ cases;
+they do not certify every external model and accelerator as bitwise reproducible.
+
+### Measured CPU results (2026-11-02)
+
+The [complete baseline comparison](validation/t05-force-engines/benchmark-cpu.json)
+ran on an AMD EPYC 9V74 host with an **8-CPU cgroup quota**, nine affinity-visible
+CPUs and 8 GiB memory. OpenMM was 8.6.1 (CPU platform); LAMMPS was wheel
+2025.7.22.4.0 with MPICH 5.0.2. `OMP_NUM_THREADS`, `OPENBLAS_NUM_THREADS` and
+`OPENMM_CPU_THREADS` were 1. No CUDA platform or NVIDIA device was available.
+These are shared-host wall times, not dedicated-node scaling measurements.
+Each entry is the median of seven complete P=32 batch evaluations after two
+warmups; construction and the cold first evaluation are excluded and retained
+in the raw JSON. All modes use the same changing coordinate sequence.
+
+| OpenMM mode | Internal CPU threads per Context | Workers | Water, 192 atoms (ms) | Water, 2187 atoms (ms) |
+|---|---:|---:|---:|---:|
+| Original serial adapter | 1 | 1 | 443.50 | 2283.54 |
+| Original serial adapter | 4 | 1 | 521.75 | 1330.58 |
+| Original serial adapter | 8 | 1 | 855.62 | 1390.62 |
+| Persistent Contexts | 1 | 1 | 896.25 | 1773.62 |
+| Persistent Contexts | 1 | 4 | 236.45 | 647.61 |
+| Persistent Contexts | 1 | 8 | **145.37** | **451.60** |
+| Force-only RPMD copy probe | 1 | 1 | 560.11 | 1141.07 |
+
+Eight Context workers improve on the original one-thread adapter by 3.05x and
+5.06x. Compared with the best measured original thread configuration at each
+size, the gains are **3.05x and 2.95x**. Retaining many Contexts without
+concurrency is not a general speedup. Across the new Context modes, maximum
+relative-infinity-norm differences were `9.28e-7` for energies and `1.61e-6`
+for forces, consistent with the tested CPU precision contract. The copy probe
+matched the serial energies and forces exactly for these water inputs.
+
+The original FCC benchmark puts many atoms exactly on periodic faces. Tiny
+perturbations then trigger the safe wrapped-image rebuild path. To measure
+ordinary neighbor reuse separately, a second comparison translates the entire
+periodic crystal by 0.25 lattice spacings (1.315 angstrom) along each axis.
+This translation leaves the periodic LJ model unchanged. Both layouts and
+their outcomes are retained; the translated case is not a replacement for the
+boundary-crossing result.
+
+| LJ layout | Atoms | Original serial (ms) | Current serial (ms) | Persistent (ms) | Original / persistent | Rebuilds / reuses |
+|---|---:|---:|---:|---:|---:|---:|
+| FCC planes on boundaries | 256 | 52.56 | 51.46 | 41.83 | 1.26x | 280 / 40 |
+| FCC planes on boundaries | 2048 | 261.80 | 276.00 | 285.02 | **0.92x** | 288 / 32 |
+| Uniformly translated FCC | 256 | 37.19 | 23.84 | 32.43 | 1.15x | 32 / 288 |
+| Uniformly translated FCC | 2048 | 123.65 | 130.54 | 116.74 | 1.06x | 32 / 288 |
+
+Counts include cold, warmup and timed evaluations: 320 individual frames in
+each row. The translated layouts retain all lists after the initial setup.
+Their energies, forces and virials match the old adapter exactly; across both
+layouts the largest relative error is `6.50e-14`, below `1e-10`. Removing setup
+does not guarantee a wall-time gain: the boundary layout is slower at 2048
+atoms, and the current serial path is faster for the translated 256-atom case.
+Keep serial as the default and benchmark the intended model, layout, batch
+size and MPI rank budget before selecting persistent mode. These measurements
+do not establish EAM/ML throughput or multi-node MPI scaling.
+
+The [translated-grid report](validation/t05-force-engines/benchmark-lammps-offset.json)
+is reproduced with:
+
+```bash
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 OPENMM_CPU_THREADS=1 \
+  python benchmarks/efficiency/force_engine_adapters.py --engine lammps \
+  --legacy-ref 8cc402fb12391e4fb644d3e186e5e58d1699759a \
+  --lj-grid-offset 0.25 --warmup 2 --repeats 7 --output lammps-offset-timings.json
+```
+
+The first report's exact benchmark source is preserved in commit
+`a928171521c94e886f9e638278a3e05e3cf5d8d8`; the subsequent script only adds
+the explicit grid-offset control, whose default remains zero. Source hashes,
+commands and raw test/build logs are indexed in
+[validation.json](validation/t05-force-engines/validation.json).
 
 ### ASE energy and force consistency
 

@@ -274,8 +274,13 @@ def lj_case(cells, args):
     basis = np.array([[0, 0, 0], [0, .5, .5], [.5, 0, .5], [.5, .5, 0]])
     indices = np.stack(np.meshgrid(*([np.arange(cells)] * 3), indexing="ij"), axis=-1)
     q = ((indices.reshape(-1, 1, 3) + basis[None]) * lattice).reshape(-1, 3)
-    q *= ANGSTROM_TO_AU
     side = lattice * cells
+    # A zero offset leaves FCC planes exactly on periodic boundaries. Tiny
+    # perturbations then stress the conservative wrapped-image rebuild path.
+    # A uniform offset changes no periodic LJ physics and measures ordinary
+    # neighbor reuse separately; retain both cases when reporting performance.
+    q = (q + args.lj_grid_offset * lattice) % side
+    q *= ANGSTROM_TO_AU
     # Explicit atom IDs reproduce this exact q order independently of LAMMPS'
     # create_atoms/lattice ordering or processor decomposition.
     with tempfile.TemporaryDirectory(prefix="pyrpmd-lj-benchmark-") as directory:
@@ -320,6 +325,8 @@ def lj_case(cells, args):
             "engine": "lammps", "model": "Lennard-Jones FCC", "physical_atoms": len(q),
             "beads": args.beads, "cell_angstrom": side, "cutoff_angstrom": 8.5,
             "neighbor_skin_angstrom": 2.0, "epsilon_ev": .0103, "sigma_angstrom": 3.4,
+            "grid_offset_lattice_fraction": args.lj_grid_offset,
+            "grid_offset_angstrom": args.lj_grid_offset * lattice,
             "modes": modes,
         }
 
@@ -329,6 +336,8 @@ def main():
     parser.add_argument("--engine", choices=("all", "openmm", "lammps"), default="all")
     parser.add_argument("--water-cells", nargs="+", type=int, default=[4, 9])
     parser.add_argument("--lj-cells", nargs="+", type=int, default=[4, 8])
+    parser.add_argument("--lj-grid-offset", type=float, default=0.0,
+                        help="uniform FCC translation per axis, in lattice units (0 <= offset < 1)")
     parser.add_argument("--beads", type=int, default=32)
     parser.add_argument("--workers", nargs="+", type=int, default=[1, 4, 8])
     parser.add_argument("--cpu-threads", type=int, default=1)
@@ -342,6 +351,8 @@ def main():
                         help="also measure the force-only RPMD copy API on the water model")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
+    if not np.isfinite(args.lj_grid_offset) or not 0 <= args.lj_grid_offset < 1:
+        parser.error("LJ grid offset must be finite and satisfy 0 <= offset < 1")
     if min(args.beads, args.cpu_threads, args.warmup, args.repeats,
            *args.workers, *args.serial_cpu_threads, *args.water_cells, *args.lj_cells) <= 0:
         parser.error("sizes, thread counts, warmup and repeats must be positive")
