@@ -359,6 +359,8 @@ def ibi_update(correction, target_density, sampled_density, *, beta,
     explicit selections. This utility does not reconstruct quasi-centroids,
     generate distributions, run the IBI iterations, or implement constrained
     adiabatic QCMD. No automatic QCMD/h-CMD method claim follows from using it.
+    The explicit bent-triatomic f-QCMD geometry, distribution, model and
+    production APIs are provided separately in :mod:`pyrpmd.qcmd`.
     """
     value = _real(correction, "correction")
     target, sampled = _real(target_density, "target_density"), _real(sampled_density, "sampled_density")
