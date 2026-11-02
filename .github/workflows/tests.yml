@@ -128,3 +128,32 @@ jobs:
           python-version: '3.12'
       - run: python -m pip install -e '.[test,ase,tblite,pyscf]'
       - run: python -m pytest -q tests/test_potential_adapters.py
+  library-macos:
+    runs-on: macos-15
+    timeout-minutes: 30
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[test]'
+      - run: python -m pytest -q -m "not campaign"
+  library-windows:
+    runs-on: windows-2022
+    timeout-minutes: 30
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      # Keep checked-in scientific fixtures and source hashes byte-identical.
+      - name: Preserve repository line endings
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[test]'
+      - run: python -m pytest -q -m "not campaign"
