@@ -34,7 +34,7 @@ _SECTIONS = {
     "path_integral": set("method alpha fd_step beta_fd_step groups projection_time trial periodic_mode block_size minimum_average_sign sign_sigma".split()),
     "active_learning": set("interval_steps force_threshold energy_threshold directory max_frames".split()),
     "electronic_friction": set("method provider gamma tensor factory params".split()),
-    "initial_ensemble": set("method beta fragments".split()),
+    "initial_ensemble": set("method beta fragments j0_energy_policy".split()),
     "nonadiabatic": set("method nstates initial_state state_labels initialization asymptotic_coupling_tolerance".split()),
     "system": set(
         "geometry transition_state reactant product reactants separation geometry_unit isotopes masses masses_amu symbols fragments charge multiplicity cell cell_unit pbc fixed_atoms bond_constraints".split()
