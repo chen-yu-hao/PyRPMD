@@ -9,7 +9,9 @@ from scipy.stats import binomtest
 from pyrpmd import CommittorSampler, CommittorResult, committor_statistics
 from pyrpmd.cv import Cartesian, CVStack
 from pyrpmd.dynamics import Dynamics, native_capabilities
+from pyrpmd.engine import ForceSplitting, PropagationPlan
 from pyrpmd.potentials import FreePotential, PESResult
+from pyrpmd.potentials.contraction import SplitPotential
 
 
 def sampler(beads=1, seed=15, dt=0.05, max_steps=8, *, integrator="cayley-bcb",
@@ -184,6 +186,62 @@ def test_reject_patched_or_changed_dynamics():
     s.dynamics.potential = FreePotential()
     with pytest.raises(ValueError, match="changed"):
         s.shoot(np.zeros((1, 1, 3)))
+
+
+@pytest.mark.parametrize("mode", ["andersen", "langevin", "nhc", "barostat", "force-splitting"])
+def test_reject_composed_dynamics_before_rng_or_pes_use(mode):
+    class UncalledPotential(FreePotential):
+        def evaluate(self, q):
+            raise AssertionError("unsupported committor must not evaluate the PES")
+
+        def set_cell(self, cell):
+            raise AssertionError("unsupported committor must not update the cell")
+
+    potential = UncalledPotential()
+    options = {}
+    if mode == "barostat":
+        options.update(barostat={"mode": "bzp", "pressure": 0.1},
+                       cell=np.eye(3) * 4, pbc=(True, True, True))
+    elif mode == "force-splitting":
+        potential = SplitPotential(potential, UncalledPotential(), 1)
+        options["force_splitting"] = ForceSplitting(2)
+    else:
+        options["thermostat"] = mode
+    d = Dynamics(potential, [1.], 4., 1, 0.05, native=False, **options)
+    before = copy.deepcopy(d.operator_state_dict())
+    shot_rng = np.random.default_rng(37)
+    saved_shot_rng = copy.deepcopy(shot_rng.bit_generator.state)
+    with pytest.raises(ValueError, match="no thermostat, barostat or force splitting"):
+        CommittorSampler(d, Cartesian(0), basin_a=-0.1, basin_b=0.1,
+                         max_steps=2, seed=shot_rng)
+    assert d.operator_state_dict() == before
+    assert shot_rng.bit_generator.state == saved_shot_rng
+
+
+def test_reject_bond_constraints_before_sampling_rng_use():
+    d = Dynamics(FreePotential(), [1., 1.], 4., 1, 0.05, native=False,
+                 integrator="velocity-verlet", bond_constraints=[(0, 1, 1.)])
+    before = copy.deepcopy(d.operator_state_dict())
+    shot_rng = np.random.default_rng(37)
+    saved_shot_rng = copy.deepcopy(shot_rng.bit_generator.state)
+    with pytest.raises(ValueError, match="bond constraints"):
+        CommittorSampler(d, Cartesian(0), basin_a=-0.1, basin_b=0.1,
+                         seed=shot_rng)
+    assert d.operator_state_dict() == before
+    assert shot_rng.bit_generator.state == saved_shot_rng
+
+
+@pytest.mark.parametrize("initial_x", [0., -0.2])
+def test_recheck_composed_plan_before_each_shot(initial_x):
+    s = sampler()
+    # A later operator change must also be rejected for step-zero basin hits.
+    s.dynamics.plan = PropagationPlan(thermostat="andersen")
+    before = copy.deepcopy(s.rng.bit_generator.state)
+    dyn_before = copy.deepcopy(s.dynamics.rng.bit_generator.state)
+    with pytest.raises(ValueError, match="no thermostat, barostat or force splitting"):
+        s.shoot(np.array([[[initial_x, 0., 0.]]]))
+    assert s.rng.bit_generator.state == before
+    assert s.dynamics.rng.bit_generator.state == dyn_before
 
 
 @pytest.mark.parametrize("q", [np.zeros((1, 3)), np.zeros((2, 1, 3)),

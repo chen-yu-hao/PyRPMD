@@ -59,9 +59,12 @@ centroid. Repeating a centroid across beads does not reproduce this measure.
 Sample separate full-ring configurations separately; pooling their output as
 IID shots of one fixed geometry is not valid without additional statistics.
 
-Only unmodified, built-in deterministic `Dynamics` is accepted. Patched
-stepping methods and potentials declaring history/time/state dependence are
-rejected. The code cannot detect a hidden time dependence or static restraint
+Only unmodified, built-in deterministic `Dynamics` is accepted. Cayley BCB,
+normal-mode BAB and velocity Verlet remain supported with fixed atoms.
+Composed thermostat, barostat and force-splitting plans, bond constraints,
+patched stepping methods and potentials declaring history/time/state
+dependence are rejected before momentum sampling. The code cannot detect a
+hidden time dependence or static restraint
 inside an arbitrary user PES; supply a pure, unbiased time-independent PES.
 Convergence of bead count, timestep, horizon and state definitions remains
 the caller's responsibility.

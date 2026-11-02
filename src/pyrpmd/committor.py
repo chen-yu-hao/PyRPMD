@@ -197,6 +197,13 @@ class CommittorSampler:
             raise ValueError("Dynamics changed: create a new sampler")
         if d.dt <= 0 or len(d.fixed_atoms) == len(d.masses):
             raise ValueError("positive dt and mobile atoms are required")
+        if d.plan.active:
+            raise ValueError(
+                "committor requires plain deterministic Dynamics: "
+                "no thermostat, barostat or force splitting"
+            )
+        if d.bond_constraints:
+            raise ValueError("committor does not support bond constraints")
         for obj, cls, methods in ((d, Dynamics, _BLOCK_DYNAMICS_METHODS),
                                   (d.integrator, CayleyIntegrator, _BLOCK_INTEGRATOR_METHODS)):
             if type(obj) is not cls or any(
