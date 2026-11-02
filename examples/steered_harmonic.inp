@@ -1,0 +1,54 @@
+# Endpoint free energies of a moving restraint, not an unbiased CV PMF.
+# Finite equilibration and 16 pulls are a smoke example, not convergence evidence.
+task = "fes"
+temperature = 300.0
+beads = 1
+seed = 711
+
+[system]
+symbols = ["H"]
+masses = [1.0]
+geometry = [[0.0, 0.0, 0.0]]
+
+[potential]
+provider = "builtin"
+name = "harmonic"
+
+[potential.params]
+k = 0.001
+
+[dynamics]
+timestep = "0.1 fs"
+integrator = "cayley-bcb"
+
+[fes]
+method = "steered"
+
+[[fes.cvs]]
+name = "x"
+kind = "cartesian"
+atom = 0
+axis = "x"
+
+[fes.steered]
+cvs = ["x"]
+start = ["0 bohr"]
+end = ["0.5 bohr"]
+stiffness = "0.002 hartree/bohr^2"
+direction = "both"
+thermostat = "langevin"
+gamma = "0.1 fs^-1"
+
+[fes.sampling]
+equilibration_steps = 1000
+production_steps = 200
+replicas = 16
+interval_steps = 10
+
+[fes.analysis]
+method = "crooks"
+measure = "restrained_endpoints"
+bootstrap = 200
+
+[output]
+checkpoint_steps = 100
