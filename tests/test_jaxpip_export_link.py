@@ -44,6 +44,7 @@ metadata={'atomic_numbers':[1,1], 'state':{'charge':0,'multiplicity':1},
 
 
 def test_export_wrapper_provenance_portability_and_no_optional_import(tmp_path):
+    pytest.importorskip("fcntl", reason="JaxPIP export writes require POSIX advisory locks")
     fit=fixture_fit(tmp_path); exporter=fixture_exporter(tmp_path); out=tmp_path/'export'
     export_jaxpip(fit,exporter,out)
     manifest,_=load_export(out)
@@ -68,6 +69,7 @@ def test_export_wrapper_provenance_portability_and_no_optional_import(tmp_path):
 
 @pytest.mark.parametrize('mode',['fail','mismatch'])
 def test_failed_export_is_not_published(tmp_path,mode):
+    pytest.importorskip("fcntl", reason="JaxPIP export writes require POSIX advisory locks")
     fit=fixture_fit(tmp_path); out=tmp_path/'failed'
     with pytest.raises((ValueError,RuntimeError)):
         export_jaxpip(fit,fixture_exporter(tmp_path,mode),out)
@@ -78,6 +80,7 @@ def test_failed_export_is_not_published(tmp_path,mode):
 @pytest.mark.parametrize('kwargs',[{'allow_unvalidated':'yes'}, {'intra_op_threads':0},
     {'intra_op_threads':True},{'device':'gpu'}, {'device':'cuda:-1'}])
 def test_native_config_rejects_invalid(tmp_path,kwargs):
+    pytest.importorskip("fcntl", reason="JaxPIP export writes require POSIX advisory locks")
     fit=fixture_fit(tmp_path,accepted=True); out=tmp_path/'out'
     export_jaxpip(fit,fixture_exporter(tmp_path),out)
     lib=tmp_path/'plugin.so'; lib.write_bytes(b'not-loaded')

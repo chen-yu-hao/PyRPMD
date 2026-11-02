@@ -47,6 +47,7 @@ def prepare_fixture(directory):
 
 
 def test_paired_rdf_bands_cancel_shared_chain_offsets_and_add_no_gate(tmp_path):
+    pytest.importorskip("matplotlib", reason="preparation diagnostic figures require matplotlib")
     protocol, _, _ = prepare_fixture(tmp_path / "data")
     result = plotter.plot(tmp_path / "data", protocol, tmp_path / "figures")
     assert result["synthetic_data"] is True
