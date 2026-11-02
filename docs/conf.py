@@ -31,6 +31,7 @@ include_patterns = [
     "rate-pmf-selection.md",
     "plumed.md", "committor.md", "transition-interface-sampling.md", "transition-state-search.md", "rate-postprocessing.md",
     "general-coordinate-rates.md", "rate-studies.md", "instanton.md", "low-temperature.md",
+    "tunnelling-phase-projection.md",
     "rate-input-v2.md",
     "quantum-statistics.md", "performance-dynamics.md", "batched-dynamics.md",
     "rpc-mts.md", "mixed-sampling.md", "trpmd-spectroscopy.md", "propagation-stack.md", "condensed-phase-nqe.md",
