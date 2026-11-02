@@ -605,7 +605,9 @@ class NativeEnsemble:
                                if record_centroids else None)
                 else:
                     # Flush before publishing; link is exclusive (no overwrite).
-                    with open(temporary, "rb") as stream:
+                    # Windows' _commit requires a writable descriptor. The
+                    # native writer has closed; do not truncate its payload.
+                    with open(temporary, "rb+") as stream:
                         os.fsync(stream.fileno())
                     os.link(temporary, path)
                     published = True
