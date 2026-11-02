@@ -19,6 +19,7 @@ implementation alongside.
 
 - **From TS to rate in one command.** No hand-staged windows or separate recrossing scripts: one
   input carries a calculation from structure to rate, with uncertainties.
+- **Fixed-ring committor analysis.** Launch independent unbiased RPMD shots from a complete ring configuration, distinguish A/B first hits from unresolved shots, and report conservative probability intervals ([guide](docs/committor.md), Python API).
 - **Results you can defend.** Every run reports estimates, failed or unresolved trajectories and
   diagnostics separately. When overlap, the recrossing plateau or energy conservation fails a
   check, PyRPMD withholds the number and tells you why.
