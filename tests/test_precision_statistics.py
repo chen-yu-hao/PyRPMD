@@ -251,9 +251,14 @@ def test_arithmetic_small_resolved_noise_survives_centering_roundoff():
     assert result["rate_standard_error"] == pytest.approx(np.std(rates, ddof=1) / math.sqrt(3))
 
 
-def test_arithmetic_cancellation_cannot_silently_erase_resolved_rate_error():
-    q = np.array([1., 2., 3., 4.])
-    rates = 1 + np.array([-1., 1., -1., 1.]) * 1e-12
+@pytest.mark.parametrize("order", [[0, 1, 2, 3], [3, 2, 1, 0], [1, 3, 0, 2], [2, 0, 3, 1]])
+def test_arithmetic_cancellation_cannot_silently_erase_resolved_rate_error(order):
+    # Replicas are exchangeable, so their order must not change the outcome.
+    # Reordering changes the rounding of the cancelling factor covariances: the
+    # reconstruction is either zero or ~1e8 times the direct variance, the
+    # latter being what a different platform reduction order produced on macOS.
+    q = np.array([1., 2., 3., 4.])[order]
+    rates = (1 + np.array([-1., 1., -1., 1.]) * 1e-12)[order]
     with pytest.raises(ValueError, match="cancellation"):
         paired_rate_replica_statistics(np.log(q), np.log(rates / q))
 

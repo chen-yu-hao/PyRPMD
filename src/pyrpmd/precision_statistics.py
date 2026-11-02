@@ -323,6 +323,14 @@ def paired_rate_replica_statistics(log_qtst, log_kappa):
     # its fluctuations, hence an O(eps*SD) error in its variance.  A tolerance
     # based only on eps*variance is too strict for small but resolved noise.
     eps = np.finfo(float).eps
+    # The reconstruction sums factor (co)variances whose rounding error is of
+    # order eps times their size. A rate variance at or below that floor is
+    # unresolved: depending on the reduction order (replica order, platform
+    # SIMD/libm), the cancelling sum is zero or a value many orders of
+    # magnitude above the direct variance. Reject it independently of rounding.
+    cancellation_floor = 64 * eps * max(result["pmf_variance"], result["recrossing_variance"])
+    if 0 < direct_variance <= cancellation_floor:
+        raise ValueError("arithmetic rate variance is lost in factor covariance cancellation")
     tolerance = 64 * eps * (scale + math.sqrt(direct_variance) + eps)
     if abs(result["log_rate_variance"] - direct_variance) > tolerance:
         raise ValueError("factor covariance does not resolve the arithmetic rate variance")
