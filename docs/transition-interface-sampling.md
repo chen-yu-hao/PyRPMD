@@ -2,10 +2,15 @@
 
 `pyrpmd.transition_interface` provides canonical two-way transition-interface
 sampling (TIS) for the existing deterministic `Dynamics` engine, with either one
-classical bead or a real-mass ring polymer. The Python API accepts an existing
-scalar collective variable or a callable on the full `q[P,N,3]` array; it does
-not need coordinate derivatives. An executable model example is
-`examples/sampling/transition_interface.py`.
+classical bead or a real-mass ring polymer. `pyrpmd.retis` adds replica exchange
+and an optional minus ensemble that supplies the effective flux internally.
+`pyrpmd.pptis` provides partial-path TIS and REPPTIS, while `pyrpmd.ffs` provides
+direct forward-flux sampling for an explicitly supplied Markov process.
+
+These Python APIs accept an existing scalar collective variable or a callable
+on the full `q[P,N,3]` array; they do not need coordinate derivatives. Runnable
+examples are `examples/sampling/transition_interface.py`,
+`examples/sampling/pptis.py`, and `examples/sampling/ffs.py`.
 
 The original TIS method is due to
 [van Erp, Moroni and Bolhuis (2003)](https://doi.org/10.1063/1.1562614),
@@ -90,10 +95,15 @@ dynamics, the energy terms cancel and only `M_old/M_new` remains. Retaining
 them accounts for the canonical weight at the first frame of a path when a
 reversible finite-step map has residual energy drift. The implementation
 assumes a deterministic, reversible, volume-preserving map. Bare built-in
-`Dynamics` and its supported real-time integrators are accepted; subclasses,
-patched stepping methods and declared history-dependent potentials are
-rejected. An arbitrary user potential must be a pure, time-independent energy
-and force function. Timestep convergence of the paths is still required.
+`Dynamics` and its supported real-time integrators are accepted. Subclasses,
+patched stepping methods, declared history-dependent potentials, active
+thermostats/barostats, force-splitting plans, and bond constraints are rejected.
+Fixed atoms remain supported with zero momenta. The guard also checks the
+resolved backend, thread setting, cell and periodic-boundary configuration for
+changes after sampler construction. An arbitrary user potential must be a
+pure, time-independent energy and force function. Timestep convergence of the
+paths is still required. These restrictions also apply to RETIS and PPTIS;
+the separate FFS callback contract is described below.
 
 The current path is counted **after every attempt, including rejections**.
 Dropping repeated paths or accepting every valid variable-length proposal
@@ -122,8 +132,9 @@ is in B. The mean gives the corresponding conditional crossing probability:
    P_A(B\mid\lambda_{m-1}).
 \]
 
-The crossing probabilities do not supply an absolute rate by themselves. An
-independently measured effective positive flux is needed:
+The crossing probabilities do not supply an absolute rate by themselves.
+Ordinary TIS and positive-only RETIS need a matching effective positive flux;
+RETIS with a minus ensemble can estimate it internally:
 
 \[
  k_{AB}=\frac{\langle\phi_{\lambda_0,A}\rangle}
@@ -166,6 +177,233 @@ rate estimate**, not a bimolecular rate coefficient. `rate_s_inv` remains
 stable basins, bead/timestep convergence, channel mixing or rate uncertainty.
 An unvisited event is not evidence that the physical rate is zero.
 
+## RETIS with a minus ensemble and internal flux
+
+`ReplicaExchangeTIS(..., minus=False)` preserves the positive-ensemble mode.
+Set `minus=True` to add `[0-]` and `[0-] <-> [0+]` exchanges. This mode requires
+`interfaces[0] == basin_a`; a gap between the first interface and A is rejected
+because its residence-time normalization would differ.
+
+A minus path has one initial and one final frame with `s > basin_a` and at
+least one interior frame with `s <= basin_a`. It is a first-return excursion
+through A. Both minus and positive shooting use the same full-bead Maxwell
+variance `m*P/beta`, momentum-reversed backward propagation, canonical
+endpoint correction and selectable-frame ratio described above. A scalar CV
+such as `Cartesian(0)` acts on the ring-polymer centroid; the stored states
+and refreshed momenta still contain every bead.
+
+```python
+from pyrpmd.retis import ReplicaExchangeTIS
+
+retis = ReplicaExchangeTIS(
+    dyn, Cartesian(0), basin_a=-1.0, basin_b=1.0,
+    interfaces=[-1.0, -0.5], max_path_steps=10000,
+    minus=True, seed=123,
+    identity={"potential": "my-model-and-parameters-v1", "coordinate": "centroid-x0-v1"},
+)
+# Supply genuine phase points: q_plus outside A/B with backward history A,
+# and q_minus inside A. generate_* integrates and validates real trajectories.
+positive_seed = retis.generate_path(State(q_plus, p_plus), interface_index=1)
+minus_seed = retis.generate_minus_path(State(q_minus, p_minus))
+result = retis.sample_interfaces(
+    [positive_seed, positive_seed], minus_path=minus_seed,
+    n_samples=2000, burn_in=300,
+)
+report = result.summary(block_size=100)
+print(report["flux_au"], report["rate_estimate_au"],
+      report["rate_standard_error_block_au"])
+```
+
+The residence-time construction follows the minus-ensemble RETIS idea of
+[van Erp (2007)](https://doi.org/10.1103/PhysRevLett.98.268301). The precise
+discrete-time bookkeeping here uses **interior frames**, not the total stored
+timestamp span. Let `M_minus` and `M_plus` be the stored frame counts:
+
+\[
+ t_-=(M_- -2)\,\Delta t,\qquad
+ t_+=(M_+ -2)\,\Delta t,\qquad
+ f_A=\frac{1}{\langle t_-\rangle+\langle t_+\rangle}.
+\]
+
+Each interior A frame of a minus path owns the following observation interval,
+including its final outward crossing interval. Each interior frame of the
+positive path owns the subsequent A-history interval, up to the first return
+to A or arrival in B. Stored endpoints are shared between neighboring
+excursions; assigning `(M-1)*dt` to both paths would count crossing intervals
+twice. A direct two-frame A-to-B positive path therefore contributes zero
+additional positive residence time: its outbound interval already belongs to
+the minus excursion. Time whose last visited basin is B is excluded. The
+helper `estimate_retis_flux(minus_frames, plus_frames, dt=..., basin_a=...,
+basin_b=..., first_interface=...)` uses the same convention as the independent
+trace-based `estimate_effective_flux`.
+
+Positive-to-positive exchanges accept when both retained paths belong to the
+opposite ensemble. A zero-interface exchange instead shares the outgoing
+crossing edges and propagates the old positive start backward into A and the
+old minus end forward toward A/B. This deterministic continuation is an
+involution. Its canonical Metropolis ratio is
+
+\[
+ \log R_0=-\frac{\beta}{P}
+ \left[H_P(x_{-,0}^{\rm new})+H_P(x_{+,0}^{\rm new})
+       -H_P(x_{-,0}^{\rm old})-H_P(x_{+,0}^{\rm old})\right].
+\]
+
+There is no uniformly chosen shooting frame in this move, so there is no
+shooting-length factor. Valid proposals accept with probability one in the
+energy-conserving limit; the endpoint correction remains for finite-step
+Hamiltonian drift. A path-length or membership failure rejects the proposal;
+potential and coordinate exceptions propagate. `zero_swap_attempts`,
+`zero_swap_accepts`, and `zero_swap_length_rejections` expose these exchanges.
+
+Every production sweep records the entire retained ladder after swaps,
+including repeats. `summary(block_size=...)` estimates crossing probability,
+flux and their product within the **same contiguous blocks**, preserving
+their cross-correlations. It returns `crossing_probability_standard_error_block`,
+`flux_standard_error_block_au`, `rate_standard_error_block_au`, and
+`block_diagnostics` with block estimates, observable-mean covariance,
+statistical inefficiencies and discarded-tail counts. Check several block
+sizes and independently initialized chains. Missing variation yields `None`
+for the corresponding error instead of a zero-error claim. A finite path
+bound truncates both ensembles and still requires convergence checks.
+
+## PPTIS and REPPTIS
+
+`PPTISSampler` samples short local trajectories around each interior center.
+For center `c_i`, the outer boundaries are `c_(i-1)` and `c_(i+1)`, using A or B
+at the ends. Both left- and right-origin paths are retained. Every path must
+cross its center, start at an outer boundary, and end at the first encounter
+with either outer boundary. The local measurements are
+
+\[
+ p_i^{LR}=P(\text{exit right}\mid\text{enter left, cross }c_i),\qquad
+ p_i^{RL}=P(\text{exit left}\mid\text{enter right, cross }c_i).
+\]
+
+PPTIS assumes that the arrival direction contains the relevant memory beyond
+neighboring interfaces. Its direction-dependent recurrence is generally an
+approximation, so multiply ordinary TIS conditionals only for full TIS/RETIS.
+For local PPTIS probabilities, `pptis_crossing_probability(p_lr, p_rl)` starts
+with `P_plus=P_minus=1` and applies
+
+\[
+ D_i=p_i^{LR}+(1-p_i^{LR})P_-^{\rm old},\qquad
+ P_+^{\rm new}=\frac{p_i^{LR}P_+^{\rm old}}{D_i},\qquad
+ P_-^{\rm new}=\frac{p_i^{RL}P_-^{\rm old}}{D_i}.
+\]
+
+The final `P_plus` estimates reaching B after the first center crossing from A.
+This follows the memory reduction introduced by
+[Moroni, Bolhuis and van Erp (2004)](https://doi.org/10.1063/1.1644537) and the
+REPPTIS formulation of
+[Vervust et al. (2023)](https://doi.org/10.1016/j.bpj.2023.02.021).
+Interface-spacing and full-TIS comparisons are necessary to assess the
+approximation; a numerically well-sampled local chain alone does not establish
+memory loss. Missing either origin population or a singular recurrence leaves
+the corresponding summary unsupported; it is not regularized into a rate.
+
+`ReplicaExchangePPTIS` adds neighboring overlap-regrowth swaps. Independent
+orientation choices are made before checking compatibility, so incompatible
+directions reject rather than being removed from the proposal distribution.
+The terminal overlap is retained and extended into its neighboring local
+window. Canonical endpoint-energy corrections account for finite-step drift.
+`swap_length_rejections` is reported separately from shooting-only local
+`length_rejections`.
+
+```python
+from pyrpmd.pptis import ReplicaExchangePPTIS, combine_pptis_rate
+
+repptis = ReplicaExchangePPTIS(
+    dyn, Cartesian(0), basin_a=-1.0, basin_b=1.0,
+    interfaces=[-0.8, -0.4], max_path_steps=10000, seed=325,
+    identity={"potential": "my-model-and-parameters-v1", "coordinate": "centroid-x0-v1"},
+)
+# One genuine seed phase point inside each local window.
+seeds = [repptis.generate_path(phase_point, i)
+         for i, phase_point in enumerate(seed_states)]
+local_result = repptis.sample_interfaces(seeds, n_samples=2000, burn_in=300)
+flux = estimate_effective_flux(
+    unbiased_coordinate_trace, basin_a=-1.0, basin_b=1.0,
+    first_interface=-0.8, dt=dyn.dt,
+)
+candidate = combine_pptis_rate(local_result, flux, block_size=100)
+```
+
+Use `PPTISSampler` in the same example to disable replica exchange. The supplied
+effective flux must be measured at the **first center**, here `-0.8`, with the
+same basins and dynamics. That flux already includes the probability of
+reaching the first center from A; multiplying another entrance factor would
+count it twice. `combine_pptis_rate` validates this convention. Its
+`rate_standard_error_block_conditional_on_flux_au` uses joint ladder blocks
+and excludes uncertainty in the supplied flux. Blocks without both origin
+populations are reported as unsupported; they are not silently discarded to
+create an error bar. `memory_loss_approximation=True` and
+`physical_converged=False` remain explicit in the result.
+
+## Direct forward-flux sampling
+
+`ForwardFluxSampler` requires an explicit `step(state, rng)` callback and needs
+no reverse dynamics. The callback mutates its owned `State` or returns a new
+one after exactly one step of duration `dt`. The sampler advances the clocks;
+the callback may leave clocks untouched or advance them by exactly that step.
+The transition law must be stationary and time-homogeneous. All Markov memory
+must live in `State.q/p`, and all random draws must use the supplied generator.
+Hidden solver memory, global RNGs and time-dependent protocols are unsupported.
+FFS does not select a thermostat, change a device, or substitute another
+physical process. The stochastic-splitting construction is reviewed by
+[Allen, Valeriani and ten Wolde (2009)](https://doi.org/10.1088/0953-8984/21/46/463102).
+
+```python
+from pyrpmd.ffs import ForwardFluxSampler
+
+ffs = ForwardFluxSampler(
+    step, Cartesian(0), dt=dt, basin_a=-1.0, basin_b=1.0,
+    interfaces=[-0.8, -0.4, 0.2],
+    dynamics_id="complete-Markov-model-parameters-and-stepper-version",
+    coordinate_id="centroid-x0-v1", flux_steps=20000,
+    trials_per_interface=[1000, 1000, 1000],
+    max_trial_steps=10000, seed=5821,
+)
+# initial_state must be prepared for the same stationary physical process.
+ffs_result = ffs.run(initial_state)
+report = ffs_result.summary(block_size=100)
+```
+
+The initial flux phase stores every first outward crossing of the first
+interface since a visit to A and accumulates A-history time. Each interface
+stage draws uniformly, with replacement, from the preceding successful bank
+and runs forward until A or the next target. Every complete state is retained,
+including all bead momenta; no Maxwell refresh occurs at an interface. A state
+that already overshot its next target is a zero-step success. The final target
+is B. Parent and original flux-crossing indices preserve the branching
+genealogy.
+
+`max_trial_steps` is a censoring bound. An unresolved trial raises
+`FFSUnresolvedError`, preserving the diagnostic terminal state and rolling back
+that operation's RNG and observations. It is not counted as a return to A.
+Numerical errors also escape with the operation rolled back. Changing the
+horizon requires a separately identified calculation. `advance(n_operations)`
+allows interruption between individual flux steps or completed trials; an
+FFS checkpoint does not interrupt the middle of a trial.
+
+The rate estimate is the measured effective flux times the product of stage
+success fractions. Successful descendants share earlier ancestors, so
+`conditional_bank_standard_error_diagnostic` is not a full rate error.
+`summary` supplies a flux ratio block-jackknife diagnostic and ancestry counts.
+Use `combine_ffs_replicates(results, block_size=...)` on independently
+initialized complete runs for an error on the full rate, including finite-bank
+and flux uncertainty. Its blocks contain whole runs, never individual
+descendants. Distinct run identities are checked; the caller must still
+establish that starting states and random streams are independent.
+
+A terminal `no_successes` run contributes an empirical zero rate, with
+downstream conditional probabilities left unavailable. A `no_flux_crossings`
+run also contributes an empirical zero when A-history observation time exists.
+These zero observations must stay in replicate averages; excluding them would
+bias the rate upward. Neither establishes a zero physical rate. A run with no
+known A-history time is incomplete, and the combination helper rejects it
+rather than dropping it. A single run reports no full rate error.
+
 ## Diagnostics, streaming and continuation
 
 Each `TISResult` holds crossing indicators, acceptance flags, path lengths and
@@ -196,25 +434,122 @@ configuration. Reconstruct `TISPath(q, p, values, dt)` on restart. A generator
 state must be restored into the same NumPy bit-generator type. Saving these
 objects does not establish a general cross-version checkpoint guarantee.
 
+RETIS, PPTIS/REPPTIS and FFS additionally provide persistent checkpoints:
+
+| Method | Save | Restore and continue |
+| --- | --- | --- |
+| RETIS | `retis.save_checkpoint(path)` | `retis.load_checkpoint(path)` returns the sampler; then `retis.sample_interfaces(n_samples=1000)` |
+| PPTIS/REPPTIS | `repptis.save_checkpoint(path, result)` | `previous = repptis.load_checkpoint(path)` returns a result; then `repptis.sample_interfaces(n_samples=1000, resume=previous)` |
+| FFS | `ffs.save_checkpoint(path)` | `ffs.load_checkpoint(path)` returns the sampler; then `ffs.advance()` or `ffs.advance(n_operations)` |
+
+Reconstruct the sampler with matching scientific settings before loading.
+RETIS and PPTIS require a nonempty JSON `identity` describing the potential
+and coordinate for persistent checkpoints. Include model/version identifiers,
+parameter values or parameter-file hashes, and all otherwise opaque callable
+configuration. FFS requires `dynamics_id` and `coordinate_id` at construction;
+the dynamics identifier must also identify its stochastic scheme, masses,
+temperature, bead conventions, and all hidden-in-code parameters. Automatic
+sampler metadata cannot infer these scientific facts from a Python class name.
+Numerical options, interface definitions, path bounds, and RNG type are included
+in the new identities. Existing workflow identities and legacy checkpoint
+formats are unchanged.
+
+The common NPZ writer writes to a temporary file, flushes it and atomically
+replaces the destination. Each payload array has a checksum; loading forbids
+pickle, verifies integrity and validates scientific metadata before resuming.
+Saved state includes the RNG and complete retained path/crossing bank, labels
+or genealogy, counters and accumulated observations. RETIS and PPTIS replay
+saved final paths against the configured deterministic dynamics; FFS validates
+its states, clocks, event trace and ancestry. A wrong configuration, damaged
+payload or incompatible RNG fails explicitly. Checkpoints preserve exact
+continuation under the same implementation, NumPy bit-generator type and
+numerical backend; they do not certify interchangeability across platforms or
+arbitrary future algorithm versions. Continued RETIS/PPTIS results contain
+cumulative observations and must not be concatenated with their earlier prefix.
+
+## Infinite-exchange scheduling: design only
+
+There is **no executable infinity-RETIS scheduler in this implementation**.
+The following is a design for a future extension informed by
+[Roet, Zhang and van Erp (2022)](https://doi.org/10.1021/acs.jpca.2c06004) and
+[Zhang et al. (2024)](https://doi.org/10.1073/pnas.2318731121).
+
+A worker would lock its assigned ensemble and immutable input-path version
+while generating a proposal. A central scheduler would exchange only free
+ensembles, atomically commit each completed proposal once, update statistical
+weights, and assign the next task. Minus/positive endpoint continuation needs
+both affected ensembles locked. Fast workers must not contribute observations
+merely in proportion to wall-clock completion speed.
+
+For free paths `X_j` and ensembles `E_i`, form assignment weights
+`W_ij = rho_i(X_j)`, including membership and any introduced path bias. A
+permutation has probability proportional to the product of its selected
+entries, normalized by `perm(W)`. Its marginal assignment weight is
+`W_ij * perm(W without row i and column j) / perm(W)`. Any optimized permanent
+algorithm must preserve these weights, handle zero support explicitly, and
+be checked against exact enumeration on small ladders. A uniform random
+assignment is valid only when the complete admissible assignment weights are
+equal. The existing unbiased path measure should remain the initial target;
+future high-acceptance path biases would require explicit reweighting.
+
+The scheduler checkpoint would include monotonic task and commit counters,
+path versions, ensemble locks, worker and scheduler RNG states, assignment
+weights, pending-task inputs, and weighted observation accumulators. The first
+implementation should checkpoint at a quiescent barrier. A later in-flight
+format must retain full integration state and pre-task RNG or replay each
+uncommitted task from its immutable input, with duplicate completions rejected
+by task ID. Exact reproducibility additionally requires a recorded commit
+order or a deterministic commit policy; wall-clock arrival order alone is not
+a reproducible scientific schedule. Fault-injection, detailed-balance and
+weighted-estimator tests are prerequisites for claiming this design implemented.
+
 ## Validation and scope
 
 Tests cover real reversible path generation for one and several beads,
-canonical momentum variance, fixed atoms, the selectable-frame length ratio,
-canonical endpoint/proposal weights, rejected-path multiplicity, seed replay,
-bounded rejection, reproducible continuation and effective-flux normalization.
-A separable classical double-well test compares an actually sampled conditional
-probability against its analytical positive-flux Boltzmann factor. This model
-check is not a molecular-rate validation or proof of quantum accuracy. TIS
-samples the dynamics supplied to it; using RPMD does not remove RPMD's own
-physical approximations.
+canonical momentum variance, fixed atoms, shooting and exchange acceptance
+ratios, rejected-path multiplicity, seed replay, bounded rejection, malformed
+checkpoints and exact split-run continuation. Stitched A/B-history traces check
+the minus residence-time normalization independently, including direct
+two-frame product crossings. Exact finite absorbing chains check the PPTIS
+direction-memory recurrence, and overlap proposals are checked against their
+inverse moves.
 
-The single-interface implementation uses two-way shooting and coordinate-defined
-basins. The separate
-[ReplicaExchangeTIS API](tier2-sampling.md#replica-exchange-tis) now exchanges
-paths between positive interface ensembles and retains repeated/rejected-path
-observations. It requires a matching, separately validated effective flux.
-Minus ensembles, stochastic one-way shooting, phase-space basin predicates and
-an automated flux run remain outside these implementations.
+For classical `U(x)=(x*x-1)**2` with separable harmonic spectator coordinates
+and basins at its two minima, equilibrium quadrature and the positive-flux
+Boltzmann factor supply independent deterministic references. RETIS with
+minus and REPPTIS are compared against that rate and independent full TIS
+with a matching external flux. These finite-chain statistical tests allow
+sampling uncertainty and, where specified, a timestep allowance; they do not
+certify molecular-rate convergence or exact quantum dynamics.
+
+FFS is independently checked on one-dimensional and nonseparable
+two-dimensional finite-state double-well Metropolis processes. Their stationary
+distributions and committors are solved from transition matrices, producing
+exact rate and flux references for those **same stochastic processes**. An
+irreversible directed cycle checks that reverse dynamics is unnecessary.
+These discrete stochastic rates must not be equated to the Hamiltonian
+double-well rates: changing the physical dynamics changes the kinetic problem.
+The executable overdamped FFS example likewise identifies its own dynamics
+and does not claim an RPMD rate.
+
+`examples/sampling/ffs_quartic_reference.py` supplies a further continuous
+quartic comparison. It starts independent canonical states, adds Maxwell
+collisions only inside A/B to make the flux trajectory explore energy, and
+keeps the outside-basin excursions Hamiltonian. Its in-basin dynamics differs
+from the RETIS calculation. Canonical density and the same outside-basin
+excursion law give a common continuous-time flux/rate reference; finite-step
+stationary bias remains a separate convergence question. The script reports
+whole-run errors, fixed statistical tolerances and execution timing, and does
+not label this short reference check physically converged. A runnable minus
+example with checkpoint/resume is `examples/sampling/retis_minus.py`.
+
+All current interfaces are ordered coordinate-based boundaries. Phase-space
+basin predicates, stochastic one-way TIS shooting, MPI/asynchronous execution,
+and executable infinity-RETIS are outside this implementation. No TOML,
+`.inp`, workflow registration or top-level `pyrpmd` export is added; import the
+dedicated modules shown above. Model initialization, stationarity, mechanism
+mixing, interface spacing, timestep, bead count, path-length support and
+independent-run convergence remain scientific checks for each application.
 
 ## References
 
@@ -234,8 +569,31 @@ an automated flux run remain outside these implementations.
 - T. S. van Erp, *Reaction rate calculation by parallel path swapping*,
   Physical Review Letters **98**, 268301 (2007),
   [doi:10.1103/PhysRevLett.98.268301](https://doi.org/10.1103/PhysRevLett.98.268301).
-  The [positive-ensemble API](tier2-sampling.md#replica-exchange-tis) implements
-  a subset of this RETIS construction and uses a separate flux estimate.
+- D. Moroni, P. G. Bolhuis and T. S. van Erp, *Rate constants for diffusive
+  processes by partial path sampling*, Journal of Chemical Physics **120**,
+  4055–4065 (2004),
+  [doi:10.1063/1.1644537](https://doi.org/10.1063/1.1644537);
+  [author preprint](https://arxiv.org/abs/cond-mat/0310466).
+- W. Vervust, D. T. Zhang, T. S. van Erp and A. Ghysels, *Path sampling with
+  memory reduction and replica exchange to reach long permeation timescales*,
+  Biophysical Journal **122**, 2960–2972 (2023),
+  [doi:10.1016/j.bpj.2023.02.021](https://doi.org/10.1016/j.bpj.2023.02.021);
+  [open article](https://pmc.ncbi.nlm.nih.gov/articles/PMC10398259/).
+- R. J. Allen, C. Valeriani and P. R. ten Wolde, *Forward flux sampling for rare
+  event simulations*, Journal of Physics: Condensed Matter **21**, 463102 (2009),
+  [doi:10.1088/0953-8984/21/46/463102](https://doi.org/10.1088/0953-8984/21/46/463102);
+  [author preprint](https://arxiv.org/abs/0906.4758).
+- S. Roet, D. T. Zhang and T. S. van Erp, *Exchanging Replicas with Unequal Cost,
+  Infinitely and Permanently*, Journal of Physical Chemistry A **126**,
+  8878–8886 (2022),
+  [doi:10.1021/acs.jpca.2c06004](https://doi.org/10.1021/acs.jpca.2c06004);
+  [open article](https://pmc.ncbi.nlm.nih.gov/articles/PMC9720720/).
+- D. T. Zhang, L. Baldauf, S. Roet, A. Lervik and T. S. van Erp,
+  *Highly parallelizable path sampling with minimal rejections using
+  asynchronous replica exchange and infinite swaps*, Proceedings of the
+  National Academy of Sciences **121**, e2318731121 (2024),
+  [doi:10.1073/pnas.2318731121](https://doi.org/10.1073/pnas.2318731121);
+  [open article](https://pmc.ncbi.nlm.nih.gov/articles/PMC10873605/).
 - S. Falkner, A. Coretti, B. Peters, P. G. Bolhuis and C. Dellago,
   *Revisiting shooting point Monte Carlo methods for transition path sampling*,
   Journal of Chemical Physics **163**, 034105 (2025),

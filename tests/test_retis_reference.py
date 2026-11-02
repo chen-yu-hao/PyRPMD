@@ -4,6 +4,9 @@ The continuous-time reference is derived from a phase-space flux integral,
 not from a fitted rate or a second implementation of the RETIS estimator.
 """
 
+import json
+import time
+
 import numpy as np
 import pytest
 from scipy.integrate import quad
@@ -125,6 +128,7 @@ def test_quartic_retis_rate_matches_flux_integral_and_tis_with_external_flux():
     # f_A = 2/(sqrt(2*pi*beta*m)*Z_x) and P(B|lambda_0)=exp(-beta).
     # The two harmonic spectator integrals cancel exactly, independently
     # checking the separable multidimensional dynamics as well as the 1D rate.
+    started = time.perf_counter()
     beta, dt = 1.0, 0.04
     partition, quadrature_error = quad(
         lambda x: np.exp(-beta * (x * x - 1) ** 2), -np.inf, np.inf,
@@ -169,3 +173,11 @@ def test_quartic_retis_rate_matches_flux_integral_and_tis_with_external_flux():
     assert abs(summary["rate_estimate_au"] - external_rate) <= (
         5 * np.hypot(rate_se, external_se) + 0.02 * exact_rate
     )
+    print("QUARTIC_RETIS_TIS_REFERENCE", json.dumps({
+        "exact_flux_au": exact_flux, "exact_rate_au": exact_rate,
+        "retis_flux_au": summary["flux_au"], "retis_flux_block_se_au": float(flux_se),
+        "retis_rate_au": summary["rate_estimate_au"], "retis_rate_block_se_au": float(rate_se),
+        "tis_external_flux_rate_au": external_rate, "tis_rate_block_se_au": float(external_se),
+        "retis_samples": 2400, "tis_samples_per_interface": 1200,
+        "dt_au": dt, "native": False, "wall_seconds": time.perf_counter() - started,
+    }, sort_keys=True))
