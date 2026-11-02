@@ -70,6 +70,14 @@ def _flux_metric_hvp(cv, centroid, masses):
     applies to custom CVs whose legacy gradient method differs from it; this
     preserves the historical Hessian override semantics of those CVs.
     """
+    from .cv import _prepare_builtin_rate_hvp
+
+    prepared = _prepare_builtin_rate_hvp(cv, centroid)
+    if prepared is not None:
+        gradient, apply = prepared
+        gradient = _flux_metric_derivative(gradient, centroid, "gradient")
+        hvp = apply(gradient / masses[:, None])
+        return gradient, _flux_metric_derivative(hvp, centroid, "Hessian-vector product")
     evaluate_hvp = getattr(cv, "centroid_value_gradient_hvp", None)
     if not callable(evaluate_hvp):
         _, gradient, hessian = cv.centroid_value_gradient_hessian(centroid)
