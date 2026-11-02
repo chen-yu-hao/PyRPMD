@@ -22,7 +22,7 @@ from ..io import write_json
 
 SCHEMA = "pyrpmd.fes-result"
 SCHEMA_VERSION = 1
-METHODS = ("umbrella", "metadynamics", "opes")
+METHODS = ("umbrella", "metadynamics", "opes", "abf", "eabf")
 UNCERTAINTY_KINDS = ("block_bootstrap", "replica_spread")
 _BOOTSTRAP_METADATA = (
     "standard_error_scope", "supported_draw_condition", "bootstrap_requested",
