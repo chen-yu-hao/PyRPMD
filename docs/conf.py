@@ -38,7 +38,7 @@ include_patterns = [
     "nonadiabatic-ensembles.md", "nonadiabatic-comparison.md",
     "nonadiabatic-spin-methods.md", "nonadiabatic-hopping-extensions.md",
     "molecular-nonadiabatic.md", "nonadiabatic-performance.md",
-    "tier2-*.md",
+    "tier2-*.md", "qcmd.md",
     "andersen-sampling.md", "trajectory-export.md", "bond-constraints.md", "distribution.md",
     "literature-validation.md", "publication-readiness.md",
     "validation/tier1-2026-10-31/README.md",
