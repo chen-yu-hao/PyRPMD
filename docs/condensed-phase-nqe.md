@@ -459,3 +459,160 @@ SC 的总能量、热容和压力由高阶作用量求导得到，不能把修�
 目标为 1；相同物理时长下减半时间步仍未消除偏差。保留该失败结果，不能
 据此宣称 PIGLET-NPT 已达到任意材料的生产精度。SC 热容的确定性高阶估计量
 核验通过，有限轨迹的 Cp 置信区间仍宽，采样精度与实现正确性分别报告。
+
+## Generating and importing GLE/PIGLET parameters
+
+`pyrpmd.gle_parameters` generates new parameters from harmonic equations or
+imports user-supplied gle4md raw matrix files. It ships no third-party matrix
+table. The historical model-solid benchmark above continues to use its
+separately documented published parameter set; the generators here are a new,
+independent route.
+
+```python
+from pyrpmd.gle_parameters import generate_optimal_gle, generate_piglet
+from pyrpmd.engine import PropagationPlan
+
+# Angular frequencies and inverse temperature are in atomic units.
+canonical = generate_optimal_gle((0.1, 10.0), naux=2)
+quantum = generate_piglet(
+    (0.5 / 8, 12 / 8), beta=8.0, beads=4,
+    naux=2, grid_size=32, max_nfev=600, tolerance=0.01,
+)
+plan = PropagationPlan(thermostat={"mode": "piglet", "gle": quantum})
+
+# A spectroscopic band can instead be given explicitly:
+canonical_cm = generate_optimal_gle(
+    (100.0, 4000.0), frequency_unit="cm^-1", naux=2,
+)
+```
+
+The returned mappings contain `A`, `C`, `provenance`, and
+`parameter_metadata`; PIGLET also includes `beta` and `beads`. `A` is a drift
+rate in inverse atomic time. `C` is the free-bath mass-scaled covariance
+divided by the ring-polymer temperature `P/beta`. Consequently a canonical
+bath has `C=I`, not `C=kBT*I`. The diffusion is
+
+$$
+D=AC+CA^T=BB^T.
+$$
+
+The generators enforce stable drift, positive covariance and positive
+diffusion. PIGLET deliberately uses noncanonical internal-mode covariances;
+requiring canonical fluctuation--dissipation there would recover ordinary
+PIMD. Its centroid remains canonical. For a harmonic oscillator this gives
+
+$$
+\langle K_{cv}\rangle=\langle V\rangle+
+\frac{1}{2\beta}-\frac{\omega^2}{2}\langle\bar q^2\rangle
+=\langle V\rangle,
+\qquad V_{exact}=K_{exact}=\frac{\omega}{4}\coth\frac{\beta\omega}{2}.
+$$
+
+These are the constraints of [Ceriotti and Manolopoulos, PRL 109, 100604
+(2012)](https://doi.org/10.1103/PhysRevLett.109.100604). The numerical fit uses
+one shared internal-mode bath, positive diagonal damping plus antisymmetric
+couplings, and positive diagonal diffusion. It solves the full harmonic
+coordinate/momentum/auxiliary Lyapunov equations on a logarithmic frequency
+grid. The final parameters are checked on a denser grid with an independent
+Lyapunov solver. The maximum relative energy residual must satisfy
+`tolerance`, and the optimizer must report success. Failed fits raise an error
+with the residual; they do not substitute a preset or retry with hidden random
+initial conditions. Very slow internal-mode auxiliary relaxation is also
+guarded against: the fixed fit controls target a full harmonic decay rate
+of `0.3/beta`, require at least `0.27/beta` on the validation grid, and bound
+two explicitly defined initial-covariance transients after `12.5*beta`.
+These implementation choices and all diagnostics are part of the parameter
+record. This check covers internal harmonic modes; a low-frequency centroid
+or an anharmonic system can need substantially longer equilibration.
+
+For canonical optimal sampling, `naux=0` selects an analytic white-noise
+subset. Its potential-energy correlation time is
+
+$$
+\tau_V(\omega)=\frac{1}{2\gamma}+\frac{\gamma}{2\omega^2},
+\qquad \gamma=\sqrt{\omega_{min}\omega_{max}}.
+$$
+
+This gamma maximizes the worst harmonic sampling efficiency
+`kappa=1/(omega*tau_V)` over the interval among scalar Langevin baths. With
+`naux=1`, `2`, or `3`, the generator fits a colored canonical bath by minimizing
+the squared `log(omega*tau_V)` residual. This is a local optimization in the
+documented matrix family, not a certified global optimum. The equations and
+sampling objective follow [Ceriotti, Bussi and Parrinello, JCTC 6, 1170
+(2010)](https://doi.org/10.1021/ct900563s). These efficiency residuals describe
+mixing, not a bias in the canonical distribution.
+
+### Importing gle4md raw output
+
+```python
+from pyrpmd.gle_parameters import load_gle4md
+
+# beta and beads are read from unambiguous T/P headers, or supplied explicitly.
+imported = load_gle4md(
+    "piglet.raw", mode="piglet", unit_convention="gle4md",
+)
+
+# Headerless files require explicit units; no unit is guessed.
+canonical_import = load_gle4md(
+    "bath.a", covariance_path="bath.c",
+    drift_unit="ps^-1", covariance_unit="dimensionless",
+)
+```
+
+The reader supports the official `# A MATRIX: (picoseconds^-1)` and
+`# C MATRIX: (K)` sections, `# Matrix for normal mode: 0` blocks, separate A/C
+files, Fortran `D` exponents, and original comment metadata. It preserves
+content SHA-256 values and records every conversion. Kelvin covariance is
+divided by `P*T`, and energy covariance is multiplied by `beta/P`. For
+canonical GLE an absent C explicitly means identity; PIGLET requires C.
+Contradictory units, temperature/bead metadata, duplicate/missing blocks,
+nonfinite entries and invalid covariance/diffusion are rejected.
+
+`unit_convention="physical"`, the default, uses the existing PyRPMD physical
+constants. The explicit `"gle4md"` option decodes the website's historical
+rounded energy/time conversion factors, which matter for its original
+eV/Hartree exports. It restores the exporter’s ps/K values and converts them
+to this library's atomic units. The choice, factors and source constants are
+recorded; the reader never silently rescales C to make a centroid test pass.
+The grammar and historical conventions are documented in the official
+[raw exporter](https://github.com/lab-cosmo/gle4md/blob/gh-pages/ingen/out_raw.html)
+and [unit converter](https://github.com/lab-cosmo/gle4md/blob/gh-pages/ingen/ingen.js).
+
+Normal-mode matrices default to PyRPMD's real ordering: centroid, cosine/sine
+pairs, then Nyquist for even P. Use `mode_order="fourier"` only for a file
+explicitly indexed `0,1,...,P-1`; the importer records the permutation.
+Drift units are inverse time and do not gain an extra `2*pi`. Spectroscopic
+frequency inputs use `omega=E/hbar`; physical frequency inputs in Hz/THz are
+converted from cycles to angular frequency. Hz/THz are rejected as ambiguous
+drift-matrix units.
+
+### Identity, restart and validation scope
+
+Both `Dynamics` and `NativeEnsemble` accept the resolved mappings. Direct
+Python propagation plans and the native JSON/TOML driver also accept
+`{"gle": {"generator": "optimal-sampling", "frequency_range": [0.1, 10.0]}}`
+inside a thermostat mapping with `"mode": "gle"`, or a `"file"` declaration
+inside `gle`. The PIGLET declaration uses `"generator": "piglet"` and explicit
+`beta`/`beads`. Native input file paths are resolved against the input's base
+directory. Legacy `task=pimd` and other workflow readers should receive the
+already resolved mapping returned by the functions above.
+
+Frequency bands, targets, all residuals, solver choices/versions, parameter
+bounds and import provenance enter run identity for the new format.
+`NativeEnsemble.run()` and native CLI summaries expose the resolved
+`gle_parameters`. Old explicit A/C inputs retain their previous identity and
+checkpoint schema. Auxiliary variables and RNG use the existing atomic
+checkpoint implementation. Save the resolved mapping as JSON alongside the
+checkpoint: recomputing a fit with another SciPy version need not reproduce
+the same matrix bytes or scientific identity.
+
+`fit_converged=true` certifies only the declared numerical fit. Generated and
+imported metadata retain `physical_converged=false`. The small-P harmonic
+checks exercise both potential and **centroid-virial** kinetic energy, not
+fictitious bead-momentum energy. Reproduce them, including timestep refinement,
+with `examples/path_integral/gle_parameter_validation.py`. Harmonic agreement
+does not establish transferability to anharmonic systems, correct NPT
+pressure, heat-capacity fluctuations, or physical real-time dynamics. Check
+equilibration, statistical precision, bead count and timestep for the actual
+system; no published liquid-water convergence claim is inferred from these
+generated baths.
