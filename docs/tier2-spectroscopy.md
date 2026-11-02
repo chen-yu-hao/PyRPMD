@@ -283,14 +283,45 @@ coverage backlog.
 
 ## Method references
 
-- Hone, Rossky and Voth, *J. Chem. Phys.* **124**, 154103 (2006),
+- Cao and Voth, “A new perspective on quantum time correlation functions,”
+  *J. Chem. Phys.* **99**, 10070–10073 (1993),
+  [doi:10.1063/1.465512](https://doi.org/10.1063/1.465512), and “The formulation of quantum
+  statistical mechanics based on the Feynman path centroid density. II. Dynamical properties,”
+  *J. Chem. Phys.* **100**, 5106–5117 (1994),
+  [doi:10.1063/1.467176](https://doi.org/10.1063/1.467176): centroid-dynamics foundations.
+- Hone, Rossky and Voth, “A comparative study of imaginary time path integral based methods
+  for quantum dynamics,” *J. Chem. Phys.* **124**, 154103 (2006),
   [doi:10.1063/1.2186636](https://doi.org/10.1063/1.2186636).
-- Hone, Izvekov and Voth, *J. Chem. Phys.* **122**, 054105 (2005),
+- Hone, Izvekov and Voth, “Fast centroid molecular dynamics: A force-matching approach for
+  the predetermination of the effective centroid forces,” *J. Chem. Phys.* **122**, 054105 (2005),
   [doi:10.1063/1.1836731](https://doi.org/10.1063/1.1836731).
+- Rossi, Ceriotti and Manolopoulos, “How to remove the spurious resonances from ring polymer
+  molecular dynamics,” *J. Chem. Phys.* **140**, 234116 (2014),
+  [doi:10.1063/1.4883861](https://doi.org/10.1063/1.4883861): TRPMD.
+- Kubo, “Statistical-Mechanical Theory of Irreversible Processes. I. General Theory and
+  Simple Applications to Magnetic and Conduction Problems,” *J. Phys. Soc. Jpn.* **12**,
+  570–586 (1957), [doi:10.1143/JPSJ.12.570](https://doi.org/10.1143/JPSJ.12.570):
+  linear-response and correlation foundation.
+- Dundas et al., “Harmonic Infrared and Raman Spectra in Molecular Environments Using the
+  Polarizable Embedding Model,” *J. Chem. Theory Comput.* **17**, 3599–3617 (2021),
+  [doi:10.1021/acs.jctc.0c01323](https://doi.org/10.1021/acs.jctc.0c01323): source for the
+  nonresonant Raman invariant convention. This is not the historical origin of Raman theory;
+  PyRPMD does not implement that paper's polarizable-embedding electronic-structure method.
+- Morita and Hynes, “A Theoretical Analysis of the Sum Frequency Generation Spectrum of the
+  Water Surface. II. Time-Dependent Approach,” *J. Phys. Chem. B* **106**, 673–685 (2002),
+  [doi:10.1021/jp0133438](https://doi.org/10.1021/jp0133438): original time-dependent
+  dipole–polarizability SFG response framework. The relative kernel here requires the caller's
+  interface, property model and optical conventions for a molecular comparison.
+
+Additional context and methods outside current implementation coverage:
+
 - [DL_POLY Quantum method definitions](https://dlpolydocs.readthedocs.io/en/latest/intro.html),
   including the PA-CMD mass convention and the f-CMD/f-QCMD/h-CMD distinctions.
 - Fletcher et al., *J. Chem. Phys.* **155**, 231101 (2021),
   [doi:10.1063/5.0076704](https://doi.org/10.1063/5.0076704).
 - [h-CMD method paper](https://doi.org/10.1063/5.0248115).
-- [Nonresonant Raman tensor invariants](https://doi.org/10.1021/acs.jctc.0c01323).
-- [SFG response-function and interface conventions](https://pmc.ncbi.nlm.nih.gov/articles/PMC7181271/).
+- [SFG response-function and interface review](https://pmc.ncbi.nlm.nih.gov/articles/PMC7181271/).
+
+See the [method catalog](manual/references.md) and [reproduction checklist](manual/reproduction.md)
+for original test systems, available entry points, observables and the gaps between a model
+regression and a completed paper reproduction.

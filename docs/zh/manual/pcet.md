@@ -193,3 +193,13 @@ $$
 方程与方法来源见 [PCET 专题](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/pcet.md)。在谐振子示例模型上，
 PyRPMD 与 Hammes-Schiffer 课题组的 pyPCET 在全部 12 个正反向速率上的偏差不超过 0.062%，见
 [模型验证记录](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/pcet-model-2026-10-30/README.md)。
+
+## 原始方法出处与复现任务
+
+2008 论文是理论出处，2019 Au/三乙基铵体系是物理复现目标，2025 tutorial/pyPCET 是独立实现对照。局域固定距离模型没有自动包含实验应用中的全部距离平均和双电层项。
+
+- [C. Venkataraman; A. V. Soudackov; S. Hammes-Schiffer (2008), Theoretical Formulation of Nonadiabatic Electrochemical Proton-Coupled Electron Transfer at Metal–Solution Interfaces](references.md#pcet2008). [DOI](https://doi.org/10.1021/jp802171y).
+- [Z. K. Goldsmith; Y. C. Lam; A. V. Soudackov; S. Hammes-Schiffer (2019), Proton Discharge on a Gold Electrode from Triethylammonium in Acetonitrile: Theoretical Modeling of Potential-Dependent Kinetic Isotope Effects](references.md#gold2019). [DOI](https://doi.org/10.1021/jacs.8b11826).
+- [P. Hutchison; K. Cui; J. Zhong; S. Hammes-Schiffer (2025), Tutorial on computing nonadiabatic proton-coupled electron transfer rate constants](references.md#pypcet2025). [DOI](https://doi.org/10.1063/5.0284337).
+
+逐项计算：[pcet](reproduction.md#task-pcet).

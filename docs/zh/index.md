@@ -43,6 +43,9 @@ PyRPMD 用一个 Python 或 TOML 输入运行环聚合物分子动力学。它�
 
 示例使用解析模型势，几秒内即可完成。进行正式研究前，请按[科学约定与收敛](manual/science.md)完成收敛流程。
 
+方法出处与计算计划：阅读[原始论文与实现对照](manual/references.md)及[逐项复现清单](manual/reproduction.md)，
+确定论文体系、物理量、原模型数据及实现缺口后再开展正式计算。
+
 ## 基本循环
 
 大多数输入工作流使用同样四条命令，每个新计算使用独立的输出目录。PLUMED 外部内核状态不支持自动续跑；
@@ -70,7 +73,7 @@ pyrpmd report runs/job                  # 可选：由保存数据生成图、in
 | 计算任务 | [气相与自由能](manual/workflows.md) · [材料与表面](manual/periodic.md) · [PCET](manual/pcet.md) · [电极模型](manual/electrochemistry.md) · [非绝热 NRPMD](manual/nonadiabatic.md) · [示例](manual/examples.md) |
 | 模型与运行 | [势能与插件](manual/potentials.md) · [势能生成](manual/pes-generation.md) · [JaxPIP 拟合](manual/jaxpip-generation.md) · [执行、并行与续跑](manual/execution.md) · [输出与分析](manual/results.md) · [自动分析与出图](manual/analysis-reports.md) |
 | 动力学扩展（英文指南） | [统一传播栈](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/propagation-stack.md) · [昂贵势能](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/performance-dynamics.md) · [批量轨迹](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/batched-dynamics.md) · [RPC/MTS](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rpc-mts.md) · [TRPMD 与谱](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/trpmd-spectroscopy.md) |
-| 参考 | [Python API](manual/api.md) · [常见问题](manual/troubleshooting.md) · [开发者指南](manual/development.md) |
+| 参考 | [原始论文](manual/references.md) · [复现清单](manual/reproduction.md) · [Python API](manual/api.md) · [常见问题](manual/troubleshooting.md) · [开发者指南](manual/development.md) |
 
 ```{toctree}
 :maxdepth: 2
@@ -110,6 +113,8 @@ JaxPIP 拟合与原生执行 <manual/jaxpip-generation>
 :caption: 参考与开发
 :hidden:
 
+原始论文与实现 <manual/references>
+论文体系与复现 <manual/reproduction>
 Python API <manual/api>
 常见问题 <manual/troubleshooting>
 开发者指南 <manual/development>

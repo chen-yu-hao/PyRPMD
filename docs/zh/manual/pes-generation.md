@@ -84,3 +84,17 @@ Python API 是 `generate`、`build_native`、`run_generated_job`。
 
 文献：QMDFF **10.1021/ct500573f**；dE-EVB **10.1039/C5CP02580J**；
 TREQ **10.1063/1.5092589**；Caracal **10.1021/acs.jctc.3c00568**。
+
+## 原始方法出处与复现任务
+
+将参考电子结构、电荷/键级定义、势函数形式与 Caracal 软件分别引用。dE-EVB 原体系包含带电 SN2 和中性 Diels–Alder 反应；当前仅中性的拟合路径不能直接复现带电案例。水或 NH₃ 试算不等于 TREQ 原文六反应研究。
+
+- [Q. Sun et al. (2018), PySCF: the Python-based simulations of chemistry framework](references.md#pyscf2018). [DOI](https://doi.org/10.1002/wcms.1340).
+- [F. L. Hirshfeld (1977), Bonded-atom fragments for describing molecular charge densities](references.md#hirshfeld1977). [DOI](https://doi.org/10.1007/BF00549096).
+- [I. Mayer (1983), Charge, bond order and valence in the AB initio SCF theory](references.md#mayer1983). [DOI](https://doi.org/10.1016/0009-2614(83)80005-0).
+- [S. Grimme (2014), A General Quantum Mechanically Derived Force Field (QMDFF) for Molecules and Condensed Phase Simulations](references.md#qmdff2014). [DOI](https://doi.org/10.1021/ct500573f).
+- [B. Hartke; S. Grimme (2015), Reactive force fields made simple](references.md#deevb2015). [DOI](https://doi.org/10.1039/C5CP02580J).
+- [J. Steffen (2019), A new class of reaction path based potential energy surfaces enabling accurate black box chemical rate constant calculations](references.md#treq2019). [DOI](https://doi.org/10.1063/1.5092589).
+- [J. Steffen (2023), Caracal: A Versatile Ring Polymer Molecular Dynamics Simulation Package](references.md#caracal2023). [DOI](https://doi.org/10.1021/acs.jctc.3c00568).
+
+逐项计算：[pyscf](reproduction.md#task-pyscf) · [populations](reproduction.md#task-populations) · [qmdff](reproduction.md#task-qmdff) · [deevb](reproduction.md#task-deevb) · [treq](reproduction.md#task-treq).

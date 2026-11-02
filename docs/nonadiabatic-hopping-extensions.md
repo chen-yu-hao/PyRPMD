@@ -92,6 +92,15 @@ common adiabatic coefficient populations for BA. These are distinct from the
 active-surface occupation counts and from a mixed quantum/classical estimator
 that substitutes active populations on a density matrix's diagonal.
 
+This distinction matters when reproducing the donor populations in
+[Limbu et al. (2025)](https://doi.org/10.1063/5.0301249). Their mixed estimator
+uses active-state indicators for the diagonal adiabatic terms and electronic
+amplitude coherences for the off-diagonal terms before transformation to the
+donor basis. Neither `density_matrix(state)` nor an active-surface fraction alone
+is that observable. A reproduction must construct the paper's estimator with
+its specified basis and bead averaging, as well as its Debye-bath parameters
+and initial distribution. See the [reproduction plan](manual/reproduction.md).
+
 ## The bead approximation
 
 The BA used here is Eq. (17) of Shakya et al. and Eq. (4) of Limbu et al.:
@@ -277,7 +286,10 @@ PYTHONPATH=src python -m pytest tests/test_advanced_surface_hopping.py \
 For predictive calculations, numerical convergence, trajectory sampling error
 and disagreement between approximate methods remain separate checks.
 
-1. P. Shakya, R. Welsch, L. Inhester and R. Santra, *Capturing electronic
+The [method-to-paper catalog](manual/references.md) distinguishes each original
+method from the extra combinations exposed by this API.
+
+1. Y. Shakya, R. Welsch, L. Inhester and R. Santra, *Capturing electronic
    decoherence in quantum-classical dynamics using the ring-polymer-surface-
    hopping–density-matrix approach*, **Phys. Rev. A 107**, 062810 (2023).
    [DOI and accepted manuscript](https://link.aps.org/accepted/10.1103/PhysRevA.107.062810).

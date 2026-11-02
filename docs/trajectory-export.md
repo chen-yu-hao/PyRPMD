@@ -60,7 +60,7 @@ velocity metadata; use the H5MD plugin where installed, or set cell/topology
 information separately. See the [VMD XYZ plugin](https://www.ks.uiuc.edu/Research/vmd/plugins/molfile/xyzplugin.html).
 No GUI-level VMD/OVITO validation is claimed by the automated tests.
 
-### ASE
+### ASE trajectory export
 
 ```python
 from ase.io import read

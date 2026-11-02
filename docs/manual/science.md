@@ -3,6 +3,9 @@
 This chapter defines the quantities PyRPMD computes, the units and array conventions, and the
 procedure for converging a result. The inputs and commands for each task are in the
 [workflow guide](workflows.md), [Materials and surfaces](periodic.md) and [PCET](pcet.md).
+The [method and reference catalog](references.md) maps implemented features to source files and
+original papers; the [reproduction checklist](reproduction.md) distinguishes the papers' systems,
+available package examples and the observables and convergence checks to calculate.
 
 ## Tasks and their results
 
@@ -20,7 +23,9 @@ procedure for converging a result. The inputs and commands for each task are in 
 | Local electrochemical proton–electron transfer | `pcet` | Reduction/oxidation rates and isotope effects in `s^-1` |
 
 `pcet` solves one-dimensional proton eigenstates and evaluates a golden-rule rate; it has no RPMD
-propagation. All other dynamics tasks share one ring-polymer convention with real atomic masses.
+propagation. RPMD propagation uses the real-mass ring-polymer convention below. The separate
+PA-CMD spectroscopy propagator assigns fictitious masses to internal ring modes and retains
+physical centroid inertia; its mass convention and convergence requirements are stated below.
 `network` reports each TS separately (`aggregation="separate"`).
 
 ## Atomic units and array conventions
@@ -63,6 +68,13 @@ With $\hbar=1$ the equilibrium distribution is $\exp[-(\beta/P)H_P]$, so one mom
 has Maxwell variance $m_iP/\beta$. For P=1 the springs vanish and deterministic propagation is
 classical molecular dynamics. Increasing P converges the path-integral discretization.
 
+The equilibrium ring representation follows
+[Chandler and Wolynes (1981)](https://doi.org/10.1063/1.441588), with early PIMD applications by
+[Parrinello and Rahman (1984)](https://doi.org/10.1063/1.446740). Real-mass propagation used to
+approximate Kubo-transformed time correlations is RPMD
+([Craig and Manolopoulos, 2004](https://doi.org/10.1063/1.1777575)); convergence of the equilibrium
+path integral does not make its real-time quantum-dynamics approximation exact.
+
 The centroid is $\bar q_i=P^{-1}\sum_j q_{ji}$. For a nonlinear function s, the two estimators
 
 $$
@@ -86,11 +98,11 @@ deterministic propagation without thermostat or bias; their time is physical tim
 instead select a physical Markovian electronic-friction bath through `[electronic_friction]`;
 those trajectories exchange energy with the bath and are not judged by NVE energy conservation.
 
-| Deterministic integrator | Free ring | Converge with respect to |
-| --- | --- | --- |
-| `cayley-bcb` | Cayley map (default) | Time step: physical-force and splitting error |
-| `normal-mode-bab` | Exact normal-mode rotation | Time step: physical-force and splitting error |
-| `velocity-verlet` | Explicit springs and forces | Time step, within the stability limit of the highest ring frequency |
+| Deterministic integrator | Free ring | Converge with respect to | Method source |
+| --- | --- | --- | --- |
+| `cayley-bcb` | Cayley map (default) | Time step: physical-force and splitting error | [Korol et al. (2019)](https://doi.org/10.1063/1.5120282) |
+| `normal-mode-bab` | Exact normal-mode rotation | Time step: physical-force and splitting error | [Ceriotti et al. (2010)](https://doi.org/10.1063/1.3489925) |
+| `velocity-verlet` | Explicit springs and forces | Time step, within the stability limit of the highest ring frequency | [Swope et al. (1982)](https://doi.org/10.1063/1.442716) |
 
 Converge every method in the time step. For Verlet the free ring is stable for
 $|\Delta t|\max\omega_k<2$; stiff bonds or biases tighten the limit. See the
@@ -103,6 +115,82 @@ Metadynamics additionally supports Nosé–Hoover chains. `native=true` enables 
 `loop_backend="native"` requires the whole loop to run fused. The separate native PIMD engine
 offers additional thermostats. The rules for periodic and fixed-atom systems are in the
 [periodic task guide](periodic.md).
+
+The stochastic splitting has its own provenance:
+[BAOAB (Leimkuhler and Matthews, 2013)](https://doi.org/10.1063/1.4802990) and
+[BCOCB (Korol et al., 2020)](https://doi.org/10.1063/1.5134810). In BCOCB, each C half-step is the
+square root of the full-step Cayley map, rather than a Cayley map evaluated at half the time step.
+The thermostat families available across the Python and native interfaces are:
+
+| Thermostat family | Original method source | Scope to retain when citing |
+| --- | --- | --- |
+| Andersen | [Andersen (1980)](https://doi.org/10.1063/1.439486) | PyRPMD uses its documented global discrete collision clock |
+| Cartesian Langevin; stochastic velocity rescaling (SVR) | [Bussi and Parrinello (2007)](https://doi.org/10.1103/PhysRevE.75.056707); [Bussi et al. (2007)](https://doi.org/10.1063/1.2408420) | Exact OU bath and global canonical rescaling are separate algorithms |
+| PILE-L; PILE-G | [Ceriotti et al. (2010)](https://doi.org/10.1063/1.3489925) | PILE-G combines internal-mode PILE with centroid SVR |
+| Nosé–Hoover chains | [Martyna et al. (1992)](https://doi.org/10.1063/1.463940) | Global chain; chain parameters and numerical substeps require convergence |
+| Cartesian/normal-mode GLE | [Ceriotti et al. (2009)](https://doi.org/10.1103/PhysRevLett.102.020601) | Supplied stable drift/covariance matrices determine the bath |
+| PIGLET | [Ceriotti and Manolopoulos (2012)](https://doi.org/10.1103/PhysRevLett.109.100604) | Native NVT route requires externally calibrated mode matrices matching temperature and bead count, with provenance |
+| Fast-forward Langevin | [Hijazi et al. (2018)](https://doi.org/10.1063/1.5029833) | Current native implementation is the rescale variant |
+
+Generic GLE matrices do not constitute a calibrated PIGLET model. PyRPMD supplies no invented
+universal PIGLET preset, rejects PIGLET NPT, and does not implement the original paper's transient
+anisotropic Gaussian momentum estimator merely by selecting that thermostat. A thermostat's
+canonical-distribution test establishes sampling behavior; physical correlation functions need
+the dynamics appropriate to their observable.
+
+Per-bead bond constraints cite [SHAKE (Ryckaert et al., 1977)](https://doi.org/10.1016/0021-9991(77)90098-5)
+and [RATTLE (Andersen, 1983)](https://doi.org/10.1016/0021-9991(83)90014-1). The supported route is
+fixed-cell velocity Verlet with NVE or Andersen and the Python fallback. The zero-potential rigid-water
+example tests constraint mechanics, rather than a realistic liquid or a quantum rigid-rotor model.
+
+## Original methods and implementation boundaries
+
+Use the following sources for the scientific method actually selected. Full bibliographic records,
+source paths, original test systems and practical reproduction targets are in
+[References](references.md) and [Reproduction](reproduction.md).
+
+| Implemented family | Original sources | Interpretation of this implementation |
+| --- | --- | --- |
+| Thermal RPMD rate | [Craig and Manolopoulos (2005)](https://doi.org/10.1063/1.1850093), [refinement (2005)](https://doi.org/10.1063/1.1954769), [Collepardo-Guevara et al. (2009)](https://doi.org/10.1063/1.3127145); [RPMDrate (2013)](https://doi.org/10.1016/j.cpc.2012.10.017) for software/workflow provenance | PMF/QTST factor and recrossing transmission coefficient; use the matching bimolecular normalization and paper errata |
+| Direct collision dRPMD | [Suleimanov et al. (2018)](https://doi.org/10.1021/acs.jpclett.8b00783) | Original mechanism study is H₂ + H₃⁺; the package H + H₂ benchmark is a separate validation system |
+| Initial-state-selected NE-RPMD | [Welsch et al. (2016)](https://doi.org/10.1063/1.4967958); [Marjollet and Welsch (2020)](https://doi.org/10.1063/5.0004179), [2021](https://doi.org/10.1002/qua.26447); [Marjollet et al. (2022)](https://doi.org/10.1063/5.0076216) | Harmonic ring preparation and centroid excitation; auxiliary β and collision energy are distinct |
+| QCT | [Karplus et al. (1965)](https://doi.org/10.1063/1.1697301) | Production initialization is harmonic P=1; full-PES action matching is a separate H₃ diatomic benchmark extension |
+| RPC and multiple time stepping | [Markland and Manolopoulos (2008)](https://doi.org/10.1063/1.2953308); [Tuckerman et al. (1992)](https://doi.org/10.1063/1.463137); [Kapil et al. (2016)](https://doi.org/10.1063/1.4941091), [Marsalek and Markland (2016)](https://doi.org/10.1063/1.4941093) for multilevel applications | Explicit fast/slow potential APIs; a reference correction is target minus reference, with separate contraction and time-step convergence |
+| PA-CMD and f-CMD | [Cao and Voth (1993)](https://doi.org/10.1063/1.465512), [1994](https://doi.org/10.1063/1.467176); [Hone et al. (2006)](https://doi.org/10.1063/1.2186636) for PA-CMD; [Hone et al. (2005)](https://doi.org/10.1063/1.1836731) for force-matched f-CMD | Dedicated fictitious-mass PA-CMD; f-CMD exports and a local quadratic conservative fitter have a restricted model class |
+| TRPMD and IR | [Rossi et al. (2014)](https://doi.org/10.1063/1.4883861); [Kubo (1957)](https://doi.org/10.1143/JPSJ.12.570); [Habershon et al. (2009)](https://doi.org/10.1063/1.3167790) for the q-TIP4P/F model | Physical masses, internal-mode thermostat and unthermostatted centroid; relative IR from dipole Kubo correlations |
+| Raman and SFG analysis | [Kubo (1957)](https://doi.org/10.1143/JPSJ.12.570); [Dundas et al. (2021)](https://doi.org/10.1021/acs.jctc.0c01323) for Raman invariant conventions; [Morita and Hynes (2002)](https://doi.org/10.1021/jp0133438) for time-dependent SFG | Relative polarizability/dipole correlation spectra using supplied property models; the Raman convention source is not a claim to implement polarizable embedding |
+| TI trace action and pCN sampling | [Takahashi and Imada (1984)](https://doi.org/10.1143/JPSJ.53.3765); [Cotter et al. (2013)](https://doi.org/10.1214/13-STS421) | Fourth-order trace action with Gaussian-preserving internal-mode Metropolis proposals; MC steps are not physical time |
+| Energy, heat capacity and isotope estimators | [Yamamoto (2005)](https://doi.org/10.1063/1.2013257); [Ceriotti and Markland (2013)](https://doi.org/10.1063/1.4772676); [Cheng and Ceriotti (2014)](https://doi.org/10.1063/1.4904293) | Action derivatives/scaled-coordinate estimators; FEP or mass integration with overlap and correlated-error checks |
+| Suzuki–Chin sampling | [Suzuki (1995)](https://doi.org/10.1016/0375-9601(95)00266-6); [Chin (1997)](https://doi.org/10.1016/S0375-9601(97)00003-0); [Kapil et al. (2016)](https://doi.org/10.1063/1.4971438) | Even-bead finite-difference force-gradient construction; current output does not include a complete SC energy/Cv/pressure estimator |
+| Bosonic exchange PIMD | [Hirshberg et al. (2019)](https://doi.org/10.1073/pnas.1913365116); [Feldman and Hirshberg (2023)](https://doi.org/10.1063/5.0173749) | Quadratic recurrence for equal-mass groups and symmetric observables; no periodic winding/superfluid estimator |
+| PIGS | [Sarsa et al. (2000)](https://doi.org/10.1063/1.481926) | Primitive open projection with a positive trial wavefunction and midpoint observables; auxiliary β specifies projection, not physical temperature |
+| Ring-polymer instanton rates and splittings | [Richardson and Althorpe (2009)](https://doi.org/10.1063/1.3267318); [Richardson (2016)](https://doi.org/10.1063/1.4943866); [Richardson and Althorpe (2011)](https://doi.org/10.1063/1.3530589) | Rate path and Gaussian prefactor; splitting is restricted to a symmetric bound/constrained doublet and rejects free external rotations/translations |
+| Harmonic TST, Wigner and Eckart checks | [Eyring (1935)](https://doi.org/10.1063/1.1749604); [Wigner (1932)](https://doi.org/10.1515/zpch-1932-1920); [Eckart (1930)](https://doi.org/10.1103/PhysRev.35.1303) | Explicit baseline/ZPE convention; weak-tunnelling expansion or a one-dimensional transmission model does not establish multidimensional accuracy |
+
+**State preparation.** A harmonic NE-RPMD state and an action-quantized QCT orbit are approximations
+to different initial distributions. Neither is an exact arbitrary anharmonic quantum eigenstate.
+The H₃ smooth-switching experiment has no identified originating method paper; it is a repository
+diagnostic whose injected work and schedule dependence must be measured. Its background NE-RPMD
+citations do not turn it into a published state-preparation correction.
+
+**Centroid dynamics and spectroscopy.** PA-CMD changes internal-mode masses; TRPMD changes
+internal-mode friction. Converge the PA-CMD adiabatic frequency separately from its time step and
+bead count. QCMD, h-CMD and f-QCMD are outside the implemented coverage, and the IBI helper is
+not a complete implementation of those methods. Nonlinear f-CMD observables need conditional
+property models. The quartic benchmark uses Cao–Voth's 1993 potential with an independently
+calculated Kubo reference; its curves are not digitizations of that paper's real quantum
+correlation. Raman/SFG output is relative and needs additional optical factors for absolute
+experimental comparisons. TRPMD rate-friction scans are sensitivity studies, as assessed by
+[Hele and Suleimanov (2015)](https://doi.org/10.1063/1.4928599), not rigorous quantum-rate error bars.
+
+**Trace and open-path quantities.** TI fourth-order accuracy concerns the partition-function trace
+and its thermodynamic derivatives, not every structural or off-diagonal observable. The current
+momentum-distribution API directly samples a primitive open path and Fourier-transforms one
+Cartesian endpoint-separation distribution. The off-diagonal-density-matrix relationship is
+reviewed by [Ceperley (1995)](https://doi.org/10.1103/RevModPhys.67.279); the related original
+[Lin et al. (2010)](https://doi.org/10.1103/PhysRevLett.105.110602) displaced-path free-energy
+algorithm is not implemented here. These citations must not imply that the API implements that
+estimator or a complete three-dimensional momentum reconstruction.
 
 ## Free-energy measures and rate normalization
 

@@ -108,7 +108,7 @@ not implemented. A minimum-image closing spring is not a substitute for the
 missing winding sum. The workflow therefore rejects periodic systems and
 reports only a symmetric bead-averaged physical potential observable.
 
-## PIGS
+## PIGS ground-state sampling
 
 ```toml
 task = "pimd"

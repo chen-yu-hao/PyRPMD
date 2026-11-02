@@ -41,6 +41,40 @@ metadynamics、PIMD、扩散、表面跃迁和电化学 PCET；积分器内核�
 跨程序逐点对照发现并修复了 OPES 首核权重的初始化问题；报告保留未收敛结果，明确区分模型校验与完整论文复现。
 
 
+## 方法出处与论文复现
+
+完整的[原始论文—实现对照表](docs/zh/manual/references.md)覆盖 **111 个功能条目与 170 条文献记录**，
+逐项给出源码、原始方法和实现范围；[复现计算清单](docs/zh/manual/reproduction.md)给出原文体系、应该算什么、
+现有入口、缺口和优先级。核查版本为 `cb60679`（2026-11-02）。
+复现建议先完成 **H + H₂/BKMP2、NRPMD 2013 两态模型、q-TIP4P/F 水**三条主线。
+
+| 功能族 | 原始方法 / 模型出处 |
+| --- | --- |
+| PIMD / RPMD 关联函数 | [Chandler–Wolynes 1981](docs/zh/manual/references.md#cw81) · [Craig–Manolopoulos 2004](docs/zh/manual/references.md#rpm04) |
+| Bennett–Chandler 与双分子 RPMD 速率 | [Bennett 1977](docs/zh/manual/references.md#bennett1977) · [Chandler 1978](docs/zh/manual/references.md#chandler1978) · [Craig–Manolopoulos 2005](docs/zh/manual/references.md#rate05) · [Collepardo-Guevara et al. 2009](docs/zh/manual/references.md#bimol09) |
+| dRPMD 与初态选择散射 | [Suleimanov et al. 2018](docs/zh/manual/references.md#drpmd18) · [Marjollet et al. 2020](docs/zh/manual/references.md#state20) · [2022 extension](docs/zh/manual/references.md#state22) |
+| Cayley / BCOCB 与 PILE / PIGLET | [Cayley 2019](docs/zh/manual/references.md#cayley19) · [BCOCB 2020](docs/zh/manual/references.md#bcocb20) · [PILE 2010](docs/zh/manual/references.md#pile10) · [PIGLET 2012](docs/zh/manual/references.md#piglet12) |
+| PA-CMD / f-CMD / TRPMD 与 SFG | [PA-CMD 2006](docs/zh/manual/references.md#pacmd06) · [f-CMD 2005](docs/zh/manual/references.md#fcmd05) · [TRPMD 2014](docs/zh/manual/references.md#trpmd14) · [Morita–Hynes 2002](docs/zh/manual/references.md#sfg02) |
+| TI / Suzuki–Chin、玻色交换与 PIGS | [TI 1984](docs/zh/manual/references.md#ti84) · [SC 2016](docs/zh/manual/references.md#sc16) · [Bosons 2019](docs/zh/manual/references.md#bose19) · [Quadratic scaling 2023](docs/zh/manual/references.md#bose23) · [PIGS 2000](docs/zh/manual/references.md#pigs00) |
+| 同位素估计器与瞬子 | [Isotopes 2013](docs/zh/manual/references.md#iso13) · [Fractionation 2014](docs/zh/manual/references.md#iso14) · [RPI 2009](docs/zh/manual/references.md#rpi09) · [Splittings 2011](docs/zh/manual/references.md#split11) |
+| 伞形采样 / MBAR / UI | [Torrie–Valleau 1977](docs/zh/manual/references.md#samp-us1977) · [Shirts–Chodera 2008](docs/zh/manual/references.md#samp-mbar2008) · [Kästner–Thiel 2005](docs/zh/manual/references.md#samp-ui2005) |
+| MetaD / WT-MetaD / OPES | [Laio–Parrinello 2002](docs/zh/manual/references.md#samp-meta2002) · [Barducci et al. 2008](docs/zh/manual/references.md#samp-wt2008) · [OPES 2020](docs/zh/manual/references.md#samp-opes2020) · [Explore 2022](docs/zh/manual/references.md#samp-explore2022) |
+| REUS、TIS / RETIS 与 committor | [REUS 2000](docs/zh/manual/references.md#samp-reus2000) · [TIS 2003](docs/zh/manual/references.md#samp-tis2003) · [RETIS 2007](docs/zh/manual/references.md#samp-retis2007) · [Committor 2000](docs/zh/manual/references.md#samp-comm2000) |
+| P-RFO / CI-NEB、路径 CV 与 string | [P-RFO 1985](docs/zh/manual/references.md#samp-prfo1985) · [CI-NEB 2000](docs/zh/manual/references.md#samp-cineb2000) · [Path CV 2007](docs/zh/manual/references.md#samp-path2007) · [CV string 2006](docs/zh/manual/references.md#samp-stringcv2006) |
+| 热平衡 / focused / 自旋映射 NRPMD | [Richardson–Thoss 2013](docs/zh/manual/references.md#na-nrpmd2013) · [Chowdhury–Huo 2019](docs/zh/manual/references.md#na-focused2019) · [Bossion et al. 2021](docs/zh/manual/references.md#na-sm2021) |
+| MASH / CA-RP-MASH 与表面跳跃 | [MASH 2023](docs/zh/manual/references.md#na-mash2023) · [CA-RP-MASH v1 2025](docs/zh/manual/references.md#na-carp2025) · [Tully 1990](docs/zh/manual/references.md#na-tully1990) · [RPSH 2017](docs/zh/manual/references.md#na-rpsh2017) · [BA/DM 2023](docs/zh/manual/references.md#na-rpshdm2023) · [DBOC 2025](docs/zh/manual/references.md#na-dboc2025) |
+| MV-RPMD / KC-RPMD / isomorphic / QD | [MV 2013](docs/zh/manual/references.md#na-mv2013) · [KC 2014](docs/zh/manual/references.md#na-kc2014) · [Isomorphic 2018](docs/zh/manual/references.md#na-iso2018) · [QD 2018](docs/zh/manual/references.md#na-qd2018) |
+| 恒压、材料扩散与表面速率 | [BZP 2009](docs/zh/manual/references.md#bzp2009) · [MTK 1994](docs/zh/manual/references.md#mtk1994) · [SCR 2020](docs/zh/manual/references.md#scr2020) · [H/Ni(100) 2012](docs/zh/manual/references.md#ni2012) · [Surface rates 2025](docs/zh/manual/references.md#sds2025) |
+| PCET、恒电位模型与电子摩擦 | [PCET 2008](docs/zh/manual/references.md#pcet2008) · [Au/TEAH+ 2019](docs/zh/manual/references.md#gold2019) · [GC approach 2025](docs/zh/manual/references.md#gc2025) · [EF-RPMD 2024](docs/zh/manual/references.md#efrpmd2024) |
+| QMDFF / dE-EVB / TREQ / PIP-NN / JaxPIP | [QMDFF 2014](docs/zh/manual/references.md#qmdff2014) · [dE-EVB 2015](docs/zh/manual/references.md#deevb2015) · [TREQ 2019](docs/zh/manual/references.md#treq2019) · [PIP-NN 2013](docs/zh/manual/references.md#pipnn2013) · [JaxPIP 2026](docs/zh/manual/references.md#jaxpip2026) |
+| ML 工作流与受力引擎接口 | [Committee 2020](docs/zh/manual/references.md#committee2020) · [Delta 2015](docs/zh/manual/references.md#delta2015) · [ASE 2017](docs/zh/manual/references.md#ase2017) · [OpenMM 2017](docs/zh/manual/references.md#openmm2017) · [i-PI 2014](docs/zh/manual/references.md#ipi2014) |
+
+引用方法时，还要引用实际使用的势能面、参数数据和上游软件，并记录 PyRPMD 提交。
+软件论文、综述、接口支持和短时回归不能替代原始算法引用或收敛复现证据。
+自适应 umbrella、signed NRPMD/电极等组合流程分别引用其组成方法；工程辅助功能不虚构唯一原论文。
+SM-NRPMD 的 focused 实现、正界面 RETIS、当前 isomorphic 动力学消费者等范围差别详见逐项目录。
+可下载 [BibTeX](docs/references.bib) 和 [结构化目录](docs/method-references.json)。
+
 ## 安装
 
 ```bash
@@ -140,7 +174,7 @@ mpiexec -n 4 pyrpmd run examples/drpmd/mpi.py --output runs/mpi
 | 自由能 | 带完整 CV Jacobian 的一至三维伞抽样、MBAR、重叠图、相关块 bootstrap、未采样区域 mask 与离线重分析；一至三维可依据 MBAR 重叠、有效样本数及可选覆盖目标自适应插入窗口 |
 | Metadynamics | Standard 与 well-tempered，1–3 维 CV、周期/固定层体系、NHC/PILE-L/Andersen、软墙、可选 1D/2D 偏置网格、独立历史或同步共享偏置 multiple-walker、统一 FESResult 与有限时间 FES |
 | 副本交换伞抽样 | 同温固定窗口 REUS、PILE-L 或 Andersen、同步集合续跑与跨窗口联合 bootstrap（[指南](docs/replica-exchange.md)） |
-| OPES | 固定带宽加权概率估计、可选冻结偏置重加权与可续跑的独立历史（[指南](docs/opes.md)） |
+| OPES | OPES_METAD / explore、可选自适应宽度、冻结偏置重加权与可续跑的独立历史；变体与 PLUMED 的差别见指南（[指南](docs/opes.md)） |
 | PLUMED 与路径抽样 | 可选的质心偏置 PLUMED 桥接；无偏双向 shooting 的跃迁界面集合与独立通量归一化（[PLUMED](docs/plumed.md)、[TIS](docs/transition-interface-sampling.md)） |
 | 速率后处理 | 离线二维分界面通量积分与带符号的通道贡献，显式归一化与严格平台检查（[指南](docs/rate-postprocessing.md)） |
 | 材料与表面 | 固定晶胞或各向同性 BZP 恒压 PIMD、固定层、primitive 与 centroid-virial 估计量、流式轨迹；普通或质心电子摩擦扩散；盆地归一化的位点/表面速率与源 FES 投影（[详情](docs/surface-catalysis.md)） |

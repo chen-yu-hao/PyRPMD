@@ -43,7 +43,11 @@ the internal damping/noise convention is unchanged.
 `normal-mode-bab` uses BAOAB with exact free-ring half rotations;
 `cayley-bcb` uses BCOCB with the square root of the full Cayley map. They converge
 to the same TRPMD equations as the time step decreases, but their finite-step
-errors differ. The native free/OU/free kernel is reused where available;
+errors differ. The original splitting references are
+[BAOAB (Leimkuhler and Matthews, 2013)](https://doi.org/10.1063/1.4802990) and
+[BCOCB (Korol et al., 2020)](https://doi.org/10.1063/1.5134810), in addition to the
+[Cayley construction (Korol et al., 2019)](https://doi.org/10.1063/1.5120282).
+The native free/OU/free kernel is reused where available;
 otherwise the existing NumPy normal-mode implementation is used. Set
 `loop_backend="auto"` or `"python"`: fully fused native stochastic blocks are
 not implemented. Velocity Verlet is not supported by this thermostat API.
@@ -168,9 +172,11 @@ with exact quantum results depends on the reaction and friction
 ensemble, matched stochastic sampling budgets, and resolved transmission
 plateaus. Friction spread does not constitute a rigorous uncertainty bound.
 
-PA-CMD is **not implemented** by setting `friction_scale`: it requires a changed
-normal-mode mass matrix and a separate adiabatic-limit/convergence treatment.
-This implementation always retains real masses.
+The TRPMD interface retains physical masses. Setting `friction_scale` therefore
+does not implement PA-CMD, which changes the normal-mode mass matrix and needs
+separate adiabatic-frequency convergence. PyRPMD implements PA-CMD in the
+dedicated `PACMDDynamics` class and [spectroscopy workflow](tier2-spectroscopy.md),
+following [Hone, Rossky and Voth (2006)](https://doi.org/10.1063/1.2186636).
 
 The regression suite checks free-centroid momentum conservation, the identical
 classical/zero-friction limits, finite-friction internal Gibbs covariance,
@@ -189,3 +195,10 @@ compares `friction_scale=0,0.5,1`. It checks the common centroid motion and a
 spectral peak within one finite-record frequency bin. It is an analytic model
 validation, not a converged molecular spectrum or a literature reaction-rate
 reproduction.
+
+The original TRPMD paper also studies harmonic/Morse OH, methane and liquid
+q-TIP4P/F water. The water potential originates in
+[Habershon, Markland and Manolopoulos (2009)](https://doi.org/10.1063/1.3167790);
+that paper's PA-CMD spectrum and the later TRPMD spectrum use different dynamics.
+For the original systems, observables and parameter-convergence checklist, see
+[References](manual/references.md) and [Reproduction](manual/reproduction.md).

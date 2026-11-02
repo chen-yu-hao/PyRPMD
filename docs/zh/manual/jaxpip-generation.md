@@ -181,3 +181,16 @@ CPU 检查通过不能作为 GPU 验证。
 
 上游源码与方法：[CQPES/JaxPIP](https://github.com/CQPES/JaxPIP)，Li 等，*JCTC* 2026，
 DOI `10.1021/acs.jctc.6c01659`。使用时应同时引用上游方法和参考数据的电子结构计算层级。
+
+## 原始方法出处与复现任务
+
+区分原始不变多项式基、PIP-NN 拟合与张量化 JaxPIP 求值器。先验证能量/力精度及置换不变性，再验证散射物理量。2026 JaxPIP 的 OH + CH₃OH 应用还需原数据、电子结构水平和 QCT 协议。
+
+- [Q. Sun et al. (2018), PySCF: the Python-based simulations of chemistry framework](references.md#pyscf2018). [DOI](https://doi.org/10.1002/wcms.1340).
+- [Z. Xie; J. M. Bowman (2010), Permutationally Invariant Polynomial Basis for Molecular Energy Surface Fitting via Monomial Symmetrization](references.md#pip2010). [DOI](https://doi.org/10.1021/ct9004917).
+- [B. Jiang; H. Guo (2013), Permutation invariant polynomial neural network approach to fitting potential energy surfaces](references.md#pipnn2013). [DOI](https://doi.org/10.1063/1.4817187).
+- [J. Li; K. Song; H. Guo; J. Li (2026), Efficient Tensorized Evaluation of Permutation Invariant Polynomials for Representing Potential Energy Surfaces](references.md#jaxpip2026). [DOI](https://doi.org/10.1021/acs.jctc.6c01659).
+- [C. Schran; K. Brezina; O. Marsalek (2020), Committee neural network potentials control generalization errors and enable active learning](references.md#committee2020). [DOI](https://doi.org/10.1063/5.0016004).
+- [R. Ramakrishnan; P. O. Dral; M. Rupp; O. A. von Lilienfeld (2015), Big Data Meets Quantum Chemistry Approximations: The Δ-Machine Learning Approach](references.md#delta2015). [DOI](https://doi.org/10.1021/acs.jctc.5b00099).
+
+逐项计算：[jaxpip](reproduction.md#task-jaxpip) · [committee](reproduction.md#task-committee) · [delta](reproduction.md#task-delta).

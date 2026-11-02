@@ -61,6 +61,41 @@ physical-model checks from completed, converged literature reproductions.
 
 These model examples test the numerical implementation; physical and sampling convergence require a separate system-specific study.
 
+## Method papers and reproduction
+
+The [original-paper / implementation catalog](docs/manual/references.md) covers **111 feature entries and 170 bibliographic records**,
+with code paths and implementation limits. The [reproduction checklist](docs/manual/reproduction.md) gives each source paper's
+system, observables, existing entry, missing ingredients and priority. The audit targets `cb60679` (2026-11-02).
+Start with **H + H2/BKMP2, the 2013 NRPMD two-state model, and q-TIP4P/F water**.
+
+| Feature family | Original method / model sources |
+| --- | --- |
+| PIMD / RPMD correlations | [Chandler–Wolynes 1981](docs/manual/references.md#cw81) · [Craig–Manolopoulos 2004](docs/manual/references.md#rpm04) |
+| Bennett–Chandler and bimolecular RPMD rates | [Bennett 1977](docs/manual/references.md#bennett1977) · [Chandler 1978](docs/manual/references.md#chandler1978) · [Craig–Manolopoulos 2005](docs/manual/references.md#rate05) · [Collepardo-Guevara et al. 2009](docs/manual/references.md#bimol09) |
+| dRPMD and state-selected scattering | [Suleimanov et al. 2018](docs/manual/references.md#drpmd18) · [Marjollet et al. 2020](docs/manual/references.md#state20) · [2022 extension](docs/manual/references.md#state22) |
+| Cayley / BCOCB and PILE / PIGLET | [Cayley 2019](docs/manual/references.md#cayley19) · [BCOCB 2020](docs/manual/references.md#bcocb20) · [PILE 2010](docs/manual/references.md#pile10) · [PIGLET 2012](docs/manual/references.md#piglet12) |
+| PA-CMD / f-CMD / TRPMD and SFG | [PA-CMD 2006](docs/manual/references.md#pacmd06) · [f-CMD 2005](docs/manual/references.md#fcmd05) · [TRPMD 2014](docs/manual/references.md#trpmd14) · [Morita–Hynes 2002](docs/manual/references.md#sfg02) |
+| TI / Suzuki–Chin, bosons and PIGS | [TI 1984](docs/manual/references.md#ti84) · [SC 2016](docs/manual/references.md#sc16) · [Bosons 2019](docs/manual/references.md#bose19) · [Quadratic scaling 2023](docs/manual/references.md#bose23) · [PIGS 2000](docs/manual/references.md#pigs00) |
+| Isotope estimators and instantons | [Isotopes 2013](docs/manual/references.md#iso13) · [Fractionation 2014](docs/manual/references.md#iso14) · [RPI 2009](docs/manual/references.md#rpi09) · [Splittings 2011](docs/manual/references.md#split11) |
+| Umbrella sampling / MBAR / UI | [Torrie–Valleau 1977](docs/manual/references.md#samp-us1977) · [Shirts–Chodera 2008](docs/manual/references.md#samp-mbar2008) · [Kästner–Thiel 2005](docs/manual/references.md#samp-ui2005) |
+| MetaD / WT-MetaD / OPES | [Laio–Parrinello 2002](docs/manual/references.md#samp-meta2002) · [Barducci et al. 2008](docs/manual/references.md#samp-wt2008) · [OPES 2020](docs/manual/references.md#samp-opes2020) · [Explore 2022](docs/manual/references.md#samp-explore2022) |
+| REUS, TIS / RETIS and committor analysis | [REUS 2000](docs/manual/references.md#samp-reus2000) · [TIS 2003](docs/manual/references.md#samp-tis2003) · [RETIS 2007](docs/manual/references.md#samp-retis2007) · [Committor 2000](docs/manual/references.md#samp-comm2000) |
+| P-RFO / CI-NEB, path CV and string | [P-RFO 1985](docs/manual/references.md#samp-prfo1985) · [CI-NEB 2000](docs/manual/references.md#samp-cineb2000) · [Path CV 2007](docs/manual/references.md#samp-path2007) · [CV string 2006](docs/manual/references.md#samp-stringcv2006) |
+| Thermal / focused / spin-mapping NRPMD | [Richardson–Thoss 2013](docs/manual/references.md#na-nrpmd2013) · [Chowdhury–Huo 2019](docs/manual/references.md#na-focused2019) · [Bossion et al. 2021](docs/manual/references.md#na-sm2021) |
+| MASH / CA-RP-MASH and surface hopping | [MASH 2023](docs/manual/references.md#na-mash2023) · [CA-RP-MASH v1 2025](docs/manual/references.md#na-carp2025) · [Tully 1990](docs/manual/references.md#na-tully1990) · [RPSH 2017](docs/manual/references.md#na-rpsh2017) · [BA/DM 2023](docs/manual/references.md#na-rpshdm2023) · [DBOC 2025](docs/manual/references.md#na-dboc2025) |
+| MV-RPMD / KC-RPMD / isomorphic / QD | [MV 2013](docs/manual/references.md#na-mv2013) · [KC 2014](docs/manual/references.md#na-kc2014) · [Isomorphic 2018](docs/manual/references.md#na-iso2018) · [QD 2018](docs/manual/references.md#na-qd2018) |
+| Pressure, material diffusion and surface rates | [BZP 2009](docs/manual/references.md#bzp2009) · [MTK 1994](docs/manual/references.md#mtk1994) · [SCR 2020](docs/manual/references.md#scr2020) · [H/Ni(100) 2012](docs/manual/references.md#ni2012) · [Surface rates 2025](docs/manual/references.md#sds2025) |
+| PCET, constant-potential models and electronic friction | [PCET 2008](docs/manual/references.md#pcet2008) · [Au/TEAH+ 2019](docs/manual/references.md#gold2019) · [GC approach 2025](docs/manual/references.md#gc2025) · [EF-RPMD 2024](docs/manual/references.md#efrpmd2024) |
+| QMDFF / dE-EVB / TREQ / PIP-NN / JaxPIP | [QMDFF 2014](docs/manual/references.md#qmdff2014) · [dE-EVB 2015](docs/manual/references.md#deevb2015) · [TREQ 2019](docs/manual/references.md#treq2019) · [PIP-NN 2013](docs/manual/references.md#pipnn2013) · [JaxPIP 2026](docs/manual/references.md#jaxpip2026) |
+| ML lifecycle and force-engine interfaces | [Committee 2020](docs/manual/references.md#committee2020) · [Delta 2015](docs/manual/references.md#delta2015) · [ASE 2017](docs/manual/references.md#ase2017) · [OpenMM 2017](docs/manual/references.md#openmm2017) · [i-PI 2014](docs/manual/references.md#ipi2014) |
+
+Cite the actual PES, parameters and upstream software as well as the method and PyRPMD commit.
+Software papers, reviews, adapter support and short regressions do not establish a full algorithm
+implementation or converged reproduction. Composed workflows cite their separate ingredients; engineering
+utilities have no invented single originating paper. The catalog records the focused SM-NRPMD subset,
+positive-interface RETIS, the isomorphic dynamics consumer and other material limitations.
+[BibTeX](docs/references.bib) and the [structured catalog](docs/method-references.json) are also available.
+
 ## Installation
 
 ```bash
@@ -175,7 +210,7 @@ to a research calculation.
 | Free energy | 1D–3D umbrella sampling with full CV Jacobians, MBAR, overlap graphs, correlated-block bootstrap, masks for unsampled regions and offline reanalysis; adaptive 1D–3D window insertion from MBAR overlap, effective sample size and optional coverage targets |
 | Metadynamics | Standard and well-tempered on 1D–3D CVs, periodic/fixed-layer systems, NHC/PILE-L/Andersen sampling, soft walls and optional 1D/2D bias grids; independent histories or synchronized shared-bias multiple walkers; common FESResult and finite-time bias FES |
 | Replica-exchange umbrellas | Same-temperature fixed-window REUS, PILE-L or Andersen, synchronized ensemble restart and joint window bootstrap ([guide](docs/replica-exchange.md)) |
-| OPES | Fixed-bandwidth weighted probability estimation, optional frozen-bias reweighting and restartable independent histories ([guide](docs/opes.md)) |
+| OPES | OPES_METAD / explore, optional adaptive widths, frozen-bias reweighting and restartable independent histories; variant/PLUMED differences are documented ([guide](docs/opes.md)) |
 | PLUMED and path sampling | Optional centroid-bias PLUMED bridge; unbiased two-way shooting transition-interface ensembles with separate flux normalization ([PLUMED](docs/plumed.md), [TIS](docs/transition-interface-sampling.md)) |
 | Rate postprocessing | Offline 2D dividing-surface flux integration and signed channel contributions with explicit normalization and strict plateau checks ([guide](docs/rate-postprocessing.md)) |
 | Materials and surfaces | Fixed-cell or isotropic BZP NPT PIMD, fixed layers, primitive and centroid-virial estimators, streamed trajectories; ordinary or centroid electronic-friction diffusion; basin-normalized site/surface rates and source-FES projection ([details](docs/surface-catalysis.md)) |
