@@ -206,4 +206,3 @@ def test_python_input_is_reexecuted_after_source_changes(tmp_path):
     assert before["potential_identity"]["declared"]["model"] == "first"
     assert after["potential_identity"]["declared"]["model"] == "second"
     assert before["potential_identity"]["input_sha256"] != after["potential_identity"]["input_sha256"]
-

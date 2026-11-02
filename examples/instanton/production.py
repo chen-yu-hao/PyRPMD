@@ -51,4 +51,3 @@ if __name__ == "__main__":
     import json
     from pyrpmd.workflows.instanton import run_instanton
     print(json.dumps(run_instanton(**build()), indent=2, allow_nan=False))
-

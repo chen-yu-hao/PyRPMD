@@ -438,4 +438,3 @@ def register_parser(commands):
     parser.add_argument("--output", help="Atomically written JSON report file")
     parser.set_defaults(_instanton_handler=_command)
     return parser
-
