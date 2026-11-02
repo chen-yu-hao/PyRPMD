@@ -112,7 +112,7 @@ def test_checkpoint_restart_is_bitwise_identical_and_records_rng(tmp_path):
     uninterrupted.sample(37)
     path = tmp_path / "conditional.npz"
     uninterrupted.save_checkpoint(path)
-    restored = sampler(seed=819)
+    restored = sampler()
     restored.load_checkpoint(path)
     expected = uninterrupted.sample(61)
     actual = restored.sample(61)
@@ -130,7 +130,7 @@ def test_checkpoint_handles_array_valued_rng_state(tmp_path):
     source.sample(3)
     path = tmp_path / "mt19937.npz"
     source.save_checkpoint(path)
-    target = sampler(seed=np.random.Generator(np.random.MT19937(0)))
+    target = sampler(seed=np.random.Generator(np.random.MT19937(37)))
     target.load_checkpoint(path)
     np.testing.assert_array_equal(target.sample(8), source.sample(8))
 
@@ -139,6 +139,7 @@ def test_checkpoint_handles_array_valued_rng_state(tmp_path):
     {"beta": 4.1}, {"bond_step": .071}, {"angle_step": .041},
     {"rotation_step": .11}, {"center_step": .09}, {"masses": [15., 1., 2.]},
     {"potential_identity": "0"*64},
+    {"seed": 819},
 ])
 def test_checkpoint_rejects_changed_science(tmp_path, override):
     before = sampler()
@@ -207,8 +208,21 @@ def test_one_bead_sampling_rotates_a_rigid_constrained_molecule():
     {"potential_identity": "not a content hash"}, {"pbc": True},
     {"beta": 0}, {"masses": [1., 0., 1.]},
     {"bond_step": -1}, {"angle_step": True},
+    {"seed": True}, {"seed": -1},
     {"bond_step": 0, "angle_step": 0, "rotation_step": 0, "center_step": 0},
 ])
 def test_invalid_or_unsupported_sampling_settings_fail(options):
     with pytest.raises(ValueError):
         sampler(**options)
+
+
+@pytest.mark.parametrize("attribute,value", [
+    ("required_bond_constraints", ((0, 1, 2.),)),
+    ("pbc", [True, True, True]), ("cell", np.eye(3)),
+    ("metadata", {"translation_invariant": False}),
+])
+def test_conditional_sampler_rejects_hidden_base_requirements(attribute, value):
+    potential = BondPotential()
+    setattr(potential, attribute, value)
+    with pytest.raises(ValueError, match="constraints|nonperiodic|translation-invariant"):
+        sampler(potential=potential)

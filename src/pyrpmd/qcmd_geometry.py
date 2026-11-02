@@ -29,6 +29,7 @@ class TriatomicCoordinates:
     """
 
     def __init__(self, molecules, natoms, *, cell=None, pbc=False):
+        object.__setattr__(self, "_sealed", False)
         self.natoms = _integer(natoms, "natoms")
         raw = np.asarray(molecules)
         if (raw.dtype.kind not in "iu" or raw.ndim != 2 or raw.shape[1] != 3
@@ -43,6 +44,12 @@ class TriatomicCoordinates:
             raise ValueError("quasi-centroid triatomics currently support nonperiodic systems without a cell")
         self.molecules = np.array(raw, dtype=np.int64, copy=True)
         self.molecules.flags.writeable = False
+        object.__setattr__(self, "_sealed", True)
+
+    def __setattr__(self, name, value):
+        if getattr(self, "_sealed", False):
+            raise AttributeError("triatomic topology is immutable; create a new coordinate object")
+        object.__setattr__(self, name, value)
 
     def _geometry(self, q):
         q = coordinates(q)

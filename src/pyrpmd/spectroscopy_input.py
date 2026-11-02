@@ -83,6 +83,11 @@ def resolve_spectroscopy_job(data, *, base_directory=None, input_path=None):
     resolved, system = JobSpec(raw, base, input_path).resolve()
     resolved["task"] = "spectroscopy"
     resolved["spectroscopy"] = deepcopy(dict(spec))
+    if "qcmd_model_file" in resolved["spectroscopy"]:
+        model_file = resolved["spectroscopy"]["qcmd_model_file"]
+        if not isinstance(model_file, str) or not model_file:
+            raise InputError("spectroscopy.qcmd_model_file must be a file path")
+        resolved["spectroscopy"]["qcmd_model_file"] = _path(base, model_file)
     resolved["properties"] = deepcopy(dict(properties))
     _plugin_paths(resolved["properties"], base)
     if "model" in resolved["properties"]:

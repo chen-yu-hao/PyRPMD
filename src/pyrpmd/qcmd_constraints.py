@@ -57,6 +57,10 @@ class ConstrainedQuasiCentroidSampler:
                  molecule=(0, 1, 2), bond_step=.025, angle_step=.02,
                  rotation_step=.05, center_step=.025, seed=0,
                  potential_identity, cell=None, pbc=False):
+        from .qcmd import _validate_base_potential
+        _validate_base_potential(potential)
+        if (getattr(potential, "metadata", {}) or {}).get("translation_invariant") is False:
+            raise ValueError("conditional quasi-centroid sampling requires a translation-invariant isolated molecule")
         self.potential = potential
         self._geometry = TriatomicCoordinates([molecule], 3, cell=cell, pbc=pbc)
         self._indices = self._geometry.molecules[0]
@@ -91,7 +95,10 @@ class ConstrainedQuasiCentroidSampler:
             self._move_types.append(2)
         if not self._move_types:
             raise ValueError("at least one unconstrained coordinate must have a positive proposal width")
-        self.rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
+        self.rng = (seed if isinstance(seed, np.random.Generator)
+                    else np.random.default_rng(_integer(seed, "seed", 0)))
+        self._initial_rng_identity = fingerprint_payload(self.rng.bit_generator.state)
+        self._initial_positions_identity = fingerprint_payload(q)
         self._internal = self._geometry.values(q)[:, 0]
         self._target = (self._internal.mean(axis=0) if target is None
                         else _real(target, "target"))
@@ -161,6 +168,8 @@ class ConstrainedQuasiCentroidSampler:
                 "rotation_proposal_width_radian": self._rotation_width,
                 "center_proposal_width_bohr": self._center_width,
                 "potential_identity": self._potential_identity,
+                "initial_positions_identity": self._initial_positions_identity,
+                "initial_rng_identity": self._initial_rng_identity,
                 "measure": "Cartesian_PIMD_delta_mean_internal_delta_centroid_COM",
                 "volume_jacobian": "product_beads(r1^2*r2^2*sin(theta))",
                 "orientation_measure": "Haar_SO3", "periodic": False,

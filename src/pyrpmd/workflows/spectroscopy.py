@@ -31,6 +31,7 @@ from .fes import _fingerprint, write_json
 SPECTROSCOPY_FIELDS = {
     "method", "integrator", "target_frequency", "friction_scale", "spectra", "sfg_component",
     "max_lag", "window", "sfg_window", "normalize", "laser_wavenumber_cm1",
+    "qcmd_model_file",
 }
 PROPERTY_FIELDS = {
     "provider", "factory", "params", "model", "device", "dtype",
@@ -76,10 +77,19 @@ def resolve_spectroscopy(config, system):
     else:
         raise ValueError("properties.provider must be python or torchscript")
     method = table.get("method", "pa-cmd")
-    if method not in ("pa-cmd", "rpmd", "trpmd", "f-cmd"):
-        raise ValueError("spectroscopy.method must be pa-cmd, rpmd, trpmd or f-cmd; QCMD/h-CMD are not implemented")
+    if method not in ("pa-cmd", "rpmd", "trpmd", "f-cmd", "f-qcmd"):
+        raise ValueError("spectroscopy.method must be pa-cmd, rpmd, trpmd, f-cmd or f-qcmd; adiabatic QCMD/h-CMD are not implemented")
     if method == "f-cmd" and config["beads"] != 1:
         raise ValueError("f-CMD requires beads=1 on a fitted centroid PMF; do not quantize it again")
+    if method == "f-qcmd":
+        if config["beads"] != 1:
+            raise ValueError("f-QCMD requires beads=1 on a fitted quasi-centroid potential; do not quantize it again")
+        if not isinstance(table.get("qcmd_model_file"), str) or not table["qcmd_model_file"]:
+            raise ValueError("f-QCMD requires spectroscopy.qcmd_model_file from fit_fqcmd")
+        if system.cell is not None or any(system.pbc):
+            raise ValueError("f-QCMD currently requires nonperiodic bent triatomics without a cell")
+    elif "qcmd_model_file" in table:
+        raise ValueError("qcmd_model_file applies only to f-QCMD")
     if method != "pa-cmd" and "target_frequency" in table:
         raise ValueError("target_frequency applies only to PA-CMD")
     if method not in ("pa-cmd", "trpmd") and "friction_scale" in table:
@@ -140,6 +150,9 @@ def resolve_spectroscopy(config, system):
         except ValueError:
             frequency = parse_quantity(value, "frequency")
         options["target_frequency"] = _scalar(frequency, "target_frequency")
+    if method == "f-qcmd":
+        # Conditional insertion preserves every previously accepted identity.
+        options["qcmd_model_file"] = table["qcmd_model_file"]
     spectra = table.get("spectra", ["ir"])
     if (not isinstance(spectra, (list, tuple)) or not spectra or any(not isinstance(name, str) for name in spectra)
             or len(set(spectra)) != len(spectra)
@@ -203,6 +216,9 @@ def _model_identity(spec):
 
 
 def _engines(config, system, potential, options, rng):
+    if options["method"] == "f-qcmd":
+        from ..qcmd import QuasiCentroidPotential
+        potential = QuasiCentroidPotential(potential, _qcmd_model(config, system))
     shared = dict(potential=potential, masses=system.masses, beta=config["beta"],
                   nbeads=config["beads"], seed=rng)
     if options["method"] == "pa-cmd":
@@ -216,6 +232,14 @@ def _engines(config, system, potential, options, rng):
             raise ValueError("f-CMD requires a provider declaring matching metadata['centroid_pmf_beta_au']")
     shared.update(native=False, integrator="normal-mode-bab", loop_backend="python")
     return Dynamics(dt=options["sampling_dt"], **shared), Dynamics(dt=options["dt"], **shared)
+
+
+def _qcmd_model(config, system):
+    from ..qcmd import QCMDModel, qcmd_base_identity
+    model = QCMDModel.load(config["spectroscopy"]["qcmd_model_file"])
+    model.validate_system(system, config["beta"],
+                          base_identity=qcmd_base_identity(config["potential"], system))
+    return model
 
 
 def prepare_spectroscopy(config, system, *, potential=None):
@@ -240,6 +264,11 @@ def prepare_spectroscopy(config, system, *, potential=None):
     }
     if options["method"] == "pa-cmd":
         result["target_angular_frequency_au"] = options["target_frequency"]
+    if options["method"] == "f-qcmd":
+        result["property_estimator"] = "property surface evaluated on fitted quasi-centroid geometry"
+        result["qcmd_model_file"] = options["qcmd_model_file"]
+        if potential is not None:
+            result["quasicentroid_model"] = _qcmd_model(config, system).to_dict()
     if potential is not None:
         # Constructor checks also enforce the fitted-PMF temperature for f-CMD.
         _engines(config, system, potential, options, np.random.default_rng(0))
@@ -301,9 +330,14 @@ def _read_checkpoint(path, config, system, options, identity):
 
 
 def _sample_replica(config, system, output, replica, options):
-    identity = _fingerprint(config, system, {"spectroscopy_replica": replica,
-                                           "property_model_sha256": _model_identity(config["properties"]),
-                                           "source_files": referenced_files(config)})
+    extra = {"spectroscopy_replica": replica,
+             "property_model_sha256": _model_identity(config["properties"]),
+             "source_files": referenced_files(config)}
+    if options["method"] == "f-qcmd":
+        # Hash explicitly here too: direct Python callers may use a relative
+        # file path, whereas the input frontend always resolves an absolute one.
+        extra["qcmd_model_sha256"] = hashlib.sha256(Path(options["qcmd_model_file"]).read_bytes()).hexdigest()
+    identity = _fingerprint(config, system, extra)
     path = _checkpoint(output, replica)
     rng = np.random.default_rng(np.random.SeedSequence([int(config.get("seed", 0)), 2503, replica]))
     traces = {key: [] for key in options["required_properties"]}
@@ -391,11 +425,13 @@ def _trace_physics(config, options):
         settings["friction_scale"] = options["friction_scale"]
     if options["method"] == "pa-cmd":
         settings["target_frequency"] = options["target_frequency"]
+    if options["method"] == "f-qcmd":
+        settings["qcmd_model_file"] = options["qcmd_model_file"]
     return {"spectroscopy_trajectory": settings, "beta": config["beta"],
             "beads": config["beads"], "seed": int(config.get("seed", 0))}
 
 
-def _analyze(config, system, output, options, streams, *, trace_metadata=None):
+def _analyze(config, system, output, options, streams, *, trace_metadata=None, qcmd_model=None):
     results = Path(output) / "results"
     results.mkdir(parents=True, exist_ok=True)
     traces = {key: np.stack([s[key] for s in streams]) for key in options["required_properties"]}
@@ -414,6 +450,9 @@ def _analyze(config, system, output, options, streams, *, trace_metadata=None):
                 "source_files": referenced_files(config),
             },
         }
+        if options["method"] == "f-qcmd":
+            trace_metadata["estimator"] = "property surface evaluated on fitted quasi-centroid geometry"
+            trace_metadata["trajectory_provenance"]["quasicentroid_model"] = qcmd_model.to_dict()
         atomic_savez(data_path, kind=TRACE_KIND, **traces,
                      sample_interval_au=dt, metadata=json.dumps(trace_metadata))
     # Reanalysis owns derived spectra only. In particular, an IR-only analysis
@@ -467,6 +506,14 @@ def _analyze(config, system, output, options, streams, *, trace_metadata=None):
             "f-CMD properties are evaluated on the centroid: nonlinear surfaces require a validated "
             "conditional centroid-property model, or introduce an additional observable approximation."
         )
+    if options["method"] == "f-qcmd":
+        summary["property_estimator"] = "property surface evaluated on fitted quasi-centroid geometry"
+        summary["warnings"].extend([
+            "f-QCMD uses temperature-specific, separable intramolecular IBI corrections for equivalent bent triatomics; "
+            "matching marginal distributions does not validate the joint distribution or real-time spectrum.",
+            "The property surface is evaluated directly on the quasi-centroid. Conditional property fitting and "
+            "intermolecular quantum corrections are not provided.",
+        ])
     if options["equilibration_steps"] == 0:
         summary["warnings"].append("No equilibration requested; the collapsed initial ring is not an equilibrium sample.")
     write_json(results / "summary.json", summary)
@@ -476,9 +523,10 @@ def _analyze(config, system, output, options, streams, *, trace_metadata=None):
 def run_spectroscopy(config, system, output):
     """Run/resume serial independent spectroscopy replicas and save spectra."""
     options = resolve_spectroscopy(config, system)
+    model = _qcmd_model(config, system) if options["method"] == "f-qcmd" else None
     streams = [_sample_replica(config, system, output, replica, options)
                for replica in range(options["replicas"])]
-    return _analyze(config, system, output, options, streams)
+    return _analyze(config, system, output, options, streams, qcmd_model=model)
 
 
 def reanalyze_spectroscopy(config, system, output):
