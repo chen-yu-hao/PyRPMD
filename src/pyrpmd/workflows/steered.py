@@ -100,8 +100,11 @@ def resolve_steered(config, system):
         raise ValueError("steered sampling requires its own moving restraint without another bias")
     if config.get("dynamics", {}).get("loop_backend", "auto") == "native":
         raise ValueError("steered sampling requires loop_backend='auto' or 'python'")
+    if "trajectory_stride" in config.get("output", {}):
+        raise ValueError("steered exports CV/work traces via sampling.sample_interval; output.trajectory_stride is unsupported")
     cv, selected, scales = resolve_cvs(config, system, "steered")
     sampling = config.get("sampling", {})
+    validate_steered_sampling(config, sampling)
     production = checked_integer(sampling["production_steps"], "sampling.production_steps")
     equilibration = checked_integer(sampling.get("equilibration_steps", 0), "sampling.equilibration_steps", minimum=0)
     replicas = checked_integer(sampling.get("replicas", 1), "sampling.replicas")

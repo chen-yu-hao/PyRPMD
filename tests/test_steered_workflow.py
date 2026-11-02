@@ -102,6 +102,9 @@ def test_units_and_explicit_protocol_are_canonical():
     ("sampling", {"thermostat_params": {}}, "owns|accept"),
     ("sampling", {"thermostat": "andersen"}, "conflicts"),
     ("sampling", {"integrator": "baoab"}, "steered-symmetric"),
+    ("sampling", {"engine": "native"}, "does not accept"),
+    ("sampling", {"andersen_interval": 5}, "does not accept"),
+    ("output", {"trajectory_stride": 1}, "trajectory_stride"),
     ("dynamics", {"loop_backend": "native"}, "loop_backend"),
 ])
 def test_unsupported_options_fail_before_output(tmp_path, section, change, match):
@@ -128,3 +131,10 @@ def test_frontend_rejects_generic_bath_options(option):
     config["sampling"].update(option)
     with pytest.raises(ValueError, match="steered|steering"):
         JobSpec.from_mapping(config).resolve()
+
+
+def test_public_prepare_rejects_ignored_trajectory_stride():
+    config = public_config()
+    config["output"]["trajectory_stride"] = 1
+    with pytest.raises(ValueError, match="trajectory_stride"):
+        prepare(config)
