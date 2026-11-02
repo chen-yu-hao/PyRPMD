@@ -61,3 +61,5 @@ Final results (2026-11-02):
 - Strict Sphinx build after the final wording corrections: build succeeded; exit 0.
 - Harmonic validation example: exit 0; elapsed 70.631522 s.
 - git diff --check: clean.
+
+Committed diagnostic and Sphinx logs normalize trailing whitespace only.
