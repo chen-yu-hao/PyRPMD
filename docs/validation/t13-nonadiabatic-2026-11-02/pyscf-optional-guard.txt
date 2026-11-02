@@ -1,0 +1,4 @@
+.............                                                            [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_pyscf_multistate.py:18: could not import 'pyscf': No module named 'pyscf'
+13 passed, 1 skipped in 0.97s
