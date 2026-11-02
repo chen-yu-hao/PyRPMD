@@ -1,0 +1,81 @@
+name: Publish verified mixed-sampling branch
+on: create
+permissions:
+  contents: read
+jobs:
+  publish:
+    if: >-
+      github.repository == 'chen-yu-hao/PyRPMD' &&
+      github.event.ref_type == 'branch' &&
+      github.event.ref == 'codex/stage-mixed-sampling-20261102'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+      - name: Verify bytes and publish only the reviewed files to a new branch
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import base64, hashlib, json, lzma, os, pathlib, subprocess
+          root = pathlib.Path.cwd()
+          staging = root / '.codex-mixed-transfer'
+          manifest = json.loads((staging / 'manifest.json').read_text())
+          base = '4698c1202d0726bce7d63742e7cd31a6f137a847'
+          branch = 'codex/mixed-ensembles-bcocb-mts-20261102'
+          assert manifest['base'] == base
+          assert len(manifest['files']) == 33
+          for name in manifest['files']:
+              p = pathlib.PurePosixPath(name)
+              assert not p.is_absolute() and '..' not in p.parts
+              assert p.parts[0] not in ('.git', '.github', '.codex-mixed-transfer')
+          encoded = ''.join((staging / f'part{i}').read_text().strip() for i in range(4))
+          compressed = base64.b64decode(encoded, validate=True)
+          assert hashlib.sha256(compressed).hexdigest() == manifest['compressed_sha256']
+          patch = lzma.decompress(compressed)
+          assert hashlib.sha256(patch).hexdigest() == manifest['patch_sha256']
+          patch_path = pathlib.Path(os.environ['RUNNER_TEMP']) / 'reviewed-mixed.patch'
+          patch_path.write_bytes(patch)
+          def git(*args):
+              return subprocess.check_output(['git', *args], text=True).strip()
+          subprocess.run(['git', 'checkout', '--detach', base], check=True)
+          assert git('rev-parse', 'HEAD') == base
+          subprocess.run(['git', 'apply', '--index', '--unidiff-zero', str(patch_path)], check=True)
+          paths = set(git('diff', '--cached', '--name-only').splitlines())
+          assert paths == set(manifest['files']), sorted(paths)
+          for name, expected in manifest['files'].items():
+              assert git('hash-object', name) == expected, name
+          subprocess.run(['git', 'diff', '--cached', '--check'], check=True)
+          existing = subprocess.run(['git', 'ls-remote', '--exit-code', '--heads', 'origin', branch], capture_output=True)
+          assert existing.returncode == 2, 'Destination must be absent; no existing ref will be overwritten'
+          subprocess.run(['git', 'config', 'user.name', 'github-actions[bot]'], check=True)
+          subprocess.run(['git', 'config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com'], check=True)
+          message = ('Support mixed NPT/TRPMD, constrained fragment PILE and BCOCB-RESPA\n\n'
+                     'Add opt-in independent sampling kernels, native isotropic middle BZP,\n'
+                     'transactional launch/checkpoint handoffs and independent-noise inner\n'
+                     'BCOCB steps. Preserve old paired maps and checkpoint/RNG semantics.\n\n'
+                     '199 new CPU cases pass; complete local suite: 7424 passed, one\n'
+                     'pre-existing GUI-environment failure, 179 skips. Include analytic\n'
+                     'NPT and independent matrix/transfer-operator validation with scope\n'
+                     'limits. No CUDA or trained-chemistry validation claim.\n\n'
+                     'Published from checksum-verified reviewed bytes; CI wiring follows\n'
+                     'in a separate connector-authored commit. No main ref is changed.')
+          subprocess.run(['git', 'commit', '-m', message], check=True)
+          commit = git('rev-parse', 'HEAD')
+          subprocess.run(['git', 'push', 'origin', f'HEAD:refs/heads/{branch}'], check=True)
+          assert git('ls-remote', '--heads', 'origin', branch).split()[0] == commit
+          receipt = {'branch': branch, 'commit': commit, 'parent': base,
+                     'tree': git('rev-parse', 'HEAD^{tree}'), 'verified_files': manifest['files'],
+                     'patch_sha256': manifest['patch_sha256']}
+          receipt_path = pathlib.Path(os.environ['RUNNER_TEMP']) / 'mixed-publish-receipt.json'
+          receipt_path.write_text(json.dumps(receipt, indent=2) + '\n')
+          print(json.dumps(receipt, indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mixed-sampling-publish-receipt
+          path: ${{ runner.temp }}/mixed-publish-receipt.json
+          retention-days: 7
