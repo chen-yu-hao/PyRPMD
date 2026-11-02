@@ -1,0 +1,18 @@
+OpenMM N=192 serial Threads=1: 0.443499 s/batch
+OpenMM N=192 serial Threads=4: 0.521748 s/batch
+OpenMM N=192 serial Threads=8: 0.855622 s/batch
+OpenMM N=192 Context workers=1: 0.896252 s/batch
+OpenMM N=192 Context workers=4: 0.236451 s/batch
+OpenMM N=192 Context workers=8: 0.145370 s/batch
+OpenMM N=192 RPMD copy probe: 0.560113 s/batch
+{"engine": "openmm", "atoms": 192, "median_seconds": {"serial": 0.4434988720022375, "serial_threads_4": 0.5217475259996718, "serial_threads_8": 0.8556220099999337, "contexts_workers_1": 0.8962524070011568, "contexts_workers_4": 0.23645060399576323, "contexts_workers_8": 0.1453697819961235, "rpmd_copy_probe": 0.5601131500006886}}
+OpenMM N=2187 serial Threads=1: 2.283538 s/batch
+OpenMM N=2187 serial Threads=4: 1.330583 s/batch
+OpenMM N=2187 serial Threads=8: 1.390624 s/batch
+OpenMM N=2187 Context workers=1: 1.773622 s/batch
+OpenMM N=2187 Context workers=4: 0.647610 s/batch
+OpenMM N=2187 Context workers=8: 0.451598 s/batch
+OpenMM N=2187 RPMD copy probe: 1.141070 s/batch
+{"engine": "openmm", "atoms": 2187, "median_seconds": {"serial": 2.2835383550045663, "serial_threads_4": 1.3305826830037404, "serial_threads_8": 1.3906244489990058, "contexts_workers_1": 1.7736221159939305, "contexts_workers_4": 0.6476100750005571, "contexts_workers_8": 0.4515982619996066, "rpmd_copy_probe": 1.1410696060047485}}
+{"engine": "lammps", "atoms": 256, "median_seconds": {"serial": 0.05255531799775781, "serial_current": 0.051461788003507536, "persistent": 0.04182535600557458}}
+{"engine": "lammps", "atoms": 2048, "median_seconds": {"serial": 0.2618002160015749, "serial_current": 0.2759969439939596, "persistent": 0.28502023599867243}}

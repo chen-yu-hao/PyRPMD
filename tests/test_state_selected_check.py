@@ -5,6 +5,7 @@ import copy
 import ctypes
 import io
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -145,6 +146,22 @@ class StateSelectedCheckTests(unittest.TestCase):
             switch = sample["switch_error"]
             self.assertAlmostEqual(switch["real_minus_harmonic_potential_au"], -0.5 * switch["harmonic_potential_au"], places=12)
         self.assertLess(report["initial_switch_error"]["real_minus_harmonic_potential_au"]["mean"], 0)
+
+    def test_action_preserving_preparation_report_is_separate_from_full_pes_switch(self):
+        config = configuration(self.factory, "qct")
+        config["initial_ensemble"]["j0_energy_policy"] = "preserve_actions"
+        fragment = config["initial_ensemble"]["fragments"][1]
+        fragment["hessian"] = (2 * np.asarray(fragment["hessian"])).tolist()
+        report = state_selected.check_state_selected(config, duration="0.04 fs", samples=2, stride=1)
+        for sample in report["samples"]:
+            preparation = sample["preparation_diagnostics"]
+            self.assertEqual(preparation["frame"], "unrotated_preparation_reference")
+            self.assertEqual(preparation["j0_energy_policy"], "preserve_actions")
+            observed = preparation["fragments"][1]
+            np.testing.assert_allclose(observed["reference_mode_energy_relative_error"], 0, atol=1e-12)
+            self.assertAlmostEqual(observed["cartesian_harmonic_energy_error_au"], 0, places=13)
+            self.assertLess(sample["switch_error"]["real_minus_harmonic_potential_au"], 0)
+        json.dumps(report, allow_nan=False)
 
     def test_time_statistics_are_paired_and_include_final_short_stride(self):
         report = state_selected.check_state_selected(configuration(self.factory), duration="0.1 fs", samples=3, stride=2)
@@ -300,7 +317,8 @@ class NativeStateSelectedCheckTests(unittest.TestCase):
         compiler = shutil.which("cc") or shutil.which("gcc")
         if compiler is None:
             self.skipTest("C compiler required")
-        with tempfile.TemporaryDirectory() as directory:
+        # Windows keeps loaded ctypes DLLs locked until the process exits.
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=os.name == "nt") as directory:
             path = Path(directory)
             source = path / "bond.c"
             source.write_text(r'''

@@ -1,0 +1,385 @@
+{
+  "schema": "pyrpmd.force-engine-benchmark.v1",
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "cpu_count": 9,
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OPENMM_CPU_THREADS": "1"
+    },
+    "versions": {
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "pyrpmd": "0.2.0",
+      "openmm": "8.6.1",
+      "lammps": "2025.7.22.4.0",
+      "mpi4py": "4.1.2",
+      "mpich": "5.0.2"
+    },
+    "nvidia_smi": null,
+    "nvidia_device_nodes": [],
+    "cpu_affinity": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "cpu_quota": "800000 100000",
+    "memory_limit_bytes": "8589934592",
+    "openmm_platforms": [
+      "Reference",
+      "CPU"
+    ]
+  },
+  "warmup_evaluations": 2,
+  "timed_evaluations": 7,
+  "seed": 20261102,
+  "timing_unit": "seconds per complete batch evaluation",
+  "physical_converged": false,
+  "complete": true,
+  "cases": [
+    {
+      "engine": "lammps",
+      "model": "Lennard-Jones FCC",
+      "physical_atoms": 256,
+      "beads": 32,
+      "cell_angstrom": 21.04,
+      "cutoff_angstrom": 8.5,
+      "neighbor_skin_angstrom": 2.0,
+      "epsilon_ev": 0.0103,
+      "sigma_angstrom": 3.4,
+      "grid_offset_lattice_fraction": 0.25,
+      "grid_offset_angstrom": 1.315,
+      "modes": {
+        "serial": {
+          "construction_seconds": 0.10836501800076803,
+          "first_evaluation_seconds": 0.03473533099895576,
+          "evaluation_seconds": [
+            0.03413624300446827,
+            0.027992868002911564,
+            0.03836828599742148,
+            0.03792237400193699,
+            0.03719486600311939,
+            0.03726613200706197,
+            0.03640688800078351
+          ],
+          "median_seconds": 0.03719486600311939,
+          "minimum_seconds": 0.027992868002911564,
+          "p95_seconds": 0.038234512398776135,
+          "error_against_serial": {},
+          "provider_metadata": {
+            "provider": "lammps",
+            "version": 20250722,
+            "thread_safety": "context_serial",
+            "execution_device": "backend",
+            "periodic": true,
+            "supports_pbc": true,
+            "native_batch": false,
+            "trajectory_batch_safe": true,
+            "virial": true,
+            "unit_style": "metal",
+            "type_map": [
+              "Ar"
+            ],
+            "atom_order": "consecutive LAMMPS IDs 1..N",
+            "model_sha256": "2082e4b771a00d2aa0f9831851b442566e3461fcf29316b583d102576e732997",
+            "factory": null,
+            "asset_sha256": {
+              "/tmp/pyrpmd-lj-benchmark-xi1lutx7/lj.data": "4f4eecb914dc8b969caed6fa5a89252efb95f1e65b9470c0a273228a2f4e6485"
+            },
+            "pair_style": "lj/cut",
+            "kspace_style": "none"
+          }
+        },
+        "serial_current": {
+          "construction_seconds": 0.0037941240007057786,
+          "first_evaluation_seconds": 0.03867814499972155,
+          "evaluation_seconds": [
+            0.03402018100314308,
+            0.0329213430013624,
+            0.025000953995913733,
+            0.02158245800092118,
+            0.02217260200268356,
+            0.023835626998334192,
+            0.022220471997570712
+          ],
+          "median_seconds": 0.023835626998334192,
+          "minimum_seconds": 0.02158245800092118,
+          "p95_seconds": 0.033690529602608876,
+          "error_against_serial": {
+            "energy_max_abs_error": 0.0,
+            "energy_relative_linf_error": 0.0,
+            "forces_max_abs_error": 0.0,
+            "forces_relative_linf_error": 0.0,
+            "virial_max_abs_error": 0.0,
+            "virial_relative_linf_error": 0.0
+          },
+          "provider_metadata": {
+            "provider": "lammps",
+            "version": 20250722,
+            "thread_safety": "context_serial",
+            "execution_device": "backend",
+            "periodic": true,
+            "supports_pbc": true,
+            "native_batch": false,
+            "trajectory_batch_safe": true,
+            "virial": true,
+            "unit_style": "metal",
+            "type_map": [
+              "Ar"
+            ],
+            "atom_order": "consecutive LAMMPS IDs 1..N",
+            "model_sha256": "2082e4b771a00d2aa0f9831851b442566e3461fcf29316b583d102576e732997",
+            "factory": null,
+            "asset_sha256": {
+              "/tmp/pyrpmd-lj-benchmark-xi1lutx7/lj.data": "4f4eecb914dc8b969caed6fa5a89252efb95f1e65b9470c0a273228a2f4e6485"
+            },
+            "pair_style": "lj/cut",
+            "kspace_style": "none"
+          },
+          "batch_stats": {
+            "instances": 1,
+            "neighbor_rebuilds": 320,
+            "neighbor_reuses": 0
+          }
+        },
+        "persistent": {
+          "construction_seconds": 0.0026583500002743676,
+          "first_evaluation_seconds": 0.1632096140019712,
+          "evaluation_seconds": [
+            0.018640407994098496,
+            0.0264604070034693,
+            0.032632724003633484,
+            0.03258580599504057,
+            0.03269272400211776,
+            0.03237623500172049,
+            0.03243006500269985
+          ],
+          "median_seconds": 0.03243006500269985,
+          "minimum_seconds": 0.018640407994098496,
+          "p95_seconds": 0.03267472400257247,
+          "error_against_serial": {
+            "energy_max_abs_error": 0.0,
+            "energy_relative_linf_error": 0.0,
+            "forces_max_abs_error": 0.0,
+            "forces_relative_linf_error": 0.0,
+            "virial_max_abs_error": 0.0,
+            "virial_relative_linf_error": 0.0
+          },
+          "provider_metadata": {
+            "provider": "lammps",
+            "version": 20250722,
+            "thread_safety": "context_serial",
+            "execution_device": "backend",
+            "periodic": true,
+            "supports_pbc": true,
+            "native_batch": false,
+            "trajectory_batch_safe": true,
+            "virial": true,
+            "unit_style": "metal",
+            "type_map": [
+              "Ar"
+            ],
+            "atom_order": "consecutive LAMMPS IDs 1..N",
+            "model_sha256": "2082e4b771a00d2aa0f9831851b442566e3461fcf29316b583d102576e732997",
+            "factory": null,
+            "asset_sha256": {
+              "/tmp/pyrpmd-lj-benchmark-xi1lutx7/lj.data": "4f4eecb914dc8b969caed6fa5a89252efb95f1e65b9470c0a273228a2f4e6485"
+            },
+            "pair_style": "lj/cut",
+            "kspace_style": "none",
+            "batch_mode": "persistent",
+            "neighbor_skin_bohr": 3.7794522518155653,
+            "neighbor_style": "bin"
+          },
+          "batch_stats": {
+            "instances": 32,
+            "neighbor_rebuilds": 32,
+            "neighbor_reuses": 288
+          },
+          "speedup_over_serial": 1.1469254224443541
+        }
+      }
+    },
+    {
+      "engine": "lammps",
+      "model": "Lennard-Jones FCC",
+      "physical_atoms": 2048,
+      "beads": 32,
+      "cell_angstrom": 42.08,
+      "cutoff_angstrom": 8.5,
+      "neighbor_skin_angstrom": 2.0,
+      "epsilon_ev": 0.0103,
+      "sigma_angstrom": 3.4,
+      "grid_offset_lattice_fraction": 0.25,
+      "grid_offset_angstrom": 1.315,
+      "modes": {
+        "serial": {
+          "construction_seconds": 0.010389238006609958,
+          "first_evaluation_seconds": 0.181403198002954,
+          "evaluation_seconds": [
+            0.12274112600425724,
+            0.1627954680006951,
+            0.14334378499916056,
+            0.12272756699530873,
+            0.12364588800119236,
+            0.12045604699960677,
+            0.1263170899983379
+          ],
+          "median_seconds": 0.12364588800119236,
+          "minimum_seconds": 0.12045604699960677,
+          "p95_seconds": 0.15695996310023475,
+          "error_against_serial": {},
+          "provider_metadata": {
+            "provider": "lammps",
+            "version": 20250722,
+            "thread_safety": "context_serial",
+            "execution_device": "backend",
+            "periodic": true,
+            "supports_pbc": true,
+            "native_batch": false,
+            "trajectory_batch_safe": true,
+            "virial": true,
+            "unit_style": "metal",
+            "type_map": [
+              "Ar"
+            ],
+            "atom_order": "consecutive LAMMPS IDs 1..N",
+            "model_sha256": "2082e4b771a00d2aa0f9831851b442566e3461fcf29316b583d102576e732997",
+            "factory": null,
+            "asset_sha256": {
+              "/tmp/pyrpmd-lj-benchmark-503gvjq4/lj.data": "b4bbed2f2c21b498d6271932d63b87e8e6e0ae5a236064bab6ed2061bb7e3a39"
+            },
+            "pair_style": "lj/cut",
+            "kspace_style": "none"
+          }
+        },
+        "serial_current": {
+          "construction_seconds": 0.006132084003183991,
+          "first_evaluation_seconds": 0.12757574600254884,
+          "evaluation_seconds": [
+            0.1209665499991388,
+            0.18195158500020625,
+            0.11848437300068326,
+            0.13053924099949654,
+            0.12412771699746372,
+            0.15122659000189742,
+            0.18335112100612605
+          ],
+          "median_seconds": 0.13053924099949654,
+          "minimum_seconds": 0.11848437300068326,
+          "p95_seconds": 0.1829312602043501,
+          "error_against_serial": {
+            "energy_max_abs_error": 0.0,
+            "energy_relative_linf_error": 0.0,
+            "forces_max_abs_error": 0.0,
+            "forces_relative_linf_error": 0.0,
+            "virial_max_abs_error": 0.0,
+            "virial_relative_linf_error": 0.0
+          },
+          "provider_metadata": {
+            "provider": "lammps",
+            "version": 20250722,
+            "thread_safety": "context_serial",
+            "execution_device": "backend",
+            "periodic": true,
+            "supports_pbc": true,
+            "native_batch": false,
+            "trajectory_batch_safe": true,
+            "virial": true,
+            "unit_style": "metal",
+            "type_map": [
+              "Ar"
+            ],
+            "atom_order": "consecutive LAMMPS IDs 1..N",
+            "model_sha256": "2082e4b771a00d2aa0f9831851b442566e3461fcf29316b583d102576e732997",
+            "factory": null,
+            "asset_sha256": {
+              "/tmp/pyrpmd-lj-benchmark-503gvjq4/lj.data": "b4bbed2f2c21b498d6271932d63b87e8e6e0ae5a236064bab6ed2061bb7e3a39"
+            },
+            "pair_style": "lj/cut",
+            "kspace_style": "none"
+          },
+          "batch_stats": {
+            "instances": 1,
+            "neighbor_rebuilds": 320,
+            "neighbor_reuses": 0
+          }
+        },
+        "persistent": {
+          "construction_seconds": 0.010022242997365538,
+          "first_evaluation_seconds": 0.4205530639956123,
+          "evaluation_seconds": [
+            0.10741896300169174,
+            0.11898283199843718,
+            0.11674005700479029,
+            0.0945462370000314,
+            0.0887951789991348,
+            0.12912126800074475,
+            0.11980039499758277
+          ],
+          "median_seconds": 0.11674005700479029,
+          "minimum_seconds": 0.0887951789991348,
+          "p95_seconds": 0.12632500609979616,
+          "error_against_serial": {
+            "energy_max_abs_error": 0.0,
+            "energy_relative_linf_error": 0.0,
+            "forces_max_abs_error": 0.0,
+            "forces_relative_linf_error": 0.0,
+            "virial_max_abs_error": 0.0,
+            "virial_relative_linf_error": 0.0
+          },
+          "provider_metadata": {
+            "provider": "lammps",
+            "version": 20250722,
+            "thread_safety": "context_serial",
+            "execution_device": "backend",
+            "periodic": true,
+            "supports_pbc": true,
+            "native_batch": false,
+            "trajectory_batch_safe": true,
+            "virial": true,
+            "unit_style": "metal",
+            "type_map": [
+              "Ar"
+            ],
+            "atom_order": "consecutive LAMMPS IDs 1..N",
+            "model_sha256": "2082e4b771a00d2aa0f9831851b442566e3461fcf29316b583d102576e732997",
+            "factory": null,
+            "asset_sha256": {
+              "/tmp/pyrpmd-lj-benchmark-503gvjq4/lj.data": "b4bbed2f2c21b498d6271932d63b87e8e6e0ae5a236064bab6ed2061bb7e3a39"
+            },
+            "pair_style": "lj/cut",
+            "kspace_style": "none",
+            "batch_mode": "persistent",
+            "neighbor_skin_bohr": 3.7794522518155653,
+            "neighbor_style": "bin"
+          },
+          "batch_stats": {
+            "instances": 32,
+            "neighbor_rebuilds": 32,
+            "neighbor_reuses": 288
+          },
+          "speedup_over_serial": 1.0591556246723326
+        }
+      }
+    }
+  ],
+  "legacy_ref": "8cc402fb12391e4fb644d3e186e5e58d1699759a",
+  "rpmd_copy_probe": false,
+  "source_sha256": {
+    "benchmarks/efficiency/force_engine_adapters.py": "d5d946c5712757bfe43f1fb7e4d9321b85787d04172cf3d62e7d631ea58075e3",
+    "src/pyrpmd/potentials/openmm.py": "3aa0694518f19ef540fb09a637c65d5400c9e2b4ca88cd55db00170756ab8015",
+    "src/pyrpmd/potentials/lammps.py": "16731e3d45647d4090700328ddddc6c2055dce38d416140ca31404f167bbfc3f",
+    "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61"
+  },
+  "planned_cases": 2
+}

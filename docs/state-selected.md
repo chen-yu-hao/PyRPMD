@@ -12,7 +12,10 @@ an exact quantum state-to-state S-matrix. Its `j=0` setting enforces zero
 **centroid angular momentum** of each incoming fragment; it is not a complete
 quantum rotational-state sampler. Arbitrary rotational excitation, quantum
 coherences, rotational ring modes, and final-state binning are outside this
-version's scope.
+version's scope. In particular, `qct` does not sample discrete rotational
+quantum numbers, a thermal rotational distribution, or a thermal mixture of
+vibrational quantum numbers. Its fixed collision energy and specified
+vibrational labels do not define a full thermal QCT ensemble.
 
 This nuclear initial-ensemble option is separate from electronic
 `nonadiabatic.method = "nrpmd"`. The two options cannot be combined. Omitting
@@ -23,7 +26,7 @@ This nuclear initial-ensemble option is separate from electronic
 | Preparation | Beads | Initial vibration | Collision ensemble |
 | --- | --- | --- | --- |
 | Existing thermal parent | One or more | Equilibrated at the specified temperature | Existing thermal or fixed-energy options |
-| `qct` | Exactly one | Random harmonic phases with mode energies approximately `(v + 1/2) * omega` | Fixed energy, independent preparations |
+| `qct` | Exactly one | Harmonic targets `(v + 1/2) * omega`; phase and rotation policy specified below | Fixed energy, independent preparations |
 | `ne_rpmd` | At least two | Cold harmonic rings plus a centroid displacement for the additional excitation `v * omega` | Fixed energy, independent preparations |
 
 All formulas below use atomic units, including `hbar = 1`. Molecular normal
@@ -41,9 +44,13 @@ The orthonormal ring coordinate $Q_{0a}$ equals $\sqrt{P}$ times the bead-mean
 molecular coordinate. NE-RPMD adds a random-phase centroid displacement with
 excitation energy $v_a\omega_a$. It does **not** add a second half-quantum on
 top of the ground-state ring fluctuations. QCT instead starts with the harmonic
-action assignment $E_a=(v_a+1/2)\omega_a$ on a single bead. Removing residual
-centroid rigid rotation can change these initial harmonic mode energies, so
-inspect the sampled diagnostics as well as the requested quantum numbers.
+action assignment $E_a=(v_a+1/2)\omega_a$ on a single bead. Its default
+`j0_energy_policy = "project"` subsequently removes residual centroid rigid
+rotation, which can change these initial harmonic mode energies. The optional
+`preserve_actions` policy adjusts the phases to satisfy zero angular momentum
+while retaining each target energy in the construction basis. These are
+different preparation conventions, described below; inspect the sampled
+diagnostics as well as the requested quantum numbers.
 
 Each fragment, including an atom, retains noncentroid free-ring center-of-mass
 fluctuations in the NE preparation. Its centroid translation is fixed until
@@ -138,6 +145,76 @@ For the QCT comparison, use `method = "qct"` and top-level `beads = 1`, with
 the same fragment references, excitation labels and collision setup. One-bead
 thermal sampling is not substituted for QCT harmonic action sampling.
 
+### QCT angular-momentum and energy policy
+
+The `initial_ensemble.j0_energy_policy` option makes the treatment of the
+initial harmonic actions explicit:
+
+| Policy | Preparation | Energy guarantee |
+| --- | --- | --- |
+| `"project"` (default) | Draw independent uniform harmonic phases, then remove the rigid velocity at the sampled centroid geometry. | The assigned mode energies apply before the angular-momentum projection; the resulting mode energies can differ. |
+| `"preserve_actions"` | Start from uniform phase draws and solve for phases satisfying zero fragment angular momentum. | At initialization, each harmonic mode energy in the construction basis equals its requested target within the solver tolerance. |
+
+For the default policy, at fixed sampled positions the removal of rigid
+rotation changes the kinetic energy by
+
+$$
+\Delta K=-\frac12\boldsymbol L^{\mathsf T}I^+\boldsymbol L,
+$$
+
+where $\boldsymbol L$ and $I$ are the fragment angular momentum and inertia
+tensor, and $I^+$ is the inertia pseudoinverse. This is an initialization
+change, separate from integration drift. It vanishes when the draw already
+has zero angular momentum, as for ideal radial vibration of a diatom.
+
+Omitting the option preserves the existing `project` sampling behavior. To
+choose the constrained-phase QCT preparation explicitly, set top-level
+`beads = 1` and use:
+
+```toml
+[initial_ensemble]
+method = "qct"
+j0_energy_policy = "preserve_actions"
+```
+
+`preserve_actions` is available only for the one-bead `qct` method. It does not
+change the multi-bead `ne_rpmd` initialization. Both policies enforce zero
+internal classical angular momentum for each incoming QCT fragment. This
+constraint is separate from the relative orbital angular momentum of the
+collision, which can be nonzero at a nonzero impact parameter.
+
+The constrained-phase solver parameterizes each mode by
+
+$$
+Q_a=\frac{\sqrt{2E_a}}{\omega_a}\cos\theta_a,\qquad
+\Pi_a=\sqrt{2E_a}\sin\theta_a,\qquad
+E_a=(v_a+1/2)\omega_a.
+$$
+
+It adjusts the phases using a damped Newton solve for the angular momentum.
+This parameterization retains each harmonic action during the solve and does
+not restore energy by multiplying all momenta by a common factor. The solver
+checks its constraints before returning a state. Failure to converge raises
+an error; it does not draw replacement phases or fall back to `project`.
+
+This option defines an **experimental constrained-phase ensemble**. The final
+phases within a molecule can be correlated, even though the starting phases
+were independent and uniformly distributed. It has not been established as a
+sampler of the conditional microcanonical distribution. Independent trajectory
+draws remain independent, but the phase statistics differ from the default
+preparation. Report the policy with the simulation results and assess its
+effect on the observable. Neither policy supplies thermal rotational sampling,
+final-state binning, or exact quantum-state preparation.
+
+The cited papers support the harmonic preparation and NE-RPMD framework; they
+do not validate this additional constrained-phase sampling distribution.
+
+The energy constraint refers to the supplied or Hessian-derived mass-weighted
+normal-mode basis used to construct the initial state. It does not guarantee
+the same energy on the full anharmonic PES, nor conservation of each mode's
+action during propagation. The later Eckart-aligned diagnostics also have a
+distinct projection convention, discussed below.
+
 ### Supplying harmonic references
 
 Provide one of the following for each molecular fragment:
@@ -205,6 +282,49 @@ in PyRPMD's atomic-unit convention. The returned `State` has ordinary
 `q` and `p` arrays with shape `[P, N, 3]`; it can be passed through the existing
 collision-launch and propagation interfaces. `sample()` does not perform an
 Andersen burn-in, collision kick, thermostat step or trajectory propagation.
+
+### QCT preparation diagnostics
+
+For a `qct` ensemble, inspect the energy constraints immediately after drawing
+the state, before any collision orientation, kick or propagation:
+
+```python
+state = prepared.sample(np.random.default_rng(17))
+preparation_report = prepared.preparation_diagnostics(state)
+```
+
+This QCT-only report uses the fixed construction basis and identifies its
+frame as `"unrotated_preparation_reference"`. Call it only on the corresponding
+unrotated preparation. It does not align a rotated state back to that frame.
+The report records `j0_energy_policy` and contains the following per-fragment
+quantities:
+
+| Field | Meaning |
+| --- | --- |
+| `target_mode_energies_au` | Requested `(v + 1/2) * omega` for each reference mode. |
+| `reference_mode_energies_au` | Actual harmonic energies from projection onto the fixed reference modes. |
+| `reference_mode_energy_error_au` | Actual minus target energy for each mode. |
+| `reference_mode_energy_relative_error` | Each mode's energy error divided by its target energy. |
+| `cartesian_kinetic_energy_au` | Complete Cartesian kinetic energy of the fragment after subtracting COM translation. |
+| `reference_harmonic_potential_energy_au` | Sum of harmonic reference potential energies. |
+| `cartesian_harmonic_energy_error_au` | Complete internal kinetic energy plus harmonic reference potential energy, minus the sum of requested mode energies. |
+| `centroid_com_momentum_au`, `centroid_angular_momentum_au` | Residual fragment linear and internal angular momenta. |
+
+The complete Cartesian kinetic energy need not equal the sum of kinetic
+energies projected onto the reference vibrational modes. Consequently,
+`cartesian_harmonic_energy_error_au` need not equal the sum of
+`reference_mode_energy_error_au`. With `project`, the Cartesian energy error
+measures the energy change from initialization projection, up to reference
+orthogonality and numerical errors. The `preserve_actions` checks cover both
+the individual mode targets and the complete Cartesian harmonic energy.
+These quantities use the harmonic reference; they do not evaluate the full
+PES or include the harmonic-to-full-PES switching error.
+
+Production QCT launches save this report as `launch.preparation_diagnostics`.
+The `state-check` report includes it in each QCT
+`samples[i].preparation_diagnostics`, before the propagation frames. Subsequent
+orientation-aligned mode diagnostics serve a different purpose, described
+below.
 
 ## Check precollision state stability
 
@@ -294,6 +414,16 @@ negative. They are ensemble diagnostics; rounding them does not provide valid
 final quantum-state assignments. The sampler metadata distinguishes the
 requested harmonic energy, expected finite-bead mode energy before the
 `j=0` projection, and residual harmonic thermal excitation.
+
+The `preserve_actions` guarantee concerns the initial construction basis.
+The diagnostics instead use mass-weighted Eckart/Kabsch alignment to the
+reference geometry. Large deformations can change the selected orientation,
+and alignment of a linear molecule does not uniquely determine rotation about
+its axis. Individual projections in a degenerate mode subspace therefore
+depend on the basis and alignment convention. An aligned diagnostic difference
+alone is not a test of the construction-basis constraint. Retain the reference
+mode convention when comparing initial preparations, and use the aligned
+diagnostics to assess subsequent state stability within their harmonic range.
 
 ## Fixed-energy cross sections and missing outcomes
 

@@ -171,7 +171,8 @@ def run_resolved(config, system, *, output=None, resume=False):
         # construction or dispatch when the materials engine is incompatible.
         from .workflows.materials import resolve_materials
         resolve_materials(config, system)
-    if config.get("task") == "plumed" and resume:
+    if (config.get("task") == "plumed" and resume
+            and config.get("plumed", {}).get("restart") != "files"):
         raise InputError("PLUMED automatic resume is unsupported because its opaque kernel history is not in the MD checkpoint")
     if config.get("task") == "rate" and config.get("rate", {}).get("pmf_source") not in (None, "umbrella"):
         from .workflows.rate_source import source_paths
@@ -509,7 +510,8 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
     result = reanalyze_fes(config, system, path)
     if result is None:
         return None
-    result = FESResult.read(path, summary=result).summary()
+    if fes_method(config) != "steered":
+        result = FESResult.read(path, summary=result).summary()
     from .parallel import root_call
 
     result = {
@@ -650,6 +652,12 @@ def prepare(job, *, numerical=False):
 
         validate_opes(config, system)
         result["opes_preparation"] = config["opes"]
+    elif config["task"] == "fes" and fes_method(config) in ("abf", "eabf", "steered"):
+        from .workflows.fes_dispatch import validate_fes
+
+        validate_fes(config, system)
+        method = fes_method(config)
+        result[method + "_preparation"] = config[method]
     elif config["task"] == "network":
         from .workflows.network import prepare_network
 
@@ -672,6 +680,7 @@ def prepare(job, *, numerical=False):
             "replicas": options["replicas"],
             "temperature_interpretation": "auxiliary_only_projection_sets_distribution" if method == "pigs" else "physical_temperature",
             "observable": "projected_midpoint_potential" if method == "pigs" else
+                "fermionic_sign_reweighted_thermodynamics" if method == "fermionic" else
                 "even_bead_potential_alpha_zero_only" if method == "suzuki_chin" else "symmetric_bead_potential",
         }
     elif config["task"] in ("pimd", "diffusion"):
@@ -767,6 +776,9 @@ def prepare(job, *, numerical=False):
                         piston = BZPBarostat(action, system, action.beta, config["beads"], **options["barostat"])
                         result["pes_check"]["initial_action_virial_hartree"] = checked.virial.tolist()
                         result["pes_check"]["initial_configurational_pressure_au"] = piston.pressure(State(q, np.zeros_like(q)))
+                elif config["path_integral"].get("method") in ("bosonic", "fermionic"):
+                    volume = float(abs(np.linalg.det(system.cell))) if all(system.pbc) else None
+                    result["pes_check"]["initial_exchange_estimators"] = action.estimators(q, volume=volume)
             elif "nonadiabatic" in config:
                 evaluated = provider.evaluate(x)
                 from .nonadiabatic import validate_diabatic_result

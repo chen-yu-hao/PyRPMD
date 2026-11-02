@@ -5,8 +5,8 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 
-from pyrpmd.dynamics import Dynamics, native_capabilities
-from pyrpmd.initial_states import PreparedInitialEnsemble
+from pyrpmd.dynamics import Dynamics, State, native_capabilities
+from pyrpmd.initial_states import PreparedInitialEnsemble, prepare_initial_ensemble
 from pyrpmd.workflows import drpmd
 
 
@@ -47,23 +47,40 @@ def assert_same_arrays(first, second, keys=None):
             np.testing.assert_array_equal(a[key], b[key], err_msg=key)
 
 
-@pytest.mark.parametrize("method,beads", [("qct", 1), ("ne_rpmd", 32)])
-def test_independent_state_launch_never_thermalizes_and_preserves_vibration(tmp_path, method, beads):
+@pytest.mark.parametrize("method,beads,policy", [
+    ("qct", 1, None), ("qct", 1, "project"),
+    ("qct", 1, "preserve_actions"), ("ne_rpmd", 32, None),
+])
+def test_independent_state_launch_never_thermalizes_and_preserves_vibration(tmp_path, method, beads, policy):
     c = config(method, beads)
+    if policy is not None:
+        c["initial_ensemble"]["j0_energy_policy"] = policy
     with patch.object(Dynamics, "thermalize", side_effect=AssertionError("thermal parent called")):
         result = drpmd.run_drpmd(c, system(), tmp_path)
     assert result["initialization_mode"] == "independent"
     assert result["temperature_K"] is None
     assert result["initial_ensemble"]["vibrational_quanta"] == [[], [1]]
+    assert result["initial_ensemble"]["j0_energy_policy"] == (policy or "project")
     assert set(result["parent_thermal_steps"].values()) == {0}
+    labels = {"method": method, "vibrational_quanta": [[], [1]], "rotation": "j0"}
+    if policy == "preserve_actions":
+        labels["j0_energy_policy"] = policy
+    ensemble = prepare_initial_ensemble(c["initial_ensemble"], system(), beads, c["beta"])
     for record in result["records"]:
-        assert record["initial_state"] == {
-            "method": method, "vibrational_quanta": [[], [1]], "rotation": "j0"}
+        assert record["initial_state"] == labels
         assert record["launch"]["sampling"] == "fixed_energy"
         path = tmp_path / "states" / f"initial-{record['trajectory_id']:08d}.npz"
         meta, arrays = drpmd._load_npz(path)
         assert "thermal_q" not in arrays
         assert meta["initialization_mode"] == "independent"
+        assert meta["initial_state"] == labels
+        if method == "qct":
+            prepared = State(arrays["prepared_q"], arrays["prepared_p"])
+            diagnostics = ensemble.preparation_diagnostics(prepared)
+            assert record["launch"]["preparation_diagnostics"] == diagnostics
+            assert meta["launch"]["preparation_diagnostics"] == diagnostics
+        else:
+            assert "preparation_diagnostics" not in record["launch"]
         q, p, m = arrays["q"], arrays["p"], arrays["masses"]
         before = arrays["prepared_q"][:, 1:] - arrays["prepared_q"][:, 1:].mean(axis=1)[:, None]
         after = q[:, 1:] - q[:, 1:].mean(axis=1)[:, None]
@@ -84,8 +101,13 @@ def test_independent_state_launch_never_thermalizes_and_preserves_vibration(tmp_
     assert float(row["possible_upper_bohr2"]) == pytest.approx(np.pi * 0.5**2)
 
 
-def test_global_rng_and_physics_identity_do_not_depend_on_work_groups(tmp_path):
-    c = config()
+@pytest.mark.parametrize("method,beads,policy", [
+    ("ne_rpmd", 8, None), ("qct", 1, "preserve_actions"),
+])
+def test_global_rng_and_physics_identity_do_not_depend_on_work_groups(tmp_path, method, beads, policy):
+    c = config(method, beads)
+    if policy is not None:
+        c["initial_ensemble"]["j0_energy_policy"] = policy
     first = drpmd.run_drpmd(c, system(), tmp_path / "one")
     c["sampling"]["parents"] = 3
     second = drpmd.run_drpmd(c, system(), tmp_path / "three")
@@ -98,8 +120,11 @@ def test_global_rng_and_physics_identity_do_not_depend_on_work_groups(tmp_path):
         assert_same_arrays(tmp_path / "one/trajectories" / name, tmp_path / "three/trajectories" / name)
 
 
-def test_process_workers_use_the_same_global_initial_conditions(tmp_path):
+@pytest.mark.parametrize("policy", [None, "preserve_actions"])
+def test_process_workers_use_the_same_global_initial_conditions(tmp_path, policy):
     c = config("qct", 1)
+    if policy is not None:
+        c["initial_ensemble"]["j0_energy_policy"] = policy
     drpmd.run_drpmd(c, system(), tmp_path / "serial")
     c["parallel"] = {"backend": "process", "trajectory_workers": 2}
     drpmd.run_drpmd(c, system(), tmp_path / "parallel")
@@ -108,8 +133,13 @@ def test_process_workers_use_the_same_global_initial_conditions(tmp_path):
         assert_same_arrays(tmp_path / "serial/trajectories" / name, tmp_path / "parallel/trajectories" / name)
 
 
-def test_interruption_resumes_full_state_and_diagnostics_without_resampling(tmp_path):
-    c = config()
+@pytest.mark.parametrize("method,beads,policy", [
+    ("ne_rpmd", 8, None), ("qct", 1, None), ("qct", 1, "preserve_actions"),
+])
+def test_interruption_resumes_full_state_and_diagnostics_without_resampling(tmp_path, method, beads, policy):
+    c = config(method, beads)
+    if policy is not None:
+        c["initial_ensemble"]["j0_energy_policy"] = policy
     c["collision"]["trajectories"] = 1
     drpmd.run_drpmd(c, system(), tmp_path / "full")
     save = drpmd._atomic_npz
@@ -129,6 +159,41 @@ def test_interruption_resumes_full_state_and_diagnostics_without_resampling(tmp_
     assert second["trajectories"] == 1
     assert_same_arrays(tmp_path / "full/trajectories/trajectory-00000000.npz",
                        tmp_path / "resume/trajectories/trajectory-00000000.npz")
+
+
+@pytest.mark.parametrize("original_policy,changed_policy", [
+    (None, "preserve_actions"), ("preserve_actions", "project"),
+])
+def test_qct_restart_rejects_a_changed_energy_policy(tmp_path, original_policy, changed_policy):
+    c = config("qct", 1)
+    c["collision"]["trajectories"] = 1
+    if original_policy is not None:
+        c["initial_ensemble"]["j0_energy_policy"] = original_policy
+    drpmd.run_drpmd(c, system(), tmp_path)
+    c["resume"] = True
+    c["initial_ensemble"]["j0_energy_policy"] = changed_policy
+    with patch.object(PreparedInitialEnsemble, "sample", side_effect=AssertionError("resampled launch")):
+        with pytest.raises(ValueError, match="does not match this restart"):
+            drpmd.run_drpmd(c, system(), tmp_path)
+
+
+def test_qct_energy_policies_remain_separate_scattering_groups(tmp_path):
+    records = []
+    for index, policy in enumerate((None, "preserve_actions")):
+        c = config("qct", 1)
+        c["collision"].update(trajectories=1, max_steps=1)
+        if policy is not None:
+            c["initial_ensemble"]["j0_energy_policy"] = policy
+        result = drpmd.run_drpmd(c, system(), tmp_path / str(index))
+        records.append({**result["records"][0], "trajectory_id": index})
+    result = drpmd.summarize(records, c, system())["fixed_energy_scattering"]
+    assert result["initial_state_scope"] == "sampled_initial_state_mixture"
+    groups = {group["initial_state"].get("j0_energy_policy", "project"): group
+              for group in result["initial_state_groups"]}
+    assert set(groups) == {"project", "preserve_actions"}
+    for group in groups.values():
+        assert group["trajectories"] == 1
+        assert group["sampling_fraction"] == 0.5
 
 
 def test_pes_failure_stays_in_fixed_energy_denominator(tmp_path):
@@ -178,11 +243,16 @@ def test_selected_fixed_energy_summary_has_independent_wilson_interval():
 
 
 @pytest.mark.skipif(not native_capabilities()["available"], reason="native build required")
-def test_selected_workflow_uses_existing_native_collision_driver(tmp_path, native_library):
+@pytest.mark.parametrize("method,beads,policy", [
+    ("ne_rpmd", 32, None), ("qct", 1, "preserve_actions"),
+])
+def test_selected_workflow_uses_existing_native_collision_driver(tmp_path, native_library, method, beads, policy):
     # Same compiled fixture as the established collision-driver integration test.
     from test_native_propagation import CompiledPotential
 
-    c = config(beads=32)
+    c = config(method, beads)
+    if policy is not None:
+        c["initial_ensemble"]["j0_energy_policy"] = policy
     c["native"] = "required"
     c["dynamics"]["loop_backend"] = "native"
     potential = CompiledPotential(native_library)

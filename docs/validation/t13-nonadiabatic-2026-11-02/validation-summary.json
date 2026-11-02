@@ -1,0 +1,222 @@
+{
+  "task": "T13 on-the-fly multistate PySCF and spin-boson HEOM",
+  "date": "2026-11-02",
+  "base_commit": "8cc402fb12391e4fb644d3e186e5e58d1699759a",
+  "source_tree_tested": "ced87bf3982cc1fad3e55f148532469cba89fc3c",
+  "hardware": {
+    "cpu": "AMD EPYC 9V74 80-Core Processor",
+    "exposed_vcpus": 9,
+    "OMP_NUM_THREADS": 1,
+    "OPENBLAS_NUM_THREADS": 1,
+    "timing_context": "shared virtual machine with concurrent validation workloads"
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.18.1",
+    "pyscf": "2.14.0",
+    "qutip": "5.3.1"
+  },
+  "tests": [
+    {
+      "name": "targeted baseline before changes",
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 .venv/bin/python -m pytest -q tests/test_adiabatic_on_the_fly.py tests/test_nonadiabatic_reference.py tests/test_nonadiabatic_checkpoint_validation.py",
+      "log": "baseline-targeted.txt",
+      "summary": "68 passed in 1.58s",
+      "scipy_version": "1.17.0"
+    },
+    {
+      "name": "PySCF multistate",
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 .venv/bin/python -m pytest -q tests/test_pyscf_multistate.py",
+      "log": "pyscf-tests.txt",
+      "summary": "53 passed in 103.46s (0:01:43)"
+    },
+    {
+      "name": "HEOM",
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 .venv/bin/python -m pytest -q tests/test_heom.py",
+      "log": "pytest-heom.txt",
+      "summary": "55 passed in 18.13s"
+    },
+    {
+      "name": "without optional PySCF",
+      "command": "PYTHONPATH=src python -m pytest -q tests/test_pyscf_multistate.py tests/test_adiabatic_provider_diagnostics.py",
+      "log": "pyscf-optional-guard.txt",
+      "summary": "13 passed, 1 skipped in 0.97s"
+    }
+  ],
+  "full_regression": {
+    "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 .venv/bin/python -m pytest -q",
+    "completed": true,
+    "exit_code": 1,
+    "log": "full-pytest.txt",
+    "summary": "1 failed, 8231 passed, 218 skipped, 51 warnings, 486 subtests passed in 2405.90s (0:40:05)",
+    "passed": 8231,
+    "skipped": 218,
+    "failed": 1,
+    "warnings": 51,
+    "subtests_passed": 486,
+    "elapsed_seconds": 2405.9,
+    "new_T13_tests_passed": 121,
+    "interpretation": "The full suite is not green. Its only failure is the existing CPU-limit signal-order test, which passed independently in both the current branch and the clean base worktree."
+  },
+  "documentation": {
+    "command": ".venv/bin/python -m sphinx -W --keep-going -b html docs docs/_build/html",
+    "log": "docs-build.txt",
+    "result": "build succeeded."
+  },
+  "reproduction": {
+    "pyscf_example": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 .venv/bin/python examples/nonadiabatic/pyscf_lih_rpsh.py --steps 40",
+    "pyscf_independent": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=src:. .venv/bin/python docs/validation/t13-nonadiabatic-2026-11-02/pyscf_independent_metrics.py",
+    "heom_scan": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 .venv/bin/python examples/nonadiabatic/heom_spin_boson.py",
+    "heom_published_figure": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 .venv/bin/python docs/validation/t13-nonadiabatic-2026-11-02/validate_lambert_figure1.py"
+  },
+  "physical_converged": false,
+  "limitations": [
+    "PySCF: real all-electron equal-weight singlet SA-CASSCF only; full NAC, no ETF, SOC, TDDFT, ECP or GPU.",
+    "Distinct molecular geometries are solved serially; exact-geometry caching does not eliminate genuine electronic-structure work.",
+    "QC electronic context snapshots and full HEOM ADO continuation are available; no new complete trajectory checkpoint I/O or CLI schema.",
+    "HEOM: static real two-state Hamiltonian, one finite-temperature Drude-Lorentz bath, factorized free-thermal preparation or a complete existing ADO state.",
+    "Finite hierarchy and finite Matsubara truncation require observable-specific convergence; no automatic physical-convergence claim.",
+    "The short LiH example has one bead and no realized hop; it does not establish converged photochemical branching."
+  ],
+  "readme_handoff": {
+    "en": "On-the-fly PySCF SA-CASSCF provides analytic multistate gradients/NACs and phase-consistent many-electron overlaps; a NumPy/SciPy Drude-Lorentz spin-boson HEOM reference adds independent benchmarks and explicit hierarchy/Matsubara convergence scans.",
+    "zh_CN": "新增 PySCF SA-CASSCF 在线多态电子结构桥，提供解析梯度、NAC 和相位一致的多电子重叠；新增纯 NumPy/SciPy 的 Drude-Lorentz 自旋-玻色子 HEOM 参考与层级/Matsubara 收敛扫描。"
+  },
+  "reference_handoff": [
+    {
+      "authors": "Qiming Sun et al.",
+      "title": "Recent developments in the PySCF program package",
+      "journal": "The Journal of Chemical Physics",
+      "volume": "153",
+      "pages": "024109",
+      "year": 2020,
+      "doi": "10.1063/5.0006074"
+    },
+    {
+      "authors": "Ignacio Fdez Galvan, Mickael G. Delcey, Thomas Bondo Pedersen, Francesco Aquilante, Roland Lindh",
+      "title": "Analytical State-Average Complete-Active-Space Self-Consistent Field Nonadiabatic Coupling Vectors: Implementation with Density-Fitted Two-Electron Integrals and Application to Conical Intersections",
+      "journal": "Journal of Chemical Theory and Computation",
+      "volume": "12",
+      "pages": "3636-3653",
+      "year": 2016,
+      "doi": "10.1021/acs.jctc.6b00384"
+    },
+    {
+      "authors": "Yoshitaka Tanimura",
+      "title": "Numerically exact approach to open quantum dynamics: The hierarchical equations of motion (HEOM)",
+      "journal": "The Journal of Chemical Physics",
+      "volume": "153",
+      "pages": "020901",
+      "year": 2020,
+      "doi": "10.1063/5.0011599"
+    },
+    {
+      "authors": "Neill Lambert, Tarun Raheja, Simon Cross, Paul Menczel, Shahnawaz Ahmed, Alexander Pitchford, Daniel Burgarth, Franco Nori",
+      "title": "QuTiP-BoFiN: A bosonic and fermionic numerical hierarchical-equations-of-motion library with applications in light-harvesting, quantum control, and single-molecule electronics",
+      "journal": "Physical Review Research",
+      "volume": "5",
+      "pages": "013181",
+      "year": 2023,
+      "doi": "10.1103/PhysRevResearch.5.013181"
+    },
+    {
+      "authors": "Shervin Fatehi, Joseph E. Subotnik",
+      "title": "Derivative Couplings with Built-In Electron-Translation Factors: Application to Benzene",
+      "journal": "The Journal of Physical Chemistry Letters",
+      "volume": "3",
+      "pages": "2039-2043",
+      "year": 2012,
+      "doi": "10.1021/jz3006173",
+      "use": "document the unsupported ETF approximation, not an implemented feature"
+    }
+  ],
+  "literature_validation": {
+    "source": "Lambert et al., Physical Review Research 5, 013181 (2023), Figure 1",
+    "doi": "10.1103/PhysRevResearch.5.013181",
+    "report": "lambert-figure1-validation.json",
+    "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 .venv/bin/python docs/validation/t13-nonadiabatic-2026-11-02/validate_lambert_figure1.py",
+    "reference": "Actual published PDF vector-path vertices, calibrated from labeled ticks; no new QuTiP run used as the literature curve",
+    "max_population_error_without_terminator": 5.696350889872193e-07,
+    "max_population_error_with_terminator": 4.953682475328236e-07,
+    "hierarchy_depth": 5,
+    "matsubara_terms": 2,
+    "qualification": "Reproduces the paper finite truncation; rounded PDF coordinates limit meaningful comparison to about 1e-6. physical_converged remains false."
+  },
+  "scope_verification": {
+    "baseline_commit": "8cc402fb12391e4fb644d3e186e5e58d1699759a",
+    "existing_nonadiabatic_document_bytes_preserved_as_prefix": true,
+    "unchanged_protected_paths": [
+      "README.md",
+      "README.zh-CN.md",
+      "docs/releases/",
+      "docs/manual/references.md",
+      "docs/method-references.json",
+      "docs/references.bib",
+      "src/pyrpmd/__init__.py"
+    ]
+  },
+  "full_regression_cpu_limit_triage": {
+    "test": "tests/test_h3_quantum_isolated_continuation.py::test_independent_worker_kernel_caps_survive_blocked_owner_alarm[CPU]",
+    "targeted_command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 .venv/bin/python -m pytest -q 'tests/test_h3_quantum_isolated_continuation.py::test_independent_worker_kernel_caps_survive_blocked_owner_alarm[CPU]'",
+    "current_isolated_result": "1 passed in 2.97s",
+    "baseline_isolated_result": "1 passed in 3.23s",
+    "current_log": "cpu-limit-current.txt",
+    "baseline_log": "cpu-limit-baseline.txt",
+    "baseline_execution": "Same .venv interpreter in a clean worktree at the base commit; PYTHONPATH points explicitly to that worktree src directory.",
+    "files_unmodified": [
+      "tests/test_h3_quantum_isolated_continuation.py",
+      "benchmarks/h3/quantum_isolated_continuation.py"
+    ],
+    "complete_traceback_pending": false,
+    "observed_return_code": -14,
+    "expected_return_code": -9,
+    "observed_signal": "SIGALRM",
+    "expected_signal": "SIGKILL",
+    "limits": {
+      "cpu_seconds": 1,
+      "wall_seconds": 3
+    },
+    "interpretation": "The wall alarm fired before the one-CPU-second hard limit. This is consistent with CPU contention on the shared host; isolated current and base runs both passed, so no stable regression or baseline failure was reproduced."
+  },
+  "delivery_status": {
+    "implementation_and_T13_acceptance_checks": "completed",
+    "full_regression_gate": "not_green_existing_signal_order_test_failed_once",
+    "publication_scope": "feature branch only; no merge to main"
+  },
+  "source_distribution": {
+    "command": ".venv/bin/python setup.py egg_info",
+    "result": "All T13 deliverable paths are included in SOURCES.txt",
+    "checked_paths": [
+      "docs/tier2-nonadiabatic.md",
+      "docs/validation/t13-nonadiabatic-2026-11-02/baseline-targeted.txt",
+      "docs/validation/t13-nonadiabatic-2026-11-02/cpu-limit-baseline.txt",
+      "docs/validation/t13-nonadiabatic-2026-11-02/cpu-limit-current.txt",
+      "docs/validation/t13-nonadiabatic-2026-11-02/docs-build.txt",
+      "docs/validation/t13-nonadiabatic-2026-11-02/full-pytest.txt",
+      "docs/validation/t13-nonadiabatic-2026-11-02/heom-convergence.json",
+      "docs/validation/t13-nonadiabatic-2026-11-02/heom-independent.json",
+      "docs/validation/t13-nonadiabatic-2026-11-02/lambert-figure1-comparison.png",
+      "docs/validation/t13-nonadiabatic-2026-11-02/lambert-figure1-terminator.csv",
+      "docs/validation/t13-nonadiabatic-2026-11-02/lambert-figure1-validation.json",
+      "docs/validation/t13-nonadiabatic-2026-11-02/lambert-figure1-without_terminator.csv",
+      "docs/validation/t13-nonadiabatic-2026-11-02/pyscf-independent.json",
+      "docs/validation/t13-nonadiabatic-2026-11-02/pyscf-lih-rpsh-40.json",
+      "docs/validation/t13-nonadiabatic-2026-11-02/pyscf-optional-guard.txt",
+      "docs/validation/t13-nonadiabatic-2026-11-02/pyscf-tests.txt",
+      "docs/validation/t13-nonadiabatic-2026-11-02/pyscf_independent_metrics.py",
+      "docs/validation/t13-nonadiabatic-2026-11-02/pytest-heom.txt",
+      "docs/validation/t13-nonadiabatic-2026-11-02/validate_lambert_figure1.py",
+      "docs/validation/t13-nonadiabatic-2026-11-02/validation-summary.json",
+      "examples/nonadiabatic/heom_spin_boson.py",
+      "examples/nonadiabatic/pyscf_lih_rpsh.py",
+      "src/pyrpmd/adiabatic.py",
+      "src/pyrpmd/analysis/heom.py",
+      "src/pyrpmd/potentials/pyscf_multistate.py",
+      "tests/test_adiabatic_provider_diagnostics.py",
+      "tests/test_heom.py",
+      "tests/test_pyscf_multistate.py"
+    ],
+    "missing_paths": []
+  }
+}

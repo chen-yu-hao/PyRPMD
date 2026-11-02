@@ -245,6 +245,19 @@ def fingerprint(config, system, extras=None):
     )
 
 
+def plugin_module(value):
+    """Return the module/file part of ``module:attribute`` plugin references.
+
+    The attribute follows the last colon, so a Windows drive letter
+    (``C:\\path\\pes.py:build``) is not mistaken for the separator. A bare
+    ``.py``/``.so`` path has no attribute part.
+    """
+    if value.endswith((".py", ".so")):
+        return value
+    head, separator, _ = value.rpartition(":")
+    return head if separator else value
+
+
 def referenced_files(config):
     """Hash explicit inputs and local plugin sources, including .o link inputs.
 
@@ -270,7 +283,7 @@ def referenced_files(config):
                 visit(v)
         elif isinstance(value, str):
             if key in ("factory", "module", "function", "initializer"):
-                module = value.partition(":")[0]
+                module = plugin_module(value)
                 if module.endswith((".py", ".so")):
                     add(module)
                 elif ":" in value or key == "module":
@@ -284,7 +297,8 @@ def referenced_files(config):
                             add(spec.origin)
                     except (ImportError, ValueError, AttributeError):
                         pass
-            elif value.startswith("/"):
+            # Identical to startswith("/") on POSIX; also covers drive paths.
+            elif os.path.isabs(value):
                 add(value)
                 if key == "manifest":
                     manifests.append(Path(value))

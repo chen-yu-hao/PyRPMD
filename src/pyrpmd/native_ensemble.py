@@ -110,7 +110,7 @@ def _gle_matrices(spec: dict, mode: str, beads: int, beta: float,
     """One-time matrix preparation; no Python linear algebra during propagation."""
     from scipy.linalg import expm
 
-    _unknown(spec, {"A", "C", "beta", "beads", "provenance"}, "GLE")
+    _unknown(spec, {"A", "C", "beta", "beads", "provenance", "parameter_metadata"}, "GLE")
     a = _array(spec["A"])
     if a.ndim not in (2, 3) or a.shape[-1] != a.shape[-2] or not 1 <= a.shape[-1] <= 64:
         raise ValueError("GLE A must have shape [s,s] or [P,s,s], with 1 <= s <= 64")
@@ -421,6 +421,7 @@ class NativeEnsemble:
         if mode == "trpmd":
             cfg["gamma0"] = 0.0
         self.thermostat, self.barostat = mode, bmode
+        self._report_gle_parameters = "parameter_metadata" in t.get("gle", {})
         self.splitting = ("BCOCB" if cfg["cayley"] else "BAOAB") if bmode == "none" else "OBABO"
         if middle_npt:
             self.splitting = "BZP-BCOCB" if cfg["cayley"] else "BZP-BAOAB"
@@ -462,7 +463,9 @@ class NativeEnsemble:
                 cfg["python_callback"] = self._python_binding.evaluate
             else:
                 from .potentials.native import descriptor_binding
-                binding = potential.native_binding() if callable(getattr(potential, "native_binding", None)) else potential
+                from .potentials._builtin_native import resolve_native_binding
+                binding = (resolve_native_binding(potential, self.natoms, cell=cell)
+                           if callable(getattr(potential, "native_binding", None)) else potential)
                 self._binding = descriptor_binding(binding)
                 if not isinstance(potential_identity, str) or not potential_identity.strip():
                     raise ValueError("native provider requires potential_identity for safe restart")
@@ -489,6 +492,10 @@ class NativeEnsemble:
         physics.update(potential_identity=self._potential_identity, initial_cell=h.tolist(),
                        fixed_positions=coordinates[0, fixed.astype(bool)].tolist(),
                        rng_abi=getattr(_thermal, "rng_abi", "std-cxx17-local-build-v1"), format=_FORMAT)
+        if self._report_gle_parameters:
+            # New parameter records carry their calibration and source into
+            # restart identity. Legacy explicit matrices keep their old hash.
+            physics["gle_parameters"] = t["gle"]
         self.fingerprint = hashlib.sha256(json.dumps(physics, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest()
         self._call_lock = threading.RLock()
 
@@ -646,6 +653,8 @@ class NativeEnsemble:
                 "python_step_callbacks": 0 if self._python_binding is None else self._python_binding.calls-callback_start,
                 "thermostat": self.thermostat, "barostat": self.barostat,
                 "splitting": self.splitting, "trajectory": None if path is None else str(path),
+                **({"gle_parameters": self.plan.thermostat_spec["gle"]}
+                   if self._report_gle_parameters else {}),
                 **common_records,
                 **({"completed": result["completed"], "error": result["error"] or None} if keep_prefix else {})}
 
@@ -843,6 +852,11 @@ def ensemble_from_config(config: dict, *, base_directory: str | Path = ".",
             t[key] = parse_quantity(t[key], "time")
     if "gle" in t:
         g = t["gle"]
+        if isinstance(g, dict) and ("generator" in g or "file" in g):
+            from .gle_parameters import resolve_gle_parameters
+            g = resolve_gle_parameters(g, mode=t.get("mode", "pile-l"),
+                                       base_directory=base_directory)
+            t["gle"] = g
         factor = unit_factor(g.pop("A_unit", "autime^-1"), "frequency")
         g["A"] = _array(g["A"])*factor
         if "beta" in g:

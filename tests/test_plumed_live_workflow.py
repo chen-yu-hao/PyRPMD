@@ -82,3 +82,56 @@ def test_real_kernel_input_cli_metad_clock_and_observation_invariance(tmp_path, 
         np.testing.assert_array_equal(first, second)
     for first, second in zip(histories[0], histories[1]):
         np.testing.assert_array_equal(first, second)
+
+
+@pytest.mark.parametrize('well_tempered', [False, True])
+@pytest.mark.parametrize('checkpoint_steps', [3, 7])
+def test_real_kernel_file_restart_matches_uninterrupted_history(tmp_path, live_plumed, monkeypatch, well_tempered,
+                                                               checkpoint_steps):
+    from pyrpmd.plumed import PlumedBias
+    from pyrpmd.workflows.plumed import resolve_plumed_job, run_plumed
+
+    tempering = ' BIASFACTOR=4 TEMP=300' if well_tempered else ''
+    script = ('UNITS LENGTH=Bohr ENERGY=Ha TIME=atomic\n'
+              'd: DISTANCE ATOMS=1,2 NOPBC\n'
+              'm: METAD ARG=d SIGMA=0.2 HEIGHT=0.0001 PACE=2 FILE=HILLS' + tempering + '\n'
+              'PRINT ARG=d,m.bias STRIDE=1 FILE=COLVAR\n')
+    data = {
+        'task': 'plumed', 'temperature': 1/(4*KB_AU), 'beads': 4,
+        'seed': 51, 'native': False,
+        'system': {'symbols': ['H', 'H'], 'masses': [2., 3.],
+                   'geometry': [[0., 0., 0.], [3., 0., 0.]]},
+        'potential': {'provider': 'harmonic', 'params': {'k': .2}},
+        'dynamics': {'timestep': .02},
+        'sampling': {'equilibration_steps': 2, 'production_steps': 12, 'sample_interval': 2},
+        'plumed': {'input': script, 'restart': 'files'}, 'output': {'checkpoint_steps': checkpoint_steps},
+    }
+    config, system = resolve_plumed_job(data, base_directory=tmp_path)
+    complete, split = tmp_path/'complete', tmp_path/'split'
+    run_plumed(config, system, complete)
+    original = PlumedBias.step
+
+    def interrupt(self, dynamics, state, **kwargs):
+        result = original(self, dynamics, state, **kwargs)
+        if state.step == 8:
+            raise RuntimeError('interrupt after real PLUMED writes a hill')
+        return result
+
+    with monkeypatch.context() as patch:
+        patch.setattr(PlumedBias, 'step', interrupt)
+        with pytest.raises(RuntimeError, match='interrupt after real'):
+            run_plumed(config, system, split)
+    result = run_plumed({**config, 'resume': True}, system, split)
+    assert result['restart_supported'] and result['steps'] == 14
+    for name, count in [('HILLS', 7), ('COLVAR', 14)]:
+        expected, actual = rows(complete/'plumed'/name), rows(split/'plumed'/name)
+        assert len(actual) == count
+        # HILLS decimal round trips and WT rescaling can differ at the last
+        # binary bit; this is a floating-point consistency, not bitwise claim.
+        np.testing.assert_allclose(actual, expected, rtol=2e-12, atol=2e-14)
+    with load_checkpoint(complete/'checkpoints/plumed-md-state.npz', require_integrity=True) as full:
+        expected = {name: full[name] for name in ['q', 'p', 'positions', 'physical_bias', 'rng']}
+    with load_checkpoint(split/'checkpoints/plumed-md-state.npz', require_integrity=True) as resumed:
+        for name in ['q', 'p', 'positions', 'physical_bias']:
+            np.testing.assert_allclose(resumed[name], expected[name], rtol=2e-12, atol=2e-14)
+        np.testing.assert_array_equal(resumed['rng'], expected['rng'])

@@ -21,6 +21,7 @@
 #include <omp.h>
 #endif
 #include "ring_fft.h"
+#include "builtin_pes.hpp"
 
 struct Cayley {
     Py_ssize_t beads, nd;
@@ -345,6 +346,7 @@ static PyObject* sample_free(PyObject*,PyObject* args){
 }
 
 static PyMethodDef methods[]={
+ {"builtin_pes",builtin_pes::create,METH_VARARGS,"Create an immutable built-in C ABI PES context and export its addresses."},
  {"bind_pes",fused::bind_pes,METH_VARARGS,"Bind a trusted native PES; retain its lifetime owner."},
  {"run_block",fused::run_block,METH_VARARGS,"Transactional fused RPMD with the selected native integrator."},
  {"advance",fused_blocks::advance,METH_VARARGS,"RPMD blocks with the selected integrator, native RATTLE and valid-prefix failure results."},

@@ -1,0 +1,529 @@
+{
+  "provider": {
+    "provider": "pyscf_sacasscf",
+    "implementation": 1,
+    "pyscf_version": "2.14.0",
+    "numpy_version": "2.3.5",
+    "scipy_version": "1.18.1",
+    "units": "atomic",
+    "dtype": "float64",
+    "device": "cpu",
+    "weights": [
+      0.5,
+      0.5
+    ],
+    "use_etfs": false,
+    "natorb": true,
+    "symmetry": false,
+    "cart": false,
+    "resolved_basis": {
+      "H": [
+        [
+          0,
+          [
+            3.42525091,
+            0.15432897
+          ],
+          [
+            0.62391373,
+            0.53532814
+          ],
+          [
+            0.1688554,
+            0.44463454
+          ]
+        ]
+      ],
+      "Li": [
+        [
+          0,
+          [
+            16.119575,
+            0.15432897
+          ],
+          [
+            2.9362007,
+            0.53532814
+          ],
+          [
+            0.7946505,
+            0.44463454
+          ]
+        ],
+        [
+          0,
+          [
+            0.6362897,
+            -0.09996723
+          ],
+          [
+            0.1478601,
+            0.39951283
+          ],
+          [
+            0.0480887,
+            0.70011547
+          ]
+        ],
+        [
+          1,
+          [
+            0.6362897,
+            0.15591627
+          ],
+          [
+            0.1478601,
+            0.60768372
+          ],
+          [
+            0.0480887,
+            0.39195739
+          ]
+        ]
+      ]
+    },
+    "symbols": [
+      "Li",
+      "H"
+    ],
+    "basis": "sto-3g",
+    "ncas": 2,
+    "nelecas": [
+      1,
+      1
+    ],
+    "nstates": 2,
+    "charge": 0,
+    "spin": 0,
+    "state_order": "energy",
+    "scf_conv_tol": 1e-12,
+    "casscf_conv_tol": 1e-12,
+    "casscf_conv_tol_grad": 1e-08,
+    "fci_conv_tol": 1e-12,
+    "response_atol": 1e-12,
+    "response_rtol": 1e-10,
+    "gap_tolerance": 1e-07,
+    "spin_tolerance": 1e-06,
+    "spin_penalty": 1.0,
+    "phase_overlap_tolerance": 1e-08,
+    "max_memory_mb": 2000.0,
+    "max_scf_cycles": 100,
+    "max_casscf_cycles": 100,
+    "max_fci_cycles": 200,
+    "max_response_cycles": 100,
+    "cache_size": 32
+  },
+  "finite_difference_step_bohr": 0.0002,
+  "lih_derivative_checks": [
+    {
+      "atom": 0,
+      "component": "x",
+      "analytic_nac": [
+        [
+          0.0,
+          0.18370151528421472
+        ],
+        [
+          -0.18370151528421472,
+          0.0
+        ]
+      ],
+      "overlap_derivative": [
+        [
+          -2.864375403532904e-10,
+          0.1837014639623331
+        ],
+        [
+          -0.183701464842994,
+          -8.493206138382448e-11
+        ]
+      ],
+      "signed_nac_max_error_bohr_inverse": 5.1321881605614905e-08,
+      "analytic_gradient": [
+        0.0023250429623230626,
+        0.02989576294171495
+      ],
+      "energy_derivative": [
+        0.0023250424341370035,
+        0.029895765580878475
+      ],
+      "gradient_max_error_hartree_per_bohr": 2.6391635266076463e-09
+    },
+    {
+      "atom": 1,
+      "component": "x",
+      "analytic_nac": [
+        [
+          0.0,
+          -0.06914581423896106
+        ],
+        [
+          0.06914581423896106,
+          0.0
+        ]
+      ],
+      "overlap_derivative": [
+        [
+          -4.085620730620576e-10,
+          -0.06914578457390579
+        ],
+        [
+          0.06914578501242001,
+          -4.4603210014315664e-10
+        ]
+      ],
+      "signed_nac_max_error_bohr_inverse": 2.9665055273353502e-08,
+      "analytic_gradient": [
+        -0.0023250429623228857,
+        -0.029895762941715164
+      ],
+      "energy_derivative": [
+        -0.002325042416373435,
+        -0.02989576556089446
+      ],
+      "gradient_max_error_hartree_per_bohr": 2.6191792970586825e-09
+    }
+  ],
+  "lih_max_signed_nac_error_bohr_inverse": 5.1321881605614905e-08,
+  "lih_max_gradient_error_hartree_per_bohr": 2.6391635266076463e-09,
+  "full_occupied_determinant_overlap_max_error": 1.214306433183765e-17,
+  "h2_three_state_max_signed_nac_error_bohr_inverse": 2.129300985531657e-09,
+  "rpsh_timestep_scan": {
+    "duration_au": 12.0,
+    "coarse_dt_au": 2.0,
+    "fine_dt_au": 1.0,
+    "coarse_max_energy_drift_hartree": 8.147682528658606e-09,
+    "fine_max_energy_drift_hartree": 2.0425634517096114e-09,
+    "fine_over_coarse_error_ratio": 0.2506925674294638,
+    "coarse_configuration": {
+      "schema": "PyRPMD.pyscf-lih-rpsh.v1",
+      "provider": {
+        "provider": "pyscf_sacasscf",
+        "implementation": 1,
+        "pyscf_version": "2.14.0",
+        "numpy_version": "2.3.5",
+        "scipy_version": "1.18.1",
+        "units": "atomic",
+        "dtype": "float64",
+        "device": "cpu",
+        "weights": [
+          0.5,
+          0.5
+        ],
+        "use_etfs": false,
+        "natorb": true,
+        "symmetry": false,
+        "cart": false,
+        "resolved_basis": {
+          "H": [
+            [
+              0,
+              [
+                3.42525091,
+                0.15432897
+              ],
+              [
+                0.62391373,
+                0.53532814
+              ],
+              [
+                0.1688554,
+                0.44463454
+              ]
+            ]
+          ],
+          "Li": [
+            [
+              0,
+              [
+                16.119575,
+                0.15432897
+              ],
+              [
+                2.9362007,
+                0.53532814
+              ],
+              [
+                0.7946505,
+                0.44463454
+              ]
+            ],
+            [
+              0,
+              [
+                0.6362897,
+                -0.09996723
+              ],
+              [
+                0.1478601,
+                0.39951283
+              ],
+              [
+                0.0480887,
+                0.70011547
+              ]
+            ],
+            [
+              1,
+              [
+                0.6362897,
+                0.15591627
+              ],
+              [
+                0.1478601,
+                0.60768372
+              ],
+              [
+                0.0480887,
+                0.39195739
+              ]
+            ]
+          ]
+        },
+        "symbols": [
+          "Li",
+          "H"
+        ],
+        "basis": "sto-3g",
+        "ncas": 2,
+        "nelecas": [
+          1,
+          1
+        ],
+        "nstates": 2,
+        "charge": 0,
+        "spin": 0,
+        "state_order": "energy",
+        "scf_conv_tol": 1e-12,
+        "casscf_conv_tol": 1e-12,
+        "casscf_conv_tol_grad": 1e-07,
+        "fci_conv_tol": 1e-12,
+        "response_atol": 1e-12,
+        "response_rtol": 1e-09,
+        "gap_tolerance": 1e-07,
+        "spin_tolerance": 1e-06,
+        "spin_penalty": 1.0,
+        "phase_overlap_tolerance": 1e-08,
+        "max_memory_mb": 2000.0,
+        "max_scf_cycles": 100,
+        "max_casscf_cycles": 100,
+        "max_fci_cycles": 200,
+        "max_response_cycles": 100,
+        "cache_size": 16
+      },
+      "method": "adiabatic-rpsh",
+      "dtype": "float64",
+      "execution_device": "cpu",
+      "masses_electron": [
+        12789.391884298417,
+        1837.1526474396187
+      ],
+      "initial_q_bohr": [
+        [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.834589188861674,
+            0.0,
+            0.0
+          ]
+        ]
+      ],
+      "initial_p_au": [
+        [
+          [
+            -0.5,
+            0.0,
+            0.0
+          ],
+          [
+            0.5,
+            0.0,
+            0.0
+          ]
+        ]
+      ],
+      "beta_hartree_inverse": 1052.5834160132904,
+      "nbeads": 1,
+      "dt_au": 2.0,
+      "steps": 6,
+      "seed": 13,
+      "initial_state": 1,
+      "electronic_substeps": 8,
+      "integrator": "cayley-bcb",
+      "native": false,
+      "threads": 1,
+      "overlap_tolerance": 1e-06,
+      "frustrated_hops": "keep"
+    },
+    "fine_configuration": {
+      "schema": "PyRPMD.pyscf-lih-rpsh.v1",
+      "provider": {
+        "provider": "pyscf_sacasscf",
+        "implementation": 1,
+        "pyscf_version": "2.14.0",
+        "numpy_version": "2.3.5",
+        "scipy_version": "1.18.1",
+        "units": "atomic",
+        "dtype": "float64",
+        "device": "cpu",
+        "weights": [
+          0.5,
+          0.5
+        ],
+        "use_etfs": false,
+        "natorb": true,
+        "symmetry": false,
+        "cart": false,
+        "resolved_basis": {
+          "H": [
+            [
+              0,
+              [
+                3.42525091,
+                0.15432897
+              ],
+              [
+                0.62391373,
+                0.53532814
+              ],
+              [
+                0.1688554,
+                0.44463454
+              ]
+            ]
+          ],
+          "Li": [
+            [
+              0,
+              [
+                16.119575,
+                0.15432897
+              ],
+              [
+                2.9362007,
+                0.53532814
+              ],
+              [
+                0.7946505,
+                0.44463454
+              ]
+            ],
+            [
+              0,
+              [
+                0.6362897,
+                -0.09996723
+              ],
+              [
+                0.1478601,
+                0.39951283
+              ],
+              [
+                0.0480887,
+                0.70011547
+              ]
+            ],
+            [
+              1,
+              [
+                0.6362897,
+                0.15591627
+              ],
+              [
+                0.1478601,
+                0.60768372
+              ],
+              [
+                0.0480887,
+                0.39195739
+              ]
+            ]
+          ]
+        },
+        "symbols": [
+          "Li",
+          "H"
+        ],
+        "basis": "sto-3g",
+        "ncas": 2,
+        "nelecas": [
+          1,
+          1
+        ],
+        "nstates": 2,
+        "charge": 0,
+        "spin": 0,
+        "state_order": "energy",
+        "scf_conv_tol": 1e-12,
+        "casscf_conv_tol": 1e-12,
+        "casscf_conv_tol_grad": 1e-07,
+        "fci_conv_tol": 1e-12,
+        "response_atol": 1e-12,
+        "response_rtol": 1e-09,
+        "gap_tolerance": 1e-07,
+        "spin_tolerance": 1e-06,
+        "spin_penalty": 1.0,
+        "phase_overlap_tolerance": 1e-08,
+        "max_memory_mb": 2000.0,
+        "max_scf_cycles": 100,
+        "max_casscf_cycles": 100,
+        "max_fci_cycles": 200,
+        "max_response_cycles": 100,
+        "cache_size": 16
+      },
+      "method": "adiabatic-rpsh",
+      "dtype": "float64",
+      "execution_device": "cpu",
+      "masses_electron": [
+        12789.391884298417,
+        1837.1526474396187
+      ],
+      "initial_q_bohr": [
+        [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.834589188861674,
+            0.0,
+            0.0
+          ]
+        ]
+      ],
+      "initial_p_au": [
+        [
+          [
+            -0.5,
+            0.0,
+            0.0
+          ],
+          [
+            0.5,
+            0.0,
+            0.0
+          ]
+        ]
+      ],
+      "beta_hartree_inverse": 1052.5834160132904,
+      "nbeads": 1,
+      "dt_au": 1.0,
+      "steps": 12,
+      "seed": 13,
+      "initial_state": 1,
+      "electronic_substeps": 8,
+      "integrator": "cayley-bcb",
+      "native": false,
+      "threads": 1,
+      "overlap_tolerance": 1e-06,
+      "frustrated_hops": "keep"
+    }
+  },
+  "wall_seconds": 50.46036592400196,
+  "physical_converged": false
+}

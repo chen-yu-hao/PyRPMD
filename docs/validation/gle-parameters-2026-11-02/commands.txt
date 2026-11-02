@@ -1,0 +1,65 @@
+T15 GLE/PIGLET parameter generation and import
+Base: 8cc402f, main at checkout; branch feat/t15-gle-parameter-tools.
+Python: 3.12.14, task-local venv with editable PyRPMD and [test]/[docs].
+NumPy: 2.3.5; SciPy: 1.17.0; Linux 6.18.57 x86_64, glibc 2.39.
+CPU: AMD EPYC 9V74 80-Core Processor (host), 8-vCPU session quota, 8 GiB.
+All numerical commands: OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1.
+This was a shared executor with concurrent project tasks, not an isolated
+performance machine. Timings are observed wall times, not speedup guarantees.
+
+The commands below use "python" for the task environment's interpreter:
+/workspace/scratch/0d3cfb158197/venv-t15/bin/python
+Run them from the repository root.
+
+Installation:
+python -m pip install -e '.[test]'
+python -m pip install -e '.[docs]'
+
+Related baseline, before source changes (related-baseline.log):
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_native_ensembles.py tests/test_condensed_phase_ensembles.py tests/test_condensed_piglet_reference.py tests/test_checkpoint.py tests/test_propagation_composition.py tests/test_input_propagation_stack.py tests/test_thermostats.py
+
+Import, unit, identity and restart tests (import-integration-tests.log):
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_gle_parameters.py tests/test_gle_parameter_integration.py
+
+Fitting and independent full harmonic SDE tests (fitting-tests.log):
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_gle_fitting.py
+
+Actual native trajectories and independent discrete covariance tests:
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_generated_piglet_sampling.py
+
+Full regression (full-pytest.log; local TCP/Unix sockets must be permitted):
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q
+
+Execution-environment diagnosis (environment-diagnostics.log):
+The default execution sandbox denied socket creation. The final full run
+uses a socket-capable environment after an unchanged i-PI subset passed
+19/19 there. No socket implementation or tests were changed.
+
+Strict documentation build (sphinx.log):
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m sphinx -W --keep-going -b html docs docs/_build/html
+
+Harmonic validation (validation.json; generated in scratch, then copied here):
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python examples/path_integral/gle_parameter_validation.py --output /workspace/scratch/0d3cfb158197/t15-generated-gle-validation.json --cpu-description 'AMD EPYC 9V74 80-Core Processor; session cgroup quota 8 vCPU, memory 8 GiB (verified separately)'
+
+The validation JSON contains every generated matrix, fit/control setting,
+source algorithm version, frequency grid, residual, seed, state digest,
+RNG ABI, sampling uncertainty, hardware statement and measured runtime.
+No external numerical matrix library was used. The references solve the
+complete continuous and BCOCB discrete harmonic Lyapunov equations separately
+from the fitter and production propagator. physical_converged remains false.
+
+Final results (2026-11-02):
+- Related pre-change baseline: 238 passed in 27.83 s.
+- Import/integration: 71 passed in 3.50 s.
+- Fitting: 46 passed in 19.23 s.
+- Native generated-PIGLET sampling: 4 passed in 5.75 s.
+  This targeted result was captured in the tool output; all four tests were
+  also included in the final full regression.
+- Full regression: 8225 passed, 225 skipped, 51 warnings, 486 subtests passed in 1257.06s (0:20:57); exit 0.
+  Skip reasons and warnings are retained in full-pytest.log. Skips cover
+  unavailable optional backends and explicitly configured external models.
+- Strict Sphinx build after the final wording corrections: build succeeded; exit 0.
+- Harmonic validation example: exit 0; elapsed 70.631522 s.
+- git diff --check: clean.
+
+Committed diagnostic and Sphinx logs normalize trailing whitespace only.

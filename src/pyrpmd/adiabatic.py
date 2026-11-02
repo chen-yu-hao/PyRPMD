@@ -7,6 +7,7 @@ An overlap is O_ij = <old_i|new_j>; it transports coefficients as O.conj().T @ c
 """
 from dataclasses import dataclass
 import copy
+import json
 
 import numpy as np
 from scipy.linalg import expm, logm
@@ -61,6 +62,7 @@ class AdiabaticResult:
     overlaps: np.ndarray | None = None
     status: np.ndarray | None = None
     context: object = None
+    messages: tuple[str, ...] | None = None
 
 
 def _array(value, shape, label, *, real=False):
@@ -94,8 +96,17 @@ def validate_adiabatic_result(result, shape, nstates=None):
     status = np.zeros(b, dtype=int) if result.status is None else np.asarray(result.status)
     if status.shape != (b,) or status.dtype.kind not in "iu" or np.any(status < 0):
         raise PotentialError("adiabatic status must be nonnegative integers [B]")
+    if result.messages is None:
+        messages = ("",) * b
+    elif (not isinstance(result.messages, (tuple, list)) or len(result.messages) != b
+          or not all(isinstance(message, str) for message in result.messages)):
+        raise PotentialError("adiabatic messages must contain one string per frame")
+    else:
+        messages = tuple(result.messages)
     if np.any(status):
-        raise PotentialError(f"adiabatic PES frames failed: {np.flatnonzero(status).tolist()}")
+        failed = np.flatnonzero(status)
+        raise PotentialError("adiabatic PES frames failed: " + ", ".join(
+            f"{i} (status={status[i]}: {messages[i]})" for i in failed[:8]))
     energy = _array(energy, (b, s), "adiabatic energies", real=True)
     gradient = _array(result.gradients, (b, s, *shape[1:]), "adiabatic gradients", real=True)
     coupling = None
@@ -106,7 +117,7 @@ def validate_adiabatic_result(result, shape, nstates=None):
     overlap = None if result.overlaps is None else _array(result.overlaps, (b, s, s), "overlaps")
     status = np.array(status, copy=True)
     status.flags.writeable = False
-    return AdiabaticResult(energy, gradient, coupling, overlap, status, result.context)
+    return AdiabaticResult(energy, gradient, coupling, overlap, status, result.context, messages)
 
 
 @dataclass(frozen=True)
@@ -141,8 +152,36 @@ class AdiabaticPythonPotential:
         if not isinstance(continuous_gauge, (bool, np.bool_)):
             raise ValueError("continuous_gauge must be boolean")
         self.length_factor, self.energy_factor = unit_factors(units)
+        if (getattr(obj, "metadata", {}).get("requires_atomic_units") is True
+                and (self.length_factor != 1 or self.energy_factor != 1)):
+            raise PotentialError("this adiabatic provider requires atomic units")
         self.metadata = {"provider": "adiabatic_python", "execution_device": "cpu",
                          "thread_safety": "context_serial", "continuous_gauge": bool(continuous_gauge)}
+        # Legacy callbacks keep their existing metadata. A provider opting into
+        # scientific identity must make its complete configuration explicit.
+        if callable(getattr(obj, "to_dict", None)):
+            self.metadata["scientific_identity"] = self.to_dict()
+
+    def to_dict(self):
+        """Return an explicit provider identity, including unit/gauge choices.
+
+        Anonymous callbacks cannot be fingerprinted from their Python name or
+        repr: they must supply their own complete ``to_dict()`` description.
+        Existing callback metadata is unchanged when this protocol is absent.
+        """
+        identity = getattr(self.obj, "to_dict", None)
+        if not callable(identity):
+            raise ValueError("adiabatic provider must implement to_dict() for scientific identity")
+        provider = identity()
+        if not isinstance(provider, dict):
+            raise ValueError("adiabatic provider identity must be a JSON object")
+        try:
+            provider = json.loads(json.dumps(provider, sort_keys=True, allow_nan=False))
+        except (TypeError, ValueError) as error:
+            raise ValueError("adiabatic provider identity must contain finite JSON values") from error
+        return {"type": "adiabatic_python", "version": 1, "provider": provider,
+                "length_factor": self.length_factor, "energy_factor": self.energy_factor,
+                "continuous_gauge": self.metadata["continuous_gauge"]}
 
     def evaluate(self, q, *, previous=None):
         q = coordinates(q)
@@ -155,7 +194,7 @@ class AdiabaticPythonPotential:
         return AdiabaticResult(result.energies*self.energy_factor,
                                result.gradients*(self.energy_factor/self.length_factor),
                                None if result.couplings is None else result.couplings/self.length_factor,
-                               result.overlaps, result.status, result.context)
+                               result.overlaps, result.status, result.context, result.messages)
 
     def close(self):
         close = getattr(self.obj, "close", None)

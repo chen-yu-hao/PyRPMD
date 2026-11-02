@@ -1,0 +1,39 @@
+# Analytic two-particle harmonic model; masses are 1 electron mass, not H nuclei.
+# Short reporting/restart example, not evidence of physical convergence.
+task = "pimd"
+temperature = "200000 K"
+beads = 8
+seed = 2081
+
+[system]
+symbols = ["H", "H"]
+masses = [1.0, 1.0]
+geometry = [[-0.4, 0.0, 0.0], [0.4, 0.0, 0.0]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "harmonic"
+params = {k = 0.64}
+
+[dynamics]
+integrator = "normal-mode-bab"
+timestep = "0.01 au"
+
+[sampling]
+thermostat = "pile-l"
+gamma_centroid = "1 au"
+equilibration_steps = 500
+production_steps = 2000
+sample_interval = 5
+
+[path_integral]
+method = "fermionic"
+groups = [[0, 1]]
+minimum_average_sign = 0.05
+sign_sigma = 3.0
+block_size = 20
+
+[output]
+directory = "runs/fermionic"
+trajectory_storage = "memory"
+checkpoint_steps = 250

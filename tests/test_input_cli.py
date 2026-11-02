@@ -98,7 +98,7 @@ class InputTests(unittest.TestCase):
 
     def test_python_build_relative_plugin_and_source_hash(self):
         with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory)
+            path = Path(directory).resolve()
             (path / "my_pes.py").write_text(
                 "import numpy as np\ndef make():\n return lambda x: (np.sum(x*x,axis=(1,2))/2, -x)\n"
             )

@@ -1,8 +1,11 @@
 """Protocol-level tests with real loopback clients, not mocked futures."""
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import suppress
 import json
+from pathlib import Path
 import socket
 import struct
+from tempfile import TemporaryDirectory
 import threading
 import time
 
@@ -25,14 +28,14 @@ def _recv(connection, length):
 
 def _client(pes, *, before_force=None, fragment=False, repeat_init=False,
             fail=None, seen=None):
-    with socket.create_connection(pes.address, timeout=3) as connection:
+    # Closing the pool can surface as EOF, reset, broken pipe or abort depending
+    # on the OS and protocol phase. Connect failures, timeouts and assertions
+    # remain errors; the caller verifies successful forces or pool shutdown.
+    with socket.create_connection(pes.address, timeout=3) as connection, suppress(EOFError, ConnectionError):
         state = b"NEEDINIT"
         frame = None
         while True:
-            try:
-                header = _recv(connection, 12).strip()
-            except (EOFError, ConnectionResetError):
-                return
+            header = _recv(connection, 12).strip()
             if header == b"STATUS":
                 connection.sendall(state.ljust(12))
             elif header == b"INIT":
@@ -62,10 +65,7 @@ def _client(pes, *, before_force=None, fragment=False, repeat_init=False,
                     connection.sendall(b"FORCEREADY".ljust(12) + b"\0")
                     # Wait for the server's deadline/abort instead of returning
                     # a complete float or voluntarily disconnecting.
-                    try:
-                        _recv(connection, 12)
-                    except (EOFError, ConnectionResetError):
-                        return
+                    _recv(connection, 12)
                     continue
                 energy = .5 * np.sum(frame * frame)
                 force = -frame
@@ -73,14 +73,11 @@ def _client(pes, *, before_force=None, fragment=False, repeat_init=False,
                 payload = (b"FORCEREADY".ljust(12) + struct.pack("=di", energy, len(frame))
                            + force.astype("=f8").tobytes() + virial.T.astype("=f8").tobytes()
                            + struct.pack("=i", 3) + b"{} ")
-                try:
-                    if fragment:
-                        for begin in range(0, len(payload), 7):
-                            connection.sendall(payload[begin:begin + 7])
-                    else:
-                        connection.sendall(payload)
-                except (BrokenPipeError, ConnectionResetError):
-                    return
+                if fragment:
+                    for begin in range(0, len(payload), 7):
+                        connection.sendall(payload[begin:begin + 7])
+                else:
+                    connection.sendall(payload)
                 state = b"NEEDINIT" if repeat_init else b"READY"
             elif header == b"EXIT":
                 return
@@ -199,16 +196,20 @@ def test_invalid_client_counts_rejected(clients):
         IPIPotential(port=0, clients=clients)
 
 
-def test_existing_unix_address_is_not_removed_on_bind_failure(tmp_path):
-    address = tmp_path / "driver.sock"
-    pes = IPIPotential(unix=address)
-    try:
-        with pytest.raises(OSError):
-            IPIPotential(unix=address)
-        assert address.exists()
-    finally:
-        pes.close()
-    assert not address.exists()
+@pytest.mark.skipif(not hasattr(socket, "AF_UNIX"),
+                    reason="this Python build does not expose AF_UNIX sockets")
+def test_existing_unix_address_is_not_removed_on_bind_failure():
+    # Pytest's per-test directory can exceed the AF_UNIX path limit on macOS.
+    with TemporaryDirectory(prefix="ipi-") as directory:
+        address = Path(directory) / "driver.sock"
+        pes = IPIPotential(unix=address)
+        try:
+            with pytest.raises(OSError):
+                IPIPotential(unix=address)
+            assert address.exists()
+        finally:
+            pes.close()
+        assert not address.exists()
 
 
 @pytest.mark.parametrize("cell,declared", [(np.eye(3), [False] * 3), (None, [True] * 3)])

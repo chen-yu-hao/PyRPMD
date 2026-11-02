@@ -10,6 +10,7 @@ import numpy as np
 
 from pyrpmd.constants import KB_AU
 from pyrpmd.input import InputError, JobSpec
+from pyrpmd.initial_states import normalize_initial_ensemble
 from pyrpmd.workflows.drpmd import _physics_hash
 
 
@@ -71,6 +72,40 @@ class StateSelectedInputTests(unittest.TestCase):
         data["initial_ensemble"]["beta"] = 900.0
         config, _ = JobSpec.from_mapping(data).resolve()
         self.assertEqual(config["beta"], 900.0)
+
+    def test_qct_energy_policy_is_explicit_canonical_scientific_input(self):
+        legacy, system = JobSpec.from_mapping(selected_job("qct")).resolve()
+        self.assertNotIn("j0_energy_policy", legacy["initial_ensemble"])
+        self.assertEqual(legacy["initial_ensemble"],
+                         normalize_initial_ensemble(legacy["initial_ensemble"]))
+        hashes = {}
+        for policy in ("project", "preserve_actions"):
+            data = selected_job("qct")
+            data["initial_ensemble"]["j0_energy_policy"] = policy
+            original = deepcopy(data)
+            config, current_system = JobSpec.from_mapping(data).resolve()
+            self.assertEqual(data, original)
+            canonical = config["initial_ensemble"]
+            self.assertEqual(canonical["j0_energy_policy"], policy)
+            self.assertEqual(canonical, normalize_initial_ensemble(canonical))
+            json.dumps(canonical, allow_nan=False)
+            hashes[policy] = _physics_hash(config, current_system, 1)
+        self.assertNotEqual(hashes["preserve_actions"], hashes["project"])
+        self.assertNotEqual(hashes["preserve_actions"], _physics_hash(legacy, system, 1))
+
+    def test_qct_energy_policy_rejects_invalid_values_and_ne_rpmd_action_constraints(self):
+        for value in (None, True, 0, [], {}, "rescale", "PROJECT"):
+            data = selected_job("qct")
+            data["initial_ensemble"]["j0_energy_policy"] = value
+            with self.subTest(value=value), self.assertRaisesRegex(InputError, "j0_energy_policy"):
+                JobSpec.from_mapping(data).resolve()
+        data = selected_job()
+        data["initial_ensemble"]["j0_energy_policy"] = "preserve_actions"
+        with self.assertRaises(InputError):
+            JobSpec.from_mapping(data).resolve()
+        data["initial_ensemble"]["j0_energy_policy"] = "project"
+        config, _ = JobSpec.from_mapping(data).resolve()
+        self.assertEqual(config["initial_ensemble"]["j0_energy_policy"], "project")
 
     def test_production_selected_requires_no_thermal_temperature_or_sampling(self):
         for method in ("qct", "ne_rpmd"):

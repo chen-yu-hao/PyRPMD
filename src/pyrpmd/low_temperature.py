@@ -142,7 +142,12 @@ class HarmonicState:
     def from_potential(cls, potential, geometry_bohr, masses, *, hessian=None,
                        active_mask=None, hessian_step_bohr=1e-4,
                        force_tolerance=1e-6, **options):
-        """Reuse a supplied Hessian, or finite-difference forces once if absent."""
+        """Reuse a supplied Hessian, the PES provider, or finite-difference forces.
+
+        A callable ``potential.hessian(x)`` supplies unweighted Cartesian PES
+        Hessians in atomic units; its validation errors are never hidden by a
+        finite-difference fallback. See :mod:`pyrpmd.instanton` for the contract.
+        """
         q = coordinates(np.asarray(geometry_bohr)[None])
         mask, _ = _mask_and_masses(q.shape[1:], masses, active_mask)
         value = validate_result(potential.evaluate(q), q.shape)
@@ -177,26 +182,54 @@ class HarmonicState:
         A finite nbeads uses the same primitive discretization as the instanton.
         No finite-P saddle partition or classical finite-P combination is used.
         """
+        return self.partition_diagnostics(beta, classical=classical,
+                                          nbeads=nbeads, saddle=saddle)["log_partition"]
+
+    def partition_diagnostics(self, beta, *, classical=False, nbeads=None, saddle=False):
+        """Return the partition and its vibrational, rigid and electronic parts.
+
+        The electronic *energy* Boltzmann factor is excluded. For finite P,
+        the exact primitive harmonic determinant is evaluated in closed form,
+        with work independent of P. Global rigid modes are removed geometrically;
+        the noncentroid free-ring factors cancel the supermolecule bead powers.
+        ``log_translation_partition`` is per bohr cubed for an isolated gas.
+        """
         beta = _positive(beta, "beta")
-        eig, _, rigid = self.spectrum(1 if saddle else 0)
-        logq = math.log(self.electronic_degeneracy)
+        for name, value in (("classical", classical), ("saddle", saddle)):
+            if not isinstance(value, (bool, np.bool_)):
+                raise ValueError(f"{name} must be boolean")
+        eig, imaginary, rigid = self.spectrum(1 if saddle else 0)
+        frequencies = np.sqrt(eig)
+        log_electronic = math.log(self.electronic_degeneracy)
+        p = None
+        x = beta * frequencies
         if nbeads is not None:
             p = _integer(nbeads, "nbeads")
             if classical or saddle:
                 raise ValueError("finite-P partition is only defined here for quantum reactants")
-            dtau = beta / p
-            springs = (2 * np.sin(np.pi * np.arange(p) / p) / dtau)**2
-            logq -= 0.5 * float(np.log(dtau**2 * (springs[:, None] + eig)).sum())
-            if rigid:
-                logq -= 0.5 * rigid * float(np.log(dtau**2 * springs[1:]).sum())
-                logq += sum(_external_logs(np.repeat(self.geometry_bohr[None], p, axis=0),
-                                           self.masses, dtau, self.symmetry_number))
-        else:
-            x = beta * np.sqrt(eig)
-            logq -= float(np.log(x).sum() if classical else (0.5*x + np.log(-np.expm1(-x))).sum())
-            if rigid:
-                logq += sum(_external_logs(self.geometry_bohr[None], self.masses, beta, self.symmetry_number))
-        return float(logq)
+            # Product_n [(beta*omega/P)^2 + 4 sin^2(pi*n/P)]
+            # = [2 sinh(P asinh(beta*omega/(2P)))]^2.
+            x = 2 * p * np.arcsinh(x / (2 * p))
+        log_vib = -float(np.log(x).sum() if classical else
+                         (0.5*x + np.log(-np.expm1(-x))).sum())
+        log_trans, log_rot = (_external_logs(self.geometry_bohr[None], self.masses,
+                                             beta, self.symmetry_number)
+                              if rigid else (0.0, 0.0))
+        logq = log_vib + log_trans + log_rot + log_electronic
+        return {"log_partition": float(logq), "log_vibrational_partition": log_vib,
+                "log_translation_partition": log_trans, "log_rotation_partition": log_rot,
+                "log_electronic_degeneracy": log_electronic,
+                "positive_frequencies_au": frequencies.tolist(),
+                "imaginary_frequency_au": imaginary,
+                "zero_point_energy_hartree": float(0.5 * frequencies.sum()),
+                "electronic_energy_hartree": self.energy_hartree,
+                "removed_rigid_modes": rigid,
+                "symmetry_number": self.symmetry_number,
+                "electronic_degeneracy": self.electronic_degeneracy,
+                "normalization": "per_bohr^3" if self.rigid_body else "dimensionless",
+                "classical": bool(classical), "saddle": bool(saddle), "nbeads": p,
+                "discretization": "primitive_harmonic" if p is not None else "continuum",
+                "rigid_bead_powers_cancelled": bool(rigid and p is not None)}
 
 
 def _compatible(geometry, masses, mask, rigid_body, reactants):
@@ -434,15 +467,33 @@ def instanton_rate(action: RingPolymerAction, result, reactants, *, rigid_body=F
     # B=sum m*(q_j-q_{j-1})^2 = 2*dtau*S_spring.
     log_prefactor = (-math.log(dtau) + 0.5*math.log(evaluation["spring_action_hbar"]/math.pi)
                      + log_vib + log_trans + log_rot + math.log(electronic*degeneracy))
-    log_qr = sum(s.log_partition(action.beta, nbeads=p) for s in reactants)
-    log_qr -= action.beta * (sum(s.energy_hartree for s in reactants) - action.energy_reference)
+    reactant_diagnostics = [s.partition_diagnostics(action.beta, nbeads=p) for s in reactants]
+    log_qr_internal = sum(s["log_partition"] for s in reactant_diagnostics)
+    reactant_energy = sum(s.energy_hartree for s in reactants)
+    log_qr_electronic = -action.beta * (reactant_energy - action.energy_reference)
+    log_qr = log_qr_internal + log_qr_electronic
     log_rate = log_prefactor - evaluation["action_hbar"] - log_qr
+    rigid_residuals = (np.linalg.norm(h @ rigid, axis=0) / scale).tolist()
     return dict(_rate_record(log_rate, len(reactants), rigid_body),
                 method="multidimensional_thermal_ring_polymer_instanton",
                 temperature_kelvin=action.temperature_kelvin, nbeads=p,
                 log_fluctuation_partition=log_vib, log_translation_partition=log_trans,
                 log_rotation_partition=log_rot, log_prefactor_au=log_prefactor,
                 log_reactant_partition=log_qr, removed_rigid_modes=rigid.shape[1],
+                reactant_partitions=reactant_diagnostics,
+                log_reactant_electronic_boltzmann=log_qr_electronic,
+                energy_reference_hartree=action.energy_reference,
+                reactant_energy_hartree=reactant_energy,
+                removed_translation_modes=3 if rigid_body else 0,
+                removed_rotation_modes=rigid.shape[1] - 3 if rigid_body else 0,
+                removed_phase_modes=1,
+                rigid_mode_relative_residuals=rigid_residuals,
+                mass_weighted_action_negative_eigenvalue=float(eig[0]),
+                positive_fluctuation_modes=int(np.count_nonzero(eig > cutoff)),
+                reaction_degeneracy=degeneracy, electronic_degeneracy=electronic,
+                symmetry_number=symmetry, molecularity=len(reactants),
+                partition_convention=("isolated_gas_number_density_classical_rigid_rotors"
+                                      if rigid_body else "bound_or_constrained_cartesian"),
                 phase_mode_relative_residual=phase_residual, negative_modes=1,
                 numerical_converged=True, physical_converged=False,
                 limitations=["semiclassical; nonuniform near crossover",

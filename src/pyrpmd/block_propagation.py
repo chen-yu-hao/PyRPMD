@@ -13,6 +13,7 @@ import numpy as np
 from . import cv as cv_module
 from .bias import UmbrellaBias, FluxMetricBias, CompositeBias
 from .potentials.native import descriptor_binding
+from .potentials._builtin_native import resolve_native_binding
 from .validation import checked_integer
 
 
@@ -136,7 +137,7 @@ def _native_plan(dynamics, bias, cv, constraint, fragment_data, tolerance, recor
     if not dynamics.native or not hasattr(dynamics.integrator._native, "advance"):
         raise NotNative(dynamics.integrator.native_fallback_reason or "compiled fused kernel is not available")
     factory = getattr(dynamics.potential, "native_binding", None)
-    binding = factory() if callable(factory) else None
+    binding = resolve_native_binding(dynamics.potential, len(dynamics.masses)) if callable(factory) else None
     if binding is None:
         raise NotNative(f"PES {type(dynamics.potential).__name__} has no native binding")
     binding = descriptor_binding(binding)

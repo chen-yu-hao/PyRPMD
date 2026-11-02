@@ -31,6 +31,7 @@ def point(r, offset=0.):
 
 
 def dataset(tmp_path, *, heldout=True, offset=0.):
+    pytest.importorskip("fcntl", reason="JaxPIP dataset writes require POSIX advisory locks")
     tmp_path.mkdir(parents=True, exist_ok=True)
     splits = {"train": np.linspace(1., 2., 7)}
     if heldout:
@@ -207,6 +208,7 @@ def test_basis_identity_and_memory_limit(tmp_path):
 
 @pytest.mark.skipif(importlib.util.find_spec('pyscf') is None,reason='optional real PySCF')
 def test_actual_pyscf_collection_reuses_cache(tmp_path,monkeypatch):
+    pytest.importorskip("fcntl", reason="JaxPIP dataset writes require POSIX advisory locks")
     from pyrpmd.pesgen.reference import PySCFReference
     q=np.zeros((4,2,3)); q[:,1,0]=[1.2,1.4,1.6,1.8]
     write_xyz(tmp_path/'h2.xyz',('H','H'),q)

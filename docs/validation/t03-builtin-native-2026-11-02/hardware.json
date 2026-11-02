@@ -1,0 +1,23 @@
+{
+  "cpu": "AMD EPYC 9V74 80-Core Processor",
+  "logical_cpus_visible": 9,
+  "cpu_affinity": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "cgroup_cpu_max": "800000 100000",
+  "cgroup_memory_max_bytes": 8589934592,
+  "cpp_compiler": "c++ (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0",
+  "OMP_NUM_THREADS": 1,
+  "OPENBLAS_NUM_THREADS": 1,
+  "MKL_NUM_THREADS": 1,
+  "integrator_threads": 1,
+  "measurement_note": "Shared host with substantial load variation. The original before/after benchmark sandbox did not expose /proc, so CPU and cgroup metadata were inspected separately. The final-control run records these fields directly and reports both wall and process CPU clocks."
+}

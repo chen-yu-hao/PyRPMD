@@ -18,8 +18,20 @@ pyrpmd run examples/state_selected/qct.inp --output runs/qct-toy
 `ne_rpmd.inp` uses 32 beads and an explicitly chosen preparation beta. This is
 an auxiliary ring parameter and does not assign a gas temperature to a selected
 initial vibrational state. `qct.inp` uses one bead, random harmonic phase and
-energy `(v+1/2)*omega`. A P=1 thermal ring is not a QCT control; select the
-`qct` method explicitly.
+the explicit `j0_energy_policy = "preserve_actions"` option to retain the
+initial energy `(v+1/2)*omega` in the construction mode basis while enforcing
+zero fragment angular momentum. The example's single radial diatom mode
+already has zero angular momentum. For a polyatomic fragment, the solver may
+adjust the drawn phases and introduce correlations between them. It raises
+an error on nonconvergence, without redrawing or using another policy.
+
+This constrained-phase option is an experimental preparation convention, not
+a validated sampler of the conditional microcanonical distribution. Inputs
+that omit `j0_energy_policy` retain the original `"project"` policy, whose
+angular-momentum projection can change the assigned harmonic mode energies.
+A P=1 thermal ring is not a QCT control; select the `qct` method explicitly.
+Neither selected-state example samples a thermal rotational distribution or
+assigns final rovibrational quantum states.
 
 The input Hessian is the analytic Cartesian Hessian of the toy Morse minimum.
 PyRPMD projects out rigid translation and rotation and diagonalizes it using
@@ -62,6 +74,14 @@ errors when the PES cannot supply the required native binding.
 
 ## Interpreting diagnostics
 
+For QCT, `launch.preparation_diagnostics` records the requested and observed
+mode energies in the unrotated construction basis, their relative errors,
+the complete Cartesian harmonic-energy error, and residual fragment momenta.
+`state-check` saves the same preparation report for each QCT sample as
+`samples[i].preparation_diagnostics`. These values quantify initialization
+constraints before the collision orientation and kick; they do not include
+the difference between the harmonic reference and the full Morse PES.
+
 The `energy_parts` columns in each trajectory NPZ sum to the conserved classical
 ring Hamiltonian `H_P/P`; they are not vibrational quantum energies. Molecular
 mode actions are approximate harmonic diagnostics from `state-check`, computed
@@ -69,6 +89,13 @@ after Eckart alignment at sparse observation times. The check evolves the full
 PES at the separated reference geometry without a collision kick, so residual
 interfragment forces can still matter. Check separation as well as timestep,
 beads, beta and harmonic/full-PES consistency before using a realistic system.
+
+The `preserve_actions` constraint applies to the reference basis used to
+construct a QCT initial state. Eckart/Kabsch alignment at a later observation
+can change the mode projections, particularly for large deformations or
+degenerate modes. For a linear molecule, alignment does not uniquely fix
+rotation about its axis. Thus an aligned mode-action estimate is not an exact
+state population or a guarantee of preserved action on the full PES.
 
 See the [method and statistical conventions](../../docs/state-selected.md) for
 equations, literature, assumptions and the boundary between initial-state

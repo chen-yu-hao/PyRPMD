@@ -52,31 +52,64 @@ static bool finite(const Vec& v) {
 }
 struct Diff {
     double v=0;
-    Vec g,h;
-    Diff(Py_ssize_t n,bool second): g(n,0),h(second?n*n:0,0) {}
+    Vec g;
+    explicit Diff(Py_ssize_t n): g(n,0) {}
     void add(const Diff& b,double scale) {
         v+=scale*b.v;
         for (size_t i=0;i<g.size();++i) g[i]+=scale*b.g[i];
-        for (size_t i=0;i<h.size();++i) h[i]+=scale*b.h[i];
     }
-    void scale(double x) { v*=x;for(auto& y:g)y*=x;for(auto& y:h)y*=x; }
+    void scale(double x) { v*=x;for(auto& y:g)y*=x; }
 };
 static double norm_value(const Vec& w,const double* q) {
     double d[3]={0,0,0};
     for (size_t a=0;a<w.size();++a) for(int c=0;c<3;++c) d[c]+=w[a]*q[3*a+c];
     return std::sqrt(d[0]*d[0]+d[1]*d[1]+d[2]*d[2]);
 }
-static Diff norm(const Vec& w,const double* q,bool second) {
+// A norm's curvature needs only its three-dimensional unit displacement.
+// Keep this geometry from the gradient pass until the metric direction is known.
+struct NormHVP {
+    const Vec* weights=nullptr;
+    std::array<double,3> unit{};
+    double radius=0,scale=1;
+    bool product_surface=false;
+    void add(const Vec& direction,Vec& hv) const {
+        double tangent[3]={0,0,0};
+        for(size_t a=0;a<weights->size();++a)for(int c=0;c<3;++c)tangent[c]+=(*weights)[a]*direction[3*a+c];
+        const double radial=unit[0]*tangent[0]+unit[1]*tangent[1]+unit[2]*tangent[2];
+        for(int c=0;c<3;++c)tangent[c]=(tangent[c]-unit[c]*radial)/radius;
+        for(size_t a=0;a<weights->size();++a)for(int c=0;c<3;++c)hv[3*a+c]+=scale*(*weights)[a]*tangent[c];
+    }
+};
+struct MetricHVP {
+    // Supported descriptors contain at most the entry, forming and breaking norms.
+    std::array<NormHVP,3> norms;
+    size_t count=0;
+    int kind=0; // primitive, surface, or quotient
+    double a=0,b=0,xi=0;
+    Vec ga,gb,direction,hv,product_hv;
+    explicit MetricHVP(Py_ssize_t n):ga(n),gb(n),direction(n),hv(n),product_hv(n) {}
+    void apply() {
+        std::fill(hv.begin(),hv.end(),0.);std::fill(product_hv.begin(),product_hv.end(),0.);
+        for(size_t i=0;i<count;++i)norms[i].add(direction,norms[i].product_surface?product_hv:hv);
+        if(kind==1)for(size_t i=0;i<hv.size();++i)hv[i]=(1-xi)*hv[i]+xi*product_hv[i];
+        if(kind==2) {
+            double da=0,db=0;
+            for(size_t i=0;i<hv.size();++i){da+=ga[i]*direction[i];db+=gb[i]*direction[i];}
+            for(size_t i=0;i<hv.size();++i)
+                hv[i]=hv[i]/b-(ga[i]*db+gb[i]*da+a*(hv[i]-product_hv[i]))/(b*b)+2*a*gb[i]*db/(b*b*b);
+        }
+    }
+};
+static Diff norm(const Vec& w,const double* q,NormHVP* prepared=nullptr) {
     const auto n=3*w.size();
-    Diff out(n,second);
+    Diff out(n);
     double u[3]={0,0,0};
     for(size_t a=0;a<w.size();++a) for(int c=0;c<3;++c) u[c]+=w[a]*q[3*a+c];
     out.v=std::sqrt(u[0]*u[0]+u[1]*u[1]+u[2]*u[2]);
     if (!(out.v>=1e-12)) throw std::runtime_error("CV derivative undefined at zero distance");
     for(auto& c:u)c/=out.v;
     for(size_t i=0;i<n;++i) out.g[i]=w[i/3]*u[i%3];
-    if(second) for(size_t i=0;i<n;++i) for(size_t j=0;j<n;++j)
-        out.h[i*n+j]=w[i/3]*w[j/3]*((i%3==j%3?1.:0.)-u[i%3]*u[j%3])/out.v;
+    if(prepared)*prepared={&w,{u[0],u[1],u[2]},out.v,1,false};
     return out;
 }
 struct Pair { Vec forming,breaking;double reference; };
@@ -118,8 +151,8 @@ struct CV {
             xi=number(field(d,"xi"));
         } else if(kind!="linear" && kind!="norm" && kind!="difference") throw std::invalid_argument("unknown native CV kind");
     }
-    std::pair<Diff,Diff> surfaces(const double* q,bool second) const {
-        auto s0=norm(weights,q,second);s0.scale(-1);s0.v+=rinf;
+    std::pair<Diff,Diff> surfaces(const double* q,MetricHVP* prepared=nullptr) const {
+        auto s0=norm(weights,q,prepared?&prepared->norms[0]:nullptr);s0.scale(-1);s0.v+=rinf;
         size_t selected_path=0,selected_bond=0;
         double smallest=std::numeric_limits<double>::infinity();
         for(size_t b=0;b<paths[0].size();++b) {
@@ -132,27 +165,42 @@ struct CV {
             if(largest<smallest){smallest=largest;selected_path=path;selected_bond=b;}
         }
         const auto& x=paths[selected_path][selected_bond];
-        auto s1=norm(x.forming,q,second);s1.scale(-1);s1.v+=x.reference;
-        s1.add(norm(x.breaking,q,second),1);
+        auto s1=norm(x.forming,q,prepared?&prepared->norms[1]:nullptr);s1.scale(-1);s1.v+=x.reference;
+        s1.add(norm(x.breaking,q,prepared?&prepared->norms[2]:nullptr),1);
+        if(prepared) {
+            prepared->count=3;prepared->norms[0].scale=-1;prepared->norms[1].scale=-1;
+            prepared->norms[1].product_surface=true;prepared->norms[2].product_surface=true;
+        }
         return {std::move(s0),std::move(s1)};
     }
-    Diff eval(const double* q,bool second=false) const {
-        if(kind=="norm") return norm(weights,q,second);
-        if(kind=="difference") {auto d=norm(weights,q,second);d.add(norm(other,q,second),-1);return d;}
-        if(kind=="linear") {Diff d(nd,second);d.g=weights;for(Py_ssize_t i=0;i<nd;++i)d.v+=weights[i]*q[i];return d;}
-        if(kind=="surface") {auto s=coordinate->surfaces(q,second);s.first.scale(1-xi);s.first.add(s.second,xi);return std::move(s.first);}
-        auto s=surfaces(q,second);
+    Diff eval(const double* q,MetricHVP* prepared=nullptr) const {
+        if(prepared){prepared->count=0;prepared->kind=0;}
+        if(kind=="norm") {if(prepared)prepared->count=1;return norm(weights,q,prepared?&prepared->norms[0]:nullptr);}
+        if(kind=="difference") {
+            auto d=norm(weights,q,prepared?&prepared->norms[0]:nullptr);
+            d.add(norm(other,q,prepared?&prepared->norms[1]:nullptr),-1);
+            if(prepared){prepared->count=2;prepared->norms[1].scale=-1;}
+            return d;
+        }
+        if(kind=="linear") {Diff d(nd);d.g=weights;for(Py_ssize_t i=0;i<nd;++i)d.v+=weights[i]*q[i];return d;}
+        if(kind=="surface") {
+            auto s=coordinate->surfaces(q,prepared);s.first.scale(1-xi);s.first.add(s.second,xi);
+            if(prepared){prepared->kind=1;prepared->xi=xi;}
+            return std::move(s.first);
+        }
+        auto s=surfaces(q,prepared);
         const Diff& a=s.first;Diff b=a;b.add(s.second,-1);
         if(std::abs(b.v)<1e-10) throw std::runtime_error("RPMDrate xi is singular where s0=s1");
-        Diff out(nd,second);out.v=a.v/b.v;
+        Diff out(nd);out.v=a.v/b.v;
         for(Py_ssize_t i=0;i<nd;++i) out.g[i]=a.g[i]/b.v-a.v*b.g[i]/(b.v*b.v);
-        if(second) for(Py_ssize_t i=0;i<nd;++i) for(Py_ssize_t j=0;j<nd;++j)
-            out.h[i*nd+j]=a.h[i*nd+j]/b.v-(a.g[i]*b.g[j]+b.g[i]*a.g[j]+a.v*b.h[i*nd+j])/(b.v*b.v)
-                +2*a.v*b.g[i]*b.g[j]/(b.v*b.v*b.v);
+        if(prepared) {
+            prepared->kind=2;prepared->a=a.v;prepared->b=b.v;
+            std::copy(a.g.begin(),a.g.end(),prepared->ga.begin());std::copy(b.g.begin(),b.g.end(),prepared->gb.begin());
+        }
         return out;
     }
     Diff ring(const Vec& q,const Vec& centroid,Py_ssize_t beads) const {
-        Diff out(q.size(),false);
+        Diff out(q.size());
         if(!bead_average) {
             auto d=eval(centroid.data());out.v=d.v;
             for(Py_ssize_t b=0;b<beads;++b) for(Py_ssize_t i=0;i<nd;++i) out.g[b*nd+i]=d.g[i]/beads;
@@ -174,19 +222,24 @@ static void centroid(const Vec& q,Vec& c,Py_ssize_t beads,Py_ssize_t nd) {
 }
 struct Bias {
     std::string kind;std::vector<CV> cv;Vec center,k,periods;
+    std::unique_ptr<MetricHVP> metric_hvp;
     Bias(PyObject* d,Py_ssize_t nd): kind(text(field(d,"kind"))),cv(cvs(field(d,"cvs"),nd)) {
         if(kind=="umbrella") {
             center=vector(field(d,"center"),cv.size());k=vector(field(d,"stiffness"),cv.size()*cv.size());
             periods=vector(field(d,"periods"),cv.size());
-        } else if(kind!="flux" || cv.size()!=1 || cv[0].bead_average) throw std::invalid_argument("invalid native bias");
+        } else {
+            if(kind!="flux" || cv.size()!=1 || cv[0].bead_average)throw std::invalid_argument("invalid native bias");
+            metric_hvp=std::make_unique<MetricHVP>(nd);
+        }
     }
     double add(const Vec& q,const Vec& c,Vec& f,const Cayley& integrator,double beta) const {
         const auto P=integrator.beads,nd=integrator.nd;
         if(kind=="flux") {
-            auto d=cv[0].eval(c.data(),true);double z=0;
-            for(Py_ssize_t i=0;i<nd;++i)z+=d.g[i]*d.g[i]/integrator.mass[i/3];
+            auto& h=*metric_hvp;auto d=cv[0].eval(c.data(),&h);double z=0;
+            for(Py_ssize_t i=0;i<nd;++i){z+=d.g[i]*d.g[i]/integrator.mass[i/3];h.direction[i]=d.g[i]/integrator.mass[i/3];}
             if(!(z>1e-30) || !std::isfinite(z))throw std::runtime_error("rate coordinate has zero/invalid mass metric");
-            for(Py_ssize_t i=0;i<nd;++i){double v=0;for(Py_ssize_t j=0;j<nd;++j)v+=d.h[i*nd+j]*d.g[j]/integrator.mass[j/3];v/=beta*z;for(Py_ssize_t b=0;b<P;++b)f[b*nd+i]+=v;}
+            h.apply();
+            for(Py_ssize_t i=0;i<nd;++i){double v=h.hv[i]/(beta*z);for(Py_ssize_t b=0;b<P;++b)f[b*nd+i]+=v;}
             return -P*std::log(std::sqrt(z/(2*pi*beta)))/beta;
         }
         std::vector<Diff> values;Vec delta(cv.size()),derivative(cv.size(),0.);

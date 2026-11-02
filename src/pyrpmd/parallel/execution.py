@@ -1,8 +1,9 @@
 """Independent tasks, persistent bead workers and hierarchical MPI execution.
 
-The MPI path uses one trajectory/window group per B ranks. Every bead result
-belongs to its current collective call; no stale/asynchronous forces are used.
-No world barrier is inserted into an integration step.
+The MPI path uses one trajectory/window group per B bead workers, with optional
+R private LAMMPS ranks per bead worker. Every bead result belongs to its current
+collective call; no stale/asynchronous forces are used. No world barrier is
+inserted into an integration step.
 """
 
 from __future__ import annotations
@@ -44,6 +45,7 @@ class ExecutionPlan:
     trajectory_groups: int
     scheduling: str = "static"
     coordinator_ranks: int = 0
+    pes_ranks: int = 1
 
 
 def execution_plan(config=None):
@@ -75,9 +77,10 @@ def execution_plan(config=None):
         raise ValueError("trajectory batching requires parallel.bead_workers=1")
     threads = _int(c.get("threads_per_rank", c.get("threads", 1)), "threads_per_rank")
     groups = _int(c.get("trajectory_groups", workers), "trajectory_groups")
-    if _int(c.get("pes_ranks", 1), "pes_ranks") != 1:
+    pes_ranks = _int(c.get("pes_ranks", 1), "pes_ranks")
+    if pes_ranks > 1 and (backend != "mpi" or mode == "gpu"):
         raise ValueError(
-            "This executor supports pes_ranks=1; internal MPI PES needs a dedicated adapter"
+            "pes_ranks>1 requires backend='mpi' with serial/bead task mode"
         )
     scheduling = c.get("scheduling", "static")
     if scheduling not in ("static", "dynamic"):
@@ -127,7 +130,7 @@ def execution_plan(config=None):
         mode = "bead" if mode != "gpu" else mode
     return ExecutionPlan(
         backend, mode, workers, beads, threads, devices, per_gpu, groups,
-        scheduling, coordinators,
+        scheduling, coordinators, pes_ranks,
     )
 
 
@@ -295,18 +298,21 @@ class ProcessBeadPotential:
 
 class _MPIBeadPotential:
     def __init__(self, spec, system, context):
-        from pyrpmd.potentials import make_potential
-
         self.comm = context.comm
+        self.engine_comm = context.engine_comm
         self._owner_context = context
         self.identifier = context.next_id
         context.next_id += 1
-        self.metadata = {"provider": "mpi-bead", "workers": self.comm.Get_size()}
+        self.metadata = {"provider": "mpi-bead", "workers": context.plan.bead_workers}
+        if self.engine_comm is not None:
+            self.metadata["pes_ranks"] = self.engine_comm.Get_size()
+            if isinstance(spec, dict) and "communicator" in spec.get("params", {}):
+                raise ValueError("The MPI executor owns the LAMMPS communicator")
         self.comm.bcast(("create", self.identifier, spec, system), root=0)
         local_error = None
         self.local = None
         try:
-            self.local = make_potential(spec, system)
+            self.local = _make_mpi_potential(spec, system, self.engine_comm)
         except Exception as exc:
             local_error = _result_error(exc)
         errors = self.comm.gather(local_error, root=0)
@@ -329,12 +335,17 @@ class _MPIBeadPotential:
         x = np.ascontiguousarray(positions, dtype=np.float64)
         if x.ndim != 3 or x.shape[-1] != 3 or len(x) < 1:
             raise ValueError("PES positions must have shape [B,N,3]")
-        parts = [
-            np.ascontiguousarray(y) for y in np.array_split(x, self.comm.Get_size())
-        ]
+        ranks = 1 if self.engine_comm is None else self.engine_comm.Get_size()
+        parts = [np.ascontiguousarray(y)
+                 for y in np.array_split(x, self.comm.Get_size() // ranks)]
+        # Send each coordinate chunk once; its private engine communicator
+        # broadcasts to the ranks that jointly evaluate it.
+        if ranks > 1:
+            parts = [part if rank == 0 else None
+                     for part in parts for rank in range(ranks)]
         self.comm.bcast(("evaluate", self.identifier), root=0)
-        local = self.comm.scatter(parts, root=0)
-        response = _evaluate_response(self.local, local)
+        local = _scatter_mpi_coordinates(self.comm, parts, self.engine_comm)
+        response = _evaluate_mpi_response(self.local, local, self.engine_comm)
         responses = self.comm.gather(response, root=0)
         errors = [r[1] for r in responses if r[1] is not None]
         if errors:
@@ -373,9 +384,41 @@ def _evaluate_response(provider, x):
         return None, _result_error(exc)
 
 
-def _mpi_service(comm):
+def _make_mpi_potential(spec, system, engine_comm):
+    """Inject a private live communicator only after config distribution.
+
+    Communicators never enter serialized inputs, cache keys or run identity.
+    Each LAMMPS provider duplicates this borrowed communicator for its own
+    lifetime; the executor owns the original until its service has finished.
+    """
     from pyrpmd.potentials import make_potential
 
+    if engine_comm is not None:
+        if not isinstance(spec, dict) or spec.get("provider", spec.get("type")) != "lammps":
+            raise ValueError("pes_ranks>1 requires the LAMMPS provider")
+        spec = copy.deepcopy(spec)
+        params = spec.setdefault("params", {})
+        if "communicator" in params:
+            raise ValueError("The MPI executor owns the LAMMPS communicator")
+        params["communicator"] = engine_comm
+    return make_potential(spec, system)
+
+
+def _scatter_mpi_coordinates(comm, parts, engine_comm):
+    local = comm.scatter(parts, root=0)
+    return local if engine_comm is None else engine_comm.bcast(local, root=0)
+
+
+def _evaluate_mpi_response(provider, x, engine_comm):
+    result, error = _evaluate_response(provider, x)
+    # All engine ranks evaluate collectively, but each bead result is returned
+    # exactly once. Keep errors from every rank for collective failure handling.
+    if engine_comm is not None and engine_comm.Get_rank() != 0:
+        result = None
+    return result, error
+
+
+def _mpi_service(comm, engine_comm=None):
     providers = {}
     while True:
         command = comm.bcast(None, root=0)
@@ -386,13 +429,14 @@ def _mpi_service(comm):
             _, key, spec, system = command
             error = None
             try:
-                providers[key] = make_potential(spec, system)
+                providers[key] = _make_mpi_potential(spec, system, engine_comm)
             except Exception as exc:
                 error = _result_error(exc)
             comm.gather(error, root=0)
         elif op == "evaluate":
-            x = comm.scatter(None, root=0)
-            comm.gather(_evaluate_response(providers.get(command[1]), x), root=0)
+            x = _scatter_mpi_coordinates(comm, None, engine_comm)
+            response = _evaluate_mpi_response(providers.get(command[1]), x, engine_comm)
+            comm.gather(response, root=0)
         elif op == "close":
             provider = providers.pop(command[1], None)
             error = None
@@ -420,16 +464,17 @@ class _Context:
     borrowed: set = field(default_factory=set)
     cleanup: ExitStack = field(default_factory=ExitStack)
     providers: list = field(default_factory=list)
+    engine_comm: Any = None
 
 
 _CONTEXT = None
 
 
 @contextmanager
-def _context(plan, slot, comm=None):
+def _context(plan, slot, comm=None, engine_comm=None):
     global _CONTEXT
     previous = _CONTEXT
-    _CONTEXT = _Context(plan, slot, comm)
+    _CONTEXT = _Context(plan, slot, comm, engine_comm=engine_comm)
     try:
         with _CONTEXT.cleanup:
             yield _CONTEXT
@@ -574,6 +619,7 @@ def make_task_potential(spec, system):
             "mace",
             "nequip",
             "fairchem",
+            "mace-batched", "nequip-batched", "fairchem-batched", "deepmd-batched", "metatomic",
             "openmm",
         ):
             raise ValueError(
@@ -681,10 +727,10 @@ def _close_uncached_mpi_potentials(context):
         raise RuntimeError("MPI PES cleanup failed: " + "; ".join(errors))
 
 
-def _dynamic_worker(function, tasks, plan, slot, group, control):
+def _dynamic_worker(function, tasks, plan, slot, group, control, engine_comm=None):
     # A worker owns its cache for the whole queue, just as a static slot does.
     # The bead service stays alive until _mpi_run sends its final finish command.
-    with _context(plan, slot, group) as context:
+    with _context(plan, slot, group, engine_comm) as context:
         while True:
             index = control.recv(source=0, tag=_TASK_TAG)
             if index is None:
@@ -730,15 +776,17 @@ def _mpi_run(function, tasks, plan):
             "MPI backend requires the optional mpi4py package and an MPI runtime"
         ) from exc
     world = MPI.COMM_WORLD
-    expected = plan.coordinator_ranks + plan.trajectory_groups * plan.bead_workers
+    group_size = plan.bead_workers * plan.pes_ranks
+    expected = plan.coordinator_ranks + plan.trajectory_groups * group_size
     if world.Get_size() != expected:
+        topology = "coordinator_ranks+G*B" + ("*R" if plan.pes_ranks > 1 else "")
         raise ValueError(
             f"MPI world has {world.Get_size()} ranks; expected "
-            f"coordinator_ranks+G*B={expected}"
+            f"{topology}={expected}"
         )
     rank = world.Get_rank()
     worker_rank = rank - plan.coordinator_ranks
-    group_id = worker_rank // plan.bead_workers if worker_rank >= 0 else MPI.UNDEFINED
+    group_id = worker_rank // group_size if worker_rank >= 0 else MPI.UNDEFINED
     device_slot = group_id
     if plan.mode == "gpu":
         # CUDA device IDs are local to each node / CUDA_VISIBLE_DEVICES. Global
@@ -762,19 +810,23 @@ def _mpi_run(function, tasks, plan):
     if len(set(task_counts)) != 1:
         raise ValueError("Every MPI rank must supply the same task list")
     group = world.Split(group_id, rank)
+    engine_comm = None
+    if worker_rank >= 0 and plan.pes_ranks > 1:
+        engine_comm = group.Split(group.Get_rank() // plan.pes_ranks, rank)
     control = world.Dup() if plan.scheduling == "dynamic" else None
     results, error = [], None
     if worker_rank < 0:
-        leaders = [1 + i * plan.bead_workers for i in range(plan.trajectory_groups)]
+        leaders = [plan.coordinator_ranks + i * group_size
+                   for i in range(plan.trajectory_groups)]
         results, errors = _dynamic_dispatch(control, leaders, len(tasks), MPI)
         if errors:
             error = "; ".join(errors)
     elif group.Get_rank() == 0:
         try:
             if control is not None:
-                _dynamic_worker(function, tasks, plan, device_slot, group, control)
+                _dynamic_worker(function, tasks, plan, device_slot, group, control, engine_comm)
             else:
-                with _context(plan, device_slot, group):
+                with _context(plan, device_slot, group, engine_comm):
                     for index in range(group_id, len(tasks), plan.trajectory_groups):
                         results.append((index, function(tasks[index])))
         except Exception as exc:
@@ -783,7 +835,7 @@ def _mpi_run(function, tasks, plan):
             group.bcast(("finish",), root=0)
     else:
         try:
-            _mpi_service(group)
+            _mpi_service(group, engine_comm)
         except Exception as exc:
             error = _result_error(exc)
     all_errors = world.allgather(error)
@@ -793,6 +845,8 @@ def _mpi_run(function, tasks, plan):
     else:
         gathered = world.gather(results if group.Get_rank() == 0 else [], root=0)
     if worker_rank >= 0:
+        if engine_comm is not None:
+            engine_comm.Free()
         group.Free()
     if any(all_errors):
         raise RuntimeError("MPI task failed: " + "; ".join(e for e in all_errors if e))

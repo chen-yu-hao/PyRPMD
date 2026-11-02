@@ -1,0 +1,4 @@
+steps: 100
+centroid / bohr: [[0.45420153 0.         0.        ]]
+ring-Hamiltonian change / hartree: -8.13103137988283e-10
+backend counters: {'native_steps': 100, 'python_steps': 0, 'fallback_reasons': {}}

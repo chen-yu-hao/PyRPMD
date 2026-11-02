@@ -115,6 +115,8 @@ def resolve_sampling(d, runtime, *, selected, materials, native_pimd):
         )
         sampling["dt_au"] = sampling_dt
         default_thermostat = "pile-l" if materials and integrator != "velocity-verlet" else "andersen"
+        if method == "steered":
+            default_thermostat = d.get("steered", {}).get("thermostat", "langevin")
         sampling["thermostat"] = sampling.get("thermostat", default_thermostat)
         if not isinstance(sampling["thermostat"], str):
             raise InputError("sampling.thermostat must be a name such as 'andersen', 'pile-l' or 'nose-hoover-chain'")
@@ -123,12 +125,17 @@ def resolve_sampling(d, runtime, *, selected, materials, native_pimd):
             from .workflows.native_pimd import sampling_splitting
             sampler = sampling_splitting(integrator, "nhc", d.get("barostat", {}).get("mode", "none"))
         expected_sampler = sampler if native_pimd or sampling["thermostat"] == "pile-l" else integrator + "-" + sampling["thermostat"]
+        if method == "steered":
+            expected_sampler = "steered-symmetric"
         from .workflows.sampling import legacy_metadynamics_sampling
-        common_sampler = method in ("umbrella", "opes") or (
+        common_sampler = method in ("umbrella", "opes", "abf", "eabf") or (
             method == "metadynamics" and not legacy_metadynamics_sampling(sampling))
         if native_pimd or not common_sampler:
             sampling["integrator"] = sampling.get("integrator", expected_sampler)
-        if native_pimd:
+        if method == "steered":
+            from .workflows.steered import validate_steered_sampling
+            validate_steered_sampling(d, sampling)
+        elif native_pimd:
             from .native_ensemble import _THERMOSTATS
             if sampling["thermostat"] not in _THERMOSTATS or sampling["thermostat"] in ("none", "trpmd"):
                 raise InputError("native PIMD requires an equilibrium sampling thermostat")
@@ -218,13 +225,14 @@ def resolve_sampling(d, runtime, *, selected, materials, native_pimd):
         sampling["interval_steps"] = sampling["sample_interval"] = _integer(
             interval, "sampling.interval_steps"
         )
-        sampling["andersen_interval"] = _integer(
-            sampling.get(
-                "andersen_interval",
-                sampling.get("thermostat_params", {}).get("interval_steps", 10),
-            ),
-            "sampling.andersen_interval",
-        )
+        if method != "steered":
+            sampling["andersen_interval"] = _integer(
+                sampling.get(
+                    "andersen_interval",
+                    sampling.get("thermostat_params", {}).get("interval_steps", 10),
+                ),
+                "sampling.andersen_interval",
+            )
         sampling["replicas"] = _integer(
             sampling.get("replicas", 4 if task == "diffusion" else 1), "sampling.replicas"
         )

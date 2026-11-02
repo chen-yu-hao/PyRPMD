@@ -133,7 +133,7 @@ class FESPreflightTests(unittest.TestCase):
 
     def test_saved_surface_source_does_not_require_new_umbrella_windows(self):
         with tempfile.TemporaryDirectory() as temporary:
-            source = Path(temporary) / "source"
+            source = (Path(temporary) / "source").resolve()
             run(small_fes(), output=source)
             data = small_fes()
             data["task"] = "surface_rate"

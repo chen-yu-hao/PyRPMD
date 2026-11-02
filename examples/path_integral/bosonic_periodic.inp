@@ -1,0 +1,40 @@
+# Explicit minimum-image approximation; no full winding sum and no NPT.
+# A free-particle smoke example, not a converged Bose-gas calculation.
+task = "pimd"
+temperature = "200000 K"
+beads = 8
+seed = 2082
+
+[system]
+symbols = ["H", "H"]
+masses = [1.0, 1.0]
+geometry = [[0.4, 0.5, 0.6], [1.0, 0.7, 0.4]]
+geometry_unit = "bohr"
+cell = [[4.0, 0.0, 0.0], [0.4, 4.2, 0.0], [0.2, 0.3, 4.4]]
+cell_unit = "bohr"
+pbc = [true, true, true]
+
+[potential]
+provider = "free"
+
+[dynamics]
+integrator = "velocity-verlet"
+timestep = "0.005 au"
+
+[sampling]
+thermostat = "andersen"
+andersen_interval = 10
+equilibration_steps = 500
+production_steps = 2000
+sample_interval = 5
+
+[path_integral]
+method = "bosonic"
+groups = [[0, 1]]
+periodic_mode = "minimum_image"
+block_size = 20
+
+[output]
+directory = "runs/bosonic_periodic"
+trajectory_storage = "memory"
+checkpoint_steps = 250
