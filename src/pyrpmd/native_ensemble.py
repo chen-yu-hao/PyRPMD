@@ -21,6 +21,7 @@ from typing import Any
 
 import numpy as np
 
+from .checkpoint import atomic_savez_uncompressed, load_checkpoint
 from .validation import finite_real, integer_count
 
 _THERMOSTATS = {name: i for i, name in enumerate((
@@ -784,25 +785,21 @@ class NativeEnsemble:
                 raise
 
     def save(self, path: str | Path) -> None:
-        """Atomic NPZ checkpoint; contains no pickle or executable objects."""
+        """Save the common atomic NPZ container with the native v1 payload.
+
+        The numerical state, RNG, native checksum and fingerprint are unchanged.
+        Array data remain uncompressed, as in pre-container native checkpoints.
+        """
         state = self.state()
         metadata = {key: value for key, value in state.items() if key not in _ARRAYS}
-        path = Path(path)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        fd, name = tempfile.mkstemp(prefix=path.name + ".", suffix=".tmp", dir=path.parent)
-        try:
-            with os.fdopen(fd, "wb") as output:
-                np.savez(output, metadata=json.dumps(metadata, sort_keys=True),
-                         **{key: state[key] for key in _ARRAYS})
-                output.flush()
-                os.fsync(output.fileno())
-            os.replace(name, path)
-        finally:
-            if os.path.exists(name):
-                os.unlink(name)
+        atomic_savez_uncompressed(
+            path, kind=_FORMAT, metadata=json.dumps(metadata, sort_keys=True),
+            **{key: state[key] for key in _ARRAYS},
+        )
 
     def load(self, path: str | Path) -> None:
-        with np.load(path, allow_pickle=False) as saved:
+        """Load current containers or an unchanged pre-container native NPZ."""
+        with load_checkpoint(path, expected_kind=_FORMAT) as saved:
             if set(saved.files) != set(_ARRAYS) | {"metadata"}:
                 raise ValueError("invalid native checkpoint files")
             state = json.loads(str(saved["metadata"]))

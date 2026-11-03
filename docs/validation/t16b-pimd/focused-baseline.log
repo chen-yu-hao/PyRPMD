@@ -1,0 +1,10 @@
+........................................................................ [ 20%]
+........................................................................ [ 40%]
+........................................................................ [ 60%]
+........................................................................ [ 80%]
+......................................................................   [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_torch_materials.py:8: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_torch_materials_input.py:10: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_torch_materials_io.py:13: could not import 'torch': No module named 'torch'
+358 passed, 3 skipped in 57.57s

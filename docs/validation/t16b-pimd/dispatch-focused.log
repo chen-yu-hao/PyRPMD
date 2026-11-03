@@ -1,0 +1,5 @@
+........................................................................ [ 81%]
+.............s..                                                         [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_torch_materials_input.py:325: CUDA hardware/runtime unavailable
+87 passed, 1 skipped in 15.19s

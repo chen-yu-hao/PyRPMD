@@ -1,0 +1,73 @@
+# Bias-scaled Hamiltonian replica exchange for one umbrella state. The ladder
+# changes the restraint strength; it is separate from fixed-window REUS.
+task = "fes"
+preset = "pilot"
+temperature = "300 K"
+beads = 4
+seed = 3711
+native = false
+
+[system]
+symbols = ["H"]
+masses = [1.0]
+geometry = [[0.0, 0.0, 0.0]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "builtin"
+name = "double_well"
+params = {height = 0.01, width = 1.0, atom = 0, axis = 0, confinement = 0.2}
+
+[dynamics]
+integrator = "cayley-bcb"
+loop_backend = "python"
+timestep = "0.002 fs"
+
+[sampling]
+thermostat = "pile-l"
+gamma_centroid = "0.05 fs^-1"
+equilibration_steps = 100
+production_steps = 1000
+sample_interval = 10
+replicas = 1
+
+[[cvs]]
+name = "x"
+kind = "cartesian"
+atom = 0
+axis = "x"
+estimator = "centroid"
+unit = "bohr"
+
+[fes]
+method = "umbrella"
+
+[umbrella]
+cvs = ["x"]
+centers = [0.0]
+stiffness = ["0.02 hartree/bohr^2"]
+
+[analysis]
+method = "mbar"
+measure = "cv_density"
+bins = 40
+ranges = [[-2.0, 2.0]]
+bootstrap = 0
+
+[tempering]
+mode = "hamiltonian"
+lambdas = [0.25, 0.5, 1.0]
+target = "bias"
+exchange_interval_steps = 20
+pairing = "odd_even"
+
+[parallel]
+backend = "process"
+trajectory_workers = 3
+trajectory_groups = 3
+bead_workers = 1
+threads_per_rank = 1
+
+[output]
+directory = "runs/tempering-hremd-umbrella"
+checkpoint_steps = 100

@@ -1,0 +1,52 @@
+# Analytic validation model for four-rank parallel tempering. This is not a
+# fitted molecular PES and the short budget is not a physical convergence claim.
+task = "pimd"
+preset = "pilot"
+temperature = "300 K"  # used only as the ordinary job default; the ladder is below
+beads = 8
+seed = 3701
+native = false
+
+[system]
+symbols = ["H"]
+masses = [1.0]
+geometry = [[-1.0, 0.0, 0.0]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "builtin"
+name = "double_well"
+params = {height = 0.01, width = 1.0, atom = 0, axis = 0, confinement = 0.2}
+
+[dynamics]
+integrator = "cayley-bcb"
+loop_backend = "python"
+timestep = "0.002 fs"
+
+[sampling]
+thermostat = "pile-l"
+gamma_centroid = "0.05 fs^-1"
+equilibration_steps = 200
+production_steps = 4000
+sample_interval = 10
+replicas = 1
+
+[tempering]
+mode = "temperature"
+temperatures = ["300 K", "450 K", "700 K", "1400 K"]
+exchange_interval_steps = 20
+pairing = "odd_even"
+seed = 3702
+
+[parallel]
+backend = "mpi"
+mode = "serial"
+trajectory_groups = 4
+trajectory_workers = 4
+bead_workers = 1
+threads_per_rank = 1
+scheduling = "static"
+
+[output]
+directory = "runs/tempering-double-well"
+checkpoint_steps = 200

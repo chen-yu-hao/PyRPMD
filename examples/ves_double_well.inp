@@ -1,0 +1,58 @@
+# Illustrative VES workflow; these short toy-model runs do not establish convergence.
+# beta = 2 / hartree; masses are in electron masses, not atomic mass units.
+task = "fes"
+temperature = "157887.5124020334 K"
+beads = 1
+seed = 124
+
+[system]
+symbols = ["H"]
+masses = [1.0]
+geometry = [[-1.0, 0.0, 0.0]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "builtin"
+name = "double_well"
+[potential.params]
+height = 1.0
+width = 1.0
+confinement = 1.0
+
+[dynamics]
+timestep = "0.03 autime"
+
+[output]
+checkpoint_steps = 1000
+
+[fes]
+method = "ves"
+[[fes.cvs]]
+name = "x"
+kind = "cartesian"
+atom = 0
+axis = "x"
+estimator = "centroid"
+
+[fes.ves]
+cvs = ["x"]
+ranges_au = [[-1.5, 1.5]]
+orders = [4]
+target = "uniform"
+learning_rate_au = 0.05
+pace = 50
+quadrature_order = 32
+wall_stiffness_au = [20.0]
+
+[fes.sampling]
+equilibration_steps = 500
+production_steps = 10000
+sample_interval = 10
+replicas = 3
+thermostat = "pile-l"
+gamma_centroid = "1 autime^-1"
+
+[fes.analysis]
+method = "bias_estimate"
+bins = [40]
+bootstrap = 0

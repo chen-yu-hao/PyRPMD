@@ -134,7 +134,7 @@ def resolve_sampling(d, runtime, *, selected, materials, native_pimd):
         if method == "steered":
             expected_sampler = "steered-symmetric"
         from .workflows.sampling import legacy_metadynamics_sampling
-        common_sampler = method in ("umbrella", "opes", "abf", "eabf") or (
+        common_sampler = method in ("umbrella", "opes", "abf", "eabf", "ves") or (
             method == "metadynamics" and not legacy_metadynamics_sampling(sampling))
         if native_pimd or not common_sampler:
             sampling["integrator"] = sampling.get("integrator", expected_sampler)

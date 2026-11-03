@@ -1,0 +1,239 @@
+T24 VES validation evidence (2026-11-03)
+======================================
+
+Scope
+-----
+All models are synthetic, in atomic units, with beta = 1 hartree^-1 and P = 1
+for the MD checks. No molecular, bead, timestep, basis-resolution or general
+physical convergence is claimed. Production FESResult.physical_converged stays
+false. The stochastic optimizer checks and actual MD checks are separate.
+
+Models on [-1.5,1.5]^D
+---------------------
+1D: F(x) = (x^2 - 1)^2 + 0.2*x.
+2D: F(x,y) = (x^2 + 1.4*y^2)/2 + 0.35*x*y + 0.2*x - 0.1*y.
+The 2D model includes an explicit mixed term. Unobserved Cartesian directions
+in the single-atom MD model have independent harmonic confinement.
+
+References are Gauss-Legendre integrals of probability within each histogram
+bin, divided by its volume. The error is computed in the same gauge as the
+MBAR estimate. Order-8 versus order-5 quadrature differences are recorded in
+reference.json. Umbrella configurations are independent continuous rejection
+draws from each exact umbrella ensemble, followed by the existing PyRPMD
+reconstruct_fes/MBAR implementation and 24 bootstrap draws. They are not draws
+from a discretized grid.
+
+Stochastic optimization checks
+------------------------------
+Six independently optimized VES histories per dimension/target; each uses
+300 iterations x 64 actual stochastic observations = 19,200 observations.
+At every coefficient block, exact continuous rejection sampling generates
+configurations under the current VES bias. A grid plus a rigorous derivative
+bound supplies the rejection envelope; the samples themselves are continuous.
+Samples pass through VESBias.observe. No true moments or true coefficients are
+injected. Learning rate = 3 hartree, gamma = 4, target update every 10 optimizer
+iterations, quadrature order = 32, Legendre degrees [4] or [2,2].
+
+Fixed regression criteria were RMSE below 0.1 kBT, at least fivefold improvement
+over a zero-bias estimate, and a 99% simultaneous Bonferroni Student-t band
+using five degrees of freedom (six independent histories). The wider finite-
+replica band cannot conceal a failure to learn because of the separate RMSE
+and improvement requirements. Seeds were not changed during tuning.
+
+Model/target           VES-exact RMSE   Max replica SEM   VES-MBAR max combined SEM
+1D uniform             0.009920572      3.239086          1.269801
+1D well_tempered       0.008851482      3.032068          1.412825
+2D uniform             0.005856662      4.297645          2.114507
+2D well_tempered       0.006028644      1.167550          2.125037
+
+All RMSE values are in hartree (= kBT for these toy models). There is support
+in every bin; the gauge bin is excluded from standardized-error comparisons,
+leaving 19/20 bins in 1D and 99/100 in 2D. The final RMSE is 0.53--1.20% of the
+zero-bias error. The earlier 200-iteration/four-history pilot, including its
+large near-gauge standardized error in 2D, is retained in reference.json.
+
+Actual public-workflow MD checks
+-------------------------------
+Both cases use the public runner, six independent replicas, 1,000 equilibration
+steps and 30,000 production steps per replica, dt = 0.04 atomic time units,
+PILE-L centroid friction = 1 atomic frequency unit, VES learning rate = 1
+hartree, pace = 100, walls = 20 hartree/bohr^2. The bias is frozen at production
+step 10,000; 1,000 further steps are discarded for fixed-bias relaxation. Each
+replica retains 3,800 frozen samples at interval 5. Reweighting uses beta*V,
+including the walls, and reports the common supported region.
+
+Model/target           VES-exact RMSE   Max replica SEM   VES-MBAR max combined SEM
+1D uniform             0.098103681      2.414758          1.607420
+2D well_tempered       0.127165007      2.286214          2.173162
+
+The 1D comparison uses all 12 bins (11 after excluding the gauge). The 2D
+comparison uses 62/64 bins after excluding one unsupported bin and the gauge.
+Exact finished-run resume and saved-state reanalysis reproduce the FES arrays
+bit for bit for both cases. This is separate from the injected-interruption
+unit tests in tests/test_ves_workflow.py.
+
+Runtime context
+---------------
+Linux x86_64, Python 3.12.14; the environment reported 9 logical CPUs but did not
+expose a CPU model. OMP_NUM_THREADS=1 and OPENBLAS_NUM_THREADS=1 throughout.
+MD uses two trajectory-worker processes, one thread each. The MD sampling
+times were 389.071 seconds (1D, 478.061 aggregate steps/second) and 301.372
+seconds (2D, 617.178 aggregate steps/second), including checkpoint publication.
+Full test suites and other validation jobs ran concurrently. These timings are
+indicative shared-environment measurements, not isolated performance claims.
+
+Commands actually used
+----------------------
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 .venv/bin/python examples/ves_validation.py --output docs/validation/t24-ves/reference.json
+
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 .venv/bin/python examples/ves_validation.py --md-only --output ../t24-md-evidence.json --md-directory ../t24-md-production
+
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 .venv/bin/python -m pytest -q tests/test_ves_reference.py -k 'potential or metadata'
+
+Focused final test output:
+......                                                                   [100%]
+6 passed, 4 deselected in 12.27s
+
+Source and artifact provenance
+------------------------------
+The exact MD factory/driver was preserved in commit 822fdb664110393d0ac0b9c2c885491bb0aa46d0 at
+examples/ves_validation.py, SHA256:
+8ee2538583e9fa65aaa25ae0ca738ce210a5a9739a9a8b79d5875558aba5ba28
+
+After all MD and resume checks completed, only explicit output grid/gauge
+metadata and an example-only guard rejecting systems other than one atom were
+added. The positive single-atom potential and sampling algorithms are unchanged.
+The two original FES array-file hashes, raw report hashes and postprocessing
+details are recorded in molecular_dynamics.json. Exact edges and gauges were
+added to the saved evidence without changing numerical estimates or errors.
+MD checkpoints are not part of this evidence directory.
+
+Files
+-----
+reference.json / reference.log: complete stochastic estimates, uncertainties,
+grids, seeds/protocol, pilot summary and machine-readable comparison metrics.
+molecular_dynamics.json / molecular_dynamics.log: actual workflow MD metrics,
+uncertainty arrays, support masks, timings and source/output hashes.
+stochastic_validation.png / stochastic_validation.pdf: visual comparison of
+the stochastic optimizer experiments, explicitly labelled as non-MD evidence.
+example-final-tests.log: focused post-metadata/shape-guard verification.
+
+Reproduce the complete scientific checks with tests/test_ves_reference.py.
+The plotting script examples/plot_ves_validation.py reads saved evidence and
+does not rerun simulations. Full-suite, baseline, workflow and documentation
+verification are reported by the main T24 delivery report.
+
+Supplement: explicit saved-state recomputation
+---------------------------------------------
+The original driver called analyze_run(output) without recompute=True. Its
+default reads the already-written result; that call alone did not establish
+explicit recomputation. After the MD campaigns and completed-run resume checks,
+both existing run directories were therefore checked again with
+analyze_run(output, recompute=True), using their saved samples and optimizer
+state. No MD trajectory was rerun.
+
+Before each call, free_energy, mask, uncertainty and every edges array were
+copied. Every array after explicit recomputation was elementwise and bytewise
+identical, including dtype and NaN locations. Both method fields remained ves,
+and converged and physical_converged remained false. In this check the entire
+fes.npz archive SHA256 also remained unchanged for each case. The clean output
+and per-array/archive hashes are in explicit-recompute.log, with corresponding
+provenance added to molecular_dynamics.json. The original MD source commit and
+SHA256 fields were preserved without alteration.
+
+The driver now explicitly passes recompute=True and its adjacent comment says
+so. This is a validation-only correction; it changes no sampling or estimator
+algorithm. The completed check preserves the existing MD provenance and
+records the supplemental verification separately.
+
+Minimal reproducible comparison command (after creating the MD runs above):
+
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 .venv/bin/python - <<'PY'
+from pathlib import Path
+import numpy as np
+from pyrpmd.analysis.fes_result import FESResult
+from pyrpmd.runner import analyze_run
+
+def arrays(result):
+    return {"free_energy": result.free_energy.copy(),
+            "mask": result.mask.copy(),
+            "uncertainty": result.uncertainty.copy(),
+            **{f"edges_{axis}": edge.copy()
+               for axis, edge in enumerate(result.edges)}}
+
+for name in ("1d-uniform", "2d-well_tempered"):
+    output = Path("../t24-md-production") / name
+    before = arrays(FESResult.read(output))
+    summary = analyze_run(output, recompute=True)
+    after = arrays(FESResult.read(output))
+    assert before.keys() == after.keys()
+    for key in before:
+        np.testing.assert_array_equal(before[key], after[key])
+        assert before[key].dtype == after[key].dtype
+        assert before[key].tobytes() == after[key].tobytes()
+    assert summary["method"] == "ves"
+    assert summary["converged"] is False
+    assert summary["physical_converged"] is False
+    print(name, "explicit recompute: all arrays byte-identical")
+PY
+
+Completed supplemental result:
+2 cases passed: free_energy, mask, uncertainty and every grid edge are byte-identical; method=ves; physical_converged=False.
+
+Final regression and integration gates (2026-11-03 UTC)
+-------------------------------------------------------
+Implementation commit: 06f23916a3d80b6b7dd1d779463c896eb128feba.
+Baseline commit: ceee59cd5f702165b56c5e541a503d8810fb9111.
+The subsequent validation-only driver correction is described above; no VES
+optimizer, dynamics, checkpoint or estimator implementation changed.
+
+Both full suites used the same Python 3.12.14 virtual environment and compiled
+native extensions, with OMP_NUM_THREADS=1 and OPENBLAS_NUM_THREADS=1. The
+baseline used its isolated worktree via an explicit PYTHONPATH.
+
+Baseline command, from ../PyRPMD-baseline:
+PYTHONPATH=/workspace/scratch/490be0542786/PyRPMD-baseline/src OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 /workspace/scratch/490be0542786/PyRPMD/.venv/bin/python -m pytest -q
+
+VES command, from the PyRPMD worktree:
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 .venv/bin/python -m pytest -q
+
+Exact summaries:
+Baseline: 1 failed, 10544 passed, 391 skipped, 48 warnings, 493 subtests passed in 2687.72s (0:44:47)
+With VES: 1 failed, 10694 passed, 391 skipped, 48 warnings, 493 subtests passed in 1940.64s (0:32:20)
+
+The pass count increased by exactly 150. The failed node, skips, warnings and
+passed subtest counts are unchanged; the full failure traceback is identical.
+The only failed node is:
+tests/test_ipi_clients.py::test_existing_unix_address_is_not_removed_on_bind_failure
+
+In both worktrees, creating socket.socket(AF_UNIX, SOCK_STREAM) raises
+PermissionError: [Errno 1] Operation not permitted before bind. Separate
+single-test reproductions also fail identically (baseline 8.45 s; VES 9.03 s).
+This is an existing runtime socket restriction, not a VES regression. Thus
+the complete suite is not entirely green in this environment; no new failures
+were introduced. Optional external-engine and framework tests remain skipped
+when their dependencies are absent.
+
+Complete outputs: full-baseline.log and full-ves.log. Only trailing whitespace
+was normalized for storage; messages and summary lines were preserved.
+Original baseline log SHA256: aa3dff544dc280649b012abb60e08d00d9debd382b3959735c6c17ffee473394
+Stored baseline log SHA256:   77fc51ace2df73d6150b091b755bc95106b0d85bc37a505b90fa51b58b84565d
+Original VES log SHA256:      cc60ac7eb0bb888617cb9bec1e36ba62a5164b50c4f5bb2450eb9b28ea462fdc
+Stored VES log SHA256:        93a50867e0cc7b41d9b2b821f6214103ce962979cfc47e1038cb7a70d708c3da
+
+Additional completed gates:
+- Before edits, related FES baseline:
+  OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 .venv/bin/python -m pytest -q tests/test_fes_entry.py tests/test_fes_unification.py tests/test_fes_result.py tests/test_opes.py tests/test_abf_workflow.py tests/test_cv_fes.py tests/test_fes_extension_operators.py
+  164 passed, 4 warnings, 10 subtests passed in 36.12s
+- Strict documentation build:
+  OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 .venv/bin/python -m sphinx -W --keep-going -b html docs docs/_build/html
+  build succeeded.
+- Both complete TOML examples were run through pyrpmd run, resume and
+  analyze --recompute; their FES arrays and masks were exactly preserved.
+- Source-distribution inspection includes all added implementation, tests,
+  examples and validation evidence; the source package needs no new manifest
+  rule.
+- git diff --check passes.
+
+Full-suite timings reflect concurrent work in a shared environment; their
+difference is not a performance comparison.

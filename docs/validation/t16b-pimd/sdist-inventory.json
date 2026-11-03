@@ -1,0 +1,175 @@
+{
+  "all_archive_payload_bytes_match_checkout": true,
+  "all_present": true,
+  "baseline_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+  "build_command": "../t16b-venv/bin/python setup.py sdist --dist-dir ../t16b-dist",
+  "checked_changed_paths": 27,
+  "entries": [
+    {
+      "bytes": 3722,
+      "path": "docs/conf.py",
+      "present": true,
+      "sha256": "9a89a280d6a47ffe686a3df3dd199f50324e766ee8ec647d5e7c0bd14d97a11a"
+    },
+    {
+      "bytes": 14688,
+      "path": "docs/pimd-engine-convergence.md",
+      "present": true,
+      "sha256": "0283638912d2050b87b3b9eab506668a0b34453450d57df7d4e240b6ce3426ff"
+    },
+    {
+      "bytes": 2286,
+      "path": "docs/validation/t16b-pimd/baseline-ipi-recheck.log",
+      "present": true,
+      "sha256": "387284a4855e22041a1b4c4b2ee416cd565ee815bbae58076dd36f6050d680d8"
+    },
+    {
+      "bytes": 3971,
+      "path": "docs/validation/t16b-pimd/checkpoint-storage.json",
+      "present": true,
+      "sha256": "788143029d4bd342e3c4aa39da0801da1c2f6bd078c1d9c88f1c47d5417ee42a"
+    },
+    {
+      "bytes": 5277,
+      "path": "docs/validation/t16b-pimd/cross_version_resume.json",
+      "present": true,
+      "sha256": "c3048222d151a9dfe69844481c47801a958073f6bc9da7f93c7cb926908d90a1"
+    },
+    {
+      "bytes": 14148,
+      "path": "docs/validation/t16b-pimd/cross_version_resume.py",
+      "present": true,
+      "sha256": "6392a34c3f91f7e989cf7770cd8e532000fc2a9961ff9c2f712939dd7a667879"
+    },
+    {
+      "bytes": 359,
+      "path": "docs/validation/t16b-pimd/dispatch-focused.log",
+      "present": true,
+      "sha256": "ea47d901378e0d98529f7e9014e7c1e9a544ea35001cb170245c9afa617f0662"
+    },
+    {
+      "bytes": 8401,
+      "path": "docs/validation/t16b-pimd/docs-build.log",
+      "present": true,
+      "sha256": "ef55742d7065e371b7fb7bea6bc3a6005ac8248b7d9bcec0dd28c0627d355e62"
+    },
+    {
+      "bytes": 809,
+      "path": "docs/validation/t16b-pimd/focused-baseline.log",
+      "present": true,
+      "sha256": "0f275dd97f3dc369707dbd135a342d755275219bd529db616347233743d6e876"
+    },
+    {
+      "bytes": 44895,
+      "path": "docs/validation/t16b-pimd/full-baseline.log",
+      "present": true,
+      "sha256": "1de305a9284621b1b4507ea4da87c7169a27571b890e2c57278df8b6aefe3b1b"
+    },
+    {
+      "bytes": 44805,
+      "path": "docs/validation/t16b-pimd/full-current.log",
+      "present": true,
+      "sha256": "3f1a14c90b11778d2cdaa4b6509cee39297d9175ae4f6b2acae1d86ce01809ad"
+    },
+    {
+      "bytes": 341,
+      "path": "docs/validation/t16b-pimd/integration-focused.log",
+      "present": true,
+      "sha256": "2ab19188a80181436415750cc932b0bc5841de8f5c8efd210ae391567e05a88b"
+    },
+    {
+      "note": "The final archive rebuild checks this record byte-for-byte too; its own digest is omitted to avoid a circular hash.",
+      "path": "docs/validation/t16b-pimd/sdist-inventory.json",
+      "present": true,
+      "self_record": true
+    },
+    {
+      "bytes": 360,
+      "path": "docs/validation/t16b-pimd/torch-baseline.log",
+      "present": true,
+      "sha256": "0434f9710a9c2a890fd5924645ac30b9c9424718ceff9bd664b518066c331581"
+    },
+    {
+      "bytes": 7671,
+      "path": "docs/validation/t16b-pimd/validation.json",
+      "present": true,
+      "sha256": "5c00a1c786d26abf52eebebac8e6f80b206515569aab97ccaddecf96679ab547"
+    },
+    {
+      "bytes": 7256,
+      "path": "examples/ensembles/checkpoint_storage_benchmark.py",
+      "present": true,
+      "sha256": "3674e956556ef3a237f66eb63edbb009561fcdebd9851ff150621ec46176415e"
+    },
+    {
+      "bytes": 10738,
+      "path": "src/pyrpmd/checkpoint.py",
+      "present": true,
+      "sha256": "6f7d1172bb81bf9aa42ae2e6e61fe233b0b998c49d188d74d46365ebb21d6b59"
+    },
+    {
+      "bytes": 54375,
+      "path": "src/pyrpmd/native_ensemble.py",
+      "present": true,
+      "sha256": "def881238502e5fbcc99021ea0cee22706b919bf62517a63c7ffc050eced80a6"
+    },
+    {
+      "bytes": 17241,
+      "path": "src/pyrpmd/pimd_checkpoint.py",
+      "present": true,
+      "sha256": "f4c036a5a5b0cd42be1227d092d0c5184de1b7e058a38c146af24627353e6d91"
+    },
+    {
+      "bytes": 44830,
+      "path": "src/pyrpmd/runner.py",
+      "present": true,
+      "sha256": "38c49344868b3ba4f385ebe7c7eb3beb661c9e790642a1b9bff5e52a1b09e709"
+    },
+    {
+      "bytes": 56029,
+      "path": "src/pyrpmd/workflows/materials.py",
+      "present": true,
+      "sha256": "6aa44901786ad2cde9870cc690c5566a57e7d1e850ea6b1d300eedad110f3611"
+    },
+    {
+      "bytes": 22977,
+      "path": "src/pyrpmd/workflows/native_pimd.py",
+      "present": true,
+      "sha256": "d5ccd91038c2dfac55b5bece623ec56762da5da2f9affe1e5930d60657e6f44e"
+    },
+    {
+      "bytes": 5003,
+      "path": "src/pyrpmd/workflows/pimd.py",
+      "present": true,
+      "sha256": "ce4f91bd2153897d1b59a38e618b51eb36837626d2ecf2a0784be6c3ece742ac"
+    },
+    {
+      "bytes": 27479,
+      "path": "src/pyrpmd/workflows/torch_materials.py",
+      "present": true,
+      "sha256": "cd6bc4d8a06af777b2dff53cdcefe97b5c31c04b4d5572e83318b212059dae76"
+    },
+    {
+      "bytes": 6605,
+      "path": "tests/test_native_checkpoint_container.py",
+      "present": true,
+      "sha256": "ae98485eca70cbbb143af51defb285e3e39b792ada07919a320d0a51126b33b6"
+    },
+    {
+      "bytes": 15327,
+      "path": "tests/test_pimd_checkpoint_compat.py",
+      "present": true,
+      "sha256": "40364e23f9044bc408ef39848edea3c82d9f6f4512fa6f22b716da6a85b56844"
+    },
+    {
+      "bytes": 8352,
+      "path": "tests/test_pimd_engine_dispatch.py",
+      "present": true,
+      "sha256": "3ff8ce06f3deda58a1c98d10883632cd87f20d8766febf01d0d032af686c8d3d"
+    }
+  ],
+  "schema": "t16b.sdist-inventory.v1",
+  "source_archive": "pyrpmd-0.2.0.tar.gz",
+  "status": "passed",
+  "verification": "Read every changed/new member with tarfile.extractfile and compare with Path.read_bytes; rebuild after recording evidence and repeat this byte comparison for the final archive."
+}

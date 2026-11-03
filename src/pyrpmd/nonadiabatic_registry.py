@@ -4,8 +4,8 @@ import numpy as np
 from .dynamics import State
 from .parallel import execution_plan
 
-METHODS = frozenset(("nrpmd", "sm-nrpmd", "rp-mash", "rpsh", "rpsh-ca",
-                     "rpsh-ba", "rpsh-dm", "soc-rpsh", "iesh", "multistate-mash"))
+METHODS = frozenset(("nrpmd", "sm-nrpmd", "rp-mash", "rp-mash-ba", "rpsh", "rpsh-ca",
+                     "rpsh-ba", "rpsh-dm", "soc-rpsh", "iesh", "rp-iesh", "multistate-mash"))
 EXTENDED_METHODS = METHODS - {"nrpmd", "rpsh"}
 
 
@@ -40,7 +40,7 @@ def make_dynamics(config, system, rng, *, potential=None):
         if method not in METHODS:
             raise ValueError("unsupported nonadiabatic method")
         from .iesh import NewnsAndersonModel
-        if isinstance(potential, NewnsAndersonModel) and method != "iesh":
+        if isinstance(potential, NewnsAndersonModel) and method not in {"iesh", "rp-iesh"}:
             raise ValueError("newns_anderson requires IESH to include its separate bare nuclear potential")
         common = dict(native=options.get("native", config.get("native", True)),
                       threads=execution_plan(config["parallel"]).threads)
@@ -52,14 +52,24 @@ def make_dynamics(config, system, rng, *, potential=None):
                 raise ValueError("multistate-mash requires integrator='adaptive-dop853'")
             return MultistateMASHDynamics(*args,seed=rng,**common,**{
                 k:options[k] for k in ("rtol","atol","max_step","max_events","gap_tolerance") if k in options})
-        if method == "iesh":
+        if method in {"iesh", "rp-iesh"}:
             from .iesh import IESHDynamics
-            return IESHDynamics(*args,seed=rng,**common,**{
+            cls = IESHDynamics
+            if method == "rp-iesh":
+                from .rp_iesh import RPIESHDynamics
+                cls = RPIESHDynamics
+            return cls(*args,seed=rng,**common,**{
                 k:options[k] for k in ("integrator","nelectrons","electronic_substeps",
                                        "gap_tolerance","max_hop_probability") if k in options})
         if method == "rp-mash":
             from .rp_mash import RPMASHDynamics
             return RPMASHDynamics(*args,seed=rng,**common,**{
+                k:options[k] for k in ("rtol","atol","max_step","max_events","gap_tolerance") if k in options})
+        if method == "rp-mash-ba":
+            from .rp_mash_ba import RPMASHBADynamics
+            if options["integrator"] != "adaptive-dop853":
+                raise ValueError("rp-mash-ba requires integrator='adaptive-dop853'")
+            return RPMASHBADynamics(*args,seed=rng,**common,**{
                 k:options[k] for k in ("rtol","atol","max_step","max_events","gap_tolerance") if k in options})
         common["integrator"] = options["integrator"]
         if method in ("nrpmd", "sm-nrpmd"):
@@ -97,7 +107,7 @@ def initialize_state(config, system, dynamics, nuclear_rng, electronic_rng):
             coordinates=initial["coordinates"],centers=initial["centers"],
             centroid_momenta=initial["centroid_momenta"],count=1,seed=nuclear_rng)[0]
     method = config["method"]
-    if method == "iesh":
+    if method in {"iesh", "rp-iesh"}:
         return dynamics.initialize(nuclear,occupied=initial["occupied"])
     if method == "multistate-mash":
         return dynamics.initialize(nuclear,initial["active_surface"],rng=electronic_rng)
@@ -106,7 +116,7 @@ def initialize_state(config, system, dynamics, nuclear_rng, electronic_rng):
         return NRPMDState.from_nuclear(nuclear,dynamics.nstates,initial["initial_state"],electronic_rng)
     if method == "sm-nrpmd":
         return dynamics.initialize(nuclear,initial_state=initial["initial_state"],rng=electronic_rng)
-    if method == "rp-mash":
+    if method in ("rp-mash", "rp-mash-ba"):
         return dynamics.initialize(nuclear,active_surface=initial["active_surface"],
                                    sampling="population",rng=electronic_rng)
     return dynamics.initialize(nuclear,active_surface=initial["active_surface"])
