@@ -14,6 +14,7 @@ _WORKFLOWS = {
     "abf": ("abf", "run_abf", "reanalyze_abf", "validate_abf"),
     "eabf": ("abf", "run_abf", "reanalyze_abf", "validate_abf"),
     "steered": ("steered", "run_steered", "reanalyze_steered", "validate_steered"),
+    "ves": ("ves", "run_ves", "reanalyze_ves", "validate_ves"),
 }
 
 

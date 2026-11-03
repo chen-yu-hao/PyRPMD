@@ -1,0 +1,68 @@
+# Illustrative two-CV VES workflow with a frozen reweighting tail.
+# Extend each stage and compare independent histories for quantitative use.
+task = "fes"
+temperature = "157887.5124020334 K"
+beads = 1
+seed = 125
+
+[system]
+symbols = ["H"]
+masses = [1.0]
+geometry = [[-1.0, 0.0, 0.0]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "builtin"
+name = "double_well"
+[potential.params]
+height = 1.0
+width = 1.0
+confinement = 1.0
+
+[dynamics]
+timestep = "0.03 autime"
+
+[output]
+checkpoint_steps = 1000
+
+[fes]
+method = "ves"
+[[fes.cvs]]
+name = "x"
+kind = "cartesian"
+atom = 0
+axis = "x"
+estimator = "centroid"
+[[fes.cvs]]
+name = "y"
+kind = "cartesian"
+atom = 0
+axis = "y"
+estimator = "centroid"
+
+[fes.ves]
+cvs = ["x", "y"]
+ranges_au = [[-1.5, 1.5], [-1.5, 1.5]]
+orders = [4, 2]
+target = "well_tempered"
+bias_factor = 4.0
+learning_rate_au = 0.05
+pace = 50
+target_update_interval = 10
+quadrature_order = 32
+wall_stiffness_au = [20.0, 20.0]
+freeze_after_steps = 5000
+freeze_equilibration_steps = 500
+
+[fes.sampling]
+equilibration_steps = 500
+production_steps = 10000
+sample_interval = 10
+replicas = 3
+thermostat = "pile-l"
+gamma_centroid = "1 autime^-1"
+
+[fes.analysis]
+method = "reweighted_histogram"
+bins = [16, 16]
+bootstrap = 0

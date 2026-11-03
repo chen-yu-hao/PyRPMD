@@ -1003,3 +1003,205 @@ mlcolvar
   Theorems to Understand and Correct Errors in Equilibrium and Nonequilibrium
   Simulations of Discrete Langevin Dynamics*, PRX **3**, 011007 (2013),
   [doi:10.1103/PhysRevX.3.011007](https://doi.org/10.1103/PhysRevX.3.011007).
+
+## Variationally enhanced sampling (VES)
+
+`task="fes"` with `[fes] method="ves"` optimizes a bias on one or two
+nonperiodic **centroid** CV components. This is a native PyRPMD workflow; it
+does not extend the external PLUMED bridge described above. It writes the
+common `FESResult` files and supports the usual `run`, `resume`, and
+`analyze --recompute` commands.
+
+The current workflow requires a nonperiodic, unconstrained system with all
+atoms mobile and independent selected CV gradients at the starting geometry.
+Barostats, alternate path-integral methods, replica exchange,
+and adaptive umbrella placement are not combined with VES. Use
+`dynamics.loop_backend="auto"` or `"python"`; an explicitly forced native
+loop is rejected because the adaptive VES updates run in Python.
+
+```toml
+[fes]
+method = "ves"
+
+[[fes.cvs]]
+name = "x"
+kind = "cartesian"
+atom = 0
+axis = "x"
+estimator = "centroid"
+
+[fes.ves]
+cvs = ["x"]
+ranges_au = [[-1.5, 1.5]]
+orders = [4]
+target = "uniform"
+learning_rate_au = 0.05
+pace = 50
+quadrature_order = 32
+wall_stiffness_au = [20.0]
+
+[fes.sampling]
+equilibration_steps = 500
+production_steps = 10000
+sample_interval = 10
+replicas = 3
+thermostat = "pile-l"
+gamma_centroid = "1 autime^-1"
+
+[fes.analysis]
+method = "bias_estimate"
+bins = [40]
+bootstrap = 0
+```
+
+The complete illustrative inputs are
+[`ves_double_well.inp`](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/ves_double_well.inp)
+and
+[`ves_well_tempered_2d.inp`](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/ves_well_tempered_2d.inp).
+They use a toy model, electron-mass units, and an artificial temperature for
+short runs; their durations are examples of the workflow, not a convergence
+recommendation for molecular simulations.
+
+### Basis, target, and optimizer
+
+The bias is a tensor-product Legendre expansion on `ranges_au`, with maximum
+degree `orders[d]` along each selected CV component. Mixed products are
+included in two dimensions. The all-constant product is omitted because a
+constant bias cannot change the sampled distribution. All `_au` fields use
+atomic units: CV bounds use the CV's canonical units, `learning_rate_au` is in
+hartree, and a wall stiffness is in hartree per squared CV unit.
+
+For basis functions `f_i` and coefficients `alpha_i`, VES minimizes the
+Valsson--Parrinello functional by matching biased-ensemble basis averages to
+those of the target distribution:
+
+```{math}
+V(s;\alpha)=\sum_i\alpha_i f_i(s),\qquad
+g_i=\langle f_i\rangle_p-\langle f_i\rangle_V,\qquad
+H_{ij}=\beta\operatorname{Cov}_V(f_i,f_j).
+```
+
+The workflow uses averaged stochastic gradient descent with the full
+covariance Hessian. It evolves instantaneous optimizer coefficients but applies
+their running average to the dynamics. `pace` counts production MD steps per
+coefficient update; `sample_interval` controls the saved CV trace, not the
+optimizer's observation frequency. The target moments use tensor-product
+Gauss--Legendre integration with `quadrature_order` points per axis. Both basis
+order and quadrature order need a resolution study for a new system.
+
+Defaults are `orders=4`, `pace=100`, `learning_rate_au=0.5/beta`,
+`quadrature_order=32`, and `target_update_interval=100`. The quadrature order
+must exceed the polynomial order on each axis. At most 255 nonconstant basis
+functions are supported; output grids are evaluated in bounded chunks.
+
+With `target="uniform"`, the target is constant within the specified box and
+the variational estimate is `F = -V + constant`. For a well-tempered target,
+replace the target setting and supply its controls:
+
+```toml
+# In [fes.ves]:
+target = "well_tempered"
+bias_factor = 4.0
+target_update_interval = 10
+```
+
+`bias_factor` must be greater than one. `target_update_interval` counts
+coefficient updates, not MD steps. The target starts uniform and is updated
+from the current bias and the **previous** target:
+
+```{math}
+F_{m+1}(s)=-V_{m+1}(s)-\beta^{-1}\log p_m(s),\qquad
+p_{m+1}(s)\propto\exp[-\beta F_{m+1}(s)/\gamma].
+```
+
+The relation `F = -gamma/(gamma-1) * V + constant` describes the self-consistent
+limit. A finite optimization stage is not assumed to have reached that limit.
+Target normalization is evaluated in the log domain.
+
+### Finite domain and physical interpretation
+
+The requested target and optimizer moments are conditional on being inside
+the CV box. Observations outside it are excluded from the optimization and
+counted explicitly in diagnostics; they are not clipped into edge bins or
+silently added to the target moments. Harmonic walls outside each interval
+provide confinement. Their stiffness remains part of the run identity.
+The VES wall energy is `W = 0.5 * sum_d(k[d] * delta[d]**2)`, with `delta`
+the signed distance outside each interval and zero inside it.
+
+For force evaluation outside an interval, each one-dimensional basis function
+uses the bounded tangent continuation
+`L(b) + L'(b) * d / (1 + abs(d))`, where `b` is the nearest boundary and `d`
+is the displacement in the mapped Legendre coordinate. This continuation
+matches the value and first derivative at the boundary. It avoids uncontrolled
+polynomial extrapolation; it does not turn an excursion into an in-domain
+sample. The wall and continuation forces act on the centroid with the same
+ring-polymer scaling as the other native FES biases.
+
+This finite-box formulation estimates the conditional CV density in the
+chosen region. A finite basis can only reproduce the shapes it represents.
+Small optimization gradients therefore do not establish complete mixing,
+adequate basis resolution, or a converged physical free energy.
+
+### Frozen production, output, and continuation
+
+`bias_estimate` is the default analysis. It reconstructs the finite-stage
+variational surface from the saved coefficients and target. For a quantitative
+check independent of that variational reconstruction, reserve a stationary
+production tail and reweight its histogram:
+
+```toml
+# In [fes.ves]:
+freeze_after_steps = 5000
+freeze_equilibration_steps = 500
+
+# In [fes.analysis]:
+method = "reweighted_histogram"
+bins = [16, 16]  # For the two-CV example.
+bootstrap = 0
+```
+
+Freezing stops both coefficient and target updates. After the additional
+frozen equilibration interval, reweighting uses only samples generated by that
+fixed bias. Adaptive samples are not treated as samples from a stationary
+ensemble. The frozen-tail estimator includes bin-volume normalization and
+masks unsupported bins. Inspect coverage, weight concentration, independent
+histories, and timestep/basis/domain dependence before interpreting an
+agreement with a reference as physical convergence.
+
+The usual common FES uncertainty fields are retained. Independent replicas
+provide a descriptive spread of reconstructed surfaces; a single history does
+not provide a calibrated FES uncertainty. Numerical optimizer diagnostics do
+not set `physical_converged=true`.
+
+Atomic checkpoints preserve coordinates, momenta, the thermostat and RNG state,
+instantaneous and averaged coefficients, partial moment accumulators, the
+optimization clock, the dynamic target, and frozen-tail statistics. Changing
+scientific VES settings invalidates continuation; analysis settings can be
+recomputed from the saved sampling state.
+
+```bash
+pyrpmd run examples/ves_double_well.inp --output runs/ves
+pyrpmd resume runs/ves
+pyrpmd analyze runs/ves --recompute
+```
+
+The reproducible [validation driver](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/ves_validation.py)
+compares independently sampled one- and two-dimensional analytic models with
+bin-integrated numerical quadrature and the existing umbrella/MBAR estimator.
+Its optional `--md` stage separately checks frozen-bias MD production. Saved
+[stochastic results](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/t24-ves/reference.json)
+and a [comparison figure](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/t24-ves/stochastic_validation.png)
+record the sampling budget, independent-history errors and model limitations.
+
+### VES primary references
+
+- O. Valsson and M. Parrinello, *Variational Approach to Enhanced Sampling and
+  Free Energy Calculations*, PRL **113**, 090601 (2014),
+  [doi:10.1103/PhysRevLett.113.090601](https://doi.org/10.1103/PhysRevLett.113.090601).
+- O. Valsson and M. Parrinello, *Well-Tempered Variational Approach to Enhanced
+  Sampling*, JCTC **11**, 1996--2002 (2015),
+  [doi:10.1021/acs.jctc.5b00076](https://doi.org/10.1021/acs.jctc.5b00076).
+- The PLUMED reference documentation describes the
+  [linear expansion](https://www.plumed.org/doc-v2.10/user-doc/html/_v_e_s__l_i_n_e_a_r__e_x_p_a_n_s_i_o_n.html),
+  [dynamic well-tempered target](https://www.plumed.org/doc-v2.10/user-doc/html/_t_d__w_e_l_l_t_e_m_p_e_r_e_d.html),
+  and [averaged stochastic optimizer](https://www.plumed.org/doc-v2.10/user-doc/html/_o_p_t__a_v_e_r_a_g_e_d__s_g_d.html).
