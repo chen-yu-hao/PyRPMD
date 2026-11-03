@@ -192,3 +192,62 @@ cannot represent. Their model identities and implementations are unchanged.
 also retain their current paths. A future extension needs a matrix ABI or
 explicit state-projection interface, together with tests for electronic
 indices, gradient signs, complex values, propagation, and restart identity.
+
+## Periodic Lennard-Jones C ABI v2
+
+`LennardJonesPotential` is an analytic, fixed-cell condensed-phase reference.
+It is selected with `provider = "lj"` (or `"lennard_jones"`) and requires a
+full-rank cell with all three periodic axes. Parameters are `epsilon` (energy),
+`sigma`, `cutoff`, and `skin` (lengths), plus the explicit execution choice
+`backend = "native"` or `"numpy"`. Numeric values are atomic units; quantity
+strings and `(value, unit)` pairs are parsed by the standard unit layer.
+
+```toml
+[system]
+cell = [[18.0, 0.0, 0.0], [1.5, 17.0, 0.0], [0.5, 0.8, 16.0]]
+pbc = [true, true, true]
+
+[potential]
+provider = "lj"
+
+[potential.params]
+epsilon = "0.0103 eV"
+sigma = "3.40 angstrom"
+cutoff = "8.50 angstrom"
+skin = "0.40 angstrom"
+backend = "native"
+```
+
+The pair energy is truncated and shifted so that it is zero at `cutoff`; the
+force is the unshifted derivative inside the cutoff and is zero at and beyond
+the cutoff. The cutoff may not exceed half the shortest cell face height. The
+minimum image follows the row-lattice convention in `geometry.py` and performs
+an exact bounded closest-lattice search for triclinic cells rather than simple
+fractional rounding.
+
+The native evaluator uses C ABI v2 because the call carries per-frame cells,
+PBC flags, and physical virials. It caches a deterministic Verlet pair list for
+each frame and rebuilds it after a cell change, atom-count change, or maximum
+minimum-image displacement greater than half the skin. Pair iteration and each
+frame's floating-point accumulation order are independent of the OpenMP thread
+count. The cache is execution state only: it is reconstructible and is not
+checkpoint or scientific-identity state.
+
+`backend = "native"` fails explicitly when the compiled extension is missing
+or stale. `backend = "numpy"` selects the independent all-pairs reference; the
+provider never silently changes backend, precision, device, cutoff, or cell.
+The v2 model is not advertised as a C ABI v1 fused molecular binding, so an
+unsupported propagation combination declines native fusion rather than losing
+its cell or virial contract.
+
+The returned virial is the physical tensor `-dE/dstrain` under homogeneous
+fixed-fractional-coordinate strain. Tests compare forces to coordinate finite
+differences, all nine virial components to finite strain, the shifted cutoff,
+an FCC nearest-neighbour lattice sum, native/NumPy frames, and—when installed—
+ASE's unsmoothed Lennard-Jones calculator for triclinic cells. These software
+checks validate implementation consistency; they do not establish a physically
+converged material model.
+
+The scaling campaign and raw timings are recorded in
+`docs/validation/native-threading-2026-11-03/`. The reproducible public driver
+is `benchmarks/efficiency/benchmark_native_threading.py`.
