@@ -235,17 +235,35 @@ def test_exact_worker_claim_passes_without_importing_physics(tmp_path, monkeypat
 
 @pytest.mark.parametrize("mode", ["wall", "CPU"])
 def test_independent_worker_kernel_caps_survive_blocked_owner_alarm(mode):
-    # The isolated interpreter is inert. CPU case deliberately consumes one
-    # CPU second; wall case proves the inherited blocked alarm is unblocked.
+    # CPU time is not wall time: under contention one CPU second can take more
+    # than three wall seconds. Keep both CPU-case wall deadlines beyond the
+    # parent's cleanup watchdog, so they cannot race the CPU cap in this test.
+    # The wall case waits without consuming CPU and tests the inherited mask.
+    watchdog_seconds = 60
+    wall_seconds = .12 if mode == "wall" else 2 * watchdog_seconds
+    if mode == "CPU":
+        workload = (
+            "print(json.dumps({'CPU':resource.getrlimit(resource.RLIMIT_CPU),"
+            "'alarm_unblocked':signal.SIGALRM not in signal.pthread_sigmask(signal.SIG_BLOCK,set()),"
+            "'wall_timer_active':signal.getitimer(signal.ITIMER_REAL)[0]>0}),flush=True)\n"
+            "while True: pass\n")
+    else:
+        # SIGALRM may legitimately fire before any post-install receipt is
+        # printed; its exact exit signal is the evidence for this branch.
+        workload = "signal.pause()\n"
     body = (
-        "import signal,time\n"
+        "import json,resource,signal,time\n"
         "from benchmarks.h3.quantum_isolated_continuation import install_worker_limits\n"
         "signal.pthread_sigmask(signal.SIG_BLOCK,{signal.SIGALRM})\n"
-        f"install_worker_limits(time.monotonic()+4,cpu_seconds=1,wall_seconds={'.12' if mode == 'wall' else '3'})\n"
-        "while True: pass\n")
+        f"install_worker_limits(time.monotonic()+{2 * watchdog_seconds},cpu_seconds=1,wall_seconds={wall_seconds!r})\n"
+        + workload)
     result = subprocess.run([sys.executable, "-c", body], cwd=owner.ROOT,
-                            stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=6)
-    assert result.returncode == (-signal.SIGALRM if mode == "wall" else -signal.SIGKILL)
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=watchdog_seconds)
+    assert result.returncode == (-signal.SIGALRM if mode == "wall" else -signal.SIGKILL), (
+        result.stdout, result.stderr)
+    if mode == "CPU":
+        assert json.loads(result.stdout) == {
+            "CPU": [1, 1], "alarm_unblocked": True, "wall_timer_active": True}
 
 
 def test_inherited_smaller_CPU_ceiling_cannot_be_silently_claimed():
