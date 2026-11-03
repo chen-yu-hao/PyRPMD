@@ -12,7 +12,7 @@ orphan: true
 | --- | --- | --- | --- |
 | 第一轮 | #81（合并为 `f877051`） | T01–T05、T07–T15，PR #78、#79、#80，以及 CI 发现问题后的修复：精度方差抵消、PLUMED 重启格式、double-well FMA、Windows 可移植性 | 60 个 CI 检查全部通过（Linux 3.11–3.14、macOS、Windows、Torch、真实 PLUMED） |
 | 第二轮 | #86（合并为 `8f32b37`） | PR #82、#83（T18）、#84（T06），以及 T04、T08、T09 分支合并后追加的提交；全量测试的 CI 时限调整为 `fused` 40 分钟、macOS/Windows 库测试 45 分钟 | CI 全部通过；Linux 本地 10311 passed、360 skipped |
-| 第四轮 | 本轮集成 | PR #93（T16b，部分）、#96（T23）、#99（T24）、#97（T25a）、#94（T25b）、#106（T37）、#104（T38）、#103（T40）；未合并的分支与原因见下文“第四轮审查结论” | 全量测试进行中（结果在合并前补记） |
+| 第四轮 | 本轮集成 | PR #93（T16b，部分）、#96（T23）、#99（T24）、#97（T25a）、#94（T25b）、#106（T37）、#104（T38）、#103（T40）；未合并的分支与原因见下文“第四轮审查结论” | Linux 本地（Python 3.13.18、NumPy 2.5.4，原生 OpenMP，ASE、PySCF 2.14.0、mpi4py 4.1.2 + MPICH 5.0.2；无 Torch、PLUMED、OpenMM、LAMMPS、pymbar），含 campaign 的完整 `pytest -q`：11187 passed、334 skipped、0 failed、493 subtests passed（17 分钟）；新增 MPI（T37、T38）与真实 PySCF（T40）测试实际运行并通过；中英文 Sphinx `-W` 通过；GitHub CI 队列积压，结果见 PR |
 | 第三轮 | #91（合并为 `ceee59c`） | PR #85（T18b）、#87（T21）、#88（T22）、#89（T19，部分）、#90（T16a） | Linux 本地（加载真实 PLUMED 2.9.4）：10491 passed、405 skipped、0 failed，新增的跳过都来自需要 OpenMM、LAMMPS 或 CUDA 的 T19 测试；在真实 OpenMM 8.6.1 和 LAMMPS（2025-07-22）上，T19 与现有引擎测试 102 passed（7 个仅限 CUDA 的跳过）；中英文 Sphinx `-W` 通过；CI 结果见 PR |
 
 ## 任务状态
