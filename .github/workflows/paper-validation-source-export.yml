@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v6
       - name: Package exact source and published quantum anchors
         run: |
-          tar --exclude=.git --exclude=pyrpmd-paper-validation-source.tar.gz -czf pyrpmd-paper-validation-source.tar.gz .
+          tar -czf pyrpmd-paper-validation-source.tar.gz src benchmarks/paper_validation tests pyproject.toml README.md
           sha256sum pyrpmd-paper-validation-source.tar.gz
           head -n 6 benchmarks/paper_validation/dac_p15_liu2024_reference.csv
           head -n 6 benchmarks/paper_validation/dac_p5_liu2024_reference.csv
@@ -21,4 +21,3 @@ jobs:
         with:
           name: pyrpmd-paper-validation-source-with-authors-dac-refs
           path: pyrpmd-paper-validation-source.tar.gz
-# Temporary T26 source checkout trigger; removed before PR.
