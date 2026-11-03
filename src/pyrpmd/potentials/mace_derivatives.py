@@ -65,6 +65,14 @@ class MACEASEPotential(ModelASEPotential):
             raise PotentialError("MACE compiled/padded calculator Hessians are not supported")
         if getattr(calculator, "num_models", None) != 1:
             raise PotentialError("MACE second derivatives require exactly one energy model")
+        try:
+            import torch
+        except ImportError as exc:
+            raise PotentialError("MACE second derivatives require torch") from exc
+        if torch.is_inference_mode_enabled():
+            raise PotentialError("inference_mode is incompatible with analytic MACE derivatives")
+        if torch.is_autocast_enabled(torch.device(getattr(calculator, "device", "cpu")).type):
+            raise PotentialError("autocast is unsupported for analytic MACE derivatives")
         energy_scale = float(getattr(calculator, "energy_units_to_eV", 1.0))
         length_scale = float(getattr(calculator, "length_units_to_A", 1.0))
         if (not np.isfinite(energy_scale) or energy_scale <= 0
@@ -82,7 +90,9 @@ class MACEASEPotential(ModelASEPotential):
         for index, frame in enumerate(q):
             try:
                 self.atoms.set_positions(frame * BOHR_ANGSTROM)
-                raw = method(atoms=self.atoms)
+                import torch
+                with torch.enable_grad():
+                    raw = method(atoms=self.atoms)
                 matrices.append(_hessian_matrix(raw, len(self.atoms)) * factor)
             except PotentialError:
                 raise
@@ -98,8 +108,6 @@ class MACEASEPotential(ModelASEPotential):
             from mace.tools import torch_tools
         except ImportError as exc:
             raise PotentialError("MACE HVP requires torch and mace.tools.torch_tools") from exc
-        if torch.is_inference_mode_enabled():
-            raise PotentialError("inference_mode is incompatible with analytic MACE derivatives")
         if not all(callable(getattr(calc, name, None)) for name in
                    ("_atoms_to_batch", "_clone_batch")):
             raise PotentialError("MACE HVP requires the supported MACECalculator graph interface")
