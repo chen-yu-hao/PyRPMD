@@ -7,6 +7,7 @@ include tools/export_jaxpip_onnx.py tools/requirements-jaxpip-export.txt
 include tools/data_manifest.py
 recursive-include native *.cpp *.h *.hpp *.c
 recursive-include docs *.md *.json *.csv *.png *.pdf *.py *.css *.txt *.html *.npz *.xml *.log
+recursive-include docs *.bib
 exclude docs/validation/tier1-2026-10-31/*.npz
 prune docs/_build
 recursive-include examples *.inp *.toml *.py *.xyz *.json *.md *.slurm

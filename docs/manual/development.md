@@ -133,7 +133,8 @@ python -m sphinx -W --keep-going -b singlehtml docs/zh docs/_build/singlehtml/zh
 
 The HTML build has navigation, search and one page per chapter; singlehtml puts everything on one
 page. Build the Chinese edition into `zh/` under the English output so the language switcher finds
-each page's counterpart. Build output is ignored by Git. The GitHub **Documentation** workflow builds
+each page's counterpart. Single-page search/index controls target the sibling
+`html/` edition, so publish both output layouts together. Build output is ignored by Git. The GitHub **Documentation** workflow builds
 both editions strictly, runs the getting-started examples and uploads the `pyrpmd-manual-html`
 artifact.
 
@@ -142,6 +143,36 @@ same commit. Extension guides and validation reports can be published in English
 entry in the Chinese API chapter. The language switcher sends those guides to the Chinese contents
 until a translated counterpart exists. Links between the editions use full GitHub URLs, because
 each Sphinx project contains only its own language.
+
+### Checking navigation and links
+
+Run the same local checks as Documentation CI after building both editions and
+both HTML layouts:
+
+```bash
+python -m unittest discover -s docs/_tools -p 'test_*.py' -v
+python docs/_tools/check_links.py --html docs/_build/html --html docs/_build/singlehtml --external-project docs/_build/external-links
+python -m sphinx -W --keep-going -b linkcheck docs/_build/external-links docs/_build/linkcheck
+```
+
+The first check enforces the README byte budget and matching stable section IDs,
+matching core chapter filenames, real local targets and rendered fragments. It
+resolves `main` repository links against the checkout so new pages can be checked
+before a PR merges. Links pinned to a full commit SHA are checked against that
+exact Git tree/blob; missing local history is checked online instead. No object
+fetch is performed by the offline checker. External URLs from both READMEs and both manuals are deduplicated
+with their source locations and checked in a separate CI job. DOI URLs use
+standard citation-metadata content negotiation to verify the registered DOI
+without depending on a publisher's browser challenge; other HTTP targets are
+checked normally. HTTP failures remain failures rather than being treated as
+proof that a scientific reference is invalid. Inspect the saved linkcheck artifact
+before changing a citation or adding an exception.
+
+Add new current guides to `docs/conf.py` and a reachable toctree; do not use an
+`orphan` flag to hide a missing navigation entry. Keep new release notes and
+core chapters paired in English and Chinese. English-only extension guides need
+an explicit, accurately labelled entry in the Chinese index. Preserve existing
+paths when possible; a rename must update inbound links and old anchors.
 
 ## Writing conventions
 

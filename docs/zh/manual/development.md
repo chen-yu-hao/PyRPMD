@@ -116,12 +116,33 @@ python -m sphinx -W --keep-going -b singlehtml docs/zh docs/_build/singlehtml/zh
 ```
 
 HTML 版本提供导航、搜索和分章节页面；singlehtml 把全部内容放在一页。把中文版构建到英文输出下的 `zh/`，语言切换才能
-找到每页的对应页面。构建输出被 Git 忽略。GitHub 的 **Documentation** 工作流严格构建两个版本、运行入门示例，并上传
+找到每页的对应页面。单页版的搜索/索引控件指向并列的 `html/` 版本，发布时应同时保留两种输出。构建输出被 Git 忽略。GitHub 的 **Documentation** 工作流严格构建两个版本、运行入门示例，并上传
 `pyrpmd-manual-html` 产物。
 
 两个版本保持相同的核心章节文件、标题、命令和表格，并在同一提交中更新。扩展指南和验证报告可先提供英文版，并在中文 API
 章节中添加简要入口；对应译文发布前，这些指南的语言按钮打开中文手册目录。两版之间的链接使用 GitHub 完整 URL，因为每个
 Sphinx 项目只包含自己语言的文件。
+
+### 检查导航与链接
+
+构建中英文及两种 HTML 布局后，运行与 Documentation CI 相同的检查：
+
+```bash
+python -m unittest discover -s docs/_tools -p 'test_*.py' -v
+python docs/_tools/check_links.py --html docs/_build/html --html docs/_build/singlehtml --external-project docs/_build/external-links
+python -m sphinx -W --keep-going -b linkcheck docs/_build/external-links docs/_build/linkcheck
+```
+
+本地检查约束 README 字节大小、对应的稳定章节 ID、核心章节文件集合，以及本地目标和渲染后的锚点。
+仓库 `main` 链接以当前检出内容验证，因此 PR 合并前也能检查新增页面。固定完整提交 SHA 的链接按该版本的
+Git tree/blob 核验；本地缺失历史对象时改做在线检查，离线检查器不会拉取对象。两份 README 和两版手册的外部 URL
+去重并保留来源，在独立 CI job 中检查。DOI 通过标准的引文元数据内容协商核实注册标识，避免依赖出版社
+的浏览器挑战页面；其他 HTTP 目标按通常方式检查。HTTP 失败仍导致检查失败，不直接证明科学文献无效。
+修改文献或增加例外前，应先查看保存的 linkcheck 产物。
+
+新的当前指南须加入 `docs/conf.py` 和可到达的 toctree，不能用 `orphan` 标记掩盖缺失的导航入口。
+新发布说明和核心章节须中英配对；仅有英文的扩展指南需要在中文索引提供明确标注的入口。
+尽量保留现有路径；确需重命名时同步更新所有入站链接和旧锚点。
 
 ## 写作约定
 
