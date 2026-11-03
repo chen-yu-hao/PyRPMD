@@ -1,7 +1,3 @@
----
-orphan: true
----
-
 # Precision-driven thermal RPMD rate control
 
 The precision layer reads existing rate diagnostics, selects pilot work, freezes

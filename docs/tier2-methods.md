@@ -1,4 +1,6 @@
-# Tier 2 method coverage and boundaries
+# Method coverage and boundaries
+
+<a id="tier-2-method-coverage-and-boundaries"></a>
 
 This extension adds force-based sampling actions, spectroscopy workflows,
 collective variables, shared bias histories, direct electronic-structure data,

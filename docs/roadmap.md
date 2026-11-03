@@ -12,7 +12,7 @@ orphan: true
 | --- | --- | --- | --- |
 | 第一轮 | #81（合并为 `f877051`） | T01–T05、T07–T15，PR #78、#79、#80，以及 CI 发现问题后的修复：精度方差抵消、PLUMED 重启格式、double-well FMA、Windows 可移植性 | 60 个 CI 检查全部通过（Linux 3.11–3.14、macOS、Windows、Torch、真实 PLUMED） |
 | 第二轮 | #86（合并为 `8f32b37`） | PR #82、#83（T18）、#84（T06），以及 T04、T08、T09 分支合并后追加的提交；全量测试的 CI 时限调整为 `fused` 40 分钟、macOS/Windows 库测试 45 分钟 | CI 全部通过；Linux 本地 10311 passed、360 skipped |
-| 第三轮 | 本轮集成 | PR #85（T18b）、#87（T21）、#88（T22）、#89（T19，部分）、#90（T16a） | Linux 本地（加载真实 PLUMED 2.9.4）：10491 passed、405 skipped、0 failed，新增的跳过都来自需要 OpenMM、LAMMPS 或 CUDA 的 T19 测试；在真实 OpenMM 8.6.1 和 LAMMPS（2025-07-22）上，T19 与现有引擎测试 102 passed（7 个仅限 CUDA 的跳过）；中英文 Sphinx `-W` 通过；CI 结果见 PR |
+| 第三轮 | #91（合并为 `ceee59c`） | PR #85（T18b）、#87（T21）、#88（T22）、#89（T19，部分）、#90（T16a） | Linux 本地（加载真实 PLUMED 2.9.4）：10491 passed、405 skipped、0 failed，新增的跳过都来自需要 OpenMM、LAMMPS 或 CUDA 的 T19 测试；在真实 OpenMM 8.6.1 和 LAMMPS（2025-07-22）上，T19 与现有引擎测试 102 passed（7 个仅限 CUDA 的跳过）；中英文 Sphinx `-W` 通过；CI 结果见 PR |
 
 ## 任务状态
 
@@ -58,7 +58,7 @@ orphan: true
 | T19（续） | 在真实 GPU 上运行 `benchmarks/efficiency/t19_cuda.py` 等测量脚本：5 个 ML provider、Torch 工作流、OpenMM CUDA | GPU 环境 | 正确性与耗时表，注明硬件 |
 | T20 | f-QCMD 光谱证据（可参考 `t07-fqcmd-curvilinear`）与 h-CMD——**尚未交付，需要重新分派** | 无 | 可复现的归档报告；h-CMD 身份与续算测试 |
 | T16b | legacy、native、torch 三套 PIMD 引擎收敛 | 无 | 旧 checkpoint 可续算；迁移工具有往返测试 |
-| T17 | README、参考文献、发布说明总整合 | T16b 之后 | README 约 12 KB 以内，链接检查通过 |
+| T17 | README、参考文献、发布说明总整合：已基于第三轮 `main` 开始整理；见[下一版本说明](releases/unreleased.md) | 最终关闭仍需 T16b 合并 | README 约 12 KB 以内，中英文章节对应，链接检查与严格构建通过；T16b 状态不能提前标为完成 |
 | 数据 | 按[数据归档计划](data-archive-plan.md)迁移验证数据 | 需维护者决定 | 不改写历史的增量迁移 |
 
 ## 可选研究方向

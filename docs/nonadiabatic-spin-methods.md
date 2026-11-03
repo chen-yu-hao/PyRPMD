@@ -31,8 +31,7 @@ CA-RP-MASH follows Cao, Suarez and Kretchmer,
 *A ring polymer molecular dynamics extension of the mapping approach to surface
 hopping: Incorporation of nuclear quantum effects*,
 [doi:10.26434/chemrxiv-2025-xps2g](https://doi.org/10.26434/chemrxiv-2025-xps2g),
-2025 preprint,
-[full manuscript](https://chemrxiv.org/engage/api-gateway/chemrxiv/assets/orp/resource/item/692ba382a10c9f5ca169b8de/original/a-ring-polymer-molecular-dynamics-extension-of-the-mapping-approach-to-surface-hopping-incorporation-of-nuclear-quantum-effects.pdf).
+2025 preprint.
 The implementation uses its energy function, centroid equations and common
 hop direction, Eqs. (36), (44)–(50), and its operator-pair weights, Eq. (29).
 The population importance sampling is also described in Lawrence, Mannouch

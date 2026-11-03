@@ -108,11 +108,13 @@ PIMD、伞窗口和受约束母链在恒温器下采样平衡分布。普通 dRP
 | PILE-L；PILE-G | [Ceriotti 等 (2010)](https://doi.org/10.1063/1.3489925) | PILE-G 对内模使用 PILE，对质心使用全局 SVR |
 | Nosé–Hoover 链 | [Martyna 等 (1992)](https://doi.org/10.1063/1.463940) | 全局链；链参数与数值子步需要收敛 |
 | Cartesian/正常模 GLE | [Ceriotti 等 (2009)](https://doi.org/10.1103/PhysRevLett.102.020601) | 由外部给定的稳定漂移矩阵与协方差矩阵决定热浴 |
-| PIGLET | [Ceriotti 和 Manolopoulos (2012)](https://doi.org/10.1103/PhysRevLett.109.100604) | native NVT 路线要求外部标定的逐模矩阵与温度、珠数匹配，并提供参数来源 |
+| PIGLET | [Ceriotti 和 Manolopoulos (2012)](https://doi.org/10.1103/PhysRevLett.109.100604) | 导入或生成的标定逐模矩阵须与温度、珠数匹配并记录来源；支持 native NVT 及受限的各向同性 BZP NPT |
 | Fast-forward Langevin | [Hijazi 等 (2018)](https://doi.org/10.1063/1.5029833) | 当前 native 实现为 rescale 变体 |
 
-任意 GLE 矩阵不等于已标定的 PIGLET。PyRPMD 没有臆造的通用 PIGLET 预设，拒绝 PIGLET NPT，也不会因选择
-该温控器而自动实现原论文的瞬态各向异性 Gaussian 动量估计器。温控器的正则分布检验说明其采样性质；
+任意 GLE 矩阵不等于已标定的 PIGLET。PyRPMD 没有臆造的通用 PIGLET 预设；
+[参数工具与凝聚相对照（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/condensed-phase-nqe.md)
+说明导入/生成参数和各向同性 BZP NPT 的要求：质心满足正则分布，且质心动量与辅助变量无协方差。
+选择该温控器不会自动实现原论文的瞬态各向异性 Gaussian 动量估计器。温控器的正则分布检验说明其采样性质；
 物理关联函数仍须采用与所测量相匹配的动力学。
 
 逐珠键约束引用 [SHAKE（Ryckaert 等，1977）](https://doi.org/10.1016/0021-9991(77)90098-5)和
@@ -136,8 +138,8 @@ NVE 或 Andersen，并走 Python 回退实现。零势刚性水样例只检验�
 | Raman 与 SFG 分析 | [Kubo (1957)](https://doi.org/10.1143/JPSJ.12.570)；Raman 不变量约定见 [Dundas 等 (2021)](https://doi.org/10.1021/acs.jctc.0c01323)；时间依赖 SFG 见 [Morita 和 Hynes (2002)](https://doi.org/10.1021/jp0133438) | 使用给定属性模型计算相对关联谱；引用 Raman 公式约定不代表实现了极化嵌入电子结构 |
 | TI 迹作用量与 pCN 采样 | [Takahashi 和 Imada (1984)](https://doi.org/10.1143/JPSJ.53.3765)；[Cotter 等 (2013)](https://doi.org/10.1214/13-STS421) | 四阶迹作用量与保持 Gaussian 参考分布的内模 Metropolis 提议；MC 步不是物理时间 |
 | 能量、热容与同位素估计器 | [Yamamoto (2005)](https://doi.org/10.1063/1.2013257)；[Ceriotti 和 Markland (2013)](https://doi.org/10.1063/1.4772676)；[Cheng 和 Ceriotti (2014)](https://doi.org/10.1063/1.4904293) | 作用量导数/缩放坐标估计；FEP 或质量积分须检查重叠与相关误差 |
-| Suzuki–Chin 采样 | [Suzuki (1995)](https://doi.org/10.1016/0375-9601(95)00266-6)；[Chin (1997)](https://doi.org/10.1016/S0375-9601(97)00003-0)；[Kapil 等 (2016)](https://doi.org/10.1063/1.4971438) | 偶数珠与有限差分力梯度；当前未提供完整 SC 总能/Cv/压力估计器 |
-| 玻色交换 PIMD | [Hirshberg 等 (2019)](https://doi.org/10.1073/pnas.1913365116)；[Feldman 和 Hirshberg (2023)](https://doi.org/10.1063/5.0173749) | 同质量组的二次递推与对称可观测量；没有周期绕数/超流估计器 |
+| Suzuki–Chin 采样 | [Suzuki (1995)](https://doi.org/10.1016/0375-9601(95)00266-6)；[Chin (1997)](https://doi.org/10.1016/S0375-9601(97)00003-0)；[Kapil 等 (2016)](https://doi.org/10.1063/1.4971438) | 偶数珠与有限差分力梯度；能量、Cv/Cp、压力估计及各向同性 BZP NPT 见[凝聚相对照（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/condensed-phase-nqe.md) |
+| 玻色交换 PIMD | [Hirshberg 等 (2019)](https://doi.org/10.1073/pnas.1913365116)；[Feldman 和 Hirshberg (2023)](https://doi.org/10.1063/5.0173749) | 同质量组的二次递推与对称可观测量；周期镜像求和、符号重加权和全珠子各向同性 NPT 见[交换采样（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/tier2-path-integral.md)；尚无超流估计量 |
 | PIGS | [Sarsa 等 (2000)](https://doi.org/10.1063/1.481926) | 正试探波函数、原始开路径投影和中点观测量；辅助 β 表示投影长度而非物理温度 |
 | 环聚合物瞬子速率与劈裂 | [Richardson 和 Althorpe (2009)](https://doi.org/10.1063/1.3267318)；[Richardson (2016)](https://doi.org/10.1063/1.4943866)；[Richardson 和 Althorpe (2011)](https://doi.org/10.1063/1.3530589) | 速率路径与 Gaussian 前因子；劈裂限对称束缚/约束双态，并拒绝自由外部转动和平移 |
 | 谐振 TST、Wigner、Eckart 对照 | [Eyring (1935)](https://doi.org/10.1063/1.1749604)；[Wigner (1932)](https://doi.org/10.1515/zpch-1932-1920)；[Eckart (1930)](https://doi.org/10.1103/PhysRev.35.1303) | 明确基线/零点能约定；弱隧穿展开或一维透射模型不能证明多维准确性 |
@@ -147,7 +149,9 @@ H₃ 平滑切换实验没有已确认的原始方法论文，属于仓库诊断
 不等于该实验成为已有文献的初态修正。
 
 **质心动力学与光谱。** PA-CMD 改变内模质量，TRPMD 改变内模摩擦。PA-CMD 的绝热频率必须独立于时间步和珠数收敛。
-QCMD、h-CMD 和 f-QCMD 不在已实现范围，IBI 辅助函数不构成这些方法的完整实现。f-CMD 的非线性可观测量还需要
+[实验性 f-QCMD（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/qcmd.md)
+支持固定拓扑弯曲三原子的分子准质心、条件采样与 IBI 修正。实时 QCMD 和 h-CMD 尚未实现，
+选定 f-QCMD 实现的成对分子光谱证据仍待补充。f-CMD 的非线性可观测量还需要
 条件属性模型。四次势基准使用 Cao–Voth 1993 年的势能和独立计算的精确 Kubo 参考；仓库曲线不是对原文实部量子
 关联曲线的数字化复现。Raman/SFG 为相对输出，与绝对实验比较还需光学因子。TRPMD 速率摩擦扫描应按
 [Hele 和 Suleimanov (2015)](https://doi.org/10.1063/1.4928599)作为敏感性研究，不能当成严格量子速率误差条。

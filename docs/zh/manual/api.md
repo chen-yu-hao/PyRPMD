@@ -102,7 +102,8 @@ python examples/manual/low_level.py
 
 程序从零动量开始做确定性传播，并打印环 Hamiltonian 的变化；需要热平均时使用 `pimd` 任务或 `sample_step()`。
 `beta` 以 `hartree^-1` 计，`dt` 以原子时间计；输入中的 `temperature="300 K"` 和 `timestep="0.1 fs"` 会自动转换。
-最后一行打印 `loop_stats`：Python `HarmonicPotential` 没有原生 PES 绑定，因此每一步都在 Python 中运行，回退原因中会写明。
+最后一行打印 `loop_stats`：`HarmonicPotential` 提供原生 PES 绑定；原生扩展可用时，这个受支持的示例使用编译循环。
+仅 NumPy 安装使用参考路线；计数和原因字段说明实际执行路径。
 
 ```{autoclass} pyrpmd.dynamics.Dynamics
 :members: step, energy, sample_momenta, propagate, propagate_block, sample_step, trpmd_step, operator_state_dict, load_operator_state_dict, loop_stats

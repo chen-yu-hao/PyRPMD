@@ -1,6 +1,3 @@
----
-orphan: true
----
 # Native thermostat and barostat trajectories
 
 `pyrpmd.native_ensemble.NativeEnsemble` is the persistent C++17 executor used
@@ -354,7 +351,7 @@ accuracy, arbitrary flexible-cell thermodynamics or calibrated PIGLET speedups**
 `benchmarks/efficiency/native_ensembles.py` compares one native block with repeated
 one-step calls to the same native engine, using identical final states. It
 measures call overhead on a cheap harmonic PES, not a general ML/ab-initio speedup.
-See the [validation summary](validation/native-ensembles-2026-10-31/README.md).
+See the [validation summary](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/native-ensembles-2026-10-31/README.md).
 
 ## Method sources
 

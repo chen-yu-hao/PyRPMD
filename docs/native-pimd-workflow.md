@@ -1,6 +1,3 @@
----
-orphan: true
----
 # Native PIMD through the standard workflow
 
 `task="pimd"` now accepts `sampling.engine="native"`. This explicitly selects

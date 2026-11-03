@@ -1,11 +1,13 @@
 # Original papers and implemented features
 
-This inventory groups implemented **scientific methods, models and interfaces**, rather than inventing
-a paper for every helper function. It audits commit
-[`cb60679`](https://github.com/chen-yu-hao/PyRPMD/commit/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d) on **2026-11-02**.
-The **111 entries and 170 bibliographic records** connect implementation paths to primary sources
-and explicit scope boundaries. The [reproduction checklist](reproduction.md) adds the original systems,
-observables, existing entry points, missing ingredients and priorities.
+This catalog maps **methods, models and interfaces** to sources: **127 entries and 204 bibliographic records**.
+The original 111-entry audit remains tied to [`cb60679`](https://github.com/chen-yu-hao/PyRPMD/commit/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d) (2026-11-02).
+An incremental review of integrated [`ceee59c`](https://github.com/chen-yu-hao/PyRPMD/commit/ceee59cd5f702165b56c5e541a503d8810fb9111)
+on **2026-11-03** updates 16 entries and adds 16; JSON `integration_update` enumerates them.
+Unchanged code links preserve the original audit revision. Refreshed entries state their **current boundary**
+and link the current method guide; the [reproduction checklist](reproduction.md) retains historical systems
+and plans, so its old gap descriptions do not override these updates.
+This refresh does not claim completed PIMD-engine convergence, h-CMD, f-QCMD spectral evidence or GPU measurements.
 
 ## How to cite a calculation
 
@@ -92,11 +94,15 @@ Code: [src/pyrpmd/initial_states.py](https://github.com/chen-yu-hao/PyRPMD/blob/
 
 Sources: [qct65](#qct65), [state20](#state20), [state22](#state22)
 
-Production QCT uses P=1 harmonic state preparation. The H₃ benchmark additionally solves a one-dimensional full-PES classical action condition J(E)=v+1/2 and samples a time-uniform orbit phase.
+Production QCT uses P=1 harmonic preparation; j0_energy_policy="preserve_actions" preserves declared modal actions during zero-angular-momentum preparation. The H3 benchmark also solves J(E)=v+1/2 on a full-PES diatomic orbit with uniform time-phase sampling.
 
-Code: [src/pyrpmd/initial_states.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/initial_states.py), [src/pyrpmd/workflows/state_selected.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/state_selected.py), [benchmarks/h3/diatomic_action.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/diatomic_action.py), [benchmarks/h3/state_preparation_study.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/state_preparation_study.py)
+Code: [src/pyrpmd/initial_states.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/initial_states.py), [src/pyrpmd/workflows/state_selected.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/state_selected.py), [benchmarks/h3/diatomic_action.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/benchmarks/h3/diatomic_action.py), [benchmarks/h3/state_preparation_study.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/benchmarks/h3/state_preparation_study.py)
 
-[Reproduction task](reproduction.md#task-qct).
+Current boundary: Action quantization is semiclassical, not exact quantum eigenstate preparation. Full-PES action initialization is an H₃ diatomic benchmark extension, not a general polyatomic production method. A 1965-paper reproduction requires its historical PES, rather than substituting BKMP2 silently.
+
+Guide: [Initial vibration-selected QCT and NE-RPMD scattering](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/state-selected.md).
+
+[Historical reproduction plan](reproduction.md#task-qct); the current scope above supersedes its older gap description.
 
 ### state-switch
 
@@ -174,25 +180,33 @@ Code: [src/pyrpmd/thermostats.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb6
 
 **Cartesian and normal-mode GLE baths**
 
-Sources: [gle09](#gle09), [pile10](#pile10)
+Sources: [gle09](#gle09), [gle2010](#gle2010), [pile10](#pile10)
 
-Extended-variable exact OU update with supplied stable drift and covariance matrices; Cartesian GLE, normal-mode GLE and normal-mode GLE plus global centroid SVR are available.
+Exact extended-variable OU baths accept explicit matrices, auditable gle4md imports, analytic white-noise OPT(V) parameters, or deterministic colored-noise fits over a declared frequency band. Fit objectives and residuals are recorded in parameter identity.
 
-Code: [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+Code: [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/native_ensemble.py), [src/pyrpmd/gle_parameters.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/gle_parameters.py), [src/pyrpmd/_gle_fitting.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/_gle_fitting.py)
 
-[Reproduction task](reproduction.md#task-gle).
+Guide: [condensed-phase-nqe.md](../condensed-phase-nqe.md).
+
+Current boundary: Colored fitting does not establish a global optimum; harmonic fit success does not certify anharmonic or timestep convergence. No third-party parameter table is bundled.
+
+[Historical reproduction plan](reproduction.md#task-gle); the current scope above supersedes its older gap description.
 
 ### piglet
 
-**PIGLET with externally calibrated matrices**
+**PIGLET with imported or generated harmonic calibration**
 
-Sources: [piglet12](#piglet12)
+Sources: [piglet12](#piglet12), [gle2010](#gle2010)
 
-NVT normal-mode GLE using externally supplied P-dependent calibrated matrices, matched β and parameter provenance; no built-in calibration table is invented.
+Per-mode GLE with explicit temperature, bead count and provenance; generate_piglet fits harmonic potential and centroid-virial kinetic energies with a canonical centroid and a shared internal-mode bath. Isotropic BZP NPT is supported subject to the centroid covariance constraint.
 
-Code: [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+Code: [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/native_ensemble.py), [src/pyrpmd/gle_parameters.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/gle_parameters.py), [src/pyrpmd/_gle_fitting.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/_gle_fitting.py)
 
-[Reproduction task](reproduction.md#task-piglet).
+Guide: [condensed-phase-nqe.md](../condensed-phase-nqe.md).
+
+Current boundary: Independent harmonic-grid residuals are fit diagnostics, not molecular convergence. Flexible-cell PIGLET NPT and TRPMD remain unsupported.
+
+[Historical reproduction plan](reproduction.md#task-piglet); the current scope above supersedes its older gap description.
 
 ### ffl
 
@@ -366,13 +380,17 @@ Code: [src/pyrpmd/pimd_methods.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb
 
 **Quadratic-scaling bosonic exchange PIMD**
 
-Sources: [bose19](#bose19), [bose23](#bose23)
+Sources: [bose19](#bose19), [bose23](#bose23), [exchange-pbc2025](#exchange-pbc2025)
 
-Feldman–Hirshberg O(N²+PN) recurrence for equal-mass exchange groups, using representative cycles and symmetric observables.
+Equal-mass exchange groups use the Feldman–Hirshberg O(N²+PN) representative-cycle recurrence. Nonperiodic, explicit minimum-image and tolerance-controlled full-winding kernels are available; periodic exchange has an all-bead isotropic BZP NPT path.
 
-Code: [src/pyrpmd/pimd_methods.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pimd_methods.py), [src/pyrpmd/workflows/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/path_integral.py)
+Code: [src/pyrpmd/pimd_methods.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/pimd_methods.py), [src/pyrpmd/workflows/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/path_integral.py)
 
-[Reproduction task](reproduction.md#task-bosons).
+Guide: [tier2-path-integral.md](../tier2-path-integral.md).
+
+Current boundary: The representative-cycle potential need not equal the factorial sum pointwise; test symmetric observables. No sampled winding-number/superfluid estimator; minimum-image remains an approximation and full-winding lattice sums have an explicit work cap.
+
+[Historical reproduction plan](reproduction.md#task-bosons); the current scope above supersedes its older gap description.
 
 ### pigs
 
@@ -390,13 +408,17 @@ Code: [src/pyrpmd/pimd_methods.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb
 
 **Ring-polymer instanton thermal rate**
 
-Sources: [rpi09](#rpi09), [rpi16](#rpi16)
+Sources: [rpi09](#rpi09), [rpi16](#rpi16), [bofill1994](#bofill1994), [instanton-onthefly2016](#instanton-onthefly2016)
 
-Stationary imaginary-time ring optimization, semiclassical fluctuation determinant/prefactor, harmonic-reactant normalization and negative/zero-mode checks; multidimensional gas-rate handling includes declared rigid-body external modes.
+Molecular path optimization and rate workflow with root or Bofill search, analytic/provider or finite-difference Hessians, bead/tolerance studies, reactant normalization and negative/zero-mode checks; available through pyrpmd instanton.
 
-Code: [src/pyrpmd/instanton.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/instanton.py), [src/pyrpmd/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/low_temperature.py)
+Code: [src/pyrpmd/instanton.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/instanton.py), [src/pyrpmd/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/low_temperature.py), [src/pyrpmd/workflows/instanton.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/instanton.py)
 
-[Reproduction task](reproduction.md#task-rpi).
+Guide: [instanton.md](../instanton.md).
+
+Current boundary: Dense prefactors are limited to 4096 active bead coordinates. Numerical/discretization convergence does not establish physical convergence; molecular PES, partitions and symmetry factors require separate validation. Uniform crossover theory and sparse determinants are absent.
+
+[Historical reproduction plan](reproduction.md#task-rpi); the current scope above supersedes its older gap description.
 
 ### splitting
 
@@ -404,11 +426,15 @@ Code: [src/pyrpmd/instanton.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb606
 
 Sources: [split11](#split11)
 
-Single-kink semiclassical splitting for an isolated symmetric bound or explicitly constrained doublet.
+Symmetric bound-well instanton splitting with explicit phase/zero-mode projection; the shared projection retains degenerate physical modes and avoids forming a cubic-cost dense projector product.
 
-Code: [src/pyrpmd/tunnelling.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/tunnelling.py), [src/pyrpmd/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/low_temperature.py)
+Code: [src/pyrpmd/tunnelling.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/tunnelling.py), [src/pyrpmd/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/low_temperature.py)
 
-[Reproduction task](reproduction.md#task-splitting).
+Guide: [low-temperature.md](../low-temperature.md), [tunnelling-phase-projection.md](../tunnelling-phase-projection.md).
+
+Current boundary: Current splitting code rejects free translational/rotational modes and is not a gas-phase rovibrational splitting or multiwell multiplet implementation. HO₂/malonaldehyde paper replication is therefore an extension target, not a presently turnkey reproduction.
+
+[Historical reproduction plan](reproduction.md#task-splitting); the current scope above supersedes its older gap description.
 
 ### low-t-checks
 
@@ -594,15 +620,19 @@ Code: [src/pyrpmd/transition_interface.py](https://github.com/chen-yu-hao/PyRPMD
 
 ### samp-retis
 
-**Positive-ensemble replica-exchange TIS**
+**Replica-exchange TIS with a minus ensemble and internal flux**
 
 Sources: [samp-retis2007](#samp-retis2007), [samp-tis2003](#samp-tis2003)
 
-Exchanges positive interface ensembles sharing identical dynamics; repeated/rejected paths remain in observations; separate flux estimate. Minus ensemble and asynchronous/infinite swaps absent.
+Exchanges positive interface paths and a [0−] minus ensemble under the same dynamics. Minus residence/excursion times supply the effective flux; atomic continuation retains paths, RNG and synchronized observations.
 
-Code: [src/pyrpmd/retis.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/retis.py)
+Code: [src/pyrpmd/retis.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/retis.py)
 
-[Reproduction task](reproduction.md#task-samp-retis).
+Guide: [transition-interface-sampling.md](../transition-interface-sampling.md).
+
+Current boundary: Infinite/asynchronous exchange and a TOML workflow are absent. Flux/rate statistics still require stationary paths, horizon support, interface and independent-run convergence.
+
+[Historical reproduction plan](reproduction.md#task-samp-retis); the current scope above supersedes its older gap description.
 
 ### samp-committor
 
@@ -630,15 +660,19 @@ Code: [src/pyrpmd/advanced_cv.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb6
 
 ### samp-string
 
-**Euclidean mean-force / restrained adaptive strings**
+**Deterministic strings and restrained finite-temperature CV strings**
 
 Sources: [samp-string2002](#samp-string2002), [samp-stringcv2006](#samp-stringcv2006)
 
-Fixed-endpoint Euclidean gradient relaxation and insertion; a supplied consistent free-energy gradient is required. Signed restrained extension uses scaled Euclidean geometry; general nonlinear-CV metric/conditional terms of a full MFEP are not all implemented.
+The deterministic Euclidean oracle optimizer remains available. RestrainedStringSampler adds thermal centroid sampling, a mean CV mass metric, fixed endpoints, block diagnostics and iteration-boundary continuation for nonperiodic full-rank CVs.
 
-Code: [src/pyrpmd/adaptive_string.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/adaptive_string.py), [src/pyrpmd/adaptive_nrpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/adaptive_nrpmd.py)
+Code: [src/pyrpmd/adaptive_string.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/adaptive_string.py), [src/pyrpmd/finite_temperature_string.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/finite_temperature_string.py)
 
-[Reproduction task](reproduction.md#task-samp-string).
+Guide: [finite-temperature-string.md](../finite-temperature-string.md).
+
+Current boundary: Finite restraints target a smoothed marginal free energy; stiffness, image spacing and timestep require convergence. A CV-space path is not a Cartesian path or a rate constant.
+
+[Historical reproduction plan](reproduction.md#task-samp-string); the current scope above supersedes its older gap description.
 
 ### samp-prfo
 
@@ -682,11 +716,15 @@ Code: [src/pyrpmd/covalent.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb6067
 
 Sources: [samp-bluemoon1989](#samp-bluemoon1989), [samp-blue1998](#samp-blue1998)
 
-Constrained-to-conditional weighting for nonlinear centroid coordinates; reparametrization invariance tests. The package rate estimator is an RPMD combination, not identical reproduction of every blue-moon thermodynamic-integration variant.
+Mass-weighted centroid flux metric and projected momentum/force handling for smooth coordinates. Analytic Hessian–vector products remove dense Cartesian Hessians; native propagation paths share one CV/bias core without changing the estimator.
 
-Code: [src/pyrpmd/workflows/rate_constraints.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/rate_constraints.py), [src/pyrpmd/cv.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/cv.py), [src/pyrpmd/cv_periodic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/cv_periodic.py)
+Code: [src/pyrpmd/workflows/rate_constraints.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/rate_constraints.py), [src/pyrpmd/cv.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/cv.py), [src/pyrpmd/cv_periodic.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/cv_periodic.py), [native/cv_core.hpp](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/native/cv_core.hpp)
 
-[Reproduction task](reproduction.md#task-samp-metric).
+Guide: [general-coordinate-rates.md](../general-coordinate-rates.md).
+
+Current boundary: The nonlinear-CV mass metric cannot be omitted. Agreement of projected PMFs does not guarantee agreement of unbiased dynamical rates.
+
+[Historical reproduction plan](reproduction.md#task-samp-metric); the current scope above supersedes its older gap description.
 
 ### samp-rate-postprocess
 
@@ -718,11 +756,15 @@ Code: [src/pyrpmd/analysis/fes_statistics.py](https://github.com/chen-yu-hao/PyR
 
 Sources: [samp-plumed2009](#samp-plumed2009), [samp-plumed2014](#samp-plumed2014)
 
-External kernel/interface, not an internal implementation of every PLUMED method. Cite the PLUMED software and every selected CV/bias algorithm in the actual plumed.dat.
+Centroid-bias bridge plus an explicit audited restart="files" protocol for supported external histories. File formats, hashes and round-trip precision are checked; opaque kernel state is not serialized generically.
 
-Code: [src/pyrpmd/plumed.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/plumed.py), [src/pyrpmd/workflows/biased_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/biased_sampling.py)
+Code: [src/pyrpmd/plumed.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/plumed.py), [src/pyrpmd/workflows/biased_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/biased_sampling.py)
 
-[Reproduction task](reproduction.md#task-samp-plumed).
+Guide: [plumed.md](../plumed.md).
+
+Current boundary: Only supported, validated file-RESTART actions can resume; an arbitrary PLUMED input is not automatically restartable.
+
+[Historical reproduction plan](reproduction.md#task-samp-plumed); the current scope above supersedes its older gap description.
 
 ## Nonadiabatic methods and matrix models
 
@@ -1202,11 +1244,15 @@ Code: [src/pyrpmd/pesgen/jaxpip_fit.py](https://github.com/chen-yu-hao/PyRPMD/bl
 
 Sources: [committee2020](#committee2020)
 
-Mean of fixed providers, population-standard-deviation disagreement and offline acquisition; no disagreement bias or automatic labelling/retraining loop.
+Committee means, population-standard-deviation disagreement and offline acquisition remain available. ActiveLearningLoop now connects sampling, reference labels and versioned retraining between fixed-model trajectory segments.
 
-Code: [src/pyrpmd/potentials/lifecycle.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/lifecycle.py)
+Code: [src/pyrpmd/potentials/lifecycle.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/potentials/lifecycle.py)
 
-[Reproduction task](reproduction.md#task-committee).
+Guide: [tier2-ml-lifecycle.md](../tier2-ml-lifecycle.md).
+
+Current boundary: Committee disagreement is a heuristic and does not certify coverage or true error. Closed-loop stopping and held-out reference checks are separate from physical convergence.
+
+[Historical reproduction plan](reproduction.md#task-committee); the current scope above supersedes its older gap description.
 
 ### delta
 
@@ -1238,11 +1284,15 @@ Code: [src/pyrpmd/potentials/optional.py](https://github.com/chen-yu-hao/PyRPMD/
 
 Sources: [openmm2017](#openmm2017)
 
-External force evaluation, virtual sites and periodic virials; PyRPMD owns nuclear dynamics.
+External OpenMM energy/force evaluation with serial, persistent concurrent Context and RPMD copy-bank modes. The copy-bank is a force-evaluation route, not PyRPMD handing trajectory propagation to OpenMM.
 
-Code: [src/pyrpmd/potentials/openmm.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/openmm.py)
+Code: [src/pyrpmd/potentials/openmm.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/potentials/openmm.py)
 
-[Reproduction task](reproduction.md#task-openmm).
+Guide: [potential-adapters.md](../potential-adapters.md), [t19-performance.md](../t19-performance.md).
+
+Current boundary: Optional engine and compatible model bytes must be supplied; this adapter does not recreate upstream training or every published application.
+
+[Historical reproduction plan](reproduction.md#task-openmm); the current scope above supersedes its older gap description.
 
 ### lammps
 
@@ -1250,11 +1300,15 @@ Code: [src/pyrpmd/potentials/openmm.py](https://github.com/chen-yu-hao/PyRPMD/bl
 
 Sources: [lammps1995](#lammps1995)
 
-Per-context external library force and cell evaluation; not a port of LAMMPS algorithms.
+External LAMMPS force/virial/cell evaluation with bead-affine persistent instances and explicitly configured private MPI subcommunicators; validation is vectorized before engine dispatch.
 
-Code: [src/pyrpmd/potentials/lammps.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/lammps.py)
+Code: [src/pyrpmd/potentials/lammps.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/potentials/lammps.py)
 
-[Reproduction task](reproduction.md#task-lammps).
+Guide: [potential-adapters.md](../potential-adapters.md), [t19-performance.md](../t19-performance.md).
+
+Current boundary: Persistent mode is not uniformly faster; measured large-system cases include regressions. MPI, engine versions, force fields and hardware must be reported with any throughput claim.
+
+[Historical reproduction plan](reproduction.md#task-lammps); the current scope above supersedes its older gap description.
 
 ### ipi-socket
 
@@ -1272,25 +1326,33 @@ Code: [src/pyrpmd/potentials/socket.py](https://github.com/chen-yu-hao/PyRPMD/bl
 
 **Torch/GPU potentials and tensor propagation**
 
-Sources: [torch2019](#torch2019)
+Sources: [torch2019](#torch2019), [bcocb20](#bcocb20), [rpm04](#rpm04)
 
-Autodifferentiated energies/forces and tensor versions of the cited physical integrators.
+Float64 tensor energy/force propagation plus sampling.engine="torch" PIMD and diffusion workflows batching replicas and beads. Atomic checkpoints store device RNG state and scientific identity; device and precision changes fail explicitly.
 
-Code: [src/pyrpmd/potentials/optional.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/optional.py), [src/pyrpmd/torch_backend.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/torch_backend.py)
+Code: [src/pyrpmd/potentials/optional.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/potentials/optional.py), [src/pyrpmd/torch_backend.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/torch_backend.py), [src/pyrpmd/workflows/torch_materials.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/torch_materials.py)
 
-[Reproduction task](reproduction.md#task-torch).
+Guide: [torch-materials-workflows.md](../torch-materials-workflows.md), [batched-ml-potentials.md](../batched-ml-potentials.md).
+
+Current boundary: This workflow does not support NPT, constraints, exchange, electronic friction or grouped MPI. No CUDA performance measurements were available in the integrated validation; CPU results do not certify GPU speedup.
+
+[Historical reproduction plan](reproduction.md#task-torch); the current scope above supersedes its older gap description.
 
 ### ml-adapters
 
-**MACE / NequIP / DeePMD / fairchem adapters**
+**Batched MACE, NequIP, DeePMD, fairchem and metatomic providers**
 
-Sources: [mace2022](#mace2022), [nequip2022](#nequip2022), [deepmd2018](#deepmd2018), [uma2025](#uma2025)
+Sources: [mace2022](#mace2022), [nequip2022](#nequip2022), [deepmd2018](#deepmd2018), [uma2025](#uma2025), [metatomic2026](#metatomic2026)
 
-Calls external inference engines; model paper and exact checkpoint are additional citations, not an in-repo reimplementation.
+Explicit native model batches evaluate configurations across beads/trajectories, with tensor routes where supported. Unit, device, model-precision, virial and neighbor-list contracts are checked; upstream model/framework attribution remains required.
 
-Code: [src/pyrpmd/potentials/adapters.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/adapters.py)
+Code: [src/pyrpmd/potentials/adapters.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/potentials/adapters.py), [src/pyrpmd/potentials/batched_ml.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/potentials/batched_ml.py)
 
-[Reproduction task](reproduction.md#task-ml-adapters).
+Guide: [batched-ml-potentials.md](../batched-ml-potentials.md), [t19-performance.md](../t19-performance.md).
+
+Current boundary: Compatible optional framework versions and model bytes must be provided. CUDA stream-order safeguards exist, but GPU correctness/performance measurements are still pending; no framework or precision is silently substituted.
+
+[Historical reproduction plan](reproduction.md#task-ml-adapters); the current scope above supersedes its older gap description.
 
 ### tblite
 
@@ -1334,11 +1396,15 @@ Code: [src/pyrpmd/input.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679ca
 
 Sources: [morse1929](#morse1929)
 
-MorsePairPotential uses the Morse functional form. Free, harmonic, separable quartic and periodic-cosine providers are explicitly specified analytic controls; they are not fitted molecular or metal potentials.
+Free, harmonic, Morse-pair, quartic double-well and fixed-cell periodic-cosine controls have native C ABI bindings for fused propagation; these are model controls, not fitted molecular surfaces.
 
-Code: [src/pyrpmd/potentials/builtin.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/builtin.py)
+Code: [src/pyrpmd/potentials/builtin.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/potentials/builtin.py)
 
-[Reproduction task](reproduction.md#task-analytic-models).
+Guide: [builtin-native-potentials.md](../builtin-native-potentials.md).
+
+Current boundary: A separable cosine model is not evidence for diffusion in a real material. Arbitrary Morse parameters do not reproduce a particular molecule from the 1929 paper.
+
+[Historical reproduction plan](reproduction.md#task-analytic-models); the current scope above supersedes its older gap description.
 
 ### rate-studies
 
@@ -1363,6 +1429,266 @@ BKMP2 is an externally sourced H3 PES used by the benchmark, not a new potential
 Code: [src/pyrpmd/potentials/native.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/native.py), [src/pyrpmd/potentials/cabi.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/cabi.py)
 
 [Reproduction task](reproduction.md#task-bkmp2-model).
+
+## Newly integrated methods and workflows
+
+Original algorithms, upstream software and project compositions are attributed separately. A runnable workflow or a numerical check does not establish physical convergence.
+
+### fqcmd
+
+**Experimental fast quasi-centroid molecular dynamics**
+
+Sources: [qcmd2019](#qcmd2019), [fqcmd2021](#fqcmd2021)
+
+Bent-triatomic molecular quasi-centroid bond/angle distributions train a separable effective potential by iterative Boltzmann inversion. Frozen models run through method="f-qcmd" spectroscopy with model identity and restart.
+
+Code: [src/pyrpmd/qcmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/qcmd.py), [src/pyrpmd/workflows/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/spectroscopy.py)
+
+Guide: [qcmd.md](../qcmd.md).
+
+Current boundary: Full real-time QCMD and h-CMD are absent. Gas-phase spectral evidence and molecular convergence are not yet delivered; the fixed-quasi-centroid conditional sampler is not a real-time QCMD solver.
+
+Independent checks: Check internal-coordinate derivatives, target/trained distributions and independent spectral peaks against classical, PA-CMD, TRPMD and a quantum reference; converge training, beads and production separately.
+
+### fermions
+
+**Fermionic sign reweighting of bosonic exchange sampling**
+
+Sources: [fermions2020](#fermions2020), [bose23](#bose23)
+
+method="fermionic" propagates the positive bosonic measure and accumulates signed energy, density and applicable pressure/volume numerators, with average-sign and denominator diagnostics.
+
+Code: [src/pyrpmd/pimd_methods.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/pimd_methods.py), [src/pyrpmd/workflows/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/path_integral.py)
+
+Guide: [tier2-path-integral.md](../tier2-path-integral.md).
+
+Current boundary: The sign problem remains. The original paper’s auxiliary Bogoliubov energy-bound strategy is not implemented; an unresolved denominator must not become an unsigned or apparently converged estimate.
+
+Independent checks: Compare canonical ideal-fermion oscillator energies and small-system permutations, signed moment ratios and independent-run errors; scan temperature, beads and average sign.
+
+### periodic-exchange
+
+**Periodic exchange and isotropic all-bead NPT**
+
+Sources: [exchange-pbc2025](#exchange-pbc2025), [bose23](#bose23), [bzp2009](#bzp2009), [ipi2014](#ipi2014)
+
+Explicit minimum_image or full_winding kernels couple image and exchange weights. Full winding sums Gaussian lattice images to a declared tolerance; all-bead BZP scaling provides isotropic exchange NPT with physical virials.
+
+Code: [src/pyrpmd/pimd_methods.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/pimd_methods.py), [src/pyrpmd/workflows/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/path_integral.py)
+
+Guide: [tier2-path-integral.md](../tier2-path-integral.md).
+
+Current boundary: Kernel image sums do not provide sampled winding-number or superfluid estimators. Periodic exchange cannot use centroid BZP, and flexible-cell exchange NPT is absent; minimum-image remains an approximation.
+
+Independent checks: Compare image kernels with independent lattice sums and Fourier momentum sums for the free gas; finite-difference forces and virials; compare NPT volume integrals and refine image tolerances.
+
+### golden-rule-instanton
+
+**Normal-regime golden-rule instanton rates**
+
+Sources: [gr-instanton2015a](#gr-instanton2015a), [gr-instanton2015b](#gr-instanton2015b)
+
+Two diabatic imaginary-time segments and a time-split saddle give a leading semiclassical weak-coupling rate with constant real electronic coupling, explicit reactant normalization and independent segment refinement through pyrpmd instanton.
+
+Code: [src/pyrpmd/golden_rule.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/golden_rule.py), [src/pyrpmd/golden_rule_partition.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/golden_rule_partition.py), [src/pyrpmd/workflows/golden_rule.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/golden_rule.py)
+
+Guide: [instanton.md](../instanton.md).
+
+Current boundary: Bound or Cartesian-constrained coordinates only. Free-molecule rotation/translation prefactors, coordinate-dependent coupling and negative-time inverted-regime paths are absent. Numerical convergence is not physical validation.
+
+Independent checks: Compare finite-bath and continuum spin-boson semiclassical rates, exact quantum golden-rule correlation quadrature and the Marcus limit; independently refine both segment grids and bath discretization.
+
+### samp-abf
+
+**Projected centroid adaptive biasing force**
+
+Sources: [samp-abf2008](#samp-abf2008), [samp-pabf2015](#samp-pabf2015)
+
+One or two nonperiodic full-rank centroid CVs use the mass-weighted dual-field divergence correction. Scalar projection/interpolation supplies consistent bias energies and forces; online histories and RNG resume exactly.
+
+Code: [src/pyrpmd/abf.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/abf.py), [src/pyrpmd/workflows/abf.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/abf.py)
+
+Guide: [enhanced-sampling.md](../enhanced-sampling.md).
+
+Current boundary: No fixed atoms, constraints, periodic cells/CVs, NPT, REUS or rate-flux measure. Nonanalytic CV derivatives require an explicit finite-difference choice. Grid occupancy and replica spread do not establish mixing.
+
+Independent checks: Check harmonic/radial free energies including the geometric term, finite-difference forces and 2D conservative projection; compare independent replicas and refine grid and derivative step.
+
+### samp-eabf
+
+**Extended-system centroid ABF**
+
+Sources: [samp-eabf2017](#samp-eabf2017)
+
+Auxiliary coordinates are harmonically coupled to physical centroid CVs and carry their own Langevin state. Physical-CV free energies use the documented reconstruction rather than equating the auxiliary marginal with the physical PMF.
+
+Code: [src/pyrpmd/abf.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/abf.py), [src/pyrpmd/workflows/abf.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/abf.py)
+
+Guide: [enhanced-sampling.md](../enhanced-sampling.md).
+
+Current boundary: The same nonperiodic 1D/2D workflow restrictions as ABF apply; spring coupling, auxiliary mass/friction, reconstruction and sampling require separate convergence.
+
+Independent checks: Compare reconstructed harmonic/double-well PMFs to independent integration, validate auxiliary covariance and exact continuation, and vary coupling and auxiliary timescales.
+
+### samp-steered
+
+**Steered dynamics and nonequilibrium work estimators**
+
+Sources: [samp-jarzynski1997](#samp-jarzynski1997), [samp-crooks1999](#samp-crooks1999), [samp-bennett1976](#samp-bennett1976), [samp-shadow2013](#samp-shadow2013)
+
+Specified moving restraints record protocol and discrete shadow work, heat and complete histories; Jarzynski and Crooks/Bennett analysis provides forward/reverse estimators and work-overlap diagnostics.
+
+Code: [src/pyrpmd/steered.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/steered.py), [src/pyrpmd/workflows/steered.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/steered.py)
+
+Guide: [enhanced-sampling.md](../enhanced-sampling.md).
+
+Current boundary: Initial equilibrium is a user declaration; finite equilibration and bootstrap cannot recover unsampled low-work tails. Finite-step total-work conventions must match the chosen propagator.
+
+Independent checks: Compare harmonic moving-trap free energies and forward/reverse work relations, including shadow work, independent-trajectory errors and checkpoint continuation.
+
+### samp-repptis
+
+**PPTIS and replica-exchange PPTIS**
+
+Sources: [samp-pptis2004](#samp-pptis2004), [samp-repptis2023](#samp-repptis2023)
+
+Short left/right-origin local paths use the direction-dependent PPTIS recurrence; ReplicaExchangePPTIS adds overlap-regrowth swaps and restart. Rate combination requires separately measured effective flux at the first center.
+
+Code: [src/pyrpmd/pptis.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/pptis.py)
+
+Guide: [transition-interface-sampling.md](../transition-interface-sampling.md).
+
+Current boundary: PPTIS assumes memory loss beyond neighboring interfaces. A local-chain standard error excludes external-flux uncertainty. No TOML workflow or infinite swapping is implemented.
+
+Independent checks: Compare the recurrence with independent absorbing Markov-chain calculations and full TIS while varying interface spacing; inspect both origin populations and synchronized blocks.
+
+### samp-ffs
+
+**Direct forward-flux sampling**
+
+Sources: [samp-ffs2005](#samp-ffs2005), [samp-ffs2009](#samp-ffs2009)
+
+Explicit stationary Markov step callbacks sample flux and branch complete phase points forward through interfaces. Genealogy, clocks and RNG persist; full-rate uncertainty combines independently initialized complete runs.
+
+Code: [src/pyrpmd/ffs.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/ffs.py)
+
+Guide: [transition-interface-sampling.md](../transition-interface-sampling.md).
+
+Current boundary: Hidden solver memory, global RNG and time-dependent protocols are unsupported. Censored trials fail rather than count as returns; descendant counts are not independent full-rate samples.
+
+Independent checks: Compare stationary birth/death chains and diffusion references, preserve zero-success runs, and scan flux duration, interface banks, horizons and independent full runs.
+
+### samp-mlcolvar
+
+**Learned Deep-LDA and Deep-TICA centroid CVs**
+
+Sources: [samp-mlcolvar2023](#samp-mlcolvar2023), [samp-deeplda2020](#samp-deeplda2020), [samp-deeptica2021](#samp-deeptica2021), [torch2019](#torch2019)
+
+Upstream mlcolvar trains coordinates; a frozen CPU float64 TorchScript graph including preprocessing, normalization and projection supplies centroid values and Cartesian derivatives.
+
+Code: [src/pyrpmd/advanced_cv.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/advanced_cv.py), [examples/mlcolvar_cv.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/examples/mlcolvar_cv.py)
+
+Guide: [mlcolvar.md](../mlcolvar.md).
+
+Current boundary: Training examples verify deployment, not molecular reaction-coordinate quality. Biased data require appropriate reweighting/time treatment; retraining changes scientific identity.
+
+Independent checks: Check exported versus upstream predictions and nonzero finite-difference ring Jacobians, then validate slow modes across lag times and independent trajectories.
+
+### na-iesh
+
+**Classical independent-electron surface hopping**
+
+Sources: [na-iesh2009](#na-iesh2009), [na-iesh2023](#na-iesh2023)
+
+P=1 IESH evolves one spinless Slater determinant with orthonormal orbitals and determinant-current hopping; population estimates sum to the declared electron count. Workflow checkpoints retain electronic and nuclear state.
+
+Code: [src/pyrpmd/iesh.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/iesh.py), [src/pyrpmd/workflows/nonadiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/nonadiabatic.py)
+
+Guide: [nonadiabatic-iesh-multistate.md](../nonadiabatic-iesh-multistate.md).
+
+Current boundary: Real, nondegenerate Hamiltonians and classical nuclei only; no ring-polymer IESH, SOC or general interacting-electron solver. Finite-band controls do not reproduce a real metal surface.
+
+Independent checks: Check determinant currents, orbital orthogonality, population sum and energy conservation; compare cold finite-band energy loss with matched electronic-friction limits.
+
+### na-multistate-mash
+
+**Original multistate MASH**
+
+Sources: [na-multimash2023](#na-multimash2023), [na-mash2023](#na-mash2023)
+
+The Runeson–Manolopoulos mapping vector selects the largest population surface, uses signed population/coherence estimators and the full multistate momentum-change direction with event-localized transitions.
+
+Code: [src/pyrpmd/mash.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/mash.py), [src/pyrpmd/workflows/nonadiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/nonadiabatic.py)
+
+Guide: [nonadiabatic-iesh-multistate.md](../nonadiabatic-iesh-multistate.md).
+
+Current boundary: P=1, real nondegenerate levels only. This is not unSMASH and is not a ring-polymer generalization; it does not alter the existing two-state rp-mash estimator.
+
+Independent checks: Compare three-state moving-packet populations to the independent Fourier quantum reference; check signed estimators, boundary events and accepted/frustrated energy changes.
+
+### na-pyscf-sacasscf
+
+**PySCF SA-CASSCF multistate bridge**
+
+Sources: [pyscf2018](#pyscf2018), [na-sacasscf2016](#na-sacasscf2016)
+
+The real all-electron equal-weight singlet SA-CASSCF provider returns energies, state gradients, full analytic NACs and many-electron overlaps with explicit root/phase tracking and restart context.
+
+Code: [src/pyrpmd/potentials/pyscf_multistate.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/potentials/pyscf_multistate.py), [src/pyrpmd/adiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/adiabatic.py)
+
+Guide: [tier2-nonadiabatic.md](../tier2-nonadiabatic.md).
+
+Current boundary: No TDDFT, SOC, ECP, density fitting or GPU path. Electron-translation factors are not applied; selected states, basis and active space require their own validation and citations.
+
+Independent checks: Compare direct PySCF energies and gradients, signed NACs against overlap differences, root tracking, core-active overlap terms and resumed electronic contexts.
+
+### na-heom
+
+**Drude–Lorentz spin-boson HEOM reference**
+
+Sources: [na-heom1989](#na-heom1989), [na-heom2020](#na-heom2020), [na-qutip-bofin2023](#na-qutip-bofin2023)
+
+A finite scaled-ADO hierarchy with Matsubara bath expansion and an optional tail terminator is propagated by sparse exponential actions. Deterministic continuation retains the entire hierarchy and its identity.
+
+Code: [src/pyrpmd/analysis/heom.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/analysis/heom.py)
+
+Guide: [tier2-nonadiabatic.md](../tier2-nonadiabatic.md).
+
+Current boundary: Two-state Drude–Lorentz model only. Factorized thermal-bath initialization is not an interacting equilibrium state. Hierarchy depth and Matsubara cutoff remain convergence parameters; physical_converged stays false.
+
+Independent checks: Compare isolated Rabi motion, exact Gaussian dephasing and optional QuTiP/BoFiN population curves; scan hierarchy depth and bath cutoff and retain all ADOs on continuation.
+
+### active-learning
+
+**Closed-loop committee learning**
+
+Sources: [committee2020](#committee2020), [active-rpmd2018](#active-rpmd2018), [mace2022](#mace2022)
+
+Sampling, disagreement selection, bounded reference labelling and versioned retraining run between fixed-model segments. Durable stage records and budgets support restart; a small CPU MACE trainer is optional.
+
+Code: [src/pyrpmd/active_learning.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/active_learning.py), [src/pyrpmd/active_learning_mace.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/active_learning_mace.py)
+
+Guide: [tier2-ml-lifecycle.md](../tier2-ml-lifecycle.md).
+
+Current boundary: This is a project composition, not a reproduction of the cited paper’s moment-tensor potential or rate benchmark. Disagreement stopping is separate from held-out reference accuracy and physical convergence.
+
+Independent checks: Track held-out energy/force errors, label efficiency, model hashes and crash/replay behavior; use independent learning trajectories and frozen reference validation sets.
+
+### rate-precision
+
+**Budgeted precision-driven thermal rate execution**
+
+Sources: [rate05](#rate05), [bimol09](#bimol09), [nist-bonferroni](#nist-bonferroni), [nist-uncertainty1994](#nist-uncertainty1994), [samp-cblock1992](#samp-cblock1992)
+
+pyrpmd precision freezes a design, runs independent complete rate replicas and declared numerical counterparts, and accounts for budgets durably. Covariance-aware log-delta intervals share a finite preallocated Bonferroni family; equivalence requires the entire adjusted interval inside the declared margin.
+
+Code: [src/pyrpmd/precision.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/precision.py), [src/pyrpmd/precision_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/precision_statistics.py), [src/pyrpmd/precision_execution.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/precision_execution.py), [src/pyrpmd/workflows/precision.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/precision.py)
+
+Guide: [rate_precision.md](../rate_precision.md).
+
+Current boundary: Intervals have approximate fixed-look coverage; repeated-check correction does not remove estimator bias, nonequilibrium sampling or missing plateau physics. The CLI currently supports its documented serial Python rate route. Budget exhaustion is not convergence.
+
+Independent checks: Use known-covariance controls, paired products and independent complete replicas; test receipt reconciliation, interrupt/replay accounting and numerical-equivalence rejection without changing the underlying rate identity.
 
 ## Bibliography
 
@@ -1970,7 +2296,7 @@ Role: Original classical electronic mapping antecedent; the complete classical S
 
 ### na-stock1997
 
-G. Stock and M. Thoss. **Semiclassical Description of Nonadiabatic Quantum Dynamics**. *Physical Review Letters 78, 578–581* (1997). DOI: [10.1103/PhysRevLett.78.578](https://doi.org/10.1103/PhysRevLett.78.578). [Source / author version](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.78.578).
+G. Stock and M. Thoss. **Semiclassical Description of Nonadiabatic Quantum Dynamics**. *Physical Review Letters 78, 578–581* (1997). DOI: [10.1103/PhysRevLett.78.578](https://doi.org/10.1103/PhysRevLett.78.578). [Source / author version](https://doi.org/10.1103/PhysRevLett.78.578).
 
 Role: Quantum mapping / SEO antecedent, not evidence that the package implements the full semiclassical IVR method..
 
@@ -2018,7 +2344,7 @@ Role: Population sampling/ET-rate follow-up used in interpreting MASH and CA-RP-
 
 ### na-carp2025
 
-Z. Cao, V. A. Suarez, and J. S. Kretchmer. **A ring polymer molecular dynamics extension of the mapping approach to surface hopping: Incorporation of nuclear quantum effects**. *ChemRxiv, version 1 (7 December 2025), preprint* (2025). DOI: [10.26434/chemrxiv-2025-xps2g](https://doi.org/10.26434/chemrxiv-2025-xps2g). [Source / author version](https://client.prod.orp.cambridge.org/engage/chemrxiv/article-details/692ba382a10c9f5ca169b8de).
+Z. Cao, V. A. Suarez, and J. S. Kretchmer. **A ring polymer molecular dynamics extension of the mapping approach to surface hopping: Incorporation of nuclear quantum effects**. *ChemRxiv, version 1 (7 December 2025), preprint* (2025). DOI: [10.26434/chemrxiv-2025-xps2g](https://doi.org/10.26434/chemrxiv-2025-xps2g). [Source / author version](https://doi.org/10.26434/chemrxiv-2025-xps2g).
 
 Role: Implemented CA-RP-MASH algorithm and operator-pair weights; record the implemented preprint version explicitly..
 
@@ -2036,13 +2362,13 @@ Role: Original RPSH proposal, with thermal scattering-rate tests..
 
 ### na-rpsh2017
 
-F. A. Shakib and P. Huo. **Ring Polymer Surface Hopping: Incorporating Nuclear Quantum Effects into Nonadiabatic Molecular Dynamics Simulations**. *The Journal of Physical Chemistry Letters 8, 3073–3080* (2017). DOI: [10.1021/acs.jpclett.7b01343](https://doi.org/10.1021/acs.jpclett.7b01343). [Source / author version](https://pubs.acs.org/doi/10.1021/acs.jpclett.7b01343).
+F. A. Shakib and P. Huo. **Ring Polymer Surface Hopping: Incorporating Nuclear Quantum Effects into Nonadiabatic Molecular Dynamics Simulations**. *The Journal of Physical Chemistry Letters 8, 3073–3080* (2017). DOI: [10.1021/acs.jpclett.7b01343](https://doi.org/10.1021/acs.jpclett.7b01343). [Source / author version](https://doi.org/10.1021/acs.jpclett.7b01343).
 
 Role: Nonequilibrium RPSH benchmark and centroid/full-ring rescaling convention discussion; Tully models and low-momentum scattering..
 
 ### na-rpshdm2023
 
-Y. Shakya, R. Welsch, L. Inhester, and R. Santra. **Capturing electronic decoherence in quantum-classical dynamics using the ring-polymer-surface-hopping–density-matrix approach**. *Physical Review A 107, 062810* (2023). DOI: [10.1103/PhysRevA.107.062810](https://doi.org/10.1103/PhysRevA.107.062810). [Source / author version](https://journals.aps.org/pra/abstract/10.1103/PhysRevA.107.062810).
+Y. Shakya, R. Welsch, L. Inhester, and R. Santra. **Capturing electronic decoherence in quantum-classical dynamics using the ring-polymer-surface-hopping–density-matrix approach**. *Physical Review A 107, 062810* (2023). DOI: [10.1103/PhysRevA.107.062810](https://doi.org/10.1103/PhysRevA.107.062810). [Source / author version](https://doi.org/10.1103/PhysRevA.107.062810).
 
 Role: Explicit CA, bead-average (BA), and bead-electronic density-matrix (DM) formulations; first author is Yashoj Shakya, initial Y., not P..
 
@@ -2066,13 +2392,13 @@ Role: Energy-based decoherence correction, especially the amplitude damping pres
 
 ### na-qd2018
 
-A. Mandal, S. S. R. K. C. Yamijala, and P. Huo. **Quasi-Diabatic Representation for Nonadiabatic Dynamics Propagation**. *Journal of Chemical Theory and Computation 14, 1828–1840* (2018). DOI: [10.1021/acs.jctc.7b01178](https://doi.org/10.1021/acs.jctc.7b01178). [Source / author version](https://pubs.acs.org/doi/10.1021/acs.jctc.7b01178).
+A. Mandal, S. S. R. K. C. Yamijala, and P. Huo. **Quasi-Diabatic Representation for Nonadiabatic Dynamics Propagation**. *Journal of Chemical Theory and Computation 14, 1828–1840* (2018). DOI: [10.1021/acs.jctc.7b01178](https://doi.org/10.1021/acs.jctc.7b01178). [Source / author version](https://doi.org/10.1021/acs.jctc.7b01178).
 
 Role: QD local-basis/overlap strategy; its PLDM calculation is not implemented merely by reusing QD transport..
 
 ### na-qd2019
 
-W. Zhou, A. Mandal, and P. Huo. **Quasi-Diabatic Scheme for Nonadiabatic On-the-Fly Simulations**. *The Journal of Physical Chemistry Letters 10, 7062–7070* (2019). DOI: [10.1021/acs.jpclett.9b02747](https://doi.org/10.1021/acs.jpclett.9b02747). [Source / author version](https://pubs.acs.org/doi/10.1021/acs.jpclett.9b02747).
+W. Zhou, A. Mandal, and P. Huo. **Quasi-Diabatic Scheme for Nonadiabatic On-the-Fly Simulations**. *The Journal of Physical Chemistry Letters 10, 7062–7070* (2019). DOI: [10.1021/acs.jpclett.9b02747](https://doi.org/10.1021/acs.jpclett.9b02747). [Source / author version](https://doi.org/10.1021/acs.jpclett.9b02747).
 
 Role: On-the-fly QD demonstration with ethylene; package QD-NRPMD is a composition with a different dynamical approximation..
 
@@ -2150,13 +2476,13 @@ Role: software / PIMD formulation.
 
 ### pd2024
 
-Y. Kataoka; J. Haruyama; O. Sugino; M. Shiga. **Predictive evaluation of hydrogen diffusion coefficient on Pd(111) surface by path integral simulations using neural network potential**. *Phys. Rev. Research 6, 043224* (2024). DOI: [10.1103/PhysRevResearch.6.043224](https://doi.org/10.1103/PhysRevResearch.6.043224). [Source / author version](https://journals.aps.org/prresearch/abstract/10.1103/PhysRevResearch.6.043224).
+Y. Kataoka; J. Haruyama; O. Sugino; M. Shiga. **Predictive evaluation of hydrogen diffusion coefficient on Pd(111) surface by path integral simulations using neural network potential**. *Phys. Rev. Research 6, 043224* (2024). DOI: [10.1103/PhysRevResearch.6.043224](https://doi.org/10.1103/PhysRevResearch.6.043224). [Source / author version](https://doi.org/10.1103/PhysRevResearch.6.043224).
 
 Role: application / estimator convention.
 
 ### ni2012
 
-Y. V. Suleimanov. **Surface Diffusion of Hydrogen on Ni(100) from Ring Polymer Molecular Dynamics**. *J. Phys. Chem. C 116, 11141–11153* (2012). DOI: [10.1021/jp302453z](https://doi.org/10.1021/jp302453z). [Source / author version](https://pubs.acs.org/doi/10.1021/jp302453z).
+Y. V. Suleimanov. **Surface Diffusion of Hydrogen on Ni(100) from Ring Polymer Molecular Dynamics**. *J. Phys. Chem. C 116, 11141–11153* (2012). DOI: [10.1021/jp302453z](https://doi.org/10.1021/jp302453z). [Source / author version](https://doi.org/10.1021/jp302453z).
 
 Role: application.
 
@@ -2180,7 +2506,7 @@ Role: potential model.
 
 ### pcet2008
 
-C. Venkataraman; A. V. Soudackov; S. Hammes-Schiffer. **Theoretical Formulation of Nonadiabatic Electrochemical Proton-Coupled Electron Transfer at Metal–Solution Interfaces**. *J. Phys. Chem. C 112, 12386–12397* (2008). DOI: [10.1021/jp802171y](https://doi.org/10.1021/jp802171y). [Source / author version](https://pubs.acs.org/doi/10.1021/jp802171y).
+C. Venkataraman; A. V. Soudackov; S. Hammes-Schiffer. **Theoretical Formulation of Nonadiabatic Electrochemical Proton-Coupled Electron Transfer at Metal–Solution Interfaces**. *J. Phys. Chem. C 112, 12386–12397* (2008). DOI: [10.1021/jp802171y](https://doi.org/10.1021/jp802171y). [Source / author version](https://doi.org/10.1021/jp802171y).
 
 Role: method.
 
@@ -2240,13 +2566,13 @@ Role: method.
 
 ### qmdff2014
 
-S. Grimme. **A General Quantum Mechanically Derived Force Field (QMDFF) for Molecules and Condensed Phase Simulations**. *J. Chem. Theory Comput. 10, 4497–4514* (2014). DOI: [10.1021/ct500573f](https://doi.org/10.1021/ct500573f). [Source / author version](https://pubs.acs.org/doi/10.1021/ct500573f).
+S. Grimme. **A General Quantum Mechanically Derived Force Field (QMDFF) for Molecules and Condensed Phase Simulations**. *J. Chem. Theory Comput. 10, 4497–4514* (2014). DOI: [10.1021/ct500573f](https://doi.org/10.1021/ct500573f). [Source / author version](https://doi.org/10.1021/ct500573f).
 
 Role: method.
 
 ### deevb2015
 
-B. Hartke; S. Grimme. **Reactive force fields made simple**. *Phys. Chem. Chem. Phys. 17, 16715–16718* (2015). DOI: [10.1039/C5CP02580J](https://doi.org/10.1039/C5CP02580J). [Source / author version](https://pubs.rsc.org/en/content/articlehtml/2015/cp/c5cp02580j).
+B. Hartke; S. Grimme. **Reactive force fields made simple**. *Phys. Chem. Chem. Phys. 17, 16715–16718* (2015). DOI: [10.1039/C5CP02580J](https://doi.org/10.1039/C5CP02580J). [Source / author version](https://doi.org/10.1039/C5CP02580J).
 
 Role: method.
 
@@ -2258,7 +2584,7 @@ Role: method.
 
 ### caracal2023
 
-J. Steffen. **Caracal: A Versatile Ring Polymer Molecular Dynamics Simulation Package**. *J. Chem. Theory Comput. 19, 5334–5355* (2023). DOI: [10.1021/acs.jctc.3c00568](https://doi.org/10.1021/acs.jctc.3c00568). [Source / author version](https://pubs.acs.org/doi/10.1021/acs.jctc.3c00568).
+J. Steffen. **Caracal: A Versatile Ring Polymer Molecular Dynamics Simulation Package**. *J. Chem. Theory Comput. 19, 5334–5355* (2023). DOI: [10.1021/acs.jctc.3c00568](https://doi.org/10.1021/acs.jctc.3c00568). [Source / author version](https://doi.org/10.1021/acs.jctc.3c00568).
 
 Role: software / upstream PES implementation.
 
@@ -2270,7 +2596,7 @@ Role: method.
 
 ### jaxpip2026
 
-J. Li; K. Song; H. Guo; J. Li. **Efficient Tensorized Evaluation of Permutation Invariant Polynomials for Representing Potential Energy Surfaces**. *J. Chem. Theory Comput. 22, 9940–9953* (2026). DOI: [10.1021/acs.jctc.6c01659](https://doi.org/10.1021/acs.jctc.6c01659). [Source / author version](https://pubs.acs.org/doi/10.1021/acs.jctc.6c01659).
+J. Li; K. Song; H. Guo; J. Li. **Efficient Tensorized Evaluation of Permutation Invariant Polynomials for Representing Potential Energy Surfaces**. *J. Chem. Theory Comput. 22, 9940–9953* (2026). DOI: [10.1021/acs.jctc.6c01659](https://doi.org/10.1021/acs.jctc.6c01659). [Source / author version](https://doi.org/10.1021/acs.jctc.6c01659).
 
 Role: method / software.
 
@@ -2282,7 +2608,7 @@ Role: method.
 
 ### delta2015
 
-R. Ramakrishnan; P. O. Dral; M. Rupp; O. A. von Lilienfeld. **Big Data Meets Quantum Chemistry Approximations: The Δ-Machine Learning Approach**. *J. Chem. Theory Comput. 11, 2087–2096* (2015). DOI: [10.1021/acs.jctc.5b00099](https://doi.org/10.1021/acs.jctc.5b00099). [Source / author version](https://pubs.acs.org/doi/10.1021/acs.jctc.5b00099).
+R. Ramakrishnan; P. O. Dral; M. Rupp; O. A. von Lilienfeld. **Big Data Meets Quantum Chemistry Approximations: The Δ-Machine Learning Approach**. *J. Chem. Theory Comput. 11, 2087–2096* (2015). DOI: [10.1021/acs.jctc.5b00099](https://doi.org/10.1021/acs.jctc.5b00099). [Source / author version](https://doi.org/10.1021/acs.jctc.5b00099).
 
 Role: method.
 
@@ -2348,7 +2674,7 @@ Role: external electronic method.
 
 ### ipea2017
 
-V. Ásgeirsson; C. A. Bauer; S. Grimme. **Quantum chemical calculation of electron ionization mass spectra for general organic and inorganic molecules**. *Chemical Science 8, 4879–4895* (2017). DOI: [10.1039/C7SC00601B](https://doi.org/10.1039/C7SC00601B). [Source / author version](https://pubs.rsc.org/en/content/articlehtml/2017/sc/c7sc00601b).
+V. Ásgeirsson; C. A. Bauer; S. Grimme. **Quantum chemical calculation of electron ionization mass spectra for general organic and inorganic molecules**. *Chemical Science 8, 4879–4895* (2017). DOI: [10.1039/C7SC00601B](https://doi.org/10.1039/C7SC00601B). [Source / author version](https://doi.org/10.1039/C7SC00601B).
 
 Role: IPEA-xTB origin; PyRPMD does not implement QCEIMS.
 
@@ -2387,3 +2713,207 @@ Role: Original Morse potential and analytic vibrational levels.
 Z. Xie; J. M. Bowman. **Permutationally Invariant Polynomial Basis for Molecular Energy Surface Fitting via Monomial Symmetrization**. *J. Chem. Theory Comput. 6, 26–34 (online 2009)* (2010). DOI: [10.1021/ct9004917](https://doi.org/10.1021/ct9004917).
 
 Role: Original monomial-symmetrization PIP basis method.
+
+### qcmd2019
+
+G. Trenins; M. J. Willatt; S. C. Althorpe. **Path-integral dynamics of water using curvilinear centroids**. *J. Chem. Phys. 151, 054109* (2019). DOI: [10.1063/1.5100587](https://doi.org/10.1063/1.5100587).
+
+Role: Original quasi-centroid coordinates and QCMD method; full real-time QCMD is not implemented.
+
+### fqcmd2021
+
+T. Fletcher; A. Zhu; J. E. Lawrence; D. E. Manolopoulos. **Fast quasi-centroid molecular dynamics**. *J. Chem. Phys. 155, 231101* (2021). DOI: [10.1063/5.0076704](https://doi.org/10.1063/5.0076704). [Source / author version](https://arxiv.org/abs/2111.11572).
+
+Role: Original f-QCMD effective-potential construction; PyRPMD implements a restricted molecular subset.
+
+### fermions2020
+
+B. Hirshberg; M. Invernizzi; M. Parrinello. **Path integral molecular dynamics for fermions: Alleviating the sign problem with the Bogoliubov inequality**. *J. Chem. Phys. 152, 171102* (2020). DOI: [10.1063/5.0008720](https://doi.org/10.1063/5.0008720). [Source / author version](https://arxiv.org/abs/2003.10317).
+
+Role: Bosonic-sampling fermionic reweighting; the auxiliary Bogoliubov-bound extension is not implemented.
+
+### exchange-pbc2025
+
+J. Higer; Y. M. Y. Feldman; B. Hirshberg. **Periodic boundary conditions for bosonic path integral molecular dynamics**. *J. Chem. Phys. 163, 024101* (2025). DOI: [10.1063/5.0265906](https://doi.org/10.1063/5.0265906). [Source / author version](https://arxiv.org/abs/2501.17618).
+
+Role: Periodic exchange image sums and the limitations of the minimum-image approximation.
+
+### gle2010
+
+M. Ceriotti; G. Bussi; M. Parrinello. **Colored-Noise Thermostats à la Carte**. *J. Chem. Theory Comput. 6, 1170–1180* (2010). DOI: [10.1021/ct900563s](https://doi.org/10.1021/ct900563s).
+
+Role: Harmonic Lyapunov response, autocorrelation objective and colored-noise fitting; not a source of bundled parameter tables.
+
+### bofill1994
+
+J. M. Bofill. **Updated Hessian matrix and the restricted step method for locating transition structures**. *J. Comput. Chem. 15, 1–11* (1994). DOI: [10.1002/jcc.540150102](https://doi.org/10.1002/jcc.540150102).
+
+Role: Hessian-update method.
+
+### instanton-onthefly2016
+
+A. N. Beyer; J. O. Richardson; P. J. Knowles; J. Rommel; S. C. Althorpe. **Quantum Tunneling Rates of Gas-Phase Reactions from On-the-Fly Instanton Calculations**. *J. Phys. Chem. Lett. 7, 4374–4379* (2016). DOI: [10.1021/acs.jpclett.6b02115](https://doi.org/10.1021/acs.jpclett.6b02115).
+
+Role: Practical molecular instanton optimization; PyRPMD does not reproduce the Molpro implementation.
+
+### gr-instanton2015a
+
+J. O. Richardson; R. Bauer; M. Thoss. **Semiclassical Green’s functions and an instanton formulation of electron-transfer rates in the nonadiabatic limit**. *J. Chem. Phys. 143, 134115* (2015). DOI: [10.1063/1.4932361](https://doi.org/10.1063/1.4932361).
+
+Role: Original golden-rule instanton derivation.
+
+### gr-instanton2015b
+
+J. O. Richardson. **Ring-polymer instanton theory of electron transfer in the nonadiabatic limit**. *J. Chem. Phys. 143, 134116* (2015). DOI: [10.1063/1.4932362](https://doi.org/10.1063/1.4932362).
+
+Role: Ring-polymer numerical formulation of golden-rule instantons.
+
+### samp-abf2008
+
+E. Darve; D. Rodríguez-Gómez; A. Pohorille. **Adaptive biasing force method for scalar and vector free energy calculations**. *J. Chem. Phys. 128, 144120* (2008). DOI: [10.1063/1.2829861](https://doi.org/10.1063/1.2829861).
+
+Role: Scalar/vector ABF local mean-force estimator.
+
+### samp-pabf2015
+
+H. Alrachid; T. Lelièvre. **Long-time convergence of an adaptive biasing force method: Variance reduction by Helmholtz projection**. *SMAI J. Comput. Math. 1, 55–82* (2015). DOI: [10.5802/smai-jcm.4](https://doi.org/10.5802/smai-jcm.4).
+
+Role: Projected ABF and Helmholtz projection.
+
+### samp-eabf2017
+
+A. Lesage; T. Lelièvre; G. Stoltz; J. Hénin. **Smoothed Biasing Forces Yield Unbiased Free Energies with the Extended-System Adaptive Biasing Force Method**. *J. Phys. Chem. B 121, 3676–3685* (2017). DOI: [10.1021/acs.jpcb.6b10055](https://doi.org/10.1021/acs.jpcb.6b10055).
+
+Role: Extended-system ABF and physical-CV reconstruction.
+
+### samp-jarzynski1997
+
+C. Jarzynski. **Nonequilibrium Equality for Free Energy Differences**. *Phys. Rev. Lett. 78, 2690–2693* (1997). DOI: [10.1103/PhysRevLett.78.2690](https://doi.org/10.1103/PhysRevLett.78.2690).
+
+Role: Original nonequilibrium work equality.
+
+### samp-crooks1999
+
+G. E. Crooks. **Entropy production fluctuation theorem and the nonequilibrium work relation for free energy differences**. *Phys. Rev. E 60, 2721–2726* (1999). DOI: [10.1103/PhysRevE.60.2721](https://doi.org/10.1103/PhysRevE.60.2721).
+
+Role: Forward/reverse work fluctuation relation.
+
+### samp-bennett1976
+
+C. H. Bennett. **Efficient estimation of free energy differences from Monte Carlo data**. *J. Comput. Phys. 22, 245–268* (1976). DOI: [10.1016/0021-9991(76)90078-4](https://doi.org/10.1016/0021-9991(76)90078-4).
+
+Role: Acceptance-ratio estimator used in bidirectional work analysis.
+
+### samp-shadow2013
+
+D. A. Sivak; J. D. Chodera; G. E. Crooks. **Using Nonequilibrium Fluctuation Theorems to Understand and Correct Errors in Equilibrium and Nonequilibrium Simulations of Discrete Langevin Dynamics**. *Phys. Rev. X 3, 011007* (2013). DOI: [10.1103/PhysRevX.3.011007](https://doi.org/10.1103/PhysRevX.3.011007).
+
+Role: Shadow-work accounting for discrete stochastic propagation.
+
+### samp-pptis2004
+
+D. Moroni; P. G. Bolhuis; T. S. van Erp. **Rate constants for diffusive processes by partial path sampling**. *J. Chem. Phys. 120, 4055–4065* (2004). DOI: [10.1063/1.1644537](https://doi.org/10.1063/1.1644537). [Source / author version](https://arxiv.org/abs/cond-mat/0310466).
+
+Role: Original partial-path memory-loss approximation.
+
+### samp-repptis2023
+
+W. Vervust; D. T. Zhang; T. S. van Erp; A. Ghysels. **Path sampling with memory reduction and replica exchange to reach long permeation timescales**. *Biophys. J. 122, 2960–2972* (2023). DOI: [10.1016/j.bpj.2023.02.021](https://doi.org/10.1016/j.bpj.2023.02.021). [Source / author version](https://pmc.ncbi.nlm.nih.gov/articles/PMC10398259/).
+
+Role: Replica-exchange PPTIS.
+
+### samp-ffs2005
+
+R. J. Allen; P. B. Warren; P. R. ten Wolde. **Sampling Rare Switching Events in Biochemical Networks**. *Phys. Rev. Lett. 94, 018104* (2005). DOI: [10.1103/PhysRevLett.94.018104](https://doi.org/10.1103/PhysRevLett.94.018104).
+
+Role: Original forward-flux sampling method.
+
+### samp-ffs2009
+
+R. J. Allen; C. Valeriani; P. R. ten Wolde. **Forward flux sampling for rare event simulations**. *J. Phys.: Condens. Matter 21, 463102* (2009). DOI: [10.1088/0953-8984/21/46/463102](https://doi.org/10.1088/0953-8984/21/46/463102). [Source / author version](https://arxiv.org/abs/0906.4758).
+
+Role: Method review and practical stochastic-splitting formulation; original method is cited separately.
+
+### samp-mlcolvar2023
+
+L. Bonati; E. Trizio; A. Rizzi; M. Parrinello. **A unified framework for machine learning collective variables for enhanced sampling simulations: mlcolvar**. *J. Chem. Phys. 159, 014801* (2023). DOI: [10.1063/5.0156343](https://doi.org/10.1063/5.0156343).
+
+Role: Upstream training software; deployed CVs also need their method citation.
+
+### samp-deeplda2020
+
+L. Bonati; A. Rizzi; M. Parrinello. **Data-Driven Collective Variables for Enhanced Sampling**. *J. Phys. Chem. Lett. 11, 2998–3004* (2020). DOI: [10.1021/acs.jpclett.0c00535](https://doi.org/10.1021/acs.jpclett.0c00535).
+
+Role: Deep-LDA collective variables.
+
+### samp-deeptica2021
+
+L. Bonati; G. Piccini; M. Parrinello. **Deep learning the slow modes for rare events sampling**. *Proc. Natl. Acad. Sci. USA 118, e2113533118* (2021). DOI: [10.1073/pnas.2113533118](https://doi.org/10.1073/pnas.2113533118).
+
+Role: Deep-TICA collective variables.
+
+### na-iesh2009
+
+N. Shenvi; S. Roy; J. C. Tully. **Nonadiabatic dynamics at metal surfaces: Independent-electron surface hopping**. *J. Chem. Phys. 130, 174107* (2009). DOI: [10.1063/1.3125436](https://doi.org/10.1063/1.3125436).
+
+Role: Original IESH method.
+
+### na-iesh2023
+
+J. Gardner; D. Corken; S. M. Janke; S. Habershon; R. J. Maurer. **Efficient implementation and performance analysis of the independent electron surface hopping method for dynamics at metal surfaces**. *J. Chem. Phys. 158, 064101* (2023). DOI: [10.1063/5.0137137](https://doi.org/10.1063/5.0137137). [Source / author version](https://arxiv.org/abs/2212.00518v2).
+
+Role: IESH implementation analysis and benchmark formulation.
+
+### na-multimash2023
+
+J. E. Runeson; D. E. Manolopoulos. **A multi-state mapping approach to surface hopping**. *J. Chem. Phys. 159, 094115* (2023). DOI: [10.1063/5.0158147](https://doi.org/10.1063/5.0158147). [Source / author version](https://arxiv.org/abs/2305.08835v3).
+
+Role: Original multistate MASH, including signed estimators and multistate momentum direction; not unSMASH.
+
+### na-sacasscf2016
+
+I. Fdez. Galván; M. G. Delcey; T. B. Pedersen; F. Aquilante; R. Lindh. **Analytical State-Average Complete-Active-Space Self-Consistent Field Nonadiabatic Coupling Vectors: Implementation with Density-Fitted Two-Electron Integrals and Application to Conical Intersections**. *J. Chem. Theory Comput. 12, 3636–3653* (2016). DOI: [10.1021/acs.jctc.6b00384](https://doi.org/10.1021/acs.jctc.6b00384).
+
+Role: SA-CASSCF analytic-coupling derivation cited by the provider; this bridge does not enable density fitting.
+
+### na-heom1989
+
+Y. Tanimura; R. Kubo. **Time Evolution of a Quantum System in Contact with a Nearly Gaussian-Markoffian Noise Bath**. *J. Phys. Soc. Jpn. 58, 101–114* (1989). DOI: [10.1143/JPSJ.58.101](https://doi.org/10.1143/JPSJ.58.101).
+
+Role: Original hierarchy foundation; finite-temperature formulation is cited separately.
+
+### na-heom2020
+
+Y. Tanimura. **Numerically “exact” approach to open quantum dynamics: The hierarchical equations of motion (HEOM)**. *J. Chem. Phys. 153, 020901* (2020). DOI: [10.1063/5.0011599](https://doi.org/10.1063/5.0011599).
+
+Role: Modern formulation and review; a finite hierarchy still requires convergence.
+
+### na-qutip-bofin2023
+
+N. Lambert; T. Raheja; S. Cross; P. Menczel; S. Ahmed; A. Pitchford; D. Burgarth; F. Nori. **QuTiP-BoFiN: A bosonic and fermionic numerical hierarchical-equations-of-motion library with applications in light-harvesting, quantum control, and single-molecule electronics**. *Phys. Rev. Research 5, 013181* (2023). DOI: [10.1103/PhysRevResearch.5.013181](https://doi.org/10.1103/PhysRevResearch.5.013181).
+
+Role: Optional independent software comparator and published population benchmark, not the PyRPMD implementation.
+
+### active-rpmd2018
+
+I. S. Novikov; Y. V. Suleimanov; A. V. Shapeev. **Automated calculation of thermal rate coefficients using ring polymer molecular dynamics and machine-learning interatomic potentials with active learning**. *Phys. Chem. Chem. Phys. 20, 29503–29512* (2018). DOI: [10.1039/C8CP06037A](https://doi.org/10.1039/C8CP06037A).
+
+Role: Published active-learning RPMD rate workflow; the PyRPMD pilot is a distinct committee-based control experiment.
+
+### metatomic2026
+
+F. Bigi; J. W. Abbott; P. Loche; A. Mazitov; D. Tisi; M. F. Langer; A. Goscinski; P. Pegolo; S. Chong; R. Goswami; P. Febrer; S. Chorna; M. Kellner; M. Ceriotti; G. Fraux. **Metatensor and metatomic: Foundational libraries for interoperable atomistic machine learning**. *J. Chem. Phys. 164, 064113* (2026). DOI: [10.1063/5.0304911](https://doi.org/10.1063/5.0304911). [Source / author version](https://docs.metatensor.org/metatomic/latest/cite.html).
+
+Role: Upstream interoperability software; model weights require their own attribution.
+
+### nist-bonferroni
+
+NIST/SEMATECH. **e-Handbook of Statistical Methods: Bonferroni’s method**. *NIST Handbook 151, §7.4.7.3 (online section accessed 2026-11-03)* (2002). [Source / author version](https://www.itl.nist.gov/div898/handbook/prc/section4/prc473.htm).
+
+Role: Official formula reference for finite-family simultaneous intervals; 2002 is the handbook launch year.
+
+### nist-uncertainty1994
+
+B. N. Taylor; C. E. Kuyatt. **Guidelines for Evaluating and Expressing the Uncertainty of NIST Measurement Results**. *NIST Technical Note 1297, 1994 edition, Appendix A* (1994). DOI: [10.6028/NIST.tn.1297](https://doi.org/10.6028/NIST.tn.1297). [Source / author version](https://www.nist.gov/pml/nist-technical-note-1297/nist-tn-1297-appendix-law-propagation-uncertainty).
+
+Role: Official covariance-aware first-order propagation of uncertainty, not a guarantee of finite-sample coverage.

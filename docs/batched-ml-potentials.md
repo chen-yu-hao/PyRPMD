@@ -1,7 +1,3 @@
----
-orphan: true
----
-
 # Batched machine-learning potentials
 
 The opt-in providers `mace-batched`, `nequip-batched`, `fairchem-batched`,

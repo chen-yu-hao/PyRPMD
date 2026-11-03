@@ -208,10 +208,12 @@ It reported `correctness_passed=true` and `unavailable_backends=[]`, covering th
 synthetic complex model and published NaH2 PES, including scalar and batched
 integration. The numerical and timing summary is retained in
 [electronic_backends_torch_cpu_ci_summary.json](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/nonadiabatic/electronic_backends_torch_cpu_ci_summary.json).
-The [complete uploaded artifact](https://github.com/chen-yu-hao/PyRPMD/actions/runs/41290725504/artifacts/13077551898)
-contains the full environment, per-observable errors, kernel rows and raw timing
-samples. Its host hardware differs from the local environment above, so the
-local timing table remains a separate measurement.
+The [workflow run](https://github.com/chen-yu-hao/PyRPMD/actions/runs/41290725504)
+records the original artifact upload with full environment, per-observable errors,
+kernel rows and raw timing samples. Hosted artifacts can expire; the checked-in
+summary above is the durable numerical record. Its host hardware differs from
+the local environment above, so the local timing table remains a separate
+measurement.
 
 The actual tested PR head was `c53fd1dff83917d4b3137abaebf03135880d9b68`, checked
 out through merge commit `a04d478f0b52d938fafe45d427d4906703bc12c6`. The later

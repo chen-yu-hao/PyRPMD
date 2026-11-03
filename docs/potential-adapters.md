@@ -52,7 +52,7 @@ The declaration promises independent, history-independent energies, forces and
 virials: changing the frame order or count, interleaving replicas, or using a
 new calculator instance must not change any frame's physical result. Audit the
 actual calculator/model, including its convergence and warm-start behavior.
-The [Ni–H example](../benchmarks/materials/batch_acceptance.md) checks these
+The [Ni–H example](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/materials/batch_acceptance.md) checks these
 properties for a checksum-pinned EAM table and compares against ASE directly.
 
 Without an explicit declaration in the input or calculator metadata, ASE is
@@ -688,7 +688,7 @@ stress produces no virial through the ASE route. Check a model's energy drift
 and gradient accuracy before using its trajectories as production evidence.
 
 References: [FAIRChem calculator API](https://github.com/facebookresearch/fairchem/blob/main/src/fairchem/core/calculate/ase_calculator.py),
-[inference guide](https://fair-chem.github.io/core/common_tasks/ase_calculator.html),
+[inference guide](https://facebookresearch.github.io/fairchem/ase-calculator/),
 the [UMA task and electronic-state conventions](https://github.com/facebookresearch/fairchem/blob/main/docs/core/uma.md),
 and [UMA precision changelog](https://facebookresearch.github.io/fairchem/uma-changelog/).
 

@@ -292,7 +292,7 @@ method from the extra combinations exposed by this API.
 1. Y. Shakya, R. Welsch, L. Inhester and R. Santra, *Capturing electronic
    decoherence in quantum-classical dynamics using the ring-polymer-surface-
    hopping–density-matrix approach*, **Phys. Rev. A 107**, 062810 (2023).
-   [DOI and accepted manuscript](https://link.aps.org/accepted/10.1103/PhysRevA.107.062810).
+   [DOI](https://doi.org/10.1103/PhysRevA.107.062810).
 2. D. K. Limbu, S. Bhusal, D. M. Castañeda-Bagatella and F. A. Shakib,
    *Diagonal Born–Oppenheimer corrections in condensed-phase ring polymer
    surface hopping*, **J. Chem. Phys. 163**, 234102 (2025).

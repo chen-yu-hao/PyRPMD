@@ -1,7 +1,3 @@
----
-orphan: true
----
-
 # Efficient phase projection for tunnelling splittings
 
 The [open-path ground-doublet calculation](low-temperature.md) removes the

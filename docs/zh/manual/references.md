@@ -1,9 +1,12 @@
 # 原始论文与实现功能对照
 
-本页按**已实现的方法/模型/接口**归并功能，而不是为每个辅助函数硬配论文。核查对象是
-[`cb60679`](https://github.com/chen-yu-hao/PyRPMD/commit/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d)，核查日期为 **2026-11-02**。
-下列 **111 个条目、170 条文献记录**将源码、原始方法及实现范围联系起来；
-[复现清单](reproduction.md)另列原文体系、应算物理量、现有入口、缺失条件和优先级。
+本目录按**方法、模型与接口**记录出处，共 **127 个条目、204 条文献记录**。
+原始 111 项审计保留在 [`cb60679`](https://github.com/chen-yu-hao/PyRPMD/commit/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d)（2026-11-02）；
+本次依据已集成的 [`ceee59c`](https://github.com/chen-yu-hao/PyRPMD/commit/ceee59cd5f702165b56c5e541a503d8810fb9111)
+在 **2026-11-03** 更新 16 项并新增 16 项，JSON 的 `integration_update` 逐项列出范围。
+未更新条目的源码链接保留原审计提交。下文带“当前边界”的条目及链接指南给出更新后的限制；
+[复现清单](reproduction.md)保留其历史体系和待办，不把旧缺口当作当前未实现功能。
+本次整合不宣称 PIMD 引擎收敛、h-CMD、f-QCMD 光谱证据或 GPU 性能实测已经完成。
 
 ## 如何引用
 
@@ -88,11 +91,15 @@
 
 出处：[qct65](#qct65), [state20](#state20), [state22](#state22)
 
-主工作流是 P=1 谐振初态；H₃ 基准另有 J(E)=v+1/2 和按运动时间均匀抽相位的全势能面双原子初始化。
+主 QCT 为 P=1 谐振制备；j0_energy_policy="preserve_actions" 在零角动量制备时保留指定模态作用量。H3 基准另在全势面双原子轨道解 J(E)=v+1/2，并均匀抽取时间相位。
 
-源码：[src/pyrpmd/initial_states.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/initial_states.py), [src/pyrpmd/workflows/state_selected.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/state_selected.py), [benchmarks/h3/diatomic_action.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/diatomic_action.py), [benchmarks/h3/state_preparation_study.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/state_preparation_study.py)
+源码：[src/pyrpmd/initial_states.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/initial_states.py), [src/pyrpmd/workflows/state_selected.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/state_selected.py), [benchmarks/h3/diatomic_action.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/benchmarks/h3/diatomic_action.py), [benchmarks/h3/state_preparation_study.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/benchmarks/h3/state_preparation_study.py)
 
-[该项复现任务](reproduction.md#task-qct).
+当前边界：作用量量子化是半经典近似；全 PES 版本限 H₃ 双原子基准，不能宣称通用多原子算法或精确本征态。
+
+指南：[初始振动态选择的 QCT 与 NE-RPMD 散射（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/state-selected.md)。
+
+[历史复现计划](reproduction.md#task-qct)（当前范围以上述更新为准）。
 
 ### state-switch
 
@@ -170,25 +177,33 @@ PILE-L 按环频率设局域摩擦；PILE-G 对内模用 PILE、质心用全局�
 
 **Cartesian/正常模 GLE 热浴**
 
-出处：[gle09](#gle09), [pile10](#pile10)
+出处：[gle09](#gle09), [gle2010](#gle2010), [pile10](#pile10)
 
-使用显式稳定漂移矩阵和协方差矩阵的扩展变量 OU 更新，可组合质心 SVR。
+精确扩展变量 OU 热浴可接收显式矩阵、可审计的 gle4md 导入、解析白噪声 OPT(V) 参数或指定频段的确定性有色噪声拟合；目标和残差进入参数身份。
 
-源码：[src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+源码：[src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/native_ensemble.py), [src/pyrpmd/gle_parameters.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/gle_parameters.py), [src/pyrpmd/_gle_fitting.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/_gle_fitting.py)
 
-[该项复现任务](reproduction.md#task-gle).
+指南：[condensed-phase-nqe.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/condensed-phase-nqe.md).
+
+当前边界：有色拟合不保证全局最优；谐振拟合通过不代表非谐性或时间步收敛，未捆绑第三方参数表。
+
+[历史复现计划](reproduction.md#task-gle)（当前范围以上述更新为准）。
 
 ### piglet
 
-**外部标定矩阵驱动的 PIGLET**
+**可导入或生成谐振校准参数的 PIGLET**
 
-出处：[piglet12](#piglet12)
+出处：[piglet12](#piglet12), [gle2010](#gle2010)
 
-NVT 正常模 GLE，要求矩阵分别匹配逆温度 β 和珠数 P 并记录来源；没有内置标定表。
+逐模 GLE 显式记录温度、珠数和来源；generate_piglet 用正则质心及共享内模热浴拟合谐振势能和质心位力动能。在质心协方差满足约束时支持各向同性 BZP NPT。
 
-源码：[src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+源码：[src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/native_ensemble.py), [src/pyrpmd/gle_parameters.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/gle_parameters.py), [src/pyrpmd/_gle_fitting.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/_gle_fitting.py)
 
-[该项复现任务](reproduction.md#task-piglet).
+指南：[condensed-phase-nqe.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/condensed-phase-nqe.md).
+
+当前边界：独立谐振网格残差只是拟合诊断，不是分子收敛；仍不支持柔性晶胞 PIGLET NPT 或 TRPMD。
+
+[历史复现计划](reproduction.md#task-piglet)（当前范围以上述更新为准）。
 
 ### ffl
 
@@ -362,13 +377,17 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 **二次复杂度玻色交换 PIMD**
 
-出处：[bose19](#bose19), [bose23](#bose23)
+出处：[bose19](#bose19), [bose23](#bose23), [exchange-pbc2025](#exchange-pbc2025)
 
-同质量交换组的 Feldman–Hirshberg O(N²+PN) 递推，使用代表循环并测量对称量。
+同质量交换组采用 Feldman–Hirshberg O(N²+PN) 代表循环递推；支持非周期、显式最小镜像及按容差截断的全绕数核，周期交换可走全珠子各向同性 BZP NPT。
 
-源码：[src/pyrpmd/pimd_methods.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pimd_methods.py), [src/pyrpmd/workflows/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/path_integral.py)
+源码：[src/pyrpmd/pimd_methods.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/pimd_methods.py), [src/pyrpmd/workflows/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/path_integral.py)
 
-[该项复现任务](reproduction.md#task-bosons).
+指南：[tier2-path-integral.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/tier2-path-integral.md).
+
+当前边界：代表循环势逐点不必等于全排列和，应比较对称可观测量。没有采样绕数或超流估计量；最小镜像仍为近似，全绕数求和有显式工作量上限。
+
+[历史复现计划](reproduction.md#task-bosons)（当前范围以上述更新为准）。
 
 ### pigs
 
@@ -386,13 +405,17 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 **环聚合物瞬子热速率**
 
-出处：[rpi09](#rpi09), [rpi16](#rpi16)
+出处：[rpi09](#rpi09), [rpi16](#rpi16), [bofill1994](#bofill1994), [instanton-onthefly2016](#instanton-onthefly2016)
 
-优化驻定虚时间路径，计算半经典涨落行列式/前因子、谐振反应物归一化及负/零模；气相速率可声明外部刚体模。
+分子路径优化与速率工作流提供 root/Bofill 求解、解析/提供器或有限差分 Hessian、珠数/容差扫描、反应物归一化和负/零模检查，通过 pyrpmd instanton 使用。
 
-源码：[src/pyrpmd/instanton.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/instanton.py), [src/pyrpmd/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/low_temperature.py)
+源码：[src/pyrpmd/instanton.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/instanton.py), [src/pyrpmd/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/low_temperature.py), [src/pyrpmd/workflows/instanton.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/instanton.py)
 
-[该项复现任务](reproduction.md#task-rpi).
+指南：[instanton.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/instanton.md).
+
+当前边界：致密前因子限于 4096 个活动珠子坐标；数值/离散收敛不证明物理收敛，分子势能面、配分函数和对称因子仍需验证；未实现统一交叉温区理论与稀疏行列式。
+
+[历史复现计划](reproduction.md#task-rpi)（当前范围以上述更新为准）。
 
 ### splitting
 
@@ -400,11 +423,15 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 出处：[split11](#split11)
 
-单 kink、孤立对称束缚或明确约束双态的半经典劈裂。
+对称束缚双阱瞬子劈裂，显式处理相位/零模投影；共享投影保留简并物理模，避免三次复杂度的致密投影乘积。
 
-源码：[src/pyrpmd/tunnelling.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/tunnelling.py), [src/pyrpmd/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/low_temperature.py)
+源码：[src/pyrpmd/tunnelling.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/tunnelling.py), [src/pyrpmd/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/low_temperature.py)
 
-[该项复现任务](reproduction.md#task-splitting).
+指南：[low-temperature.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/low-temperature.md), [tunnelling-phase-projection.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/tunnelling-phase-projection.md).
+
+当前边界：当前拒绝自由平移/转动模，不是气相转振劈裂或多阱多重态；原分子复现需扩展。
+
+[历史复现计划](reproduction.md#task-splitting)（当前范围以上述更新为准）。
 
 ### low-t-checks
 
@@ -590,15 +617,19 @@ Python API 使用确定性实质量环动力学，均匀选择 shooting frame �
 
 ### samp-retis
 
-**正界面系综的交换式 TIS**
+**带 minus 系综和内部通量的交换式 TIS**
 
 出处：[samp-retis2007](#samp-retis2007), [samp-tis2003](#samp-tis2003)
 
-交换相同动力学下的正界面路径系综并保留拒绝/重复路径；不含 minus 界面通量系综、异步或无限交换。
+在相同动力学下交换正界面路径及 [0−] minus 系综，以 minus 停留/往返时间估计有效通量；原子性续算保留路径、RNG 与同步观测。
 
-源码：[src/pyrpmd/retis.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/retis.py)
+源码：[src/pyrpmd/retis.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/retis.py)
 
-[该项复现任务](reproduction.md#task-samp-retis).
+指南：[transition-interface-sampling.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/transition-interface-sampling.md).
+
+当前边界：未实现无限/异步交换及 TOML 工作流；通量/速率统计仍需路径平稳性、路径时长支持、界面与独立重复收敛。
+
+[历史复现计划](reproduction.md#task-samp-retis)（当前范围以上述更新为准）。
 
 ### samp-committor
 
@@ -626,15 +657,19 @@ Python API 使用确定性实质量环动力学，均匀选择 shooting frame �
 
 ### samp-string
 
-**欧氏平均力与约束自适应 string**
+**确定性字符串与受限有限温度 CV 字符串**
 
 出处：[samp-string2002](#samp-string2002), [samp-stringcv2006](#samp-stringcv2006)
 
-固定端点的梯度松弛、重参数化和插点；需要调用者提供一致的自由能梯度。约束扩展仍用缩放欧氏几何，没有完整一般非线性 CV 的 MFEP 度量和条件项。
+保留确定性欧氏力接口优化器；RestrainedStringSampler 增加热质心采样、平均 CV 质量度规、固定端点、分块诊断与迭代边界续算，要求非周期满秩 CV。
 
-源码：[src/pyrpmd/adaptive_string.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/adaptive_string.py), [src/pyrpmd/adaptive_nrpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/adaptive_nrpmd.py)
+源码：[src/pyrpmd/adaptive_string.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/adaptive_string.py), [src/pyrpmd/finite_temperature_string.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/finite_temperature_string.py)
 
-[该项复现任务](reproduction.md#task-samp-string).
+指南：[finite-temperature-string.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/finite-temperature-string.md).
+
+当前边界：有限刚度对应平滑边缘自由能，需要检验刚度、图像间距与时间步；CV 空间路径不等于笛卡尔路径或速率常数。
+
+[历史复现计划](reproduction.md#task-samp-string)（当前范围以上述更新为准）。
 
 ### samp-prfo
 
@@ -678,11 +713,15 @@ Python API 使用确定性实质量环动力学，均匀选择 shooting frame �
 
 出处：[samp-bluemoon1989](#samp-bluemoon1989), [samp-blue1998](#samp-blue1998)
 
-将受约束父样本转换为条件系综权重，并检验坐标重参数化不变性；属于 RPMD 速率理论组合，不等于实现全部 blue-moon 热力学积分变体。
+光滑坐标的质量加权质心通量度规及动量/力投影；解析 Hessian–向量积替代致密笛卡尔 Hessian，原生推进路径共用一套 CV/偏置实现，估计量保持不变。
 
-源码：[src/pyrpmd/workflows/rate_constraints.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/rate_constraints.py), [src/pyrpmd/cv.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/cv.py), [src/pyrpmd/cv_periodic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/cv_periodic.py)
+源码：[src/pyrpmd/workflows/rate_constraints.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/rate_constraints.py), [src/pyrpmd/cv.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/cv.py), [src/pyrpmd/cv_periodic.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/cv_periodic.py), [native/cv_core.hpp](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/native/cv_core.hpp)
 
-[该项复现任务](reproduction.md#task-samp-metric).
+指南：[general-coordinate-rates.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/general-coordinate-rates.md).
+
+当前边界：非线性 CV 的质量度量不能省略；相同投影 PMF 不保证相同无偏动力学速率。
+
+[历史复现计划](reproduction.md#task-samp-metric)（当前范围以上述更新为准）。
 
 ### samp-rate-postprocess
 
@@ -714,11 +753,15 @@ Python API 使用确定性实质量环动力学，均匀选择 shooting frame �
 
 出处：[samp-plumed2009](#samp-plumed2009), [samp-plumed2014](#samp-plumed2014)
 
-连接外部 PLUMED kernel，不能视为内部实现全部 PLUMED action；实际使用时同时引用软件及 plumed.dat 选择的每个 CV/偏置算法。
+质心偏置接口增加显式 restart="files" 协议，仅用于可审计的外部历史；检查文件格式、哈希及往返精度，不通用序列化不透明内核状态。
 
-源码：[src/pyrpmd/plumed.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/plumed.py), [src/pyrpmd/workflows/biased_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/biased_sampling.py)
+源码：[src/pyrpmd/plumed.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/plumed.py), [src/pyrpmd/workflows/biased_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/biased_sampling.py)
 
-[该项复现任务](reproduction.md#task-samp-plumed).
+指南：[plumed.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/plumed.md).
+
+当前边界：仅已支持并校验过的文件 RESTART 动作可以续算，任意 PLUMED 输入不自动具备续算能力。
+
+[历史复现计划](reproduction.md#task-samp-plumed)（当前范围以上述更新为准）。
 
 ## 非绝热方法与矩阵模型
 
@@ -1198,11 +1241,15 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 出处：[committee2020](#committee2020)
 
-固定提供器均值、总体标准差分歧及离线采集；无分歧偏置和自动标注/重训练循环。
+保留委员会均值、总体标准差分歧及离线采集；ActiveLearningLoop 现可在模型固定的轨迹段之间串联采样、参考标注与版本化重训练。
 
-源码：[src/pyrpmd/potentials/lifecycle.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/lifecycle.py)
+源码：[src/pyrpmd/potentials/lifecycle.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/potentials/lifecycle.py)
 
-[该项复现任务](reproduction.md#task-committee).
+指南：[tier2-ml-lifecycle.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/tier2-ml-lifecycle.md).
+
+当前边界：委员会分歧是启发式量，不证明覆盖或真实误差；闭环停止和留出参考检查与物理收敛分开。
+
+[历史复现计划](reproduction.md#task-committee)（当前范围以上述更新为准）。
 
 ### delta
 
@@ -1234,11 +1281,15 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 出处：[openmm2017](#openmm2017)
 
-外部受力计算、虚拟位点与周期位力；核动力学由 PyRPMD 执行。
+外部 OpenMM 能量/力评估支持串行、持久并发 Context 及 RPMD copy-bank 模式；copy-bank 用于力评估，不是把 PyRPMD 轨迹推进交给 OpenMM。
 
-源码：[src/pyrpmd/potentials/openmm.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/openmm.py)
+源码：[src/pyrpmd/potentials/openmm.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/potentials/openmm.py)
 
-[该项复现任务](reproduction.md#task-openmm).
+指南：[potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/potential-adapters.md), [t19-performance.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/t19-performance.md).
+
+当前边界：须提供可选引擎及兼容模型文件；接口不重做上游训练，也不复现其全部应用。
+
+[历史复现计划](reproduction.md#task-openmm)（当前范围以上述更新为准）。
 
 ### lammps
 
@@ -1246,11 +1297,15 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 出处：[lammps1995](#lammps1995)
 
-每个上下文调用外部库受力/晶胞；不是重写 LAMMPS 算法。
+外部 LAMMPS 力/位力/晶胞评估支持珠子亲和持久实例和显式私有 MPI 子通信器，分派前校验采用向量化。
 
-源码：[src/pyrpmd/potentials/lammps.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/lammps.py)
+源码：[src/pyrpmd/potentials/lammps.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/potentials/lammps.py)
 
-[该项复现任务](reproduction.md#task-lammps).
+指南：[potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/potential-adapters.md), [t19-performance.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/t19-performance.md).
+
+当前边界：持久模式并非普遍更快，大体系实测包含变慢配置；性能声明必须同时记录 MPI、引擎版本、力场与硬件。
+
+[历史复现计划](reproduction.md#task-lammps)（当前范围以上述更新为准）。
 
 ### ipi-socket
 
@@ -1268,25 +1323,33 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 **Torch/GPU 势及张量传播**
 
-出处：[torch2019](#torch2019)
+出处：[torch2019](#torch2019), [bcocb20](#bcocb20), [rpm04](#rpm04)
 
-自动微分能量/力及已有物理积分器的张量版本。
+float64 张量能量/力推进，以及 sampling.engine="torch" 的 PIMD/扩散工作流，对副本与珠子批处理；原子检查点保存设备 RNG 与科学身份，设备/精度变化显式失败。
 
-源码：[src/pyrpmd/potentials/optional.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/optional.py), [src/pyrpmd/torch_backend.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/torch_backend.py)
+源码：[src/pyrpmd/potentials/optional.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/potentials/optional.py), [src/pyrpmd/torch_backend.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/torch_backend.py), [src/pyrpmd/workflows/torch_materials.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/torch_materials.py)
 
-[该项复现任务](reproduction.md#task-torch).
+指南：[torch-materials-workflows.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/torch-materials-workflows.md), [batched-ml-potentials.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/batched-ml-potentials.md).
+
+当前边界：该工作流不支持 NPT、约束、交换、电子摩擦或分组 MPI；已集成验证中没有 CUDA 实测，CPU 结果不能证明 GPU 加速。
+
+[历史复现计划](reproduction.md#task-torch)（当前范围以上述更新为准）。
 
 ### ml-adapters
 
-**MACE / NequIP / DeePMD / fairchem 接口**
+**MACE、NequIP、DeePMD、fairchem、metatomic 批量提供器**
 
-出处：[mace2022](#mace2022), [nequip2022](#nequip2022), [deepmd2018](#deepmd2018), [uma2025](#uma2025)
+出处：[mace2022](#mace2022), [nequip2022](#nequip2022), [deepmd2018](#deepmd2018), [uma2025](#uma2025), [metatomic2026](#metatomic2026)
 
-调用外部推理引擎；模型论文及准确权重需另引，不能称为仓库重实现。
+显式原生模型批量覆盖珠子/轨迹构型，并在支持时提供张量路径；校验单位、设备、模型精度、位力与邻居表契约，仍须引用实际上游模型和框架。
 
-源码：[src/pyrpmd/potentials/adapters.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/adapters.py)
+源码：[src/pyrpmd/potentials/adapters.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/potentials/adapters.py), [src/pyrpmd/potentials/batched_ml.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/potentials/batched_ml.py)
 
-[该项复现任务](reproduction.md#task-ml-adapters).
+指南：[batched-ml-potentials.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/batched-ml-potentials.md), [t19-performance.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/t19-performance.md).
+
+当前边界：须提供兼容可选框架及模型文件；已有 CUDA stream 顺序保护，但 GPU 正确性/性能实测尚待完成，不静默替换框架或精度。
+
+[历史复现计划](reproduction.md#task-ml-adapters)（当前范围以上述更新为准）。
 
 ### tblite
 
@@ -1330,11 +1393,15 @@ H5MD 格式来源与 ASE 互操作格式；不是新动力学方法。
 
 出处：[morse1929](#morse1929)
 
-MorsePairPotential 使用 Morse 函数形式；自由粒子、谐振子、可分离四次双阱和周期余弦是明确给定的解析控制模型，不是拟合的分子或金属势。
+自由、谐振、Morse 对、四次双阱及固定晶胞周期余弦控制势具有融合推进使用的原生 C ABI 绑定；它们是模型对照，不是拟合分子势能面。
 
-源码：[src/pyrpmd/potentials/builtin.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/builtin.py)
+源码：[src/pyrpmd/potentials/builtin.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/potentials/builtin.py)
 
-[该项复现任务](reproduction.md#task-analytic-models).
+指南：[builtin-native-potentials.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/builtin-native-potentials.md).
+
+当前边界：可分离余弦模型不能证明真实材料扩散正确；任意 Morse 参数也不等于复现 1929 原文的某个分子。
+
+[历史复现计划](reproduction.md#task-analytic-models)（当前范围以上述更新为准）。
 
 ### rate-studies
 
@@ -1359,6 +1426,266 @@ MorsePairPotential 使用 Morse 函数形式；自由粒子、谐振子、可分
 源码：[src/pyrpmd/potentials/native.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/native.py), [src/pyrpmd/potentials/cabi.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/cabi.py)
 
 [该项复现任务](reproduction.md#task-bkmp2-model).
+
+## 新集成的方法与工作流
+
+此处将原始算法、上游软件及项目组合分别归属；可运行或数值检查通过不表示物理收敛。
+
+### fqcmd
+
+**实验性快速准质心分子动力学**
+
+出处：[qcmd2019](#qcmd2019), [fqcmd2021](#fqcmd2021)
+
+由弯曲三原子分子的准质心键长/键角分布，通过迭代 Boltzmann 反演训练可分离有效势；冻结模型经 method="f-qcmd" 光谱工作流运行，包含模型身份和续算。
+
+源码：[src/pyrpmd/qcmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/qcmd.py), [src/pyrpmd/workflows/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/spectroscopy.py)
+
+指南：[qcmd.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/qcmd.md).
+
+当前边界：尚无完整实时 QCMD 或 h-CMD；气相光谱证据及分子收敛尚未交付，固定准质心条件采样器不等于实时 QCMD 求解器。
+
+独立检查：检查内坐标导数、目标/训练后分布及相对经典、PA-CMD、TRPMD 和量子参考的独立谱峰，分别收敛训练、珠数与生产采样。
+
+### fermions
+
+**玻色交换采样的费米符号重加权**
+
+出处：[fermions2020](#fermions2020), [bose23](#bose23)
+
+method="fermionic" 推进正的玻色测度并累计带符号的能量、密度及适用的压力/体积数值，报告平均符号与分母诊断。
+
+源码：[src/pyrpmd/pimd_methods.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/pimd_methods.py), [src/pyrpmd/workflows/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/path_integral.py)
+
+指南：[tier2-path-integral.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/tier2-path-integral.md).
+
+当前边界：符号问题仍存在；未实现原论文的辅助 Bogoliubov 能量界方案，无法分辨的分母不得改成无符号或看似已收敛的估计。
+
+独立检查：对照正则理想费米谐振子能量、小体系排列、带符号矩比和独立重复误差，扫描温度、珠数与平均符号。
+
+### periodic-exchange
+
+**周期交换与全珠子各向同性 NPT**
+
+出处：[exchange-pbc2025](#exchange-pbc2025), [bose23](#bose23), [bzp2009](#bzp2009), [ipi2014](#ipi2014)
+
+显式 minimum_image/full_winding 核耦合镜像和交换权重；全绕数按指定容差求高斯晶格像之和，全珠子 BZP 缩放结合物理位力提供各向同性交换 NPT。
+
+源码：[src/pyrpmd/pimd_methods.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/pimd_methods.py), [src/pyrpmd/workflows/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/path_integral.py)
+
+指南：[tier2-path-integral.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/tier2-path-integral.md).
+
+当前边界：核镜像求和不提供采样绕数或超流估计量；周期交换不能使用质心 BZP，也无柔性晶胞交换 NPT；最小镜像仍为近似。
+
+独立检查：用独立晶格求和及自由气体 Fourier 动量求和核对镜像核，用有限差分核对力和位力，比较 NPT 体积积分并收敛镜像容差。
+
+### golden-rule-instanton
+
+**正常区 golden-rule 瞬子速率**
+
+出处：[gr-instanton2015a](#gr-instanton2015a), [gr-instanton2015b](#gr-instanton2015b)
+
+双 diabatic 虚时间路径及时间分割鞍点给出常量实电子耦合下的 leading 半经典弱耦合速率；显式反应物归一化，pyrpmd instanton 支持独立细化两段。
+
+源码：[src/pyrpmd/golden_rule.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/golden_rule.py), [src/pyrpmd/golden_rule_partition.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/golden_rule_partition.py), [src/pyrpmd/workflows/golden_rule.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/golden_rule.py)
+
+指南：[instanton.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/instanton.md).
+
+当前边界：仅支持束缚或笛卡尔约束坐标；没有自由分子转动/平动前因子、坐标依赖耦合或倒转区负时间路径，数值收敛不代表物理验证。
+
+独立检查：对照有限浴与连续浴自旋玻色半经典速率、精确量子 golden-rule 关联积分和 Marcus 极限，分别收敛两段网格与浴离散。
+
+### samp-abf
+
+**投影质心自适应偏置力**
+
+出处：[samp-abf2008](#samp-abf2008), [samp-pabf2015](#samp-pabf2015)
+
+一至二维非周期满秩质心 CV 使用质量加权对偶场散度修正；标量投影/插值给出一致的偏置能量与力，在线历史与 RNG 可精确续算。
+
+源码：[src/pyrpmd/abf.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/abf.py), [src/pyrpmd/workflows/abf.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/abf.py)
+
+指南：[enhanced-sampling.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/enhanced-sampling.md).
+
+当前边界：不支持固定原子、约束、周期晶胞/CV、NPT、REUS 或速率通量测度；无解析导数的 CV 须显式选择有限差分，网格占据和副本离散度不证明混合。
+
+独立检查：核对含几何项的谐振/径向自由能、有限差分力及二维保守投影，对比独立副本并细化网格与导数步长。
+
+### samp-eabf
+
+**扩展体系质心 ABF**
+
+出处：[samp-eabf2017](#samp-eabf2017)
+
+辅助坐标与物理质心 CV 谐振耦合并具有自身 Langevin 状态；物理 CV 自由能按指南重建，不将辅助边缘分布等同于物理 PMF。
+
+源码：[src/pyrpmd/abf.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/abf.py), [src/pyrpmd/workflows/abf.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/abf.py)
+
+指南：[enhanced-sampling.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/enhanced-sampling.md).
+
+当前边界：适用 ABF 相同的非周期一/二维工作流限制；弹簧耦合、辅助质量/摩擦、重建与采样须分别收敛。
+
+独立检查：对照独立积分的谐振/双阱 PMF，验证辅助协方差与精确续算，并扫描耦合和辅助时间尺度。
+
+### samp-steered
+
+**牵引动力学与非平衡功估计**
+
+出处：[samp-jarzynski1997](#samp-jarzynski1997), [samp-crooks1999](#samp-crooks1999), [samp-bennett1976](#samp-bennett1976), [samp-shadow2013](#samp-shadow2013)
+
+指定移动约束记录协议功、离散 shadow work、热量及完整历史；Jarzynski 和 Crooks/Bennett 分析提供正反向估计与功重叠诊断。
+
+源码：[src/pyrpmd/steered.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/steered.py), [src/pyrpmd/workflows/steered.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/steered.py)
+
+指南：[enhanced-sampling.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/enhanced-sampling.md).
+
+当前边界：初始平衡由用户声明；有限平衡时间与 bootstrap 不能补回未采到的低功尾部，有限步长总功约定必须匹配传播器。
+
+独立检查：核对移动谐振阱自由能及正反向功关系，包括 shadow work、独立轨迹误差与检查点续算。
+
+### samp-repptis
+
+**PPTIS 与副本交换 PPTIS**
+
+出处：[samp-pptis2004](#samp-pptis2004), [samp-repptis2023](#samp-repptis2023)
+
+短左右来向局部路径采用有方向的 PPTIS 递推；ReplicaExchangePPTIS 增加重叠再生交换和续算，速率组合需在第一个中心单独测量有效通量。
+
+源码：[src/pyrpmd/pptis.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/pptis.py)
+
+指南：[transition-interface-sampling.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/transition-interface-sampling.md).
+
+当前边界：PPTIS 假设相邻界面之外的记忆丢失；局部链标准误不包含外部通量不确定度，未实现 TOML 工作流或无限交换。
+
+独立检查：以独立吸收 Markov 链计算和完整 TIS 对照递推，改变界面间距，检查双向来向样本与同步分块。
+
+### samp-ffs
+
+**直接前向通量采样**
+
+出处：[samp-ffs2005](#samp-ffs2005), [samp-ffs2009](#samp-ffs2009)
+
+显式平稳 Markov 步回调采样通量，并让完整相点逐界面向前分支；保存谱系、时钟和 RNG，完整速率误差由独立初始化的完整运行组合估计。
+
+源码：[src/pyrpmd/ffs.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/ffs.py)
+
+指南：[transition-interface-sampling.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/transition-interface-sampling.md).
+
+当前边界：不支持隐藏求解器记忆、全局 RNG 和时变协议；截尾试验显式失败，不计作返回；后代数不等于独立完整速率样本数。
+
+独立检查：对照平稳生灭链与扩散参考，保留零成功运行，扫描通量时长、界面样本库、时长上限及独立完整运行。
+
+### samp-mlcolvar
+
+**学习得到的 Deep-LDA 与 Deep-TICA 质心 CV**
+
+出处：[samp-mlcolvar2023](#samp-mlcolvar2023), [samp-deeplda2020](#samp-deeplda2020), [samp-deeptica2021](#samp-deeptica2021), [torch2019](#torch2019)
+
+上游 mlcolvar 训练坐标；冻结的 CPU float64 TorchScript 图包含预处理、归一化和投影，提供质心值与笛卡尔导数。
+
+源码：[src/pyrpmd/advanced_cv.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/advanced_cv.py), [examples/mlcolvar_cv.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/examples/mlcolvar_cv.py)
+
+指南：[mlcolvar.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/mlcolvar.md).
+
+当前边界：训练示例验证部署而非分子反应坐标质量；偏置数据须适当重加权/时间处理，重训练改变科学身份。
+
+独立检查：比较导出与上游预测及非零环 Jacobian 有限差分，再跨滞后时间与独立轨迹验证慢模。
+
+### na-iesh
+
+**经典核独立电子表面跳跃**
+
+出处：[na-iesh2009](#na-iesh2009), [na-iesh2023](#na-iesh2023)
+
+P=1 IESH 推进正交轨道构成的无自旋 Slater 行列式，并使用行列式流跳跃；布居之和为指定电子数，工作流检查点保留电子和核状态。
+
+源码：[src/pyrpmd/iesh.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/iesh.py), [src/pyrpmd/workflows/nonadiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/nonadiabatic.py)
+
+指南：[nonadiabatic-iesh-multistate.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/nonadiabatic-iesh-multistate.md).
+
+当前边界：仅实数非简并 Hamiltonian 与经典核，不支持环聚合物 IESH、SOC 或通用相互作用电子求解；有限能带对照不等于真实金属表面复现。
+
+独立检查：检查行列式流、轨道正交、布居之和与能量守恒；将低温有限能带能量损失与匹配的电子摩擦极限比较。
+
+### na-multistate-mash
+
+**原始多态 MASH**
+
+出处：[na-multimash2023](#na-multimash2023), [na-mash2023](#na-mash2023)
+
+Runeson–Manolopoulos 映射向量选择最大布居势面，采用带符号布居/相干性估计及完整多态动量变换方向，通过事件定位跃迁。
+
+源码：[src/pyrpmd/mash.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/mash.py), [src/pyrpmd/workflows/nonadiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/nonadiabatic.py)
+
+指南：[nonadiabatic-iesh-multistate.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/nonadiabatic-iesh-multistate.md).
+
+当前边界：仅 P=1、实数非简并能级；不是 unSMASH，也不是环聚合物推广，不改变已有两态 rp-mash 估计量。
+
+独立检查：以独立 Fourier 量子参考对照三态移动波包布居，检查带符号估计、边界事件及接受/受挫跃迁能量变化。
+
+### na-pyscf-sacasscf
+
+**PySCF SA-CASSCF 多态接口**
+
+出处：[pyscf2018](#pyscf2018), [na-sacasscf2016](#na-sacasscf2016)
+
+实数全电子等权单重态 SA-CASSCF 提供器返回能量、态梯度、完整解析 NAC 和多电子重叠，显式跟踪根/相位并保存续算上下文。
+
+源码：[src/pyrpmd/potentials/pyscf_multistate.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/potentials/pyscf_multistate.py), [src/pyrpmd/adiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/adiabatic.py)
+
+指南：[tier2-nonadiabatic.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/tier2-nonadiabatic.md).
+
+当前边界：无 TDDFT、SOC、ECP、密度拟合或 GPU 路径，未使用电子平移因子；所选态、基组和活动空间须独立验证并引用。
+
+独立检查：比较直接 PySCF 能量/梯度、重叠差分的带符号 NAC、根跟踪、核轨道/活动轨道交叉重叠项与电子上下文续算。
+
+### na-heom
+
+**Drude–Lorentz 自旋玻色 HEOM 参考**
+
+出处：[na-heom1989](#na-heom1989), [na-heom2020](#na-heom2020), [na-qutip-bofin2023](#na-qutip-bofin2023)
+
+有限缩放 ADO 层级采用 Matsubara 浴展开和可选尾终止项，以稀疏指数作用推进；确定性续算保留完整层级及其身份。
+
+源码：[src/pyrpmd/analysis/heom.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/analysis/heom.py)
+
+指南：[tier2-nonadiabatic.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/tier2-nonadiabatic.md).
+
+当前边界：仅两态 Drude–Lorentz 模型；因子化热浴初始化不等于相互作用平衡态，层级深度和 Matsubara 截断仍须收敛，physical_converged 保持 false。
+
+独立检查：对照孤立 Rabi、精确高斯退相干及可选 QuTiP/BoFiN 布居曲线，扫描层级深度与浴截断，续算保留所有 ADO。
+
+### active-learning
+
+**委员会主动学习闭环**
+
+出处：[committee2020](#committee2020), [active-rpmd2018](#active-rpmd2018), [mace2022](#mace2022)
+
+在模型固定的轨迹段之间依次采样、按分歧选择、预算内参考标注和版本化重训练；持久阶段记录与预算支持续算，可选小规模 CPU MACE 训练器。
+
+源码：[src/pyrpmd/active_learning.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/active_learning.py), [src/pyrpmd/active_learning_mace.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/active_learning_mace.py)
+
+指南：[tier2-ml-lifecycle.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/tier2-ml-lifecycle.md).
+
+当前边界：这是项目组合流程，不复现所引论文的矩张量势或速率基准；分歧停止独立于留出参考精度和物理收敛。
+
+独立检查：跟踪留出能量/力误差、标注效率、模型哈希与崩溃/重放行为，使用独立学习轨迹和冻结参考验证集。
+
+### rate-precision
+
+**有预算的精度驱动热速率执行**
+
+出处：[rate05](#rate05), [bimol09](#bimol09), [nist-bonferroni](#nist-bonferroni), [nist-uncertainty1994](#nist-uncertainty1994), [samp-cblock1992](#samp-cblock1992)
+
+pyrpmd precision 冻结设计，执行独立完整速率副本及指定数值对照并持久记账；保留协方差的 log-delta 区间共享预分配有限 Bonferroni 族，等价要求完整调整区间落在声明容限内。
+
+源码：[src/pyrpmd/precision.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/precision.py), [src/pyrpmd/precision_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/precision_statistics.py), [src/pyrpmd/precision_execution.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/precision_execution.py), [src/pyrpmd/workflows/precision.py](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/src/pyrpmd/workflows/precision.py)
+
+指南：[rate_precision.md](https://github.com/chen-yu-hao/PyRPMD/blob/ceee59cd5f702165b56c5e541a503d8810fb9111/docs/rate_precision.md).
+
+当前边界：固定查看区间覆盖率仍是近似；重复检查修正不消除估计偏差、非平衡采样或平台物理缺失，CLI 当前仅支持指南中的串行 Python 速率路径；预算耗尽不等于收敛。
+
+独立检查：使用已知协方差对照、配对乘积与独立完整副本，验证回执核对、中断/重放记账和数值非等价拒绝，保持底层速率身份不变。
 
 ## 完整参考文献
 
@@ -1966,7 +2293,7 @@ H.-D. Meyer and W. H. Miller. **A classical analog for electronic degrees of fre
 
 ### na-stock1997
 
-G. Stock and M. Thoss. **Semiclassical Description of Nonadiabatic Quantum Dynamics**. *Physical Review Letters 78, 578–581* (1997). DOI: [10.1103/PhysRevLett.78.578](https://doi.org/10.1103/PhysRevLett.78.578). [Source / author version](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.78.578).
+G. Stock and M. Thoss. **Semiclassical Description of Nonadiabatic Quantum Dynamics**. *Physical Review Letters 78, 578–581* (1997). DOI: [10.1103/PhysRevLett.78.578](https://doi.org/10.1103/PhysRevLett.78.578). [Source / author version](https://doi.org/10.1103/PhysRevLett.78.578).
 
 用途 / Role: Quantum mapping / SEO antecedent, not evidence that the package implements the full semiclassical IVR method..
 
@@ -2014,7 +2341,7 @@ J. E. Lawrence, J. R. Mannouch, and J. O. Richardson. **Recovering Marcus Theory
 
 ### na-carp2025
 
-Z. Cao, V. A. Suarez, and J. S. Kretchmer. **A ring polymer molecular dynamics extension of the mapping approach to surface hopping: Incorporation of nuclear quantum effects**. *ChemRxiv, version 1 (7 December 2025), preprint* (2025). DOI: [10.26434/chemrxiv-2025-xps2g](https://doi.org/10.26434/chemrxiv-2025-xps2g). [Source / author version](https://client.prod.orp.cambridge.org/engage/chemrxiv/article-details/692ba382a10c9f5ca169b8de).
+Z. Cao, V. A. Suarez, and J. S. Kretchmer. **A ring polymer molecular dynamics extension of the mapping approach to surface hopping: Incorporation of nuclear quantum effects**. *ChemRxiv, version 1 (7 December 2025), preprint* (2025). DOI: [10.26434/chemrxiv-2025-xps2g](https://doi.org/10.26434/chemrxiv-2025-xps2g). [Source / author version](https://doi.org/10.26434/chemrxiv-2025-xps2g).
 
 用途 / Role: Implemented CA-RP-MASH algorithm and operator-pair weights; record the implemented preprint version explicitly..
 
@@ -2032,13 +2359,13 @@ P. Shushkov, R. Li, and J. C. Tully. **Ring polymer molecular dynamics with surf
 
 ### na-rpsh2017
 
-F. A. Shakib and P. Huo. **Ring Polymer Surface Hopping: Incorporating Nuclear Quantum Effects into Nonadiabatic Molecular Dynamics Simulations**. *The Journal of Physical Chemistry Letters 8, 3073–3080* (2017). DOI: [10.1021/acs.jpclett.7b01343](https://doi.org/10.1021/acs.jpclett.7b01343). [Source / author version](https://pubs.acs.org/doi/10.1021/acs.jpclett.7b01343).
+F. A. Shakib and P. Huo. **Ring Polymer Surface Hopping: Incorporating Nuclear Quantum Effects into Nonadiabatic Molecular Dynamics Simulations**. *The Journal of Physical Chemistry Letters 8, 3073–3080* (2017). DOI: [10.1021/acs.jpclett.7b01343](https://doi.org/10.1021/acs.jpclett.7b01343). [Source / author version](https://doi.org/10.1021/acs.jpclett.7b01343).
 
 用途 / Role: Nonequilibrium RPSH benchmark and centroid/full-ring rescaling convention discussion; Tully models and low-momentum scattering..
 
 ### na-rpshdm2023
 
-Y. Shakya, R. Welsch, L. Inhester, and R. Santra. **Capturing electronic decoherence in quantum-classical dynamics using the ring-polymer-surface-hopping–density-matrix approach**. *Physical Review A 107, 062810* (2023). DOI: [10.1103/PhysRevA.107.062810](https://doi.org/10.1103/PhysRevA.107.062810). [Source / author version](https://journals.aps.org/pra/abstract/10.1103/PhysRevA.107.062810).
+Y. Shakya, R. Welsch, L. Inhester, and R. Santra. **Capturing electronic decoherence in quantum-classical dynamics using the ring-polymer-surface-hopping–density-matrix approach**. *Physical Review A 107, 062810* (2023). DOI: [10.1103/PhysRevA.107.062810](https://doi.org/10.1103/PhysRevA.107.062810). [Source / author version](https://doi.org/10.1103/PhysRevA.107.062810).
 
 用途 / Role: Explicit CA, bead-average (BA), and bead-electronic density-matrix (DM) formulations; first author is Yashoj Shakya, initial Y., not P..
 
@@ -2062,13 +2389,13 @@ G. Granucci and M. Persico. **Critical appraisal of the fewest switches algorith
 
 ### na-qd2018
 
-A. Mandal, S. S. R. K. C. Yamijala, and P. Huo. **Quasi-Diabatic Representation for Nonadiabatic Dynamics Propagation**. *Journal of Chemical Theory and Computation 14, 1828–1840* (2018). DOI: [10.1021/acs.jctc.7b01178](https://doi.org/10.1021/acs.jctc.7b01178). [Source / author version](https://pubs.acs.org/doi/10.1021/acs.jctc.7b01178).
+A. Mandal, S. S. R. K. C. Yamijala, and P. Huo. **Quasi-Diabatic Representation for Nonadiabatic Dynamics Propagation**. *Journal of Chemical Theory and Computation 14, 1828–1840* (2018). DOI: [10.1021/acs.jctc.7b01178](https://doi.org/10.1021/acs.jctc.7b01178). [Source / author version](https://doi.org/10.1021/acs.jctc.7b01178).
 
 用途 / Role: QD local-basis/overlap strategy; its PLDM calculation is not implemented merely by reusing QD transport..
 
 ### na-qd2019
 
-W. Zhou, A. Mandal, and P. Huo. **Quasi-Diabatic Scheme for Nonadiabatic On-the-Fly Simulations**. *The Journal of Physical Chemistry Letters 10, 7062–7070* (2019). DOI: [10.1021/acs.jpclett.9b02747](https://doi.org/10.1021/acs.jpclett.9b02747). [Source / author version](https://pubs.acs.org/doi/10.1021/acs.jpclett.9b02747).
+W. Zhou, A. Mandal, and P. Huo. **Quasi-Diabatic Scheme for Nonadiabatic On-the-Fly Simulations**. *The Journal of Physical Chemistry Letters 10, 7062–7070* (2019). DOI: [10.1021/acs.jpclett.9b02747](https://doi.org/10.1021/acs.jpclett.9b02747). [Source / author version](https://doi.org/10.1021/acs.jpclett.9b02747).
 
 用途 / Role: On-the-fly QD demonstration with ethylene; package QD-NRPMD is a composition with a different dynamical approximation..
 
@@ -2146,13 +2473,13 @@ M. Ceriotti; J. More; D. E. Manolopoulos. **i-PI: A Python interface for ab init
 
 ### pd2024
 
-Y. Kataoka; J. Haruyama; O. Sugino; M. Shiga. **Predictive evaluation of hydrogen diffusion coefficient on Pd(111) surface by path integral simulations using neural network potential**. *Phys. Rev. Research 6, 043224* (2024). DOI: [10.1103/PhysRevResearch.6.043224](https://doi.org/10.1103/PhysRevResearch.6.043224). [Source / author version](https://journals.aps.org/prresearch/abstract/10.1103/PhysRevResearch.6.043224).
+Y. Kataoka; J. Haruyama; O. Sugino; M. Shiga. **Predictive evaluation of hydrogen diffusion coefficient on Pd(111) surface by path integral simulations using neural network potential**. *Phys. Rev. Research 6, 043224* (2024). DOI: [10.1103/PhysRevResearch.6.043224](https://doi.org/10.1103/PhysRevResearch.6.043224). [Source / author version](https://doi.org/10.1103/PhysRevResearch.6.043224).
 
 用途 / Role: application / estimator convention.
 
 ### ni2012
 
-Y. V. Suleimanov. **Surface Diffusion of Hydrogen on Ni(100) from Ring Polymer Molecular Dynamics**. *J. Phys. Chem. C 116, 11141–11153* (2012). DOI: [10.1021/jp302453z](https://doi.org/10.1021/jp302453z). [Source / author version](https://pubs.acs.org/doi/10.1021/jp302453z).
+Y. V. Suleimanov. **Surface Diffusion of Hydrogen on Ni(100) from Ring Polymer Molecular Dynamics**. *J. Phys. Chem. C 116, 11141–11153* (2012). DOI: [10.1021/jp302453z](https://doi.org/10.1021/jp302453z). [Source / author version](https://doi.org/10.1021/jp302453z).
 
 用途 / Role: application.
 
@@ -2176,7 +2503,7 @@ J. E. Angelo; N. R. Moody; M. I. Baskes. **Trapping of hydrogen to lattice defec
 
 ### pcet2008
 
-C. Venkataraman; A. V. Soudackov; S. Hammes-Schiffer. **Theoretical Formulation of Nonadiabatic Electrochemical Proton-Coupled Electron Transfer at Metal–Solution Interfaces**. *J. Phys. Chem. C 112, 12386–12397* (2008). DOI: [10.1021/jp802171y](https://doi.org/10.1021/jp802171y). [Source / author version](https://pubs.acs.org/doi/10.1021/jp802171y).
+C. Venkataraman; A. V. Soudackov; S. Hammes-Schiffer. **Theoretical Formulation of Nonadiabatic Electrochemical Proton-Coupled Electron Transfer at Metal–Solution Interfaces**. *J. Phys. Chem. C 112, 12386–12397* (2008). DOI: [10.1021/jp802171y](https://doi.org/10.1021/jp802171y). [Source / author version](https://doi.org/10.1021/jp802171y).
 
 用途 / Role: method.
 
@@ -2236,13 +2563,13 @@ I. Mayer. **Charge, bond order and valence in the AB initio SCF theory**. *Chemi
 
 ### qmdff2014
 
-S. Grimme. **A General Quantum Mechanically Derived Force Field (QMDFF) for Molecules and Condensed Phase Simulations**. *J. Chem. Theory Comput. 10, 4497–4514* (2014). DOI: [10.1021/ct500573f](https://doi.org/10.1021/ct500573f). [Source / author version](https://pubs.acs.org/doi/10.1021/ct500573f).
+S. Grimme. **A General Quantum Mechanically Derived Force Field (QMDFF) for Molecules and Condensed Phase Simulations**. *J. Chem. Theory Comput. 10, 4497–4514* (2014). DOI: [10.1021/ct500573f](https://doi.org/10.1021/ct500573f). [Source / author version](https://doi.org/10.1021/ct500573f).
 
 用途 / Role: method.
 
 ### deevb2015
 
-B. Hartke; S. Grimme. **Reactive force fields made simple**. *Phys. Chem. Chem. Phys. 17, 16715–16718* (2015). DOI: [10.1039/C5CP02580J](https://doi.org/10.1039/C5CP02580J). [Source / author version](https://pubs.rsc.org/en/content/articlehtml/2015/cp/c5cp02580j).
+B. Hartke; S. Grimme. **Reactive force fields made simple**. *Phys. Chem. Chem. Phys. 17, 16715–16718* (2015). DOI: [10.1039/C5CP02580J](https://doi.org/10.1039/C5CP02580J). [Source / author version](https://doi.org/10.1039/C5CP02580J).
 
 用途 / Role: method.
 
@@ -2254,7 +2581,7 @@ J. Steffen. **A new class of reaction path based potential energy surfaces enabl
 
 ### caracal2023
 
-J. Steffen. **Caracal: A Versatile Ring Polymer Molecular Dynamics Simulation Package**. *J. Chem. Theory Comput. 19, 5334–5355* (2023). DOI: [10.1021/acs.jctc.3c00568](https://doi.org/10.1021/acs.jctc.3c00568). [Source / author version](https://pubs.acs.org/doi/10.1021/acs.jctc.3c00568).
+J. Steffen. **Caracal: A Versatile Ring Polymer Molecular Dynamics Simulation Package**. *J. Chem. Theory Comput. 19, 5334–5355* (2023). DOI: [10.1021/acs.jctc.3c00568](https://doi.org/10.1021/acs.jctc.3c00568). [Source / author version](https://doi.org/10.1021/acs.jctc.3c00568).
 
 用途 / Role: software / upstream PES implementation.
 
@@ -2266,7 +2593,7 @@ B. Jiang; H. Guo. **Permutation invariant polynomial neural network approach to 
 
 ### jaxpip2026
 
-J. Li; K. Song; H. Guo; J. Li. **Efficient Tensorized Evaluation of Permutation Invariant Polynomials for Representing Potential Energy Surfaces**. *J. Chem. Theory Comput. 22, 9940–9953* (2026). DOI: [10.1021/acs.jctc.6c01659](https://doi.org/10.1021/acs.jctc.6c01659). [Source / author version](https://pubs.acs.org/doi/10.1021/acs.jctc.6c01659).
+J. Li; K. Song; H. Guo; J. Li. **Efficient Tensorized Evaluation of Permutation Invariant Polynomials for Representing Potential Energy Surfaces**. *J. Chem. Theory Comput. 22, 9940–9953* (2026). DOI: [10.1021/acs.jctc.6c01659](https://doi.org/10.1021/acs.jctc.6c01659). [Source / author version](https://doi.org/10.1021/acs.jctc.6c01659).
 
 用途 / Role: method / software.
 
@@ -2278,7 +2605,7 @@ C. Schran; K. Brezina; O. Marsalek. **Committee neural network potentials contro
 
 ### delta2015
 
-R. Ramakrishnan; P. O. Dral; M. Rupp; O. A. von Lilienfeld. **Big Data Meets Quantum Chemistry Approximations: The Δ-Machine Learning Approach**. *J. Chem. Theory Comput. 11, 2087–2096* (2015). DOI: [10.1021/acs.jctc.5b00099](https://doi.org/10.1021/acs.jctc.5b00099). [Source / author version](https://pubs.acs.org/doi/10.1021/acs.jctc.5b00099).
+R. Ramakrishnan; P. O. Dral; M. Rupp; O. A. von Lilienfeld. **Big Data Meets Quantum Chemistry Approximations: The Δ-Machine Learning Approach**. *J. Chem. Theory Comput. 11, 2087–2096* (2015). DOI: [10.1021/acs.jctc.5b00099](https://doi.org/10.1021/acs.jctc.5b00099). [Source / author version](https://doi.org/10.1021/acs.jctc.5b00099).
 
 用途 / Role: method.
 
@@ -2344,7 +2671,7 @@ C. Bannwarth; S. Ehlert; S. Grimme. **GFN2-xTB—An Accurate and Broadly Paramet
 
 ### ipea2017
 
-V. Ásgeirsson; C. A. Bauer; S. Grimme. **Quantum chemical calculation of electron ionization mass spectra for general organic and inorganic molecules**. *Chemical Science 8, 4879–4895* (2017). DOI: [10.1039/C7SC00601B](https://doi.org/10.1039/C7SC00601B). [Source / author version](https://pubs.rsc.org/en/content/articlehtml/2017/sc/c7sc00601b).
+V. Ásgeirsson; C. A. Bauer; S. Grimme. **Quantum chemical calculation of electron ionization mass spectra for general organic and inorganic molecules**. *Chemical Science 8, 4879–4895* (2017). DOI: [10.1039/C7SC00601B](https://doi.org/10.1039/C7SC00601B). [Source / author version](https://doi.org/10.1039/C7SC00601B).
 
 用途 / Role: IPEA-xTB origin; PyRPMD does not implement QCEIMS.
 
@@ -2383,3 +2710,207 @@ P. M. Morse. **Diatomic Molecules According to the Wave Mechanics. II. Vibration
 Z. Xie; J. M. Bowman. **Permutationally Invariant Polynomial Basis for Molecular Energy Surface Fitting via Monomial Symmetrization**. *J. Chem. Theory Comput. 6, 26–34 (online 2009)* (2010). DOI: [10.1021/ct9004917](https://doi.org/10.1021/ct9004917).
 
 用途 / Role: Original monomial-symmetrization PIP basis method.
+
+### qcmd2019
+
+G. Trenins; M. J. Willatt; S. C. Althorpe. **Path-integral dynamics of water using curvilinear centroids**. *J. Chem. Phys. 151, 054109* (2019). DOI: [10.1063/1.5100587](https://doi.org/10.1063/1.5100587).
+
+归属: Original quasi-centroid coordinates and QCMD method; full real-time QCMD is not implemented.
+
+### fqcmd2021
+
+T. Fletcher; A. Zhu; J. E. Lawrence; D. E. Manolopoulos. **Fast quasi-centroid molecular dynamics**. *J. Chem. Phys. 155, 231101* (2021). DOI: [10.1063/5.0076704](https://doi.org/10.1063/5.0076704). [原文 / 作者版本](https://arxiv.org/abs/2111.11572).
+
+归属: Original f-QCMD effective-potential construction; PyRPMD implements a restricted molecular subset.
+
+### fermions2020
+
+B. Hirshberg; M. Invernizzi; M. Parrinello. **Path integral molecular dynamics for fermions: Alleviating the sign problem with the Bogoliubov inequality**. *J. Chem. Phys. 152, 171102* (2020). DOI: [10.1063/5.0008720](https://doi.org/10.1063/5.0008720). [原文 / 作者版本](https://arxiv.org/abs/2003.10317).
+
+归属: Bosonic-sampling fermionic reweighting; the auxiliary Bogoliubov-bound extension is not implemented.
+
+### exchange-pbc2025
+
+J. Higer; Y. M. Y. Feldman; B. Hirshberg. **Periodic boundary conditions for bosonic path integral molecular dynamics**. *J. Chem. Phys. 163, 024101* (2025). DOI: [10.1063/5.0265906](https://doi.org/10.1063/5.0265906). [原文 / 作者版本](https://arxiv.org/abs/2501.17618).
+
+归属: Periodic exchange image sums and the limitations of the minimum-image approximation.
+
+### gle2010
+
+M. Ceriotti; G. Bussi; M. Parrinello. **Colored-Noise Thermostats à la Carte**. *J. Chem. Theory Comput. 6, 1170–1180* (2010). DOI: [10.1021/ct900563s](https://doi.org/10.1021/ct900563s).
+
+归属: Harmonic Lyapunov response, autocorrelation objective and colored-noise fitting; not a source of bundled parameter tables.
+
+### bofill1994
+
+J. M. Bofill. **Updated Hessian matrix and the restricted step method for locating transition structures**. *J. Comput. Chem. 15, 1–11* (1994). DOI: [10.1002/jcc.540150102](https://doi.org/10.1002/jcc.540150102).
+
+归属: Hessian-update method.
+
+### instanton-onthefly2016
+
+A. N. Beyer; J. O. Richardson; P. J. Knowles; J. Rommel; S. C. Althorpe. **Quantum Tunneling Rates of Gas-Phase Reactions from On-the-Fly Instanton Calculations**. *J. Phys. Chem. Lett. 7, 4374–4379* (2016). DOI: [10.1021/acs.jpclett.6b02115](https://doi.org/10.1021/acs.jpclett.6b02115).
+
+归属: Practical molecular instanton optimization; PyRPMD does not reproduce the Molpro implementation.
+
+### gr-instanton2015a
+
+J. O. Richardson; R. Bauer; M. Thoss. **Semiclassical Green’s functions and an instanton formulation of electron-transfer rates in the nonadiabatic limit**. *J. Chem. Phys. 143, 134115* (2015). DOI: [10.1063/1.4932361](https://doi.org/10.1063/1.4932361).
+
+归属: Original golden-rule instanton derivation.
+
+### gr-instanton2015b
+
+J. O. Richardson. **Ring-polymer instanton theory of electron transfer in the nonadiabatic limit**. *J. Chem. Phys. 143, 134116* (2015). DOI: [10.1063/1.4932362](https://doi.org/10.1063/1.4932362).
+
+归属: Ring-polymer numerical formulation of golden-rule instantons.
+
+### samp-abf2008
+
+E. Darve; D. Rodríguez-Gómez; A. Pohorille. **Adaptive biasing force method for scalar and vector free energy calculations**. *J. Chem. Phys. 128, 144120* (2008). DOI: [10.1063/1.2829861](https://doi.org/10.1063/1.2829861).
+
+归属: Scalar/vector ABF local mean-force estimator.
+
+### samp-pabf2015
+
+H. Alrachid; T. Lelièvre. **Long-time convergence of an adaptive biasing force method: Variance reduction by Helmholtz projection**. *SMAI J. Comput. Math. 1, 55–82* (2015). DOI: [10.5802/smai-jcm.4](https://doi.org/10.5802/smai-jcm.4).
+
+归属: Projected ABF and Helmholtz projection.
+
+### samp-eabf2017
+
+A. Lesage; T. Lelièvre; G. Stoltz; J. Hénin. **Smoothed Biasing Forces Yield Unbiased Free Energies with the Extended-System Adaptive Biasing Force Method**. *J. Phys. Chem. B 121, 3676–3685* (2017). DOI: [10.1021/acs.jpcb.6b10055](https://doi.org/10.1021/acs.jpcb.6b10055).
+
+归属: Extended-system ABF and physical-CV reconstruction.
+
+### samp-jarzynski1997
+
+C. Jarzynski. **Nonequilibrium Equality for Free Energy Differences**. *Phys. Rev. Lett. 78, 2690–2693* (1997). DOI: [10.1103/PhysRevLett.78.2690](https://doi.org/10.1103/PhysRevLett.78.2690).
+
+归属: Original nonequilibrium work equality.
+
+### samp-crooks1999
+
+G. E. Crooks. **Entropy production fluctuation theorem and the nonequilibrium work relation for free energy differences**. *Phys. Rev. E 60, 2721–2726* (1999). DOI: [10.1103/PhysRevE.60.2721](https://doi.org/10.1103/PhysRevE.60.2721).
+
+归属: Forward/reverse work fluctuation relation.
+
+### samp-bennett1976
+
+C. H. Bennett. **Efficient estimation of free energy differences from Monte Carlo data**. *J. Comput. Phys. 22, 245–268* (1976). DOI: [10.1016/0021-9991(76)90078-4](https://doi.org/10.1016/0021-9991(76)90078-4).
+
+归属: Acceptance-ratio estimator used in bidirectional work analysis.
+
+### samp-shadow2013
+
+D. A. Sivak; J. D. Chodera; G. E. Crooks. **Using Nonequilibrium Fluctuation Theorems to Understand and Correct Errors in Equilibrium and Nonequilibrium Simulations of Discrete Langevin Dynamics**. *Phys. Rev. X 3, 011007* (2013). DOI: [10.1103/PhysRevX.3.011007](https://doi.org/10.1103/PhysRevX.3.011007).
+
+归属: Shadow-work accounting for discrete stochastic propagation.
+
+### samp-pptis2004
+
+D. Moroni; P. G. Bolhuis; T. S. van Erp. **Rate constants for diffusive processes by partial path sampling**. *J. Chem. Phys. 120, 4055–4065* (2004). DOI: [10.1063/1.1644537](https://doi.org/10.1063/1.1644537). [原文 / 作者版本](https://arxiv.org/abs/cond-mat/0310466).
+
+归属: Original partial-path memory-loss approximation.
+
+### samp-repptis2023
+
+W. Vervust; D. T. Zhang; T. S. van Erp; A. Ghysels. **Path sampling with memory reduction and replica exchange to reach long permeation timescales**. *Biophys. J. 122, 2960–2972* (2023). DOI: [10.1016/j.bpj.2023.02.021](https://doi.org/10.1016/j.bpj.2023.02.021). [原文 / 作者版本](https://pmc.ncbi.nlm.nih.gov/articles/PMC10398259/).
+
+归属: Replica-exchange PPTIS.
+
+### samp-ffs2005
+
+R. J. Allen; P. B. Warren; P. R. ten Wolde. **Sampling Rare Switching Events in Biochemical Networks**. *Phys. Rev. Lett. 94, 018104* (2005). DOI: [10.1103/PhysRevLett.94.018104](https://doi.org/10.1103/PhysRevLett.94.018104).
+
+归属: Original forward-flux sampling method.
+
+### samp-ffs2009
+
+R. J. Allen; C. Valeriani; P. R. ten Wolde. **Forward flux sampling for rare event simulations**. *J. Phys.: Condens. Matter 21, 463102* (2009). DOI: [10.1088/0953-8984/21/46/463102](https://doi.org/10.1088/0953-8984/21/46/463102). [原文 / 作者版本](https://arxiv.org/abs/0906.4758).
+
+归属: Method review and practical stochastic-splitting formulation; original method is cited separately.
+
+### samp-mlcolvar2023
+
+L. Bonati; E. Trizio; A. Rizzi; M. Parrinello. **A unified framework for machine learning collective variables for enhanced sampling simulations: mlcolvar**. *J. Chem. Phys. 159, 014801* (2023). DOI: [10.1063/5.0156343](https://doi.org/10.1063/5.0156343).
+
+归属: Upstream training software; deployed CVs also need their method citation.
+
+### samp-deeplda2020
+
+L. Bonati; A. Rizzi; M. Parrinello. **Data-Driven Collective Variables for Enhanced Sampling**. *J. Phys. Chem. Lett. 11, 2998–3004* (2020). DOI: [10.1021/acs.jpclett.0c00535](https://doi.org/10.1021/acs.jpclett.0c00535).
+
+归属: Deep-LDA collective variables.
+
+### samp-deeptica2021
+
+L. Bonati; G. Piccini; M. Parrinello. **Deep learning the slow modes for rare events sampling**. *Proc. Natl. Acad. Sci. USA 118, e2113533118* (2021). DOI: [10.1073/pnas.2113533118](https://doi.org/10.1073/pnas.2113533118).
+
+归属: Deep-TICA collective variables.
+
+### na-iesh2009
+
+N. Shenvi; S. Roy; J. C. Tully. **Nonadiabatic dynamics at metal surfaces: Independent-electron surface hopping**. *J. Chem. Phys. 130, 174107* (2009). DOI: [10.1063/1.3125436](https://doi.org/10.1063/1.3125436).
+
+归属: Original IESH method.
+
+### na-iesh2023
+
+J. Gardner; D. Corken; S. M. Janke; S. Habershon; R. J. Maurer. **Efficient implementation and performance analysis of the independent electron surface hopping method for dynamics at metal surfaces**. *J. Chem. Phys. 158, 064101* (2023). DOI: [10.1063/5.0137137](https://doi.org/10.1063/5.0137137). [原文 / 作者版本](https://arxiv.org/abs/2212.00518v2).
+
+归属: IESH implementation analysis and benchmark formulation.
+
+### na-multimash2023
+
+J. E. Runeson; D. E. Manolopoulos. **A multi-state mapping approach to surface hopping**. *J. Chem. Phys. 159, 094115* (2023). DOI: [10.1063/5.0158147](https://doi.org/10.1063/5.0158147). [原文 / 作者版本](https://arxiv.org/abs/2305.08835v3).
+
+归属: Original multistate MASH, including signed estimators and multistate momentum direction; not unSMASH.
+
+### na-sacasscf2016
+
+I. Fdez. Galván; M. G. Delcey; T. B. Pedersen; F. Aquilante; R. Lindh. **Analytical State-Average Complete-Active-Space Self-Consistent Field Nonadiabatic Coupling Vectors: Implementation with Density-Fitted Two-Electron Integrals and Application to Conical Intersections**. *J. Chem. Theory Comput. 12, 3636–3653* (2016). DOI: [10.1021/acs.jctc.6b00384](https://doi.org/10.1021/acs.jctc.6b00384).
+
+归属: SA-CASSCF analytic-coupling derivation cited by the provider; this bridge does not enable density fitting.
+
+### na-heom1989
+
+Y. Tanimura; R. Kubo. **Time Evolution of a Quantum System in Contact with a Nearly Gaussian-Markoffian Noise Bath**. *J. Phys. Soc. Jpn. 58, 101–114* (1989). DOI: [10.1143/JPSJ.58.101](https://doi.org/10.1143/JPSJ.58.101).
+
+归属: Original hierarchy foundation; finite-temperature formulation is cited separately.
+
+### na-heom2020
+
+Y. Tanimura. **Numerically “exact” approach to open quantum dynamics: The hierarchical equations of motion (HEOM)**. *J. Chem. Phys. 153, 020901* (2020). DOI: [10.1063/5.0011599](https://doi.org/10.1063/5.0011599).
+
+归属: Modern formulation and review; a finite hierarchy still requires convergence.
+
+### na-qutip-bofin2023
+
+N. Lambert; T. Raheja; S. Cross; P. Menczel; S. Ahmed; A. Pitchford; D. Burgarth; F. Nori. **QuTiP-BoFiN: A bosonic and fermionic numerical hierarchical-equations-of-motion library with applications in light-harvesting, quantum control, and single-molecule electronics**. *Phys. Rev. Research 5, 013181* (2023). DOI: [10.1103/PhysRevResearch.5.013181](https://doi.org/10.1103/PhysRevResearch.5.013181).
+
+归属: Optional independent software comparator and published population benchmark, not the PyRPMD implementation.
+
+### active-rpmd2018
+
+I. S. Novikov; Y. V. Suleimanov; A. V. Shapeev. **Automated calculation of thermal rate coefficients using ring polymer molecular dynamics and machine-learning interatomic potentials with active learning**. *Phys. Chem. Chem. Phys. 20, 29503–29512* (2018). DOI: [10.1039/C8CP06037A](https://doi.org/10.1039/C8CP06037A).
+
+归属: Published active-learning RPMD rate workflow; the PyRPMD pilot is a distinct committee-based control experiment.
+
+### metatomic2026
+
+F. Bigi; J. W. Abbott; P. Loche; A. Mazitov; D. Tisi; M. F. Langer; A. Goscinski; P. Pegolo; S. Chong; R. Goswami; P. Febrer; S. Chorna; M. Kellner; M. Ceriotti; G. Fraux. **Metatensor and metatomic: Foundational libraries for interoperable atomistic machine learning**. *J. Chem. Phys. 164, 064113* (2026). DOI: [10.1063/5.0304911](https://doi.org/10.1063/5.0304911). [原文 / 作者版本](https://docs.metatensor.org/metatomic/latest/cite.html).
+
+归属: Upstream interoperability software; model weights require their own attribution.
+
+### nist-bonferroni
+
+NIST/SEMATECH. **e-Handbook of Statistical Methods: Bonferroni’s method**. *NIST Handbook 151, §7.4.7.3 (online section accessed 2026-11-03)* (2002). [原文 / 作者版本](https://www.itl.nist.gov/div898/handbook/prc/section4/prc473.htm).
+
+归属: Official formula reference for finite-family simultaneous intervals; 2002 is the handbook launch year.
+
+### nist-uncertainty1994
+
+B. N. Taylor; C. E. Kuyatt. **Guidelines for Evaluating and Expressing the Uncertainty of NIST Measurement Results**. *NIST Technical Note 1297, 1994 edition, Appendix A* (1994). DOI: [10.6028/NIST.tn.1297](https://doi.org/10.6028/NIST.tn.1297). [原文 / 作者版本](https://www.nist.gov/pml/nist-technical-note-1297/nist-tn-1297-appendix-law-propagation-uncertainty).
+
+归属: Official covariance-aware first-order propagation of uncertainty, not a guarantee of finite-sample coverage.

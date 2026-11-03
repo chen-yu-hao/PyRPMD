@@ -9,6 +9,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT / "docs" / "_tools"))
 from pyrpmd import __version__
 
 project = "PyRPMD"
@@ -19,6 +20,7 @@ version = release
 language = "en"
 extensions = [
     "myst_parser",
+    "sphinx_singlehtml",
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
@@ -27,7 +29,7 @@ extensions = [
 source_suffix = {".md": "markdown"}
 root_doc = "index"
 include_patterns = [
-    "index.md", "manual/*.md", "enhanced-sampling.md", "replica-exchange.md", "opes.md", "mlcolvar.md", "finite-temperature-string.md",
+    "index.md", "manual/*.md", "releases/unreleased.md", "enhanced-sampling.md", "replica-exchange.md", "opes.md", "mlcolvar.md", "finite-temperature-string.md",
     "rate-pmf-selection.md",
     "data-archive-plan.md",
     "plumed.md", "committor.md", "transition-interface-sampling.md", "transition-state-search.md", "rate-postprocessing.md",
@@ -38,8 +40,9 @@ include_patterns = [
     "quantum-statistics.md", "performance-dynamics.md", "batched-dynamics.md",
     "batched-ml-potentials.md",
     "t19-performance.md",
-    "builtin-native-potentials.md",
+    "builtin-native-potentials.md", "potential-adapters.md",
     "torch-materials-workflows.md",
+    "native-ensembles.md", "native-pimd-workflow.md",
     "implementation-review-2026-11-03.md",
     "rpc-mts.md", "mixed-sampling.md", "trpmd-spectroscopy.md", "propagation-stack.md", "condensed-phase-nqe.md",
     "nonadiabatic-workflow.md", "nonadiabatic-models.md",
@@ -82,7 +85,7 @@ html_context = {
     "doc_path": "docs",
     # English-only extension guides return to the Chinese contents rather than
     # claiming a translation at a nonexistent same-name page.
-    "bilingual_pages": ["index", "genindex", "search", "enhanced-sampling", "replica-exchange", "rate-pmf-selection", "rate-input-v2"] + [
+    "bilingual_pages": ["index", "genindex", "search", "releases/unreleased", "enhanced-sampling", "replica-exchange", "rate-pmf-selection", "rate-input-v2"] + [
         "manual/" + path.stem
         for path in sorted((ROOT / "docs" / "manual").glob("*.md"))
         if (ROOT / "docs" / "zh" / "manual" / path.name).is_file()

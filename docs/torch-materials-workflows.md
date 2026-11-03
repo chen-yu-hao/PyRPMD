@@ -1,7 +1,3 @@
----
-orphan: true
----
-
 # Tensor PIMD and RPMD transport workflows
 
 `sampling.engine="torch"` connects the existing float64, device-resident
@@ -79,23 +75,23 @@ its resolved index; use `cuda:0`, `cuda:1`, etc. to remove that ambiguity.
 | Harmonic parameters | Scalar, Cartesian and atom-axis broadcasting; no frame-dependent parameters |
 | Periodic cosine | Triclinic cells, partial PBC, atom subsets, repeats and nonperiodic confinement |
 | Module-backed `TorchPotential` | Requires `batch_independent=True`, a deterministic position-only model, float64 and matching device |
-| T04 batched ML providers, after PR #81 is integrated | The `as_torch_pes()` bridge is borrowed without host fallback; each provider retains its own model and dependency restrictions |
+| Batched ML providers | The `as_torch_pes()` bridge is borrowed without host fallback; each provider retains its own model and dependency restrictions |
 | PIMD | All-mobile Cartesian atoms, fixed cell, PILE-L with BCOCB |
 | Diffusion | Same sampling route, followed by Cayley BCB or exact normal-mode BAB with no thermostat |
 | NPT, fixed atoms, bond constraints, exchange/PIGS/high-order actions, friction, active learning, bias/CVs | Explicitly rejected by this workflow |
 | MPI, bead workers, trajectory worker pools, legacy `trajectory_batch_size` | Explicitly rejected; the workflow owns one device batch |
 | Precision and devices | float64 on CPU or explicitly requested CUDA; no automatic conversion |
 
-The named T04 provider factories (`mace-batched`, `nequip-batched`,
-`fairchem-batched`, `deepmd-batched` and `metatomic`) belong to the separate,
-unmerged [PR #81](https://github.com/chen-yu-hao/PyRPMD/pull/81). This main-based
-change supplies compatible bindings, not those factories. The combined source
-has been tested with a real T04 base-class fixture; public inputs using those
-provider names require the T04 integration as well.
+The named provider factories (`mace-batched`, `nequip-batched`,
+`fairchem-batched`, `deepmd-batched` and `metatomic`) and their tensor bridges
+are integrated. Install each provider's compatible optional dependencies and
+follow [the batched ML guide](batched-ml-potentials.md). Provider availability
+does not imply that CUDA correctness or throughput has been measured; the
+[performance report](t19-performance.md) records the remaining hardware work.
 
 Accepting a tensor bridge is not evidence that a particular trained model is
 physically accurate. A provider's own strict checks may add device
-synchronizations. In particular, T04's tensor interface on PR #81 checks
+synchronizations. In particular, the batched tensor interface checks
 finite values with scalar reads; this workflow does not claim to remove those
 provider-side synchronizations.
 

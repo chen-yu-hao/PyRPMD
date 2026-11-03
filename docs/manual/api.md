@@ -161,8 +161,10 @@ python examples/manual/low_level.py
 The program propagates deterministically from zero momenta and prints the change of the ring
 Hamiltonian; for thermal averages use the `pimd` task or `sample_step()`. `beta` is in `hartree^-1`
 and `dt` in atomic time; in an input, `temperature="300 K"` and `timestep="0.1 fs"` are converted for
-you. The last line prints `loop_stats`: the Python `HarmonicPotential` has no native PES binding, so
-every step runs in Python and the fallback reason says so.
+you. The last line prints `loop_stats`: `HarmonicPotential` supplies a native PES
+binding, so this supported example uses the compiled loop when the native
+extension is available. A NumPy-only installation uses the reference route;
+inspect the counters and reasons to see the path actually executed.
 
 ```{autoclass} pyrpmd.dynamics.Dynamics
 :members: step, energy, sample_momenta, propagate, propagate_block, sample_step, trpmd_step, operator_state_dict, load_operator_state_dict, loop_stats

@@ -1,8 +1,6 @@
----
-orphan: true
----
+# CUDA and large-system performance validation
 
-# T19: CUDA and large-system performance validation
+<a id="t19-cuda-and-large-system-performance-validation"></a>
 
 ## Acceptance status and source revisions
 
