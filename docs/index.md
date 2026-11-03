@@ -6,7 +6,7 @@ PyRPMD runs ring-polymer molecular dynamics from a single Python or TOML input. 
 potential energy surfaces to ring-polymer integrators and restartable workflows for gas-phase
 reaction rates, direct collisions, free-energy surfaces, enhanced sampling, periodic materials,
 surfaces with fixed layers and local electrochemical PCET. An experimental NRPMD extension
-handles scattering from a selected incoming electronic state. This manual covers release 0.2.0.
+handles scattering from a selected incoming electronic state. The 0.2.0 manual also documents subsequent main-branch features; see [integration notes](releases/0.2.0.md) for scope and status.
 
 New users: read [Installation](manual/installation.md), the [Quickstart](manual/quickstart.md)
 and [Input and command line](manual/input.md). If you already have a system and a potential,
@@ -47,7 +47,13 @@ go straight to your task:
 | Suzuki–Chin, bosonic exchange and PIGS | `pimd` + `[path_integral]` | [Path-integral actions](tier2-path-integral.md) |
 | Condensed-phase SC energy/Cv/Cp/pressure, SC-NPT, PIGLET-NPT and RPC virial | SC workflow, native PIGLET or Python RPC | [Condensed-phase NQE validation](condensed-phase-nqe.md) |
 | Thermal nonadiabatic population-flux calculation | `nonadiabatic-rate` command | [Direct data and rates](tier2-nonadiabatic.md) |
-| Method coverage, ML lifecycle and remaining gaps | Input / Python APIs | [Tier 2 overview](tier2-methods.md) |
+| Method coverage, ML lifecycle and remaining gaps | Input / Python APIs | [Method coverage and boundaries](tier2-methods.md) |
+| Precision-driven rate budgets and restart | `pyrpmd precision plan/run/status` | [Rate precision](rate_precision.md) |
+| Explicit Torch device-resident PIMD/diffusion | `sampling.engine="torch"` | [Torch workflow](torch-materials-workflows.md) |
+| Golden-rule instantons and molecular optimization | `pyrpmd instanton` / Python API | [Instantons](instanton.md) |
+| Fermionic sign reweighting and periodic exchange | `pimd` + `[path_integral]` | [Exchange and path integrals](tier2-path-integral.md) |
+| IESH and multistate MASH, one bead only | `nonadiabatic` | [IESH/MASH](nonadiabatic-iesh-multistate.md) |
+| RETIS minus, REPPTIS and direct FFS | Python API | [Path sampling](transition-interface-sampling.md) |
 
 The examples use analytic model potentials so they run in seconds. Before a production study,
 work through [Scientific conventions and convergence](manual/science.md).
@@ -137,6 +143,11 @@ Automatic analysis and figures <manual/analysis-reports>
 Examples <manual/examples>
 General-coordinate rates <general-coordinate-rates>
 Rate studies <rate-studies>
+Precision-driven rate controller <rate_precision>
+Torch PIMD and diffusion <torch-materials-workflows>
+Classical IESH and multistate MASH <nonadiabatic-iesh-multistate>
+f-QCMD <qcmd>
+IESH and spin extensions <nonadiabatic-iesh-multistate>
 Instantons <instanton>
 Low-temperature cross-checks <low-temperature>
 Quantum statistics <quantum-statistics>
@@ -174,6 +185,7 @@ Python API <manual/api>
 Troubleshooting <manual/troubleshooting>
 Developer guide <manual/development>
 Distribution and releases <distribution>
+Release notes 0.2.0 <releases/0.2.0>
 Literature validation <literature-validation>
 Publication readiness <publication-readiness>
 Dynamics validation <validation/tier1-2026-10-31/README>
