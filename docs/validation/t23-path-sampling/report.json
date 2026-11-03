@@ -155,11 +155,38 @@
       "command": "python -m sphinx -W --keep-going -b html docs ../t23-docs-html",
       "output": "build succeeded.",
       "log": "sphinx.log"
+    },
+    {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../.venv/bin/python -m pytest -q tests/test_infinite_retis.py tests/test_path_sampling_input.py tests/test_path_sampling_reporting.py tests/test_path_sampling_workflow.py tests/test_path_sampling_interrupt.py -k 'not quartic_rate'",
+      "output": "90 passed, 1 deselected in 111.56s (0:01:51)",
+      "log": "final-focused.log",
+      "note": "Consolidated final-source check includes the latest interruption and worker fault cases; the long physical references are recorded separately."
+    },
+    {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../.venv/bin/python -m pytest -q tests/test_ipi_clients.py::test_existing_unix_address_is_not_removed_on_bind_failure tests/test_path_sampling_workflow.py::test_public_toml_cli_validate_run_analyze_and_resume",
+      "output": "1 failed, 1 passed in 9.87s",
+      "log": "failure-recheck.log",
+      "qualification": "The CLI lifecycle passes on the final source; the only failure is the independently reproduced Unix socket environment restriction."
     }
   ],
   "full_suite": {
-    "status": "running",
-    "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q"
+    "status": "completed_with_failures",
+    "exit_code": 1,
+    "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../.venv/bin/python -m pytest -q",
+    "output": "2 failed, 10631 passed, 392 skipped, 48 warnings, 493 subtests passed in 2609.72s (0:43:29)",
+    "log": "full-suite.log",
+    "failures": [
+      {
+        "test": "tests/test_ipi_clients.py::test_existing_unix_address_is_not_removed_on_bind_failure",
+        "disposition": "Existing test blocked by AF_UNIX EPERM in this environment; see environment_failure."
+      },
+      {
+        "test": "tests/test_path_sampling_workflow.py::test_public_toml_cli_validate_run_analyze_and_resume",
+        "disposition": "Resolved stale collected assertion: this long-lived process retained the earlier ready key. The checked-in assertion uses valid and passed both the final-source 90-case gate and the failed-case recheck."
+      }
+    ],
+    "current_source_recheck": "1 passed (CLI lifecycle), 1 environment-blocked failure (Unix socket); no unresolved T23 failure.",
+    "collection_note": "The full invocation began before the last test updates; the final-source consolidated T23 gate records coverage of the checked-in interrupt and worker-fault tests."
   },
   "limitations": [
     "Local CPU process scheduler; MPI/GPU/bead-worker scheduling is rejected.",
@@ -174,5 +201,31 @@
     "https://doi.org/10.1021/acs.jpca.2c06004",
     "https://doi.org/10.1073/pnas.2318731121"
   ],
-  "artifact_note": "Raw observations retain the original atomic integrity envelope. Saved resolved inputs preserve capture-time paths for provenance; use checked-in examples and helper to reproduce on another machine."
+  "artifact_note": "Raw observations retain the original atomic integrity envelope. Saved resolved inputs preserve capture-time paths for provenance; use checked-in examples and helper to reproduce on another machine. Text logs preserve line content with trailing whitespace stripped.",
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "package_version": "0.2.0",
+    "test_executable": "../.venv/bin/python"
+  },
+  "environment_failure": {
+    "test": "tests/test_ipi_clients.py::test_existing_unix_address_is_not_removed_on_bind_failure",
+    "error": "PermissionError: [Errno 1] Operation not permitted at socket.socket(AF_UNIX, SOCK_STREAM), before bind",
+    "isolated_reproduction": "A separate Python process importing only the standard library reproduces EPERM for socket.socket(socket.AF_UNIX, socket.SOCK_STREAM).",
+    "source_comparison": {
+      "tests/test_ipi_clients.py": {
+        "base_blob": "ecf0242b449f8dd8c59783bc2ae3cae12db5af80",
+        "working_blob": "ecf0242b449f8dd8c59783bc2ae3cae12db5af80"
+      },
+      "src/pyrpmd/potentials/socket.py": {
+        "base_blob": "5ecc80495ed3ddec55cb01ebc3f8622fb715b3f3",
+        "working_blob": "5ecc80495ed3ddec55cb01ebc3f8622fb715b3f3"
+      }
+    },
+    "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../.venv/bin/python -m pytest -q tests/test_ipi_clients.py",
+    "output": "1 failed, 18 passed in 8.49s",
+    "log": "environment-ipc.log",
+    "resolution": "Recorded as an existing test blocked by the execution environment; no unrelated socket implementation or tests changed."
+  }
 }
