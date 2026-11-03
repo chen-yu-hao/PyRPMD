@@ -1,0 +1,48 @@
+# Four MPI-connected VES walkers on a two-dimensional analytic model.
+# Requires a PLUMED build with the optional VES module.
+# mpiexec -n 4 pyrpmd run examples/plumed/mpi-ves-2d.inp --output runs/plumed-ves-2d
+task = "plumed"
+temperature = "300 K"
+beads = 1
+seed = 3620
+
+[system]
+symbols = ["H"]
+geometry = [[-1.0, 0.15, 0.0]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "double_well"
+params = { height = 0.01, width = 1.0, confinement = 0.02 }
+
+[dynamics]
+timestep = "0.05 fs"
+integrator = "cayley-bcb"
+loop_backend = "python"
+
+[sampling]
+replicas = 4
+thermostat = "andersen"
+equilibration_steps = 100
+production_steps = 2000
+sample_interval = 10
+andersen_interval = 10
+
+[plumed]
+file = "ves-2d.dat"
+mode = "centroid"
+walkers = "mpi"
+restart = "files"
+
+[parallel]
+backend = "mpi"
+mode = "serial"
+trajectory_workers = 4
+trajectory_groups = 4
+bead_workers = 1
+pes_ranks = 1
+coordinator_ranks = 0
+scheduling = "static"
+
+[output]
+checkpoint_steps = 100
