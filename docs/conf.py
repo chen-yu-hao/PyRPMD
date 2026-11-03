@@ -31,7 +31,7 @@ include_patterns = [
     "rate-pmf-selection.md",
     "data-archive-plan.md",
     "plumed.md", "committor.md", "transition-interface-sampling.md", "transition-state-search.md", "rate-postprocessing.md",
-    "general-coordinate-rates.md", "rate-studies.md", "instanton.md", "low-temperature.md",
+    "general-coordinate-rates.md", "rate-studies.md", "instanton.md", "low-temperature.md", "vtst.md",
     "tunnelling-phase-projection.md",
     "rate-input-v2.md",
     "rate_precision.md",
