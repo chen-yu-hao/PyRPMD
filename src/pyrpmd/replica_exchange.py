@@ -198,3 +198,118 @@ class ReplicaExchange:
             self.rng.bit_generator.state = own_rng
             self.labels[:], self.attempts[:], self.accepts[:] = labels, attempts, accepts
             raise
+
+
+def exchange_pairs(nstates, scheme="odd_even", sweep=0):
+    """Return deterministic neighboring pairs for one workflow sweep.
+
+    ``odd_even`` alternates disjoint even/odd edges. ``adjacent`` performs a
+    left-to-right nearest-neighbor sweep, so a walker may cross more than one
+    edge in one sweep. The pure ordering is shared by serial and MPI runners.
+    """
+    nstates = _integer(nstates, "number of replica states", 2)
+    sweep = _integer(sweep, "exchange sweep")
+    if scheme == "odd_even":
+        parity = 0 if nstates == 2 else sweep % 2
+        return tuple((i, i + 1) for i in range(parity, nstates - 1, 2))
+    if scheme == "adjacent":
+        return tuple((i, i + 1) for i in range(nstates - 1))
+    raise ValueError("exchange pairing must be odd_even or adjacent")
+
+
+def metropolis_accept(log_acceptance_ratio, rng):
+    """Draw one logarithmic Metropolis decision without exponent overflow."""
+    ratio = float(log_acceptance_ratio)
+    if np.isnan(ratio):
+        raise ValueError("indeterminate replica exchange probability")
+    if not callable(getattr(rng, "random", None)):
+        raise TypeError("replica exchange RNG must implement random()")
+    uniform = float(rng.random())
+    if not 0.0 <= uniform < 1.0:
+        raise ValueError("replica exchange RNG returned a value outside [0,1)")
+    return bool((-np.inf if uniform == 0.0 else np.log(uniform)) < min(0.0, ratio))
+
+
+def temperature_momentum_scale(beta_from, beta_to):
+    """Scale momenta when one walker moves between canonical temperatures."""
+    beta_from, beta_to = float(beta_from), float(beta_to)
+    if (not np.isfinite(beta_from) or not np.isfinite(beta_to)
+            or beta_from <= 0.0 or beta_to <= 0.0):
+        raise ValueError("replica inverse temperatures must be positive and finite")
+    scale = float(np.sqrt(beta_from / beta_to))
+    if not np.isfinite(scale):
+        raise ValueError("temperature momentum rescaling is not representable")
+    return scale
+
+
+def _assignment_history(assignments, steps):
+    history = np.asarray(assignments)
+    clocks = np.asarray(steps)
+    if (history.ndim != 2 or history.shape[0] < 1 or history.shape[1] < 2
+            or history.dtype.kind not in "iu"
+            or clocks.shape != (history.shape[0],) or clocks.dtype.kind not in "iu"
+            or clocks[0] != 0 or np.any(np.diff(clocks) <= 0)):
+        raise ValueError(
+            "replica history must be integer assignments[E,R] with steps[0]=0 and increasing clocks"
+        )
+    expected = np.arange(history.shape[1])
+    if any(not np.array_equal(np.sort(row), expected) for row in history):
+        raise ValueError("replica assignments must be permutations")
+    return history.astype(np.int64, copy=False), clocks.astype(np.int64, copy=False)
+
+
+def round_trip_statistics(assignments, steps):
+    """Count endpoint-to-endpoint-to-endpoint walks for each walker label."""
+    history, clocks = _assignment_history(assignments, steps)
+    nstates = history.shape[1]
+    counts, durations = [], []
+    for walker in range(nstates):
+        anchor = None
+        reached_other = False
+        started = None
+        values = []
+        for clock, slot in zip(clocks, history[:, walker]):
+            if slot not in (0, nstates - 1):
+                continue
+            endpoint = int(slot == nstates - 1)
+            if anchor is None:
+                anchor, started = endpoint, int(clock)
+            elif endpoint != anchor:
+                reached_other = True
+            elif reached_other:
+                values.append(int(clock) - started)
+                started = int(clock)
+                reached_other = False
+        counts.append(len(values))
+        durations.append(values)
+    pooled = [value for values in durations for value in values]
+    return {
+        "completed_per_walker": counts,
+        "durations_steps_per_walker": durations,
+        "completed_total": int(sum(counts)),
+        "mean_duration_steps": None if not pooled else float(np.mean(pooled)),
+    }
+
+
+def state_space_diffusion(assignments, steps, max_lag=20):
+    """Return mean-squared thermodynamic-slot displacement versus event lag."""
+    history, clocks = _assignment_history(assignments, steps)
+    max_lag = _integer(max_lag, "maximum state-space diffusion lag", 1)
+    if len(history) < 2:
+        return {
+            "event_lags": [],
+            "mean_step_lags": [],
+            "mean_squared_slot_displacement": [],
+        }
+    limit = min(max_lag, len(history) - 1)
+    event_lags, step_lags, msd = [], [], []
+    for lag in range(1, limit + 1):
+        delta = history[lag:] - history[:-lag]
+        event_lags.append(lag)
+        step_lags.append(float(np.mean(clocks[lag:] - clocks[:-lag])))
+        msd.append(float(np.mean(delta.astype(float) ** 2)))
+    return {
+        "event_lags": event_lags,
+        "mean_step_lags": step_lags,
+        "mean_squared_slot_displacement": msd,
+    }

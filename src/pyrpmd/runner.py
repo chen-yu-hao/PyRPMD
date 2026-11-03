@@ -249,6 +249,10 @@ def run_resolved(config, system, *, output=None, resume=False):
     if (resume and config["task"] == "rate"
             and (Path(target) / "results" / "extensions.json").is_file()):
         raise InputError("This rate run has an authorized extension budget; use resume_run or pyrpmd resume")
+    if "tempering" in config:
+        from .workflows.tempering import validate_tempering
+
+        root_call(validate_tempering, config, system)
     if config["task"] == "fes":
         from .workflows.fes_dispatch import validate_fes
 
@@ -262,6 +266,10 @@ def run_resolved(config, system, *, output=None, resume=False):
         from .workflows.path_sampling import run_path_sampling
 
         result = run_path_sampling(config, system, Path(target))
+    elif "tempering" in config:
+        from .workflows.tempering import run_tempering
+
+        result = run_tempering(config, system, Path(target))
     elif config["task"] == "spectroscopy":
         from .workflows.spectroscopy import run_spectroscopy
 
@@ -495,6 +503,24 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
                 return FESResult.read(path, summary=result).summary()
         return result
     config = json.loads((path / "input" / "resolved.json").read_text())
+    if "tempering" in config:
+        if bins is not None or bootstrap is not None or diffusion is not None:
+            raise InputError("Tempering reanalysis does not accept FES/diffusion overrides")
+        from .workflows.tempering import reanalyze_tempering
+        from .parallel import root_call
+
+        system = _read_identity(config, path)
+        _initialize_output(config, system, path, resume=True)
+        result = reanalyze_tempering(config, system, path)
+        if result is None:
+            return None
+        result = {
+            **result, "software": "PyRPMD", "version": __version__,
+            "output": str(path), "preset": config.get("preset", "pilot"),
+            "input_warnings": config.get("_warnings", []),
+        }
+        root_call(write_json, path / "results" / "summary.json", result)
+        return result
     if config["task"] == "nonadiabatic":
         if bins is not None or bootstrap is not None or diffusion is not None:
             raise InputError("Nonadiabatic time-series analysis does not accept FES/diffusion overrides")

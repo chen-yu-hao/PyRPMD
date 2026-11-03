@@ -390,6 +390,19 @@ def main(argv=None):
                 from .input import fes_method
 
                 result["method"] = fes_method(config)
+            if "tempering" in config:
+                from .workflows.tempering import resolve_tempering
+
+                tempering = resolve_tempering(config, system)
+                result["tempering"] = {
+                    "mode": tempering.mode,
+                    "replicas": tempering.nstates,
+                    "temperatures_K": tempering.temperatures.tolist(),
+                    "lambdas": tempering.lambdas.tolist(),
+                    "target": tempering.target,
+                    "exchange_interval_steps": tempering.exchange_interval,
+                    "pairing": tempering.pairing,
+                }
             if config.get("initial_ensemble"):
                 result["temperature_K"] = None
                 result["beta_au"] = config["beta"]
