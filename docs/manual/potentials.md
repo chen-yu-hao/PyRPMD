@@ -105,6 +105,7 @@ finally:
 | `torch` | Batched molecular or explicitly cell-aware periodic Torch models |
 | `ipi` | Persistent i-PI client pool, evaluating multiple beads concurrently |
 | `mace`, `nequip`, `fairchem` | Ready-made reusable ASE calculators for explicit ML checkpoints |
+| `mace-batched`, `nequip-batched`, `fairchem-batched`, `deepmd-batched`, `metatomic` | Explicit batched/tensor routes with framework-specific dependencies; see [batched ML potentials](../batched-ml-potentials.md) |
 | `deepmd` | DeePMD `DeepPot` with native structure batching |
 | `tblite` / `xtb` | On-the-fly GFN1/GFN2/IPEA1-xTB through tblite |
 | `pyscf` | Molecular HF/DFT with analytic nuclear gradients |
@@ -124,8 +125,10 @@ readable. Use a new output directory; new-convention checkpoints resume normally
 old extrapolated energies or free-energy weights with the corrected ones. See the
 [ASE energy contract](https://docs.ase-lib.org/ase/atoms.html#ase.Atoms.get_potential_energy).
 
-The Torch adapter evaluates the model on its device and transfers coordinates and forces each call;
-each trajectory process loads its own copy of the model.
+The NumPy-facing Torch adapter evaluates the model on its device and transfers
+coordinates/forces per call; each trajectory process loads its own model copy.
+The explicit [tensor workflow](../torch-materials-workflows.md) instead retains
+its supported state and provider interface on the selected device.
 
 ## Periodic models
 

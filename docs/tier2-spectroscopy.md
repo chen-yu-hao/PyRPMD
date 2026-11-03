@@ -9,9 +9,11 @@ and production clocks, and offline reanalysis.
 
 These implementations add working spectroscopy tools. They do **not** establish
 physical convergence on a molecular material or complete QCMD/h-CMD coverage.
-Constrained adiabatic QCMD, quasi-centroid reconstruction and the complete
-iterative h-CMD/f-QCMD fitting loop are not implemented. An explicit `qcmd` or
-`h-cmd` method request fails instead of selecting Cartesian CMD.
+[Experimental f-QCMD](qcmd.md) adds quasi-centroid reconstruction, conditional
+sampling, iterative IBI fitting and one-bead production for fixed-topology bent
+triatomic molecules. Its paired spectral validation remains pending. Real-time
+adiabatic QCMD and h-CMD are unimplemented; explicit `qcmd` and `h-cmd` requests
+fail instead of selecting another method.
 
 ## Run from an input file
 
@@ -276,10 +278,12 @@ The workflow does not automatically train these conditional property models.
 
 `ibi_update` implements a checked Boltzmann-inversion update on supplied,
 consistently normalized coordinate distributions, including damping and
-explicit zero-bin regularization. It is a building block for f-QCMD/h-CMD
-development. It does not construct quasi-centroids, implement Eckart
-constraints or complete an IBI sampling iteration; these methods remain on the
-coverage backlog.
+explicit zero-bin regularization. This helper alone does not construct
+quasi-centroids, impose Eckart constraints or perform a sampling iteration.
+The separate [experimental f-QCMD API](qcmd.md) implements molecular
+quasi-centroids, fixed-quasi-centroid sampling and an IBI training cycle for its
+supported bent-triatomic model class. Real-time QCMD and h-CMD remain separate,
+unimplemented methods.
 
 ## Method references
 

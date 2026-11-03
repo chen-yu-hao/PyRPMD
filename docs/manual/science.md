@@ -129,12 +129,14 @@ The thermostat families available across the Python and native interfaces are:
 | PILE-L; PILE-G | [Ceriotti et al. (2010)](https://doi.org/10.1063/1.3489925) | PILE-G combines internal-mode PILE with centroid SVR |
 | Nosé–Hoover chains | [Martyna et al. (1992)](https://doi.org/10.1063/1.463940) | Global chain; chain parameters and numerical substeps require convergence |
 | Cartesian/normal-mode GLE | [Ceriotti et al. (2009)](https://doi.org/10.1103/PhysRevLett.102.020601) | Supplied stable drift/covariance matrices determine the bath |
-| PIGLET | [Ceriotti and Manolopoulos (2012)](https://doi.org/10.1103/PhysRevLett.109.100604) | Native NVT route requires externally calibrated mode matrices matching temperature and bead count, with provenance |
+| PIGLET | [Ceriotti and Manolopoulos (2012)](https://doi.org/10.1103/PhysRevLett.109.100604) | Imported or generated calibrated mode matrices must match temperature and bead count, with provenance; native NVT and supported isotropic BZP NPT |
 | Fast-forward Langevin | [Hijazi et al. (2018)](https://doi.org/10.1063/1.5029833) | Current native implementation is the rescale variant |
 
 Generic GLE matrices do not constitute a calibrated PIGLET model. PyRPMD supplies no invented
-universal PIGLET preset, rejects PIGLET NPT, and does not implement the original paper's transient
-anisotropic Gaussian momentum estimator merely by selecting that thermostat. A thermostat's
+universal PIGLET preset. Its [parameter tools and condensed-phase checks](../condensed-phase-nqe.md)
+describe imported/generated fits and isotropic BZP NPT, which requires a canonical
+centroid and no centroid-momentum/auxiliary covariance. Selecting this thermostat
+does not implement the original paper's transient anisotropic Gaussian momentum estimator. A thermostat's
 canonical-distribution test establishes sampling behavior; physical correlation functions need
 the dynamics appropriate to their observable.
 
@@ -161,8 +163,8 @@ source paths, original test systems and practical reproduction targets are in
 | Raman and SFG analysis | [Kubo (1957)](https://doi.org/10.1143/JPSJ.12.570); [Dundas et al. (2021)](https://doi.org/10.1021/acs.jctc.0c01323) for Raman invariant conventions; [Morita and Hynes (2002)](https://doi.org/10.1021/jp0133438) for time-dependent SFG | Relative polarizability/dipole correlation spectra using supplied property models; the Raman convention source is not a claim to implement polarizable embedding |
 | TI trace action and pCN sampling | [Takahashi and Imada (1984)](https://doi.org/10.1143/JPSJ.53.3765); [Cotter et al. (2013)](https://doi.org/10.1214/13-STS421) | Fourth-order trace action with Gaussian-preserving internal-mode Metropolis proposals; MC steps are not physical time |
 | Energy, heat capacity and isotope estimators | [Yamamoto (2005)](https://doi.org/10.1063/1.2013257); [Ceriotti and Markland (2013)](https://doi.org/10.1063/1.4772676); [Cheng and Ceriotti (2014)](https://doi.org/10.1063/1.4904293) | Action derivatives/scaled-coordinate estimators; FEP or mass integration with overlap and correlated-error checks |
-| Suzuki–Chin sampling | [Suzuki (1995)](https://doi.org/10.1016/0375-9601(95)00266-6); [Chin (1997)](https://doi.org/10.1016/S0375-9601(97)00003-0); [Kapil et al. (2016)](https://doi.org/10.1063/1.4971438) | Even-bead finite-difference force-gradient construction; current output does not include a complete SC energy/Cv/pressure estimator |
-| Bosonic exchange PIMD | [Hirshberg et al. (2019)](https://doi.org/10.1073/pnas.1913365116); [Feldman and Hirshberg (2023)](https://doi.org/10.1063/5.0173749) | Quadratic recurrence for equal-mass groups and symmetric observables; no periodic winding/superfluid estimator |
+| Suzuki–Chin sampling | [Suzuki (1995)](https://doi.org/10.1016/0375-9601(95)00266-6); [Chin (1997)](https://doi.org/10.1016/S0375-9601(97)00003-0); [Kapil et al. (2016)](https://doi.org/10.1063/1.4971438) | Even-bead finite-difference force-gradient construction; energy, Cv/Cp and pressure estimators plus isotropic BZP NPT are documented in [condensed-phase checks](../condensed-phase-nqe.md) |
+| Bosonic exchange PIMD | [Hirshberg et al. (2019)](https://doi.org/10.1073/pnas.1913365116); [Feldman and Hirshberg (2023)](https://doi.org/10.1063/5.0173749) | Quadratic recurrence for equal-mass groups and symmetric observables; periodic image sums, sign reweighting and all-bead isotropic NPT are documented in [exchange sampling](../tier2-path-integral.md); no superfluid estimator |
 | PIGS | [Sarsa et al. (2000)](https://doi.org/10.1063/1.481926) | Primitive open projection with a positive trial wavefunction and midpoint observables; auxiliary β specifies projection, not physical temperature |
 | Ring-polymer instanton rates and splittings | [Richardson and Althorpe (2009)](https://doi.org/10.1063/1.3267318); [Richardson (2016)](https://doi.org/10.1063/1.4943866); [Richardson and Althorpe (2011)](https://doi.org/10.1063/1.3530589) | Rate path and Gaussian prefactor; splitting is restricted to a symmetric bound/constrained doublet and rejects free external rotations/translations |
 | Harmonic TST, Wigner and Eckart checks | [Eyring (1935)](https://doi.org/10.1063/1.1749604); [Wigner (1932)](https://doi.org/10.1515/zpch-1932-1920); [Eckart (1930)](https://doi.org/10.1103/PhysRev.35.1303) | Explicit baseline/ZPE convention; weak-tunnelling expansion or a one-dimensional transmission model does not establish multidimensional accuracy |
@@ -175,8 +177,10 @@ citations do not turn it into a published state-preparation correction.
 
 **Centroid dynamics and spectroscopy.** PA-CMD changes internal-mode masses; TRPMD changes
 internal-mode friction. Converge the PA-CMD adiabatic frequency separately from its time step and
-bead count. QCMD, h-CMD and f-QCMD are outside the implemented coverage, and the IBI helper is
-not a complete implementation of those methods. Nonlinear f-CMD observables need conditional
+bead count. [Experimental f-QCMD](../qcmd.md) supplies molecular quasi-centroids,
+conditional sampling and IBI corrections for fixed-topology bent triatomics.
+Real-time QCMD and h-CMD remain unimplemented, and paired molecular spectral
+evidence for the selected f-QCMD implementation is still pending. Nonlinear f-CMD observables need conditional
 property models. The quartic benchmark uses Cao–Voth's 1993 potential with an independently
 calculated Kubo reference; its curves are not digitizations of that paper's real quantum
 correlation. Raman/SFG output is relative and needs additional optical factors for absolute

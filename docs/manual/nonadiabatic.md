@@ -85,6 +85,8 @@ The exact `method` selectors are:
 | `rpsh-ba` | Real RPSH-BA; one shared adiabatic coefficient vector, bead-averaged energies and velocity-contracted NACs |
 | `rpsh-dm` | Per-bead wavefunctions with a common centroid density and hopping current; nondegenerate Hermitian matrix |
 | `soc-rpsh` | Explicit complex-SOC selector for the same extended CA implementation as `rpsh-ca` |
+| `iesh` | Classical P=1 independent-electron surface hopping; real one-electron Hamiltonian and occupied-orbital preparation |
+| `multistate-mash` | Classical P=1 multistate MASH; real matrix and signed population estimator |
 
 The [model library](../nonadiabatic-models.md) supplies Tully I–III, general LVC
 and finite discrete spin-boson Hamiltonians. The registry also includes the
@@ -95,18 +97,22 @@ restartable CLI workflow.
 
 For `nrpmd` and `sm-nrpmd`, `initial.initial_state` is a fixed-diabatic state
 index. Hopping methods use `initial.active_surface`; BA shares a bead adiabatic
-label, while CA/DM use the centroid basis for their population decision. MASH
+label, while CA/DM use the centroid basis for their population decision. `rp-mash`
 draws spins from the chosen centroid adiabatic hemisphere with its required
 population importance distribution. Equal integer labels across methods do
 not establish equal physical electronic preparations.
 
 NRPMD and SM save signed fixed-diabatic density estimates without clipping.
 RPSH saves its amplitude density, adiabatic amplitude populations and active
-fractions separately. **MASH CLI populations are adiabatic active-surface
+fractions separately. **`rp-mash` CLI populations are adiabatic active-surface
 indicators** under the specified importance sampling. Its propagation-spin
 outer product is not a MASH density estimator; the CLI therefore does not
 publish it as diabatic population or coherence. General MASH operator
-correlations use the full-sphere, weighted Python API in the spin-method guide.
+correlations for this two-state formulation use the full-sphere, weighted
+Python API in the spin-method guide. `multistate-mash` instead uses the signed
+Runeson–Manolopoulos population estimator; IESH reports its one-particle density
+with the declared occupied orbitals. See [IESH and multistate MASH](../nonadiabatic-iesh-multistate.md)
+for their distinct initialization, normalization and checkpoint contracts.
 
 The four extended RPSH selectors accept `dboc=true` and `geometric_force`.
 DBOC enters energies, nuclear gradients and hop energy gaps consistently.
@@ -125,7 +131,7 @@ Checkpoints retain the complete electronic state, including BA transported
 frames, MASH sampling labels, RNG states and observation histories. These
 nonequilibrium preparations do not supply the coupled electronic-nuclear
 thermal distribution or a thermal rate. The SM thermal trace/phase reweighting,
-BA-RP-MASH, multistate MASH and SU(N) SM-NRPMD remain outside these interfaces.
+BA-RP-MASH, ring-polymer multistate MASH and SU(N) SM-NRPMD remain outside these interfaces.
 
 ## Published molecular PES
 

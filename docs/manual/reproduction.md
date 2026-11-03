@@ -1,5 +1,11 @@
 # Paper systems and reproduction checklist
 
+**Scope of this checklist.** The source-pinned plans below retain their original
+audit boundaries. Subsequent integrations change several implementation gaps.
+Use the [current method catalog](references.md), [capabilities](capabilities.md)
+and [next-release notes](../releases/unreleased.md) for current support; a newer
+implementation does not by itself complete a paper reproduction.
+
 **First finish the H + H2/BKMP2 convergence record and, in parallel, the Richardson–Thoss 2013 two-state
 model; then study q-TIP4P/F water equilibrium, diffusion and spectra.** These campaigns test rates,
 nonadiabatic dynamics and condensed-phase nuclear quantum effects. All 111 inventory entries

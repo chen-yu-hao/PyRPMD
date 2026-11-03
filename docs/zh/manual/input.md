@@ -161,7 +161,7 @@ FES、metadynamics 和 OPES 可通过 `sampling.thermostat_params` 选择正则�
 | --- | --- | --- |
 | `[system]` | 除 `pcet` 外全部 | `geometry`、`transition_state`、`reactants`、`separation`、`symbols`、`masses`、`masses_amu`、`isotopes`、`geometry_unit`、`fragments`、`charge`、`multiplicity`、`cell`、`cell_unit`、`pbc`、`fixed_atoms` |
 | `[potential]` | 除 `pcet` 外全部 | `provider`、`factory`、`library`、`manifest`、`params`、`units`、`derivative`、`device` 等，见[势能](potentials.md) |
-| `[dynamics]`、`[sampling]`、`[parallel]` | 除 `pcet` 外全部 | 见上文与[执行与并行](execution.md)；`sampling.engine="native"` 配合 `thermostat_params` 选择 C++ PIMD 驱动（仅 `pimd`，见[材料与表面](periodic.md)） |
+| `[dynamics]`、`[sampling]`、`[parallel]` | 除 `pcet` 外全部 | 见上文与[执行与并行](execution.md)；`sampling.engine="native"` 配合 `thermostat_params` 选择 C++ PIMD 驱动（仅 `pimd`，见[材料与表面](periodic.md)）；`sampling.engine="torch"` 选择固定晶胞 `pimd`/`diffusion` 的[张量路线（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/torch-materials-workflows.md) |
 | `[[cvs]]`、`[analysis]` | 三种 FES 方法；`rate`、`network`、`site_rate`、`surface_rate` | CV 定义与重构设置，见下文 |
 | `[umbrella]` | 伞形 FES；`rate`、`network`、`site_rate`、`surface_rate` | 窗口中心与刚度；FES 中可写为 `[fes.umbrella]` |
 | `[reaction]` | `rate`（`drpmd` 可用 `electronic_weight`） | `fragments`、`forming_bonds`、`breaking_bonds`、`rinf`、`symmetry_factor`、`equivalent_paths`；`entry_side` 选择 TS 下降的一侧；`preparation` 调整 TS Hessian/下降（`gradient_tolerance`、`hessian_step`、`displacement`、`trace_step`、`trace_steps`、`bond_scale`） |
@@ -288,6 +288,8 @@ stiffness = "0.002 hartree/bohr^2"      # 也可写 kappa
 | `pyrpmd report RUN [RUN ...]` | 由保存结果自动分析，生成出版级图、`index.html` 与 `report.json` | `--output DIR`（多个运行时必填）、`--style jctc\|nature`、`--formats png pdf svg`、`--labels`、`--series`、`--reference CSV`、`--kie A B`、`--convergence beads`、`--overwrite`；见[自动分析与出图](analysis-reports.md) |
 | `pyrpmd rate-postprocess DIR` | 由已保存 PMF/FES 与带符号通道通量计算速率，不再运行动力学 | `--spec FILE.json`（二维分割面）、`--output FILE`、`--bootstrap 200`、`--seed 0`；见[二维速率后处理（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-postprocessing.md) |
 | `pyrpmd project DIR` | 把已保存的 CV 密度 FES 按 Boltzmann 权重边缘化到更少的 CV | 必填 `--axes 0 1`（保留的轴，从 0 计）与 `--output DIR`；可选 `--selection mask.npy` |
+| `pyrpmd precision plan INPUT --spec FILE --output DIR` | 冻结有预算的热速率生产设计 | 见[精度控制（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate_precision.md)；`precision run DIR` 执行/恢复，`precision status DIR` 报告判断 |
+| `pyrpmd instanton INPUT.py` | 速率、劈裂或正常区 golden-rule 收敛研究 | `--output FILE`；见[瞬子（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/instanton.md) |
 | `pyrpmd study INPUT` | 对已有速率任务做温度/同位素与数值收敛扫描 | `--plan`（只列出算例，不跑动力学）、`--output DIR`、`--resume`；见[速率研究（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-studies.md) |
 | `pyrpmd checkpoint FILE` | 校验检查点容器 | `--require-integrity` 拒绝没有校验值的旧容器 |
 | `pyrpmd info` | 显示版本、原生能力、任务、积分器与初态系综 | |

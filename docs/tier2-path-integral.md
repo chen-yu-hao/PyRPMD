@@ -1,7 +1,7 @@
 # Force-based path-integral sampling in the main engine
 
 `task="pimd"` now accepts `[path_integral]` to select a Suzuki–Chin action,
-bosonic exchange, or path-integral ground-state projection (PIGS). These
+bosonic/fermionic exchange, or path-integral ground-state projection (PIGS). These
 actions use the existing `Dynamics` integration and sampling machinery. They
 are equilibrium sampling Hamiltonians; their trajectories are not physical
 real-time dynamics and must not be used as RPMD spectra or rate trajectories.
@@ -25,11 +25,13 @@ short harmonic-trap workflow checks, not equilibrated material simulations.
 `validate --check-pes` evaluates the actual action and force on the initial
 full ring without propagating it or creating an output directory.
 
-All three workflows require serial execution and all atoms mobile. Use the main engine
+These workflows require serial execution and all atoms mobile. Use the main engine
 (`sampling.engine="legacy"`, the default), with Andersen or PILE-L sampling.
 Compiled free-ring substeps remain available, but the action calls use Python
 step orchestration. Suzuki–Chin supports fixed fully periodic 3D cells and
-isotropic BZP NPT; bosonic/PIGS workflows retain nonperiodic fixed-cell scope.
+isotropic BZP NPT. Exchange supports periodic image sums and isotropic all-bead
+BZP NPT as detailed in [periodic exchange](#periodic-exchange-and-numerical-winding-sums);
+PIGS retains nonperiodic fixed-cell scope.
 Electronic friction and active-learning collection are not combined with these
 workflows. The physical PES must be a
 deterministic function of independent configurations; an RPC wrapper cannot
@@ -146,10 +148,11 @@ potential is not the factorial sum of every permutation at fixed labeled
 coordinates. Symmetric observables of the sampled ensemble are the intended
 use.
 
-Periodic winding sectors and permutation-resolved particle observables are
-not implemented. A minimum-image closing spring is not a substitute for the
-missing winding sum. The workflow therefore rejects periodic systems and
-reports only a symmetric bead-averaged physical potential observable.
+For periodic systems, choose the converged Gaussian image sum (`full_winding`)
+or the explicit `minimum_image` approximation; see
+[periodic exchange](#periodic-exchange-and-numerical-winding-sums). The latter
+is not a winding sum. Permutation-resolved particle observables and a superfluid
+estimator remain outside this workflow's symmetric-observable scope.
 
 ## PIGS ground-state sampling
 
@@ -218,8 +221,10 @@ has bounded-memory trajectory storage.
 counts and mean potential energy in hartree. SC adds method-specific mean
 energies and a `thermodynamics` report with Cv or Cp and conditional block
 uncertainties when enough samples are available. Its checkpoint retains the
-full estimator series and, for NPT, the cell history and piston. Bosonic/PIGS
-summaries retain the potential-only observable. None of these sampling
+full estimator series and, for NPT, the cell history and piston. Exchange
+summaries also retain sign diagnostics, and periodic exchange NPT records its
+pressure/cell state; see [restart checks](#restart-and-independent-checks).
+PIGS retains the midpoint-potential observable. None of these sampling
 trajectories defines a physical real-time correlation function.
 
 ## Validation

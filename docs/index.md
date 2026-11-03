@@ -2,63 +2,56 @@
 
 **English** · [中文](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/zh/index.md)
 
-PyRPMD runs ring-polymer molecular dynamics from a single Python or TOML input. It connects
-potential energy surfaces to ring-polymer integrators and restartable workflows for gas-phase
-reaction rates, direct collisions, free-energy surfaces, enhanced sampling, periodic materials,
-surfaces with fixed layers and local electrochemical PCET. An experimental NRPMD extension
-handles scattering from a selected incoming electronic state. This manual covers release 0.2.0.
+PyRPMD connects potential energy surfaces to ring-polymer molecular dynamics,
+reaction-rate calculations, free-energy sampling, quantum statistics and
+spectroscopy. Start with [Installation](manual/installation.md), the
+[Quickstart](manual/quickstart.md), and [Input and command line](manual/input.md).
 
-New users: read [Installation](manual/installation.md), the [Quickstart](manual/quickstart.md)
-and [Input and command line](manual/input.md). If you already have a system and a potential,
-go straight to your task:
+This is the manual for the source checkout. The package version is still 0.2.0;
+[the next-release notes](releases/unreleased.md) distinguish newly integrated
+features from the [0.2.0 release](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/releases/0.2.0.md).
+The [capabilities and limits](manual/capabilities.md) page explains supported
+combinations and the evidence behind them. Short examples exercise an interface;
+production calculations also need [scientific convergence](manual/science.md).
 
-| Quantity | `task` | Chapter |
+## Find your workflow
+
+| Goal | Entry point | Guide |
 | --- | --- | --- |
-| Gas-phase bimolecular RPMD rate | `rate` | [Gas phase and free energy](manual/workflows.md) |
-| Direct collisions and product channels | `drpmd` | [Gas phase](manual/workflows.md); [NRPMD](manual/nonadiabatic.md) |
-| Model electronic populations and coherences | `nonadiabatic` | [Population workflow](nonadiabatic-workflow.md) |
-| Collisions from selected incoming vibrational states (NE-RPMD, QCT) | `drpmd` + `[initial_ensemble]`; `state-check`, `extend` commands | [Gas phase](manual/workflows.md#selected-vibrational-initial-states) |
-| 1D–3D umbrella free-energy surface | `fes` | [Quickstart](manual/quickstart.md), [Unified enhanced sampling](enhanced-sampling.md) |
-| Postprocess saved PMF/FES rates and branching | `rate-postprocess` command | [2D rate postprocessing](rate-postprocessing.md) |
-| Marginalize a saved FES onto fewer CVs | `project` command | [Output and analysis](manual/results.md) |
-| Automatic analysis, publication figures and HTML reports | `report` command, or `run`/`analyze --report` | [Automatic analysis and figures](manual/analysis-reports.md) |
-| Rate matrix for several entrances and transition states | `network` | [Gas phase and free energy](manual/workflows.md) |
-| Standard or well-tempered metadynamics, shared walkers | `fes` + `method="metadynamics"` | [Unified enhanced sampling](enhanced-sampling.md) |
-| OPES probability-based sampling | `fes` + `method="opes"` | [Unified enhanced sampling](enhanced-sampling.md), [OPES](opes.md) |
-| Replica-exchange umbrellas | `fes` + `[replica_exchange]` | [Replica exchange](replica-exchange.md) |
-| Optional PLUMED centroid biases | `plumed` / Python API | [PLUMED bridge](plumed.md) |
-| Transition-interface path ensembles | Python API | [Transition-interface sampling](transition-interface-sampling.md) |
-| Equilibrium nuclear quantum statistics and energy estimators | `pimd` | [Materials and surfaces](manual/periodic.md) |
-| C++ PIMD driver: SVR, GLE, PIGLET, FFL thermostats; BZP/MTTK/RGB/SCR NPT | `pimd` + `sampling.engine="native"`; `pyrpmd-native` | [Materials and surfaces](manual/periodic.md#native-pimd-engine) |
-| RPMD self-diffusion, MSD, VACF | `diffusion` | [Materials and surfaces](manual/periodic.md) |
-| Directed site-to-site hop in a material | `site_rate` | [Materials and surfaces](manual/periodic.md) |
-| Directed escape on a fixed substrate | `surface_rate` | [Materials and surfaces](manual/periodic.md) |
-| Electrochemical PCET in the weak vibronic-coupling limit | `pcet` | [PCET](manual/pcet.md) |
-| Constant-potential effective PES, electron-number sampling and HER current | `fes` / Python API | [Electrode models](manual/electrochemistry.md) |
-| Adaptive restrained paths with constant-potential thermal NRPMD | Python API | [Adaptive NRPMD paths](manual/adaptive-nrpmd.md) |
-| Smooth nonlinear centroid escape coordinate | `site_rate` | [General-coordinate rates](general-coordinate-rates.md) |
-| Temperature, isotope and numerical convergence scans | `pyrpmd study` | [Rate studies](rate-studies.md) |
-| Instanton paths and one-dimensional low-temperature rates | Python API | [Instantons](instanton.md) |
-| Multidimensional instanton rates, splittings and TST/Wigner/Eckart | Python API / cached-Hessian CLI | [Low-temperature cross-checks](low-temperature.md) |
-| Thermal NRPMD, surface hopping, SOC, KC-/MV-RPMD, electronic friction | Python API; `diffusion` + `[electronic_friction]` | [Nonadiabatic dynamics](manual/nonadiabatic.md) |
-| Ab initio reference data, fitted PES, JaxPIP and native ONNX export | `python -m pyrpmd.pesgen`, Python API | [PES generation](manual/pes-generation.md), [JaxPIP](manual/jaxpip-generation.md) |
-| Higher-order equilibrium sampling and quantum estimators | Python API | [Quantum statistics](quantum-statistics.md) |
-| PA-CMD and relative IR/Raman/SFG spectra | `spectroscopy` | [Spectroscopy](tier2-spectroscopy.md) |
-| Suzuki–Chin, bosonic exchange and PIGS | `pimd` + `[path_integral]` | [Path-integral actions](tier2-path-integral.md) |
-| Condensed-phase SC energy/Cv/Cp/pressure, SC-NPT, PIGLET-NPT and RPC virial | SC workflow, native PIGLET or Python RPC | [Condensed-phase NQE validation](condensed-phase-nqe.md) |
-| Thermal nonadiabatic population-flux calculation | `nonadiabatic-rate` command | [Direct data and rates](tier2-nonadiabatic.md) |
-| Method coverage, ML lifecycle and remaining gaps | Input / Python APIs | [Tier 2 overview](tier2-methods.md) |
+| Thermal gas-phase RPMD rates and reaction networks | `rate`, `network` | [Gas phase and free energy](manual/workflows.md) · [Explicit rate input](rate-input-v2.md) · [PMF selection](rate-pmf-selection.md) |
+| Budgeted rates with declared statistical and numerical targets | `pyrpmd precision plan/run/status` | [Precision-driven rate control](rate_precision.md) |
+| Instanton rates, tunnelling splittings and normal-regime golden-rule rates | `pyrpmd instanton`, Python API | [Instanton workflow](instanton.md) · [Low-temperature normalization](low-temperature.md) |
+| Thermal or selected-vibrational-state collisions, NE-RPMD and QCT | `drpmd`, `state-check`, `extend` | [Direct collisions](manual/workflows.md#selected-vibrational-initial-states) |
+| Site hopping and escape from a fixed substrate | `site_rate`, `surface_rate` | [Materials and surfaces](manual/periodic.md) · [General-coordinate rates](general-coordinate-rates.md) |
+| Umbrella FES, metadynamics, OPES and replica exchange | `fes` | [Enhanced sampling](enhanced-sampling.md) · [Replica exchange](replica-exchange.md) · [OPES](opes.md) |
+| ABF, eABF and steered free-energy differences | `fes` with `abf`, `eabf`, `steered` | [Enhanced sampling](enhanced-sampling.md) |
+| Finite-temperature strings and learned CVs | Python API / exported CV | [String sampling](finite-temperature-string.md) · [mlcolvar](mlcolvar.md) |
+| PLUMED biases with declared file-based restart | `plumed` | [PLUMED bridge](plumed.md) |
+| TIS, RETIS minus-ensemble flux, REPPTIS and direct FFS | Python API | [Path sampling](transition-interface-sampling.md) |
+| Equilibrium PIMD, native thermostats and barostats | `pimd`, `sampling.engine="native"`, `pyrpmd-native` | [Native workflow](native-pimd-workflow.md) · [Native ensembles](native-ensembles.md) |
+| GLE/PIGLET parameter import, generation and estimator checks | Python API / thermostat parameters | [Condensed-phase quantum statistics](condensed-phase-nqe.md) |
+| Device-resident PIMD and RPMD transport | `pimd` / `diffusion`, `sampling.engine="torch"` | [Tensor workflows](torch-materials-workflows.md) |
+| Suzuki–Chin, bosonic/fermionic exchange, periodic winding and exchange NPT, PIGS | `pimd` + `[path_integral]` | [Path-integral actions](tier2-path-integral.md) · [Quantum estimators](quantum-statistics.md) |
+| Self-diffusion, MSD and VACF | `diffusion` | [Materials](manual/periodic.md) · [Common propagation](propagation-stack.md) |
+| TRPMD, PA-CMD, quadratic f-CMD and experimental molecular f-QCMD spectra | `spectroscopy` | [Property spectra](tier2-spectroscopy.md) · [f-QCMD](qcmd.md) · [TRPMD](trpmd-spectroscopy.md) |
+| Mapping dynamics, surface hopping, thermal rates and electronic friction | `nonadiabatic`, `nonadiabatic-rate`, Python API | [Population workflow](nonadiabatic-workflow.md) · [Method comparison](nonadiabatic-comparison.md) |
+| Classical IESH and multistate MASH | `nonadiabatic`, P=1 | [IESH and multistate MASH](nonadiabatic-iesh-multistate.md) |
+| PySCF SA-CASSCF electronic data and spin–boson HEOM references | Python API | [Electronic structure and HEOM](tier2-nonadiabatic.md) |
+| PCET, constant-potential models and restrained nonadiabatic paths | `pcet`, `fes`, Python API | [PCET](manual/pcet.md) · [Electrochemistry](manual/electrochemistry.md) · [Adaptive paths](manual/adaptive-nrpmd.md) |
+| Batched ML potentials, OpenMM and LAMMPS | Potential providers | [Batched ML](batched-ml-potentials.md) · [Provider interfaces](manual/potentials.md) · [Measured performance and limits](t19-performance.md) |
+| Fast analytic potentials, trajectory batches and RPC/MTS | Native bindings / Python API | [Built-in native potentials](builtin-native-potentials.md) · [Batching](batched-dynamics.md) · [RPC/MTS](rpc-mts.md) |
+| PES fitting and resumable sampling–labelling–training loops | `python -m pyrpmd.pesgen`, Python API | [PES generation](manual/pes-generation.md) · [JaxPIP](manual/jaxpip-generation.md) · [Active learning](tier2-ml-lifecycle.md) |
+| Reanalyse FES, postprocess rates, export trajectories and make reports | `analyze`, `project`, `rate-postprocess`, `report` | [Results](manual/results.md) · [Rate postprocessing](rate-postprocessing.md) · [Trajectory export](trajectory-export.md) · [Reports](manual/analysis-reports.md) |
 
-The examples use analytic model potentials so they run in seconds. Before a production study,
-work through [Scientific conventions and convergence](manual/science.md).
-
-For method attribution and research planning, use the [original-paper catalog](manual/references.md)
-and [reproduction checklist](manual/reproduction.md), including source systems, target observables and implementation gaps.
+For attribution, use the [original-paper catalog](manual/references.md).
+The [reproduction checklist](manual/reproduction.md) retains its source-pinned
+research plans; current supported combinations are in the linked guides.
 
 ## The basic cycle
 
-Most input workflows use the same four commands. PLUMED cannot automatically restore its
-opaque kernel state; the thermal nonadiabatic rate command uses a separate input schema.
+Most input workflows use the same commands. PLUMED automatic continuation requires
+`restart="files"` before the first run; precision campaigns and thermal nonadiabatic
+rates use their own commands and schemas.
 Give each new calculation its own output directory.
 To create a ready input first, use `pyrpmd init my-first-run` and follow the
 [Quickstart](manual/quickstart.md). In the template below, `job.inp` is your own input file.
@@ -80,11 +73,11 @@ Python equivalents are `prepare`, `run`, `analyze_run` and `resume_run`; see the
 
 | Topic | Chapters |
 | --- | --- |
-| Getting started | [Installation](manual/installation.md) · [Quickstart](manual/quickstart.md) · [Input and CLI](manual/input.md) · [Scientific conventions](manual/science.md) |
+| Getting started | [Installation](manual/installation.md) · [Quickstart](manual/quickstart.md) · [Input and CLI](manual/input.md) · [Scientific conventions](manual/science.md) · [Capabilities and limits](manual/capabilities.md) |
 | Tasks | [Gas phase and free energy](manual/workflows.md) · [Materials and surfaces](manual/periodic.md) · [PCET](manual/pcet.md) · [Electrode models](manual/electrochemistry.md) · [Nonadiabatic NRPMD](manual/nonadiabatic.md) · [Examples](manual/examples.md) |
 | Models and runs | [Potentials and plugins](manual/potentials.md) · [PES generation](manual/pes-generation.md) · [JaxPIP fitting](manual/jaxpip-generation.md) · [Execution, parallelism and restart](manual/execution.md) · [Output and analysis](manual/results.md) · [Automatic analysis and figures](manual/analysis-reports.md) |
 | Dynamics extensions | [Common propagation stack](propagation-stack.md) · [Expensive potentials](performance-dynamics.md) · [Trajectory batching](batched-dynamics.md) · [RPC/MTS](rpc-mts.md) · [Mixed sampling](mixed-sampling.md) · [TRPMD and spectra](trpmd-spectroscopy.md) |
-| Reference | [Original papers](manual/references.md) · [Reproduction checklist](manual/reproduction.md) · [Python API](manual/api.md) · [Troubleshooting](manual/troubleshooting.md) · [Developer guide](manual/development.md) |
+| Reference | [Original papers](manual/references.md) · [Reproduction checklist](manual/reproduction.md) · [Python API](manual/api.md) · [Troubleshooting](manual/troubleshooting.md) · [Developer guide](manual/development.md) · [Next release](releases/unreleased.md) |
 
 ```{toctree}
 :maxdepth: 2
@@ -95,6 +88,7 @@ Installation <manual/installation>
 Quickstart <manual/quickstart>
 Input <manual/input>
 Science <manual/science>
+Capabilities and limits <manual/capabilities>
 ```
 
 ```{toctree}
@@ -107,6 +101,9 @@ Rate PMF selection <rate-pmf-selection>
 Explicit rate input and regional umbrellas <rate-input-v2>
 Transition-state search <transition-state-search>
 Materials and surfaces <manual/periodic>
+Native PIMD workflow <native-pimd-workflow>
+Native thermostats and barostats <native-ensembles>
+Tensor PIMD and transport <torch-materials-workflows>
 PCET <manual/pcet>
 Electrode models <manual/electrochemistry>
 Nonadiabatic dynamics <manual/nonadiabatic>
@@ -119,6 +116,9 @@ BA/DM hopping, DBOC and SOC <nonadiabatic-hopping-extensions>
 Molecular multistate potentials <molecular-nonadiabatic>
 Electronic propagation performance <nonadiabatic-performance>
 Potentials and plugins <manual/potentials>
+Batched machine-learning potentials <batched-ml-potentials>
+Built-in native potentials <builtin-native-potentials>
+External force engines and adapters <potential-adapters>
 PES generation <manual/pes-generation>
 JaxPIP fitting and native execution <manual/jaxpip-generation>
 Execution <manual/execution>
@@ -137,11 +137,14 @@ Automatic analysis and figures <manual/analysis-reports>
 Examples <manual/examples>
 General-coordinate rates <general-coordinate-rates>
 Rate studies <rate-studies>
+Precision-driven rate control <rate_precision>
 Instantons <instanton>
 Low-temperature cross-checks <low-temperature>
+Tunnelling phase projection <tunnelling-phase-projection>
 Quantum statistics <quantum-statistics>
-Tier 2 coverage <tier2-methods>
+Method coverage and boundaries <tier2-methods>
 PA-CMD and property spectra <tier2-spectroscopy>
+Molecular quasi-centroids and f-QCMD <qcmd>
 Main-engine path-integral actions <tier2-path-integral>
 Direct nonadiabatic data and rates <tier2-nonadiabatic>
 ML model lifecycle <tier2-ml-lifecycle>
@@ -174,6 +177,11 @@ Python API <manual/api>
 Troubleshooting <manual/troubleshooting>
 Developer guide <manual/development>
 Distribution and releases <distribution>
+Next release <releases/unreleased>
+Portable publication and archives <portable-persistence>
+Performance evidence and CUDA work <t19-performance>
+Data archive plan <data-archive-plan>
+Historical implementation review <implementation-review-2026-11-03>
 Literature validation <literature-validation>
 Publication readiness <publication-readiness>
 Dynamics validation <validation/tier1-2026-10-31/README>

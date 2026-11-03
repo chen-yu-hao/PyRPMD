@@ -40,7 +40,9 @@ pbc = [true, true, false]
 可在更换几何来源时保持输入含义不变。
 
 传播坐标 `q[P,N,3]` 和导出的质心轨迹保持展开，使环弹簧、质心和 MSD 连续。周期势能和周期 CV 自行处理最小镜像；
-在倾斜晶胞中，这与逐个分数坐标取整不同。原子核是可区分的闭合环，不采样交换和缠绕。
+在倾斜晶胞中，这与逐个分数坐标取整不同。默认路线使用可区分的闭合环原子核。交换和周期 winding 求和
+必须显式选择 `[path_integral]` 作用量及其[交换控制（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/tier2-path-integral.md)，
+仅设置 PBC 不会启用这些方法。
 
 H、D、T 在电子 PES 上都对应氢，差别在于核质量。可用 `symbols=["D"]`、`isotopes` 或 `masses_amu` 指定。
 同位素沿用同一 Born–Oppenheimer PES；对每种同位素分别收敛珠子数和平衡时间。
@@ -199,7 +201,7 @@ gamma = "0.01 fs^-1"
 
 | 项目 | 原生引擎 |
 | --- | --- |
-| 恒温器 | `andersen`、`langevin`、`pile-l`、`pile-g`、`svr`、`gle`、`nm-gle`、`nm-gle-g`、`piglet`（仅 NVT，需提供标定矩阵）、`ffl`；`thermostat_params` 接受 `gamma`、`tau`、`pile_scale`、`interval`、`gle` |
+| 恒温器 | `andersen`、`langevin`、`pile-l`、`pile-g`、`svr`、`gle`、`nm-gle`、`nm-gle-g`、`piglet`（NVT 或支持的各向同性 BZP NPT，需标定矩阵）、`ffl`、`nhc`；`thermostat_params` 接受 `gamma`、`tau`、`pile_scale`、`interval`、`gle` 或文档规定的 NHC 链参数 |
 | 恒压器 | `mode="bzp"`、`"mttk"`、`"rgb"`（需 `stress` 与 `reference_cell`）、`"scr"`（单珠子）；要求三维 PBC 且全部原子可动 |
 | 势能 | 内置 `free`、标量谐振和 `periodic_cosine`；非周期 NVT 中的分子 C ABI/Fortran；编译周期求值函数用 `provider="native_periodic"` |
 | 并行 | 独立副本可用 serial/process/MPI；每条轨迹 `mode="serial"`、一个珠子 worker |

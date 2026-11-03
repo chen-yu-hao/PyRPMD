@@ -48,7 +48,9 @@ changes.
 Propagated coordinates `q[P,N,3]` and exported centroid trajectories stay unwrapped, which keeps
 ring springs, centroids and MSD continuous. Periodic potentials and periodic CVs apply the minimum
 image themselves; in a skewed cell that is not the same as rounding each fractional coordinate.
-Nuclei are distinguishable closed rings; exchange and winding are not sampled.
+The default route uses distinguishable closed-ring nuclei. Exchange and periodic
+winding sums require the explicit `[path_integral]` action and its separate
+[exchange controls](../tier2-path-integral.md); they are not enabled by PBC alone.
 
 H, D and T map to hydrogen on the electronic PES and differ in nuclear mass. Use `symbols=["D"]`,
 `isotopes` or `masses_amu`. An isotope keeps the same Born–Oppenheimer PES; converge the bead number
@@ -240,7 +242,7 @@ gamma = "0.01 fs^-1"
 
 | Item | Native engine |
 | --- | --- |
-| Thermostats | `andersen`, `langevin`, `pile-l`, `pile-g`, `svr`, `gle`, `nm-gle`, `nm-gle-g`, `piglet` (NVT, supply calibrated matrices), `ffl`; `thermostat_params` takes `gamma`, `tau`, `pile_scale`, `interval`, `gle` |
+| Thermostats | `andersen`, `langevin`, `pile-l`, `pile-g`, `svr`, `gle`, `nm-gle`, `nm-gle-g`, `piglet` (NVT or supported isotropic BZP NPT with calibrated matrices), `ffl`, `nhc`; `thermostat_params` takes `gamma`, `tau`, `pile_scale`, `interval`, `gle`, or the documented NHC chain controls |
 | Barostats | `mode="bzp"`, `"mttk"`, `"rgb"` (needs `stress` and `reference_cell`), `"scr"` (one bead); 3D PBC, all atoms mobile |
 | Potentials | Built-in `free`, scalar harmonic and `periodic_cosine`; molecular C ABI/Fortran in nonperiodic NVT; `provider="native_periodic"` for a compiled periodic evaluator |
 | Parallelism | Independent replicas over serial/process/MPI; each trajectory `mode="serial"` with one bead worker |

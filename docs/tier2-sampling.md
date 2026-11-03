@@ -317,13 +317,13 @@ repeated paths. Results retain per-interface crossing sequences, path lengths,
 shooting acceptance, swap counts and the full walker-label history. Statistics
 across interface slots are correlated and should be resampled jointly.
 
-The implementation covers **positive-ensemble RETIS with a separate flux
-estimate**, rather than the complete original RETIS construction. The
-minus-interface flux ensemble, asynchronous/infinite swapping,
-MPI execution and persistent ensemble restart are not implemented. Use
-`combine_tis_rate(result.interfaces, matching_flux)` with a separately validated
-effective flux. The existing finite path-length cutoff also applies: increasing
-it until truncation is negligible is part of a physical convergence study.
+The positive-ensemble API can combine its interfaces with a separately
+validated matching flux. The [path-sampling guide](transition-interface-sampling.md)
+also documents the integrated minus ensemble, internally estimated flux,
+atomic RETIS checkpoint/restart, REPPTIS and direct FFS APIs. Asynchronous/infinite
+swapping and a general TOML/MPI workflow remain separate work. The finite
+path-length cutoff still applies: increase it until truncation is negligible
+as part of a physical convergence study.
 
 ## Verification
 

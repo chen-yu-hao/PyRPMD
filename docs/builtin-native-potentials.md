@@ -1,7 +1,3 @@
----
-orphan: true
----
-
 # Native execution for analytic built-in potentials
 
 The five scalar reference potentials in `pyrpmd.potentials.builtin` can provide

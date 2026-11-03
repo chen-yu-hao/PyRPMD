@@ -51,6 +51,8 @@ pyrpmd resume runs/population --workers 1 --block-steps 64
 | `rpsh-ba` | 实矩阵 RPSH-BA；一个共同绝热电子向量，由逐珠平均能量和 `v·d` 驱动 |
 | `rpsh-dm` | 逐珠电子波函数在共同质心基下形成密度与跃迁电流；支持非简并 Hermitian 矩阵 |
 | `soc-rpsh` | 复 SOC 的显式选择项，使用与 `rpsh-ca` 相同的扩展 CA 驱动器 |
+| `iesh` | 经典 P=1 独立电子表面跳跃；实单电子 Hamiltonian 与占据轨道初态 |
+| `multistate-mash` | 经典 P=1 多态 MASH；实矩阵与有符号布居估计量 |
 
 程序内置 Tully I–III、一般线性振电耦合（LVC）、显式有限模式 spin-boson 模型，
 以及下文介绍的 NaH₂ 分子 PES。参数采用原子单位，provider 给出全部透热势能矩阵及
@@ -62,15 +64,17 @@ pyrpmd resume runs/population --workers 1 --block-steps 64
 坐标采样，其余坐标和动量为零；它不是传播势能下的完整核—电子热平衡分布。
 NRPMD 和 SM 的 `initial.initial_state` 表示固定透热初态；hopping 方法使用
 `initial.active_surface`。BA 使用共同的逐珠绝热标签，CA/DM 在质心基下形成用于布居
-决策的电子量；MASH 在选定质心绝热半球上按要求进行重要性采样。
+决策的电子量；`rp-mash` 在选定质心绝热半球上按要求进行重要性采样。
 相同的整数通常并不代表相同的物理电子初态。
 
 `results/nonadiabatic.npz` 保存逐轨迹的能量、范数、核质心及方法对应的电子观测量；
 `results/populations.csv` 给出布居均值和逐时刻标准误。NRPMD 和 SM 保存固定透热基下
 的有符号密度估计，不裁剪负值；RPSH 的幅度密度、绝热振幅布居和活跃面占比分别保存。
-**MASH 的 CLI 布居是指定重要性采样下的绝热活跃面占比**，不把传播自旋的外积当成
+**`rp-mash` 的 CLI 布居是指定重要性采样下的绝热活跃面占比**，不把传播自旋的外积当成
 透热密度估计，也不据此输出相干性。一般 MASH 透热布居或相干算符的关联函数，应使用
-全球面采样及带算符配对权重的 Python API。
+该双态方法的全球面采样及带算符配对权重的 Python API。`multistate-mash` 使用有符号的
+Runeson–Manolopoulos 布居估计量，IESH 按声明的占据轨道报告单粒子密度；其初态、归一化和检查点契约见
+[IESH 与多态 MASH（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/nonadiabatic-iesh-multistate.md)。
 
 误差以独立轨迹为样本，珠数和时间帧数不增加独立样本量；只有一条轨迹时不提供标准误。
 
@@ -130,7 +134,7 @@ GPU 范围限于 mapping/impulse 内核；当前驱动器的分子 PES 与核位
 [性能指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/nonadiabatic-performance.md)。
 
 仍未实现的具体范围包括 SM 电子热迹及相位重加权、SU(N) SM-NRPMD、BA-RP-MASH、
-多态/复 SOC MASH、简并子空间的非 Abelian hopping，以及 GPU PES、核传播或
+环聚合物多态 MASH、复 SOC MASH、简并子空间的非 Abelian hopping，以及 GPU PES、核传播或
 hopping/event 内核。现有 focused / harmonic-reference 初始化不是这些缺失热采样的替代。
 
 ## 实验性非绝热碰撞：NRPMD

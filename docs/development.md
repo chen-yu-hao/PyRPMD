@@ -83,9 +83,10 @@ is on `main`. T18b removes that group's 15 registrations, restoring 16
 parametrized source-provenance and resume-preflight cases on Windows. The
 registry shrinks from 37 to 22 names, or from 61 to 45 parametrized skips in
 the [main baseline job](https://github.com/chen-yu-hao/PyRPMD/actions/runs/41518522419/job/125528228876).
-The three remaining groups depend on [PR #83](https://github.com/chen-yu-hao/PyRPMD/pull/83),
-which was still unmerged when this cleanup was prepared against `main@f877051`.
-Remove them after that repair is integrated and its Windows library job passes.
+The three remaining groups correspond to [PR #83](https://github.com/chen-yu-hao/PyRPMD/pull/83),
+which was subsequently integrated by PR #86. Their registrations remain pending
+an explicit Windows cleanup and validation pass; the historical counts below
+are not a claim that the skipped features were exercised by later library runs.
 
 The [T18b Windows job](https://github.com/chen-yu-hao/PyRPMD/actions/runs/41582846451/job/125741769206)
 passed on code revision `b013bc2`: **8206 passed, 285 skipped**, compared with
@@ -99,10 +100,10 @@ have the same single sandbox-denied Unix-socket failure and no new failures.
 
 | Limitation | Affected checks | Status / removal requirement |
 | --- | --- | --- |
-| Native trajectory publication calls `os.fsync()` on a read-only descriptor and can unlink a mapped file on Windows. | 19 registrations / 40 parametrized native streaming, journal, publication and restart cases. In-memory native dynamics and pre-publication failure checks remain enabled. | Retained: integrate PR #83's portable publication and rollback repair, then validate on Windows. |
+| Native trajectory publication calls `os.fsync()` on a read-only descriptor and can unlink a mapped file on Windows. | 19 registrations / 40 parametrized native streaming, journal, publication and restart cases. In-memory native dynamics and pre-publication failure checks remain enabled. | Retained pending cleanup: PR #83 is integrated; enable and validate these cases on Windows. |
 | File/source walkers omitted drive-letter paths or split a `.py:factory` at the drive colon. | 15 registrations / 16 source-provenance, model-change and early resume-preflight cases. | Removed: f9e85b4 repairs parsing and hashing; the legacy-provenance refusal below supplies an explicit compatibility policy. |
-| Archived rate generations write relative mapping keys using `\\`, while the report reader looks them up using `/`. | Two registrations / two archived-generation report/reanalysis cases. | Retained: integrate PR #83's writer/reader compatibility for authenticated historical archives, then validate on Windows. |
-| Simultaneous `os.replace()` calls targeting one JSON destination can raise `WinError 5`. | One registration / three concurrent writer-policy variants. | Retained: integrate PR #83's bounded Windows replacement retries, then validate on Windows. |
+| Archived rate generations write relative mapping keys using `\\`, while the report reader looks them up using `/`. | Two registrations / two archived-generation report/reanalysis cases. | Retained pending cleanup: PR #83's archive compatibility is integrated; enable and validate these cases on Windows. |
+| Simultaneous `os.replace()` calls targeting one JSON destination can raise `WinError 5`. | One registration / three concurrent writer-policy variants. | Retained pending cleanup: PR #83's bounded replacement retries are integrated; enable and validate these cases on Windows. |
 
 This registry does not certify the skipped Windows capabilities. Keep its
 entries narrow and remove them only with regression evidence for the relevant

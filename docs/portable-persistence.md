@@ -1,7 +1,3 @@
----
-orphan: true
----
-
 # Portable publication and rate archives
 
 This T18 follow-up repairs three persistence problems found during the first
@@ -104,21 +100,24 @@ OpenMP/BLAS thread. Windows-specific behavior is fault-injected locally; this
 is not evidence that the full suite has run successfully on Windows. No
 numerical-kernel speedup is claimed by this change.
 
-PR #81 adds `_WINDOWS_LIMITATIONS` entries to `tests/conftest.py`, which does
-not exist on this change's main-branch baseline. After actual Windows
-validation, integration can remove the native trajectory, archived generation
-and concurrent JSON groups. The drive-letter/source-hash group must remain.
+The fixes described above were integrated in PR #86. The Windows skip
+registry in `tests/conftest.py` still retains the native publication, archived
+generation and concurrent JSON groups pending their separate cleanup. PR #85
+removed the drive-letter/source-hash skip group and supplied the explicit
+legacy compatibility policy below. Current status and pinned Windows results
+are in [the development guide](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/development.md).
 
-## Deferred source-identity repair
+<a id="deferred-source-identity-repair"></a>
 
-`io.referenced_files`, file-plugin parsing, dRPMD dependency fingerprints and
-spectroscopy model identity still need coordinated treatment of Windows
-drive-letter paths. Replacing their parsers immediately would change hashes for
-old Windows checkpoints whose source coverage was incomplete. Silently
-accepting the current source as historical evidence would also be incorrect.
+## Windows source-identity compatibility
 
-A separate migration needs versioned source-coverage records, preservation of
-historical identity checks, explicit reporting of incomplete legacy coverage,
-and tests for old checkpoint resume. This follow-up deliberately leaves those
-identity routines unchanged. Existing POSIX input fingerprints and ordinary
-checkpoint compatibility therefore retain their previous behavior.
+Drive-letter plugin/model parsing and hashing are repaired in the integrated
+source. Resume rejects older Windows runs when their saved provenance omitted
+those source files; it reports that they must be rerun in a new directory.
+Today's files cannot establish which bytes produced an old checkpoint, so no
+automatic migration fabricates the missing source hashes.
+
+This refusal is checked before migration or workflow dispatch. POSIX identity
+values and ordinary checkpoints with complete provenance keep their existing
+behavior. The precise affected-run predicate and regression evidence are in
+[the Windows compatibility policy](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/development.md).

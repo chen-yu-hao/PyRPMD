@@ -1,8 +1,10 @@
----
-orphan: true
----
-
 # Implementation review and follow-up boundaries
+
+**Historical snapshot.** The review below records the revisions available before
+the integration rounds. Its statements about unmerged PRs and missing features
+are not the current support matrix. For the integrated state, use the
+[capability guide](manual/capabilities.md), [next-release notes](releases/unreleased.md)
+and [roadmap](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/roadmap.md).
 
 This review distinguishes current `main@8cc402f` from the separate integration
 branch in [PR #81](https://github.com/chen-yu-hao/PyRPMD/pull/81), pinned at

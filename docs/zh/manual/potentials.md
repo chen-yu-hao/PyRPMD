@@ -100,6 +100,7 @@ finally:
 | `torch` | 分子或显式支持晶胞/PBC 的周期 Torch 模型 |
 | `ipi` | 多客户端持久连接池，并行计算不同珠子 |
 | `mace`、`nequip`、`fairchem` | 复用 ASE Calculator 的现成 ML 适配器 |
+| `mace-batched`、`nequip-batched`、`fairchem-batched`、`deepmd-batched`、`metatomic` | 显式批量/张量路线，各框架依赖独立；见[批量 ML 势（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/batched-ml-potentials.md) |
 | `deepmd` | DeepPot 原生结构批处理 |
 | `tblite` / `xtb` | 即时 GFN1/GFN2/IPEA1-xTB |
 | `pyscf` | 分子 HF/DFT 及解析核梯度 |
@@ -115,7 +116,9 @@ calculator 的电子自由能，并非零温外推能或核 PMF。仅当 calcula
 请用新输出目录，新约定的检查点可正常续跑。不要把旧外推能或自由能权重与修正后的约定拼接。参见
 [ASE 能量契约](https://docs.ase-lib.org/ase/atoms.html#ase.Atoms.get_potential_energy)。
 
-Torch 适配器在其设备上求值模型，每次调用传输坐标和力；每个轨迹进程加载自己的模型副本。
+面向 NumPy 的 Torch 适配器在设备上求值模型，每次调用传输坐标和力；每个轨迹进程加载自己的模型副本。
+显式[张量工作流（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/torch-materials-workflows.md)
+将受支持的状态及 provider 接口保留在所选设备上。
 
 ## 周期模型
 

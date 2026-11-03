@@ -235,8 +235,9 @@ time, bead count, timestep, state definitions and block-size sensitivity.
 
 This rate workflow uses the established real-diabatic SEO thermal implementation
 described in [the thermal NRPMD guide](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/thermal-nrpmd.md). A thermal on-the-fly
-QD ensemble, multistate MASH and portable QC wavefunction restart remain future
-work. The bundled example is an executable model smoke check, not a molecular
+QD ensemble and portable QC wavefunction restart remain future work.
+Classical P=1 multistate MASH is a separate implemented
+[population workflow](nonadiabatic-iesh-multistate.md), not this thermal-rate sampler. The bundled example is an executable model smoke check, not a molecular
 rate benchmark.
 
 ## PySCF SA-CASSCF molecular bridge
