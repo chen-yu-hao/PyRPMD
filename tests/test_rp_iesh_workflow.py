@@ -123,6 +123,11 @@ def test_rp_interrupted_resume_is_bitwise_identical_including_diagnostics_and_rn
     monkeypatch.setattr(RPIESHDynamics, "step", original)
     assert resume_run(tmp_path/"interrupted", execution={"block_steps": 13, "loop_backend": "python"})["completed"]
     assert_same_checkpoints(tmp_path/"reference", tmp_path/"interrupted", trajectories=1)
+    before = arrays(tmp_path/"reference/results/nonadiabatic.npz")
+    after = arrays(tmp_path/"interrupted/results/nonadiabatic.npz")
+    assert before.keys() == after.keys()
+    for key in before:
+        np.testing.assert_array_equal(before[key], after[key], err_msg=key)
 
 
 def test_rp_serial_and_process_execution_preserve_logical_streams(tmp_path):

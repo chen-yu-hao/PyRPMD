@@ -1,9 +1,11 @@
-# Classical IESH and multistate MASH
+# Classical and ring-polymer IESH, and multistate MASH
 
-`task="nonadiabatic"` accepts `method="iesh"` and
-`method="multistate-mash"`. Both currently require **one bead, real Hamiltonians
-and nondegenerate adiabatic levels**. They use separate states and estimators;
-neither name is an alias for the existing two-state `rp-mash` workflow. All
+`task="nonadiabatic"` accepts `method="iesh"`, `method="rp-iesh"` and
+`method="multistate-mash"`. Classical IESH and multistate MASH require **one
+bead**. RP-IESH accepts a nuclear ring polymer and uses a shared electronic
+determinant at its centroid. These methods require **real Hamiltonians and
+nondegenerate adiabatic levels**. They use separate states and estimators;
+their names are not aliases for the existing two-state `rp-mash` workflow. All
 coordinates, matrix elements, gradients, momenta and model parameters below use
 atomic units. Explicit unit strings remain available for masses, temperature,
 time and the existing quantity fields.
@@ -11,6 +13,7 @@ time and the existing quantity fields.
 | Method | Electronic state | Nuclear potential | Reported electronic population |
 | --- | --- | --- | --- |
 | `iesh` | Orthonormal orbitals of one spinless Slater determinant | Bare nuclear energy plus the sum of occupied adiabatic orbital energies | One-particle density; populations sum to the electron count |
+| `rp-iesh` | One spinless Slater determinant shared by all beads; centroid electronic propagation | Ring springs and beadwise bare/occupied-orbital energies | One-particle density; adiabatic populations use the centroid basis and sum to the electron count |
 | `multistate-mash` | One normalized complex mapping vector | Adiabatic surface with largest mapping population | Runeson–Manolopoulos signed observable estimator; populations sum to one |
 | Existing `rp-mash` | Two-state centroid spin | CA-RP-MASH surface for the whole ring | Adiabatic active-state indicator with its own initial importance sampling |
 
@@ -25,6 +28,11 @@ pyrpmd validate examples/nonadiabatic/iesh.inp --check-pes
 pyrpmd run examples/nonadiabatic/iesh.inp --output runs/iesh
 pyrpmd resume runs/iesh
 pyrpmd analyze runs/iesh --recompute
+
+pyrpmd validate examples/nonadiabatic/rp_iesh.inp --check-pes
+pyrpmd run examples/nonadiabatic/rp_iesh.inp --output runs/rp-iesh
+pyrpmd resume runs/rp-iesh
+pyrpmd analyze runs/rp-iesh --recompute
 
 pyrpmd validate examples/nonadiabatic/multistate_mash.inp --check-pes
 pyrpmd run examples/nonadiabatic/multistate_mash.inp --output runs/multistate-mash
@@ -73,11 +81,13 @@ The following parameters are part of the immutable, versioned model identity.
 | `center`, `coordinate`, `natoms` | Reference position, flattened Cartesian index and atom count |
 
 `evaluate(q)` returns a **one-electron** `DiabaticResult`. The scalar
-`bare_potential(q)` returns `PESResult(energy, forces)` and is added once,
-independently of the electron count. Its forces follow the ordinary
-$-\nabla U_0$ contract. The CLI restricts this model to IESH, so another method
-cannot silently omit its separate bare potential. A custom IESH provider must
-also describe a one-electron matrix; a molecular many-electron state matrix
+`bare_potential(q)` returns `PESResult(energy, forces)` and is added once per
+nuclear configuration, independently of the electron count. For `rp-iesh`
+this means once per bead. Its forces follow the ordinary $-\nabla U_0$
+contract. The CLI restricts this model to the IESH methods, so another method
+cannot silently omit its separate bare potential. Both `iesh` and `rp-iesh`
+accept this model. A custom IESH provider must also describe a one-electron
+matrix; a molecular many-electron state matrix
 does not acquire an orbital interpretation merely by choosing this method.
 
 `dynamics.nelectrons` sets a fixed electron count (default
@@ -107,7 +117,7 @@ Pauli-forbidden targets. It does not form exponentially small source
 determinants. Singular or numerically unresolved conditional overlaps fail
 explicitly.
 
-Velocity Verlet advances the nuclei. Electronic midpoint substeps integrate
+At $P=1$, velocity Verlet advances the nuclei. Electronic midpoint substeps integrate
 the current along the nuclear drift, and at most one selected hop is applied
 at the nuclear-step endpoint. Momentum changes along the NAC with the physical
 inverse-mass metric. An accepted hop exactly balances the orbital energy gap
@@ -146,6 +156,289 @@ recurrences are needed. Sending $\Gamma$ to zero at fixed nuclear velocity is
 not the electronic-friction limit; the paper itself finds discrepancies in
 that regime. Finite electronic levels quantize IESH energy exchange, so
 individual trajectories need not resemble smooth friction trajectories.
+
+## Centroid ring-polymer IESH (T25)
+
+`method="rp-iesh"` implements the centroid RPIESH construction described in
+[Gardner's 2023 doctoral thesis](https://wrap.warwick.ac.uk/id/eprint/185255/),
+Section VI.1.1, Eqs. VI.1–VI.2, together with the centroid approximation in
+Section II.5.2 and the IESH determinant currents cited above. The direct
+RP-IESH provenance is an archived doctoral thesis. The method is a research
+approximation; the thesis reports appreciable errors in some desorption
+regimes. No quantum detailed-balance or general physical-convergence guarantee
+is implied.
+
+### State and propagation
+
+The Python classes are `pyrpmd.rp_iesh.RPIESHState` and `RPIESHDynamics`.
+Positions and momenta have shape `(P, natoms, 3)`. The complex128 orbital
+matrix still has shape `(nstates, nelectrons)` and the ordered occupation
+vector has length `nelectrons`: neither has an independent bead axis. All
+beads follow the same occupied adiabatic-orbital indices. Electronic
+propagation, determinant currents, candidate selection and the NAC direction
+are evaluated at the centroid. Adiabatic electronic populations also use
+that centroid basis; the fixed-diabatic density is the shared projector
+$CC^\dagger$ and has trace `nelectrons`.
+
+For an occupied index set $s$, define the bead potential
+
+$$
+W_s(q_b)=U_0(q_b)+\sum_{i\in s}\epsilon_i(q_b).
+$$
+
+Away from hopping events, the nuclear forces correspond to
+
+$$
+H_P=\sum_{b=1}^P\left[
+\sum_a\frac{p_{a,b}^2}{2m_a}
++\sum_a\frac{m_a\omega_P^2}{2}(q_{a,b}-q_{a,b-1})^2
++W_s(q_b)\right],\qquad \omega_P=P/\beta,
+$$
+
+with cyclic bead indices and $\hbar=1$ in atomic units. The force returned by
+the potential provider remains an ordinary physical force; it is not divided
+by $P$. In the fixed diabatic basis the common orbital matrix obeys
+$i\dot C=h(\bar q)C$, where $\bar q=P^{-1}\sum_bq_b$.
+
+`rp-iesh` uses the IESH controls `nelectrons`, `electronic_substeps`,
+`max_hop_probability` and `gap_tolerance`. Its hopping convention is fixed:
+centroid energy gap, uniform bead momentum shift, and rejected frustrated
+hops with unchanged momenta. There is no additional decoherence prescription,
+independent-bead electronic determinant, complex-SOC treatment, or selectable
+full-ring-energy rescaling. Unsupported options fail explicitly. Near-degenerate
+adiabatic levels and unresolved conditional determinant overlaps retain the
+IESH failure policy.
+
+### What a hop conserves
+
+The distinction between centroid and full-ring energy is observable even if
+the propagation timestep is very small. For a single-electron hop $i\to j$,
+write
+
+$$
+\Delta_c=\epsilon_j(\bar q)-\epsilon_i(\bar q),\qquad
+\Delta_b=\epsilon_j(q_b)-\epsilon_i(q_b).
+$$
+
+The accepted hop changes every bead's momentum by the same vector,
+$p_b'=p_b+\Delta p$, with $\Delta p$ along the centroid NAC. Its magnitude
+uses the physical inverse-mass metric to satisfy
+
+$$
+\sum_a\frac{(\bar p_a+\Delta p_a)^2-\bar p_a^2}{2m_a}
+=-\Delta_c,\qquad \bar p=P^{-1}\sum_bp_b.
+$$
+
+There is no additional division of $\Delta p$ by $P$. The internal-mode
+momenta are unchanged by this common shift. Summing its kinetic-energy change
+over beads gives $-P\Delta_c$; the spring and bare potentials do not change
+instantaneously. Therefore direct subtraction of the pre-hop and post-hop
+Hamiltonians gives
+
+$$
+\boxed{\Delta H_P^{\rm hop}=\sum_{b=1}^P\Delta_b-P\Delta_c.}
+$$
+
+This algebraic diagnostic is generally nonzero for a spread-out ring on
+nonlinear adiabatic surfaces. It vanishes for $P=1$, coincident beads and
+identical bead/centroid gaps. Replacing $\Delta_c$ by the bead-average gap
+would define a different hopping rule.
+
+`RPIESHHopResult.centroid_energy_error` reports the residual in the centroid
+hop balance; its `energy_error` attribute has the same meaning.
+`ring_energy_change` reports the full-ring jump. Neither field certifies
+conservation along the surrounding finite-timestep nuclear trajectory.
+The RP state, checkpoint and observed result arrays additionally retain
+`hop_energy_change`, the cumulative signed full-ring change from accepted
+hops, and `hop_energy_change_abs`, the sum of its absolute increments.
+`energy_drift_minus_hop_changes` subtracts those signed increments from the
+change in the reported full-ring energy. It separates the explicit hopping
+contribution from the remaining numerical drift; it does not repair the
+underlying approximation or enforce a conservation law.
+
+Result metadata identifies this choice using
+`method_variant="gardner-2023-centroid"`, `method_status="research"`,
+`electronic_geometry="centroid"`,
+`hop_rescaling="centroid_gap_uniform_bead_momentum_shift"`,
+`frustrated_hops="keep"`,
+`energy_estimator="ring_polymer_hamiltonian_sum"`, and
+`energy_conservation="centroid_hop_balance_only"`.
+The full-ring energy is a sum over beads. Dividing it by the bead count for
+display does not turn it into the centroid Hamiltonian.
+
+### Preparation, identity and restart
+
+The checked-in `rp_iesh.inp` uses eight beads, four trajectories and a short
+propagation to demonstrate validation, output and restart. Its
+`harmonic_ring` preparation samples an independent harmonic reference in the
+selected nuclear coordinate. The determinant is then initialized from the
+specified occupied adiabatic orbitals at each sampled centroid. This is not
+the coupled electron–nuclear thermal state. The fixed electronic occupation
+and particle count do not become a Fermi–Dirac sample when `beta` is changed.
+
+The `rp-iesh` method name, bead count, spring temperature, preparation,
+scientific controls and fixed hopping convention participate in the new
+method's identity. Existing `iesh` identities and checkpoint layouts are
+preserved. An RP checkpoint records the common electronic matrix and
+occupations, all bead coordinates and momenta, both accumulated hop-energy
+diagnostics and the existing random streams. Restart does not reinterpret a
+classical IESH checkpoint as a ring-polymer state.
+
+### Validation scope
+
+Validation separates independent references and exact limiting cases from
+accuracy claims about approximate coupled dynamics:
+
+- The $P=1$ regression compares matched initial states and random streams
+  against classical IESH, including hopping and continuation.
+- Finite differences check the beadwise occupied-state force and centroid
+  overlap derivative. Direct before/after energy evaluation checks the
+  full-ring hop-jump formula independently of its cumulative accounting.
+- A small fixed-electron-number Fock-space Hamiltonian can be propagated
+  with the one-dimensional Fourier solver. Its creation/annihilation signs
+  and one-particle density provide an independent many-electron reference.
+  A coordinate-independent electronic Hamiltonian supplies an exactly
+  separable propagation limit; coupled finite-bath comparisons additionally
+  contain RP-IESH approximation error and trajectory sampling error.
+- Interrupted-run tests compare states, observations and RNG streams with
+  uninterrupted propagation and validate corrupted-checkpoint rejection.
+
+These checks support implementation correctness within their tested limits.
+Finite-bead, finite-band and finite-ensemble results retain
+`physical_converged=false`. Quantitative metal-surface predictions require
+separate timestep, bead-count, band-discretization, initialization and
+statistical studies. A bosonic spin-boson HEOM result is not automatically a
+reference for the fermionic electronic bath of a Newns–Anderson model.
+
+### Executed T25 operational check: 2026-11-03
+
+The checked-in eight-bead example passed `validate --check-pes`, `run`,
+completed-run `resume` and `analyze --recompute`. Both replay commands
+preserved all 27 result arrays exactly and retained the physics fingerprint.
+The four trajectories produced nine observations each. The largest
+matrix-gradient finite-difference error was $1.19\times10^{-13}$
+hartree/bohr, and the maximum full-ring energy change at saved frames was
+$6.63\times10^{-11}$ hartree. The cumulative hop-energy diagnostics were
+zero for this short example, so it does not exercise nonzero jump accounting.
+OpenMP and OpenBLAS each used one thread. This operational check keeps
+`physical_converged=false`; independent references and dedicated hop tests
+are needed to assess the remaining dynamics.
+
+### Executed finite-bath/Fourier comparison: 2026-11-03
+
+```bash
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python \
+  examples/nonadiabatic/rp_iesh_reference.py --trajectories 128
+```
+
+This independent reference lifts a three-orbital Newns–Anderson Hamiltonian
+into its two-electron Fock sector using explicit creation/annihilation signs,
+then propagates the nuclear coordinate with the Fourier solver. The reported
+populations are the diagonal of the one-particle density and sum to two.
+The Fock-basis occupation probabilities are a different observable.
+
+The run used 128 trajectories, eight beads, seed 20261103, nuclear mass 1000,
+`beta=80`, harmonic preparation frequency 0.02, RP timestep 0.2 and duration
+20, all in atomic units. The initial electronic state was a fixed-diabatic
+Slater determinant occupying orbitals 0 and 1, factorized from the harmonic
+nuclear thermal state. The Python reference samples initial active adiabatic
+occupations from the squared Slater minors at each sampled centroid. This
+preparation is different from the specified adiabatic occupation in the CLI
+input example above.
+
+The final refined Fourier calculation used 384 grid points on $[-3,3)$ bohr
+and timestep 0.025 a.u. Its harmonic thermal-state truncation omitted
+$3.11\times10^{-13}$ probability. Separate timestep, grid and box refinements
+changed the final density matrix by at most $5.19\times10^{-9}$,
+$3.28\times10^{-13}$ and $3.48\times10^{-13}$, respectively.
+
+| Fixed-diabatic orbital | Fourier population | RP-IESH population | RP-IESH pointwise SEM | Difference / SEM |
+| --- | ---: | ---: | ---: | ---: |
+| 0 | 0.802580081 | 0.803248711 | 0.000813479 | 0.822 |
+| 1 | 0.987495972 | 0.987477084 | 0.000009219 | -2.049 |
+| 2 | 0.209923947 | 0.209274205 | 0.000815501 | -0.797 |
+
+The largest population discrepancy is $6.69\times10^{-4}$. The
+middle-orbital difference is approximately 2.05 sampling SEMs. SEM measures
+independent-trajectory sampling uncertainty only; it excludes finite-bead,
+finite-timestep and approximate-method errors. The full complex densities are
+retained in the reference record, and the population table does not establish
+coherence accuracy. This finite isolated bath is not a metallic continuum.
+
+The ensemble contained one accepted and one frustrated hop. The accepted
+hop had a full-ring energy change of $8.84\times10^{-4}$ hartree while the
+maximum centroid hop-balance residual was $2.78\times10^{-17}$ hartree.
+After subtracting cumulative hop changes, the largest remaining absolute
+final-minus-initial energy change among trajectories was
+$2.17\times10^{-6}$ hartree. These values illustrate why
+centroid balance and full-ring energy changes are reported separately.
+
+The interrupted-run regression additionally exercises a nonzero hop-energy
+accumulator between observations: a stochastic hop occurs at step 28, the
+checkpoint is saved at step 33, and the last saved observation is step 26.
+Restart must preserve the newer accumulator even though the observation
+history still contains zero accumulated hop energy. The resumed checkpoint
+payload and result arrays match uninterrupted propagation bit for bit.
+
+[Full two-electron/Fourier result and model parameters](validation/t25-rp-iesh/fock-fourier-reference.json).
+The result retains `physical_converged=false`; RP timestep, bead-count and
+ensemble convergence have not been established by this short comparison.
+
+### Single-thread step timings: 2026-11-03
+
+```bash
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python \
+  examples/nonadiabatic/rp_iesh_performance.py --steps 100 --repeats 5 --warmups 10
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python \
+  examples/nonadiabatic/rp_iesh_performance.py --native --steps 100 --repeats 5 --warmups 10
+```
+
+The fixed model has 12 bath orbitals, 13 total one-electron states and six
+electrons. Timings cover the complete validated propagation step, including
+bead forces, electronic substeps and hop decisions. Initialization,
+observations, checkpointing and output are excluded. Each repeat restores
+the same initial state and RNG. `--native` requires the compiled nuclear map;
+the electronic algebra remains NumPy in both cases.
+
+The environment was Linux x86_64 with nine logical CPUs visible, Python
+3.12.14, NumPy 2.3.5 and OpenBLAS 0.3.30. The host CPU model was not exposed.
+The nuclear kernel and every detected BLAS/OpenMP pool used one thread.
+Other validation jobs in this session were stopped during the measurements;
+shared infrastructure can still affect wall-clock timings.
+
+| Beads | Python nuclear map, median ms/step | Native nuclear map, median ms/step | Python repeat range | Native repeat range |
+| ---: | ---: | ---: | ---: | ---: |
+| 1 | 11.306 | 10.040 | 10.463–12.723 | 9.103–12.413 |
+| 8 | 14.714 | 11.576 | 11.777–16.300 | 11.492–15.764 |
+| 32 | 22.808 | 27.990 | 20.158–31.994 | 13.606–43.566 |
+
+Ranges are also in ms/step. The repeat spread, especially at 32 beads,
+does not support a general speedup claim for the native nuclear map. These
+small CPU cases do not measure GPU throughput or a converged large metallic
+bath. Complete parameters, repeats and thread-pool records are retained in
+the [Python timing record](validation/t25-rp-iesh/performance-python.json)
+and [native timing record](validation/t25-rp-iesh/performance-native.json).
+
+### Primary references for the RP-IESH extension
+
+- J. J. Gardner, *Simulation of nonadiabatic molecular dynamics at metal
+  surfaces*, PhD thesis, University of Warwick (2023), Sections II.5.2 and
+  VI.1.1, [archived thesis](https://wrap.warwick.ac.uk/id/eprint/185255/).
+- N. Shenvi, S. Roy and J. C. Tully, *Nonadiabatic dynamics at metal surfaces:
+  independent-electron surface hopping*, J. Chem. Phys. **130**, 174107
+  (2009), [DOI: 10.1063/1.3125436](https://doi.org/10.1063/1.3125436).
+- J. Gardner, D. Corken, S. M. Janke, S. Habershon and R. J. Maurer,
+  *Efficient implementation and performance analysis of the independent
+  electron surface hopping method for dynamics at metal surfaces*,
+  J. Chem. Phys. **158**, 064101 (2023),
+  [DOI: 10.1063/5.0137137](https://doi.org/10.1063/5.0137137).
+- P. Shushkov, R. Li and J. C. Tully, *Ring polymer molecular dynamics with
+  surface hopping*, J. Chem. Phys. **137**, 22A549 (2012),
+  [DOI: 10.1063/1.4766449](https://doi.org/10.1063/1.4766449).
+- F. A. Shakib and P. Huo, *Ring Polymer Surface Hopping: Incorporating
+  Nuclear Quantum Effects into Nonadiabatic Molecular Dynamics Simulations*,
+  J. Phys. Chem. Lett. **8**, 3073–3080 (2017),
+  [DOI: 10.1021/acs.jpclett.7b01343](https://doi.org/10.1021/acs.jpclett.7b01343).
 
 ## Original 2023 multistate MASH
 
