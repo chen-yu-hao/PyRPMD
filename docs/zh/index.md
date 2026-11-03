@@ -4,7 +4,7 @@
 
 PyRPMD 用一个 Python 或 TOML 输入运行环聚合物分子动力学。它把势能面、环聚合物积分器与可续跑的
 工作流连接起来，覆盖气相反应速率、直接碰撞、自由能面、增强采样、周期材料、带固定层的表面以及
-局域电化学 PCET；实验性 NRPMD 扩展处理从指定入射电子态出发的散射。本手册对应 0.2.0 版本。
+局域电化学 PCET；实验性 NRPMD 扩展处理从指定入射电子态出发的散射。本手册以 0.2.0 为基础，并收录后续已合并到主线的功能；[集成说明（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/releases/0.2.0.md)记录版本边界。
 
 初次使用，请阅读[安装](manual/installation.md)、[快速入门](manual/quickstart.md)和
 [输入与命令行](manual/input.md)。已有体系和势能面时，直接进入对应任务：
@@ -64,6 +64,17 @@ pyrpmd report runs/job                  # 可选：由保存数据生成图、in
 命令索引与常用选项见[输入与命令行](manual/input.md#命令行参考)；`pyrpmd COMMAND --help` 列出当前安装版本的全部选项。
 对应的 Python 入口是 `prepare`、`run`、
 `analyze_run` 和 `resume_run`，见[快速入门](manual/quickstart.md)。
+
+## 后续功能入口（英文扩展指南）
+
+| 功能 | 入口 | 说明 |
+| --- | --- | --- |
+| 预算化精度驱动速率 | `pyrpmd precision plan/run/status` | [精度控制](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate_precision.md) |
+| Torch 批量 PIMD/扩散 | `sampling.engine="torch"` | [Torch 工作流](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/torch-materials-workflows.md) |
+| Golden-rule instanton | Python API / `pyrpmd instanton` | [Instanton](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/instanton.md) |
+| 费米子符号重加权与周期交换 | `pimd` + `[path_integral]` | [路径积分](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/tier2-path-integral.md) |
+| 单珠 IESH、多态 MASH | `nonadiabatic` | [IESH/MASH](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/nonadiabatic-iesh-multistate.md) |
+| RETIS、REPPTIS、FFS | Python API | [路径采样](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/transition-interface-sampling.md) |
 
 ## 章节
 
