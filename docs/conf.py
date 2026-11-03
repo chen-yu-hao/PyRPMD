@@ -41,6 +41,7 @@ include_patterns = [
     "builtin-native-potentials.md",
     "torch-materials-workflows.md",
     "implementation-review-2026-11-03.md",
+    "excited-state-interface.md",
     "rpc-mts.md", "mixed-sampling.md", "trpmd-spectroscopy.md", "propagation-stack.md", "condensed-phase-nqe.md",
     "nonadiabatic-workflow.md", "nonadiabatic-models.md",
     "nonadiabatic-ensembles.md", "nonadiabatic-comparison.md",
@@ -89,4 +90,3 @@ html_context = {
     ],
 }
 html_show_sourcelink = True
-
