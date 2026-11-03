@@ -73,6 +73,10 @@ inline void centroid(const double* q,double* out,Py_ssize_t P,Py_ssize_t d){
     std::fill(out,out+d,0.);for(Py_ssize_t b=0;b<P;++b)for(Py_ssize_t j=0;j<d;++j)out[j]+=q[b*d+j];
     for(Py_ssize_t j=0;j<d;++j)out[j]/=static_cast<double>(P);
 }
+inline void physical_kick(double* p,const double* force,Py_ssize_t size,double h,int threads){
+    #pragma omp parallel for num_threads(threads) schedule(static) if(threads>1 && size>=4096)
+    for(Py_ssize_t j=0;j<size;++j)p[j]+=h*force[j];
+}
 struct Fragment { std::vector<size_t> atoms; std::array<double,3> ref; double mass=0.; };
 static PyObject* run_block(PyObject*,PyObject* args){
     PyObject *context,*binding,*qo,*po,*eo,*co,*vo,*spec;
@@ -118,6 +122,9 @@ static PyObject* run_block(PyObject*,PyObject* args){
         PES pes(*binding_ptr,P,d);
         double initial=0.,minimum=std::numeric_limits<double>::infinity(),maximum=-minimum;
         double clock=number(field(spec,"time"));
+        constexpr Py_ssize_t energy_block=4096;
+        const bool parallel_energy=c->threads>1&&size>=energy_block;
+        std::vector<double> energy_parts(parallel_energy?(size+energy_block-1)/energy_block:0);
         Py_ssize_t step=0,sample=0;std::exception_ptr failure;
         auto project=[&](){for(const auto& f:fragments){double com[3]={0,0,0},vel[3]={0,0,0};
             for(Py_ssize_t b=0;b<P;++b)for(size_t a:f.atoms)for(int k=0;k<3;++k){com[k]+=q[b*d+3*a+k]*c->mass[a];vel[k]+=p[b*d+3*a+k];}
@@ -130,17 +137,31 @@ static PyObject* run_block(PyObject*,PyObject* args){
             fixed.clear_force(pes.force.data(),P);
             return bias_energy;};
         auto energy=[&](double bias_energy){double e=bias_energy;for(double v:pes.energy)e+=v;
-            for(Py_ssize_t b=0;b<P;++b)for(Py_ssize_t j=0;j<d;++j){double dq=q[b*d+j]-q[((b+1)%P)*d+j];
-                e+=p[b*d+j]*p[b*d+j]/(2*c->mass[j/3])+.5*c->omega2*c->mass[j/3]*dq*dq;}
+            if(!parallel_energy){
+                for(Py_ssize_t b=0;b<P;++b)for(Py_ssize_t j=0;j<d;++j){double dq=q[b*d+j]-q[((b+1)%P)*d+j];
+                    e+=p[b*d+j]*p[b*d+j]/(2*c->mass[j/3])+.5*c->omega2*c->mass[j/3]*dq*dq;}
+            }else{
+                const Py_ssize_t parts=static_cast<Py_ssize_t>(energy_parts.size());
+                #pragma omp parallel for num_threads(c->threads) schedule(static)
+                for(Py_ssize_t part=0;part<parts;++part){
+                    const Py_ssize_t begin=part*energy_block,end=std::min(size,begin+energy_block);double local=0.;
+                    for(Py_ssize_t index=begin;index<end;++index){
+                        const Py_ssize_t b=index/d,j=index-b*d;double dq=q[index]-q[((b+1)%P)*d+j];
+                        local+=p[index]*p[index]/(2*c->mass[j/3])+.5*c->omega2*c->mass[j/3]*dq*dq;
+                    }
+                    energy_parts[part]=local;
+                }
+                for(double part:energy_parts)e+=part;
+            }
             ensure(std::isfinite(e),"nonfinite ring-polymer energy");return e;};
         Py_BEGIN_ALLOW_THREADS
         try{
             for(step=0;step<steps;++step){
                 double bias_energy=force();if(step==0)initial=energy(bias_energy);
-                for(Py_ssize_t j=0;j<size;++j)p[j]+=.5*c->dt*pes.force[j];
+                physical_kick(p.data(),pes.force.data(),size,.5*c->dt,c->threads);
                 project();
                 c->propagate(q.data(),p.data(),work.data());project();
-                bias_energy=force();for(Py_ssize_t j=0;j<size;++j)p[j]+=.5*c->dt*pes.force[j];
+                bias_energy=force();physical_kick(p.data(),pes.force.data(),size,.5*c->dt,c->threads);
                 project();
                 for(double v:p)ensure(std::isfinite(v),"nonfinite momentum");
                 // For projected fragment COMs, final projection changes position
