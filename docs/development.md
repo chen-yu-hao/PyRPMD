@@ -71,20 +71,28 @@ skipped on non-POSIX systems, matching the implementation's durability steps.
 
 ### Observed Windows runtime limitations
 
-The first Windows library run exposed existing runtime gaps in addition to
-test-only path assumptions. T01 preserves library behavior, scientific
-identities and convergence gates. `tests/conftest.py` therefore records a
-Windows-only registry of exact affected test names (and parameter names where
-only part of a test is affected), each with a diagnostic skip reason. The
+The first Windows library run exposed runtime gaps in addition to test-only
+path assumptions. `tests/conftest.py` records a Windows-only registry of exact
+affected test names (and parameter names where only part of a test is affected),
+each with a diagnostic skip reason. The
 [initial Actions log](https://github.com/chen-yu-hao/PyRPMD/actions/runs/41476577723/job/125383616891)
 provides the failure evidence. These cases still execute on Linux and macOS.
 
-| Existing limitation | Affected checks | Follow-up needed before removing the guard |
+The drive-path repair in [f9e85b4](https://github.com/chen-yu-hao/PyRPMD/commit/f9e85b43152cc768939cd7281649142cb30da8ed)
+is on `main`. T18b removes that group's 15 registrations, restoring 16
+parametrized source-provenance and resume-preflight cases on Windows. The
+registry shrinks from 37 to 22 names, or from 61 to 45 parametrized skips in
+the [main baseline job](https://github.com/chen-yu-hao/PyRPMD/actions/runs/41518522419/job/125528228876).
+The three remaining groups depend on [PR #83](https://github.com/chen-yu-hao/PyRPMD/pull/83),
+which was still unmerged when this cleanup was prepared against `main@f877051`.
+Remove them after that repair is integrated and its Windows library job passes.
+
+| Limitation | Affected checks | Status / removal requirement |
 | --- | --- | --- |
-| Native trajectory publication calls `os.fsync()` on a read-only file descriptor, which raises `EBADF` on Windows. | 40 parametrized native streaming, journal, publication and restart cases. In-memory native dynamics and pre-publication failure checks remain enabled. | Make native trajectory flush/publication portable while preserving atomic writes and rollback semantics. |
-| File/source walkers omit drive-letter absolute paths or split a `.py:factory` at the drive colon. | 16 source-provenance, model-change and early resume-preflight cases. Other checkpoint integrity cases remain enabled. | Correct Windows path parsing with explicit run-identity compatibility and restart regression evidence. |
-| Archived rate generations write relative mapping keys using `\\`, while the report reader looks them up using `/`. | Two archived-generation report/reanalysis cases. | Align writer/reader lookup with compatibility for previously written manifests. |
-| Simultaneous `os.replace()` calls targeting one JSON destination can raise `WinError 5`. | Three writer-policy variants sharing the same concurrent publication operation. | Define and verify portable concurrent publication behavior without losing atomicity. |
+| Native trajectory publication calls `os.fsync()` on a read-only descriptor and can unlink a mapped file on Windows. | 19 registrations / 40 parametrized native streaming, journal, publication and restart cases. In-memory native dynamics and pre-publication failure checks remain enabled. | Retained: integrate PR #83's portable publication and rollback repair, then validate on Windows. |
+| File/source walkers omitted drive-letter paths or split a `.py:factory` at the drive colon. | 15 registrations / 16 source-provenance, model-change and early resume-preflight cases. | Removed: f9e85b4 repairs parsing and hashing; the legacy-provenance refusal below supplies an explicit compatibility policy. |
+| Archived rate generations write relative mapping keys using `\\`, while the report reader looks them up using `/`. | Two registrations / two archived-generation report/reanalysis cases. | Retained: integrate PR #83's writer/reader compatibility for authenticated historical archives, then validate on Windows. |
+| Simultaneous `os.replace()` calls targeting one JSON destination can raise `WinError 5`. | One registration / three concurrent writer-policy variants. | Retained: integrate PR #83's bounded Windows replacement retries, then validate on Windows. |
 
 This registry does not certify the skipped Windows capabilities. Keep its
 entries narrow and remove them only with regression evidence for the relevant
@@ -93,6 +101,57 @@ Additional capability guards cover Python builds without `socket.AF_UNIX` and
 the existing POSIX-only writers. The C ABI tests still execute on Windows when a
 compiler is present; cleanup of temporary loaded DLLs is best-effort only on
 Windows because those files remain locked until the process releases them.
+
+### Windows runs with missing historical source hashes
+
+Before f9e85b4, Windows inputs such as `C:\models\pes.py:build` and
+`C:\models\weights.bin` could be omitted from a run's `manifest.json` file
+hashes. Correctly including these dependencies changes the identities of
+workflows that bind those hashes into their checkpoints. Other workflows could
+previously pass the manifest's one-way file check despite the missing evidence.
+
+T18b uses **explicit refusal**, not identity migration. After validating the
+scientific settings, system and previously recorded file hashes, resume checks
+the saved Windows platform and saved drive-path references. If a referenced
+file is now hashed but has no historical entry, it raises `InputError` beginning
+`Cannot resume this Windows run`, lists the affected files and explains the
+missing provenance. Explicit plugin/model file references are also checked if
+the file has since disappeared; output/base directories are excluded. Public
+entry points retain the existing `Root stage failed: InputError:` wrapper.
+This check also runs before public rate/dRPMD extensions,
+including pending extensions reached through `pyrpmd resume`, acquire their
+lock or change a ledger. Refusal does not migrate or rewrite the manifest,
+resolved input, checkpoints or RNG state.
+
+The diagnostic identifies an evidence gap, rather than inferring a release
+from `version`: both affected and repaired code can report version `0.2.0`.
+Hashing a file today cannot prove what its contents were when the trajectory
+was generated. There is no ignore-identity option and no automatic insertion
+of current hashes into an old manifest.
+
+Recovery is a fresh run:
+
+1. Keep the original run directory and its checkpoints for inspection.
+2. Locate the original input and verify the intended plugin/model files in its
+   original input environment. Do not edit the old manifest's `files` mapping
+   or checkpoint fingerprints to make resume pass.
+3. Run the original input into a **new, empty output directory**, for example
+   in PowerShell:
+
+   ```powershell
+   pyrpmd run .\original.inp --output .\runs\fresh-after-windows-hash-fix
+   ```
+
+4. Treat this as a new trajectory with newly recorded provenance. Do not copy
+   old checkpoints into it or use `--resume` for the fresh run.
+
+Runs whose Windows hashes were recorded completely continue through the
+existing checks. A changed or missing recorded file still reports
+`Input/model file changed or is missing`; a change to scientific settings keeps
+its existing diagnostic. POSIX identities, manifest/checkpoint schemas and
+authenticated schema-1 migration are unchanged. The new regression module
+`tests/test_windows_resume_provenance.py` emulates drive paths and
+`os.path.isabs` on Linux and uses actual drive paths in the Windows CI job.
 
 The macOS fixes canonicalize temporary paths and keep Unix socket names short.
 The symmetric teaching-saddle tests accept either physically equivalent

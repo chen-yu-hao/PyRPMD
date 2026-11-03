@@ -118,7 +118,7 @@ def test_platform_guards_keep_unaffected_cases_and_other_systems_enabled(platfor
     assert selection._platform_skip_reason("test_native_ensembles.py::test_in_memory_dynamics", platform) is None
     if platform == "win32":
         assert "EBADF" in selection._platform_skip_reason(limited, platform)
-        assert "source hashes" in selection._platform_skip_reason(model, platform)
+        assert selection._platform_skip_reason(model, platform) is None
     else:
         assert selection._platform_skip_reason(limited, platform) is None
         assert selection._platform_skip_reason(model, platform) is None
