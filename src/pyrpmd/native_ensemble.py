@@ -582,6 +582,8 @@ class NativeEnsemble:
         width = (7 if record_moments else 3) * self.natoms
         temporary = None
         published = False
+        published_stat = None
+        data = None
         path = None if trajectory is None else Path(trajectory)
         # Hold both the engine and provider locks through publication/rollback.
         # Otherwise another thread could advance this engine before an I/O
@@ -612,10 +614,18 @@ class NativeEnsemble:
                                if record_centroids else None)
                 else:
                     # Flush before publishing; link is exclusive (no overwrite).
-                    with open(temporary, "rb") as stream:
+                    # Windows' _commit requires a writable descriptor. The
+                    # native writer has closed; do not truncate its payload.
+                    with open(temporary, "rb+") as stream:
                         os.fsync(stream.fileno())
+                    published_stat = os.stat(temporary)
                     os.link(temporary, path)
                     published = True
+                    # Windows cannot unlink either hard link while the file
+                    # is memory-mapped. Retain its identity for rollback, then
+                    # remove our temporary name before opening the mapping.
+                    os.unlink(temporary)
+                    temporary = None
                     data = np.load(path, mmap_mode="r" if frames else None, allow_pickle=False)
                     samples, records = data[:, :len(_COLUMNS)], data[:, len(_COLUMNS):]
                 centroids = (records[:, :3*self.natoms].reshape(frames, self.natoms, 3)
@@ -636,11 +646,16 @@ class NativeEnsemble:
                     os.unlink(temporary)
                     temporary = None
             except BaseException:
+                # No arrays have been handed to the caller yet. Release this
+                # mapping before rollback attempts to remove the owned file.
+                if isinstance(data, np.memmap) and data._mmap is not None:
+                    data._mmap.close()
                 if before is not None:
                     self._native.restore(self._handle, before)
                 # Only remove the hard link that WE created. Never delete an
                 # existing or concurrently replaced user's trajectory.
-                if published and temporary is not None and path.exists() and os.path.samefile(temporary, path):
+                if (published and published_stat is not None and path.exists()
+                        and os.path.samestat(published_stat, path.lstat())):
                     path.unlink()
                 raise
             finally:

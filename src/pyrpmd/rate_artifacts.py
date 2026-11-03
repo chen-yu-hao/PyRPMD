@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from ._archive_paths import archive_path_mapping
 from .io import file_sha256
 
 
@@ -45,7 +46,9 @@ def read_generation(directory, pointer):
             or receipt.get("generation") != relative
             or receipt.get("physics_fingerprint") != manifest.get("physics_fingerprint")):
         raise ValueError("Rate generation receipt does not match the original run")
-    artifacts = receipt.get("artifacts")
+    # Validate hashes against the original receipt bytes above, then normalize
+    # paths only for lookup. Old Windows archives remain portable and immutable.
+    artifacts = archive_path_mapping(receipt.get("artifacts"))
     summary = json.loads((path / "summary.json").read_text())
     if (not isinstance(summary, dict) or summary.get("task") != "rate"
             or summary.get("effective_production_steps") != target):
@@ -63,7 +66,9 @@ def read_generation(directory, pointer):
             raise ValueError("Invalid rate generation artifact path")
         if file_sha256(path / name) != digest:
             raise ValueError(f"Rate generation artifact checksum differs: {name}")
-    return path, summary, receipt
+    # Consumers join these names to the generation directory. Return canonical
+    # lookup names, while the saved receipt and its authenticated hash stay as-is.
+    return path, summary, {**receipt, "artifacts": artifacts}
 
 
 def active_rate_directory(directory, summary=None):

@@ -526,9 +526,11 @@ def collect_run(directory, *, label=None, prefix="run-001", energy_unit="kcal/mo
         artifacts = active_rate_directory(path, summary)
         run["_rate_artifact_directory"] = str(artifacts)
         if artifacts != path:
+            from .._archive_paths import archive_path_mapping
+
             receipt = _json(run, artifacts / "receipt.json")
             run["_rate_generation"] = _json(run, artifacts / "generation.json")
-            for name in receipt["artifacts"]:
+            for name in archive_path_mapping(receipt["artifacts"]):
                 _source(run, artifacts / name)
     _comparison_sources(run)
     dt = _number(config.get("dt_au"))

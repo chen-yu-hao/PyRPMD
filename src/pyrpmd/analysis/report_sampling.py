@@ -319,6 +319,8 @@ def _hdf5_streams(run, path, dimension, summary):
 
 
 def _checkpoint_chunk_directory(run, checkpoint):
+    from .._archive_paths import archive_path_mapping
+
     generation = run.get("_rate_generation")
     if generation is None:
         return checkpoint.with_suffix(".chunks")
@@ -326,9 +328,12 @@ def _checkpoint_chunk_directory(run, checkpoint):
     artifacts = Path(run["_rate_artifact_directory"])
     relative = checkpoint.relative_to(artifacts).as_posix()
     expected = "umbrella/checkpoints/" + checkpoint.name
-    chunk_name = str(Path(expected).with_suffix(".chunks"))
-    sources = generation.get("sample_stream_sources")
-    checkpoints = generation.get("source_checkpoints")
+    chunk_name = Path(expected).with_suffix(".chunks").as_posix()
+    try:
+        sources = archive_path_mapping(generation.get("sample_stream_sources"), path_values=True)
+        checkpoints = archive_path_mapping(generation.get("source_checkpoints"))
+    except ValueError as error:
+        raise ValueError("Archived umbrella checkpoint has inconsistent generation sources") from error
     if (relative != expected or not isinstance(sources, dict)
             or sources.get(relative) != chunk_name or not isinstance(checkpoints, dict)
             or checkpoints.get(relative) != run["_sources"][str(checkpoint.resolve())]["sha256"]):
