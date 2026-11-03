@@ -1,0 +1,93 @@
+name: T39 apply recovered core
+on:
+  push:
+    paths:
+      - '.github/workflows/t39-apply-clean.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: agent/t39-photo-initial-lvc-gpt56
+          fetch-depth: 0
+      - name: Recover and commit T39 core
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/t39-recovered
+          cat .github/t39-payload.part00 .github/t39-payload.part01 .github/t39-payload.part02 \
+            | base64 -d > /tmp/t39-payload.tar.xz
+          set +e
+          xz -dc /tmp/t39-payload.tar.xz | tar -x -C /tmp/t39-recovered
+          pipeline_status=$?
+          set -e
+          test "$pipeline_status" -ne 0
+          for path in \
+            src/pyrpmd/photo_initial.py \
+            src/pyrpmd/potentials/lvc_builder.py \
+            src/pyrpmd/cli.py \
+            src/pyrpmd/nonadiabatic_input.py \
+            src/pyrpmd/nonadiabatic_registry.py \
+            src/pyrpmd/workflows/nonadiabatic.py \
+            src/pyrpmd/workflows/nonadiabatic_extensions.py \
+            tests/test_photo_initial.py \
+            tests/test_lvc_builder.py; do
+            test -s "/tmp/t39-recovered/$path"
+          done
+          git fetch origin agent/t39-photo-initial-lvc-clean
+          git worktree add /tmp/t39-clean origin/agent/t39-photo-initial-lvc-clean
+          cd /tmp/t39-clean
+          cp /tmp/t39-recovered/src/pyrpmd/photo_initial.py src/pyrpmd/photo_initial.py
+          cp /tmp/t39-recovered/src/pyrpmd/potentials/lvc_builder.py src/pyrpmd/potentials/lvc_builder.py
+          cp /tmp/t39-recovered/src/pyrpmd/cli.py src/pyrpmd/cli.py
+          cp /tmp/t39-recovered/src/pyrpmd/nonadiabatic_input.py src/pyrpmd/nonadiabatic_input.py
+          cp /tmp/t39-recovered/src/pyrpmd/nonadiabatic_registry.py src/pyrpmd/nonadiabatic_registry.py
+          cp /tmp/t39-recovered/src/pyrpmd/workflows/nonadiabatic.py src/pyrpmd/workflows/nonadiabatic.py
+          cp /tmp/t39-recovered/src/pyrpmd/workflows/nonadiabatic_extensions.py src/pyrpmd/workflows/nonadiabatic_extensions.py
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/pyrpmd/workflows/nonadiabatic_multistate.py')
+          text = path.read_text()
+          text = text.replace(
+              '        initial_state = initialize_state(config, System.from_dict(config["system"]),\n'
+              '                                         dynamics, *initial_streams[:2])',
+              '        initial_state = initialize_state(\n'
+              '            config, System.from_dict(config["system"]), dynamics,\n'
+              '            *initial_streams[:2], index=index,\n'
+              '        )',
+          )
+          text = text.replace(
+              '            state = initialize_state(config, system, dynamics, *streams[:2])',
+              '            state = initialize_state(\n'
+              '                config, system, dynamics, *streams[:2], index=index\n'
+              '            )',
+              1,
+          )
+          text = text.replace(
+              '        state = initialize_state(config, system, dynamics, *streams[:2])',
+              '        state = initialize_state(config, system, dynamics, *streams[:2], index=0)',
+              1,
+          )
+          path.write_text(text)
+          PY
+          git config user.name 'chen-yu-hao'
+          git config user.email '72141038+chen-yu-hao@users.noreply.github.com'
+          git add \
+            src/pyrpmd/photo_initial.py \
+            src/pyrpmd/potentials/lvc_builder.py \
+            src/pyrpmd/cli.py \
+            src/pyrpmd/nonadiabatic_input.py \
+            src/pyrpmd/nonadiabatic_registry.py \
+            src/pyrpmd/workflows/nonadiabatic.py \
+            src/pyrpmd/workflows/nonadiabatic_extensions.py \
+            src/pyrpmd/workflows/nonadiabatic_multistate.py
+          git commit -m 'feat: add photodynamics initial conditions and LVC builder'
+          cp /tmp/t39-recovered/tests/test_photo_initial.py tests/test_photo_initial.py
+          cp /tmp/t39-recovered/tests/test_lvc_builder.py tests/test_lvc_builder.py
+          git add tests/test_photo_initial.py tests/test_lvc_builder.py
+          git commit -m 'test: validate Wigner sampling and LVC reconstruction'
+          git push origin HEAD:agent/t39-photo-initial-lvc-clean
