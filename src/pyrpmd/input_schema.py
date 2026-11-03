@@ -73,10 +73,10 @@ _SECTIONS = {
     ),
     "surface": set("reactant_basin dividing_surface product_side max_relative_standard_error normalization free_energy".split()),
     "metadynamics": set(
-        "cvs mode sigma sigma_au height height_au pace bias_factor walls walls_during_equilibration grid multiple_walkers block_steps shared_walkers freeze_after_steps freeze_equilibration_steps".split()
+        "cvs mode sigma sigma_au height height_au pace bias_factor walls walls_during_equilibration grid multiple_walkers block_steps shared_walkers freeze_after_steps freeze_equilibration_steps walkers_mode".split()
     ),
     "opes": set(
-        "cvs sigma sigma_au barrier barrier_au bias_factor pace freeze_after_steps freeze_equilibration_steps mode adaptive_sigma sigma_min sigma_min_au".split()
+        "cvs sigma sigma_au barrier barrier_au bias_factor pace freeze_after_steps freeze_equilibration_steps mode adaptive_sigma sigma_min sigma_min_au walkers_mode".split()
     ),
     "abf": set("cvs ranges ranges_au bins full_samples pace wall_stiffness wall_stiffness_au derivative fd_step".split()),
     "eabf": set("cvs ranges ranges_au bins full_samples pace wall_stiffness wall_stiffness_au coupling coupling_au extended_mass extended_mass_au friction friction_au".split()),

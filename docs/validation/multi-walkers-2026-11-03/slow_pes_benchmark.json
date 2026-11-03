@@ -1,0 +1,43 @@
+{
+  "async_speedup": 1.0954326159637973,
+  "benchmark": "variable-latency artificial PES scheduler microbenchmark",
+  "deposition_pace": 10,
+  "evaluations_per_second": {
+    "async-files": 388.69740817780297,
+    "mpi-sync": 354.83461283998224
+  },
+  "hardware": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "logical_cpus": 5,
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "processor": ""
+  },
+  "median_seconds": {
+    "async-files": 1.234893750000083,
+    "mpi-sync": 1.3527428909999344
+  },
+  "note": "Sleep emulates variable PES latency; this is not a molecular-dynamics or physical-convergence benchmark.",
+  "repeats": 3,
+  "schema_version": 1,
+  "seconds": {
+    "async-files": [
+      1.234893750000083,
+      1.2090302219999103,
+      1.3243203910001284
+    ],
+    "mpi-sync": [
+      1.4118947160000062,
+      1.2618832860000566,
+      1.3527428909999344
+    ]
+  },
+  "sleep_seconds": {
+    "maximum": 0.028994640035322466,
+    "median": 0.0019707764039360014,
+    "minimum": 0.0001524282743976498,
+    "sum": 1.2861908960917865
+  },
+  "steps_per_walker": 120,
+  "walkers": 4
+}

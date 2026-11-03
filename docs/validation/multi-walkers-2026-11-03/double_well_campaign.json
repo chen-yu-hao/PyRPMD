@@ -1,0 +1,39 @@
+{
+  "campaign": "two-dimensional double-well multiple-walker estimators",
+  "hardware": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "logical_cpus": 5,
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41"
+  },
+  "metadynamics": {
+    "acceptance_limit_2se": 0.19087632445629427,
+    "async_poll_steps": 23,
+    "async_run_to_run_rms_spread": 0.16535833188869042,
+    "combined_standard_error": 0.09543816222814713,
+    "mean_fes_rms_difference": 0.0002585233321895051,
+    "pace": 30,
+    "replicates": 6,
+    "steps_per_walker": 3000,
+    "sync_run_to_run_rms_spread": 0.16524914200051533,
+    "walkers": 4,
+    "within_statistical_error": true
+  },
+  "note": "Toy overdamped and Markov-chain evidence only; neither estimator is asserted physically converged.",
+  "opes_explore": {
+    "acceptance_limit_2se": 3.3234980203426403,
+    "combined_standard_error": 1.6617490101713202,
+    "compression": "none",
+    "independent_replicates": 8,
+    "mean_fes_rms_difference": 1.322486680526311,
+    "same_center_formula_max_abs_difference": 7.105427357601002e-15,
+    "shared_kernels": 160,
+    "shared_run_to_run_rms_spread": 2.747512277325608,
+    "shared_walkers": 4,
+    "single_kernels": 160,
+    "single_run_to_run_rms_spread": 3.8134570232779534,
+    "within_statistical_error": true
+  },
+  "runtime_seconds": 9.877312504000201,
+  "schema_version": 1
+}
