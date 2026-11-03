@@ -38,6 +38,7 @@ include_patterns = [
     "quantum-statistics.md", "performance-dynamics.md", "batched-dynamics.md",
     "batched-ml-potentials.md",
     "t19-performance.md",
+    "tempering.md",
     "builtin-native-potentials.md",
     "torch-materials-workflows.md",
     "implementation-review-2026-11-03.md",
