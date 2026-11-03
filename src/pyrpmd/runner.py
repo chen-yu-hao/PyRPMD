@@ -713,7 +713,7 @@ def prepare(job, *, numerical=False):
 
         validate_opes(config, system)
         result["opes_preparation"] = config["opes"]
-    elif config["task"] == "fes" and fes_method(config) in ("abf", "eabf", "steered"):
+    elif config["task"] == "fes" and fes_method(config) in ("abf", "eabf", "steered", "ves"):
         from .workflows.fes_dispatch import validate_fes
 
         validate_fes(config, system)

@@ -88,10 +88,10 @@ def validate_task_sections(d):
         raise InputError("[metadynamics] requires fes.method='metadynamics' or rate.pmf.method='metadynamics'")
     if "opes" in d and method != "opes" and rate_pmf_method != "opes":
         raise InputError("[opes] requires fes.method='opes' or rate.pmf.method='opes'")
-    for name in ("abf", "eabf", "steered"):
+    for name in ("abf", "eabf", "steered", "ves"):
         if name in d and method != name:
             raise InputError(f"[{name}] requires fes.method='{name}'")
-    if method in ("abf", "eabf", "steered") and any(
+    if method in ("abf", "eabf", "steered", "ves") and any(
         name in d for name in ("reaction", "collision", "outcomes", "rate", "recrossing")
     ):
         raise InputError(f"{method} does not accept reaction, collision or rate settings")
