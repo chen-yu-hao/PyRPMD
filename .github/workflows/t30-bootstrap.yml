@@ -1,0 +1,219 @@
+name: T30 implementation bootstrap
+
+on:
+  push:
+    branches: [agent/t30-kinetics-export]
+    paths: [.github/workflows/t30-bootstrap.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  implement-test-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      PYTHONUNBUFFERED: "1"
+      BOOTSTRAP_SHA: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Reset workspace to latest main
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cat .github/t30-payload.part* > /tmp/t30-payload.b64
+          echo "c9cc1656da71f3d00790005d75702f326e03e1fd825659fc4117383c95111b15  /tmp/t30-payload.b64" | sha256sum -c -
+          git fetch origin main
+          git reset --hard origin/main
+          git rev-parse HEAD | tee /tmp/t30-base-sha
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install baseline dependencies
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[test,docs]'
+          python -m pip install 'cantera>=3.0'
+
+      - name: Record focused baseline
+        shell: bash
+        run: |
+          set -o pipefail
+          python -m pytest -q tests -k "study or arrhenius or kinetics" 2>&1 | tee /tmp/t30-baseline.log
+
+      - name: Apply T30 implementation
+        shell: bash
+        run: |
+          set -euxo pipefail
+          mkdir -p /tmp/t30-payload
+          base64 -d /tmp/t30-payload.b64 > /tmp/t30-payload.tar.gz
+          echo "d5285445f9f3a866ecbc2851debf940235ace413b0a86c1d92b772a8a073685e  /tmp/t30-payload.tar.gz" | sha256sum -c -
+          tar -xzf /tmp/t30-payload.tar.gz -C /tmp/t30-payload
+          python /tmp/t30-payload/apply.py "$GITHUB_WORKSPACE"
+          python -m pip install -e .
+          python -m compileall -q src/pyrpmd tests
+          git diff --check
+
+      - name: Run focused verification
+        shell: bash
+        run: |
+          set -o pipefail
+          python -m pytest -q tests -k "study or arrhenius or kinetics" 2>&1 | tee /tmp/t30-focused.log
+
+      - name: Run non-campaign suite
+        shell: bash
+        run: |
+          set -o pipefail
+          python -m pytest -q -m "not campaign" 2>&1 | tee /tmp/t30-noncampaign.log
+
+      - name: Run full suite
+        shell: bash
+        run: |
+          set -o pipefail
+          python -m pytest -q 2>&1 | tee /tmp/t30-full.log
+
+      - name: Build documentation
+        shell: bash
+        run: |
+          set -o pipefail
+          python -m sphinx -W --keep-going -b html docs docs/_build/html 2>&1 | tee /tmp/t30-docs.log
+
+      - name: Benchmark and finalize validation record
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python - <<'PYBENCH' > /tmp/t30-benchmark.log
+          import math
+          import platform
+          import time
+
+          from pyrpmd.analysis.kinetics_export import render_chemkin
+          from pyrpmd.studies import modified_arrhenius_fit
+
+          temperatures = [200.0, 250.0, 300.0, 400.0, 600.0, 900.0]
+          rates = [
+              2.1e-12 * (temperature / 300.0) ** 1.25
+              * math.exp(-1450.0 / temperature)
+              for temperature in temperatures
+          ]
+          errors = [0.02 * rate for rate in rates]
+          iterations = 2000
+          start = time.perf_counter()
+          for _ in range(iterations):
+              fit = modified_arrhenius_fit(
+                  temperatures,
+                  rates,
+                  standard_errors=errors,
+                  rate_unit="cm^3 molecule^-1 s^-1",
+              )
+          fit_seconds = time.perf_counter() - start
+          start = time.perf_counter()
+          for _ in range(iterations):
+              render_chemkin(
+                  fit,
+                  equation="H + H2 <=> H3",
+                  reaction_order=2,
+                  source="benchmark",
+                  run_identity="synthetic",
+              )
+          export_seconds = time.perf_counter() - start
+          print(f"Python {platform.python_version()}; iterations={iterations}")
+          print(
+              "modified_arrhenius_fit: "
+              f"{1e6 * fit_seconds / iterations:.3f} us/call"
+          )
+          print(
+              "Chemkin rendering: "
+              f"{1e6 * export_seconds / iterations:.3f} us/call"
+          )
+          PYBENCH
+          python - <<'PYRECORD'
+          from pathlib import Path
+          import platform
+          import subprocess
+
+          path = Path(
+              "docs/validation/kinetics-export-2026-11-03/README.md"
+          )
+          text = path.read_text()
+
+          def tail(name, lines=10):
+              content = Path(name).read_text(errors="replace").strip().splitlines()
+              return "\n".join(content[-lines:])
+
+          try:
+              hardware = subprocess.check_output(
+                  [
+                      "bash",
+                      "-lc",
+                      "lscpu | sed -n 's/^Model name:[[:space:]]*//p' | head -n1",
+                  ],
+                  text=True,
+              ).strip() or platform.machine()
+          except Exception:
+              hardware = platform.machine()
+          replacements = {
+              "__HARDWARE__": hardware,
+              "__PYTHON__": platform.python_version(),
+              "__BASE_SHA__": Path("/tmp/t30-base-sha").read_text().strip(),
+              "__BASELINE__": tail("/tmp/t30-baseline.log"),
+              "__FOCUSED__": tail("/tmp/t30-focused.log"),
+              "__FULL__": tail("/tmp/t30-noncampaign.log"),
+              "__FULL_ALL__": tail("/tmp/t30-full.log"),
+              "__DOCS__": tail("/tmp/t30-docs.log", 14),
+              "__BENCHMARK__": Path("/tmp/t30-benchmark.log").read_text().strip(),
+          }
+          for old, new in replacements.items():
+              text = text.replace(old, new)
+          if "__" in text:
+              raise RuntimeError("Unreplaced validation record placeholder")
+          path.write_text(text)
+          PYRECORD
+          git diff --check
+
+      - name: Verify main did not move during validation
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "$(cat /tmp/t30-base-sha)"
+
+      - name: Commit logical changes and push clean branch history
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git config user.name "OpenAI Codex"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add src/pyrpmd/studies.py tests/test_modified_arrhenius.py
+          git commit -m "feat: add modified Arrhenius fitting"
+
+          git add             src/pyrpmd/analysis/kinetics_export.py             src/pyrpmd/cli.py             pyproject.toml             tests/test_kinetics_export.py
+          git commit -m "feat: export kinetics models to Cantera and Chemkin"
+
+          git add             docs/conf.py             docs/kinetics-export.md             docs/validation/kinetics-export-2026-11-03/README.md             examples/rate/modified_arrhenius_chemkin.inp
+          git commit -m "docs: document and validate kinetics export"
+
+          git status --short
+          test -z "$(git status --porcelain)"
+          git push             --force-with-lease=refs/heads/agent/t30-kinetics-export:${BOOTSTRAP_SHA}             origin HEAD:refs/heads/agent/t30-kinetics-export
+
+      - name: Upload validation logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: t30-validation-logs
+          if-no-files-found: ignore
+          path: |
+            /tmp/t30-*.log
+            docs/validation/kinetics-export-2026-11-03/README.md
