@@ -54,11 +54,26 @@ def read_sealed(path):
 def write_sealed(path, value):
     _json_value(value, "precision execution data")
     payload = {**value, "integrity_sha256": _digest(value)}
+    parent = Path(path).parent
+    created = []
+    current = parent
+    while not current.exists():
+        created.append(current)
+        current = current.parent
     # Windows may briefly deny replacement while a concurrent status reader
     # has the old file open. Retry that sharing conflict, never other I/O errors.
     for attempt in range(11):
         try:
             write_json(path, payload, sort_keys=True)
+            if os.name != "nt":
+                # Persist the rename and any newly created journal directories
+                # before the admission can authorize a PES call.
+                for directory in (parent, *(item.parent for item in created)):
+                    fd = os.open(directory, os.O_RDONLY)
+                    try:
+                        os.fsync(fd)
+                    finally:
+                        os.close(fd)
             return
         except PermissionError as exc:
             if getattr(exc, "winerror", None) not in (5, 32, 33) or attempt == 10:
