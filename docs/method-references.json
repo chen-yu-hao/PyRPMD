@@ -1744,6 +1744,26 @@
       "doi": "10.1063/5.0137137",
       "url": "https://doi.org/10.1063/5.0137137",
       "role": "Follow-up IESH analysis"
+    },
+    {
+      "id": "gr-instanton2015a",
+      "authors": "J. O. Richardson; R. Bauer; M. Thoss",
+      "title": "Semiclassical Green's functions and an instanton formulation of electron-transfer rates in the nonadiabatic limit",
+      "year": 2015,
+      "venue": "J. Chem. Phys. 143, 134115",
+      "doi": "10.1063/1.4932361",
+      "url": "https://doi.org/10.1063/1.4932361",
+      "role": "Original golden-rule instanton derivation"
+    },
+    {
+      "id": "gr-instanton2015b",
+      "authors": "J. O. Richardson",
+      "title": "Ring-polymer instanton theory of electron transfer in the nonadiabatic limit",
+      "year": 2015,
+      "venue": "J. Chem. Phys. 143, 134116",
+      "doi": "10.1063/1.4932362",
+      "url": "https://doi.org/10.1063/1.4932362",
+      "role": "Original nonadiabatic ring-polymer instanton formulation"
     }
   ],
   "methods": [
@@ -4848,7 +4868,8 @@
         "src/pyrpmd/instanton.py"
       ],
       "references": [
-        "rpi09",
+        "gr-instanton2015a",
+        "gr-instanton2015b",
         "rpi16"
       ],
       "priority": "P2",
