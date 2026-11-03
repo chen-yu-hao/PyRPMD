@@ -8,7 +8,6 @@ checkpoint was committed; the complete primary state remains resumable.
 """
 from __future__ import annotations
 
-import copy
 import json
 from pathlib import Path
 
@@ -26,7 +25,7 @@ for _name in dir(_legacy):
         globals()[_name] = getattr(_legacy, _name)
 
 
-_OPERATOR_KIND = "PyRPMD.nrpmd_auxiliary_state.v2"
+_OPERATOR_KIND = "pyrpmd.nrpmd_auxiliary_state.v2"
 _OPERATOR_VERSION = 2
 _ORIGINAL_SAVE = _legacy._save
 _ORIGINAL_LOAD = _legacy._load
