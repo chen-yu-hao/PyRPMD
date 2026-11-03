@@ -33,8 +33,8 @@ PYTHONPATH=/mnt/data/t31_work/src:/mnt/data/t31_work \
 Observed output:
 
 ```text
-.....                                                                    [100%]
-5 passed, 1 deselected in 7.39s
+......                                                                   [100%]
+6 passed, 1 deselected in 7.40s
 ```
 
 The isolated checks cover:
@@ -42,12 +42,13 @@ The isolated checks cover:
 - bidirectional mass-scaled MEP integration on an analytic separable saddle;
 - Cartesian projection and a symmetric CVT free-energy profile;
 - the exact numerical limit SCT = ZCT for a straight path;
+- distance-weighted SCT saddle-mass interpolation on a nonuniform path;
 - a sampled Eckart barrier whose WKB action is compared with an independent
   continuous SciPy quadrature, including the logistic barrier-top limit and
   reflected above-barrier continuation; and
 - workflow publication, scientific-fingerprint sensitivity, and CLI dispatch.
 
-The sixth full-repository test directly compares the reactant translational,
+The seventh full-repository test directly compares the reactant translational,
 rotational, vibrational, and total partition logs with
 `pyrpmd.low_temperature.HarmonicState`. That production module was not copied
 into the isolated harness; pull-request CI is the authoritative result for this
