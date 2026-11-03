@@ -76,6 +76,40 @@ class MASHHop:
     energy_error: float
 
 
+def _rescale_ring_momentum(p, direction, masses, gap, source, event_time):
+    """Energy-conserving impulse for a supplied bead-space NAC direction.
+
+    ``direction`` may have any finite nonzero common normalization.  The
+    quadratic uses the physical mass metric, including unequal atom masses.
+    CA and BA differ in their direction, not in this conservation equation.
+    """
+    a = 0.5 * float(np.sum(direction ** 2 / masses[None, :, None]))
+    b = float(np.sum(p * direction / masses[None, :, None]))
+    if not np.isfinite([a, b, gap]).all() or a <= 0.0:
+        raise ValueError("momentum rescaling overflow")
+    if b == 0.0:
+        raise ValueError("grazing equator crossing has zero velocity along the derivative coupling")
+    discriminant = b*b - 4.0*a*gap
+    if not np.isfinite(discriminant):
+        raise ValueError("momentum rescaling overflow")
+    tolerance = 64.0 * np.finfo(float).eps * max(b*b, abs(4.0*a*gap), np.finfo(float).tiny)
+    accepted = discriminant >= -tolerance
+    if accepted:
+        root = np.sqrt(max(0.0, discriminant))
+        # This algebraically equivalent form avoids subtracting nearly
+        # equal momenta for a small electronic energy change.
+        denominator = b + np.copysign(root, b)
+        change = -2.0 * gap / denominator
+    else:
+        change = -b / a
+    updated = p + change * direction
+    kinetic_change = float(np.sum((updated**2 - p**2) / (2.0 * masses[None, :, None])))
+    error = kinetic_change + (gap if accepted else 0.0)
+    if not np.isfinite(updated).all() or not np.isfinite(error):
+        raise ValueError("momentum rescaling overflow")
+    return updated, MASHHop(event_time, source, 1-source, bool(accepted), not accepted, gap, error)
+
+
 class RPMASHDynamics:
     """Deterministic CA-RP-MASH using adaptive DOP853 plus equator root finding.
 
@@ -89,13 +123,15 @@ class RPMASHDynamics:
     control internal integration and event resolution.  This CPU reference
     driver does not use a Cayley splitting or claim a symplectic MASH map.
     """
+    _method_label = "CA-RP-MASH"
+
     def __init__(self, potential, masses, beta, nbeads, dt, nstates=2, *, seed=0,
                  rtol=1e-9, atol=1e-11, max_step=None, max_events=64,
                  gap_tolerance=1e-10, native=False, threads=1):
         if _positive_integer(nstates, "nstates") != 2:
             raise ValueError("RPMASHDynamics implements exactly two electronic states")
         if native is not False:
-            raise ValueError("CA-RP-MASH currently uses the CPU adaptive reference solver; native must be False")
+            raise ValueError(f"{self._method_label} currently uses the CPU adaptive reference solver; native must be False")
         self._validator = CayleyIntegrator(masses, beta, nbeads, dt, native=False, threads=threads)
         self.masses = self._validator.masses
         self.beta, self.dt, self.nbeads, self.nstates = float(beta), float(dt), int(nbeads), 2
@@ -116,12 +152,12 @@ class RPMASHDynamics:
              self.max_events, self.gap_tolerance, self.integrator_name, self.native) != self._parameters
                 or self.beta != self._validator.beta or self.dt != self._validator.dt
                 or self.nbeads != self._validator.nbeads):
-            raise ValueError("RPMASHDynamics parameters are immutable")
+            raise ValueError(f"{type(self).__name__} parameters are immutable")
 
     def _evaluate(self, q):
         value = validate_diabatic_result(self.potential.evaluate(q), q.shape, 2)
         if np.any(np.abs(value.matrix.imag) > 1e-12) or np.any(np.abs(value.gradients.imag) > 1e-12):
-            raise PotentialError("CA-RP-MASH requires real symmetric matrices; complex SOC is not implemented")
+            raise PotentialError(f"{self._method_label} requires real symmetric matrices; complex SOC is not implemented")
         # Treat accepted imaginary roundoff as zero consistently: the real
         # adiabatic frame below must not contain a residual y-field.
         value.matrix = np.ascontiguousarray(value.matrix.real)
@@ -133,7 +169,7 @@ class RPMASHDynamics:
         scalar, field, dscalar, dfield = _pauli_components(value.matrix, value.gradients)
         magnitude = np.linalg.norm(field, axis=1)
         if np.any(2.0 * magnitude <= self.gap_tolerance):
-            raise PotentialError("CA-RP-MASH requires a nondegenerate adiabatic gap")
+            raise PotentialError(f"{self._method_label} requires a nondegenerate adiabatic gap")
         axis = field / magnitude[:, None]
         dmag = np.einsum("bi,biac->bac", axis, dfield)
         return scalar, field, magnitude, axis, dscalar, dfield, dmag
@@ -252,29 +288,9 @@ class RPMASHDynamics:
         if not np.isfinite(scale) or scale == 0.0:
             raise ValueError("equator crossing has no finite nonzero centroid derivative coupling")
         direction = np.broadcast_to(direction / scale, p.shape)
-        a = 0.5 * float(np.sum(direction ** 2 / self.masses[None, :, None]))
-        b = float(np.sum(p * direction / self.masses[None, :, None]))
-        if b == 0.0:
-            raise ValueError("grazing equator crossing has zero velocity along the derivative coupling")
         target = 1 - source
         gap = float(2.0 * (2 * target - 1) * np.sum(self._electronic(q)[2]))
-        discriminant = b*b - 4.0*a*gap
-        tolerance = 64.0 * np.finfo(float).eps * max(b*b, abs(4.0*a*gap), np.finfo(float).tiny)
-        accepted = discriminant >= -tolerance
-        if accepted:
-            root = np.sqrt(max(0.0, discriminant))
-            # This algebraically equivalent form avoids subtracting nearly
-            # equal momenta for a small electronic energy change.
-            denominator = b + np.copysign(root, b)
-            change = -2.0 * gap / denominator
-        else:
-            change = -b / a
-        updated = p + change * direction
-        kinetic_change = float(np.sum((updated**2 - p**2) / (2.0 * self.masses[None, :, None])))
-        error = kinetic_change + (gap if accepted else 0.0)
-        if not np.isfinite(updated).all() or not np.isfinite(error):
-            raise ValueError("momentum rescaling overflow")
-        return updated, MASHHop(event_time, source, target, bool(accepted), not accepted, gap, error)
+        return _rescale_ring_momentum(p, direction, self.masses, gap, source, event_time)
 
     def step(self, state):
         self._check(state)
@@ -290,13 +306,13 @@ class RPMASHDynamics:
                                  method="DOP853", rtol=self.rtol, atol=self.atol,
                                  max_step=self.max_step, events=event)
             if not solution.success or not np.isfinite(solution.y[:, -1]).all():
-                raise ValueError("CA-RP-MASH integration failed: " + solution.message)
+                raise ValueError(self._method_label + " integration failed: " + solution.message)
             y = solution.y[:, -1].copy()
             elapsed = float(solution.t[-1])
             if not solution.t_events[0].size:
                 break
             if len(events) >= self.max_events:
-                raise ValueError("too many CA-RP-MASH equator events; reduce dt or inspect a grazing crossing")
+                raise ValueError(f"too many {self._method_label} equator events; reduce dt or inspect a grazing crossing")
             q, p, spin = self._unpack(y)
             updated, hop = self._impulse(q, p, active, state.time + elapsed)
             p[:] = updated
