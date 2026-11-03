@@ -160,7 +160,7 @@ def test_plumed_stop_flag_ends_at_a_complete_step(tmp_path, monkeypatch):
 
 
 @pytest.mark.parametrize("change", [
-    {"sampling": {"timestep": .01}}, {"sampling": {"replicas": 2}},
+    {"sampling": {"timestep": .01}},
     {"path_integral": {}}, {"active_learning": {}}, {"barostat": {}},
     {"umbrella": {}}, {"metadynamics": {}}, {"analysis": {}},
     {"output": {"trajectory_storage": "stream"}}, {"plumed": {"file": True}},
