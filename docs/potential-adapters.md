@@ -688,7 +688,7 @@ stress produces no virial through the ASE route. Check a model's energy drift
 and gradient accuracy before using its trajectories as production evidence.
 
 References: [FAIRChem calculator API](https://github.com/facebookresearch/fairchem/blob/main/src/fairchem/core/calculate/ase_calculator.py),
-[inference guide](https://fair-chem.github.io/core/common_tasks/ase_calculator.html),
+[inference guide](https://facebookresearch.github.io/fairchem/ase-calculator/),
 the [UMA task and electronic-state conventions](https://github.com/facebookresearch/fairchem/blob/main/docs/core/uma.md),
 and [UMA precision changelog](https://facebookresearch.github.io/fairchem/uma-changelog/).
 
