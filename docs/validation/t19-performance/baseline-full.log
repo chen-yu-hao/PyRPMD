@@ -1,0 +1,715 @@
+........................................................................ [  0%]
+........................................................................ [  1%]
+.....................ss...............ssssss............................ [  1%]
+........................................................................ [  2%]
+........................................................................ [  3%]
+........................................................................ [  3%]
+........................................................................ [  4%]
+........................................................................ [  5%]
+........................................................................ [  5%]
+........................................................................ [  6%]
+........................................................................ [  7%]
+....................................................................s... [  7%]
+........................................................................ [  8%]
+..........sssssss................................ssssssssssssssss.ss.... [  9%]
+................ssssssssssssssssssssssssssss............................ [  9%]
+........................................................................ [ 10%]
+........................................................................ [ 11%]
+........................................................................ [ 11%]
+........................................................................ [ 12%]
+........................................................................ [ 13%]
+............................................................................................... [ 13%]
+........................................................................ [ 14%]
+........................................................................ [ 15%]
+.................................................................................................... [ 16%]
+............................................................................................s......................................... [ 17%]
+........................................................................ [ 17%]
+.................................... [ 18%]
+........................................................................ [ 18%]
+........................................................................ [ 19%]
+........................................................................ [ 20%]
+........................................................................ [ 20%]
+........................................................................ [ 21%]
+..................................s.s................................... [ 22%]
+..................FF....................................................................................................................... [ 23%]
+........................................................................ [ 24%]
+........................................................................ [ 24%]
+........................................................................ [ 25%]
+........................................................................ [ 26%]
+........................................................................ [ 26%]
+........................................................................ [ 27%]
+........................................................................ [ 27%]
+........................................................................ [ 28%]
+............................................................s........... [ 29%]
+........................................................................ [ 29%]
+........................................................................ [ 30%]
+......................................................................ss [ 31%]
+sssss...............................................ssss............sssss.............s................................................... [ 32%]
+........................................................................ [ 33%]
+........................................................................ [ 33%]
+........................................................................ [ 34%]
+....sss............................................................ [ 35%]
+........................................................................ [ 35%]
+..............................................................s......... [ 36%]
+........................................................................ [ 36%]
+........................................................................ [ 37%]
+.................................................................s...... [ 38%]
+........................................................................ [ 38%]
+...........................................ssssss...ss.................. [ 39%]
+................ss...................................................... [ 40%]
+........................................................................ [ 40%]
+...................................................... [ 41%]
+........................................................................ [ 42%]
+........................................................................ [ 42%]
+..ss.........................ssssss..................................... [ 43%]
+..........................F............................................. [ 43%]
+.............................sssssssss.................................. [ 44%]
+........................................................................ [ 45%]
+......................................................s....s............ [ 45%]
+................................................................ssssssss [ 46%]
+................................................................... [ 47%]
+........................................................................ [ 47%]
+........................................................................ [ 48%]
+........................................................................ [ 49%]
+........................................................................ [ 49%]
+........................................................................ [ 50%]
+........................................................................ [ 51%]
+........................................................................ [ 51%]
+...ss................................................................... [ 52%]
+........................................................................ [ 53%]
+........................................................................ [ 53%]
+........................................................................ [ 54%]
+........................................................................ [ 55%]
+........................................................................ [ 55%]
+........................................................................ [ 56%]
+........................................................................ [ 56%]
+........................................................................ [ 57%]
+........................................................................ [ 58%]
+........................................................................ [ 58%]
+........................................................................ [ 59%]
+........................................................................ [ 60%]
+........................................................................ [ 60%]
+........................................................................ [ 61%]
+........................................................................ [ 62%]
+........................................................................ [ 62%]
+........................................................................ [ 63%]
+........................................................................ [ 64%]
+........................................................................ [ 64%]
+............................s........................................... [ 65%]
+................................. [ 65%]
+............................................................... [ 66%]
+ssssss.ssssssss......................................................... [ 66%]
+......................s................................................. [ 67%]
+.....................ssssss............................................. [ 68%]
+..............s......................................................... [ 68%]
+sssssss................................................................. [ 69%]
+..................................................................... [ 70%]
+........................................................................ [ 70%]
+........................................................................ [ 71%]
+........................................................................ [ 72%]
+........................................................................ [ 72%]
+.................................................................. [ 73%]
+........................................................................ [ 74%]
+...................................................................................................................................... [ 75%]
+........................................................................ [ 75%]
+..................................................................................................................................... [ 77%]
+........................................................................ [ 77%]
+........................................................................ [ 78%]
+........................................................................ [ 79%]
+........................................................................ [ 79%]
+........................................................................ [ 80%]
+........................................................................ [ 80%]
+........................................................................ [ 81%]
+........................................................................ [ 82%]
+..............s..................................... [ 82%]
+................................................. [ 83%]
+........................................................................ [ 83%]
+........................................................................ [ 84%]
+................................................................. [ 85%]
+........................... [ 85%]
+............................................................. [ 85%]
+........................................................................ [ 86%]
+........................................................................ [ 87%]
+........................................................................ [ 87%]
+........................................................................ [ 88%]
+........................................................ [ 88%]
+........................................................................ [ 89%]
+........................................................................ [ 90%]
+........................................................................ [ 90%]
+......ss.............s.................................................. [ 91%]
+........................................................................ [ 92%]
+...........................s............................................ [ 92%]
+........................................................................ [ 93%]
+........................................................................ [ 94%]
+.................................................................ss..... [ 94%]
+........................................................................ [ 95%]
+........................................................................ [ 96%]
+..................................................................................................... [ 97%]
+........................................................................ [ 97%]
+........................................................................ [ 98%]
+........................................................................ [ 99%]
+........................................................................ [ 99%]
+......................................                                   [100%]
+=================================== FAILURES ===================================
+______________ test_actual_lammps_private_engine_groups[static-4] ______________
+
+scheduling = 'static', ranks = 4
+
+    @pytest.mark.parametrize("scheduling,ranks", [("static", 4), ("dynamic", 5)])
+    def test_actual_lammps_private_engine_groups(scheduling, ranks):
+        # Do not initialize MPI in pytest's process. Ordinary installations without
+        # these optional engines still run all routing/validation unit tests above.
+        pytest.importorskip("lammps")
+        pytest.importorskip("mpi4py")
+        launcher = Path(sys.executable).with_name("mpiexec")
+        if not launcher.is_file():
+            executable = shutil.which("mpiexec")
+            if executable is None:
+                pytest.skip("optional MPI launcher unavailable")
+            launcher = Path(executable)
+        env = dict(os.environ, OMP_NUM_THREADS="1", OPENBLAS_NUM_THREADS="1")
+        # Open MPI requires explicit root opt-in in containerized test environments.
+        # MPICH ignores these variables; no engine or numerical option is changed.
+        env.setdefault("OMPI_ALLOW_RUN_AS_ROOT", "1")
+        env.setdefault("OMPI_ALLOW_RUN_AS_ROOT_CONFIRM", "1")
+        env.setdefault("OMPI_MCA_rmaps_base_oversubscribe", "1")
+        script = Path(__file__).with_name("mpi_engine_subcommunicator_smoke.py")
+        run = subprocess.run(
+            [str(launcher), "-n", str(ranks), sys.executable, str(script),
+             "--scheduling", scheduling],
+            env=env, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            timeout=180, check=False,
+        )
+>       assert run.returncode == 0, run.stdout
+E       AssertionError: [1793682784.479134] [b0572daa46b0:370  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [hwloc/linux] failed to find sysfs cpu topology directory, aborting linux discovery.
+E         [1793682784.485977] [b0572daa46b0:371  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [hwloc/linux] failed to find sysfs cpu topology directory, aborting linux discovery.
+E         [hwloc/linux] failed to find sysfs cpu topology directory, aborting linux discovery.
+E         [1793682784.490936] [b0572daa46b0:370  :0]       tcp_iface.c:984  UCX  ERROR scandir(/sys/class/net) failed: No such file or directory
+E         [1793682784.491052] [b0572daa46b0:370  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.491285] [b0572daa46b0:370  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.491315] [b0572daa46b0:370  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.491357] [b0572daa46b0:370  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.498246] [b0572daa46b0:371  :0]       tcp_iface.c:984  UCX  ERROR scandir(/sys/class/net) failed: No such file or directory
+E         [1793682784.498328] [b0572daa46b0:371  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.498552] [b0572daa46b0:371  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.498555] [b0572daa46b0:371  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.498583] [b0572daa46b0:371  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.526666] [b0572daa46b0:372  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.528561] [b0572daa46b0:373  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [hwloc/linux] failed to find sysfs cpu topology directory, aborting linux discovery.
+E         [hwloc/linux] failed to find sysfs cpu topology directory, aborting linux discovery.
+E         [1793682784.542449] [b0572daa46b0:372  :0]       tcp_iface.c:984  UCX  ERROR scandir(/sys/class/net) failed: No such file or dir[1793682784.543719] [b0572daa46b0:373  :0]       tcp_iface.c:984  UCX  ERROR scandir(/sys/class/net) failed: No such file or directory
+E         [1793682784.543786] [b0572daa46b0:373  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.544035] [b0572daa46b0:373  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.544038] [b0572daa46b0:373  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.544071] [b0572daa46b0:373  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         ectory
+E         [1793682784.545082] [b0572daa46b0:372  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.546101] [b0572daa46b0:372  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.546107] [b0572daa46b0:372  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.546134] [b0572daa46b0:372  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         Abort(880428431) on node 0: Fatal error in internal_Init_thread: Other MPI error, error stack:
+E         internal_Init_thread(71)...................: MPI_Init_thread(argc=(nil), argv=(nil), required=3, provided=0x7ffdafa42570) failed
+E         MPII_Init_thread(333)......................: 
+E         MPIR_init_comm_world(37)...................: 
+E         MPIR_Comm_commit(821)......................: 
+E         MPID_Comm_commit_pre_hook(163).............: 
+E         MPIDI_UCX_mpi_comm_commit_pre_hook(19).....: 
+E         MPIDI_UCX_comm_addr_exchange(188)..........: 
+E         MPIR_Allgather_impl(2268)..................: 
+E         MPIR_Allgather_allcomm_auto(2182)..........: 
+E         MPIR_Allgather_intra_recursive_doubling(84): 
+E         MPIC_Sendrecv(280).........................: 
+E         MPIC_Wait(99)..............................: 
+E         MPIR_Wait(745).............................: 
+E         MPIDI_IPC_rndv_cb(176).....................: 
+E         MPIDI_CMA_copy_data(68)....................: 
+E         copy_iovs(224).............................: process_vm_readv failed (errno 1)
+E         Abort(209339791) on node 3: Fatal error in internal_Init_thread: Other MPI error, error stack:
+E         internal_Init_thread(71)...................: MPI_Init_thread(argc=(nil), argv=(nil), required=3, provided=0x7ffeb4549e20) failed
+E         MPII_Init_thread(333)......................: 
+E         MPIR_init_comm_world(37)...................: 
+E         MPIR_Comm_commit(821)......................: 
+E         MPID_Comm_commit_pre_hook(163).............: 
+E         MPIDI_UCX_mpi_comm_commit_pre_hook(19).....: 
+E         MPIDI_UCX_comm_addr_exchange(188)..........: 
+E         MPIR_Allgather_impl(2268)..................: 
+E         MPIR_Allgather_allcomm_auto(2182)..........: 
+E         MPIR_Allgather_intra_recursive_doubling(84): 
+E         MPIC_Sendrecv(280).........................: 
+E         MPIC_Wait(99)..............................: 
+E         MPIR_Wait(745).............................: 
+E         MPIDI_IPC_rndv_cb(176).....................: 
+E         MPIDI_CMA_copy_data(68)....................: 
+E         copy_iovs(224).............................: process_vm_readv failed (errno 1)
+E         Abort(8013199) on node 1: Fatal error in internal_Init_thread: Other MPI error, error stack:
+E         internal_Init_thread(71)...................: MPI_Init_thread(argc=(nil), argv=(nil), required=3, provided=0x7ffc0c757a70) failed
+E         MPII_Init_thread(333)......................: 
+E         MPIR_init_comm_world(37)...................: 
+E         MPIR_Comm_commit(821)......................: 
+E         MPID_Comm_commit_pre_hook(163).............: 
+E         MPIDI_UCX_mpi_comm_commit_pre_hook(19).....: 
+E         MPIDI_UCX_comm_addr_exchange(188)..........: 
+E         MPIR_Allgather_impl(2268)..................: 
+E         MPIR_Allgather_allcomm_auto(2182)..........: 
+E         MPIR_Allgather_intra_recursive_doubling(84): 
+E         MPIC_Sendrecv(280).........................: 
+E         MPIC_Wait(99)..............................: 
+E         MPIR_Wait(745).............................: 
+E         MPIDI_IPC_rndv_cb(176).....................: 
+E         MPIDI_CMA_copy_data(68)....................: 
+E         copy_iovs(224).............................: process_vm_readv failed (errno 1)
+E         Abort(947537295) on node 2: Fatal error in internal_Init_thread: Other MPI error, error stack:
+E         internal_Init_thread(71)...................: MPI_Init_thread(argc=(nil), argv=(nil), required=3, provided=0x7fffce9c0ad0) failed
+E         MPII_Init_thread(333)......................: 
+E         MPIR_init_comm_world(37)...................: 
+E         MPIR_Comm_commit(821)......................: 
+E         MPID_Comm_commit_pre_hook(163).............: 
+E         MPIDI_UCX_mpi_comm_commit_pre_hook(19).....: 
+E         MPIDI_UCX_comm_addr_exchange(188)..........: 
+E         MPIR_Allgather_impl(2268)..................: 
+E         MPIR_Allgather_allcomm_auto(2182)..........: 
+E         MPIR_Allgather_intra_recursive_doubling(84): 
+E         MPIC_Sendrecv(280).........................: 
+E         MPIC_Wait(99)..............................: 
+E         MPIR_Wait(745).............................: 
+E         MPIDI_IPC_rndv_cb(176).....................: 
+E         MPIDI_CMA_copy_data(68)....................: 
+E         copy_iovs(224).............................: process_vm_readv failed (errno 1)
+E         
+E       assert 143 == 0
+E        +  where 143 = CompletedProcess(args=['/workspace/scratch/998803105056/PyRPMD-baseline/../.venv/bin/mpiexec', '-n', '4', '/workspace/...copy_data(68)....................: \ncopy_iovs(224).............................: process_vm_readv failed (errno 1)\n').returncode
+
+tests/test_engine_subcommunicators.py:88: AssertionError
+_____________ test_actual_lammps_private_engine_groups[dynamic-5] ______________
+
+scheduling = 'dynamic', ranks = 5
+
+    @pytest.mark.parametrize("scheduling,ranks", [("static", 4), ("dynamic", 5)])
+    def test_actual_lammps_private_engine_groups(scheduling, ranks):
+        # Do not initialize MPI in pytest's process. Ordinary installations without
+        # these optional engines still run all routing/validation unit tests above.
+        pytest.importorskip("lammps")
+        pytest.importorskip("mpi4py")
+        launcher = Path(sys.executable).with_name("mpiexec")
+        if not launcher.is_file():
+            executable = shutil.which("mpiexec")
+            if executable is None:
+                pytest.skip("optional MPI launcher unavailable")
+            launcher = Path(executable)
+        env = dict(os.environ, OMP_NUM_THREADS="1", OPENBLAS_NUM_THREADS="1")
+        # Open MPI requires explicit root opt-in in containerized test environments.
+        # MPICH ignores these variables; no engine or numerical option is changed.
+        env.setdefault("OMPI_ALLOW_RUN_AS_ROOT", "1")
+        env.setdefault("OMPI_ALLOW_RUN_AS_ROOT_CONFIRM", "1")
+        env.setdefault("OMPI_MCA_rmaps_base_oversubscribe", "1")
+        script = Path(__file__).with_name("mpi_engine_subcommunicator_smoke.py")
+        run = subprocess.run(
+            [str(launcher), "-n", str(ranks), sys.executable, str(script),
+             "--scheduling", scheduling],
+            env=env, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            timeout=180, check=False,
+        )
+>       assert run.returncode == 0, run.stdout
+E       AssertionError: [1793682784.636245] [b0572daa46b0:381  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [hwloc/linux] failed to find sysfs cpu topology directory, aborting linux discovery.
+E         [hwloc/linux] failed to find sysfs cpu topology directory, aborting linux discovery.
+E         [1793682784.646647] [b0572daa46b0:381  :0]       tcp_iface.c:984  UCX  ERROR scandir(/sys/class/net) failed: No such file or directory
+E         [1793682784.646712] [b0572daa46b0:381  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.646930] [b0572daa46b0:381  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.646941] [b0572daa46b0:381  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.646976] [b0572daa46b0:381  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.663424] [b0572daa46b0:382  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.664411] [b0572daa46b0:383  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [hwloc/linux] failed to find sysfs cpu topology directory, aborting linux discovery.
+E         [hwloc/linux] failed to find sysfs cpu topology directory, aborting linux discovery.
+E         [1793682784.678469] [b0572daa46b0:382  :0]       tcp_iface.c:984  UCX  ERROR scandir(/sys/class/net) failed: No such file or directory
+E         [1793682784.678608] [b0572daa46b0:382  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.678919] [b0572daa46b0:382  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.678923] [b0572daa46b0:382  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.678967] [b0572daa46b0:382  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.680633] [b0572daa46b0:380  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.680429] [b0572daa46b0:383  :0]       tcp_iface.c:984  UCX  ERROR scandir(/sys/class/net) failed: No such file or directory
+E         [1793682784.680504] [b0572daa46b0:383  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.680909] [b0572daa46b0:383  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.680915] [b0572daa46b0:383  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.680951] [b0572daa46b0:383  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.685785] [b0572daa46b0:384  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [hwloc/linux] failed to find sysfs cpu topology directory, aborting linux discovery.
+E         [hwloc/linux] failed to find sysfs cpu topology directory, aborting linux discovery.
+E         [1793682784.694581] [b0572daa46b0:380  :0]       tcp_iface.c:984  UCX  ERROR scandir(/sys/class/net) failed: No such file or directory
+E         [1793682784.694671] [b0572daa46b0:380  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.695057] [b0572daa46b0:380  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.695064] [b0572daa46b0:380  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.695108] [b0572daa46b0:380  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.699244] [b0572daa46b0:384  :0]       tcp_iface.c:984  UCX  ERROR scandir(/sys/class/net) failed: No such file or directory
+E         [1793682784.700520] [b0572daa46b0:384  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.700864] [b0572daa46b0:384  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.700905] [b0572daa46b0:384  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         [1793682784.700948] [b0572daa46b0:384  :0]             sys.c:319  UCX  ERROR failed to get boot id
+E         Abort(343557519) on node 1: Fatal error in internal_Init_thread: Other MPI error, error stack:
+E         internal_Init_thread(71)..............: MPI_Init_thread(argc=(nil), argv=(nil), required=3, provided=0x7ffc1a2cfe10) failed
+E         MPII_Init_thread(333).................: 
+E         MPIR_init_comm_world(37)..............: 
+E         MPIR_Comm_commit(821).................: 
+E         MPID_Comm_commit_pre_hook(163)........: 
+E         MPIDI_UCX_mpi_comm_commit_pre_hook(19): 
+E         MPIDI_UCX_comm_addr_exchange(188).....: 
+E         MPIR_Allgather_impl(2268).............: 
+E         MPIR_Allgather_allcomm_auto(2182).....: 
+E         MPIR_Allgather_intra_brucks(70).......: 
+E         MPIC_Sendrecv(280)....................: 
+E         MPIC_Wait(99).........................: 
+E         MPIR_Wait(745)........................: 
+E         MPIDI_IPC_rndv_cb(176)................: 
+E         MPIDI_CMA_copy_data(68)...............: 
+E         copy_iovs(224)........................: process_vm_readv failed (errno 1)
+E         Abort(746210703) on node 3: Fatal error in internal_Init_thread: Other MPI error, error stack:
+E         internal_Init_thread(71)..............: MPI_Init_thread(argc=(nil), argv=(nil), required=3, provided=0x7ffe8d0a43c0) failed
+E         MPII_Init_thread(333).................: 
+E         MPIR_init_comm_world(37)..............: 
+E         MPIR_Comm_commit(821).................: 
+E         MPID_Comm_commit_pre_hook(163)........: 
+E         MPIDI_UCX_mpi_comm_commit_pre_hook(19): 
+E         MPIDI_UCX_comm_addr_exchange(188).....: 
+E         MPIR_Allgather_impl(2268).............: 
+E         MPIR_Allgather_allcomm_auto(2182).....: 
+E         MPIR_Allgather_intra_brucks(70).......: 
+E         MPIC_Sendrecv(280)....................: 
+E         MPIC_Wait(99).........................: 
+E         MPIR_Wait(745)........................: 
+E         MPIDI_IPC_rndv_cb(176)................: 
+E         MPIDI_CMA_copy_data(68)...............: 
+E         copy_iovs(224)........................: process_vm_readv failed (errno 1)
+E         Abort(880428431) on node 4: Fatal error in internal_Init_thread: Other MPI error, error stack:
+E         internal_Init_thread(71)..............: MPI_Init_thread(argc=(nil), argv=(nil), required=3, provided=0x7ffe801cded0) failed
+E         MPII_Init_thread(333).................: 
+E         MPIR_init_comm_world(37)..............: 
+E         MPIR_Comm_commit(821).................: 
+E         MPID_Comm_commit_pre_hook(163)........: 
+E         MPIDI_UCX_mpi_comm_commit_pre_hook(19): 
+E         MPIDI_UCX_comm_addr_exchange(188).....: 
+E         MPIR_Allgather_impl(2268).............: 
+E         MPIR_Allgather_allcomm_auto(2182).....: 
+E         MPIR_Allgather_intra_brucks(70).......: 
+E         MPIC_Sendrecv(280)....................: 
+E         MPIC_Wait(99).........................: 
+E         MPIR_Wait(745)........................: 
+E         MPIDI_IPC_rndv_cb(176)................: 
+E         MPIDI_CMA_copy_data(68)...............: 
+E         copy_iovs(224)........................: process_vm_readv failed (errno 1)
+E         Abort(611992975) on node 2: Fatal error in internal_Init_thread: Other MPI error, error stack:
+E         internal_Init_thread(71)..............: MPI_Init_thread(argc=(nil), argv=(nil), required=3, provided=0x7ffca3630820) failed
+E         MPII_Init_thread(333).................: 
+E         MPIR_init_comm_world(37)..............: 
+E         MPIR_Comm_commit(821).................: 
+E         MPID_Comm_commit_pre_hook(163)........: 
+E         MPIDI_UCX_mpi_comm_commit_pre_hook(19): 
+E         MPIDI_UCX_comm_addr_exchange(188).....: 
+E         MPIR_Allgather_impl(2268).............: 
+E         MPIR_Allgather_allcomm_auto(2182).....: 
+E         MPIR_Allgather_intra_brucks(70).......: 
+E         MPIC_Sendrecv(280)....................: 
+E         MPIC_Wait(99).........................: 
+E         MPIR_Wait(745)........................: 
+E         MPIDI_IPC_rndv_cb(176)................: 
+E         MPIDI_CMA_copy_data(68)...............: 
+E         copy_iovs(224)........................: process_vm_readv failed (errno 1)
+E         Abort(276448655) on node 0: Fatal error in internal_Init_thread: Other MPI error, error stack:
+E         internal_Init_thread(71)..............: MPI_Init_thread(argc=(nil), argv=(nil), required=3, provided=0x7ffc4586bfc0) failed
+E         MPII_Init_thread(333).................: 
+E         MPIR_init_comm_world(37)..............: 
+E         MPIR_Comm_commit(821).................: 
+E         MPID_Comm_commit_pre_hook(163)........: 
+E         MPIDI_UCX_mpi_comm_commit_pre_hook(19): 
+E         MPIDI_UCX_comm_addr_exchange(188).....: 
+E         MPIR_Allgather_impl(2268).............: 
+E         MPIR_Allgather_allcomm_auto(2182).....: 
+E         MPIR_Allgather_intra_brucks(70).......: 
+E         MPIC_Sendrecv(280)....................: 
+E         MPIC_Wait(99).........................: 
+E         MPIR_Wait(745)........................: 
+E         MPIDI_IPC_rndv_cb(176)................: 
+E         MPIDI_CMA_copy_data(68)...............: 
+E         copy_iovs(224)........................: process_vm_readv failed (errno 1)
+E         
+E       assert 143 == 0
+E        +  where 143 = CompletedProcess(args=['/workspace/scratch/998803105056/PyRPMD-baseline/../.venv/bin/mpiexec', '-n', '5', '/workspace/...MPIDI_CMA_copy_data(68)...............: \ncopy_iovs(224)........................: process_vm_readv failed (errno 1)\n').returncode
+
+tests/test_engine_subcommunicators.py:88: AssertionError
+__________ test_existing_unix_address_is_not_removed_on_bind_failure ___________
+
+    @pytest.mark.skipif(not hasattr(socket, "AF_UNIX"),
+                        reason="this Python build does not expose AF_UNIX sockets")
+    def test_existing_unix_address_is_not_removed_on_bind_failure():
+        # Pytest's per-test directory can exceed the AF_UNIX path limit on macOS.
+        with TemporaryDirectory(prefix="ipi-") as directory:
+            address = Path(directory) / "driver.sock"
+>           pes = IPIPotential(unix=address)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_ipi_clients.py:205: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/pyrpmd/potentials/socket.py:136: in __init__
+    self.server = socket.socket(socket.AF_UNIX if unix else socket.AF_INET, socket.SOCK_STREAM)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <socket.socket fd=-1, family=0, type=0, proto=0>
+family = <AddressFamily.AF_UNIX: 1>, type = <SocketKind.SOCK_STREAM: 1>
+proto = 0, fileno = None
+
+    def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
+        # For user code address family and type values are IntEnum members, but
+        # for the underlying _socket.socket they're just integers. The
+        # constructor of _socket.socket converts the given argument to an
+        # integer automatically.
+        if fileno is None:
+            if family == -1:
+                family = AF_INET
+            if type == -1:
+                type = SOCK_STREAM
+            if proto == -1:
+                proto = 0
+>       _socket.socket.__init__(self, family, type, proto, fileno)
+E       PermissionError: [Errno 1] Operation not permitted
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socket.py:233: PermissionError
+=============================== warnings summary ===============================
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[centroid]
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[bead_average]
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[full_ring]
+tests/test_advanced_cv.py::test_torchscript_rejects_bad_output_shape
+tests/test_advanced_cv.py::test_torchscript_rejects_detached_derivatives
+tests/test_potentials.py::TorchCPUTests::test_torchscript_autograd_and_units
+  /workspace/scratch/998803105056/.venv/lib/python3.12/site-packages/torch/jit/_trace.py:1006: FutureWarning: `torch.jit.trace` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[centroid]
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[bead_average]
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[full_ring]
+tests/test_advanced_cv.py::test_torchscript_rejects_bad_output_shape
+tests/test_advanced_cv.py::test_torchscript_rejects_detached_derivatives
+tests/test_potentials.py::TorchCPUTests::test_torchscript_autograd_and_units
+  /workspace/scratch/998803105056/.venv/lib/python3.12/site-packages/torch/jit/_trace.py:1145: FutureWarning: `torch.jit.trace_method` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[centroid]
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[bead_average]
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[full_ring]
+tests/test_advanced_cv.py::test_torchscript_rejects_bad_output_shape
+tests/test_advanced_cv.py::test_torchscript_rejects_detached_derivatives
+tests/test_potentials.py::TorchCPUTests::test_torchscript_autograd_and_units
+tests/test_tier2_spectroscopy.py::test_torchscript_property_contract_runs_real_optional_torch
+  /workspace/scratch/998803105056/.venv/lib/python3.12/site-packages/torch/jit/_serialization.py:176: FutureWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+    warnings.warn(
+
+tests/test_constraint_workflow_guards.py::test_run_resolved_rejects_before_creating_run_manifest[metadynamics]
+tests/test_fes_entry.py::test_old_run_manifest_and_streams_migrate_without_changing_samples[metadynamics]
+tests/test_report_workflow_e2e.py::test_actual_workflow_exports_match_archives_and_never_execute_dynamics
+  /workspace/scratch/998803105056/PyRPMD-baseline/src/pyrpmd/runner.py:163: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    config = normalize_fes_task(copy.deepcopy(config))
+
+tests/test_constraint_workflow_guards.py::test_run_resolved_rejects_before_creating_run_manifest[opes]
+tests/test_fes_entry.py::test_old_run_manifest_and_streams_migrate_without_changing_samples[opes]
+  /workspace/scratch/998803105056/PyRPMD-baseline/src/pyrpmd/runner.py:163: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+    config = normalize_fes_task(copy.deepcopy(config))
+
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[nhc-metadynamics]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[svr-metadynamics]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[gle-metadynamics]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[pile-g-metadynamics]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[ffl-metadynamics]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[pile-l-metadynamics]
+  /workspace/scratch/998803105056/PyRPMD-baseline/tests/test_enhanced_sampling_composition.py:140: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    resolved, _ = JobSpec.from_mapping(cfg).resolve()
+
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[nhc-opes]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[svr-opes]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[gle-opes]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[pile-g-opes]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[ffl-opes]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[pile-l-opes]
+  /workspace/scratch/998803105056/PyRPMD-baseline/tests/test_enhanced_sampling_composition.py:140: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+    resolved, _ = JobSpec.from_mapping(cfg).resolve()
+
+tests/test_fes_entry.py::test_nested_and_legacy_namespaces_have_same_scientific_identity[metadynamics]
+  /workspace/scratch/998803105056/PyRPMD-baseline/tests/test_fes_entry.py:51: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    historical, _ = JobSpec.from_mapping(legacy).resolve()
+
+tests/test_fes_entry.py::test_nested_and_legacy_namespaces_have_same_scientific_identity[opes]
+  /workspace/scratch/998803105056/PyRPMD-baseline/tests/test_fes_entry.py:51: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+    historical, _ = JobSpec.from_mapping(legacy).resolve()
+
+tests/test_grid_metadynamics.py::test_grid_frontend_explicit_and_declared_units_and_defaults
+  /workspace/scratch/998803105056/PyRPMD-baseline/tests/test_grid_metadynamics.py:285: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    cfg, system = JobSpec.from_mapping(job).resolve()
+
+tests/test_grid_metadynamics.py::test_grid_frontend_explicit_and_declared_units_and_defaults
+  /workspace/scratch/998803105056/PyRPMD-baseline/tests/test_grid_metadynamics.py:291: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    JobSpec.from_mapping(job).resolve()
+
+tests/test_metadynamics.py::test_metadynamics_default_production_budget
+  /workspace/scratch/998803105056/PyRPMD-baseline/tests/test_metadynamics.py:293: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    cfg, _ = spec.resolve()
+
+tests/test_metadynamics.py::test_frontend_resolves_width_units_and_rejects_bad_options
+  /workspace/scratch/998803105056/PyRPMD-baseline/tests/test_metadynamics.py:365: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    cfg, sys = JobSpec.from_mapping(job).resolve()
+
+tests/test_metadynamics.py::test_frontend_resolves_width_units_and_rejects_bad_options
+  /workspace/scratch/998803105056/PyRPMD-baseline/tests/test_metadynamics.py:372: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    JobSpec.from_mapping(job).resolve()
+
+tests/test_sampling_public_api.py::test_opes_public_default_and_frozen_run_resume_offline
+  /workspace/scratch/998803105056/PyRPMD-baseline/src/pyrpmd/runner.py:532: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+    config, system = spec.resolve()
+
+tests/test_sampling_public_api.py::test_opes_public_default_and_frozen_run_resume_offline
+  /workspace/scratch/998803105056/PyRPMD-baseline/src/pyrpmd/runner.py:158: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+    config, system = spec.resolve()
+
+tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[reaction]
+tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[rate]
+tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[recrossing]
+tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[collision]
+tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[outcomes]
+  /workspace/scratch/998803105056/PyRPMD-baseline/tests/test_sampling_public_api.py:77: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+    JobSpec.from_mapping(job).resolve()
+
+tests/test_shared_metadynamics.py::test_shared_input_and_cli_run_resume_and_offline_analyze
+  /workspace/scratch/998803105056/PyRPMD-baseline/tests/test_shared_metadynamics.py:305: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    cfg, _ = JobSpec.from_file(source).resolve()
+
+tests/test_shared_metadynamics.py::test_shared_input_and_cli_run_resume_and_offline_analyze
+  /workspace/scratch/998803105056/PyRPMD-baseline/src/pyrpmd/runner.py:158: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    config, system = spec.resolve()
+
+tests/test_surface_source.py: 13 warnings
+  /workspace/scratch/998803105056/PyRPMD-baseline/tests/test_surface_source.py:35: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    cfg, system = JobSpec.from_mapping(original).resolve()
+
+tests/test_surface_workflow.py::test_metadynamics_input_accepts_fixed_atoms_and_periodic_cell[fixed]
+tests/test_surface_workflow.py::test_metadynamics_input_accepts_fixed_atoms_and_periodic_cell[periodic]
+  /workspace/scratch/998803105056/PyRPMD-baseline/tests/test_surface_workflow.py:56: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    return JobSpec.from_mapping(cluster_job() if job is None else job).resolve()
+
+tests/test_tier2_spectroscopy.py::test_torchscript_property_contract_runs_real_optional_torch
+  /workspace/scratch/998803105056/.venv/lib/python3.12/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_batched_ml_deepmd.py:7: could not import 'deepmd.pt.model.model': No module named 'deepmd'
+SKIPPED [1] tests/test_batched_ml_fairchem.py:10: could not import 'fairchem.core': No module named 'fairchem'
+SKIPPED [1] tests/test_batched_ml_mace.py:9: could not import 'mace.modules': No module named 'mace'
+SKIPPED [1] tests/test_batched_ml_metatomic.py:10: could not import 'metatomic.torch': No module named 'metatomic'
+SKIPPED [1] tests/test_batched_ml_nequip.py:10: could not import 'nequip': No module named 'nequip'
+SKIPPED [1] tests/test_onnx_native.py:20: optional native ONNX plugin not configured
+SKIPPED [1] tests/test_pyscf_multistate.py:18: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_active_learning_labeling.py:306: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_active_learning_labeling.py:306: could not import 'tblite.interface': No module named 'tblite'
+SKIPPED [1] tests/test_active_learning_mace.py:50: could not import 'mace': No module named 'mace'
+SKIPPED [1] tests/test_active_learning_mace.py:65: could not import 'mace': No module named 'mace'
+SKIPPED [1] tests/test_active_learning_mace.py:74: could not import 'mace': No module named 'mace'
+SKIPPED [1] tests/test_active_learning_mace.py:96: could not import 'mace': No module named 'mace'
+SKIPPED [1] tests/test_active_learning_mace.py:115: could not import 'mace': No module named 'mace'
+SKIPPED [1] tests/test_active_learning_mace.py:133: could not import 'mace': No module named 'mace'
+SKIPPED [1] tests/test_bcocb_mts.py:148: CUDA hardware/runtime unavailable
+SKIPPED [1] tests/test_brhcl_pes.py:45: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:57: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:71: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:91: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:102: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:126: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:147: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_reference.py:246: build optional pinned BrHCl PES for actual-source cache checks
+SKIPPED [11] tests/test_brhcl_reference.py:260: build optional pinned BrHCl PES for actual-source cache checks
+SKIPPED [4] tests/test_brhcl_reference.py:290: build optional pinned BrHCl PES for actual-source cache checks
+SKIPPED [1] tests/test_brhcl_reference.py:331: build optional pinned BrHCl PES for actual-source cache checks
+SKIPPED [1] tests/test_brhcl_reference.py:349: build optional pinned BrHCl PES for actual-source cache checks
+SKIPPED [1] tests/test_brhcl_scan.py:50: build optional pinned BrHCl PES first
+SKIPPED [1] tests/test_brhcl_scan.py:83: build optional pinned BrHCl PES first
+SKIPPED [1] tests/test_brhcl_scan.py:100: build optional pinned BrHCl PES first
+SKIPPED [15] tests/test_brhcl_scan.py:139: build optional pinned BrHCl PES first
+SKIPPED [1] tests/test_brhcl_scan.py:166: build optional pinned BrHCl PES first
+SKIPPED [8] tests/test_brhcl_scan.py:186: build optional pinned BrHCl PES first
+SKIPPED [1] tests/test_brhcl_scan.py:209: build optional pinned BrHCl PES first
+SKIPPED [1] tests/test_data_manifest.py:111: Windows junction integration requires cmd /c mklink /J
+SKIPPED [2] tests/test_electronic_backends.py:132: CUDA hardware unavailable; CPU path is independently checked
+SKIPPED [1] tests/test_fused_propagation.py:120: optional real BKMP2 not built
+SKIPPED [1] tests/test_h3_classical_sampling_v2.py:27: optional pinned BKMP2 library is not built
+SKIPPED [2] tests/test_h3_classical_sampling_v2.py:40: optional pinned BKMP2 library is not built
+SKIPPED [1] tests/test_h3_classical_sampling_v2.py:52: optional pinned BKMP2 library is not built
+SKIPPED [2] tests/test_h3_classical_sampling_v2.py:63: optional pinned BKMP2 library is not built
+SKIPPED [1] tests/test_h3_classical_sampling_v2.py:78: optional pinned BKMP2 library is not built
+SKIPPED [1] tests/test_h3_diatomic_action.py:210: Build verified benchmarks/h3/build/libbkmp2.so for the real-PES checks
+SKIPPED [1] tests/test_h3_diatomic_action.py:237: Build verified benchmarks/h3/build/libbkmp2.so for the real-PES checks
+SKIPPED [1] tests/test_h3_diatomic_action.py:248: Build verified benchmarks/h3/build/libbkmp2.so for the real-PES checks
+SKIPPED [1] tests/test_h3_diatomic_action.py:222: Build verified benchmarks/h3/build/libbkmp2.so for the real-PES checks
+SKIPPED [1] tests/test_h3_diatomic_switch.py:279: Build verified BKMP2 for the real-PES switch checks
+SKIPPED [1] tests/test_h3_diatomic_switch.py:306: Build verified BKMP2 for the real-PES switch checks
+SKIPPED [1] tests/test_h3_diatomic_switch.py:286: Build verified BKMP2 for the real-PES switch checks
+SKIPPED [1] tests/test_h3_diatomic_switch.py:299: Build verified BKMP2 for the real-PES switch checks
+SKIPPED [1] tests/test_h3_diatomic_switch.py:312: Build verified BKMP2 for the real-PES switch checks
+SKIPPED [1] tests/test_h3_mixing_sampling.py:139: optional built BKMP2 library unavailable
+SKIPPED [1] tests/test_h3_pes.py:29: optional real BKMP2 PES has not been built
+SKIPPED [1] tests/test_h3_pes.py:35: optional real BKMP2 PES has not been built
+SKIPPED [1] tests/test_h3_pes.py:18: optional real BKMP2 PES has not been built
+SKIPPED [1] tests/test_h3_preparation_study.py:307: Build verified BKMP2 for the full-PES near-threshold launch check
+SKIPPED [1] tests/test_h3_surface_partition.py:86: optional real BKMP2 library unavailable
+SKIPPED [1] benchmarks/hch4/test_native.py:32: Set PYRPMD_CBE2008_LIBRARY; this test never downloads a PES
+SKIPPED [1] benchmarks/hch4/test_native.py:23: Set PYRPMD_CBE2008_LIBRARY; this test never downloads a PES
+SKIPPED [4] benchmarks/hch4/test_native.py:47: Set PYRPMD_CBE2008_LIBRARY; this test never downloads a PES
+SKIPPED [1] tests/test_hch4_pes.py:48: Set PYRPMD_CBE2008_LIBRARY to the locally built pinned PES; no implicit download
+SKIPPED [1] tests/test_hch4_pes.py:60: Set PYRPMD_CBE2008_LIBRARY to the locally built pinned PES; no implicit download
+SKIPPED [2] tests/test_heom.py:94: could not import 'qutip': No module named 'qutip'
+SKIPPED [1] tests/test_instanton_validation.py:110: optional real BKMP2 library is not built
+SKIPPED [1] tests/test_instanton_validation.py:124: optional real BKMP2 library is not built
+SKIPPED [6] tests/test_integrator_workflows.py:123: optional real BKMP2 PES has not been built
+SKIPPED [4] tests/test_jaxpip_pesgen.py:139: optional real JaxPIP environment
+SKIPPED [2] tests/test_jaxpip_pesgen.py:168: optional real JaxPIP environment
+SKIPPED [1] tests/test_jaxpip_pesgen.py:190: optional real JaxPIP environment
+SKIPPED [1] tests/test_jaxpip_pesgen.py:197: optional real JaxPIP environment
+SKIPPED [1] tests/test_jaxpip_pesgen.py:209: optional real PySCF
+SKIPPED [1] tests/test_materials_batch_acceptance.py:61: Set PYRPMD_NIALH_POTENTIAL to explicitly opt into the real EAM acceptance
+SKIPPED [1] tests/test_materials_eam.py:85: Set PYRPMD_NIALH_POTENTIAL to opt into the source-pinned real EAM check
+SKIPPED [1] tests/test_materials_reference_eam4.py:39: opt-in exact EAM4 static library is not configured
+SKIPPED [4] tests/test_materials_reference_eam4.py:47: opt-in exact EAM4 static library is not configured
+SKIPPED [1] tests/test_materials_reference_eam4.py:54: opt-in exact EAM4 static library is not configured
+SKIPPED [1] tests/test_materials_reference_eam4.py:60: opt-in exact EAM4 static library is not configured
+SKIPPED [1] tests/test_materials_reference_eam4.py:66: opt-in exact EAM4 static library is not configured
+SKIPPED [2] tests/test_mlcolvar_cv.py:14: could not import 'lightning': No module named 'lightning'
+SKIPPED [1] tests/test_opes_initialization.py:133: optional PLUMED Python wrapper unavailable
+SKIPPED [1] tests/test_pesgen.py:86: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [3] tests/test_pesgen.py:101: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_pesgen.py:111: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_pesgen.py:120: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_pesgen_native.py:50: explicit pinned native Caracal build/source required
+SKIPPED [1] tests/test_pesgen_native.py:67: explicit pinned native Caracal build/source required
+SKIPPED [1] tests/test_pesgen_native.py:97: explicit pinned native Caracal build/source required
+SKIPPED [2] tests/test_pesgen_native.py:112: explicit pinned native Caracal build/source required
+SKIPPED [1] tests/test_pesgen_native.py:151: full MPI installation for original optimizer
+SKIPPED [1] tests/test_pesgen_native.py:160: explicit pinned native Caracal build/source required
+SKIPPED [1] tests/test_pesgen_native.py:177: full MPI installation for original optimizer
+SKIPPED [1] tests/test_plumed.py:379: optional PLUMED Python wrapper unavailable
+SKIPPED [2] tests/test_plumed_live_workflow.py:36: Optional real PLUMED runtime unavailable: No module named 'plumed'
+SKIPPED [4] tests/test_plumed_live_workflow.py:87: Optional real PLUMED runtime unavailable: No module named 'plumed'
+SKIPPED [1] tests/test_pmf_2d_accuracy.py:117: independent optional reference solver
+SKIPPED [1] tests/test_potential_adapters.py:266: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_potential_adapters.py:276: could not import 'tblite.interface': No module named 'tblite'
+SKIPPED [1] tests/test_potential_adapters.py:289: could not import 'tblite.interface': No module named 'tblite'
+SKIPPED [1] tests/test_potential_adapters.py:305: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_potential_adapters.py:325: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [2] tests/test_potential_adapters.py:339: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_rpmdrate_normal_modes.py:262: CUDA hardware/runtime unavailable
+SKIPPED [2] tests/test_torch_backend.py:359: CUDA hardware/runtime unavailable
+SKIPPED [1] tests/test_torch_backend.py:472: CUDA hardware/runtime unavailable
+SKIPPED [1] tests/test_torch_bcocb.py:218: CUDA hardware/runtime unavailable
+SKIPPED [2] tests/test_trajectory_export.py:92: could not import 'MDAnalysis': No module named 'MDAnalysis'
+FAILED tests/test_engine_subcommunicators.py::test_actual_lammps_private_engine_groups[static-4]
+FAILED tests/test_engine_subcommunicators.py::test_actual_lammps_private_engine_groups[dynamic-5]
+FAILED tests/test_ipi_clients.py::test_existing_unix_address_is_not_removed_on_bind_failure
+3 failed, 10898 passed, 171 skipped, 68 warnings, 493 subtests passed in 1485.02s (0:24:45)

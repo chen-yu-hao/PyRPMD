@@ -1,0 +1,64 @@
+{
+  "python": "3.12.14",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "cpu_count": 9,
+  "thread_environment": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OPENMM_CPU_THREADS": "1",
+    "UCX_TLS": "self"
+  },
+  "versions": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "pyrpmd": "0.2.0",
+    "openmm": "8.6.1",
+    "lammps": "2025.7.22.4.0",
+    "mpi4py": "4.1.2",
+    "mpich": "5.0.2"
+  },
+  "nvidia_smi": null,
+  "nvidia_device_nodes": [],
+  "cpu_affinity": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+  "cpu_quota": "unavailable",
+  "memory_limit_bytes": "unavailable",
+  "openmm_platforms": [
+    "Reference",
+    "CPU"
+  ],
+  "cpu_model_source": "x86 CPUID brand string leaves 0x80000002..0x80000004; /proc/cpuinfo is unavailable",
+  "torch": {
+    "version": "2.15.0+cpu",
+    "cuda_runtime": null,
+    "cuda_available": false,
+    "device_count": 0
+  },
+  "gpu": {
+    "model": null,
+    "driver": null,
+    "cuda_runtime": null,
+    "status": "unavailable",
+    "evidence": "No nvidia-smi, no NVIDIA device nodes, torch.cuda.is_available() is false; OpenMM platforms are Reference and CPU."
+  },
+  "mpi_scope": "Single rank only. UCX self transport avoids unavailable interprocess/network transports. Multi-rank performance is not measured.",
+  "date_utc": "2026-11-03T05:09:42.282746+00:00",
+  "repository": "chen-yu-hao/PyRPMD",
+  "base_commit": "f87705115c7496821b283a0966c991abd541231c",
+  "t04_followup_head": "c7f05464d1724c58863e18494e0d11e24e062571",
+  "pr84_head": "a17a69774b2284f6345c92ac44b021999b07556a",
+  "pr84_merged_at_inspection": false,
+  "t04_cuda_stream_followup_in_base": false,
+  "physical_converged": false,
+  "gpu_acceptance_complete": false
+}

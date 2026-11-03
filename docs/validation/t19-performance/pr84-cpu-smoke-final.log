@@ -1,0 +1,4 @@
+Error in cpuinfo: failed to parse processor information from /proc/cpuinfo
+pimd N=64 P=8: passed
+diffusion N=64 P=8: passed
+{"output": "../t19-validation/pr84-cpu-smoke-final.json", "cases": 2, "requested_cases_passed": true, "cuda_matrix_complete": false}

@@ -501,6 +501,65 @@ the explicit grid-offset control, whose default remains zero. Source hashes,
 commands and raw test/build logs are indexed in
 [validation.json](validation/t05-force-engines/validation.json).
 
+### T19 measurements and RPMD copy evaluation (2026-11-03)
+
+The T19 [validation record](t19-performance.md) adds reproducible large-system
+profiling and an explicit `batch_mode="rpmd"` route. CUDA remains unmeasured
+in this environment; the CPU results are not GPU speedup claims.
+
+The new explicit OpenMM mode keeps every batch row in one `RPMDIntegrator`
+copy bank and one Context:
+
+```toml
+[potential]
+provider = "openmm"
+model = "system.xml"
+device = "cuda:0"
+params = {batch_mode = "rpmd", properties = {Precision = "double"}}
+```
+
+Only physical System energies and forces are requested. No integration,
+thermostat, ring springs or force-group contraction is performed. The copy
+bank grows when needed and retains capacity for smaller batches; the public
+copy API still uploads and retrieves each row separately. Virtual sites use
+OpenMM's kernels and parent-force redistribution, with a per-row physical
+position check guarding the copy-to-Context implementation. Those additional
+position downloads are included in measured time.
+
+This mode requires a **fixed cell and a System without constraints**. A
+changed cell is rejected before mutation, preventing automatic PME grids
+from depending on a previous cell or maximum batch size. The existing
+serial and concurrent-Context modes retain their current contracts and
+metadata; serial remains the default. `max_workers>1` remains specific to
+the concurrent-Context mode.
+
+```bash
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 OPENMM_CPU_THREADS=1 \
+  python benchmarks/efficiency/t19_openmm.py --device cuda:0 \
+  --model lj --atoms 64 512 4096 --beads 8 32 64 \
+  --workers 4 --rounds 3 --output t19-openmm-cuda.json
+
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
+  python benchmarks/efficiency/t19_lammps.py \
+  --baseline-ref f87705115c7496821b283a0966c991abd541231c \
+  --atoms 256 2048 4096 --beads 32 --offsets 0 .173 \
+  --rounds 3 --output t19-lammps-cpu.json
+```
+
+OpenMM compares every measured configuration to the float64 Reference
+platform, records separate construction/cold costs and alternates mode order
+across rounds. Missing CUDA produces explicit unmeasured rows and exit code
+2. Use `--device cpu --platform CPU` only for an explicitly labeled CPU
+measurement.
+
+The LAMMPS profiler compares the actual pinned old adapter with the new
+linear-time atom validator, in both serial and persistent modes. Boundary-
+aligned and translated FCC grids separate frequent image-triggered neighbor
+rebuilds from ordinary reuse. Uninstrumented wall/CPU medians and separate
+phase profiles identify where time is spent. Periodic wrapping, neighbor
+rebuild rules, force refresh and scientific metadata are unchanged; no
+history-dependent periodic image cache is introduced.
+
 ### ASE energy and force consistency
 
 ASE-backed adapters request `atoms.get_potential_energy(force_consistent=True)` so that a

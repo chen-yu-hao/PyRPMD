@@ -35,6 +35,7 @@ include_patterns = [
     "rate-input-v2.md",
     "quantum-statistics.md", "performance-dynamics.md", "batched-dynamics.md",
     "batched-ml-potentials.md",
+    "t19-performance.md",
     "builtin-native-potentials.md",
     "rpc-mts.md", "mixed-sampling.md", "trpmd-spectroscopy.md", "propagation-stack.md", "condensed-phase-nqe.md",
     "nonadiabatic-workflow.md", "nonadiabatic-models.md",

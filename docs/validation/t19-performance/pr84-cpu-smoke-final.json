@@ -1,0 +1,917 @@
+{
+  "schema": "pyrpmd.t19-cuda.v1",
+  "created_utc": "2026-11-03T05:38:41.215686+00:00",
+  "source": {
+    "root": "/workspace/scratch/998803105056/PyRPMD-pr84-validation",
+    "git_head": "f87705115c7496821b283a0966c991abd541231c",
+    "tracked_worktree_changes": "A  examples/materials/torch_diffusion.inp\nA  examples/materials/torch_pimd.inp\nA  examples/materials/torch_workflow_validation.py\nM  src/pyrpmd/input_runtime.py\nM  src/pyrpmd/input_schema.py\nM  src/pyrpmd/input_tasks.py\nA  src/pyrpmd/potentials/torch_workflow.py\nM  src/pyrpmd/runner.py\nM  src/pyrpmd/workflows/materials.py\nA  src/pyrpmd/workflows/torch_materials.py\nA  tests/test_torch_materials.py\nA  tests/test_torch_materials_input.py\nA  tests/test_torch_materials_io.py\nA  tests/test_torch_workflow_potentials.py",
+    "package_path": "/workspace/scratch/998803105056/PyRPMD-pr84-validation/src/pyrpmd/__init__.py",
+    "modules": {
+      "pyrpmd.potentials.batched_ml": {
+        "path": "/workspace/scratch/998803105056/PyRPMD-pr84-validation/src/pyrpmd/potentials/batched_ml.py",
+        "sha256": "dc5c96009dda382fe0c369269b20ec2d72e83523ea4350fd359a090e56c1459d"
+      },
+      "pyrpmd.torch_backend": {
+        "path": "/workspace/scratch/998803105056/PyRPMD-pr84-validation/src/pyrpmd/torch_backend.py",
+        "sha256": "496214563ffb00170dfa4ae1f963d9fb1275311d0a5c9a768afa613a820f4d3e"
+      },
+      "pyrpmd.torch_normal_modes": {
+        "path": "/workspace/scratch/998803105056/PyRPMD-pr84-validation/src/pyrpmd/torch_normal_modes.py",
+        "sha256": "5b31af409c6c021c76c3a04f5127cd2a263dc28f004a5611e35f2ccdd960faf6"
+      },
+      "pyrpmd.workflows.materials": {
+        "path": "/workspace/scratch/998803105056/PyRPMD-pr84-validation/src/pyrpmd/workflows/materials.py",
+        "sha256": "a4e1a826a8bf675fba30eb29a7de24a207c004b19226300cfa09cc3aad8599a5"
+      },
+      "pyrpmd.workflows.torch_materials": {
+        "path": "/workspace/scratch/998803105056/PyRPMD-pr84-validation/src/pyrpmd/workflows/torch_materials.py",
+        "sha256": "72edd0a33b4f8fc2e12667eb1bf2767a9aac06ee508874573434a14e903bceb2"
+      },
+      "pyrpmd.potentials.torch_workflow": {
+        "path": "/workspace/scratch/998803105056/PyRPMD-pr84-validation/src/pyrpmd/potentials/torch_workflow.py",
+        "sha256": "5237ee8075ffa2ec8a001c26c4a438845276f1488219ce482abf425600ec9052"
+      },
+      "pyrpmd.potentials._batched_ml_base": {
+        "path": "/workspace/scratch/998803105056/PyRPMD-pr84-validation/src/pyrpmd/potentials/_batched_ml_base.py",
+        "sha256": "3fc758260311364d8126263ce5e1caf2579d1099617c2bf5018a23c2a625951d"
+      },
+      "pyrpmd.potentials._batched_mace": {
+        "path": "/workspace/scratch/998803105056/PyRPMD-pr84-validation/src/pyrpmd/potentials/_batched_mace.py",
+        "sha256": "f7f41525bb4c9e609638e722b6db97ee5c0f033a95b448186b15b7f5fb9adc81"
+      },
+      "pyrpmd.potentials._batched_nequip": {
+        "path": "/workspace/scratch/998803105056/PyRPMD-pr84-validation/src/pyrpmd/potentials/_batched_nequip.py",
+        "sha256": "a372d0e89c1e1b5c0208e78e21115576570bf03be88bb07b44a0e14b3bc073f3"
+      },
+      "pyrpmd.potentials._batched_fairchem": {
+        "path": "/workspace/scratch/998803105056/PyRPMD-pr84-validation/src/pyrpmd/potentials/_batched_fairchem.py",
+        "sha256": "ebf345c8c201ba6008dff5e9f6a89b18748ac37c94142e4f73b2c64e8c458b81"
+      },
+      "pyrpmd.potentials._batched_deepmd": {
+        "path": "/workspace/scratch/998803105056/PyRPMD-pr84-validation/src/pyrpmd/potentials/_batched_deepmd.py",
+        "sha256": "a542ed1a2fbdd232fd7bad2aba7a0e88438004e6e032b4c18e52c2abd6d34396"
+      },
+      "pyrpmd.potentials._batched_metatomic": {
+        "path": "/workspace/scratch/998803105056/PyRPMD-pr84-validation/src/pyrpmd/potentials/_batched_metatomic.py",
+        "sha256": "eef40a12144fbd9bfd087725884fba737b270eeae21fc7dcadd6067b7be144ff"
+      }
+    },
+    "torch_workflow_available": true,
+    "benchmark": {
+      "root": "/workspace/scratch/998803105056/PyRPMD",
+      "git_head": "6dc3b527531369f1f9fae7ea5f6dfa3800ef9af1",
+      "tracked_worktree_changes": "M docs/batched-ml-potentials.md\n M docs/conf.py\n M docs/potential-adapters.md",
+      "path": "/workspace/scratch/998803105056/PyRPMD/benchmarks/efficiency/t19_cuda.py",
+      "sha256": "4d6a1bf809256151b3632eae9c0cf9f2ad9fe9f0c9befb668f8a2459d36410e2"
+    }
+  },
+  "environment": {
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "python": "3.12.14",
+    "cpu_model": null,
+    "logical_cpus": 9,
+    "affinity_cpus": 9,
+    "requested_device": "cpu",
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": null
+    },
+    "versions": {
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "torch": "2.15.0+cpu",
+      "mace-torch": null,
+      "nequip": null,
+      "fairchem-core": null,
+      "deepmd-kit": null,
+      "metatomic-torch": null,
+      "vesin-torch": null,
+      "nvalchemiops": null
+    },
+    "gpu": null,
+    "cuda_available": false,
+    "cuda_build_version": null,
+    "cuda_driver_version": null,
+    "nvidia_smi": null,
+    "blocking_reasons": [],
+    "torch_threads": 1,
+    "torch_interop_threads": 9
+  },
+  "settings": {
+    "beads": [
+      8
+    ],
+    "atoms": [
+      64
+    ],
+    "providers": [
+      "mace-batched",
+      "nequip-batched",
+      "fairchem-batched",
+      "deepmd-batched",
+      "metatomic"
+    ],
+    "replicas": 1,
+    "warmup": 1,
+    "repeats": 3,
+    "threads": 1,
+    "seed": 19064,
+    "device": "cpu",
+    "suite": "workflows",
+    "rtol": 1e-09,
+    "atol": 1e-10,
+    "production_steps": 6,
+    "equilibration_steps": 2,
+    "sample_interval": 2,
+    "normal_mode_layout": "rfft"
+  },
+  "manifest_sha256": null,
+  "models": [],
+  "effective_torch_threads": 1,
+  "physical_converged": false,
+  "execution_complete": true,
+  "cuda_matrix_complete": false,
+  "cases": [
+    {
+      "suite": "workflow",
+      "name": "pimd",
+      "provider": null,
+      "atoms": 64,
+      "beads": 8,
+      "replicas": 1,
+      "target_device": "cpu",
+      "dtype": "float64",
+      "status": "passed",
+      "correctness": {
+        "target/-1": {
+          "0": {
+            "observables": {
+              "max_absolute": 1.4210854715202004e-14,
+              "rms": 7.105427357601002e-15,
+              "relative_l2": 5.5298842718744285e-18,
+              "passed": true
+            },
+            "positions": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "velocities": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "radii_gyration_squared": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            }
+          }
+        },
+        "cpu/-1": {
+          "0": {
+            "observables": {
+              "max_absolute": 1.4210854715202004e-14,
+              "rms": 7.105427357601002e-15,
+              "relative_l2": 5.5298842718744285e-18,
+              "passed": true
+            },
+            "positions": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "velocities": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "radii_gyration_squared": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            }
+          }
+        },
+        "cpu/0": {
+          "0": {
+            "observables": {
+              "max_absolute": 1.4210854715202004e-14,
+              "rms": 7.105427357601002e-15,
+              "relative_l2": 5.5298842718744285e-18,
+              "passed": true
+            },
+            "positions": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "velocities": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "radii_gyration_squared": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            }
+          }
+        },
+        "target/0": {
+          "0": {
+            "observables": {
+              "max_absolute": 1.4210854715202004e-14,
+              "rms": 7.105427357601002e-15,
+              "relative_l2": 5.5298842718744285e-18,
+              "passed": true
+            },
+            "positions": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "velocities": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "radii_gyration_squared": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            }
+          }
+        },
+        "target/1": {
+          "0": {
+            "observables": {
+              "max_absolute": 1.4210854715202004e-14,
+              "rms": 7.105427357601002e-15,
+              "relative_l2": 5.5298842718744285e-18,
+              "passed": true
+            },
+            "positions": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "velocities": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "radii_gyration_squared": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            }
+          }
+        },
+        "cpu/1": {
+          "0": {
+            "observables": {
+              "max_absolute": 1.4210854715202004e-14,
+              "rms": 7.105427357601002e-15,
+              "relative_l2": 5.5298842718744285e-18,
+              "passed": true
+            },
+            "positions": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "velocities": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "radii_gyration_squared": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            }
+          }
+        },
+        "cpu/2": {
+          "0": {
+            "observables": {
+              "max_absolute": 1.4210854715202004e-14,
+              "rms": 7.105427357601002e-15,
+              "relative_l2": 5.5298842718744285e-18,
+              "passed": true
+            },
+            "positions": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "velocities": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "radii_gyration_squared": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            }
+          }
+        },
+        "target/2": {
+          "0": {
+            "observables": {
+              "max_absolute": 1.4210854715202004e-14,
+              "rms": 7.105427357601002e-15,
+              "relative_l2": 5.5298842718744285e-18,
+              "passed": true
+            },
+            "positions": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "velocities": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "radii_gyration_squared": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            }
+          }
+        }
+      },
+      "correctness_scope": "independent NumPy float64 same-snapshot observables; CPU/CUDA stochastic paths are not compared",
+      "potential": "harmonic k=2 hartree/bohr^2",
+      "model_kind": "analytic_workflow_probe",
+      "workflow_config": {
+        "task": "pimd",
+        "beta": 4.0,
+        "beads": 8,
+        "dt_au": 0.125,
+        "seed": 19064,
+        "potential": {
+          "provider": "harmonic",
+          "params": {
+            "k": 2.0
+          }
+        },
+        "sampling": {
+          "engine": "torch",
+          "device": "cpu",
+          "integrator": "bcocb",
+          "thermostat": "pile-l",
+          "gamma_centroid": 1.0,
+          "normal_mode_layout": "rfft",
+          "equilibration_steps": 2,
+          "production_steps": 6,
+          "sample_interval": 2,
+          "replicas": 1
+        },
+        "dynamics": {
+          "integrator": "cayley-bcb",
+          "block_steps": 256
+        },
+        "parallel": {
+          "backend": "serial",
+          "threads_per_rank": 1
+        },
+        "output": {
+          "checkpoint_steps": 32,
+          "chunk_frames": 128
+        }
+      },
+      "mass_electron": 2.0,
+      "timings": {
+        "cpu": {
+          "seconds": [
+            0.030670915999962745,
+            0.03595851699992636,
+            0.03424359500013452
+          ],
+          "median_ms": 34.24359500013452,
+          "median_ms_per_step": 4.280449375016815
+        },
+        "target": {
+          "seconds": [
+            0.03204393399983019,
+            0.03303298299988455,
+            0.033948410999983025
+          ],
+          "median_ms": 33.03298299988455,
+          "median_ms_per_step": 4.129122874985569
+        }
+      },
+      "runtime": {
+        "target": {
+          "cuda": null,
+          "deterministic_algorithms": true,
+          "device": "cpu",
+          "dtype": "float64",
+          "interop_threads": 9,
+          "machine": "x86_64",
+          "normal_mode_layout": "rfft",
+          "platform": "Linux",
+          "threads": 1,
+          "torch": "2.15.0+cpu"
+        },
+        "cpu": {
+          "cuda": null,
+          "deterministic_algorithms": true,
+          "device": "cpu",
+          "dtype": "float64",
+          "interop_threads": 9,
+          "machine": "x86_64",
+          "normal_mode_layout": "rfft",
+          "platform": "Linux",
+          "threads": 1,
+          "torch": "2.15.0+cpu"
+        }
+      },
+      "physical_converged": false,
+      "peak_cuda_allocated_bytes": null,
+      "steps_per_replica": 8,
+      "peak_cuda_reserved_bytes": null,
+      "cpu_over_target": 1.0366485824260618,
+      "timing_scope": "public run_materials including construction, propagation, I/O, materialization and analysis"
+    },
+    {
+      "suite": "workflow",
+      "name": "diffusion",
+      "provider": null,
+      "atoms": 64,
+      "beads": 8,
+      "replicas": 1,
+      "target_device": "cpu",
+      "dtype": "float64",
+      "status": "passed",
+      "correctness": {
+        "target/-1": {
+          "0": {
+            "observables": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "positions": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "velocities": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "radii_gyration_squared": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "ballistic_positions": {
+              "max_absolute": 1.1102230246251565e-15,
+              "rms": 1.8945574165603428e-16,
+              "relative_l2": 9.639476217466235e-16,
+              "passed": true
+            },
+            "constant_centroid_velocity": {
+              "max_absolute": 1.3322676295501878e-15,
+              "rms": 2.6081322520129256e-16,
+              "relative_l2": 7.411105503079854e-16,
+              "passed": true
+            }
+          }
+        },
+        "cpu/-1": {
+          "0": {
+            "observables": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "positions": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "velocities": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "radii_gyration_squared": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "ballistic_positions": {
+              "max_absolute": 1.1102230246251565e-15,
+              "rms": 1.8945574165603428e-16,
+              "relative_l2": 9.639476217466235e-16,
+              "passed": true
+            },
+            "constant_centroid_velocity": {
+              "max_absolute": 1.3322676295501878e-15,
+              "rms": 2.6081322520129256e-16,
+              "relative_l2": 7.411105503079854e-16,
+              "passed": true
+            }
+          }
+        },
+        "cpu/0": {
+          "0": {
+            "observables": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "positions": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "velocities": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "radii_gyration_squared": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "ballistic_positions": {
+              "max_absolute": 1.1102230246251565e-15,
+              "rms": 1.8945574165603428e-16,
+              "relative_l2": 9.639476217466235e-16,
+              "passed": true
+            },
+            "constant_centroid_velocity": {
+              "max_absolute": 1.3322676295501878e-15,
+              "rms": 2.6081322520129256e-16,
+              "relative_l2": 7.411105503079854e-16,
+              "passed": true
+            }
+          }
+        },
+        "target/0": {
+          "0": {
+            "observables": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "positions": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "velocities": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "radii_gyration_squared": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "ballistic_positions": {
+              "max_absolute": 1.1102230246251565e-15,
+              "rms": 1.8945574165603428e-16,
+              "relative_l2": 9.639476217466235e-16,
+              "passed": true
+            },
+            "constant_centroid_velocity": {
+              "max_absolute": 1.3322676295501878e-15,
+              "rms": 2.6081322520129256e-16,
+              "relative_l2": 7.411105503079854e-16,
+              "passed": true
+            }
+          }
+        },
+        "target/1": {
+          "0": {
+            "observables": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "positions": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "velocities": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "radii_gyration_squared": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "ballistic_positions": {
+              "max_absolute": 1.1102230246251565e-15,
+              "rms": 1.8945574165603428e-16,
+              "relative_l2": 9.639476217466235e-16,
+              "passed": true
+            },
+            "constant_centroid_velocity": {
+              "max_absolute": 1.3322676295501878e-15,
+              "rms": 2.6081322520129256e-16,
+              "relative_l2": 7.411105503079854e-16,
+              "passed": true
+            }
+          }
+        },
+        "cpu/1": {
+          "0": {
+            "observables": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "positions": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "velocities": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "radii_gyration_squared": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "ballistic_positions": {
+              "max_absolute": 1.1102230246251565e-15,
+              "rms": 1.8945574165603428e-16,
+              "relative_l2": 9.639476217466235e-16,
+              "passed": true
+            },
+            "constant_centroid_velocity": {
+              "max_absolute": 1.3322676295501878e-15,
+              "rms": 2.6081322520129256e-16,
+              "relative_l2": 7.411105503079854e-16,
+              "passed": true
+            }
+          }
+        },
+        "cpu/2": {
+          "0": {
+            "observables": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "positions": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "velocities": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "radii_gyration_squared": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "ballistic_positions": {
+              "max_absolute": 1.1102230246251565e-15,
+              "rms": 1.8945574165603428e-16,
+              "relative_l2": 9.639476217466235e-16,
+              "passed": true
+            },
+            "constant_centroid_velocity": {
+              "max_absolute": 1.3322676295501878e-15,
+              "rms": 2.6081322520129256e-16,
+              "relative_l2": 7.411105503079854e-16,
+              "passed": true
+            }
+          }
+        },
+        "target/2": {
+          "0": {
+            "observables": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "positions": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "velocities": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "radii_gyration_squared": {
+              "max_absolute": 0.0,
+              "rms": 0.0,
+              "relative_l2": 0.0,
+              "passed": true
+            },
+            "ballistic_positions": {
+              "max_absolute": 1.1102230246251565e-15,
+              "rms": 1.8945574165603428e-16,
+              "relative_l2": 9.639476217466235e-16,
+              "passed": true
+            },
+            "constant_centroid_velocity": {
+              "max_absolute": 1.3322676295501878e-15,
+              "rms": 2.6081322520129256e-16,
+              "relative_l2": 7.411105503079854e-16,
+              "passed": true
+            }
+          }
+        }
+      },
+      "correctness_scope": "independent NumPy float64 same-snapshot observables; CPU/CUDA stochastic paths are not compared",
+      "potential": "free",
+      "model_kind": "analytic_workflow_probe",
+      "workflow_config": {
+        "task": "diffusion",
+        "beta": 4.0,
+        "beads": 8,
+        "dt_au": 0.125,
+        "seed": 19064,
+        "potential": {
+          "provider": "free"
+        },
+        "sampling": {
+          "engine": "torch",
+          "device": "cpu",
+          "integrator": "bcocb",
+          "thermostat": "pile-l",
+          "gamma_centroid": 1.0,
+          "normal_mode_layout": "rfft",
+          "equilibration_steps": 2,
+          "production_steps": 6,
+          "sample_interval": 2,
+          "replicas": 1
+        },
+        "dynamics": {
+          "integrator": "cayley-bcb",
+          "block_steps": 256
+        },
+        "parallel": {
+          "backend": "serial",
+          "threads_per_rank": 1
+        },
+        "output": {
+          "checkpoint_steps": 32,
+          "chunk_frames": 128
+        },
+        "diffusion": {
+          "bootstrap": 0
+        }
+      },
+      "mass_electron": 2.0,
+      "timings": {
+        "cpu": {
+          "seconds": [
+            0.04022084400003223,
+            0.03865648000009969,
+            0.04931754900007945
+          ],
+          "median_ms": 40.22084400003223,
+          "median_ms_per_step": 5.027605500004029
+        },
+        "target": {
+          "seconds": [
+            0.03905008200035809,
+            0.041681263000100444,
+            0.0482342189998235
+          ],
+          "median_ms": 41.681263000100444,
+          "median_ms_per_step": 5.2101578750125555
+        }
+      },
+      "runtime": {
+        "target": {
+          "cuda": null,
+          "deterministic_algorithms": true,
+          "device": "cpu",
+          "dtype": "float64",
+          "interop_threads": 9,
+          "machine": "x86_64",
+          "normal_mode_layout": "rfft",
+          "platform": "Linux",
+          "threads": 1,
+          "torch": "2.15.0+cpu"
+        },
+        "cpu": {
+          "cuda": null,
+          "deterministic_algorithms": true,
+          "device": "cpu",
+          "dtype": "float64",
+          "interop_threads": 9,
+          "machine": "x86_64",
+          "normal_mode_layout": "rfft",
+          "platform": "Linux",
+          "threads": 1,
+          "torch": "2.15.0+cpu"
+        }
+      },
+      "physical_converged": false,
+      "peak_cuda_allocated_bytes": null,
+      "steps_per_replica": 8,
+      "peak_cuda_reserved_bytes": null,
+      "cpu_over_target": 0.9649622181538814,
+      "timing_scope": "public run_materials including construction, propagation, I/O, materialization and analysis"
+    }
+  ],
+  "threadpools": {
+    "controlled": true,
+    "pools": [
+      {
+        "user_api": "blas",
+        "internal_api": "openblas",
+        "num_threads": 1,
+        "prefix": "libscipy_openblas",
+        "filepath": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/numpy.libs/libscipy_openblas64_-fdde5778.so",
+        "version": "0.3.30",
+        "threading_layer": "pthreads",
+        "architecture": "SkylakeX"
+      },
+      {
+        "user_api": "openmp",
+        "internal_api": "openmp",
+        "num_threads": 1,
+        "prefix": "libgomp",
+        "filepath": "/workspace/scratch/998803105056/.venv/lib/python3.12/site-packages/torch/lib/libgomp.so.1",
+        "version": null
+      }
+    ]
+  },
+  "requested_cases_passed": true
+}
