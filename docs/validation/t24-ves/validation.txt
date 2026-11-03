@@ -122,3 +122,118 @@ Reproduce the complete scientific checks with tests/test_ves_reference.py.
 The plotting script examples/plot_ves_validation.py reads saved evidence and
 does not rerun simulations. Full-suite, baseline, workflow and documentation
 verification are reported by the main T24 delivery report.
+
+Supplement: explicit saved-state recomputation
+---------------------------------------------
+The original driver called analyze_run(output) without recompute=True. Its
+default reads the already-written result; that call alone did not establish
+explicit recomputation. After the MD campaigns and completed-run resume checks,
+both existing run directories were therefore checked again with
+analyze_run(output, recompute=True), using their saved samples and optimizer
+state. No MD trajectory was rerun.
+
+Before each call, free_energy, mask, uncertainty and every edges array were
+copied. Every array after explicit recomputation was elementwise and bytewise
+identical, including dtype and NaN locations. Both method fields remained ves,
+and converged and physical_converged remained false. In this check the entire
+fes.npz archive SHA256 also remained unchanged for each case. The clean output
+and per-array/archive hashes are in explicit-recompute.log, with corresponding
+provenance added to molecular_dynamics.json. The original MD source commit and
+SHA256 fields were preserved without alteration.
+
+The driver now explicitly passes recompute=True and its adjacent comment says
+so. This is a validation-only correction; it changes no sampling or estimator
+algorithm. The completed check preserves the existing MD provenance and
+records the supplemental verification separately.
+
+Minimal reproducible comparison command (after creating the MD runs above):
+
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 .venv/bin/python - <<'PY'
+from pathlib import Path
+import numpy as np
+from pyrpmd.analysis.fes_result import FESResult
+from pyrpmd.runner import analyze_run
+
+def arrays(result):
+    return {"free_energy": result.free_energy.copy(),
+            "mask": result.mask.copy(),
+            "uncertainty": result.uncertainty.copy(),
+            **{f"edges_{axis}": edge.copy()
+               for axis, edge in enumerate(result.edges)}}
+
+for name in ("1d-uniform", "2d-well_tempered"):
+    output = Path("../t24-md-production") / name
+    before = arrays(FESResult.read(output))
+    summary = analyze_run(output, recompute=True)
+    after = arrays(FESResult.read(output))
+    assert before.keys() == after.keys()
+    for key in before:
+        np.testing.assert_array_equal(before[key], after[key])
+        assert before[key].dtype == after[key].dtype
+        assert before[key].tobytes() == after[key].tobytes()
+    assert summary["method"] == "ves"
+    assert summary["converged"] is False
+    assert summary["physical_converged"] is False
+    print(name, "explicit recompute: all arrays byte-identical")
+PY
+
+Completed supplemental result:
+2 cases passed: free_energy, mask, uncertainty and every grid edge are byte-identical; method=ves; physical_converged=False.
+
+Final regression and integration gates (2026-11-03 UTC)
+-------------------------------------------------------
+Implementation commit: 06f23916a3d80b6b7dd1d779463c896eb128feba.
+Baseline commit: ceee59cd5f702165b56c5e541a503d8810fb9111.
+The subsequent validation-only driver correction is described above; no VES
+optimizer, dynamics, checkpoint or estimator implementation changed.
+
+Both full suites used the same Python 3.12.14 virtual environment and compiled
+native extensions, with OMP_NUM_THREADS=1 and OPENBLAS_NUM_THREADS=1. The
+baseline used its isolated worktree via an explicit PYTHONPATH.
+
+Baseline command, from ../PyRPMD-baseline:
+PYTHONPATH=/workspace/scratch/490be0542786/PyRPMD-baseline/src OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 /workspace/scratch/490be0542786/PyRPMD/.venv/bin/python -m pytest -q
+
+VES command, from the PyRPMD worktree:
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 .venv/bin/python -m pytest -q
+
+Exact summaries:
+Baseline: 1 failed, 10544 passed, 391 skipped, 48 warnings, 493 subtests passed in 2687.72s (0:44:47)
+With VES: 1 failed, 10694 passed, 391 skipped, 48 warnings, 493 subtests passed in 1940.64s (0:32:20)
+
+The pass count increased by exactly 150. The failed node, skips, warnings and
+passed subtest counts are unchanged; the full failure traceback is identical.
+The only failed node is:
+tests/test_ipi_clients.py::test_existing_unix_address_is_not_removed_on_bind_failure
+
+In both worktrees, creating socket.socket(AF_UNIX, SOCK_STREAM) raises
+PermissionError: [Errno 1] Operation not permitted before bind. Separate
+single-test reproductions also fail identically (baseline 8.45 s; VES 9.03 s).
+This is an existing runtime socket restriction, not a VES regression. Thus
+the complete suite is not entirely green in this environment; no new failures
+were introduced. Optional external-engine and framework tests remain skipped
+when their dependencies are absent.
+
+Complete outputs: full-baseline.log and full-ves.log. Only trailing whitespace
+was normalized for storage; messages and summary lines were preserved.
+Original baseline log SHA256: aa3dff544dc280649b012abb60e08d00d9debd382b3959735c6c17ffee473394
+Stored baseline log SHA256:   77fc51ace2df73d6150b091b755bc95106b0d85bc37a505b90fa51b58b84565d
+Original VES log SHA256:      cc60ac7eb0bb888617cb9bec1e36ba62a5164b50c4f5bb2450eb9b28ea462fdc
+Stored VES log SHA256:        93a50867e0cc7b41d9b2b821f6214103ce962979cfc47e1038cb7a70d708c3da
+
+Additional completed gates:
+- Before edits, related FES baseline:
+  OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 .venv/bin/python -m pytest -q tests/test_fes_entry.py tests/test_fes_unification.py tests/test_fes_result.py tests/test_opes.py tests/test_abf_workflow.py tests/test_cv_fes.py tests/test_fes_extension_operators.py
+  164 passed, 4 warnings, 10 subtests passed in 36.12s
+- Strict documentation build:
+  OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 .venv/bin/python -m sphinx -W --keep-going -b html docs docs/_build/html
+  build succeeded.
+- Both complete TOML examples were run through pyrpmd run, resume and
+  analyze --recompute; their FES arrays and masks were exactly preserved.
+- Source-distribution inspection includes all added implementation, tests,
+  examples and validation evidence; the source package needs no new manifest
+  rule.
+- git diff --check passes.
+
+Full-suite timings reflect concurrent work in a shared environment; their
+difference is not a performance comparison.

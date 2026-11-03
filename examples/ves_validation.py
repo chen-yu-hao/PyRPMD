@@ -320,9 +320,9 @@ def md_validation(directory, *, replicas=6, production_steps=30000, timestep=.04
         support[mbar_reference] = False
         combined = np.sqrt(sem**2 + mbar_sem**2)
         band = float(student_t.ppf(1 - .01/(2*np.sum(support)), replicas - 1))
-        # Finished-run resume and saved-state analysis must reproduce the
-        # final result and may not label it physically converged.
-        reanalyzed = analyze_run(output)
+        # Explicit saved-state recomputation and finished-run resume must
+        # reproduce the result and may not label it physically converged.
+        reanalyzed = analyze_run(output, recompute=True)
         resumed = resume_run(output)
         reread = FESResult.read(output)
         np.testing.assert_array_equal(result.free_energy, reread.free_energy)

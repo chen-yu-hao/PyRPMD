@@ -760,5 +760,60 @@
   "artifact_postprocessing": {
     "raw_report_sha256": "e1436623d8a3eff001e09139f1c54c3a7125ecd4d824e5c3ec7ed3b1610789ef",
     "operation": "Added exact edges read from each saved FES artifact, unique zero-variance gauge bin, hardware context, source/output hashes. No numeric estimates or uncertainties changed."
+  },
+  "explicit_recompute_validation": {
+    "entrypoint": "pyrpmd.runner.analyze_run(output, recompute=True)",
+    "resampled": false,
+    "implementation_commit": "06f23916a3d80b6b7dd1d779463c896eb128feba",
+    "driver_validation_only_fix": "Explicit recompute=True and adjacent explanatory comment; no sampling or estimator changes.",
+    "driver_sha256_after_validation_only_fix": "2ccab6a3b8669d3306252f1c9fd524168097824e2f84d5041a31f383bf75ef16",
+    "preserved_original_md_provenance": true,
+    "log": "explicit-recompute.log",
+    "comparisons": [
+      {
+        "run_directory": "../t24-md-production/1d-uniform",
+        "arrays_checked": [
+          "free_energy",
+          "mask",
+          "uncertainty",
+          "edges_0"
+        ],
+        "arrays_byte_identical": true,
+        "method": "ves",
+        "physical_converged": false,
+        "converged": false,
+        "array_sha256": {
+          "free_energy": "6f7b44aaa274d46040ca4d013cf6075ffbb70292179e8b7406cb94b8a0a22438",
+          "mask": "15ec7bf0b50732b49f8228e07d24365338f9e3ab994b00af08e5a3bffe55fd8b",
+          "uncertainty": "d6297fb8c42270e76f0a9f3a9fd44af8e5fe64c9f93bcd3000da43a713c64c71",
+          "edges_0": "ae57b9e7f5b591483fdde184e66dcad0c9349ce605a182edecd7fbec4d1ad101"
+        },
+        "fes_archive_sha256_before": "f6b8f21d2ca37e1cf88019cc42bb18ca3a5c69fa51d152c8d36ea8651c01a111",
+        "fes_archive_sha256_after": "f6b8f21d2ca37e1cf88019cc42bb18ca3a5c69fa51d152c8d36ea8651c01a111"
+      },
+      {
+        "run_directory": "../t24-md-production/2d-well_tempered",
+        "arrays_checked": [
+          "free_energy",
+          "mask",
+          "uncertainty",
+          "edges_0",
+          "edges_1"
+        ],
+        "arrays_byte_identical": true,
+        "method": "ves",
+        "physical_converged": false,
+        "converged": false,
+        "array_sha256": {
+          "free_energy": "26bbf6244877328acfc73027f58cfc65d627a1422449895baaf25cb8681b46eb",
+          "mask": "90f4b39548df55ad6187a1d20d731ecee78c545b94afd16f42ef7592d99cd365",
+          "uncertainty": "4f2d2eb1b27b0e9478884a22be5d4517d3733f80dde1d02b681ea45cf851f5b9",
+          "edges_0": "e6a064f779459303389dedee02ed8429b56e6d37313e214b1ab86cfa277376fc",
+          "edges_1": "e6a064f779459303389dedee02ed8429b56e6d37313e214b1ab86cfa277376fc"
+        },
+        "fes_archive_sha256_before": "85da1ab5d8eb26c14f0dc1202c2a5cb7714760c278dcf78be19e01912539c0d7",
+        "fes_archive_sha256_after": "85da1ab5d8eb26c14f0dc1202c2a5cb7714760c278dcf78be19e01912539c0d7"
+      }
+    ]
   }
 }
