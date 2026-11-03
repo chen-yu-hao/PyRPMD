@@ -16,7 +16,6 @@ from .vtst_core import (
 )
 from .vtst_path import MEPPath
 
-
 @dataclass
 class PathModeAnalysis:
     frequencies_au: list[np.ndarray]
@@ -107,6 +106,15 @@ def analyze_path_modes(
     exponent = -2.0 * a_bar - a_bar**2 + turning_derivative[nonzero] ** 2
     mass_ratio[nonzero] = np.exp(np.minimum(exponent, 0.0))
     mass_ratio = np.minimum(mass_ratio, 1.0)
+    # At the saddle the normalized-gradient reaction-path direction is
+    # undefined because the gradient vanishes.  The centrifugal-dominant SCT
+    # prescription therefore takes the linear interpolation from the nearest
+    # nonstationary points (Bao & Truhlar 2017, Eq. 85).
+    saddle = path.saddle_index
+    if 0 < saddle < len(mass_ratio) - 1:
+        mass_ratio[saddle] = 0.5 * (
+            mass_ratio[saddle - 1] + mass_ratio[saddle + 1]
+        )
     zpe = np.array([0.5 * float(np.sum(omega)) for omega in frequencies])
     return PathModeAnalysis(
         frequencies_au=frequencies,

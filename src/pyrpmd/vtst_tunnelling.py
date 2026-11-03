@@ -1,4 +1,4 @@
-"""Primitive WKB ZCT/SCT transmission and assembled VTST results."""
+"""Uniform semiclassical ZCT/SCT transmission and assembled VTST results."""
 
 from __future__ import annotations
 
@@ -10,6 +10,7 @@ from typing import Any, Iterable, Sequence
 import numpy as np
 from scipy.interpolate import PchipInterpolator
 from scipy.optimize import brentq
+from scipy.special import logsumexp
 
 from .constants import AMU_TO_AU, KB_AU
 from .vtst_core import VTSTError, _finite_array, _jsonable, _positive, _positive_integer
@@ -18,7 +19,6 @@ from .vtst_thermo import (
     PathModeAnalysis, PartitionSpecies, _rate_record, analyze_path_modes,
     canonical_variational_profile,
 )
-
 
 def _turning_points(
     s: np.ndarray,
@@ -59,7 +59,7 @@ def wkb_transmission_probability(
     effective_mass_ratio: Sequence[float] | None = None,
     scaling_mass: float = AMU_TO_AU,
 ) -> dict[str, float]:
-    """Primitive WKB transmission through the barrier containing its maximum."""
+    """Uniform semiclassical transmission through the dominant path barrier."""
     energy = float(energy_hartree)
     if not math.isfinite(energy):
         raise VTSTError("energy_hartree must be finite")
@@ -80,15 +80,33 @@ def wkb_transmission_probability(
     maximum_index = int(np.argmax(potential_values))
     maximum = float(potential_values[maximum_index])
     threshold = max(float(potential_values[0]), float(potential_values[-1]))
-    if energy < threshold:
-        return {"probability": 0.0, "action": math.inf}
+    reflection_limit = 2.0 * maximum - threshold
+    if energy <= threshold:
+        return {"probability": 0.0, "log_probability": -math.inf, "action": math.inf}
+    if energy > reflection_limit:
+        return {"probability": 1.0, "log_probability": 0.0, "action": 0.0}
     if energy >= maximum:
-        return {"probability": 1.0, "action": 0.0}
+        if math.isclose(energy, maximum, rel_tol=0.0, abs_tol=1.0e-15):
+            return {"probability": 0.5, "log_probability": -math.log(2.0), "action": 0.0}
+        reflected = wkb_transmission_probability(
+            2.0 * maximum - energy,
+            s,
+            potential_values,
+            effective_mass_ratio=ratio,
+            scaling_mass=mu,
+        )
+        probability = 1.0 - reflected["probability"]
+        return {
+            "probability": probability,
+            "log_probability": math.log1p(-reflected["probability"]),
+            "action": reflected["action"],
+            "reflected_energy_hartree": 2.0 * maximum - energy,
+        }
     potential = PchipInterpolator(s, potential_values, extrapolate=False)
     mass_ratio = PchipInterpolator(s, ratio, extrapolate=False)
     points = _turning_points(s, potential, potential_values, energy, maximum_index)
     if points is None:
-        return {"probability": 0.0, "action": math.inf}
+        return {"probability": 0.0, "log_probability": -math.inf, "action": math.inf}
     left, right = points
 
     def integrand(coordinate: float) -> float:
@@ -123,9 +141,15 @@ def wkb_transmission_probability(
         action = refined
     if not math.isfinite(action) or error > max(1.0e-8, 2.0e-6 * max(action, 1.0e-12)):
         raise VTSTError("WKB action quadrature did not converge")
-    probability = math.exp(-2.0 * action) if action < 400.0 else 0.0
+    # Uniform semiclassical ground-state transmission.  The logistic form is
+    # finite at the barrier top and, together with the reflected branch above,
+    # is the ZCT/SCT prescription used in modern VTST (Bao & Truhlar 2017,
+    # Eqs. 79-80 and 86).
+    log_probability = -float(np.logaddexp(0.0, 2.0 * action))
+    probability = math.exp(log_probability) if log_probability > -745.0 else 0.0
     return {
         "probability": min(max(probability, 0.0), 1.0),
+        "log_probability": log_probability,
         "action": float(action),
         "turning_point_left_bohr": left,
         "turning_point_right_bohr": right,
@@ -136,10 +160,12 @@ def wkb_transmission_probability(
 @dataclass
 class TunnellingCorrection:
     method: str
-    kappa: float
+    kappa: float | None
     log_kappa: float
+    kappa_range_status: str
     threshold_energy_hartree: float
     barrier_energy_hartree: float
+    reflection_limit_energy_hartree: float
     reference_energy_hartree: float
     quadrature_points: int
     effective_mass_ratio_minimum: float
@@ -159,7 +185,7 @@ def thermal_tunnelling_correction(
     quadrature_points: int = 64,
     method: str = "zct",
 ) -> TunnellingCorrection:
-    """Boltzmann-average primitive WKB transmission for a CVT surface."""
+    """Boltzmann-average uniform semiclassical transmission for a CVT surface."""
     temperature = _positive(temperature_kelvin, "temperature_kelvin")
     beta = 1.0 / (KB_AU * temperature)
     s = _finite_array(s_bohr, None, "s_bohr")
@@ -183,39 +209,62 @@ def thermal_tunnelling_correction(
             "vibrationally adiabatic path has no barrier above both channel thresholds"
         )
     x, weight = np.polynomial.legendre.leggauss(nodes)
-    energies = threshold + 0.5 * (x + 1.0) * (barrier - threshold)
-    probabilities = np.array(
-        [
-            wkb_transmission_probability(
-                energy,
-                s,
-                values,
-                effective_mass_ratio=ratio,
-                scaling_mass=scaling_mass,
-            )["probability"]
-            for energy in energies
-        ]
+    reflection_limit = 2.0 * barrier - threshold
+
+    def log_interval_integral(lower: float, upper: float) -> float:
+        if upper <= lower:
+            return -math.inf
+        energies = lower + 0.5 * (x + 1.0) * (upper - lower)
+        log_probabilities = np.array(
+            [
+                wkb_transmission_probability(
+                    energy,
+                    s,
+                    values,
+                    effective_mass_ratio=ratio,
+                    scaling_mass=scaling_mass,
+                )["log_probability"]
+                for energy in energies
+            ]
+        )
+        log_terms = np.log(weight) + log_probabilities - beta * (
+            energies - threshold
+        )
+        return math.log(0.5 * (upper - lower)) + float(logsumexp(log_terms))
+
+    log_integral_below = log_interval_integral(threshold, barrier)
+    log_integral_reflection = log_interval_integral(barrier, reflection_limit)
+    log_integral_above = (
+        -beta * (reflection_limit - threshold) - math.log(beta)
     )
-    shifted = np.exp(-beta * (energies - threshold))
-    integral_below = 0.5 * (barrier - threshold) * float(
-        np.dot(weight, probabilities * shifted)
+    log_scaled_integral = float(
+        logsumexp(
+            [log_integral_below, log_integral_reflection, log_integral_above]
+        )
     )
-    # Primitive WKB takes P(E)=1 above the barrier; this excludes
-    # nonclassical reflection by construction.
-    integral_above = math.exp(-beta * (barrier - threshold)) / beta
-    scaled_integral = integral_below + integral_above
+    if not math.isfinite(log_scaled_integral):
+        raise VTSTError("thermal tunnelling integral is nonfinite")
     log_kappa = (
         math.log(beta)
         + beta * (reference - threshold)
-        + math.log(scaled_integral)
+        + log_scaled_integral
     )
-    kappa = math.exp(log_kappa) if log_kappa <= math.log(sys.float_info.max) else math.inf
+    kappa = (
+        math.exp(log_kappa)
+        if log_kappa <= math.log(sys.float_info.max)
+        else None
+    )
+    range_status = (
+        "overflow" if kappa is None else "underflow" if kappa == 0.0 else "finite"
+    )
     return TunnellingCorrection(
         method=str(method),
-        kappa=float(kappa),
+        kappa=kappa,
         log_kappa=float(log_kappa),
+        kappa_range_status=range_status,
         threshold_energy_hartree=threshold,
         barrier_energy_hartree=barrier,
+        reflection_limit_energy_hartree=reflection_limit,
         reference_energy_hartree=reference,
         quadrature_points=nodes,
         effective_mass_ratio_minimum=float(np.min(ratio)),
@@ -323,7 +372,7 @@ def compute_vtst(
     warnings = [
         "physical_converged is false until MEP step, path extent, Hessian displacement, and tunnelling quadrature are independently converged",
         "harmonic transverse vibrations and classical rigid rotors are used",
-        "ZCT/SCT use primitive ground-state WKB; nonclassical reflection, LCT, and microcanonical OMT are not included",
+        "ZCT/SCT use uniform semiclassical ground-state transmission with the reflected above-barrier branch; LCT and microcanonical OMT are not included",
         "Cartesian projection is used for generalized normal modes",
     ]
     return VTSTResult(
@@ -351,7 +400,7 @@ def compute_vtst(
             "transition_state_electronic_degeneracy": int(
                 transition_state_electronic_degeneracy
             ),
-            "tunnelling": "primitive_ground_state_wkb_zct_and_centrifugal_dominant_sct",
+            "tunnelling": "uniform_semiclassical_ground_state_zct_and_centrifugal_dominant_sct",
         },
         endpoint_validation=endpoint_validation or {"checked": False},
         warnings=warnings,

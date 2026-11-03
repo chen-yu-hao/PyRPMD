@@ -22,7 +22,6 @@ from ..vtst import MEPOptions
 _SCHEMA = "pyrpmd.vtst-run"
 _SCHEMA_VERSION = 1
 
-
 def _scientific_identity(
     config: Mapping[str, Any],
     system: Any,
@@ -71,7 +70,7 @@ def _scientific_identity(
         },
         "tunnelling": {
             "methods": ["zct", "sct"],
-            "model": "primitive_ground_state_wkb",
+            "model": "uniform_semiclassical_ground_state_wkb_with_reflection",
             "quadrature_points": tunnelling_quadrature_points,
         },
         "endpoint_connectivity": {"bond_scale": bond_scale},
@@ -129,6 +128,10 @@ def _path_csv(result: Mapping[str, Any]) -> str:
     return output.getvalue()
 
 
+def _format_optional_float(value: Any) -> str:
+    return "" if value is None else format(float(value), ".17g")
+
+
 def _rates_csv(result: Mapping[str, Any]) -> str:
     output = io.StringIO(newline="")
     writer = csv.writer(output)
@@ -164,8 +167,8 @@ def _rates_csv(result: Mapping[str, Any]) -> str:
                     float(row["cvt"]["variational_transmission_coefficient"]),
                     ".17g",
                 ),
-                format(float(row["zct"]["kappa"]), ".17g"),
-                format(float(row["sct"]["kappa"]), ".17g"),
+                _format_optional_float(row["zct"]["kappa"]),
+                _format_optional_float(row["sct"]["kappa"]),
                 format(float(row["zct"]["log_kappa"]), ".17g"),
                 format(float(row["sct"]["log_kappa"]), ".17g"),
             ]
@@ -262,3 +265,4 @@ def _publish(
     finally:
         if stage.exists():
             shutil.rmtree(stage)
+

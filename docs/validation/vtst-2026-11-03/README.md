@@ -25,6 +25,7 @@ Command:
 
 ```text
 PYTHONPATH=/mnt/data/t31_work/src:/mnt/data/t31_work \
+  OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
   python -m pytest -q /mnt/data/t31_work/tests/test_vtst.py \
   -k "not reactant_partition_matches_low_temperature_harmonic_state"
 ```
@@ -33,7 +34,7 @@ Observed output:
 
 ```text
 .....                                                                    [100%]
-5 passed, 1 deselected in 3.61s
+5 passed, 1 deselected in 7.39s
 ```
 
 The isolated checks cover:
@@ -42,13 +43,15 @@ The isolated checks cover:
 - Cartesian projection and a symmetric CVT free-energy profile;
 - the exact numerical limit SCT = ZCT for a straight path;
 - a sampled Eckart barrier whose WKB action is compared with an independent
-  continuous SciPy quadrature; and
+  continuous SciPy quadrature, including the logistic barrier-top limit and
+  reflected above-barrier continuation; and
 - workflow publication, scientific-fingerprint sensitivity, and CLI dispatch.
 
-The full-repository test additionally compares the reactant translational,
-rotational, vibrational, and total partition logs directly with
-`pyrpmd.low_temperature.HarmonicState`; that module was not duplicated into the
-isolated harness.
+The sixth full-repository test directly compares the reactant translational,
+rotational, vibrational, and total partition logs with
+`pyrpmd.low_temperature.HarmonicState`. That production module was not copied
+into the isolated harness; pull-request CI is the authoritative result for this
+comparison.
 
 ## MEP-step convergence on the analytic separable path
 
@@ -58,9 +61,9 @@ step changed.
 
 | MEP step (bohr) | Path points | CVT rate (s^-1) | Relative change from previous | MEP time (s) | CVT/ZCT/SCT time (s) |
 | ---: | ---: | ---: | ---: | ---: | ---: |
-| 0.08 | 45 | 1.2722044453e9 | — | 0.0202 | 1.0403 |
-| 0.04 | 61 | 1.2722044525e9 | 5.66e-9 | 0.0214 | 1.0885 |
-| 0.02 | 99 | 1.2722044463e9 | 4.84e-9 | 0.0410 | 1.6422 |
+| 0.08 | 41 | 6.0596461064e8 | — | 0.0153 | 2.1247 |
+| 0.04 | 59 | 6.0596459727e8 | 2.21e-8 | 0.0237 | 2.2483 |
+| 0.02 | 95 | 6.0596462310e8 | 4.26e-8 | 0.0387 | 2.9197 |
 
 Both path sides met the analytic force criterion at every resolution. This is a
 numerical regression and step-convergence check for the implementation, not a
@@ -72,7 +75,8 @@ For a synthetic collinear H3 path with constant tangent and locally constructed
 positive transverse Hessians, the largest evaluated curvature was below
 `1e-11 bohr^-1`. Every SCT effective-mass ratio was exactly `1.0` in binary
 floating-point, and ZCT/SCT thermal coefficients and corrected rates were equal
-for 300 K and 500 K.
+for 300 K and 500 K. The sampled Eckart check also gives exactly 0.5 at the
+barrier top and verifies `P(E) = 1 - P(2 V_max - E)` above the barrier.
 
 ## Missing production validation
 

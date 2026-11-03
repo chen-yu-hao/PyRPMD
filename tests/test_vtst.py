@@ -190,9 +190,19 @@ def test_eckart_wkb_action_matches_independent_continuous_integral():
     )
     s = np.linspace(-5.0, 5.0, 2001)
     values = barrier / np.cosh(inverse_width * s) ** 2
+    top = wkb_transmission_probability(barrier, s, values, scaling_mass=mass)
+    assert top["probability"] == pytest.approx(0.5, abs=0.0)
     actual = wkb_transmission_probability(energy, s, values, scaling_mass=mass)
     assert actual["action"] == pytest.approx(expected_action, rel=2.0e-5)
-    assert actual["probability"] == pytest.approx(math.exp(-2.0 * expected_action), rel=4.0e-5)
+    expected_probability = 1.0 / (1.0 + math.exp(2.0 * expected_action))
+    assert actual["probability"] == pytest.approx(expected_probability, rel=4.0e-5)
+    reflected = wkb_transmission_probability(
+        2.0 * barrier - energy, s, values, scaling_mass=mass
+    )
+    assert reflected["probability"] == pytest.approx(
+        1.0 - expected_probability, rel=4.0e-5
+    )
+
 
 
 def test_workflow_publishes_versioned_identity_and_complete_bundle(monkeypatch, tmp_path):

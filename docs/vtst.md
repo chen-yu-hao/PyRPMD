@@ -127,13 +127,33 @@ Python-API results are in `s^-1`.
 
 ## ZCT and SCT
 
-For energy \(E\) below the maximum of \(V_a^G\), the primitive ground-state WKB
-probability is
+Let \(V_\max\) be the maximum of the ground-state vibrationally adiabatic
+potential and let \(E_\mathrm{th}\) be the higher of its two endpoint channel
+energies. For \(E_\mathrm{th}<E<V_\max\), PyRPMD evaluates the semiclassical
+action
 
 \[
- P(E)=\exp\left[-2\int_{s_<}^{s_>}
- \sqrt{2\mu_\mathrm{eff}(s)[V_a^G(s)-E]}\,ds\right].
+ \theta(E)=\int_{s_<}^{s_>}
+ \sqrt{2\mu_\mathrm{eff}(s)[V_a^G(s)-E]}\,ds
 \]
+
+between the two turning points. The uniform ground-state transmission is
+
+\[
+ P(E)=\frac{1}{1+\exp[2\theta(E)]}.
+\]
+
+This gives \(P(V_\max)=1/2\) without a singular barrier-top branch. Above the
+barrier, the reflected-energy continuation is used,
+
+\[
+ P(E)=1-P(2V_\max-E),
+ \qquad V_\max<E<2V_\max-E_\mathrm{th},
+\]
+
+and \(P(E)=1\) at higher energy. Thus the thermal integral includes the
+semiclassical nonclassical-reflection branch instead of replacing all
+above-barrier transmission by one.
 
 The canonical coefficient multiplying the CVT rate uses the CVT classical
 threshold explicitly,
@@ -172,16 +192,24 @@ and
  \qquad \bar a(s)=|\kappa(s)\bar t(s)|.
 \]
 
-The zero-curvature limit is handled analytically: when \(\kappa=0\), the mass
-ratio is exactly one and SCT reduces exactly to ZCT. The implementation is a
-ground-state, harmonic, primitive-WKB treatment. It does not include
-nonclassical reflection above the barrier, anharmonic transverse turning
-points, large-curvature tunnelling, least-action optimization, or
-microcanonical optimized multidimensional tunnelling. An analytic Eckart
-transmission probability is therefore not expected to equal the reported WKB
-probability, even for an Eckart-shaped barrier.
+The normalized-gradient path direction is undefined exactly at a stationary
+saddle. The SCT mass ratio there is therefore the linear interpolation of the
+nearest nonstationary path values. The zero-curvature limit is handled
+analytically: when \(\kappa=0\), the mass ratio is exactly one and SCT reduces
+exactly to ZCT.
 
-The equations and terminology follow A. Fernandez-Ramos, B. A. Ellingson,
+The implementation is a ground-state, harmonic, uniform-semiclassical
+treatment. It does not include anharmonic transverse turning points,
+large-curvature tunnelling, least-action optimization, or microcanonical
+optimized multidimensional tunnelling. An analytic Eckart quantum transmission
+probability is therefore not expected to equal this semiclassical result even
+for an Eckart-shaped barrier; the validation separately checks the WKB action
+against a continuous integral and records that distinction.
+
+The transmission, reflection, curvature, effective-frequency, and saddle
+interpolation equations follow J. L. Bao and D. G. Truhlar, *Chem. Soc. Rev.*
+**46**, 7548-7596 (2017), DOI `10.1039/C7CS00602K`, Eqs. 79-86. The underlying
+VTST/SCT conventions also follow A. Fernandez-Ramos, B. A. Ellingson,
 B. C. Garrett, and D. G. Truhlar, *Reviews in Computational Chemistry* **23**,
 125-232 (2007), DOI `10.1002/9780470116449.ch3`, especially Eqs. 159-174;
 and the final centrifugal-dominant SCT formulation of Y.-P. Liu, D.-H. Lu,
