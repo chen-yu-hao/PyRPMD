@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from concurrent.futures import ProcessPoolExecutor
 from contextlib import ExitStack, contextmanager
+from contextvars import ContextVar
 from dataclasses import dataclass, field
 import copy
 import multiprocessing as mp
@@ -468,6 +469,24 @@ class _Context:
 
 
 _CONTEXT = None
+_TASK_POTENTIAL_TRANSFORM = ContextVar("pyrpmd_task_potential_transform", default=None)
+
+
+@contextmanager
+def _task_potential_transform(transform):
+    """Temporarily wrap borrowed providers in the calling execution context.
+
+    The ordinary task lease retains ownership and closes the original provider.
+    Transforms are not propagated to newly spawned workers or threads; callers
+    requiring complete instrumentation must validate their execution route.
+    """
+    if not callable(transform):
+        raise TypeError("task potential transform must be callable")
+    token = _TASK_POTENTIAL_TRANSFORM.set(transform)
+    try:
+        yield
+    finally:
+        _TASK_POTENTIAL_TRANSFORM.reset(token)
 
 
 @contextmanager
@@ -541,8 +560,9 @@ def task_potential(spec, system, *, reuse=True):
     """Lease an actual provider for one task, reusing it within its worker.
 
     The worker closes cached providers once, after its entire task batch (also
-    on exceptions), before an MPI group sends ``finish``. The returned object
-    is not proxied, so native PES bindings and custom dispatch keep working.
+    on exceptions), before an MPI group sends ``finish``. Without an explicit
+    scoped transform, the returned object is not proxied, so native PES bindings
+    and custom dispatch keep working.
     Outside ``run_tasks`` this is an ordinary create/close context manager.
     Stateful plugins can declare ``metadata['reuse_across_tasks']=False``;
     callers can opt out with ``reuse=False``.
@@ -580,7 +600,8 @@ def task_potential(spec, system, *, reuse=True):
     if key is not None:
         context.borrowed.add(key)
     try:
-        yield provider
+        transform = _TASK_POTENTIAL_TRANSFORM.get()
+        yield provider if transform is None else transform(provider)
     except BaseException:
         # A caller may catch a task failure and continue its batch. Do not hand
         # a possibly damaged backend to that next task. Cleanup still owns it.
