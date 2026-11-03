@@ -37,7 +37,7 @@ establish arbitrary bead/timestep limits, PES validity, or other untested physic
 | Status / condition | Meaning |
 | --- | --- |
 | `statistical_target_met` | A scheduled independent production interval meets its target. The separate `accepted` flag also requires numerical equivalence. |
-| `budget_exhausted` | The spent budget is exhausted, or the next justified complete action cannot fit its remaining allowance. |
+| `budget_exhausted` | The campaign or per-job allowance cannot accommodate the next authorized work. |
 | `diagnostic_failed` | A known PMF, overlap, effective-sample, plateau or energy prerequisite failed. |
 | `error_unestimable` | Required uncertainty, covariance, degrees of freedom or diagnostics are unavailable. |
 | `numerical_convergence_not_established` | At least one comparison is missing, invalid, too uncertain, or outside its equivalence margin. |
@@ -161,6 +161,7 @@ retains its predeclared multiple-epoch interface.
 
 `max_cost` is the campaign budget and `job_max_cost` is the hard cap for each
 complete rate job, including each numerical-comparison job. Both are integers.
+Counts above `2^53 - 1` are rejected to preserve exact integer ledger accounting.
 The per-job cap is an explicit authorization, not an automatic prediction of
 the required work. Choose it to cover the declared sampling, energy checks and
 any recovery recomputation. The finer-timestep and larger-bead jobs may require
@@ -435,6 +436,8 @@ does it call the provider. A batch that cannot fit is rejected without calling
 the PES or splitting the batch, and the campaign records `budget_exhausted`.
 Failed provider calls remain charged because they were admitted. No subsequent
 job can spend beyond the reserved increment caps.
+A per-job cap can stop the campaign while global balance remains; another
+job's unused allowance does not increase an already frozen per-job cap.
 
 The charge and the provider call cannot be committed as one atomic operation.
 If a process dies after publishing a charge but before making its call, recovery
@@ -469,8 +472,9 @@ The campaign execution lock serializes launches and recovery across processes.
 It is separate from the ledger's short transaction lock, so `status` need not
 wait for dynamics to finish. Both locks use `flock` on POSIX and
 `msvcrt.locking` on Windows; process exit releases them. Checksums, atomic
-replacement and file fsync protect published metadata. The ledger additionally
-fsyncs its directory on POSIX, an operation Windows does not support. These
+replacement and file fsync protect published metadata. The ledger and execution
+journals additionally fsync their directories on POSIX, an operation Windows
+does not support. These
 contracts require local-filesystem lock and atomic-replacement semantics.
 
 On `run`, existing work is reconciled before new work is admitted:
@@ -551,6 +555,8 @@ jobs imported through the existing runner. The CLI/execution tests additionally
 exercise planning without PES calls, real rate continuation after a durable
 checkpoint, direct-run trajectory/RNG comparisons, batch admission limits,
 receipt recovery and repeat execution without duplicate charges or results.
+They also run the nonzero analytic teaching exchange PES and verify that an
+interrupted child pair adds recomputation charges without adding a sample.
 These are control, execution and estimator regressions. A short test run that
 stops with failed diagnostics does not establish physical convergence of a
 molecular reaction rate.

@@ -182,6 +182,62 @@ def test_meter_preserves_original_pes_result_and_analytic_force_contract(meter):
     assert read_sealed(meter.path)["charged_cost"] == 3
 
 
+def test_meter_preserves_provider_required_constraint_validation(meter):
+    provider = _AnalyticProvider()
+    provider.required_bond_constraints = [(0, 1, 1.)]
+    wrapped = MeteredPotential(provider, meter)
+    provider.required_bond_constraints.append((1, 2, 2.))
+    assert wrapped.required_bond_constraints == [(0, 1, 1.)]
+    with pytest.raises(ValueError, match="potential-required bond constraints"):
+        Dynamics(wrapped, [1., 1.], beta=1., nbeads=1, dt=.01,
+                 native=False, loop_backend="python")
+    assert meter.data["charged_cost"] == 0
+
+
+@pytest.mark.skipif(os.name == "nt", reason="POSIX directory fsync contract")
+def test_directory_fsync_failure_prevents_pes_admission(meter, monkeypatch):
+    import stat
+
+    provider = _AnalyticProvider()
+    original = os.fsync
+
+    def fail_directory(fd):
+        if stat.S_ISDIR(os.fstat(fd).st_mode):
+            raise OSError("directory fsync failed")
+        return original(fd)
+
+    monkeypatch.setattr(os, "fsync", fail_directory)
+    with pytest.raises(OSError, match="directory fsync failed"):
+        MeteredPotential(provider, meter).evaluate(np.ones((2, 1, 3)))
+    assert not provider.inputs
+    # Publication may already have succeeded: recovery retains the charge
+    # conservatively, without claiming that the PES call actually completed.
+    assert read_sealed(meter.path)["charged_cost"] == 2
+
+
+def test_windows_status_reader_sharing_conflict_retries_publication(meter, monkeypatch):
+    import pyrpmd.precision_execution as execution
+
+    original = execution.write_json
+    calls = []
+    delays = []
+
+    def transient_conflict(*args, **kwargs):
+        calls.append(1)
+        if len(calls) == 1:
+            error = PermissionError("status reader still has the old file open")
+            error.winerror = 32
+            raise error
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(execution, "write_json", transient_conflict)
+    monkeypatch.setattr(execution.time, "sleep", delays.append)
+    meter.charge(2)
+    assert len(calls) == 2
+    assert delays == [.01]
+    assert read_sealed(meter.path)["charged_cost"] == 2
+
+
 @pytest.mark.parametrize("error", [RuntimeError("provider failed"), KeyboardInterrupt()])
 def test_provider_failure_keeps_write_ahead_admissions(meter, error):
     provider = _AnalyticProvider(error)

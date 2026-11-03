@@ -79,6 +79,34 @@ def assert_same_trajectories(actual, reference):
     assert {"q", "p", "rng", "numerator", "denominator"}.issubset(compared)
 
 
+def test_nonzero_exchange_pes_runs_frozen_rate_jobs_and_reconciles_pause(tmp_path):
+    """Exercise a genuine analytic exchange saddle, without a physical claim."""
+    config, system = configuration()
+    source = Path(__file__).resolve().parents[1] / "examples/rate/toy_exchange.py"
+    config["potential"] = {"provider": "python", "factory": str(source) + ":build"}
+    # Exact saddle of the example's default Morse/coupling parameters.
+    distance = 1.2 + np.log(3.) / 1.2
+    system.geometry[:] = [[-distance, 0., 0.], [0., 0., 0.], [distance, 0., 0.]]
+    directory = tmp_path / "exchange-rate"
+    plan_precision_resolved(config, system, request(config, system), output=directory)
+    paused = run_precision(directory, max_jobs=1)
+    assert paused["status"] == "paused"
+    final = run_precision(directory)
+    assert final["stop"] is not None
+    assert final["latest_assessment"]["accepted"] is False
+    assert final["completed_results"] == 2
+    assert all(job["state"] == "completed" for job in final["jobs"])
+    frozen = frozen_from_ledger(directory)
+    job = materialize_rate_job(config, system, frozen, frozen.jobs[0]["job_id"])
+    reference = tmp_path / "unmetered-exchange"
+    run_resolved(job["config"], system, output=reference, **job["run_kwargs"])
+    actual = directory / "jobs" / job["job_id"]
+    assert_same_trajectories(actual, reference)
+    with np.load(actual / "umbrella/checkpoints/window_00000_replica_0000.npz",
+                 allow_pickle=False) as checkpoint:
+        assert np.any(checkpoint["energies"] != 0.)
+
+
 @pytest.mark.parametrize("scoped", [False, True])
 def test_real_rate_plan_pause_resume_stop_and_replay(tmp_path, monkeypatch, scoped):
     config, system = configuration(scoped=scoped)
@@ -186,6 +214,46 @@ def test_real_checkpoint_interruption_preserves_rng_and_job_identity(tmp_path, m
     run_resolved(job["config"], system, output=reference, **job["run_kwargs"])
     actual = Path(next(item for item in final["jobs"] if item["job_id"] == job["job_id"])["directory"])
     assert_same_trajectories(actual, reference)
+
+
+def test_interrupted_child_pair_recomputation_is_charged_without_an_extra_sample(tmp_path, monkeypatch):
+    from pyrpmd.workflows import rate
+
+    config, system = configuration()
+    directory = tmp_path / "child-recovery"
+    plan_precision_resolved(config, system, request(config, system), output=directory)
+    original_child = rate._child_task
+    original_evaluate = FreePotential.evaluate
+    discarded = []
+
+    def child_interrupted_after_five_batches(task):
+        def interrupted_evaluate(provider, q):
+            result = original_evaluate(provider, q)
+            discarded.append(len(q))
+            if len(discarded) == 5:
+                raise KeyboardInterrupt("incomplete paired child")
+            return result
+
+        with monkeypatch.context() as patch:
+            patch.setattr(FreePotential, "evaluate", interrupted_evaluate)
+            return original_child(task)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(rate, "_child_task", child_interrupted_after_five_batches)
+        with pytest.raises(KeyboardInterrupt, match="incomplete paired child"):
+            run_precision(directory)
+    assert len(discarded) == 5
+    final = run_precision(directory)
+    assert final["completed_results"] == 2
+    first, second = sorted(final["jobs"], key=lambda job: job["replica_index"])
+    # Same frozen work counts: only the discarded child prefix adds expense.
+    assert first["charged_cost"] == second["charged_cost"] + sum(discarded)
+    assert final["budget"]["spent_cost"] == sum(j["charged_cost"] for j in final["jobs"])
+    frozen = frozen_from_ledger(directory)
+    job = materialize_rate_job(config, system, frozen, first["job_id"])
+    reference = tmp_path / "child-reference"
+    run_resolved(job["config"], system, output=reference, **job["run_kwargs"])
+    assert_same_trajectories(Path(first["directory"]), reference)
 
 
 @pytest.mark.parametrize("receipt_written", [False, True])

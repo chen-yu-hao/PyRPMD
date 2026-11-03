@@ -210,6 +210,9 @@ class MeteredPotential:
         self.provider = provider
         self.meter = meter
         self.metadata = dict(getattr(provider, "metadata", {}) or {})
+        required = getattr(provider, "required_bond_constraints", None)
+        if required is not None:
+            self.required_bond_constraints = deepcopy(required)
         # Do not forward native bindings or split-force entry points: those
         # would permit evaluation without passing the admission gate.
         for name in ("evaluate_fast", "evaluate_slow", "split_force"):
