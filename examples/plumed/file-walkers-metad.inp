@@ -1,0 +1,49 @@
+# Four deterministic PLUMED file-sharing walkers. This is a workflow smoke
+# example, not a converged free-energy calculation.
+# pyrpmd run examples/plumed/file-walkers-metad.inp --output runs/plumed-file-walkers
+task = "plumed"
+temperature = "300 K"
+beads = 4
+seed = 3601
+
+[system]
+symbols = ["H"]
+geometry = [[-1.0, 0.0, 0.0]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "double_well"
+params = { height = 0.01, width = 1.0, confinement = 0.01 }
+
+[dynamics]
+timestep = "0.05 fs"
+integrator = "cayley-bcb"
+loop_backend = "python"
+
+[sampling]
+replicas = 4
+thermostat = "pile-l"
+integrator = "bcocb"
+equilibration_steps = 20
+production_steps = 200
+sample_interval = 5
+
+[plumed]
+mode = "centroid"
+walkers = "files"
+walker_read_stride = 1
+restart = "files"
+input = """
+UNITS LENGTH=Bohr ENERGY=Ha TIME=atomic
+x: POSITION ATOM=1
+m: METAD ARG=x.x SIGMA=0.10 HEIGHT=0.00002 PACE=10 BIASFACTOR=5 TEMP=300 FILE=HILLS
+PRINT ARG=x.x,m.bias STRIDE=5 FILE=COLVAR
+"""
+
+[parallel]
+backend = "process"
+trajectory_workers = 4
+scheduling = "static"
+
+[output]
+checkpoint_steps = 25
