@@ -121,6 +121,12 @@ def resolve_sampling(d, runtime, *, selected, materials, native_pimd):
         if not isinstance(sampling["thermostat"], str):
             raise InputError("sampling.thermostat must be a name such as 'andersen', 'pile-l' or 'nose-hoover-chain'")
         sampler = {"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}.get(integrator)
+        if sampling.get("engine") == "torch":
+            # The Torch workflow's equilibration map is explicitly BCOCB,
+            # independently of the selected deterministic production map.
+            sampler = "bcocb"
+            sampling.setdefault("device", d.get("potential", {}).get("device", "cpu"))
+            sampling.setdefault("normal_mode_layout", "rfft")
         if native_pimd and sampling["thermostat"] == "nhc" and sampler is not None:
             from .workflows.native_pimd import sampling_splitting
             sampler = sampling_splitting(integrator, "nhc", d.get("barostat", {}).get("mode", "none"))
@@ -255,7 +261,8 @@ def resolve_parallel(d, potential):
         "mode",
         (
             "gpu"
-            if str(potential.get("device", "")).startswith("cuda")
+            if (str(potential.get("device", "")).startswith("cuda")
+                and d.get("sampling", {}).get("engine") != "torch")
             else ("bead" if parallel["bead_workers"] > 1 else "serial")
         ),
     )

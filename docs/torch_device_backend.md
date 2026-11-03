@@ -1,10 +1,12 @@
 # Device-resident Torch dynamics: experimental Python API
 
 This is an opt-in backend for the sum-beads Hamiltonian with real masses and
-atomic units. It is **not yet connected to `rate`, `drpmd`, or `pimd` input
-files**, existing workflow checkpoints, constrained recrossing, or collective
-variable/bias evaluation. Those workflows continue to use their existing
-NumPy/native paths. Do not add unsupported input keys expecting GPU execution.
+atomic units. Fixed-cell `pimd` and `diffusion` input workflows can explicitly
+select `sampling.engine="torch"`; see [the tensor workflow guide](torch-materials-workflows.md)
+for their atomic batch checkpoints and supported combinations. The low-level
+API on this page is separate from those checkpoint payloads. `rate`, `drpmd`,
+constrained recrossing and collective-variable/bias workflows remain on their
+existing NumPy/native paths.
 
 The backend requires the existing `pyrpmd[gpu]` extra. CPU Torch is useful for
 correctness testing; request `device="cuda"` explicitly for GPU execution.
@@ -124,8 +126,8 @@ not be attributed to this extension. With `thermostat=None`, the roots collapse
 to the existing full BCB inner step, without extra FFTs or RNG consumption.
 
 See [independent verification and repeated observables](torch_bcocb_validation.md).
-The Torch backend remains a separate Python API, not a silent GPU workflow
-fallback. CPU/native mixed NPT, TRPMD and constrained-fragment sampling are
+The low-level Torch API and the explicit fixed-cell tensor workflow have
+separate entry points. CPU/native mixed NPT, TRPMD and constrained-fragment sampling are
 available through the [mixed-sampling routes](mixed-sampling.md). CUDA and
 trained-chemistry acceptance gates remain.
 

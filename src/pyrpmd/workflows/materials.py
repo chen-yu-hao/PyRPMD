@@ -85,8 +85,11 @@ def resolve_materials(config, system):
     if config.get("sampling", {}).get("engine", "legacy") == "native":
         from .native_pimd import resolve_native_pimd
         return resolve_native_pimd(config, system)
+    if config.get("sampling", {}).get("engine") == "torch":
+        from .torch_materials import resolve_torch_materials
+        return resolve_torch_materials(config, system)
     if config.get("sampling", {}).get("engine", "legacy") != "legacy":
-        raise ValueError("sampling.engine must be legacy or native")
+        raise ValueError("sampling.engine must be legacy, native or torch")
     from ..electronic_friction import validate_electronic_friction
     friction_spec = validate_electronic_friction(config, system)
     if not np.any(system.mobile_mask):
@@ -967,6 +970,9 @@ def run_materials(config, system, output, executor=None, return_data=False):
     if config.get("sampling", {}).get("engine", "legacy") == "native":
         from .native_pimd import run_native_pimd
         return run_native_pimd(config, system, output, executor, return_data)
+    if config.get("sampling", {}).get("engine") == "torch":
+        from .torch_materials import run_torch_materials
+        return run_torch_materials(config, system, output, executor, return_data)
     options = resolve_materials(config, system)
     tasks = [{"config": copy.deepcopy(config), "system": system, "output": str(output), "replica": replica,
               "materialize": False}
@@ -985,6 +991,9 @@ def reanalyze_diffusion(config, system, output, return_data=False):
     """Analyze saved unwrapped production trajectories; never evaluate a PES."""
     if config.get("task") != "diffusion":
         raise ValueError("reanalyze_diffusion requires a diffusion run")
+    if config.get("sampling", {}).get("engine") == "torch":
+        from .torch_materials import analyze_torch_materials
+        return root_call(analyze_torch_materials, config, system, output, return_data)
     def analyze():
         options = resolve_materials(config, system)
         streams = [_read_stream(config, system, output, replica, options,

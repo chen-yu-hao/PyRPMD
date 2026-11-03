@@ -50,8 +50,12 @@ def validate_task_sections(d):
     if not materials and any(key in d.get("output", {}) for key in ("trajectory_storage", "chunk_frames")):
         raise InputError("output.trajectory_storage/chunk_frames require task='pimd' or 'diffusion'")
     engine = d.get("sampling", {}).get("engine", "legacy")
-    if engine not in ("legacy", "native"):
-        raise InputError("sampling.engine must be legacy or native")
+    if engine not in ("legacy", "native", "torch"):
+        raise InputError("sampling.engine must be legacy, native or torch")
+    if engine == "torch" and not materials:
+        raise InputError("sampling.engine='torch' requires task='pimd' or 'diffusion'")
+    if engine != "torch" and any(key in d.get("sampling", {}) for key in ("device", "normal_mode_layout")):
+        raise InputError("sampling.device/normal_mode_layout require sampling.engine='torch'")
     native_pimd = engine == "native"
     if native_pimd and task != "pimd":
         raise InputError("sampling.engine='native' currently requires task='pimd'")

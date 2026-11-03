@@ -41,7 +41,7 @@ _SECTIONS = {
     ),
     "dynamics": set("timestep integrator native loop_backend block_steps".split()),
     "sampling": set(
-        "engine integrator thermostat timestep equilibration production save_interval interval interval_steps sample_interval equilibration_steps production_steps andersen_interval andersen_schedule thermostat_params gamma_centroid replicas parents".split()
+        "engine device normal_mode_layout integrator thermostat timestep equilibration production save_interval interval interval_steps sample_interval equilibration_steps production_steps andersen_interval andersen_schedule thermostat_params gamma_centroid replicas parents".split()
     ),
     "potential": _POTENTIAL_SPEC_FIELDS,
     "parallel": set(
