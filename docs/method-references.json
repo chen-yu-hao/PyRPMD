@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "repository": "chen-yu-hao/PyRPMD",
-  "audited_commit": "cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d",
-  "audit_date": "2026-11-02",
+  "audited_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+  "audit_date": "2026-11-03",
   "scope": "Feature-level method/model/interface provenance; citations are not claims of full implementation or completed reproduction.",
   "references": [
     {
@@ -1704,6 +1704,46 @@
       "doi": "10.1021/ct9004917",
       "url": "https://doi.org/10.1021/ct9004917",
       "role": "Original monomial-symmetrization PIP basis method"
+    },
+    {
+      "id": "samp-pptis2004",
+      "authors": "D. Moroni; P. G. Bolhuis; T. S. van Erp",
+      "title": "Rate constants for diffusive processes by partial path sampling",
+      "year": 2004,
+      "venue": "J. Chem. Phys. 120, 4055–4065",
+      "doi": "10.1063/1.1644537",
+      "url": "https://doi.org/10.1063/1.1644537",
+      "role": "Original PPTIS partial-path sampling"
+    },
+    {
+      "id": "samp-ffs2009",
+      "authors": "R. J. Allen; C. Valeriani; P. R. ten Wolde",
+      "title": "Forward flux sampling for rare event simulations",
+      "year": 2009,
+      "venue": "J. Phys.: Condens. Matter 21, 463102",
+      "doi": "10.1088/0953-8984/21/46/463102",
+      "url": "https://doi.org/10.1088/0953-8984/21/46/463102",
+      "role": "FFS method review and original-context formulation"
+    },
+    {
+      "id": "na-iesh2009",
+      "authors": "N. Shenvi; S. Roy; J. C. Tully",
+      "title": "Nonadiabatic dynamics at metal surfaces: Independent-electron surface hopping",
+      "year": 2009,
+      "venue": "J. Chem. Phys. 130",
+      "doi": "10.1063/1.3125436",
+      "url": "https://doi.org/10.1063/1.3125436",
+      "role": "Independent-electron surface hopping origin"
+    },
+    {
+      "id": "na-iesh2023",
+      "authors": "Gardner et al.",
+      "title": "Independent-electron surface-hopping implementation analysis",
+      "year": 2023,
+      "venue": "J. Chem. Phys.",
+      "doi": "10.1063/5.0137137",
+      "url": "https://doi.org/10.1063/5.0137137",
+      "role": "Follow-up IESH analysis"
     }
   ],
   "methods": [
@@ -4678,6 +4718,144 @@
       "gaps": "Pin source bytes/checksum and channel/symmetry conventions. Existing fixed-P agreement leaves the separate parent-time, umbrella-precision and dynamic-bead convergence checks to complete.",
       "gaps_zh": "固定势文件及校验和、通道与对称性约定；已有固定珠数一致性仍留下父链时间、伞窗精度和动态珠数收敛需要完成。",
       "group": "materials"
+    },
+    {
+      "id": "samp-pptis-repptis",
+      "name": "Partial-path TIS and replica-exchange PPTIS",
+      "name_zh": "部分路径 TIS 与 REPPTIS",
+      "code": [
+        "src/pyrpmd/pptis.py"
+      ],
+      "references": [
+        "samp-pptis2004",
+        "samp-retis2007"
+      ],
+      "priority": "P2",
+      "kind": "method",
+      "scope": "Python API; no TOML workflow; numerical model checks do not establish rate convergence.",
+      "scope_zh": "仅 Python API；尚无 TOML 工作流；模型数值检查不等于速率物理收敛。",
+      "group": "sampling"
+    },
+    {
+      "id": "samp-ffs",
+      "name": "Direct forward-flux sampling",
+      "name_zh": "直接前向通量采样",
+      "code": [
+        "src/pyrpmd/ffs.py"
+      ],
+      "references": [
+        "samp-ffs2009"
+      ],
+      "priority": "P2",
+      "kind": "method",
+      "scope": "Python API for a supplied Markov process; not a general path-sampling TOML task.",
+      "scope_zh": "针对指定马尔可夫过程的 Python API，尚无统一 TOML 工作流。",
+      "group": "sampling"
+    },
+    {
+      "id": "na-iesh",
+      "name": "Independent-electron surface hopping",
+      "name_zh": "独立电子表面跳跃",
+      "code": [
+        "src/pyrpmd/iesh.py"
+      ],
+      "references": [
+        "na-iesh2009",
+        "na-iesh2023"
+      ],
+      "priority": "P2",
+      "kind": "method",
+      "scope": "P=1 spinless determinant, real nondegenerate single-electron Hamiltonian; not ring-polymer IESH.",
+      "scope_zh": "P=1、自旋忽略的行列式及实非简并单电子哈密顿量；不是环聚合物 IESH。",
+      "group": "nonadiabatic"
+    },
+    {
+      "id": "na-multistate-mash",
+      "name": "Classical multistate MASH",
+      "name_zh": "经典多态 MASH",
+      "code": [
+        "src/pyrpmd/mash.py"
+      ],
+      "references": [
+        "na-mash2023",
+        "na-mashrates2024"
+      ],
+      "priority": "P2",
+      "kind": "method",
+      "scope": "P=1 classical multistate implementation; distinct from two-state RP-MASH.",
+      "scope_zh": "P=1 经典多态算法；不同于双态 RP-MASH。",
+      "group": "nonadiabatic"
+    },
+    {
+      "id": "rate-precision",
+      "name": "Precision-driven thermal-rate planning and metered execution",
+      "name_zh": "精度驱动热速率计划与预算化执行",
+      "code": [
+        "src/pyrpmd/precision.py",
+        "src/pyrpmd/precision_cli.py"
+      ],
+      "references": [
+        "rate05",
+        "bimol09",
+        "samp-mbar2008"
+      ],
+      "priority": "P2",
+      "kind": "project-composition",
+      "scope": "Original algorithms cited by component; no original paper asserted for the package's precision ledger or CLI.",
+      "scope_zh": "按组件引用原始算法；不为项目的预算账本或 CLI 虚构原始论文。",
+      "group": "core"
+    },
+    {
+      "id": "torch-materials-workflow",
+      "name": "Explicit device-resident tensor PIMD and diffusion",
+      "name_zh": "显式设备驻留张量 PIMD 与扩散",
+      "code": [
+        "src/pyrpmd/workflows/torch_materials.py"
+      ],
+      "references": [
+        "cw81",
+        "pile10",
+        "torch2019"
+      ],
+      "priority": "P2",
+      "kind": "project-composition",
+      "scope": "Fixed-cell PIMD/diffusion only; CPU benchmark is not a CUDA benchmark.",
+      "scope_zh": "仅固定晶胞 PIMD/扩散；CPU 基准不能证明 CUDA 性能。",
+      "group": "materials"
+    },
+    {
+      "id": "fermionic-winding",
+      "name": "Fermionic sign reweighting and periodic winding exchange",
+      "name_zh": "费米符号重加权与周期 winding 交换",
+      "code": [
+        "src/pyrpmd/pimd_methods.py"
+      ],
+      "references": [
+        "bose19",
+        "bose23"
+      ],
+      "priority": "P2",
+      "kind": "method-extension",
+      "scope": "Fermionic observables use sign gates; periodic winding and all-bead BZP have explicit restrictions.",
+      "scope_zh": "费米估计量经符号门限；周期 winding 与全珠子 BZP 存在明确限制。",
+      "group": "materials"
+    },
+    {
+      "id": "gr-instanton-workflow",
+      "name": "Golden-rule and molecular ring-polymer instanton workflows",
+      "name_zh": "Golden-rule 与分子环聚合物 instanton 工作流",
+      "code": [
+        "src/pyrpmd/instanton.py"
+      ],
+      "references": [
+        "rpi09",
+        "rpi16"
+      ],
+      "priority": "P2",
+      "kind": "method-extension",
+      "scope": "Results are model and discretization comparisons; physical_converged remains false.",
+      "scope_zh": "验证仅覆盖模型与离散化对照；physical_converged 仍为 false。",
+      "group": "core"
     }
   ]
 }
