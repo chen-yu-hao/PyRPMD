@@ -1092,7 +1092,7 @@
       "year": 2025,
       "venue": "ChemRxiv, version 1 (7 December 2025), preprint",
       "doi": "10.26434/chemrxiv-2025-xps2g",
-      "url": "https://client.prod.orp.cambridge.org/engage/chemrxiv/article-details/692ba382a10c9f5ca169b8de",
+      "url": "https://doi.org/10.26434/chemrxiv-2025-xps2g",
       "role": "Implemented CA-RP-MASH algorithm and operator-pair weights; record the implemented preprint version explicitly."
     },
     {
@@ -1704,6 +1704,346 @@
       "doi": "10.1021/ct9004917",
       "url": "https://doi.org/10.1021/ct9004917",
       "role": "Original monomial-symmetrization PIP basis method"
+    },
+    {
+      "id": "qcmd2019",
+      "authors": "G. Trenins; M. J. Willatt; S. C. Althorpe",
+      "title": "Path-integral dynamics of water using curvilinear centroids",
+      "year": 2019,
+      "venue": "J. Chem. Phys. 151, 054109",
+      "doi": "10.1063/1.5100587",
+      "url": "https://doi.org/10.1063/1.5100587",
+      "role": "Original quasi-centroid coordinates and QCMD method; full real-time QCMD is not implemented"
+    },
+    {
+      "id": "fqcmd2021",
+      "authors": "T. Fletcher; A. Zhu; J. E. Lawrence; D. E. Manolopoulos",
+      "title": "Fast quasi-centroid molecular dynamics",
+      "year": 2021,
+      "venue": "J. Chem. Phys. 155, 231101",
+      "doi": "10.1063/5.0076704",
+      "url": "https://arxiv.org/abs/2111.11572",
+      "role": "Original f-QCMD effective-potential construction; PyRPMD implements a restricted molecular subset"
+    },
+    {
+      "id": "fermions2020",
+      "authors": "B. Hirshberg; M. Invernizzi; M. Parrinello",
+      "title": "Path integral molecular dynamics for fermions: Alleviating the sign problem with the Bogoliubov inequality",
+      "year": 2020,
+      "venue": "J. Chem. Phys. 152, 171102",
+      "doi": "10.1063/5.0008720",
+      "url": "https://arxiv.org/abs/2003.10317",
+      "role": "Bosonic-sampling fermionic reweighting; the auxiliary Bogoliubov-bound extension is not implemented"
+    },
+    {
+      "id": "exchange-pbc2025",
+      "authors": "J. Higer; Y. M. Y. Feldman; B. Hirshberg",
+      "title": "Periodic boundary conditions for bosonic path integral molecular dynamics",
+      "year": 2025,
+      "venue": "J. Chem. Phys. 163, 024101",
+      "doi": "10.1063/5.0265906",
+      "url": "https://arxiv.org/abs/2501.17618",
+      "role": "Periodic exchange image sums and the limitations of the minimum-image approximation"
+    },
+    {
+      "id": "gle2010",
+      "authors": "M. Ceriotti; G. Bussi; M. Parrinello",
+      "title": "Colored-Noise Thermostats à la Carte",
+      "year": 2010,
+      "venue": "J. Chem. Theory Comput. 6, 1170–1180",
+      "doi": "10.1021/ct900563s",
+      "url": "https://doi.org/10.1021/ct900563s",
+      "role": "Harmonic Lyapunov response, autocorrelation objective and colored-noise fitting; not a source of bundled parameter tables"
+    },
+    {
+      "id": "bofill1994",
+      "authors": "J. M. Bofill",
+      "title": "Updated Hessian matrix and the restricted step method for locating transition structures",
+      "year": 1994,
+      "venue": "J. Comput. Chem. 15, 1–11",
+      "doi": "10.1002/jcc.540150102",
+      "url": "https://doi.org/10.1002/jcc.540150102",
+      "role": "Hessian-update method"
+    },
+    {
+      "id": "instanton-onthefly2016",
+      "authors": "A. N. Beyer; J. O. Richardson; P. J. Knowles; J. Rommel; S. C. Althorpe",
+      "title": "Quantum Tunneling Rates of Gas-Phase Reactions from On-the-Fly Instanton Calculations",
+      "year": 2016,
+      "venue": "J. Phys. Chem. Lett. 7, 4374–4379",
+      "doi": "10.1021/acs.jpclett.6b02115",
+      "url": "https://doi.org/10.1021/acs.jpclett.6b02115",
+      "role": "Practical molecular instanton optimization; PyRPMD does not reproduce the Molpro implementation"
+    },
+    {
+      "id": "gr-instanton2015a",
+      "authors": "J. O. Richardson; R. Bauer; M. Thoss",
+      "title": "Semiclassical Green’s functions and an instanton formulation of electron-transfer rates in the nonadiabatic limit",
+      "year": 2015,
+      "venue": "J. Chem. Phys. 143, 134115",
+      "doi": "10.1063/1.4932361",
+      "url": "https://doi.org/10.1063/1.4932361",
+      "role": "Original golden-rule instanton derivation"
+    },
+    {
+      "id": "gr-instanton2015b",
+      "authors": "J. O. Richardson",
+      "title": "Ring-polymer instanton theory of electron transfer in the nonadiabatic limit",
+      "year": 2015,
+      "venue": "J. Chem. Phys. 143, 134116",
+      "doi": "10.1063/1.4932362",
+      "url": "https://doi.org/10.1063/1.4932362",
+      "role": "Ring-polymer numerical formulation of golden-rule instantons"
+    },
+    {
+      "id": "samp-abf2008",
+      "authors": "E. Darve; D. Rodríguez-Gómez; A. Pohorille",
+      "title": "Adaptive biasing force method for scalar and vector free energy calculations",
+      "year": 2008,
+      "venue": "J. Chem. Phys. 128, 144120",
+      "doi": "10.1063/1.2829861",
+      "url": "https://doi.org/10.1063/1.2829861",
+      "role": "Scalar/vector ABF local mean-force estimator"
+    },
+    {
+      "id": "samp-pabf2015",
+      "authors": "H. Alrachid; T. Lelièvre",
+      "title": "Long-time convergence of an adaptive biasing force method: Variance reduction by Helmholtz projection",
+      "year": 2015,
+      "venue": "SMAI J. Comput. Math. 1, 55–82",
+      "doi": "10.5802/smai-jcm.4",
+      "url": "https://doi.org/10.5802/smai-jcm.4",
+      "role": "Projected ABF and Helmholtz projection"
+    },
+    {
+      "id": "samp-eabf2017",
+      "authors": "A. Lesage; T. Lelièvre; G. Stoltz; J. Hénin",
+      "title": "Smoothed Biasing Forces Yield Unbiased Free Energies with the Extended-System Adaptive Biasing Force Method",
+      "year": 2017,
+      "venue": "J. Phys. Chem. B 121, 3676–3685",
+      "doi": "10.1021/acs.jpcb.6b10055",
+      "url": "https://doi.org/10.1021/acs.jpcb.6b10055",
+      "role": "Extended-system ABF and physical-CV reconstruction"
+    },
+    {
+      "id": "samp-jarzynski1997",
+      "authors": "C. Jarzynski",
+      "title": "Nonequilibrium Equality for Free Energy Differences",
+      "year": 1997,
+      "venue": "Phys. Rev. Lett. 78, 2690–2693",
+      "doi": "10.1103/PhysRevLett.78.2690",
+      "url": "https://doi.org/10.1103/PhysRevLett.78.2690",
+      "role": "Original nonequilibrium work equality"
+    },
+    {
+      "id": "samp-crooks1999",
+      "authors": "G. E. Crooks",
+      "title": "Entropy production fluctuation theorem and the nonequilibrium work relation for free energy differences",
+      "year": 1999,
+      "venue": "Phys. Rev. E 60, 2721–2726",
+      "doi": "10.1103/PhysRevE.60.2721",
+      "url": "https://doi.org/10.1103/PhysRevE.60.2721",
+      "role": "Forward/reverse work fluctuation relation"
+    },
+    {
+      "id": "samp-bennett1976",
+      "authors": "C. H. Bennett",
+      "title": "Efficient estimation of free energy differences from Monte Carlo data",
+      "year": 1976,
+      "venue": "J. Comput. Phys. 22, 245–268",
+      "doi": "10.1016/0021-9991(76)90078-4",
+      "url": "https://doi.org/10.1016/0021-9991(76)90078-4",
+      "role": "Acceptance-ratio estimator used in bidirectional work analysis"
+    },
+    {
+      "id": "samp-shadow2013",
+      "authors": "D. A. Sivak; J. D. Chodera; G. E. Crooks",
+      "title": "Using Nonequilibrium Fluctuation Theorems to Understand and Correct Errors in Equilibrium and Nonequilibrium Simulations of Discrete Langevin Dynamics",
+      "year": 2013,
+      "venue": "Phys. Rev. X 3, 011007",
+      "doi": "10.1103/PhysRevX.3.011007",
+      "url": "https://doi.org/10.1103/PhysRevX.3.011007",
+      "role": "Shadow-work accounting for discrete stochastic propagation"
+    },
+    {
+      "id": "samp-pptis2004",
+      "authors": "D. Moroni; P. G. Bolhuis; T. S. van Erp",
+      "title": "Rate constants for diffusive processes by partial path sampling",
+      "year": 2004,
+      "venue": "J. Chem. Phys. 120, 4055–4065",
+      "doi": "10.1063/1.1644537",
+      "url": "https://arxiv.org/abs/cond-mat/0310466",
+      "role": "Original partial-path memory-loss approximation"
+    },
+    {
+      "id": "samp-repptis2023",
+      "authors": "W. Vervust; D. T. Zhang; T. S. van Erp; A. Ghysels",
+      "title": "Path sampling with memory reduction and replica exchange to reach long permeation timescales",
+      "year": 2023,
+      "venue": "Biophys. J. 122, 2960–2972",
+      "doi": "10.1016/j.bpj.2023.02.021",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10398259/",
+      "role": "Replica-exchange PPTIS"
+    },
+    {
+      "id": "samp-ffs2005",
+      "authors": "R. J. Allen; P. B. Warren; P. R. ten Wolde",
+      "title": "Sampling Rare Switching Events in Biochemical Networks",
+      "year": 2005,
+      "venue": "Phys. Rev. Lett. 94, 018104",
+      "doi": "10.1103/PhysRevLett.94.018104",
+      "url": "https://doi.org/10.1103/PhysRevLett.94.018104",
+      "role": "Original forward-flux sampling method"
+    },
+    {
+      "id": "samp-ffs2009",
+      "authors": "R. J. Allen; C. Valeriani; P. R. ten Wolde",
+      "title": "Forward flux sampling for rare event simulations",
+      "year": 2009,
+      "venue": "J. Phys.: Condens. Matter 21, 463102",
+      "doi": "10.1088/0953-8984/21/46/463102",
+      "url": "https://arxiv.org/abs/0906.4758",
+      "role": "Method review and practical stochastic-splitting formulation; original method is cited separately"
+    },
+    {
+      "id": "samp-mlcolvar2023",
+      "authors": "L. Bonati; E. Trizio; A. Rizzi; M. Parrinello",
+      "title": "A unified framework for machine learning collective variables for enhanced sampling simulations: mlcolvar",
+      "year": 2023,
+      "venue": "J. Chem. Phys. 159, 014801",
+      "doi": "10.1063/5.0156343",
+      "url": "https://doi.org/10.1063/5.0156343",
+      "role": "Upstream training software; deployed CVs also need their method citation"
+    },
+    {
+      "id": "samp-deeplda2020",
+      "authors": "L. Bonati; A. Rizzi; M. Parrinello",
+      "title": "Data-Driven Collective Variables for Enhanced Sampling",
+      "year": 2020,
+      "venue": "J. Phys. Chem. Lett. 11, 2998–3004",
+      "doi": "10.1021/acs.jpclett.0c00535",
+      "url": "https://doi.org/10.1021/acs.jpclett.0c00535",
+      "role": "Deep-LDA collective variables"
+    },
+    {
+      "id": "samp-deeptica2021",
+      "authors": "L. Bonati; G. Piccini; M. Parrinello",
+      "title": "Deep learning the slow modes for rare events sampling",
+      "year": 2021,
+      "venue": "Proc. Natl. Acad. Sci. USA 118, e2113533118",
+      "doi": "10.1073/pnas.2113533118",
+      "url": "https://doi.org/10.1073/pnas.2113533118",
+      "role": "Deep-TICA collective variables"
+    },
+    {
+      "id": "na-iesh2009",
+      "authors": "N. Shenvi; S. Roy; J. C. Tully",
+      "title": "Nonadiabatic dynamics at metal surfaces: Independent-electron surface hopping",
+      "year": 2009,
+      "venue": "J. Chem. Phys. 130, 174107",
+      "doi": "10.1063/1.3125436",
+      "url": "https://doi.org/10.1063/1.3125436",
+      "role": "Original IESH method"
+    },
+    {
+      "id": "na-iesh2023",
+      "authors": "J. Gardner; D. Corken; S. M. Janke; S. Habershon; R. J. Maurer",
+      "title": "Efficient implementation and performance analysis of the independent electron surface hopping method for dynamics at metal surfaces",
+      "year": 2023,
+      "venue": "J. Chem. Phys. 158, 064101",
+      "doi": "10.1063/5.0137137",
+      "url": "https://arxiv.org/abs/2212.00518v2",
+      "role": "IESH implementation analysis and benchmark formulation"
+    },
+    {
+      "id": "na-multimash2023",
+      "authors": "J. E. Runeson; D. E. Manolopoulos",
+      "title": "A multi-state mapping approach to surface hopping",
+      "year": 2023,
+      "venue": "J. Chem. Phys. 159, 094115",
+      "doi": "10.1063/5.0158147",
+      "url": "https://arxiv.org/abs/2305.08835v3",
+      "role": "Original multistate MASH, including signed estimators and multistate momentum direction; not unSMASH"
+    },
+    {
+      "id": "na-sacasscf2016",
+      "authors": "I. Fdez. Galván; M. G. Delcey; T. B. Pedersen; F. Aquilante; R. Lindh",
+      "title": "Analytical State-Average Complete-Active-Space Self-Consistent Field Nonadiabatic Coupling Vectors: Implementation with Density-Fitted Two-Electron Integrals and Application to Conical Intersections",
+      "year": 2016,
+      "venue": "J. Chem. Theory Comput. 12, 3636–3653",
+      "doi": "10.1021/acs.jctc.6b00384",
+      "url": "https://doi.org/10.1021/acs.jctc.6b00384",
+      "role": "SA-CASSCF analytic-coupling derivation cited by the provider; this bridge does not enable density fitting"
+    },
+    {
+      "id": "na-heom1989",
+      "authors": "Y. Tanimura; R. Kubo",
+      "title": "Time Evolution of a Quantum System in Contact with a Nearly Gaussian-Markoffian Noise Bath",
+      "year": 1989,
+      "venue": "J. Phys. Soc. Jpn. 58, 101–114",
+      "doi": "10.1143/JPSJ.58.101",
+      "url": "https://doi.org/10.1143/JPSJ.58.101",
+      "role": "Original hierarchy foundation; finite-temperature formulation is cited separately"
+    },
+    {
+      "id": "na-heom2020",
+      "authors": "Y. Tanimura",
+      "title": "Numerically “exact” approach to open quantum dynamics: The hierarchical equations of motion (HEOM)",
+      "year": 2020,
+      "venue": "J. Chem. Phys. 153, 020901",
+      "doi": "10.1063/5.0011599",
+      "url": "https://doi.org/10.1063/5.0011599",
+      "role": "Modern formulation and review; a finite hierarchy still requires convergence"
+    },
+    {
+      "id": "na-qutip-bofin2023",
+      "authors": "N. Lambert; T. Raheja; S. Cross; P. Menczel; S. Ahmed; A. Pitchford; D. Burgarth; F. Nori",
+      "title": "QuTiP-BoFiN: A bosonic and fermionic numerical hierarchical-equations-of-motion library with applications in light-harvesting, quantum control, and single-molecule electronics",
+      "year": 2023,
+      "venue": "Phys. Rev. Research 5, 013181",
+      "doi": "10.1103/PhysRevResearch.5.013181",
+      "url": "https://doi.org/10.1103/PhysRevResearch.5.013181",
+      "role": "Optional independent software comparator and published population benchmark, not the PyRPMD implementation"
+    },
+    {
+      "id": "active-rpmd2018",
+      "authors": "I. S. Novikov; Y. V. Suleimanov; A. V. Shapeev",
+      "title": "Automated calculation of thermal rate coefficients using ring polymer molecular dynamics and machine-learning interatomic potentials with active learning",
+      "year": 2018,
+      "venue": "Phys. Chem. Chem. Phys. 20, 29503–29512",
+      "doi": "10.1039/C8CP06037A",
+      "url": "https://doi.org/10.1039/C8CP06037A",
+      "role": "Published active-learning RPMD rate workflow; the PyRPMD pilot is a distinct committee-based control experiment"
+    },
+    {
+      "id": "metatomic2026",
+      "authors": "F. Bigi; J. W. Abbott; P. Loche; A. Mazitov; D. Tisi; M. F. Langer; A. Goscinski; P. Pegolo; S. Chong; R. Goswami; P. Febrer; S. Chorna; M. Kellner; M. Ceriotti; G. Fraux",
+      "title": "Metatensor and metatomic: Foundational libraries for interoperable atomistic machine learning",
+      "year": 2026,
+      "venue": "J. Chem. Phys. 164, 064113",
+      "doi": "10.1063/5.0304911",
+      "url": "https://docs.metatensor.org/metatomic/latest/cite.html",
+      "role": "Upstream interoperability software; model weights require their own attribution"
+    },
+    {
+      "id": "nist-bonferroni",
+      "authors": "NIST/SEMATECH",
+      "title": "e-Handbook of Statistical Methods: Bonferroni’s method",
+      "year": 2002,
+      "venue": "NIST Handbook 151, §7.4.7.3 (online section accessed 2026-11-03)",
+      "doi": null,
+      "url": "https://www.itl.nist.gov/div898/handbook/prc/section4/prc473.htm",
+      "role": "Official formula reference for finite-family simultaneous intervals; 2002 is the handbook launch year"
+    },
+    {
+      "id": "nist-uncertainty1994",
+      "authors": "B. N. Taylor; C. E. Kuyatt",
+      "title": "Guidelines for Evaluating and Expressing the Uncertainty of NIST Measurement Results",
+      "year": 1994,
+      "venue": "NIST Technical Note 1297, 1994 edition, Appendix A",
+      "doi": "10.6028/NIST.tn.1297",
+      "url": "https://www.nist.gov/pml/nist-technical-note-1297/nist-tn-1297-appendix-law-propagation-uncertainty",
+      "role": "Official covariance-aware first-order propagation of uncertainty, not a guarantee of finite-sample coverage"
     }
   ],
   "methods": [
@@ -1855,18 +2195,20 @@
         "state20",
         "state22"
       ],
-      "scope": "Production QCT uses P=1 harmonic state preparation. The H₃ benchmark additionally solves a one-dimensional full-PES classical action condition J(E)=v+1/2 and samples a time-uniform orbit phase.",
+      "scope": "Production QCT uses P=1 harmonic preparation; j0_energy_policy=\"preserve_actions\" preserves declared modal actions during zero-angular-momentum preparation. The H3 benchmark also solves J(E)=v+1/2 on a full-PES diatomic orbit with uniform time-phase sampling.",
       "original_system": "Foundational QCT: H + H₂ on a simple barrier PES. Modern NE-RPMD papers compare with QCT for atom–diatom or methane scattering.",
       "reproduce_observables": "Compute σ_vj(Ecoll), vibrational action and isolated-energy drift; compare harmonic and action-matched initial energy distributions and scattering under separately labelled fixed-collision-energy and fixed-total-energy protocols.",
-      "existing_entry": "examples/state_selected/qct.inp; benchmarks/h3/state_preparation_study.py; benchmarks/h3/STATE_PREPARATION_STUDY.md",
+      "existing_entry": "docs/state-selected.md; examples/state_selected/qct.inp; benchmarks/h3/state_preparation_study.py; benchmarks/h3/STATE_PREPARATION_STUDY.md",
       "gaps": "Action quantization is semiclassical, not exact quantum eigenstate preparation. Full-PES action initialization is an H₃ diatomic benchmark extension, not a general polyatomic production method. A 1965-paper reproduction requires its historical PES, rather than substituting BKMP2 silently.",
       "priority": "P1",
       "name_zh": "谐振 QCT 与全势能面作用量匹配 QCT",
-      "scope_zh": "主工作流是 P=1 谐振初态；H₃ 基准另有 J(E)=v+1/2 和按运动时间均匀抽相位的全势能面双原子初始化。",
+      "scope_zh": "主 QCT 为 P=1 谐振制备；j0_energy_policy=\"preserve_actions\" 在零角动量制备时保留指定模态作用量。H3 基准另在全势面双原子轨道解 J(E)=v+1/2，并均匀抽取时间相位。",
       "original_system_zh": "QCT 奠基应用为简单势垒上的 H+H₂；现代 NE-RPMD 文献也使用 QCT 对照。",
       "reproduce_observables_zh": "算态分辨截面、作用量、孤立能量漂移；分别按固定碰撞能和固定总能比较初态分布与反应结果。",
       "gaps_zh": "作用量量子化是半经典近似；全 PES 版本限 H₃ 双原子基准，不能宣称通用多原子算法或精确本征态。",
-      "group": "core"
+      "group": "core",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
     },
     {
       "id": "state-switch",
@@ -2022,46 +2364,56 @@
       "id": "gle",
       "name": "Cartesian and normal-mode GLE baths",
       "code": [
-        "src/pyrpmd/native_ensemble.py"
+        "src/pyrpmd/native_ensemble.py",
+        "src/pyrpmd/gle_parameters.py",
+        "src/pyrpmd/_gle_fitting.py"
       ],
       "references": [
         "gle09",
+        "gle2010",
         "pile10"
       ],
-      "scope": "Extended-variable exact OU update with supplied stable drift and covariance matrices; Cartesian GLE, normal-mode GLE and normal-mode GLE plus global centroid SVR are available.",
+      "scope": "Exact extended-variable OU baths accept explicit matrices, auditable gle4md imports, analytic white-noise OPT(V) parameters, or deterministic colored-noise fits over a declared frequency band. Fit objectives and residuals are recorded in parameter identity.",
       "original_system": "Original colored-noise thermostat: harmonic-frequency response and selective control of dynamical time scales.",
       "reproduce_observables": "Compare sampled joint momentum/auxiliary covariance with the Lyapunov target; measure position/energy autocorrelation versus oscillator frequency and matrix parameters; check canonical physical variance.",
-      "existing_entry": "docs/native-ensembles.md; src/pyrpmd/native_ensemble.py",
-      "gaps": "Generic GLE matrices are not automatically quantum-correct or optimally tuned. The parameterization and physical/auxiliary covariance conventions must accompany any reproduction.",
+      "existing_entry": "docs/condensed-phase-nqe.md; examples/path_integral/gle_parameter_validation.py",
+      "gaps": "Colored fitting does not establish a global optimum; harmonic fit success does not certify anharmonic or timestep convergence. No third-party parameter table is bundled.",
       "priority": "P0",
       "name_zh": "Cartesian/正常模 GLE 热浴",
-      "scope_zh": "使用显式稳定漂移矩阵和协方差矩阵的扩展变量 OU 更新，可组合质心 SVR。",
+      "scope_zh": "精确扩展变量 OU 热浴可接收显式矩阵、可审计的 gle4md 导入、解析白噪声 OPT(V) 参数或指定频段的确定性有色噪声拟合；目标和残差进入参数身份。",
       "original_system_zh": "原文研究按谐振频率选择性调控热浴响应。",
       "reproduce_observables_zh": "对照 Lyapunov 目标算联合动量/辅助变量协方差，扫描频率下的位置与能量相关时间。",
-      "gaps_zh": "任意 GLE 矩阵不自动具备量子修正或最佳采样效率；必须提供参数来源。",
-      "group": "core"
+      "gaps_zh": "有色拟合不保证全局最优；谐振拟合通过不代表非谐性或时间步收敛，未捆绑第三方参数表。",
+      "group": "core",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
     },
     {
       "id": "piglet",
-      "name": "PIGLET with externally calibrated matrices",
+      "name": "PIGLET with imported or generated harmonic calibration",
       "code": [
-        "src/pyrpmd/native_ensemble.py"
+        "src/pyrpmd/native_ensemble.py",
+        "src/pyrpmd/gle_parameters.py",
+        "src/pyrpmd/_gle_fitting.py"
       ],
       "references": [
-        "piglet12"
+        "piglet12",
+        "gle2010"
       ],
-      "scope": "NVT normal-mode GLE using externally supplied P-dependent calibrated matrices, matched β and parameter provenance; no built-in calibration table is invented.",
+      "scope": "Per-mode GLE with explicit temperature, bead count and provenance; generate_piglet fits harmonic potential and centroid-virial kinetic energies with a canonical centroid and a shared internal-mode bath. Isotropic BZP NPT is supported subject to the centroid covariance constraint.",
       "original_system": "Original first-principles liquid-water structural and nuclear kinetic-energy/momentum-distribution study.",
       "reproduce_observables": "With the original calibrated bath, compare kinetic energy and static observables against fully converged PIMD versus P and computational cost; independently verify mode covariance and centroid classical temperature.",
-      "existing_entry": "docs/native-ensembles.md; src/pyrpmd/native_ensemble.py",
-      "gaps": "External temperature/bead-specific matrices and the original electronic-structure setup are required. PIGLET NPT is rejected. The paper's transient anisotropic Gaussian momentum estimator is not implemented by selecting this bath.",
+      "existing_entry": "docs/condensed-phase-nqe.md; examples/path_integral/gle_parameter_validation.py; examples/path_integral/piglet_npt.py",
+      "gaps": "Independent harmonic-grid residuals are fit diagnostics, not molecular convergence. Flexible-cell PIGLET NPT and TRPMD remain unsupported.",
       "priority": "P2",
-      "name_zh": "外部标定矩阵驱动的 PIGLET",
-      "scope_zh": "NVT 正常模 GLE，要求矩阵分别匹配逆温度 β 和珠数 P 并记录来源；没有内置标定表。",
+      "name_zh": "可导入或生成谐振校准参数的 PIGLET",
+      "scope_zh": "逐模 GLE 显式记录温度、珠数和来源；generate_piglet 用正则质心及共享内模热浴拟合谐振势能和质心位力动能。在质心协方差满足约束时支持各向同性 BZP NPT。",
       "original_system_zh": "原文为第一性原理液态水的结构、核动能和动量分布。",
       "reproduce_observables_zh": "用原标定热浴比较动能/静态量的珠数与成本收敛，并检验正常模协方差与质心经典温度。",
-      "gaps_zh": "需外部矩阵和原电子结构条件；不支持 PIGLET NPT，且未实现论文的瞬态各向异性 Gaussian 动量估计器。",
-      "group": "core"
+      "gaps_zh": "独立谐振网格残差只是拟合诊断，不是分子收敛；仍不支持柔性晶胞 PIGLET NPT 或 TRPMD。",
+      "group": "core",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
     },
     {
       "id": "ffl",
@@ -2414,20 +2766,23 @@
       ],
       "references": [
         "bose19",
-        "bose23"
+        "bose23",
+        "exchange-pbc2025"
       ],
-      "scope": "Feldman–Hirshberg O(N²+PN) recurrence for equal-mass exchange groups, using representative cycles and symmetric observables.",
+      "scope": "Equal-mass exchange groups use the Feldman–Hirshberg O(N²+PN) representative-cycle recurrence. Nonperiodic, explicit minimum-image and tolerance-controlled full-winding kernels are available; periodic exchange has an all-bead isotropic BZP NPT path.",
       "original_system": "Original papers: trapped two-dimensional ideal/interacting bosons; 2023 also demonstrates large-system scaling and periodic helium. Existing package benchmark targets the published ideal two-dimensional harmonic-trap setting.",
       "reproduce_observables": "Compute symmetric density and potential/virial-derived total energy versus N, β and P; compare exact canonical ideal-boson recurrence and small-N explicit checks. Measure wall-time scaling and errors per independent replica.",
-      "existing_entry": "examples/path_integral/bosonic.inp; benchmarks/tier2_literature/path_integral.py; benchmarks/tier2_literature/README.md",
-      "gaps": "The representative-cycle potential need not equal a full factorial sum pointwise; compare symmetric ensemble observables. No periodic winding/superfluid estimator. Existing P=36 model agreement uses different thermostat and shorter trajectories than the paper and is not a complete original statistical campaign.",
+      "existing_entry": "docs/tier2-path-integral.md; examples/path_integral/bosonic_winding_npt.inp",
+      "gaps": "The representative-cycle potential need not equal the factorial sum pointwise; test symmetric observables. No sampled winding-number/superfluid estimator; minimum-image remains an approximation and full-winding lattice sums have an explicit work cap.",
       "priority": "P1",
       "name_zh": "二次复杂度玻色交换 PIMD",
-      "scope_zh": "同质量交换组的 Feldman–Hirshberg O(N²+PN) 递推，使用代表循环并测量对称量。",
+      "scope_zh": "同质量交换组采用 Feldman–Hirshberg O(N²+PN) 代表循环递推；支持非周期、显式最小镜像及按容差截断的全绕数核，周期交换可走全珠子各向同性 BZP NPT。",
       "original_system_zh": "二维谐振阱理想/相互作用玻色子；2023 年另有大规模与周期氦测试。仓库已对接二维理想阱。",
       "reproduce_observables_zh": "算对称密度、势能及谐振 virial 总能随 N、β、P 的变化，对照精确正则递推并测量时间复杂度。",
-      "gaps_zh": "逐点势不必等于全排列和；只比较对称系综量。未实现周期绕数/超流估计，仓库温控与采样长度也不同于原文。",
-      "group": "core"
+      "gaps_zh": "代表循环势逐点不必等于全排列和，应比较对称可观测量。没有采样绕数或超流估计量；最小镜像仍为近似，全绕数求和有显式工作量上限。",
+      "group": "core",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
     },
     {
       "id": "pigs",
@@ -2457,24 +2812,29 @@
       "name": "Ring-polymer instanton thermal rate",
       "code": [
         "src/pyrpmd/instanton.py",
-        "src/pyrpmd/low_temperature.py"
+        "src/pyrpmd/low_temperature.py",
+        "src/pyrpmd/workflows/instanton.py"
       ],
       "references": [
         "rpi09",
-        "rpi16"
+        "rpi16",
+        "bofill1994",
+        "instanton-onthefly2016"
       ],
-      "scope": "Stationary imaginary-time ring optimization, semiclassical fluctuation determinant/prefactor, harmonic-reactant normalization and negative/zero-mode checks; multidimensional gas-rate handling includes declared rigid-body external modes.",
+      "scope": "Molecular path optimization and rate workflow with root or Bofill search, analytic/provider or finite-difference Hessians, bead/tolerance studies, reactant normalization and negative/zero-mode checks; available through pyrpmd instanton.",
       "original_system": "2009 connection paper: symmetric/asymmetric one-dimensional Eckart barrier tests. 2016 paper supplies first-principles instanton-rate derivation.",
       "reproduce_observables": "Compute Tc, optimized path/action, gradient residual, Hessian signature, fluctuation prefactor and k(T); converge beads, optimization tolerance and finite-difference Hessian; compare one-dimensional Eckart against numerical quantum transmission integration away from crossover.",
-      "existing_entry": "examples/instanton/eckart.py; examples/instanton/low_temperature.py; examples/instanton/cross_checks.json; docs/instanton.md",
-      "gaps": "Optimization success is not physical convergence; reports retain physical_converged=False. Dense Hessian size is bounded. A molecular claim also needs the matching PES, reactant partition functions, symmetry/rotation factors and bead-converged temperatures.",
+      "existing_entry": "docs/instanton.md; examples/instanton/production.py; examples/instanton/golden_rule.py",
+      "gaps": "Dense prefactors are limited to 4096 active bead coordinates. Numerical/discretization convergence does not establish physical convergence; molecular PES, partitions and symmetry factors require separate validation. Uniform crossover theory and sparse determinants are absent.",
       "priority": "P1",
       "name_zh": "环聚合物瞬子热速率",
-      "scope_zh": "优化驻定虚时间路径，计算半经典涨落行列式/前因子、谐振反应物归一化及负/零模；气相速率可声明外部刚体模。",
+      "scope_zh": "分子路径优化与速率工作流提供 root/Bofill 求解、解析/提供器或有限差分 Hessian、珠数/容差扫描、反应物归一化和负/零模检查，通过 pyrpmd instanton 使用。",
       "original_system_zh": "2009 年包含对称/非对称一维 Eckart 势垒；2016 年提供第一原理推导。",
       "reproduce_observables_zh": "算 Tc、路径/作用量、梯度残差、Hessian 符号、前因子及 k(T)，检查珠数/优化/Hessian 差分收敛，与一维精确透射积分比较。",
-      "gaps_zh": "优化收敛不代表物理收敛，报告仍保留 physical_converged=False；分子目标还需势面、配分函数、对称/转动因子。",
-      "group": "core"
+      "gaps_zh": "致密前因子限于 4096 个活动珠子坐标；数值/离散收敛不证明物理收敛，分子势能面、配分函数和对称因子仍需验证；未实现统一交叉温区理论与稀疏行列式。",
+      "group": "core",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
     },
     {
       "id": "splitting",
@@ -2486,18 +2846,20 @@
       "references": [
         "split11"
       ],
-      "scope": "Single-kink semiclassical splitting for an isolated symmetric bound or explicitly constrained doublet.",
+      "scope": "Symmetric bound-well instanton splitting with explicit phase/zero-mode projection; the shared projection retains degenerate physical modes and avoids forming a cubic-cost dense projector product.",
       "original_system": "Original ring-polymer splitting paper: full-dimensional HO₂ and malonaldehyde.",
       "reproduce_observables": "First use a one-dimensional symmetric double well: compare instanton action, fluctuation prefactor and ground-doublet Δ against independent Hamiltonian diagonalization; converge projection time, beads and optimization.",
-      "existing_entry": "examples/instanton/low_temperature.py; docs/instanton.md; docs/low-temperature.md",
+      "existing_entry": "docs/low-temperature.md; docs/tunnelling-phase-projection.md",
       "gaps": "Current splitting code rejects free translational/rotational modes and is not a gas-phase rovibrational splitting or multiwell multiplet implementation. HO₂/malonaldehyde paper replication is therefore an extension target, not a presently turnkey reproduction.",
       "priority": "P1/P2",
       "name_zh": "对称束缚双阱的瞬子隧穿劈裂",
-      "scope_zh": "单 kink、孤立对称束缚或明确约束双态的半经典劈裂。",
+      "scope_zh": "对称束缚双阱瞬子劈裂，显式处理相位/零模投影；共享投影保留简并物理模，避免三次复杂度的致密投影乘积。",
       "original_system_zh": "原文为全维 HO₂ 和丙二醛。",
       "reproduce_observables_zh": "先用一维对称双阱，对照量子对角化的基态双态差 Δ，核验作用量/前因子、投影时间和珠数收敛。",
       "gaps_zh": "当前拒绝自由平移/转动模，不是气相转振劈裂或多阱多重态；原分子复现需扩展。",
-      "group": "core"
+      "group": "core",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
     },
     {
       "id": "low-t-checks",
@@ -2858,7 +3220,7 @@
     },
     {
       "id": "samp-retis",
-      "name": "Positive-ensemble replica-exchange TIS",
+      "name": "Replica-exchange TIS with a minus ensemble and internal flux",
       "code": [
         "src/pyrpmd/retis.py"
       ],
@@ -2866,18 +3228,20 @@
         "samp-retis2007",
         "samp-tis2003"
       ],
-      "scope": "Exchanges positive interface ensembles sharing identical dynamics; repeated/rejected paths remain in observations; separate flux estimate. Minus ensemble and asynchronous/infinite swaps absent.",
+      "scope": "Exchanges positive interface paths and a [0−] minus ensemble under the same dynamics. Minus residence/excursion times supply the effective flux; atomic continuation retains paths, RNG and synchronized observations.",
       "original_system": "The original 2007 RETIS paper studies DNA denaturation using the Peyrard–Bishop–Dauxois model.",
       "reproduce_observables": "First compare TIS/RETIS conditional probabilities, autocorrelation, walker labels and total cost in the same double well. The original-paper route requires a PBD potential and DNA-denaturation rates and sampling-efficiency comparisons.",
-      "existing_entry": "pyrpmd.retis.ReplicaExchangeTIS (Python API)",
-      "gaps": "Do not claim complete equivalence to original RETIS: the minus-interface flux ensemble, persistent checkpointing and MPI orchestration are absent.",
+      "existing_entry": "docs/transition-interface-sampling.md; examples/sampling/retis_minus.py",
+      "gaps": "Infinite/asynchronous exchange and a TOML workflow are absent. Flux/rate statistics still require stationary paths, horizon support, interface and independent-run convergence.",
       "priority": "P1",
-      "name_zh": "正界面系综的交换式 TIS",
-      "scope_zh": "交换相同动力学下的正界面路径系综并保留拒绝/重复路径；不含 minus 界面通量系综、异步或无限交换。",
+      "name_zh": "带 minus 系综和内部通量的交换式 TIS",
+      "scope_zh": "在相同动力学下交换正界面路径及 [0−] minus 系综，以 minus 停留/往返时间估计有效通量；原子性续算保留路径、RNG 与同步观测。",
       "original_system_zh": "RETIS 2007 原论文：Peyrard–Bishop–Dauxois 模型的 DNA 变性。",
       "reproduce_observables_zh": "先在相同双阱比较 TIS/RETIS 的条件概率、自相关、walker labels 和总成本；论文路线需要实现 PBD 势，算 DNA 变性速率与采样效率。",
-      "gaps_zh": "不能宣称完整 RETIS 原算法等价：minus-interface flux ensemble、持久 checkpoint 与 MPI 均缺失。",
-      "group": "sampling"
+      "gaps_zh": "未实现无限/异步交换及 TOML 工作流；通量/速率统计仍需路径平稳性、路径时长支持、界面与独立重复收敛。",
+      "group": "sampling",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
     },
     {
       "id": "samp-committor",
@@ -2927,27 +3291,29 @@
     },
     {
       "id": "samp-string",
-      "name": "Euclidean mean-force / restrained adaptive strings",
+      "name": "Deterministic strings and restrained finite-temperature CV strings",
       "code": [
         "src/pyrpmd/adaptive_string.py",
-        "src/pyrpmd/adaptive_nrpmd.py"
+        "src/pyrpmd/finite_temperature_string.py"
       ],
       "references": [
         "samp-string2002",
         "samp-stringcv2006"
       ],
-      "scope": "Fixed-endpoint Euclidean gradient relaxation and insertion; a supplied consistent free-energy gradient is required. Signed restrained extension uses scaled Euclidean geometry; general nonlinear-CV metric/conditional terms of a full MFEP are not all implemented.",
+      "scope": "The deterministic Euclidean oracle optimizer remains available. RestrainedStringSampler adds thermal centroid sampling, a mean CV mass metric, fixed endpoints, block diagnostics and iteration-boundary continuation for nonperiodic full-rank CVs.",
       "original_system": "The 2002 string paper includes Lennard-Jones cluster rearrangements and magnetic-film switching. The 2006 CV-string paper studies alanine dipeptide using two versus four dihedral angles.",
       "reproduce_observables": "First verify normal-force residuals, node count and reparameterization on an analytic curved valley. For the 2006 route, calculate the MFEP, free-energy barrier and committor width as CV choice changes.",
-      "existing_entry": "pyrpmd.adaptive_string.adaptive_mean_force_string; docs/manual/adaptive-nrpmd.md",
-      "gaps": "A PES gradient yields an MEP only. The package should not be described as a complete arbitrary-nonlinear-CV MFEP or isocommittor construction. The original four-angle route requires the missing metric terms.",
+      "existing_entry": "docs/finite-temperature-string.md; src/pyrpmd/finite_temperature_string.py",
+      "gaps": "Finite restraints target a smoothed marginal free energy; stiffness, image spacing and timestep require convergence. A CV-space path is not a Cartesian path or a rate constant.",
       "priority": "P1",
-      "name_zh": "欧氏平均力与约束自适应 string",
-      "scope_zh": "固定端点的梯度松弛、重参数化和插点；需要调用者提供一致的自由能梯度。约束扩展仍用缩放欧氏几何，没有完整一般非线性 CV 的 MFEP 度量和条件项。",
+      "name_zh": "确定性字符串与受限有限温度 CV 字符串",
+      "scope_zh": "保留确定性欧氏力接口优化器；RestrainedStringSampler 增加热质心采样、平均 CV 质量度规、固定端点、分块诊断与迭代边界续算，要求非周期满秩 CV。",
       "original_system_zh": "2002 string 原论文：Lennard–Jones cluster 重排和磁性薄膜翻转；2006 CV string：alanine dipeptide，比较 2 与 4 个二面角。",
       "reproduce_observables_zh": "先在解析弯曲谷检验法向力残差、节点数与重参数化；论文 2006 路线算 MFEP、自由能势垒及 committor 宽度随 CV 选择变化。",
-      "gaps_zh": "用 PES 梯度只得到 MEP；本包不应直接声称实现任意 nonlinear CV 的完整 MFEP/等 committor 面。原论文 4-angle route 需补齐 metric 项。",
-      "group": "sampling"
+      "gaps_zh": "有限刚度对应平滑边缘自由能，需要检验刚度、图像间距与时间步；CV 空间路径不等于笛卡尔路径或速率常数。",
+      "group": "sampling",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
     },
     {
       "id": "samp-prfo",
@@ -3025,24 +3391,27 @@
       "code": [
         "src/pyrpmd/workflows/rate_constraints.py",
         "src/pyrpmd/cv.py",
-        "src/pyrpmd/cv_periodic.py"
+        "src/pyrpmd/cv_periodic.py",
+        "native/cv_core.hpp"
       ],
       "references": [
         "samp-bluemoon1989",
         "samp-blue1998"
       ],
-      "scope": "Constrained-to-conditional weighting for nonlinear centroid coordinates; reparametrization invariance tests. The package rate estimator is an RPMD combination, not identical reproduction of every blue-moon thermodynamic-integration variant.",
+      "scope": "Mass-weighted centroid flux metric and projected momentum/force handling for smooth coordinates. Analytic Hessian–vector products remove dense Cartesian Hessians; native propagation paths share one CV/bias core without changing the estimator.",
       "original_system": "The original papers derive ensemble relations for general constrained reaction coordinates. The complete 1998 chemical application protocol has not been recovered, so no unverified molecule is assigned.",
       "reproduce_observables": "First test rate invariance under s, a*s and nonlinear monotonic f(s) on the same analytic potential; check mass metrics and constrained-parent weights. Then test a general bond-difference coordinate.",
       "existing_entry": "examples/rate/general_coordinate.inp; tests/test_general_coordinate_rates.py; docs/general-coordinate-rates.md",
       "gaps": "The nonlinear-CV mass metric cannot be omitted. Agreement of projected PMFs does not guarantee agreement of unbiased dynamical rates.",
       "priority": "P0",
       "name_zh": "一般非线性质心坐标的约束质量度量",
-      "scope_zh": "将受约束父样本转换为条件系综权重，并检验坐标重参数化不变性；属于 RPMD 速率理论组合，不等于实现全部 blue-moon 热力学积分变体。",
+      "scope_zh": "光滑坐标的质量加权质心通量度规及动量/力投影；解析 Hessian–向量积替代致密笛卡尔 Hessian，原生推进路径共用一套 CV/偏置实现，估计量保持不变。",
       "original_system_zh": "原论文为一般受约束反应坐标的 ensemble 关系；本次未恢复完整 1998 化学应用协议，不指定未经核实的分子。",
       "reproduce_observables_zh": "优先对同一解析势使用 s、a*s、非线性单调 f(s) 比较速率不变性，检查 mass metric 与 constrained-parent weights；再测一般键差坐标。",
       "gaps_zh": "非线性 CV 的质量度量不能省略；相同投影 PMF 不保证相同无偏动力学速率。",
-      "group": "sampling"
+      "group": "sampling",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
     },
     {
       "id": "samp-rate-postprocess",
@@ -3109,18 +3478,20 @@
         "samp-plumed2009",
         "samp-plumed2014"
       ],
-      "scope": "External kernel/interface, not an internal implementation of every PLUMED method. Cite the PLUMED software and every selected CV/bias algorithm in the actual plumed.dat.",
+      "scope": "Centroid-bias bridge plus an explicit audited restart=\"files\" protocol for supported external histories. File formats, hashes and round-trip precision are checked; opaque kernel state is not serialized generically.",
       "original_system": "The original software papers contain several examples. Validate the bridge with a specifically defined algorithm and model; the software name is not itself a physical method.",
       "reproduce_observables": "Compare CVs, bias, forces and one-step trajectories between this package and external PLUMED on the same model, then reproduce the original system of the chosen sampling algorithm.",
-      "existing_entry": "python examples/plumed/centroid_metadynamics.py --steps 200 --output runs/plumed-centroid; python benchmarks/tier2_literature/sampling.py plumed --output runs/tier2-sampling",
-      "gaps": "External-history management and automated resume have explicit limitations. An unconfigured PLUMED action is not an implemented PyRPMD feature.",
+      "existing_entry": "docs/plumed.md; examples/plumed",
+      "gaps": "Only supported, validated file-RESTART actions can resume; an arbitrary PLUMED input is not automatically restartable.",
       "priority": "P1",
       "name_zh": "PLUMED 质心偏置接口",
-      "scope_zh": "连接外部 PLUMED kernel，不能视为内部实现全部 PLUMED action；实际使用时同时引用软件及 plumed.dat 选择的每个 CV/偏置算法。",
+      "scope_zh": "质心偏置接口增加显式 restart=\"files\" 协议，仅用于可审计的外部历史；检查文件格式、哈希及往返精度，不通用序列化不透明内核状态。",
       "original_system_zh": "原始软件论文包含多个示例；桥接验证应选择已确定算法/模型，不把软件名作为独立物理方法。",
       "reproduce_observables_zh": "同一模型比较本包与外部 PLUMED 的 CV、bias、forces 和单步轨迹；再按所选算法的原论文体系复现。",
-      "gaps_zh": "外部历史管理和自动 resume 有明确限制；尚未配置的 PLUMED action 不算 PyRPMD 已实现功能。",
-      "group": "sampling"
+      "gaps_zh": "仅已支持并校验过的文件 RESTART 动作可以续算，任意 PLUMED 输入不自动具备续算能力。",
+      "group": "sampling",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
     },
     {
       "id": "na-nrpmd-focused",
@@ -4308,8 +4679,8 @@
       "references": [
         "committee2020"
       ],
-      "scope": "Mean of fixed providers, population-standard-deviation disagreement and offline acquisition; no disagreement bias or automatic labelling/retraining loop.",
-      "scope_zh": "固定提供器均值、总体标准差分歧及离线采集；无分歧偏置和自动标注/重训练循环。",
+      "scope": "Committee means, population-standard-deviation disagreement and offline acquisition remain available. ActiveLearningLoop now connects sampling, reference labels and versioned retraining between fixed-model trajectory segments.",
+      "scope_zh": "保留委员会均值、总体标准差分歧及离线采集；ActiveLearningLoop 现可在模型固定的轨迹段之间串联采样、参考标注与版本化重训练。",
       "original_system": "Condensed water across liquid state points, ice phases and an air/water interface.",
       "original_system_zh": "跨液体状态点、冰相及气水界面的凝聚相水。",
       "reproduce_observables": "Disagreement versus true held-out energy/force error, acquisition enrichment and learning curves with frozen model versions.",
@@ -4318,11 +4689,13 @@
         "examples/ml_lifecycle/committee.inp",
         "docs/tier2-ml-lifecycle.md"
       ],
-      "gaps": "Analytic committee examples test control flow only; external labelled data and training are required.",
-      "gaps_zh": "解析势委员会示例只验证流程；须补外部标注数据与训练。",
+      "gaps": "Committee disagreement is a heuristic and does not certify coverage or true error. Closed-loop stopping and held-out reference checks are separate from physical convergence.",
+      "gaps_zh": "委员会分歧是启发式量，不证明覆盖或真实误差；闭环停止和留出参考检查与物理收敛分开。",
       "priority": "P2",
       "kind": "project subset",
-      "group": "materials"
+      "group": "materials",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
     },
     {
       "id": "delta",
@@ -4386,20 +4759,20 @@
       "references": [
         "openmm2017"
       ],
-      "scope": "External force evaluation, virtual sites and periodic virials; PyRPMD owns nuclear dynamics.",
-      "scope_zh": "外部受力计算、虚拟位点与周期位力；核动力学由 PyRPMD 执行。",
+      "scope": "External OpenMM energy/force evaluation with serial, persistent concurrent Context and RPMD copy-bank modes. The copy-bank is a force-evaluation route, not PyRPMD handing trajectory propagation to OpenMM.",
+      "scope_zh": "外部 OpenMM 能量/力评估支持串行、持久并发 Context 及 RPMD copy-bank 模式；copy-bank 用于力评估，不是把 PyRPMD 轨迹推进交给 OpenMM。",
       "original_system": "External software/model interface; original software paper is attribution, not a unique PyRPMD physics benchmark.",
       "original_system_zh": "外部软件/模型接口；软件论文用于归属引用，不对应唯一的 PyRPMD 物理基准。",
       "reproduce_observables": "Compare identical configurations directly against the upstream engine: energy, force, virial, units, batching and periodic images; then use a separately validated physical model.",
       "reproduce_observables_zh": "同一构型与上游直接比较能量、力、位力、单位、批处理和周期映像，再接已验证物理体系。",
-      "existing_entry": [
-        "docs/potential-adapters.md"
-      ],
+      "existing_entry": "docs/potential-adapters.md; docs/t19-performance.md",
       "gaps": "Optional engine and compatible model bytes must be supplied; this adapter does not recreate upstream training or every published application.",
       "gaps_zh": "须提供可选引擎及兼容模型文件；接口不重做上游训练，也不复现其全部应用。",
       "priority": "P0",
       "kind": "external interface",
-      "group": "materials"
+      "group": "materials",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
     },
     {
       "id": "lammps",
@@ -4411,20 +4784,20 @@
       "references": [
         "lammps1995"
       ],
-      "scope": "Per-context external library force and cell evaluation; not a port of LAMMPS algorithms.",
-      "scope_zh": "每个上下文调用外部库受力/晶胞；不是重写 LAMMPS 算法。",
+      "scope": "External LAMMPS force/virial/cell evaluation with bead-affine persistent instances and explicitly configured private MPI subcommunicators; validation is vectorized before engine dispatch.",
+      "scope_zh": "外部 LAMMPS 力/位力/晶胞评估支持珠子亲和持久实例和显式私有 MPI 子通信器，分派前校验采用向量化。",
       "original_system": "External software/model interface; original software paper is attribution, not a unique PyRPMD physics benchmark.",
       "original_system_zh": "外部软件/模型接口；软件论文用于归属引用，不对应唯一的 PyRPMD 物理基准。",
       "reproduce_observables": "Compare identical configurations directly against the upstream engine: energy, force, virial, units, batching and periodic images; then use a separately validated physical model.",
       "reproduce_observables_zh": "同一构型与上游直接比较能量、力、位力、单位、批处理和周期映像，再接已验证物理体系。",
-      "existing_entry": [
-        "docs/potential-adapters.md"
-      ],
-      "gaps": "Optional engine and compatible model bytes must be supplied; this adapter does not recreate upstream training or every published application.",
-      "gaps_zh": "须提供可选引擎及兼容模型文件；接口不重做上游训练，也不复现其全部应用。",
+      "existing_entry": "docs/potential-adapters.md; docs/t19-performance.md",
+      "gaps": "Persistent mode is not uniformly faster; measured large-system cases include regressions. MPI, engine versions, force fields and hardware must be reported with any throughput claim.",
+      "gaps_zh": "持久模式并非普遍更快，大体系实测包含变慢配置；性能声明必须同时记录 MPI、引擎版本、力场与硬件。",
       "priority": "P0",
       "kind": "external interface",
-      "group": "materials"
+      "group": "materials",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
     },
     {
       "id": "ipi-socket",
@@ -4457,53 +4830,58 @@
       "name_zh": "Torch/GPU 势及张量传播",
       "code": [
         "src/pyrpmd/potentials/optional.py",
-        "src/pyrpmd/torch_backend.py"
+        "src/pyrpmd/torch_backend.py",
+        "src/pyrpmd/workflows/torch_materials.py"
       ],
       "references": [
-        "torch2019"
+        "torch2019",
+        "bcocb20",
+        "rpm04"
       ],
-      "scope": "Autodifferentiated energies/forces and tensor versions of the cited physical integrators.",
-      "scope_zh": "自动微分能量/力及已有物理积分器的张量版本。",
+      "scope": "Float64 tensor energy/force propagation plus sampling.engine=\"torch\" PIMD and diffusion workflows batching replicas and beads. Atomic checkpoints store device RNG state and scientific identity; device and precision changes fail explicitly.",
+      "scope_zh": "float64 张量能量/力推进，以及 sampling.engine=\"torch\" 的 PIMD/扩散工作流，对副本与珠子批处理；原子检查点保存设备 RNG 与科学身份，设备/精度变化显式失败。",
       "original_system": "External software/model interface; original software paper is attribution, not a unique PyRPMD physics benchmark.",
       "original_system_zh": "外部软件/模型接口；软件论文用于归属引用，不对应唯一的 PyRPMD 物理基准。",
       "reproduce_observables": "Compare identical configurations directly against the upstream engine: energy, force, virial, units, batching and periodic images; then use a separately validated physical model.",
       "reproduce_observables_zh": "同一构型与上游直接比较能量、力、位力、单位、批处理和周期映像，再接已验证物理体系。",
-      "existing_entry": [
-        "docs/potential-adapters.md"
-      ],
-      "gaps": "Optional engine and compatible model bytes must be supplied; this adapter does not recreate upstream training or every published application.",
-      "gaps_zh": "须提供可选引擎及兼容模型文件；接口不重做上游训练，也不复现其全部应用。",
+      "existing_entry": "docs/torch-materials-workflows.md; docs/batched-ml-potentials.md",
+      "gaps": "This workflow does not support NPT, constraints, exchange, electronic friction or grouped MPI. No CUDA performance measurements were available in the integrated validation; CPU results do not certify GPU speedup.",
+      "gaps_zh": "该工作流不支持 NPT、约束、交换、电子摩擦或分组 MPI；已集成验证中没有 CUDA 实测，CPU 结果不能证明 GPU 加速。",
       "priority": "P0",
       "kind": "external interface",
-      "group": "materials"
+      "group": "materials",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
     },
     {
       "id": "ml-adapters",
-      "name": "MACE / NequIP / DeePMD / fairchem adapters",
-      "name_zh": "MACE / NequIP / DeePMD / fairchem 接口",
+      "name": "Batched MACE, NequIP, DeePMD, fairchem and metatomic providers",
+      "name_zh": "MACE、NequIP、DeePMD、fairchem、metatomic 批量提供器",
       "code": [
-        "src/pyrpmd/potentials/adapters.py"
+        "src/pyrpmd/potentials/adapters.py",
+        "src/pyrpmd/potentials/batched_ml.py"
       ],
       "references": [
         "mace2022",
         "nequip2022",
         "deepmd2018",
-        "uma2025"
+        "uma2025",
+        "metatomic2026"
       ],
-      "scope": "Calls external inference engines; model paper and exact checkpoint are additional citations, not an in-repo reimplementation.",
-      "scope_zh": "调用外部推理引擎；模型论文及准确权重需另引，不能称为仓库重实现。",
+      "scope": "Explicit native model batches evaluate configurations across beads/trajectories, with tensor routes where supported. Unit, device, model-precision, virial and neighbor-list contracts are checked; upstream model/framework attribution remains required.",
+      "scope_zh": "显式原生模型批量覆盖珠子/轨迹构型，并在支持时提供张量路径；校验单位、设备、模型精度、位力与邻居表契约，仍须引用实际上游模型和框架。",
       "original_system": "External software/model interface; original software paper is attribution, not a unique PyRPMD physics benchmark.",
       "original_system_zh": "外部软件/模型接口；软件论文用于归属引用，不对应唯一的 PyRPMD 物理基准。",
       "reproduce_observables": "Compare identical configurations directly against the upstream engine: energy, force, virial, units, batching and periodic images; then use a separately validated physical model.",
       "reproduce_observables_zh": "同一构型与上游直接比较能量、力、位力、单位、批处理和周期映像，再接已验证物理体系。",
-      "existing_entry": [
-        "docs/potential-adapters.md"
-      ],
-      "gaps": "Optional engine and compatible model bytes must be supplied; this adapter does not recreate upstream training or every published application.",
-      "gaps_zh": "须提供可选引擎及兼容模型文件；接口不重做上游训练，也不复现其全部应用。",
+      "existing_entry": "docs/batched-ml-potentials.md; docs/t19-performance.md",
+      "gaps": "Compatible optional framework versions and model bytes must be provided. CUDA stream-order safeguards exist, but GPU correctness/performance measurements are still pending; no framework or precision is silently substituted.",
+      "gaps_zh": "须提供兼容可选框架及模型文件；已有 CUDA stream 顺序保护，但 GPU 正确性/性能实测尚待完成，不静默替换框架或精度。",
       "priority": "P0",
       "kind": "external interface",
-      "group": "materials"
+      "group": "materials",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
     },
     {
       "id": "tblite",
@@ -4610,19 +4988,18 @@
       ],
       "priority": "P0",
       "kind": "model",
-      "scope": "MorsePairPotential uses the Morse functional form. Free, harmonic, separable quartic and periodic-cosine providers are explicitly specified analytic controls; they are not fitted molecular or metal potentials.",
-      "scope_zh": "MorsePairPotential 使用 Morse 函数形式；自由粒子、谐振子、可分离四次双阱和周期余弦是明确给定的解析控制模型，不是拟合的分子或金属势。",
+      "scope": "Free, harmonic, Morse-pair, quartic double-well and fixed-cell periodic-cosine controls have native C ABI bindings for fused propagation; these are model controls, not fitted molecular surfaces.",
+      "scope_zh": "自由、谐振、Morse 对、四次双阱及固定晶胞周期余弦控制势具有融合推进使用的原生 C ABI 绑定；它们是模型对照，不是拟合分子势能面。",
       "original_system": "Morse: diatomic vibrational levels. The other generic test potentials do not specify one original molecular system or a unique originating paper.",
       "original_system_zh": "Morse 原文研究双原子振动能级；其余通用测试势没有唯一指定的原始分子体系或方法论文。",
       "reproduce_observables": "Energy/force finite differences, analytic harmonic equilibrium moments, Morse bound levels, exact quadrature FES and coordinate-periodicity checks. Match the energy zero and model parameters.",
       "reproduce_observables_zh": "算能量/力有限差分、谐振子的解析平衡矩、Morse 束缚能级、积分自由能面和坐标周期性；统一能量零点与参数。",
-      "existing_entry": [
-        "examples/quantum_statistics/harmonic_validation.py",
-        "examples/fes/harmonic2d.inp"
-      ],
+      "existing_entry": "docs/builtin-native-potentials.md",
       "gaps": "A separable cosine model is not evidence for diffusion in a real material. Arbitrary Morse parameters do not reproduce a particular molecule from the 1929 paper.",
       "gaps_zh": "可分离余弦模型不能证明真实材料扩散正确；任意 Morse 参数也不等于复现 1929 原文的某个分子。",
-      "group": "materials"
+      "group": "materials",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
     },
     {
       "id": "rate-studies",
@@ -4678,6 +5055,530 @@
       "gaps": "Pin source bytes/checksum and channel/symmetry conventions. Existing fixed-P agreement leaves the separate parent-time, umbrella-precision and dynamic-bead convergence checks to complete.",
       "gaps_zh": "固定势文件及校验和、通道与对称性约定；已有固定珠数一致性仍留下父链时间、伞窗精度和动态珠数收敛需要完成。",
       "group": "materials"
+    },
+    {
+      "id": "fqcmd",
+      "name": "Experimental fast quasi-centroid molecular dynamics",
+      "name_zh": "实验性快速准质心分子动力学",
+      "code": [
+        "src/pyrpmd/qcmd.py",
+        "src/pyrpmd/workflows/spectroscopy.py"
+      ],
+      "references": [
+        "qcmd2019",
+        "fqcmd2021"
+      ],
+      "scope": "Bent-triatomic molecular quasi-centroid bond/angle distributions train a separable effective potential by iterative Boltzmann inversion. Frozen models run through method=\"f-qcmd\" spectroscopy with model identity and restart.",
+      "scope_zh": "由弯曲三原子分子的准质心键长/键角分布，通过迭代 Boltzmann 反演训练可分离有效势；冻结模型经 method=\"f-qcmd\" 光谱工作流运行，包含模型身份和续算。",
+      "original_system": "Implementation and validation scope is described in the linked guide.",
+      "original_system_zh": "实现与验证体系范围见所链接指南。",
+      "reproduce_observables": "Check internal-coordinate derivatives, target/trained distributions and independent spectral peaks against classical, PA-CMD, TRPMD and a quantum reference; converge training, beads and production separately.",
+      "reproduce_observables_zh": "检查内坐标导数、目标/训练后分布及相对经典、PA-CMD、TRPMD 和量子参考的独立谱峰，分别收敛训练、珠数与生产采样。",
+      "existing_entry": "docs/qcmd.md",
+      "gaps": "Full real-time QCMD and h-CMD are absent. Gas-phase spectral evidence and molecular convergence are not yet delivered; the fixed-quasi-centroid conditional sampler is not a real-time QCMD solver.",
+      "gaps_zh": "尚无完整实时 QCMD 或 h-CMD；气相光谱证据及分子收敛尚未交付，固定准质心条件采样器不等于实时 QCMD 求解器。",
+      "priority": "P1",
+      "kind": "method",
+      "group": "core",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
+    },
+    {
+      "id": "fermions",
+      "name": "Fermionic sign reweighting of bosonic exchange sampling",
+      "name_zh": "玻色交换采样的费米符号重加权",
+      "code": [
+        "src/pyrpmd/pimd_methods.py",
+        "src/pyrpmd/workflows/path_integral.py"
+      ],
+      "references": [
+        "fermions2020",
+        "bose23"
+      ],
+      "scope": "method=\"fermionic\" propagates the positive bosonic measure and accumulates signed energy, density and applicable pressure/volume numerators, with average-sign and denominator diagnostics.",
+      "scope_zh": "method=\"fermionic\" 推进正的玻色测度并累计带符号的能量、密度及适用的压力/体积数值，报告平均符号与分母诊断。",
+      "original_system": "Implementation and validation scope is described in the linked guide.",
+      "original_system_zh": "实现与验证体系范围见所链接指南。",
+      "reproduce_observables": "Compare canonical ideal-fermion oscillator energies and small-system permutations, signed moment ratios and independent-run errors; scan temperature, beads and average sign.",
+      "reproduce_observables_zh": "对照正则理想费米谐振子能量、小体系排列、带符号矩比和独立重复误差，扫描温度、珠数与平均符号。",
+      "existing_entry": "docs/tier2-path-integral.md",
+      "gaps": "The sign problem remains. The original paper’s auxiliary Bogoliubov energy-bound strategy is not implemented; an unresolved denominator must not become an unsigned or apparently converged estimate.",
+      "gaps_zh": "符号问题仍存在；未实现原论文的辅助 Bogoliubov 能量界方案，无法分辨的分母不得改成无符号或看似已收敛的估计。",
+      "priority": "P1",
+      "kind": "method",
+      "group": "core",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
+    },
+    {
+      "id": "periodic-exchange",
+      "name": "Periodic exchange and isotropic all-bead NPT",
+      "name_zh": "周期交换与全珠子各向同性 NPT",
+      "code": [
+        "src/pyrpmd/pimd_methods.py",
+        "src/pyrpmd/workflows/path_integral.py"
+      ],
+      "references": [
+        "exchange-pbc2025",
+        "bose23",
+        "bzp2009",
+        "ipi2014"
+      ],
+      "scope": "Explicit minimum_image or full_winding kernels couple image and exchange weights. Full winding sums Gaussian lattice images to a declared tolerance; all-bead BZP scaling provides isotropic exchange NPT with physical virials.",
+      "scope_zh": "显式 minimum_image/full_winding 核耦合镜像和交换权重；全绕数按指定容差求高斯晶格像之和，全珠子 BZP 缩放结合物理位力提供各向同性交换 NPT。",
+      "original_system": "Implementation and validation scope is described in the linked guide.",
+      "original_system_zh": "实现与验证体系范围见所链接指南。",
+      "reproduce_observables": "Compare image kernels with independent lattice sums and Fourier momentum sums for the free gas; finite-difference forces and virials; compare NPT volume integrals and refine image tolerances.",
+      "reproduce_observables_zh": "用独立晶格求和及自由气体 Fourier 动量求和核对镜像核，用有限差分核对力和位力，比较 NPT 体积积分并收敛镜像容差。",
+      "existing_entry": "docs/tier2-path-integral.md",
+      "gaps": "Kernel image sums do not provide sampled winding-number or superfluid estimators. Periodic exchange cannot use centroid BZP, and flexible-cell exchange NPT is absent; minimum-image remains an approximation.",
+      "gaps_zh": "核镜像求和不提供采样绕数或超流估计量；周期交换不能使用质心 BZP，也无柔性晶胞交换 NPT；最小镜像仍为近似。",
+      "priority": "P1",
+      "kind": "method",
+      "group": "core",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
+    },
+    {
+      "id": "golden-rule-instanton",
+      "name": "Normal-regime golden-rule instanton rates",
+      "name_zh": "正常区 golden-rule 瞬子速率",
+      "code": [
+        "src/pyrpmd/golden_rule.py",
+        "src/pyrpmd/golden_rule_partition.py",
+        "src/pyrpmd/workflows/golden_rule.py"
+      ],
+      "references": [
+        "gr-instanton2015a",
+        "gr-instanton2015b"
+      ],
+      "scope": "Two diabatic imaginary-time segments and a time-split saddle give a leading semiclassical weak-coupling rate with constant real electronic coupling, explicit reactant normalization and independent segment refinement through pyrpmd instanton.",
+      "scope_zh": "双 diabatic 虚时间路径及时间分割鞍点给出常量实电子耦合下的 leading 半经典弱耦合速率；显式反应物归一化，pyrpmd instanton 支持独立细化两段。",
+      "original_system": "Implementation and validation scope is described in the linked guide.",
+      "original_system_zh": "实现与验证体系范围见所链接指南。",
+      "reproduce_observables": "Compare finite-bath and continuum spin-boson semiclassical rates, exact quantum golden-rule correlation quadrature and the Marcus limit; independently refine both segment grids and bath discretization.",
+      "reproduce_observables_zh": "对照有限浴与连续浴自旋玻色半经典速率、精确量子 golden-rule 关联积分和 Marcus 极限，分别收敛两段网格与浴离散。",
+      "existing_entry": "docs/instanton.md",
+      "gaps": "Bound or Cartesian-constrained coordinates only. Free-molecule rotation/translation prefactors, coordinate-dependent coupling and negative-time inverted-regime paths are absent. Numerical convergence is not physical validation.",
+      "gaps_zh": "仅支持束缚或笛卡尔约束坐标；没有自由分子转动/平动前因子、坐标依赖耦合或倒转区负时间路径，数值收敛不代表物理验证。",
+      "priority": "P1",
+      "kind": "method",
+      "group": "core",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
+    },
+    {
+      "id": "samp-abf",
+      "name": "Projected centroid adaptive biasing force",
+      "name_zh": "投影质心自适应偏置力",
+      "code": [
+        "src/pyrpmd/abf.py",
+        "src/pyrpmd/workflows/abf.py"
+      ],
+      "references": [
+        "samp-abf2008",
+        "samp-pabf2015"
+      ],
+      "scope": "One or two nonperiodic full-rank centroid CVs use the mass-weighted dual-field divergence correction. Scalar projection/interpolation supplies consistent bias energies and forces; online histories and RNG resume exactly.",
+      "scope_zh": "一至二维非周期满秩质心 CV 使用质量加权对偶场散度修正；标量投影/插值给出一致的偏置能量与力，在线历史与 RNG 可精确续算。",
+      "original_system": "Implementation and validation scope is described in the linked guide.",
+      "original_system_zh": "实现与验证体系范围见所链接指南。",
+      "reproduce_observables": "Check harmonic/radial free energies including the geometric term, finite-difference forces and 2D conservative projection; compare independent replicas and refine grid and derivative step.",
+      "reproduce_observables_zh": "核对含几何项的谐振/径向自由能、有限差分力及二维保守投影，对比独立副本并细化网格与导数步长。",
+      "existing_entry": "docs/enhanced-sampling.md",
+      "gaps": "No fixed atoms, constraints, periodic cells/CVs, NPT, REUS or rate-flux measure. Nonanalytic CV derivatives require an explicit finite-difference choice. Grid occupancy and replica spread do not establish mixing.",
+      "gaps_zh": "不支持固定原子、约束、周期晶胞/CV、NPT、REUS 或速率通量测度；无解析导数的 CV 须显式选择有限差分，网格占据和副本离散度不证明混合。",
+      "priority": "P1",
+      "kind": "method",
+      "group": "sampling",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
+    },
+    {
+      "id": "samp-eabf",
+      "name": "Extended-system centroid ABF",
+      "name_zh": "扩展体系质心 ABF",
+      "code": [
+        "src/pyrpmd/abf.py",
+        "src/pyrpmd/workflows/abf.py"
+      ],
+      "references": [
+        "samp-eabf2017"
+      ],
+      "scope": "Auxiliary coordinates are harmonically coupled to physical centroid CVs and carry their own Langevin state. Physical-CV free energies use the documented reconstruction rather than equating the auxiliary marginal with the physical PMF.",
+      "scope_zh": "辅助坐标与物理质心 CV 谐振耦合并具有自身 Langevin 状态；物理 CV 自由能按指南重建，不将辅助边缘分布等同于物理 PMF。",
+      "original_system": "Implementation and validation scope is described in the linked guide.",
+      "original_system_zh": "实现与验证体系范围见所链接指南。",
+      "reproduce_observables": "Compare reconstructed harmonic/double-well PMFs to independent integration, validate auxiliary covariance and exact continuation, and vary coupling and auxiliary timescales.",
+      "reproduce_observables_zh": "对照独立积分的谐振/双阱 PMF，验证辅助协方差与精确续算，并扫描耦合和辅助时间尺度。",
+      "existing_entry": "docs/enhanced-sampling.md",
+      "gaps": "The same nonperiodic 1D/2D workflow restrictions as ABF apply; spring coupling, auxiliary mass/friction, reconstruction and sampling require separate convergence.",
+      "gaps_zh": "适用 ABF 相同的非周期一/二维工作流限制；弹簧耦合、辅助质量/摩擦、重建与采样须分别收敛。",
+      "priority": "P1",
+      "kind": "method",
+      "group": "sampling",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
+    },
+    {
+      "id": "samp-steered",
+      "name": "Steered dynamics and nonequilibrium work estimators",
+      "name_zh": "牵引动力学与非平衡功估计",
+      "code": [
+        "src/pyrpmd/steered.py",
+        "src/pyrpmd/workflows/steered.py"
+      ],
+      "references": [
+        "samp-jarzynski1997",
+        "samp-crooks1999",
+        "samp-bennett1976",
+        "samp-shadow2013"
+      ],
+      "scope": "Specified moving restraints record protocol and discrete shadow work, heat and complete histories; Jarzynski and Crooks/Bennett analysis provides forward/reverse estimators and work-overlap diagnostics.",
+      "scope_zh": "指定移动约束记录协议功、离散 shadow work、热量及完整历史；Jarzynski 和 Crooks/Bennett 分析提供正反向估计与功重叠诊断。",
+      "original_system": "Implementation and validation scope is described in the linked guide.",
+      "original_system_zh": "实现与验证体系范围见所链接指南。",
+      "reproduce_observables": "Compare harmonic moving-trap free energies and forward/reverse work relations, including shadow work, independent-trajectory errors and checkpoint continuation.",
+      "reproduce_observables_zh": "核对移动谐振阱自由能及正反向功关系，包括 shadow work、独立轨迹误差与检查点续算。",
+      "existing_entry": "docs/enhanced-sampling.md",
+      "gaps": "Initial equilibrium is a user declaration; finite equilibration and bootstrap cannot recover unsampled low-work tails. Finite-step total-work conventions must match the chosen propagator.",
+      "gaps_zh": "初始平衡由用户声明；有限平衡时间与 bootstrap 不能补回未采到的低功尾部，有限步长总功约定必须匹配传播器。",
+      "priority": "P1",
+      "kind": "method",
+      "group": "sampling",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
+    },
+    {
+      "id": "samp-repptis",
+      "name": "PPTIS and replica-exchange PPTIS",
+      "name_zh": "PPTIS 与副本交换 PPTIS",
+      "code": [
+        "src/pyrpmd/pptis.py"
+      ],
+      "references": [
+        "samp-pptis2004",
+        "samp-repptis2023"
+      ],
+      "scope": "Short left/right-origin local paths use the direction-dependent PPTIS recurrence; ReplicaExchangePPTIS adds overlap-regrowth swaps and restart. Rate combination requires separately measured effective flux at the first center.",
+      "scope_zh": "短左右来向局部路径采用有方向的 PPTIS 递推；ReplicaExchangePPTIS 增加重叠再生交换和续算，速率组合需在第一个中心单独测量有效通量。",
+      "original_system": "Implementation and validation scope is described in the linked guide.",
+      "original_system_zh": "实现与验证体系范围见所链接指南。",
+      "reproduce_observables": "Compare the recurrence with independent absorbing Markov-chain calculations and full TIS while varying interface spacing; inspect both origin populations and synchronized blocks.",
+      "reproduce_observables_zh": "以独立吸收 Markov 链计算和完整 TIS 对照递推，改变界面间距，检查双向来向样本与同步分块。",
+      "existing_entry": "docs/transition-interface-sampling.md",
+      "gaps": "PPTIS assumes memory loss beyond neighboring interfaces. A local-chain standard error excludes external-flux uncertainty. No TOML workflow or infinite swapping is implemented.",
+      "gaps_zh": "PPTIS 假设相邻界面之外的记忆丢失；局部链标准误不包含外部通量不确定度，未实现 TOML 工作流或无限交换。",
+      "priority": "P1",
+      "kind": "method",
+      "group": "sampling",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
+    },
+    {
+      "id": "samp-ffs",
+      "name": "Direct forward-flux sampling",
+      "name_zh": "直接前向通量采样",
+      "code": [
+        "src/pyrpmd/ffs.py"
+      ],
+      "references": [
+        "samp-ffs2005",
+        "samp-ffs2009"
+      ],
+      "scope": "Explicit stationary Markov step callbacks sample flux and branch complete phase points forward through interfaces. Genealogy, clocks and RNG persist; full-rate uncertainty combines independently initialized complete runs.",
+      "scope_zh": "显式平稳 Markov 步回调采样通量，并让完整相点逐界面向前分支；保存谱系、时钟和 RNG，完整速率误差由独立初始化的完整运行组合估计。",
+      "original_system": "Implementation and validation scope is described in the linked guide.",
+      "original_system_zh": "实现与验证体系范围见所链接指南。",
+      "reproduce_observables": "Compare stationary birth/death chains and diffusion references, preserve zero-success runs, and scan flux duration, interface banks, horizons and independent full runs.",
+      "reproduce_observables_zh": "对照平稳生灭链与扩散参考，保留零成功运行，扫描通量时长、界面样本库、时长上限及独立完整运行。",
+      "existing_entry": "docs/transition-interface-sampling.md",
+      "gaps": "Hidden solver memory, global RNG and time-dependent protocols are unsupported. Censored trials fail rather than count as returns; descendant counts are not independent full-rate samples.",
+      "gaps_zh": "不支持隐藏求解器记忆、全局 RNG 和时变协议；截尾试验显式失败，不计作返回；后代数不等于独立完整速率样本数。",
+      "priority": "P1",
+      "kind": "method",
+      "group": "sampling",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
+    },
+    {
+      "id": "samp-mlcolvar",
+      "name": "Learned Deep-LDA and Deep-TICA centroid CVs",
+      "name_zh": "学习得到的 Deep-LDA 与 Deep-TICA 质心 CV",
+      "code": [
+        "src/pyrpmd/advanced_cv.py",
+        "examples/mlcolvar_cv.py"
+      ],
+      "references": [
+        "samp-mlcolvar2023",
+        "samp-deeplda2020",
+        "samp-deeptica2021",
+        "torch2019"
+      ],
+      "scope": "Upstream mlcolvar trains coordinates; a frozen CPU float64 TorchScript graph including preprocessing, normalization and projection supplies centroid values and Cartesian derivatives.",
+      "scope_zh": "上游 mlcolvar 训练坐标；冻结的 CPU float64 TorchScript 图包含预处理、归一化和投影，提供质心值与笛卡尔导数。",
+      "original_system": "Implementation and validation scope is described in the linked guide.",
+      "original_system_zh": "实现与验证体系范围见所链接指南。",
+      "reproduce_observables": "Check exported versus upstream predictions and nonzero finite-difference ring Jacobians, then validate slow modes across lag times and independent trajectories.",
+      "reproduce_observables_zh": "比较导出与上游预测及非零环 Jacobian 有限差分，再跨滞后时间与独立轨迹验证慢模。",
+      "existing_entry": "docs/mlcolvar.md",
+      "gaps": "Training examples verify deployment, not molecular reaction-coordinate quality. Biased data require appropriate reweighting/time treatment; retraining changes scientific identity.",
+      "gaps_zh": "训练示例验证部署而非分子反应坐标质量；偏置数据须适当重加权/时间处理，重训练改变科学身份。",
+      "priority": "P1",
+      "kind": "external interface",
+      "group": "sampling",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
+    },
+    {
+      "id": "na-iesh",
+      "name": "Classical independent-electron surface hopping",
+      "name_zh": "经典核独立电子表面跳跃",
+      "code": [
+        "src/pyrpmd/iesh.py",
+        "src/pyrpmd/workflows/nonadiabatic.py"
+      ],
+      "references": [
+        "na-iesh2009",
+        "na-iesh2023"
+      ],
+      "scope": "P=1 IESH evolves one spinless Slater determinant with orthonormal orbitals and determinant-current hopping; population estimates sum to the declared electron count. Workflow checkpoints retain electronic and nuclear state.",
+      "scope_zh": "P=1 IESH 推进正交轨道构成的无自旋 Slater 行列式，并使用行列式流跳跃；布居之和为指定电子数，工作流检查点保留电子和核状态。",
+      "original_system": "Implementation and validation scope is described in the linked guide.",
+      "original_system_zh": "实现与验证体系范围见所链接指南。",
+      "reproduce_observables": "Check determinant currents, orbital orthogonality, population sum and energy conservation; compare cold finite-band energy loss with matched electronic-friction limits.",
+      "reproduce_observables_zh": "检查行列式流、轨道正交、布居之和与能量守恒；将低温有限能带能量损失与匹配的电子摩擦极限比较。",
+      "existing_entry": "docs/nonadiabatic-iesh-multistate.md",
+      "gaps": "Real, nondegenerate Hamiltonians and classical nuclei only; no ring-polymer IESH, SOC or general interacting-electron solver. Finite-band controls do not reproduce a real metal surface.",
+      "gaps_zh": "仅实数非简并 Hamiltonian 与经典核，不支持环聚合物 IESH、SOC 或通用相互作用电子求解；有限能带对照不等于真实金属表面复现。",
+      "priority": "P1",
+      "kind": "method",
+      "group": "nonadiabatic",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
+    },
+    {
+      "id": "na-multistate-mash",
+      "name": "Original multistate MASH",
+      "name_zh": "原始多态 MASH",
+      "code": [
+        "src/pyrpmd/mash.py",
+        "src/pyrpmd/workflows/nonadiabatic.py"
+      ],
+      "references": [
+        "na-multimash2023",
+        "na-mash2023"
+      ],
+      "scope": "The Runeson–Manolopoulos mapping vector selects the largest population surface, uses signed population/coherence estimators and the full multistate momentum-change direction with event-localized transitions.",
+      "scope_zh": "Runeson–Manolopoulos 映射向量选择最大布居势面，采用带符号布居/相干性估计及完整多态动量变换方向，通过事件定位跃迁。",
+      "original_system": "Implementation and validation scope is described in the linked guide.",
+      "original_system_zh": "实现与验证体系范围见所链接指南。",
+      "reproduce_observables": "Compare three-state moving-packet populations to the independent Fourier quantum reference; check signed estimators, boundary events and accepted/frustrated energy changes.",
+      "reproduce_observables_zh": "以独立 Fourier 量子参考对照三态移动波包布居，检查带符号估计、边界事件及接受/受挫跃迁能量变化。",
+      "existing_entry": "docs/nonadiabatic-iesh-multistate.md",
+      "gaps": "P=1, real nondegenerate levels only. This is not unSMASH and is not a ring-polymer generalization; it does not alter the existing two-state rp-mash estimator.",
+      "gaps_zh": "仅 P=1、实数非简并能级；不是 unSMASH，也不是环聚合物推广，不改变已有两态 rp-mash 估计量。",
+      "priority": "P1",
+      "kind": "method",
+      "group": "nonadiabatic",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
+    },
+    {
+      "id": "na-pyscf-sacasscf",
+      "name": "PySCF SA-CASSCF multistate bridge",
+      "name_zh": "PySCF SA-CASSCF 多态接口",
+      "code": [
+        "src/pyrpmd/potentials/pyscf_multistate.py",
+        "src/pyrpmd/adiabatic.py"
+      ],
+      "references": [
+        "pyscf2018",
+        "na-sacasscf2016"
+      ],
+      "scope": "The real all-electron equal-weight singlet SA-CASSCF provider returns energies, state gradients, full analytic NACs and many-electron overlaps with explicit root/phase tracking and restart context.",
+      "scope_zh": "实数全电子等权单重态 SA-CASSCF 提供器返回能量、态梯度、完整解析 NAC 和多电子重叠，显式跟踪根/相位并保存续算上下文。",
+      "original_system": "Implementation and validation scope is described in the linked guide.",
+      "original_system_zh": "实现与验证体系范围见所链接指南。",
+      "reproduce_observables": "Compare direct PySCF energies and gradients, signed NACs against overlap differences, root tracking, core-active overlap terms and resumed electronic contexts.",
+      "reproduce_observables_zh": "比较直接 PySCF 能量/梯度、重叠差分的带符号 NAC、根跟踪、核轨道/活动轨道交叉重叠项与电子上下文续算。",
+      "existing_entry": "docs/tier2-nonadiabatic.md",
+      "gaps": "No TDDFT, SOC, ECP, density fitting or GPU path. Electron-translation factors are not applied; selected states, basis and active space require their own validation and citations.",
+      "gaps_zh": "无 TDDFT、SOC、ECP、密度拟合或 GPU 路径，未使用电子平移因子；所选态、基组和活动空间须独立验证并引用。",
+      "priority": "P1",
+      "kind": "external interface",
+      "group": "nonadiabatic",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
+    },
+    {
+      "id": "na-heom",
+      "name": "Drude–Lorentz spin-boson HEOM reference",
+      "name_zh": "Drude–Lorentz 自旋玻色 HEOM 参考",
+      "code": [
+        "src/pyrpmd/analysis/heom.py"
+      ],
+      "references": [
+        "na-heom1989",
+        "na-heom2020",
+        "na-qutip-bofin2023"
+      ],
+      "scope": "A finite scaled-ADO hierarchy with Matsubara bath expansion and an optional tail terminator is propagated by sparse exponential actions. Deterministic continuation retains the entire hierarchy and its identity.",
+      "scope_zh": "有限缩放 ADO 层级采用 Matsubara 浴展开和可选尾终止项，以稀疏指数作用推进；确定性续算保留完整层级及其身份。",
+      "original_system": "Implementation and validation scope is described in the linked guide.",
+      "original_system_zh": "实现与验证体系范围见所链接指南。",
+      "reproduce_observables": "Compare isolated Rabi motion, exact Gaussian dephasing and optional QuTiP/BoFiN population curves; scan hierarchy depth and bath cutoff and retain all ADOs on continuation.",
+      "reproduce_observables_zh": "对照孤立 Rabi、精确高斯退相干及可选 QuTiP/BoFiN 布居曲线，扫描层级深度与浴截断，续算保留所有 ADO。",
+      "existing_entry": "docs/tier2-nonadiabatic.md",
+      "gaps": "Two-state Drude–Lorentz model only. Factorized thermal-bath initialization is not an interacting equilibrium state. Hierarchy depth and Matsubara cutoff remain convergence parameters; physical_converged stays false.",
+      "gaps_zh": "仅两态 Drude–Lorentz 模型；因子化热浴初始化不等于相互作用平衡态，层级深度和 Matsubara 截断仍须收敛，physical_converged 保持 false。",
+      "priority": "P1",
+      "kind": "method",
+      "group": "nonadiabatic",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
+    },
+    {
+      "id": "active-learning",
+      "name": "Closed-loop committee learning",
+      "name_zh": "委员会主动学习闭环",
+      "code": [
+        "src/pyrpmd/active_learning.py",
+        "src/pyrpmd/active_learning_mace.py"
+      ],
+      "references": [
+        "committee2020",
+        "active-rpmd2018",
+        "mace2022"
+      ],
+      "scope": "Sampling, disagreement selection, bounded reference labelling and versioned retraining run between fixed-model segments. Durable stage records and budgets support restart; a small CPU MACE trainer is optional.",
+      "scope_zh": "在模型固定的轨迹段之间依次采样、按分歧选择、预算内参考标注和版本化重训练；持久阶段记录与预算支持续算，可选小规模 CPU MACE 训练器。",
+      "original_system": "Implementation and validation scope is described in the linked guide.",
+      "original_system_zh": "实现与验证体系范围见所链接指南。",
+      "reproduce_observables": "Track held-out energy/force errors, label efficiency, model hashes and crash/replay behavior; use independent learning trajectories and frozen reference validation sets.",
+      "reproduce_observables_zh": "跟踪留出能量/力误差、标注效率、模型哈希与崩溃/重放行为，使用独立学习轨迹和冻结参考验证集。",
+      "existing_entry": "docs/tier2-ml-lifecycle.md",
+      "gaps": "This is a project composition, not a reproduction of the cited paper’s moment-tensor potential or rate benchmark. Disagreement stopping is separate from held-out reference accuracy and physical convergence.",
+      "gaps_zh": "这是项目组合流程，不复现所引论文的矩张量势或速率基准；分歧停止独立于留出参考精度和物理收敛。",
+      "priority": "P1",
+      "kind": "project composition",
+      "group": "materials",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
+    },
+    {
+      "id": "rate-precision",
+      "name": "Budgeted precision-driven thermal rate execution",
+      "name_zh": "有预算的精度驱动热速率执行",
+      "code": [
+        "src/pyrpmd/precision.py",
+        "src/pyrpmd/precision_statistics.py",
+        "src/pyrpmd/precision_execution.py",
+        "src/pyrpmd/workflows/precision.py"
+      ],
+      "references": [
+        "rate05",
+        "bimol09",
+        "nist-bonferroni",
+        "nist-uncertainty1994",
+        "samp-cblock1992"
+      ],
+      "scope": "pyrpmd precision freezes a design, runs independent complete rate replicas and declared numerical counterparts, and accounts for budgets durably. Covariance-aware log-delta intervals share a finite preallocated Bonferroni family; equivalence requires the entire adjusted interval inside the declared margin.",
+      "scope_zh": "pyrpmd precision 冻结设计，执行独立完整速率副本及指定数值对照并持久记账；保留协方差的 log-delta 区间共享预分配有限 Bonferroni 族，等价要求完整调整区间落在声明容限内。",
+      "original_system": "Implementation and validation scope is described in the linked guide.",
+      "original_system_zh": "实现与验证体系范围见所链接指南。",
+      "reproduce_observables": "Use known-covariance controls, paired products and independent complete replicas; test receipt reconciliation, interrupt/replay accounting and numerical-equivalence rejection without changing the underlying rate identity.",
+      "reproduce_observables_zh": "使用已知协方差对照、配对乘积与独立完整副本，验证回执核对、中断/重放记账和数值非等价拒绝，保持底层速率身份不变。",
+      "existing_entry": "docs/rate_precision.md",
+      "gaps": "Intervals have approximate fixed-look coverage; repeated-check correction does not remove estimator bias, nonequilibrium sampling or missing plateau physics. The CLI currently supports its documented serial Python rate route. Budget exhaustion is not convergence.",
+      "gaps_zh": "固定查看区间覆盖率仍是近似；重复检查修正不消除估计偏差、非平衡采样或平台物理缺失，CLI 当前仅支持指南中的串行 Python 速率路径；预算耗尽不等于收敛。",
+      "priority": "P1",
+      "kind": "project composition",
+      "group": "core",
+      "reviewed_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+      "review_date": "2026-11-03"
     }
-  ]
+  ],
+  "integration_update": {
+    "commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+    "date": "2026-11-03",
+    "scope": "Incremental refresh of integrated functionality; unchanged entries retain the original audit. No new physical-convergence certification.",
+    "updated_method_ids": [
+      "gle",
+      "piglet",
+      "bosons",
+      "rpi",
+      "splitting",
+      "samp-retis",
+      "samp-string",
+      "samp-plumed",
+      "samp-metric",
+      "torch",
+      "ml-adapters",
+      "openmm",
+      "lammps",
+      "committee",
+      "qct",
+      "analytic-models"
+    ],
+    "new_method_ids": [
+      "fqcmd",
+      "fermions",
+      "periodic-exchange",
+      "golden-rule-instanton",
+      "samp-abf",
+      "samp-eabf",
+      "samp-steered",
+      "samp-repptis",
+      "samp-ffs",
+      "samp-mlcolvar",
+      "na-iesh",
+      "na-multistate-mash",
+      "na-pyscf-sacasscf",
+      "na-heom",
+      "active-learning",
+      "rate-precision"
+    ],
+    "new_reference_ids": [
+      "qcmd2019",
+      "fqcmd2021",
+      "fermions2020",
+      "exchange-pbc2025",
+      "gle2010",
+      "bofill1994",
+      "instanton-onthefly2016",
+      "gr-instanton2015a",
+      "gr-instanton2015b",
+      "samp-abf2008",
+      "samp-pabf2015",
+      "samp-eabf2017",
+      "samp-jarzynski1997",
+      "samp-crooks1999",
+      "samp-bennett1976",
+      "samp-shadow2013",
+      "samp-pptis2004",
+      "samp-repptis2023",
+      "samp-ffs2005",
+      "samp-ffs2009",
+      "samp-mlcolvar2023",
+      "samp-deeplda2020",
+      "samp-deeptica2021",
+      "na-iesh2009",
+      "na-iesh2023",
+      "na-multimash2023",
+      "na-sacasscf2016",
+      "na-heom1989",
+      "na-heom2020",
+      "na-qutip-bofin2023",
+      "active-rpmd2018",
+      "metatomic2026",
+      "nist-bonferroni",
+      "nist-uncertainty1994"
+    ],
+    "pending": [
+      "Legacy/native/torch PIMD convergence has not merged.",
+      "h-CMD and f-QCMD spectral evidence remain undelivered.",
+      "CUDA performance evidence remains pending."
+    ]
+  }
 }

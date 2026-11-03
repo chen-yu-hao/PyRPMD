@@ -1086,7 +1086,7 @@
   year = {2025},
   howpublished = {ChemRxiv, version 1 (7 December 2025), preprint},
   doi = {10.26434/chemrxiv-2025-xps2g},
-  url = {https://client.prod.orp.cambridge.org/engage/chemrxiv/article-details/692ba382a10c9f5ca169b8de},
+  url = {https://doi.org/10.26434/chemrxiv-2025-xps2g},
   note = {Implemented CA-RP-MASH algorithm and operator-pair weights; record the implemented preprint version explicitly.},
 }
 
@@ -1697,4 +1697,345 @@
   doi = {10.1021/ct9004917},
   url = {https://doi.org/10.1021/ct9004917},
   note = {Original monomial-symmetrization PIP basis method},
+}
+
+% Incremental integrated-feature refresh: ceee59cd5f702165b56c5e541a503d8810fb9111, 2026-11-03.
+
+@misc{qcmd2019,
+  author = {G. Trenins and M. J. Willatt and S. C. Althorpe},
+  title = {{Path-integral dynamics of water using curvilinear centroids}},
+  year = {2019},
+  howpublished = {J. Chem. Phys. 151, 054109},
+  doi = {10.1063/1.5100587},
+  url = {https://doi.org/10.1063/1.5100587},
+  note = {Original quasi-centroid coordinates and QCMD method; full real-time QCMD is not implemented},
+}
+
+@misc{fqcmd2021,
+  author = {T. Fletcher and A. Zhu and J. E. Lawrence and D. E. Manolopoulos},
+  title = {{Fast quasi-centroid molecular dynamics}},
+  year = {2021},
+  howpublished = {J. Chem. Phys. 155, 231101},
+  doi = {10.1063/5.0076704},
+  url = {https://arxiv.org/abs/2111.11572},
+  note = {Original f-QCMD effective-potential construction; PyRPMD implements a restricted molecular subset},
+}
+
+@misc{fermions2020,
+  author = {B. Hirshberg and M. Invernizzi and M. Parrinello},
+  title = {{Path integral molecular dynamics for fermions: Alleviating the sign problem with the Bogoliubov inequality}},
+  year = {2020},
+  howpublished = {J. Chem. Phys. 152, 171102},
+  doi = {10.1063/5.0008720},
+  url = {https://arxiv.org/abs/2003.10317},
+  note = {Bosonic-sampling fermionic reweighting; the auxiliary Bogoliubov-bound extension is not implemented},
+}
+
+@misc{exchange-pbc2025,
+  author = {J. Higer and Y. M. Y. Feldman and B. Hirshberg},
+  title = {{Periodic boundary conditions for bosonic path integral molecular dynamics}},
+  year = {2025},
+  howpublished = {J. Chem. Phys. 163, 024101},
+  doi = {10.1063/5.0265906},
+  url = {https://arxiv.org/abs/2501.17618},
+  note = {Periodic exchange image sums and the limitations of the minimum-image approximation},
+}
+
+@misc{gle2010,
+  author = {M. Ceriotti and G. Bussi and M. Parrinello},
+  title = {{Colored-Noise Thermostats à la Carte}},
+  year = {2010},
+  howpublished = {J. Chem. Theory Comput. 6, 1170–1180},
+  doi = {10.1021/ct900563s},
+  url = {https://doi.org/10.1021/ct900563s},
+  note = {Harmonic Lyapunov response, autocorrelation objective and colored-noise fitting; not a source of bundled parameter tables},
+}
+
+@misc{bofill1994,
+  author = {J. M. Bofill},
+  title = {{Updated Hessian matrix and the restricted step method for locating transition structures}},
+  year = {1994},
+  howpublished = {J. Comput. Chem. 15, 1–11},
+  doi = {10.1002/jcc.540150102},
+  url = {https://doi.org/10.1002/jcc.540150102},
+  note = {Hessian-update method},
+}
+
+@misc{instanton-onthefly2016,
+  author = {A. N. Beyer and J. O. Richardson and P. J. Knowles and J. Rommel and S. C. Althorpe},
+  title = {{Quantum Tunneling Rates of Gas-Phase Reactions from On-the-Fly Instanton Calculations}},
+  year = {2016},
+  howpublished = {J. Phys. Chem. Lett. 7, 4374–4379},
+  doi = {10.1021/acs.jpclett.6b02115},
+  url = {https://doi.org/10.1021/acs.jpclett.6b02115},
+  note = {Practical molecular instanton optimization; PyRPMD does not reproduce the Molpro implementation},
+}
+
+@misc{gr-instanton2015a,
+  author = {J. O. Richardson and R. Bauer and M. Thoss},
+  title = {{Semiclassical Green’s functions and an instanton formulation of electron-transfer rates in the nonadiabatic limit}},
+  year = {2015},
+  howpublished = {J. Chem. Phys. 143, 134115},
+  doi = {10.1063/1.4932361},
+  url = {https://doi.org/10.1063/1.4932361},
+  note = {Original golden-rule instanton derivation},
+}
+
+@misc{gr-instanton2015b,
+  author = {J. O. Richardson},
+  title = {{Ring-polymer instanton theory of electron transfer in the nonadiabatic limit}},
+  year = {2015},
+  howpublished = {J. Chem. Phys. 143, 134116},
+  doi = {10.1063/1.4932362},
+  url = {https://doi.org/10.1063/1.4932362},
+  note = {Ring-polymer numerical formulation of golden-rule instantons},
+}
+
+@misc{samp-abf2008,
+  author = {E. Darve and D. Rodríguez-Gómez and A. Pohorille},
+  title = {{Adaptive biasing force method for scalar and vector free energy calculations}},
+  year = {2008},
+  howpublished = {J. Chem. Phys. 128, 144120},
+  doi = {10.1063/1.2829861},
+  url = {https://doi.org/10.1063/1.2829861},
+  note = {Scalar/vector ABF local mean-force estimator},
+}
+
+@misc{samp-pabf2015,
+  author = {H. Alrachid and T. Lelièvre},
+  title = {{Long-time convergence of an adaptive biasing force method: Variance reduction by Helmholtz projection}},
+  year = {2015},
+  howpublished = {SMAI J. Comput. Math. 1, 55–82},
+  doi = {10.5802/smai-jcm.4},
+  url = {https://doi.org/10.5802/smai-jcm.4},
+  note = {Projected ABF and Helmholtz projection},
+}
+
+@misc{samp-eabf2017,
+  author = {A. Lesage and T. Lelièvre and G. Stoltz and J. Hénin},
+  title = {{Smoothed Biasing Forces Yield Unbiased Free Energies with the Extended-System Adaptive Biasing Force Method}},
+  year = {2017},
+  howpublished = {J. Phys. Chem. B 121, 3676–3685},
+  doi = {10.1021/acs.jpcb.6b10055},
+  url = {https://doi.org/10.1021/acs.jpcb.6b10055},
+  note = {Extended-system ABF and physical-CV reconstruction},
+}
+
+@misc{samp-jarzynski1997,
+  author = {C. Jarzynski},
+  title = {{Nonequilibrium Equality for Free Energy Differences}},
+  year = {1997},
+  howpublished = {Phys. Rev. Lett. 78, 2690–2693},
+  doi = {10.1103/PhysRevLett.78.2690},
+  url = {https://doi.org/10.1103/PhysRevLett.78.2690},
+  note = {Original nonequilibrium work equality},
+}
+
+@misc{samp-crooks1999,
+  author = {G. E. Crooks},
+  title = {{Entropy production fluctuation theorem and the nonequilibrium work relation for free energy differences}},
+  year = {1999},
+  howpublished = {Phys. Rev. E 60, 2721–2726},
+  doi = {10.1103/PhysRevE.60.2721},
+  url = {https://doi.org/10.1103/PhysRevE.60.2721},
+  note = {Forward/reverse work fluctuation relation},
+}
+
+@misc{samp-bennett1976,
+  author = {C. H. Bennett},
+  title = {{Efficient estimation of free energy differences from Monte Carlo data}},
+  year = {1976},
+  howpublished = {J. Comput. Phys. 22, 245–268},
+  doi = {10.1016/0021-9991(76)90078-4},
+  url = {https://doi.org/10.1016/0021-9991(76)90078-4},
+  note = {Acceptance-ratio estimator used in bidirectional work analysis},
+}
+
+@misc{samp-shadow2013,
+  author = {D. A. Sivak and J. D. Chodera and G. E. Crooks},
+  title = {{Using Nonequilibrium Fluctuation Theorems to Understand and Correct Errors in Equilibrium and Nonequilibrium Simulations of Discrete Langevin Dynamics}},
+  year = {2013},
+  howpublished = {Phys. Rev. X 3, 011007},
+  doi = {10.1103/PhysRevX.3.011007},
+  url = {https://doi.org/10.1103/PhysRevX.3.011007},
+  note = {Shadow-work accounting for discrete stochastic propagation},
+}
+
+@misc{samp-pptis2004,
+  author = {D. Moroni and P. G. Bolhuis and T. S. van Erp},
+  title = {{Rate constants for diffusive processes by partial path sampling}},
+  year = {2004},
+  howpublished = {J. Chem. Phys. 120, 4055–4065},
+  doi = {10.1063/1.1644537},
+  url = {https://arxiv.org/abs/cond-mat/0310466},
+  note = {Original partial-path memory-loss approximation},
+}
+
+@misc{samp-repptis2023,
+  author = {W. Vervust and D. T. Zhang and T. S. van Erp and A. Ghysels},
+  title = {{Path sampling with memory reduction and replica exchange to reach long permeation timescales}},
+  year = {2023},
+  howpublished = {Biophys. J. 122, 2960–2972},
+  doi = {10.1016/j.bpj.2023.02.021},
+  url = {https://pmc.ncbi.nlm.nih.gov/articles/PMC10398259/},
+  note = {Replica-exchange PPTIS},
+}
+
+@misc{samp-ffs2005,
+  author = {R. J. Allen and P. B. Warren and P. R. ten Wolde},
+  title = {{Sampling Rare Switching Events in Biochemical Networks}},
+  year = {2005},
+  howpublished = {Phys. Rev. Lett. 94, 018104},
+  doi = {10.1103/PhysRevLett.94.018104},
+  url = {https://doi.org/10.1103/PhysRevLett.94.018104},
+  note = {Original forward-flux sampling method},
+}
+
+@misc{samp-ffs2009,
+  author = {R. J. Allen and C. Valeriani and P. R. ten Wolde},
+  title = {{Forward flux sampling for rare event simulations}},
+  year = {2009},
+  howpublished = {J. Phys.: Condens. Matter 21, 463102},
+  doi = {10.1088/0953-8984/21/46/463102},
+  url = {https://arxiv.org/abs/0906.4758},
+  note = {Method review and practical stochastic-splitting formulation; original method is cited separately},
+}
+
+@misc{samp-mlcolvar2023,
+  author = {L. Bonati and E. Trizio and A. Rizzi and M. Parrinello},
+  title = {{A unified framework for machine learning collective variables for enhanced sampling simulations: mlcolvar}},
+  year = {2023},
+  howpublished = {J. Chem. Phys. 159, 014801},
+  doi = {10.1063/5.0156343},
+  url = {https://doi.org/10.1063/5.0156343},
+  note = {Upstream training software; deployed CVs also need their method citation},
+}
+
+@misc{samp-deeplda2020,
+  author = {L. Bonati and A. Rizzi and M. Parrinello},
+  title = {{Data-Driven Collective Variables for Enhanced Sampling}},
+  year = {2020},
+  howpublished = {J. Phys. Chem. Lett. 11, 2998–3004},
+  doi = {10.1021/acs.jpclett.0c00535},
+  url = {https://doi.org/10.1021/acs.jpclett.0c00535},
+  note = {Deep-LDA collective variables},
+}
+
+@misc{samp-deeptica2021,
+  author = {L. Bonati and G. Piccini and M. Parrinello},
+  title = {{Deep learning the slow modes for rare events sampling}},
+  year = {2021},
+  howpublished = {Proc. Natl. Acad. Sci. USA 118, e2113533118},
+  doi = {10.1073/pnas.2113533118},
+  url = {https://doi.org/10.1073/pnas.2113533118},
+  note = {Deep-TICA collective variables},
+}
+
+@misc{na-iesh2009,
+  author = {N. Shenvi and S. Roy and J. C. Tully},
+  title = {{Nonadiabatic dynamics at metal surfaces: Independent-electron surface hopping}},
+  year = {2009},
+  howpublished = {J. Chem. Phys. 130, 174107},
+  doi = {10.1063/1.3125436},
+  url = {https://doi.org/10.1063/1.3125436},
+  note = {Original IESH method},
+}
+
+@misc{na-iesh2023,
+  author = {J. Gardner and D. Corken and S. M. Janke and S. Habershon and R. J. Maurer},
+  title = {{Efficient implementation and performance analysis of the independent electron surface hopping method for dynamics at metal surfaces}},
+  year = {2023},
+  howpublished = {J. Chem. Phys. 158, 064101},
+  doi = {10.1063/5.0137137},
+  url = {https://arxiv.org/abs/2212.00518v2},
+  note = {IESH implementation analysis and benchmark formulation},
+}
+
+@misc{na-multimash2023,
+  author = {J. E. Runeson and D. E. Manolopoulos},
+  title = {{A multi-state mapping approach to surface hopping}},
+  year = {2023},
+  howpublished = {J. Chem. Phys. 159, 094115},
+  doi = {10.1063/5.0158147},
+  url = {https://arxiv.org/abs/2305.08835v3},
+  note = {Original multistate MASH, including signed estimators and multistate momentum direction; not unSMASH},
+}
+
+@misc{na-sacasscf2016,
+  author = {I. Fdez. Galván and M. G. Delcey and T. B. Pedersen and F. Aquilante and R. Lindh},
+  title = {{Analytical State-Average Complete-Active-Space Self-Consistent Field Nonadiabatic Coupling Vectors: Implementation with Density-Fitted Two-Electron Integrals and Application to Conical Intersections}},
+  year = {2016},
+  howpublished = {J. Chem. Theory Comput. 12, 3636–3653},
+  doi = {10.1021/acs.jctc.6b00384},
+  url = {https://doi.org/10.1021/acs.jctc.6b00384},
+  note = {SA-CASSCF analytic-coupling derivation cited by the provider; this bridge does not enable density fitting},
+}
+
+@misc{na-heom1989,
+  author = {Y. Tanimura and R. Kubo},
+  title = {{Time Evolution of a Quantum System in Contact with a Nearly Gaussian-Markoffian Noise Bath}},
+  year = {1989},
+  howpublished = {J. Phys. Soc. Jpn. 58, 101–114},
+  doi = {10.1143/JPSJ.58.101},
+  url = {https://doi.org/10.1143/JPSJ.58.101},
+  note = {Original hierarchy foundation; finite-temperature formulation is cited separately},
+}
+
+@misc{na-heom2020,
+  author = {Y. Tanimura},
+  title = {{Numerically “exact” approach to open quantum dynamics: The hierarchical equations of motion (HEOM)}},
+  year = {2020},
+  howpublished = {J. Chem. Phys. 153, 020901},
+  doi = {10.1063/5.0011599},
+  url = {https://doi.org/10.1063/5.0011599},
+  note = {Modern formulation and review; a finite hierarchy still requires convergence},
+}
+
+@misc{na-qutip-bofin2023,
+  author = {N. Lambert and T. Raheja and S. Cross and P. Menczel and S. Ahmed and A. Pitchford and D. Burgarth and F. Nori},
+  title = {{QuTiP-BoFiN: A bosonic and fermionic numerical hierarchical-equations-of-motion library with applications in light-harvesting, quantum control, and single-molecule electronics}},
+  year = {2023},
+  howpublished = {Phys. Rev. Research 5, 013181},
+  doi = {10.1103/PhysRevResearch.5.013181},
+  url = {https://doi.org/10.1103/PhysRevResearch.5.013181},
+  note = {Optional independent software comparator and published population benchmark, not the PyRPMD implementation},
+}
+
+@misc{active-rpmd2018,
+  author = {I. S. Novikov and Y. V. Suleimanov and A. V. Shapeev},
+  title = {{Automated calculation of thermal rate coefficients using ring polymer molecular dynamics and machine-learning interatomic potentials with active learning}},
+  year = {2018},
+  howpublished = {Phys. Chem. Chem. Phys. 20, 29503–29512},
+  doi = {10.1039/C8CP06037A},
+  url = {https://doi.org/10.1039/C8CP06037A},
+  note = {Published active-learning RPMD rate workflow; the PyRPMD pilot is a distinct committee-based control experiment},
+}
+
+@misc{metatomic2026,
+  author = {F. Bigi and J. W. Abbott and P. Loche and A. Mazitov and D. Tisi and M. F. Langer and A. Goscinski and P. Pegolo and S. Chong and R. Goswami and P. Febrer and S. Chorna and M. Kellner and M. Ceriotti and G. Fraux},
+  title = {{Metatensor and metatomic: Foundational libraries for interoperable atomistic machine learning}},
+  year = {2026},
+  howpublished = {J. Chem. Phys. 164, 064113},
+  doi = {10.1063/5.0304911},
+  url = {https://docs.metatensor.org/metatomic/latest/cite.html},
+  note = {Upstream interoperability software; model weights require their own attribution},
+}
+
+@misc{nist-bonferroni,
+  author = {NIST/SEMATECH},
+  title = {{e-Handbook of Statistical Methods: Bonferroni’s method}},
+  year = {2002},
+  howpublished = {NIST Handbook 151, §7.4.7.3 (online section accessed 2026-11-03)},
+  url = {https://www.itl.nist.gov/div898/handbook/prc/section4/prc473.htm},
+  note = {Official formula reference for finite-family simultaneous intervals; 2002 is the handbook launch year},
+}
+
+@misc{nist-uncertainty1994,
+  author = {B. N. Taylor and C. E. Kuyatt},
+  title = {{Guidelines for Evaluating and Expressing the Uncertainty of NIST Measurement Results}},
+  year = {1994},
+  howpublished = {NIST Technical Note 1297, 1994 edition, Appendix A},
+  doi = {10.6028/NIST.tn.1297},
+  url = {https://www.nist.gov/pml/nist-technical-note-1297/nist-tn-1297-appendix-law-propagation-uncertainty},
+  note = {Official covariance-aware first-order propagation of uncertainty, not a guarantee of finite-sample coverage},
 }
