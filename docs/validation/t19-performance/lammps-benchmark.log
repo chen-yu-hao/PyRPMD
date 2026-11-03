@@ -1,0 +1,13 @@
+[1793684003.843168] [b0572daa46b0:4    :0]             sys.c:319  UCX  ERROR failed to get boot id
+[hwloc/linux] failed to find sysfs cpu topology directory, aborting linux discovery.
+[1793684003.861736] [b0572daa46b0:4    :0]       tcp_iface.c:984  UCX  ERROR scandir(/sys/class/net) failed: No such file or directory
+[1793684003.861902] [b0572daa46b0:4    :0]             sys.c:319  UCX  ERROR failed to get boot id
+[1793684003.862300] [b0572daa46b0:4    :0]             sys.c:319  UCX  ERROR failed to get boot id
+[1793684003.862308] [b0572daa46b0:4    :0]             sys.c:319  UCX  ERROR failed to get boot id
+[1793684003.862379] [b0572daa46b0:4    :0]             sys.c:319  UCX  ERROR failed to get boot id
+{"atoms": 256, "beads": 32, "offset": 0.0, "median_seconds": {"baseline_serial": 0.04435888600028193, "baseline_persistent": 0.05253976199992394, "serial": 0.04745315500031211, "persistent": 0.049040533999686886}}
+{"atoms": 256, "beads": 32, "offset": 0.173, "median_seconds": {"baseline_serial": 0.038224360999720375, "baseline_persistent": 0.022807259000273916, "serial": 0.03686247199993886, "persistent": 0.02342407700007243}}
+{"atoms": 2048, "beads": 32, "offset": 0.0, "median_seconds": {"baseline_serial": 0.2610915800000839, "baseline_persistent": 0.27771460300027684, "serial": 0.2724591869996402, "persistent": 0.24749291499983883}}
+{"atoms": 2048, "beads": 32, "offset": 0.173, "median_seconds": {"baseline_serial": 0.1807146629998897, "baseline_persistent": 0.10801100900016536, "serial": 0.11683384600019053, "persistent": 0.09129600200003551}}
+{"atoms": 4096, "beads": 32, "offset": 0.0, "median_seconds": {"baseline_serial": 0.5235038079999867, "baseline_persistent": 0.4903021059999446, "serial": 0.4976962139999159, "persistent": 0.47105222800018964}}
+{"atoms": 4096, "beads": 32, "offset": 0.173, "median_seconds": {"baseline_serial": 0.24738470400006918, "baseline_persistent": 0.16528893500026243, "serial": 0.21619802099985463, "persistent": 0.09406576200035488}}

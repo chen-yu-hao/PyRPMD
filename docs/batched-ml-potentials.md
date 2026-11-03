@@ -518,6 +518,48 @@ the timings do not establish a uniform graph-stage, end-to-end or GPU speedup.
 All repetitions, edge counts, allocation metrics and version details are in
 [`mace_graph_cpu_benchmark.json`](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/potentials/mace_graph_cpu_benchmark.json).
 
+### T19 CUDA validation matrix (2026-11-03)
+
+CUDA performance is **not yet measured**. The T19 environment has no NVIDIA
+device or CUDA runtime; the later T04 stream changes and PR #84 were also
+absent from the main revision used for this work. The existing CPU table
+above is not evidence for those CUDA changes.
+
+The new [T19 measurement driver](../benchmarks/efficiency/t19_cuda.py) covers
+all five named providers at every combination of `P=8,32,64` and
+`N=64,512,4096`. Supply local model files with their SHA256 hashes, explicit
+float64 precision and either representative NPZ structures or an explicitly
+labeled generated lattice. See the script's `--help` for the manifest schema.
+It never downloads weights or changes the requested model/device/precision.
+
+```bash
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
+  python benchmarks/efficiency/t19_cuda.py --device cuda:0 --suite ml \
+  --providers mace-batched --manifest models.json \
+  --output t19-mace-cuda.json --markdown t19-mace-cuda.md
+```
+
+Use an explicit `--providers` subset when frameworks require incompatible
+environments, and collect one report per environment. A requested subset
+can pass without marking the complete five-provider T19 matrix as complete.
+
+Each configured model is compared with its CPU float64 evaluation on the
+same coordinates and cell. The driver records energy/force/virial errors,
+frame-permutation and changing-batch checks, nondefault CUDA stream checks,
+median complete NumPy-boundary and resident-tensor timings, all raw
+repetitions, peak device memory, framework versions and the actual imported
+source files. Device-specific artifacts that cannot supply the CPU reference
+are explicit unsupported cases. GPU synchronization surrounds every timed
+CUDA evaluation. The resident-tensor timing excludes the initial coordinate upload;
+the NumPy timing includes the public boundary transfers.
+
+No model, missing CUDA, unsupported precision and out-of-memory errors leave
+explicit rows and a nonzero exit code. A partial matrix cannot be reported
+as complete T19 CUDA acceptance. The [T19 validation record](t19-performance.md)
+describes the available hardware, missing measurements, workflow comparison
+and CPU force-engine results. Short correctness/performance checks keep
+`physical_converged=false`.
+
 ## API references
 
 - [MACE batch construction and model evaluation](https://github.com/ACEsuit/mace/blob/v0.3.17/mace/tools/multihead_tools.py)

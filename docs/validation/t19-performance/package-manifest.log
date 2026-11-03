@@ -1,0 +1,28 @@
+running egg_info
+writing src/PyRPMD.egg-info/PKG-INFO
+writing dependency_links to src/PyRPMD.egg-info/dependency_links.txt
+writing entry points to src/PyRPMD.egg-info/entry_points.txt
+writing requirements to src/PyRPMD.egg-info/requires.txt
+writing top-level names to src/PyRPMD.egg-info/top_level.txt
+reading manifest file 'src/PyRPMD.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+warning: no previously-included files found matching 'docs/validation/tier1-2026-10-31/*.npz'
+no previously-included directories found matching 'docs/_build'
+no previously-included directories found matching 'benchmarks/brhcl/build'
+warning: no previously-included files matching '*.csv' found under directory 'benchmarks/condensed_phase/results'
+warning: no previously-included files matching '*.npz' found under directory 'benchmarks/condensed_phase/results'
+no previously-included directories found matching 'docs/validation/tier2-literature-2026-11-01/sampling/opes'
+warning: no previously-included files matching 'bck.*' found under directory 'docs/validation/tier2-literature-2026-11-01/sampling'
+warning: no previously-included files matching '__pycache__' found anywhere in distribution
+warning: no previously-included files matching '*.py[cod]' found anywhere in distribution
+warning: no previously-included files matching '*.so' found anywhere in distribution
+warning: no previously-included files matching '*.o' found anywhere in distribution
+warning: no files found matching '*.md' under directory 'benchmarks/torch_literature'
+warning: no files found matching '*.gz' under directory 'benchmarks/torch_literature'
+adding license file 'LICENSE'
+adding license file 'THIRD_PARTY_NOTICES.md'
+adding license file 'native/thermal-NOTICE.md'
+adding license file 'src/pyrpmd/potentials/_licenses/chempotpy-APACHE-2.0.txt'
+writing manifest file 'src/PyRPMD.egg-info/SOURCES.txt'
+
+T19 source manifest check: all 33 new scripts, tests, documentation and evidence files are included.

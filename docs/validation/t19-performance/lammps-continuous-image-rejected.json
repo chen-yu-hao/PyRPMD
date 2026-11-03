@@ -1,0 +1,28 @@
+{
+  "schema": "pyrpmd.t19.rejected-prototype.v1",
+  "candidate": "Keep near-rebuild coordinate images across periodic faces",
+  "published": false,
+  "reason": "History-dependent image subtraction changes floating-point results after a provider is recreated; exact checkpoint continuation is not established.",
+  "environment": {
+    "lammps_version": 20250722,
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "UCX_TLS": "self",
+    "ranks": 1
+  },
+  "model": {
+    "units": "metal",
+    "box_angstrom": [20.0, 20.0, 20.0],
+    "periodicity": [true, true, true],
+    "pair_style": "lj/cut 5",
+    "pair_coeff": "1 1 0.2 1",
+    "positions_initial_angstrom": [[0.01, 2, 2], [1.31, 2, 2]],
+    "positions_next_angstrom": [[-0.02, 2, 2], [1.31, 2, 2]]
+  },
+  "comparison": "Evaluate next positions with retained continuous-image prototype versus a freshly constructed prototype provider performing its initial run 0 setup",
+  "energy_signed_difference_hartree": 2.25514052e-17,
+  "max_absolute_force_difference_hartree_per_bohr": 3.2959746043559335e-17,
+  "retained_counters": {"instances": 1, "neighbor_rebuilds": 1, "neighbor_reuses": 1},
+  "recreated_counters": {"instances": 1, "neighbor_rebuilds": 1, "neighbor_reuses": 0},
+  "interpretation": "These errors are tiny physically, but nonzero; the candidate cannot be advertised as bitwise restart equivalent. The published adapter retains its original wrapped-image and rebuild behavior."
+}

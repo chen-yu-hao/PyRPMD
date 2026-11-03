@@ -84,6 +84,13 @@ class LAMMPSPotential(Potential):
         if type_map is None or isinstance(type_map, str):
             raise ValueError("LAMMPS requires params.type_map, ordered from atom type 1")
         self.type_map = _chemical_symbols(type_map)
+        # Integer symbol codes keep validation O(N), without sorting IDs or
+        # allocating one Python string/tuple element per atom on every sweep.
+        # Several LAMMPS types may legitimately identify the same element.
+        codes = {symbol: index for index, symbol in enumerate(dict.fromkeys(
+            self.symbols + self.type_map))}
+        self._symbol_codes = np.array([codes[symbol] for symbol in self.symbols], dtype=np.int64)
+        self._type_codes = np.array([codes[symbol] for symbol in self.type_map], dtype=np.int64)
         if (not isinstance(asset_files, (list, tuple))
                 or not all(isinstance(path, (str, Path)) for path in asset_files)):
             raise ValueError("LAMMPS asset_files must list every external data, potential and include file")
@@ -281,6 +288,7 @@ class LAMMPSPotential(Potential):
         if cell is not None and not np.allclose(matrix, cell * BOHR_ANGSTROM, rtol=1e-10, atol=1e-10):
             raise PotentialError("LAMMPS restricted-triclinic row cell does not match System.cell")
         self._origin, self._box_matrix = lo, matrix
+        self._box_inverse = np.linalg.inv(matrix)
 
     def _validate_atoms(self):
         n = len(self.symbols)
@@ -301,9 +309,9 @@ class LAMMPSPotential(Potential):
         if not valid:
             raise PotentialError("LAMMPS type_map must identify every atom type")
         if self._comm_size == 1:
-            if not np.array_equal(np.sort(ids), np.arange(1, n+1)):
+            if not np.all(np.bincount(ids, minlength=n+1)[1:] == 1):
                 raise PotentialError("LAMMPS atom IDs must be consecutive 1..N in System order")
-            ordered_types = types[np.argsort(ids)]
+            valid_symbols = np.array_equal(self._type_codes[types-1], self._symbol_codes[ids-1])
         else:
             atoms = np.zeros((n, 2), dtype=np.int64)
             np.add.at(atoms[:, 0], ids-1, 1)
@@ -311,9 +319,8 @@ class LAMMPSPotential(Potential):
             atoms = self._sum_array(atoms)
             if not np.all(atoms[:, 0] == 1):
                 raise PotentialError("LAMMPS atom IDs must be consecutive 1..N in System order")
-            ordered_types = atoms[:, 1]
-        observed = tuple(self.type_map[int(t)-1] for t in ordered_types)
-        if observed != self.symbols:
+            valid_symbols = np.array_equal(self._type_codes[atoms[:, 1]-1], self._symbol_codes)
+        if not valid_symbols:
             raise PotentialError("LAMMPS type_map/atom IDs do not match System symbols/order")
         return ids
 
@@ -367,7 +374,7 @@ class LAMMPSPotential(Potential):
                 raise PotentialError("LAMMPS atom count mismatch")
             # Validate the whole batch before modifying any instance. Wrapping
             # stays in a temporary copy, preserving unwrapped diffusion paths.
-            frac = (x * BOHR_ANGSTROM-self._origin) @ np.linalg.inv(self._box_matrix)
+            frac = (x * BOHR_ANGSTROM-self._origin) @ self._box_inverse
             if np.any((frac[:, :, ~self.pbc] < 0) | (frac[:, :, ~self.pbc] >= 1)):
                 raise PotentialError("LAMMPS coordinates lie outside a nonperiodic box boundary")
             frac[:, :, self.pbc] -= np.floor(frac[:, :, self.pbc])

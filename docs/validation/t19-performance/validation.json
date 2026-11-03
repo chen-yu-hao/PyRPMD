@@ -1,0 +1,303 @@
+{
+  "schema": "pyrpmd.t19.validation.v1",
+  "date_utc": "2026-11-03",
+  "base_commit": "f87705115c7496821b283a0966c991abd541231c",
+  "tested_code_commit": "6dc3b527531369f1f9fae7ea5f6dfa3800ef9af1",
+  "tested_code_tree": "addfcf296872d991386fa1f5505e1ba36f887544",
+  "local_to_published_commit_mapping": "commit-mapping.json",
+  "gpu_acceptance_complete": false,
+  "physical_converged": false,
+  "full_regression": [
+    {
+      "label": "baseline",
+      "cwd": "/workspace/scratch/998803105056/PyRPMD-baseline",
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 OPENMM_CPU_THREADS=1 LD_LIBRARY_PATH=/workspace/scratch/998803105056/.venv/lib UCX_TLS=self TMPDIR=/workspace/scratch/998803105056/tmp PYTHONPATH=/workspace/scratch/998803105056/PyRPMD-baseline/src ../.venv/bin/python -m pytest -q > ../t19-validation/baseline-full.log 2>&1",
+      "exit_code": 1,
+      "raw_summary": "3 failed, 10898 passed, 171 skipped, 68 warnings, 493 subtests passed in 1485.02s (0:24:45)",
+      "failed_nodeids": [
+        "tests/test_engine_subcommunicators.py::test_actual_lammps_private_engine_groups[static-4]",
+        "tests/test_engine_subcommunicators.py::test_actual_lammps_private_engine_groups[dynamic-5]",
+        "tests/test_ipi_clients.py::test_existing_unix_address_is_not_removed_on_bind_failure"
+      ],
+      "log": "baseline-full.log"
+    },
+    {
+      "label": "candidate",
+      "cwd": "/workspace/scratch/998803105056/PyRPMD",
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 OPENMM_CPU_THREADS=1 LD_LIBRARY_PATH=/workspace/scratch/998803105056/.venv/lib UCX_TLS=self TMPDIR=/workspace/scratch/998803105056/tmp PYTHONPATH=/workspace/scratch/998803105056/PyRPMD/src ../.venv/bin/python -m pytest -q > ../t19-validation/candidate-full.log 2>&1",
+      "exit_code": 1,
+      "raw_summary": "3 failed, 10974 passed, 182 skipped, 68 warnings, 493 subtests passed in 1012.21s (0:16:52)",
+      "failed_nodeids": [
+        "tests/test_engine_subcommunicators.py::test_actual_lammps_private_engine_groups[static-4]",
+        "tests/test_engine_subcommunicators.py::test_actual_lammps_private_engine_groups[dynamic-5]",
+        "tests/test_ipi_clients.py::test_existing_unix_address_is_not_removed_on_bind_failure"
+      ],
+      "log": "candidate-full.log"
+    }
+  ],
+  "new_failed_nodeids": [],
+  "shared_failure_causes": {
+    "engine_subcommunicators": "MPICH/UCX process_vm_readv denied (errno 1); also unavailable sysfs topology/network paths",
+    "ipi_unix_address": "AF_UNIX socket creation denied (PermissionError errno 1)"
+  },
+  "commands": [
+    {
+      "name": "openmm_focused",
+      "cwd": "/workspace/scratch/998803105056/PyRPMD",
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 OPENMM_CPU_THREADS=1 /workspace/scratch/998803105056/.venv/bin/python -m pytest -q tests/test_openmm_provider.py tests/test_openmm_batch_provider.py tests/test_openmm_resident.py tests/test_t19_openmm_benchmark.py > /workspace/scratch/998803105056/t19-validation/openmm-focused.log 2>&1",
+      "exit_code": 0,
+      "log": "openmm-focused.log"
+    },
+    {
+      "name": "lammps_focused",
+      "cwd": "/workspace/scratch/998803105056/PyRPMD",
+      "command": "env LD_LIBRARY_PATH=/workspace/scratch/998803105056/.venv/lib UCX_TLS=self OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 /workspace/scratch/998803105056/.venv/bin/python -m pytest -q tests/test_lammps_provider.py tests/test_lammps_batch_provider.py tests/test_lammps_performance.py > /workspace/scratch/998803105056/t19-validation/lammps-focused.log 2>&1",
+      "exit_code": 0,
+      "log": "lammps-focused.log"
+    },
+    {
+      "name": "cuda_harness",
+      "cwd": "/workspace/scratch/998803105056/PyRPMD",
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../.venv/bin/python -m pytest -q tests/test_t19_cuda.py > ../t19-validation/cuda-harness-tests.log 2>&1",
+      "exit_code": 0,
+      "log": "cuda-harness-tests.log"
+    },
+    {
+      "name": "pr84_harness",
+      "cwd": "/workspace/scratch/998803105056/PyRPMD",
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=/workspace/scratch/998803105056/PyRPMD-pr84-validation/src ../.venv/bin/python -m pytest -q tests/test_t19_cuda.py::test_pr84_workflow_cpu_if_present > ../t19-validation/pr84-cpu-harness-test.log 2>&1",
+      "exit_code": 0,
+      "log": "pr84-cpu-harness-test.log"
+    },
+    {
+      "name": "lammps_cpu",
+      "cwd": "/workspace/scratch/998803105056/PyRPMD",
+      "command": "env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 OPENMM_CPU_THREADS=1 LD_LIBRARY_PATH=/workspace/scratch/998803105056/.venv/lib UCX_TLS=self TMPDIR=/workspace/scratch/998803105056/tmp /workspace/scratch/998803105056/.venv/bin/python benchmarks/efficiency/t19_lammps.py --baseline-ref f87705115c7496821b283a0966c991abd541231c --atoms 256 2048 4096 --beads 32 --offsets 0 .173 --rounds 3 --warmup 2 --repeats 7 --output /workspace/scratch/998803105056/t19-validation/lammps-cpu.json > /workspace/scratch/998803105056/t19-validation/lammps-benchmark.log 2>&1",
+      "exit_code": 0,
+      "log": "lammps-benchmark.log"
+    },
+    {
+      "name": "openmm_cpu",
+      "cwd": "/workspace/scratch/998803105056/PyRPMD",
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 OPENMM_CPU_THREADS=1 TMPDIR=/workspace/scratch/998803105056/tmp ../.venv/bin/python benchmarks/efficiency/t19_openmm.py --device cpu --platform CPU --model lj --beads 8 32 64 --atoms 64 512 4096 --workers 4 --warmup 1 --repeats 3 --rounds 3 --output ../t19-validation/openmm-cpu.json > ../t19-validation/openmm-benchmark.log 2>&1",
+      "exit_code": 0,
+      "log": "openmm-benchmark.log"
+    },
+    {
+      "name": "openmm_cuda_blocked",
+      "cwd": "/workspace/scratch/998803105056/PyRPMD",
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 OPENMM_CPU_THREADS=1 ../.venv/bin/python benchmarks/efficiency/t19_openmm.py --output ../t19-validation/openmm-cuda-blocked.json > ../t19-validation/openmm-cuda-blocked.log 2>&1",
+      "exit_code": 2,
+      "log": "openmm-cuda-blocked.log"
+    },
+    {
+      "name": "cuda_blocked",
+      "cwd": "/workspace/scratch/998803105056/PyRPMD",
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../.venv/bin/python benchmarks/efficiency/t19_cuda.py --output ../t19-validation/cuda-blocked.json --markdown ../t19-validation/cuda-blocked.md > ../t19-validation/cuda-blocked.log 2>&1",
+      "exit_code": 2,
+      "log": "cuda-blocked.log"
+    },
+    {
+      "name": "pr84_cpu_smoke",
+      "cwd": "/workspace/scratch/998803105056/PyRPMD",
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=/workspace/scratch/998803105056/PyRPMD-pr84-validation/src ../.venv/bin/python benchmarks/efficiency/t19_cuda.py --device cpu --suite workflows --beads 8 --atoms 64 --warmup 1 --repeats 3 --production-steps 6 --equilibration-steps 2 --sample-interval 2 --output ../t19-validation/pr84-cpu-smoke-final.json --markdown ../t19-validation/pr84-cpu-smoke-final.md > ../t19-validation/pr84-cpu-smoke-final.log 2>&1",
+      "exit_code": 0,
+      "log": "pr84-cpu-smoke-final.log"
+    },
+    {
+      "name": "strict_docs",
+      "cwd": "/workspace/scratch/998803105056/PyRPMD",
+      "command": "../.venv/bin/python -m sphinx -b html -W --keep-going -D language=en docs ../t19-validation/html > ../t19-validation/docs-build.log 2>&1",
+      "exit_code": 0,
+      "log": "docs-build.log"
+    },
+    {
+      "name": "source_manifest",
+      "cwd": "/workspace/scratch/998803105056/PyRPMD",
+      "command": "../.venv/bin/python setup.py egg_info > ../t19-validation/package-manifest.log 2>&1",
+      "exit_code": 0,
+      "log": "package-manifest.log",
+      "verified_new_paths": [
+        "benchmarks/efficiency/t19_cuda.py",
+        "benchmarks/efficiency/t19_openmm.py",
+        "benchmarks/efficiency/t19_lammps.py",
+        "tests/test_t19_cuda.py",
+        "tests/test_openmm_resident.py",
+        "tests/test_t19_openmm_benchmark.py",
+        "tests/test_lammps_performance.py",
+        "docs/t19-performance.md",
+        "docs/validation/t19-performance/baseline-full.log",
+        "docs/validation/t19-performance/baseline-lammps.log",
+        "docs/validation/t19-performance/baseline-ml-torch.log",
+        "docs/validation/t19-performance/baseline-openmm.log",
+        "docs/validation/t19-performance/candidate-full.log",
+        "docs/validation/t19-performance/commit-mapping.json",
+        "docs/validation/t19-performance/cuda-blocked.json",
+        "docs/validation/t19-performance/cuda-blocked.log",
+        "docs/validation/t19-performance/cuda-harness-tests.log",
+        "docs/validation/t19-performance/docs-build.log",
+        "docs/validation/t19-performance/environment.json",
+        "docs/validation/t19-performance/lammps-benchmark.log",
+        "docs/validation/t19-performance/lammps-continuous-image-rejected.json",
+        "docs/validation/t19-performance/lammps-cpu.json",
+        "docs/validation/t19-performance/lammps-focused.log",
+        "docs/validation/t19-performance/openmm-benchmark.log",
+        "docs/validation/t19-performance/openmm-cpu.json",
+        "docs/validation/t19-performance/openmm-cuda-blocked.json",
+        "docs/validation/t19-performance/openmm-cuda-blocked.log",
+        "docs/validation/t19-performance/openmm-focused.log",
+        "docs/validation/t19-performance/package-manifest.log",
+        "docs/validation/t19-performance/pr84-cpu-harness-test.log",
+        "docs/validation/t19-performance/pr84-cpu-smoke-final.json",
+        "docs/validation/t19-performance/pr84-cpu-smoke-final.log",
+        "docs/validation/t19-performance/validation.json"
+      ],
+      "missing_paths": []
+    }
+  ],
+  "native_extension_baseline_comparison": [
+    {
+      "path": "src/pyrpmd/_thermal.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "05bb6ec8c543dd41483f6f29fbdecc5ad896a5dfd7d4783bc9f999ab40502451",
+      "baseline_identical": true
+    },
+    {
+      "path": "src/pyrpmd/_electronic.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "6fe9163fc597d403ed1d4fe999f2f355e8c75ab1c6c1a7a04cd8f70ff835e814",
+      "baseline_identical": true
+    },
+    {
+      "path": "src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "8d9f03b8b75457312eb1b5db3e05e1f1718f6ae95d674987221ef677ba0d78e7",
+      "baseline_identical": true
+    }
+  ],
+  "dependency_integration": {
+    "pr84_head": "a17a69774b2284f6345c92ac44b021999b07556a",
+    "pr84_base": "8cc402fb12391e4fb644d3e186e5e58d1699759a",
+    "pr84_unmerged_at_inspection": true,
+    "pr84_runtime_smoke_tree_base": "f87705115c7496821b283a0966c991abd541231c",
+    "pr84_runtime_patch_generation": "git diff 8cc402fb12391e4fb644d3e186e5e58d1699759a a17a69774b2284f6345c92ac44b021999b07556a -- src tests examples",
+    "pr84_runtime_patch_sha256": "58fc94fac21d22c828ee4a893f91aac470fd2a840f43bc185faec39197bad9ef",
+    "regenerated_patch_identical": true,
+    "patch_application": "git apply --3way --index ../t19-validation/pr84-runtime.patch in isolated worktree",
+    "t04_followup_head": "c7f05464d1724c58863e18494e0d11e24e062571",
+    "t04_cuda_followup_present": false
+  },
+  "measurement_notes": [
+    "LAMMPS and OpenMM performance campaigns ran sequentially after the baseline suite completed and before candidate regression started.",
+    "The PR84 CPU smoke ran concurrently with candidate regression. Its timing fields are not performance evidence.",
+    "OpenMM CPU JSON is whitespace-compacted only; every JSON value equals the original 4287469-byte report.",
+    "Single-rank LAMMPS UCX_TLS=self is not a multi-rank scaling configuration.",
+    "No real ML model or CUDA kernel was measured."
+  ],
+  "artifacts": {
+    "baseline-full.log": {
+      "sha256": "97664411c06b03683d2b9bc0aa01d0c185dbd05c002d71e93cf5b75113802e02",
+      "bytes": 56477
+    },
+    "baseline-lammps.log": {
+      "sha256": "7de2c6efd3a09e14774dbf12952e2a299a686cec798a3003141556acbced9b34",
+      "bytes": 99
+    },
+    "baseline-ml-torch.log": {
+      "sha256": "af009f69edcf3ae909fe07d5ea3e853502c6fd27e68adf3b645432fa3b88ebdd",
+      "bytes": 1449
+    },
+    "baseline-openmm.log": {
+      "sha256": "4e3facd10e692931371f8d9a62d08e99f43428de4681063c388efb50aad73c16",
+      "bytes": 3807
+    },
+    "candidate-full.log": {
+      "sha256": "e9d5eb223f4f4f2d1c3043f1b606d8210758d3e33acaed75a3e35ee95e094ea7",
+      "bytes": 56785
+    },
+    "commit-mapping.json": {
+      "sha256": "33141b3ab3c3a83b7b8e42fb7761a53fee57536c5a642f959e9083edad927a9c",
+      "bytes": 1838
+    },
+    "cuda-blocked.json": {
+      "sha256": "423c06d292ead9e4d6be6b9daf3fd741834be57d56c37c7ff79c33decd9dd44b",
+      "bytes": 30736
+    },
+    "cuda-blocked.log": {
+      "sha256": "4b438258bafa37c7aa93e63e2049d4efb73fcf21942c8417d14a7890da6dfef5",
+      "bytes": 2206
+    },
+    "cuda-harness-tests.log": {
+      "sha256": "b8bf6062183ec5af17c45b112b3af7dd2fa5017cc95ca8faa6ec65e100f579fd",
+      "bytes": 401
+    },
+    "docs-build.log": {
+      "sha256": "2995b717da618bbbe05df01992cf50160bd7708968b5395148f2f94c98518f74",
+      "bytes": 8101
+    },
+    "environment.json": {
+      "sha256": "4f5513b1c1e992c2e86d99085f076e3968a4abc9b0ad983fc9968f881549ecab",
+      "bytes": 1789
+    },
+    "lammps-benchmark.log": {
+      "sha256": "85405ee3fea5e29a8a85199f36b8f68ec9aa59fac438947ed1088202053741b7",
+      "bytes": 2000
+    },
+    "lammps-continuous-image-rejected.json": {
+      "sha256": "8a88cf30e496de58260633552fcbed745988ed72a37ad9792b686ff51793e301",
+      "bytes": 1459
+    },
+    "lammps-cpu.json": {
+      "sha256": "df5427a4f0e44e23102f92c373f23ddad643989eaed09dfcf41966011c316f93",
+      "bytes": 166840
+    },
+    "lammps-focused.log": {
+      "sha256": "49b7f44c14c76551a6337b69b8865f741e6388ef76c61c4eeed31aba38928962",
+      "bytes": 99
+    },
+    "openmm-benchmark.log": {
+      "sha256": "0876806173fd9433d67f55505ce97b1fa01f8bf3510838d116e20af3e32b9528",
+      "bytes": 213
+    },
+    "openmm-cpu.json": {
+      "sha256": "96bd99597add5501f04b89e012fc8329508f2be046578ca861773dab220945c4",
+      "bytes": 1006253
+    },
+    "openmm-cuda-blocked.json": {
+      "sha256": "8d83ccac454a8d0a86cff165648de0670e1010f2d7627f8e1e93f41cfe12d095",
+      "bytes": 4362
+    },
+    "openmm-cuda-blocked.log": {
+      "sha256": "217d2d80cf0d83ea3a8ee110aa272e27169d8e620f46d7a42a5da332b1fdde01",
+      "bytes": 231
+    },
+    "openmm-focused.log": {
+      "sha256": "4e9a0569cfc970f1c79b926621c6c97f27b0f926777bfe46dc68c9228276d0c9",
+      "bytes": 362
+    },
+    "package-manifest.log": {
+      "sha256": "17f3ea0578db80cef7f60782ef37bd61943e71714ff7557c194c72d7a1ff0e59",
+      "bytes": 1983
+    },
+    "pr84-cpu-harness-test.log": {
+      "sha256": "bd203e77497b35bde30a9796537718c675d887623f3fa612cb36e52b2f399662",
+      "bytes": 99
+    },
+    "pr84-cpu-smoke-final.json": {
+      "sha256": "18352437c0d514709c42e634b2f03cf5a93c70235dfa23dc06aafae8c1e17010",
+      "bytes": 28722
+    },
+    "pr84-cpu-smoke-final.log": {
+      "sha256": "2ed0357e39ab7e0c89e8cfee037bc19c59edd37c8feb2092090caeacd6d22742",
+      "bytes": 257
+    }
+  },
+  "whitespace_check": {
+    "source_and_docs_exit_code": 0,
+    "command": "git diff --check f87705115c7496821b283a0966c991abd541231c -- . ':(exclude)docs/validation/t19-performance/*.log'",
+    "full_check_exit_code": 2,
+    "raw_log_whitespace_paths": [
+      "docs/validation/t19-performance/baseline-full.log",
+      "docs/validation/t19-performance/candidate-full.log",
+      "docs/validation/t19-performance/docs-build.log"
+    ],
+    "reason": "Raw process output is retained verbatim, including pytest/MPI/Sphinx trailing spaces; no source, Markdown or JSON whitespace errors."
+  }
+}

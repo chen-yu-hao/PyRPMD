@@ -65,6 +65,16 @@ class OpenMMPotential(Potential):
     precision; their Contexts require additional device memory. OpenMM's public
     API still transfers each copy separately. No integrator is ever stepped.
 
+    ``batch_mode="rpmd"`` keeps all rows in one RPMDIntegrator copy bank and
+    one Context. The bank grows when needed and is reused for smaller batches.
+    Only the physical System energy/forces are queried: the integrator is never
+    stepped, no ring springs are evaluated, and no contraction is used. This
+    saves per-copy Context storage, but OpenMM's public copy API still uploads
+    positions and retrieves physical results separately for every row. Systems
+    with constraints are explicitly unsupported by RPMDIntegrator. This mode
+    requires a fixed cell so growing/recreating the bank selects the same PME
+    grid, independent of batch history and restart.
+
     The default ``batch_mode="serial"`` preserves the original one-Context
     execution and metadata, including existing run identities/checkpoints.
     """
@@ -77,12 +87,13 @@ class OpenMMPotential(Potential):
         self.context = self.integrator = None
         self._contexts, self._integrators = [], []
         self._executor = None
-        if batch_mode not in ("serial", "contexts"):
-            raise ValueError("OpenMM batch_mode must be serial or contexts")
+        self._rpmd_copies = 1
+        if batch_mode not in ("serial", "contexts", "rpmd"):
+            raise ValueError("OpenMM batch_mode must be serial, contexts, or rpmd")
         if (isinstance(max_workers, bool) or not isinstance(max_workers, Integral)
                 or max_workers < 1):
             raise ValueError("OpenMM max_workers must be a positive integer")
-        if batch_mode == "serial" and max_workers != 1:
+        if batch_mode != "contexts" and max_workers != 1:
             raise ValueError("OpenMM max_workers > 1 requires batch_mode='contexts'")
         self.batch_mode, self.max_workers = batch_mode, int(max_workers)
         self.symbols = _symbols(symbols)
@@ -127,6 +138,11 @@ class OpenMMPotential(Potential):
             self.required_bond_constraints.append((inverse[a], inverse[b],
                 float(distance.value_in_unit(unit.nanometer))/BOHR_NM))
         self._constraints_bound = not self.required_bond_constraints
+        if batch_mode == "rpmd" and self.required_bond_constraints:
+            raise PotentialError(
+                "OpenMM RPMD copy mode does not support System constraints; "
+                "select batch_mode='serial' or 'contexts' with matching PyRPMD constraints"
+            )
         requested = str(device).lower()
         if requested == "cuda":
             requested = "cuda:0"
@@ -194,15 +210,59 @@ class OpenMMPotential(Potential):
             # execution policy is fingerprinted only when it is requested.
             self.metadata.update(batch_mode=batch_mode, max_workers=self.max_workers,
                                  batch_residency="persistent_context_per_row")
+        elif batch_mode == "rpmd":
+            self.metadata.update(batch_mode=batch_mode,
+                                 batch_residency="single_rpmd_integrator_copy_bank",
+                                 copy_api_transfers="per_row",
+                                 fixed_cell=True,
+                                 integrator_stepped=False, ring_polymer_contraction=False)
+            if self._virtual_sites:
+                self.metadata.update(
+                    virtual_site_context_selection="RPMDIntegrator.getState.copyToContext",
+                    virtual_site_copy_guard="physical_positions_downloaded_and_checked_each_row")
 
-    def _new_context(self):
-        integrator = self.openmm.VerletIntegrator(1.0 * self.unit.femtosecond)
+    def _new_context(self, copies=1):
+        if self.batch_mode == "rpmd":
+            # Temperature/friction/timestep never enter a force-only getState.
+            # Explicitly disable the thermostat; no call to step() is allowed.
+            integrator = self.openmm.RPMDIntegrator(copies, 300.0, 0.0, 0.001)
+            integrator.setApplyThermostat(False)
+            integrator.setRandomNumberSeed(1)
+        else:
+            integrator = self.openmm.VerletIntegrator(1.0 * self.unit.femtosecond)
         context = self.openmm.Context(self.system, integrator, self._backend,
                                       self._properties)
         if self.pbc.all():
             context.setPeriodicBoxVectors(*[
                 self.openmm.Vec3(*row) for row in self.cell * BOHR_NM])
+        if self.batch_mode == "rpmd":
+            # getState(getEnergy=True) also computes kinetic energy, even though
+            # only the physical potential energy is returned to PyRPMD.
+            zero = (np.zeros((self.system.getNumParticles(), 3))
+                    * self.unit.nanometer / self.unit.picosecond)
+            for copy in range(copies):
+                integrator.setVelocities(copy, zero)
         return context, integrator
+
+    def _ensure_rpmd_copies(self, count):
+        if count <= self._rpmd_copies:
+            return
+        try:
+            context, integrator = self._new_context(count)
+        except Exception as exc:
+            # Unsupported copy counts, missing platform kernels and allocation
+            # failures must not discard a previously usable bank or fall back.
+            raise PotentialError(
+                f"Cannot allocate OpenMM RPMD bank of {count} copies on "
+                f"{self._backend.getName()}: {exc}"
+            ) from exc
+        # Release the old Context before its bound Integrator, after complete
+        # construction succeeds. The copy bank is disposable execution state.
+        self.context = context
+        self._contexts[:] = [context]
+        self.integrator = integrator
+        self._integrators[:] = [integrator]
+        self._rpmd_copies = count
 
     def _ensure_contexts(self, count):
         """Publish new copies only after the complete allocation succeeds."""
@@ -224,6 +284,15 @@ class OpenMMPotential(Potential):
         self._integrators.extend(pending_integrators)
 
     def _set_box(self, cell):
+        if self.batch_mode == "rpmd":
+            # A new Context selects its PME grid from the construction box.
+            # Changing that box before growing/recreating a copy bank would
+            # make physical forces depend on execution/cache history. Keep the
+            # new mode fixed-cell; existing serial/contexts behavior is intact.
+            if not np.array_equal(cell, self.cell):
+                raise PotentialError(
+                    "OpenMM RPMD copy mode requires a fixed cell; cell changes are unsupported")
+            return
         vectors = [self.openmm.Vec3(*row) for row in cell * BOHR_NM]
         previous = [self.openmm.Vec3(*row) for row in self.cell * BOHR_NM]
         attempted = []
@@ -291,6 +360,8 @@ class OpenMMPotential(Potential):
             raise PotentialError("OpenMM atom count mismatch")
         if self.batch_mode == "contexts":
             return self._evaluate_contexts(x)
+        if self.batch_mode == "rpmd":
+            return self._evaluate_rpmd(x)
         energies, forces = [], []
         positions = np.zeros((self.system.getNumParticles(), 3), dtype=float)
         for frame in x:
@@ -302,6 +373,56 @@ class OpenMMPotential(Potential):
             energies.append(state.getPotentialEnergy().value_in_unit(self.unit.kilojoule_per_mole) * KJ_MOL_TO_AU)
             raw = state.getForces(asNumpy=True).value_in_unit(self.unit.kilojoule_per_mole/self.unit.nanometer)
             forces.append(np.asarray(raw)[self.particle_indices] * KJ_MOL_TO_AU * BOHR_NM)
+        return validate_result(PESResult(energies, forces), x.shape)
+
+    def _evaluate_rpmd(self, x):
+        self._ensure_rpmd_copies(len(x))
+        positions = np.zeros((len(x), self.system.getNumParticles(), 3))
+        positions[:, self.particle_indices] = x * BOHR_NM
+        energies = np.empty(len(x))
+        forces = np.empty_like(x)
+        # Load every row before querying any row. All copies then remain in the
+        # selected device's bank; no nuclear state lives solely in the Context.
+        for index in range(len(x)):
+            try:
+                self.integrator.setPositions(index, positions[index] * self.unit.nanometer)
+            except Exception as exc:
+                raise PotentialError(f"OpenMM RPMD upload row {index} failed: {exc}") from exc
+        for index in range(len(x)):
+            try:
+                if self._virtual_sites:
+                    # RPMDIntegrator.getState first copies the requested row to
+                    # its bound Context, but unlike step() does not recompute
+                    # virtual sites. An empty state selects the row without a
+                    # position/force download; use OpenMM's own virtual-site
+                    # construction and parent-force redistribution afterwards.
+                    # Verified against OpenMM 8.6.1 RPMDIntegrator.cpp getState.
+                    # Because this couples to copyToContext implementation
+                    # semantics, check selected physical coordinates on EVERY
+                    # row. A changed upstream implementation must fail loudly.
+                    self.integrator.getState(index)
+                    self.context.computeVirtualSites()
+                    state = self.context.getState(getEnergy=True, getForces=True, getPositions=True)
+                    selected = np.asarray(state.getPositions(asNumpy=True).value_in_unit(
+                        self.unit.nanometer))[self.particle_indices]
+                    precision = self._properties.get("Precision", self._properties.get(
+                        self._backend.getName() + "Precision", "double"))
+                    tolerance = 8 * (np.finfo(np.float32).eps if precision == "single"
+                                     else np.finfo(np.float64).eps)
+                    expected = positions[index, self.particle_indices]
+                    if not np.allclose(selected, expected, rtol=tolerance, atol=tolerance):
+                        raise PotentialError(
+                            "RPMDIntegrator.getState did not select the requested physical "
+                            "coordinates in its Context; virtual-site copy API is incompatible")
+                else:
+                    state = self.integrator.getState(index, getEnergy=True, getForces=True)
+                energies[index] = state.getPotentialEnergy().value_in_unit(
+                    self.unit.kilojoule_per_mole) * KJ_MOL_TO_AU
+                raw = state.getForces(asNumpy=True).value_in_unit(
+                    self.unit.kilojoule_per_mole / self.unit.nanometer)
+                forces[index] = np.asarray(raw)[self.particle_indices] * KJ_MOL_TO_AU * BOHR_NM
+            except Exception as exc:
+                raise PotentialError(f"OpenMM RPMD evaluation row {index} failed: {exc}") from exc
         return validate_result(PESResult(energies, forces), x.shape)
 
     def _evaluate_contexts(self, x):

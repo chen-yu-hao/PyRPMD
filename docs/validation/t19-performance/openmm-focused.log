@@ -1,0 +1,5 @@
+.............................................sss.......ssss..            [100%]
+=========================== short test summary info ============================
+SKIPPED [6] tests/test_openmm_resident.py:341: OpenMM CUDA platform is unavailable
+SKIPPED [1] tests/test_t19_openmm_benchmark.py:16: OpenMM CUDA platform is unavailable
+54 passed, 7 skipped in 36.45s

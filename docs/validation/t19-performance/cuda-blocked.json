@@ -1,0 +1,1081 @@
+{
+  "schema": "pyrpmd.t19-cuda.v1",
+  "created_utc": "2026-11-03T05:38:41.079879+00:00",
+  "source": {
+    "root": "/workspace/scratch/998803105056/PyRPMD",
+    "git_head": "6dc3b527531369f1f9fae7ea5f6dfa3800ef9af1",
+    "tracked_worktree_changes": "M docs/batched-ml-potentials.md\n M docs/conf.py\n M docs/potential-adapters.md",
+    "package_path": "/workspace/scratch/998803105056/PyRPMD/src/pyrpmd/__init__.py",
+    "modules": {
+      "pyrpmd.potentials.batched_ml": {
+        "path": "/workspace/scratch/998803105056/PyRPMD/src/pyrpmd/potentials/batched_ml.py",
+        "sha256": "dc5c96009dda382fe0c369269b20ec2d72e83523ea4350fd359a090e56c1459d"
+      },
+      "pyrpmd.torch_backend": {
+        "path": "/workspace/scratch/998803105056/PyRPMD/src/pyrpmd/torch_backend.py",
+        "sha256": "496214563ffb00170dfa4ae1f963d9fb1275311d0a5c9a768afa613a820f4d3e"
+      },
+      "pyrpmd.torch_normal_modes": {
+        "path": "/workspace/scratch/998803105056/PyRPMD/src/pyrpmd/torch_normal_modes.py",
+        "sha256": "5b31af409c6c021c76c3a04f5127cd2a263dc28f004a5611e35f2ccdd960faf6"
+      },
+      "pyrpmd.workflows.materials": {
+        "path": "/workspace/scratch/998803105056/PyRPMD/src/pyrpmd/workflows/materials.py",
+        "sha256": "2d21a367b6817aeb8b0650c7702d8d5319ac7443715aed87702cabc843718f35"
+      },
+      "pyrpmd.potentials._batched_ml_base": {
+        "path": "/workspace/scratch/998803105056/PyRPMD/src/pyrpmd/potentials/_batched_ml_base.py",
+        "sha256": "3fc758260311364d8126263ce5e1caf2579d1099617c2bf5018a23c2a625951d"
+      },
+      "pyrpmd.potentials._batched_mace": {
+        "path": "/workspace/scratch/998803105056/PyRPMD/src/pyrpmd/potentials/_batched_mace.py",
+        "sha256": "f7f41525bb4c9e609638e722b6db97ee5c0f033a95b448186b15b7f5fb9adc81"
+      },
+      "pyrpmd.potentials._batched_nequip": {
+        "path": "/workspace/scratch/998803105056/PyRPMD/src/pyrpmd/potentials/_batched_nequip.py",
+        "sha256": "a372d0e89c1e1b5c0208e78e21115576570bf03be88bb07b44a0e14b3bc073f3"
+      },
+      "pyrpmd.potentials._batched_fairchem": {
+        "path": "/workspace/scratch/998803105056/PyRPMD/src/pyrpmd/potentials/_batched_fairchem.py",
+        "sha256": "ebf345c8c201ba6008dff5e9f6a89b18748ac37c94142e4f73b2c64e8c458b81"
+      },
+      "pyrpmd.potentials._batched_deepmd": {
+        "path": "/workspace/scratch/998803105056/PyRPMD/src/pyrpmd/potentials/_batched_deepmd.py",
+        "sha256": "a542ed1a2fbdd232fd7bad2aba7a0e88438004e6e032b4c18e52c2abd6d34396"
+      },
+      "pyrpmd.potentials._batched_metatomic": {
+        "path": "/workspace/scratch/998803105056/PyRPMD/src/pyrpmd/potentials/_batched_metatomic.py",
+        "sha256": "eef40a12144fbd9bfd087725884fba737b270eeae21fc7dcadd6067b7be144ff"
+      }
+    },
+    "torch_workflow_available": false,
+    "benchmark": {
+      "root": "/workspace/scratch/998803105056/PyRPMD",
+      "git_head": "6dc3b527531369f1f9fae7ea5f6dfa3800ef9af1",
+      "tracked_worktree_changes": "M docs/batched-ml-potentials.md\n M docs/conf.py\n M docs/potential-adapters.md",
+      "path": "/workspace/scratch/998803105056/PyRPMD/benchmarks/efficiency/t19_cuda.py",
+      "sha256": "4d6a1bf809256151b3632eae9c0cf9f2ad9fe9f0c9befb668f8a2459d36410e2"
+    }
+  },
+  "environment": {
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "python": "3.12.14",
+    "cpu_model": null,
+    "logical_cpus": 9,
+    "affinity_cpus": 9,
+    "requested_device": "cuda:0",
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": null
+    },
+    "versions": {
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "torch": "2.15.0+cpu",
+      "mace-torch": null,
+      "nequip": null,
+      "fairchem-core": null,
+      "deepmd-kit": null,
+      "metatomic-torch": null,
+      "vesin-torch": null,
+      "nvalchemiops": null
+    },
+    "gpu": null,
+    "cuda_available": false,
+    "cuda_build_version": null,
+    "cuda_driver_version": null,
+    "nvidia_smi": null,
+    "blocking_reasons": [
+      "CUDA was requested but no CUDA device is available; no CPU fallback"
+    ],
+    "torch_threads": 1,
+    "torch_interop_threads": 9
+  },
+  "settings": {
+    "beads": [
+      8,
+      32,
+      64
+    ],
+    "atoms": [
+      64,
+      512,
+      4096
+    ],
+    "providers": [
+      "mace-batched",
+      "nequip-batched",
+      "fairchem-batched",
+      "deepmd-batched",
+      "metatomic"
+    ],
+    "replicas": 1,
+    "warmup": 2,
+    "repeats": 5,
+    "threads": 1,
+    "seed": 19064,
+    "device": "cuda:0",
+    "suite": "all",
+    "rtol": 1e-09,
+    "atol": 1e-10,
+    "production_steps": 64,
+    "equilibration_steps": 16,
+    "sample_interval": 8,
+    "normal_mode_layout": "rfft"
+  },
+  "manifest_sha256": null,
+  "models": [],
+  "effective_torch_threads": 1,
+  "physical_converged": false,
+  "execution_complete": true,
+  "cuda_matrix_complete": false,
+  "cases": [
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "mace-batched",
+      "atoms": 64,
+      "beads": 8,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "mace-batched",
+      "atoms": 64,
+      "beads": 32,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "mace-batched",
+      "atoms": 64,
+      "beads": 64,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "mace-batched",
+      "atoms": 512,
+      "beads": 8,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "mace-batched",
+      "atoms": 512,
+      "beads": 32,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "mace-batched",
+      "atoms": 512,
+      "beads": 64,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "mace-batched",
+      "atoms": 4096,
+      "beads": 8,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "mace-batched",
+      "atoms": 4096,
+      "beads": 32,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "mace-batched",
+      "atoms": 4096,
+      "beads": 64,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "nequip-batched",
+      "atoms": 64,
+      "beads": 8,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "nequip-batched",
+      "atoms": 64,
+      "beads": 32,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "nequip-batched",
+      "atoms": 64,
+      "beads": 64,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "nequip-batched",
+      "atoms": 512,
+      "beads": 8,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "nequip-batched",
+      "atoms": 512,
+      "beads": 32,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "nequip-batched",
+      "atoms": 512,
+      "beads": 64,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "nequip-batched",
+      "atoms": 4096,
+      "beads": 8,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "nequip-batched",
+      "atoms": 4096,
+      "beads": 32,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "nequip-batched",
+      "atoms": 4096,
+      "beads": 64,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "fairchem-batched",
+      "atoms": 64,
+      "beads": 8,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "fairchem-batched",
+      "atoms": 64,
+      "beads": 32,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "fairchem-batched",
+      "atoms": 64,
+      "beads": 64,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "fairchem-batched",
+      "atoms": 512,
+      "beads": 8,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "fairchem-batched",
+      "atoms": 512,
+      "beads": 32,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "fairchem-batched",
+      "atoms": 512,
+      "beads": 64,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "fairchem-batched",
+      "atoms": 4096,
+      "beads": 8,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "fairchem-batched",
+      "atoms": 4096,
+      "beads": 32,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "fairchem-batched",
+      "atoms": 4096,
+      "beads": 64,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "deepmd-batched",
+      "atoms": 64,
+      "beads": 8,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "deepmd-batched",
+      "atoms": 64,
+      "beads": 32,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "deepmd-batched",
+      "atoms": 64,
+      "beads": 64,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "deepmd-batched",
+      "atoms": 512,
+      "beads": 8,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "deepmd-batched",
+      "atoms": 512,
+      "beads": 32,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "deepmd-batched",
+      "atoms": 512,
+      "beads": 64,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "deepmd-batched",
+      "atoms": 4096,
+      "beads": 8,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "deepmd-batched",
+      "atoms": 4096,
+      "beads": 32,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "deepmd-batched",
+      "atoms": 4096,
+      "beads": 64,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "metatomic",
+      "atoms": 64,
+      "beads": 8,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "metatomic",
+      "atoms": 64,
+      "beads": 32,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "metatomic",
+      "atoms": 64,
+      "beads": 64,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "metatomic",
+      "atoms": 512,
+      "beads": 8,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "metatomic",
+      "atoms": 512,
+      "beads": 32,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "metatomic",
+      "atoms": 512,
+      "beads": 64,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "metatomic",
+      "atoms": 4096,
+      "beads": 8,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "metatomic",
+      "atoms": 4096,
+      "beads": 32,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "ml",
+      "name": null,
+      "provider": "metatomic",
+      "atoms": 4096,
+      "beads": 64,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "No local float64 model was supplied for this provider"
+      ]
+    },
+    {
+      "suite": "workflow",
+      "name": "pimd",
+      "provider": null,
+      "atoms": 64,
+      "beads": 8,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "PR #84 Torch materials workflow is not present in this source snapshot"
+      ]
+    },
+    {
+      "suite": "workflow",
+      "name": "pimd",
+      "provider": null,
+      "atoms": 64,
+      "beads": 32,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "PR #84 Torch materials workflow is not present in this source snapshot"
+      ]
+    },
+    {
+      "suite": "workflow",
+      "name": "pimd",
+      "provider": null,
+      "atoms": 64,
+      "beads": 64,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "PR #84 Torch materials workflow is not present in this source snapshot"
+      ]
+    },
+    {
+      "suite": "workflow",
+      "name": "pimd",
+      "provider": null,
+      "atoms": 512,
+      "beads": 8,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "PR #84 Torch materials workflow is not present in this source snapshot"
+      ]
+    },
+    {
+      "suite": "workflow",
+      "name": "pimd",
+      "provider": null,
+      "atoms": 512,
+      "beads": 32,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "PR #84 Torch materials workflow is not present in this source snapshot"
+      ]
+    },
+    {
+      "suite": "workflow",
+      "name": "pimd",
+      "provider": null,
+      "atoms": 512,
+      "beads": 64,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "PR #84 Torch materials workflow is not present in this source snapshot"
+      ]
+    },
+    {
+      "suite": "workflow",
+      "name": "pimd",
+      "provider": null,
+      "atoms": 4096,
+      "beads": 8,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "PR #84 Torch materials workflow is not present in this source snapshot"
+      ]
+    },
+    {
+      "suite": "workflow",
+      "name": "pimd",
+      "provider": null,
+      "atoms": 4096,
+      "beads": 32,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "PR #84 Torch materials workflow is not present in this source snapshot"
+      ]
+    },
+    {
+      "suite": "workflow",
+      "name": "pimd",
+      "provider": null,
+      "atoms": 4096,
+      "beads": 64,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "PR #84 Torch materials workflow is not present in this source snapshot"
+      ]
+    },
+    {
+      "suite": "workflow",
+      "name": "diffusion",
+      "provider": null,
+      "atoms": 64,
+      "beads": 8,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "PR #84 Torch materials workflow is not present in this source snapshot"
+      ]
+    },
+    {
+      "suite": "workflow",
+      "name": "diffusion",
+      "provider": null,
+      "atoms": 64,
+      "beads": 32,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "PR #84 Torch materials workflow is not present in this source snapshot"
+      ]
+    },
+    {
+      "suite": "workflow",
+      "name": "diffusion",
+      "provider": null,
+      "atoms": 64,
+      "beads": 64,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "PR #84 Torch materials workflow is not present in this source snapshot"
+      ]
+    },
+    {
+      "suite": "workflow",
+      "name": "diffusion",
+      "provider": null,
+      "atoms": 512,
+      "beads": 8,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "PR #84 Torch materials workflow is not present in this source snapshot"
+      ]
+    },
+    {
+      "suite": "workflow",
+      "name": "diffusion",
+      "provider": null,
+      "atoms": 512,
+      "beads": 32,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "PR #84 Torch materials workflow is not present in this source snapshot"
+      ]
+    },
+    {
+      "suite": "workflow",
+      "name": "diffusion",
+      "provider": null,
+      "atoms": 512,
+      "beads": 64,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "PR #84 Torch materials workflow is not present in this source snapshot"
+      ]
+    },
+    {
+      "suite": "workflow",
+      "name": "diffusion",
+      "provider": null,
+      "atoms": 4096,
+      "beads": 8,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "PR #84 Torch materials workflow is not present in this source snapshot"
+      ]
+    },
+    {
+      "suite": "workflow",
+      "name": "diffusion",
+      "provider": null,
+      "atoms": 4096,
+      "beads": 32,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "PR #84 Torch materials workflow is not present in this source snapshot"
+      ]
+    },
+    {
+      "suite": "workflow",
+      "name": "diffusion",
+      "provider": null,
+      "atoms": 4096,
+      "beads": 64,
+      "replicas": 1,
+      "target_device": "cuda:0",
+      "dtype": "float64",
+      "status": "blocked",
+      "reasons": [
+        "CUDA was requested but no CUDA device is available; no CPU fallback",
+        "PR #84 Torch materials workflow is not present in this source snapshot"
+      ]
+    }
+  ],
+  "requested_cases_passed": false
+}

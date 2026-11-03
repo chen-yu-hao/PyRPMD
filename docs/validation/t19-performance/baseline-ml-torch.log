@@ -1,0 +1,17 @@
+........................................................................ [ 15%]
+................ss.............s........................................ [ 30%]
+........................................................................ [ 45%]
+.....................................s.................................. [ 60%]
+........................................................................ [ 75%]
+........................................................................ [ 90%]
+..............................................                           [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_batched_ml_mace.py:9: could not import 'mace.modules': No module named 'mace'
+SKIPPED [1] tests/test_batched_ml_nequip.py:10: could not import 'nequip': No module named 'nequip'
+SKIPPED [1] tests/test_batched_ml_fairchem.py:10: could not import 'fairchem.core': No module named 'fairchem'
+SKIPPED [1] tests/test_batched_ml_deepmd.py:7: could not import 'deepmd.pt.model.model': No module named 'deepmd'
+SKIPPED [1] tests/test_batched_ml_metatomic.py:10: could not import 'metatomic.torch': No module named 'metatomic'
+SKIPPED [2] tests/test_torch_backend.py:359: CUDA hardware/runtime unavailable
+SKIPPED [1] tests/test_torch_backend.py:472: CUDA hardware/runtime unavailable
+SKIPPED [1] tests/test_torch_bcocb.py:218: CUDA hardware/runtime unavailable
+474 passed, 9 skipped in 46.97s
