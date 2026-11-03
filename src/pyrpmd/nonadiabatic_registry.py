@@ -5,7 +5,7 @@ from .dynamics import State
 from .parallel import execution_plan
 
 METHODS = frozenset(("nrpmd", "sm-nrpmd", "rp-mash", "rpsh", "rpsh-ca",
-                     "rpsh-ba", "rpsh-dm", "soc-rpsh", "iesh", "multistate-mash"))
+                     "rpsh-ba", "rpsh-dm", "soc-rpsh", "iesh", "rp-iesh", "multistate-mash"))
 EXTENDED_METHODS = METHODS - {"nrpmd", "rpsh"}
 
 
@@ -40,7 +40,7 @@ def make_dynamics(config, system, rng, *, potential=None):
         if method not in METHODS:
             raise ValueError("unsupported nonadiabatic method")
         from .iesh import NewnsAndersonModel
-        if isinstance(potential, NewnsAndersonModel) and method != "iesh":
+        if isinstance(potential, NewnsAndersonModel) and method not in {"iesh", "rp-iesh"}:
             raise ValueError("newns_anderson requires IESH to include its separate bare nuclear potential")
         common = dict(native=options.get("native", config.get("native", True)),
                       threads=execution_plan(config["parallel"]).threads)
@@ -52,9 +52,13 @@ def make_dynamics(config, system, rng, *, potential=None):
                 raise ValueError("multistate-mash requires integrator='adaptive-dop853'")
             return MultistateMASHDynamics(*args,seed=rng,**common,**{
                 k:options[k] for k in ("rtol","atol","max_step","max_events","gap_tolerance") if k in options})
-        if method == "iesh":
+        if method in {"iesh", "rp-iesh"}:
             from .iesh import IESHDynamics
-            return IESHDynamics(*args,seed=rng,**common,**{
+            cls = IESHDynamics
+            if method == "rp-iesh":
+                from .rp_iesh import RPIESHDynamics
+                cls = RPIESHDynamics
+            return cls(*args,seed=rng,**common,**{
                 k:options[k] for k in ("integrator","nelectrons","electronic_substeps",
                                        "gap_tolerance","max_hop_probability") if k in options})
         if method == "rp-mash":
@@ -97,7 +101,7 @@ def initialize_state(config, system, dynamics, nuclear_rng, electronic_rng):
             coordinates=initial["coordinates"],centers=initial["centers"],
             centroid_momenta=initial["centroid_momenta"],count=1,seed=nuclear_rng)[0]
     method = config["method"]
-    if method == "iesh":
+    if method in {"iesh", "rp-iesh"}:
         return dynamics.initialize(nuclear,occupied=initial["occupied"])
     if method == "multistate-mash":
         return dynamics.initialize(nuclear,initial["active_surface"],rng=electronic_rng)
