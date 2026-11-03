@@ -61,6 +61,14 @@ orphan: true
 | T17 | README、参考文献、发布说明总整合 | T16b 之后 | README 约 12 KB 以内，链接检查通过 |
 | 数据 | 按[数据归档计划](data-archive-plan.md)迁移验证数据 | 需维护者决定 | 不改写历史的增量迁移 |
 
+## 第四轮任务卡
+
+2026-11-03 的对标评审（与 i-PI、NQCDynamics.jl、RPMDrate/Caracal、SHARC、LAMMPS/CP2K/Tinker-HP、
+PLUMED/infretis、TorchSim 的比较）拆成了可以独立分派的任务卡，放在 [`docs/tasks/`](tasks/README.md)：
+共 22 张卡（T16b、T23 扩充版、T26–T41、T42a/b、T43–T46），附通用执行规则、文件所有权、
+波次与依赖关系，以及按 agent 数量划分的车道。T25 中的 TDDFT NAC 由 T40 取代；
+T24（VES）优先通过 T36 的 PLUMED 路线满足；T19（续）的 GPU 实测并入 T43。
+
 ## 可选研究方向
 
 - T23：∞RETIS 与路径采样 TOML 工作流；
