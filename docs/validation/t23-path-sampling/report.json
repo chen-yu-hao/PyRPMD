@@ -1,0 +1,178 @@
+{
+  "task": "T23 path_sampling and canonical infinite RETIS",
+  "base_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+  "pull_request": "https://github.com/chen-yu-hao/PyRPMD/pull/96",
+  "hardware": {
+    "cpu_brand": "AMD EPYC 9V74 80-Core Processor",
+    "logical_cpus_visible": 9,
+    "machine": "x86_64",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "openmp_threads_per_process": 1,
+    "blas_threads_per_process": 1,
+    "measurement_conditions": "Shared executor with concurrent validation; wall times do not establish parallel speedup."
+  },
+  "reference": {
+    "potential": "(x*x-1)**2+(y*y+z*z)/2",
+    "mass_au": 1.0,
+    "beads": 1,
+    "beta_au": 1.0,
+    "dt_au": 0.04,
+    "basin_a": -1.0,
+    "basin_b": 1.0,
+    "rate_exact_au": 0.14871588646621658,
+    "flux_at_basin_a_exact_au": 0.40425169178429504,
+    "acceptance_guard": "Predeclared absolute error <= 5 independently recomputed standard errors, without a hidden timestep allowance. All measured differences are below two standard errors.",
+    "physical_converged": false
+  },
+  "workflow_references": [
+    {
+      "block_size": 120,
+      "dt_au": 0.04,
+      "exact_rate_au": 0.14871588646621658,
+      "independent_block_se_au": 0.008176994590308321,
+      "method": "retis",
+      "rate_estimate_au": 0.13897200561499662,
+      "samples": 2400,
+      "wall_seconds": 360.7902611720019,
+      "distance_from_exact_in_standard_errors": 1.1916212911243425
+    },
+    {
+      "block_size": 100,
+      "dt_au": 0.04,
+      "exact_rate_au": 0.14871588646621658,
+      "independent_block_se_au": 0.009074218335513057,
+      "method": "repptis",
+      "rate_estimate_au": 0.1512514003538419,
+      "samples": 1800,
+      "wall_seconds": 120.46247175700046,
+      "distance_from_exact_in_standard_errors": 0.2794195371850688
+    },
+    {
+      "block_size": 200,
+      "dt_au": 0.04,
+      "events": 4000,
+      "exact_rate_au": 0.14871588646621658,
+      "free_counts": [
+        2445,
+        2409,
+        2369
+      ],
+      "independent_block_se_au": 0.012112178961754922,
+      "method": "infinite-retis",
+      "rate_estimate_au": 0.13808830564788385,
+      "wall_seconds": 141.25009738399967,
+      "workers": 2,
+      "distance_from_exact_in_standard_errors": 0.8774293091185397
+    },
+    {
+      "dt_au": 0.04,
+      "exact_rate_au": 0.14871588646621658,
+      "flux_steps_per_run": 6000,
+      "independent_whole_run_se_au": 0.034347319344752096,
+      "method": "ffs-basin-andersen",
+      "rate_estimate_au": 0.21190638401068906,
+      "replicate_rates_au": [
+        0.15394837838791645,
+        0.15310170429991354,
+        0.25411712002159303,
+        0.2864583333333333
+      ],
+      "trials_per_interface": 160,
+      "wall_seconds": 74.17172722399846,
+      "distance_from_exact_in_standard_errors": 1.8397504885378286
+    }
+  ],
+  "core_infinite_reference": {
+    "production_events": 6000,
+    "burn_in_events": 600,
+    "workers": 1,
+    "rate_estimate_au": 0.14157105971435385,
+    "rate_standard_error_block_au": 0.007652817163238004,
+    "flux_au": 0.40044796779329866,
+    "flux_standard_error_block_au": 0.0033568600784686714,
+    "wall_seconds": 256.485,
+    "path_length_rejections": 0
+  },
+  "permanent_marginal_kernel": [
+    {
+      "ensembles": 32,
+      "repetitions": 100,
+      "median_ms": 0.1333405,
+      "minimum_ms": 0.111989
+    },
+    {
+      "ensembles": 128,
+      "repetitions": 50,
+      "median_ms": 0.7707655,
+      "minimum_ms": 0.42501
+    },
+    {
+      "ensembles": 512,
+      "repetitions": 20,
+      "median_ms": 13.536645,
+      "minimum_ms": 2.766525
+    }
+  ],
+  "checks": [
+    {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_transition_interface.py tests/test_retis.py tests/test_retis_reference.py tests/test_pptis.py tests/test_ffs.py tests/test_parallel.py",
+      "output": "185 passed, 1 skipped in 532.56s (0:08:52)",
+      "baseline": true,
+      "log": "baseline.log"
+    },
+    {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_path_sampling_input.py tests/test_path_sampling_reporting.py",
+      "output": "49 passed in 31.80s"
+    },
+    {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_path_sampling_workflow.py",
+      "output": "18 passed in 117.53s (0:01:57)",
+      "log": "workflow.log"
+    },
+    {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_path_sampling_interrupt.py",
+      "output": "4 passed in 42.55s"
+    },
+    {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_infinite_retis.py -k 'not quartic_rate'",
+      "output": "17 passed, 1 deselected in 48.49s",
+      "note": "Before the two additional fault tests were appended."
+    },
+    {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_infinite_retis.py -k 'submission_failure or error_drains'",
+      "output": "2 passed, 18 deselected in 11.47s"
+    },
+    {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q -s tests/test_infinite_retis.py::test_infinite_retis_quartic_rate_matches_independent_phase_space_integral",
+      "output": "1 passed in 266.29s (0:04:26)"
+    },
+    {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q -s tests/test_path_sampling_reference.py",
+      "output": "4 passed in 716.03s (0:11:56)",
+      "log": "physical-references.log"
+    },
+    {
+      "command": "python -m sphinx -W --keep-going -b html docs ../t23-docs-html",
+      "output": "build succeeded.",
+      "log": "sphinx.log"
+    }
+  ],
+  "full_suite": {
+    "status": "running",
+    "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q"
+  },
+  "limitations": [
+    "Local CPU process scheduler; MPI/GPU/bead-worker scheduling is rejected.",
+    "Deterministic ticket commits may wait behind an earlier slow move.",
+    "Canonical shooting only; high-acceptance subtrajectory/wire-fencing kernels from PNAS2024 are not implemented.",
+    "REPPTIS generally uses a memory-loss approximation; this particular uphill quartic ladder supplies an exact reference.",
+    "External-flux rate error excludes supplied-flux uncertainty.",
+    "Four FFS independent runs have substantial uncertainty; no physical convergence is asserted.",
+    "Uncommitted work is replayed; FFS initial equilibration before its first checkpoint is replayed from the explicit initial state."
+  ],
+  "primary_references": [
+    "https://doi.org/10.1021/acs.jpca.2c06004",
+    "https://doi.org/10.1073/pnas.2318731121"
+  ],
+  "artifact_note": "Raw observations retain the original atomic integrity envelope. Saved resolved inputs preserve capture-time paths for provenance; use checked-in examples and helper to reproduce on another machine."
+}
