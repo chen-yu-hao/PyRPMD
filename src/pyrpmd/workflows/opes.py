@@ -17,6 +17,37 @@ from ..checkpoint import atomic_savez as _atomic_savez
 _async.atomic_savez = _atomic_savez
 _mpi.atomic_savez = _atomic_savez
 
+
+class _DistributedFESSampler:
+    """Preserve the serial history-dependent Andersen refresh clock."""
+
+    def __init__(self, delegate, interval):
+        self._delegate = delegate
+        self._interval = interval
+
+    def __getattr__(self, name):
+        return getattr(self._delegate, name)
+
+    def step(self, dynamics, state, bias):
+        if (self._delegate.thermostat == "andersen"
+                and state.step % self._interval == 0):
+            state.p[:] = dynamics.sample_momenta()
+        return self._delegate.step(dynamics, state, bias)
+
+
+_original_fes_sampler = fes_sampler
+
+
+def _distributed_fes_sampler(config):
+    return _DistributedFESSampler(
+        _original_fes_sampler(config),
+        config.get("sampling", {}).get("andersen_interval", 10),
+    )
+
+
+_async.fes_sampler = _distributed_fes_sampler
+_mpi.fes_sampler = _distributed_fes_sampler
+
 OPES_FIELDS.add("walkers_mode")
 _original_resolve_opes = resolve_opes
 
