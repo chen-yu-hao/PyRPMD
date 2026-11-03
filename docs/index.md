@@ -147,7 +147,6 @@ Precision-driven rate controller <rate_precision>
 Torch PIMD and diffusion <torch-materials-workflows>
 Classical IESH and multistate MASH <nonadiabatic-iesh-multistate>
 f-QCMD <qcmd>
-IESH and spin extensions <nonadiabatic-iesh-multistate>
 Instantons <instanton>
 Low-temperature cross-checks <low-temperature>
 Quantum statistics <quantum-statistics>
