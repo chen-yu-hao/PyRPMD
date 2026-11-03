@@ -5,6 +5,21 @@
 下列 **111 个条目、170 条文献记录**将源码、原始方法及实现范围联系起来；
 [复现清单](reproduction.md)另列原文体系、应算物理量、现有入口、缺失条件和优先级。
 
+## 新增功能与原始文献（2026-11-03）
+
+以下功能的出处与实现边界对应英文目录的 119 个条目、174 篇文献；这不是物理收敛声明。
+
+| 功能 | 文献 | 边界 |
+| --- | --- | --- |
+| 部分路径 TIS 与 REPPTIS | [samp-pptis2004](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/manual/references.md#samp-pptis2004)、[samp-retis2007](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/manual/references.md#samp-retis2007) | 仅 Python API；尚无 TOML 工作流；模型数值检查不等于速率物理收敛。 |
+| 直接前向通量采样 | [samp-ffs2009](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/manual/references.md#samp-ffs2009) | 针对指定马尔可夫过程的 Python API，尚无统一 TOML 工作流。 |
+| 独立电子表面跳跃 | [na-iesh2009](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/manual/references.md#na-iesh2009)、[na-iesh2023](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/manual/references.md#na-iesh2023) | P=1、自旋忽略的行列式及实非简并单电子哈密顿量；不是环聚合物 IESH。 |
+| 经典多态 MASH | [na-mash2023](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/manual/references.md#na-mash2023)、[na-mashrates2024](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/manual/references.md#na-mashrates2024) | P=1 经典多态算法；不同于双态 RP-MASH。 |
+| 精度驱动热速率计划与预算化执行 | [rate05](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/manual/references.md#rate05)、[bimol09](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/manual/references.md#bimol09)、[samp-mbar2008](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/manual/references.md#samp-mbar2008) | 按组件引用原始算法；不为项目的预算账本或 CLI 虚构原始论文。 |
+| 显式设备驻留张量 PIMD 与扩散 | [cw81](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/manual/references.md#cw81)、[pile10](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/manual/references.md#pile10)、[torch2019](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/manual/references.md#torch2019) | 仅固定晶胞 PIMD/扩散；CPU 基准不能证明 CUDA 性能。 |
+| 费米符号重加权与周期 winding 交换 | [bose19](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/manual/references.md#bose19)、[bose23](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/manual/references.md#bose23) | 费米估计量经符号门限；周期 winding 与全珠子 BZP 存在明确限制。 |
+| Golden-rule 与分子环聚合物 instanton 工作流 | [rpi09](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/manual/references.md#rpi09)、[rpi16](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/manual/references.md#rpi16) | 验证仅覆盖模型与离散化对照；physical_converged 仍为 false。 |
+
 ## 如何引用
 
 论文/报告应同时引用使用的**原始算法、具体势能面或电子结构模型、依赖软件**，并记录 PyRPMD 的版本与提交。
