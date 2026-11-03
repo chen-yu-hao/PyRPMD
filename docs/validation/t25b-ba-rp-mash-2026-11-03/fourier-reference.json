@@ -1,0 +1,93 @@
+{
+  "method": "rp-mash-ba",
+  "model": "constant_gap_rotating_eigenvectors",
+  "model_formula": "V(x)=g*[cos(x)*sigma_z+sin(x)*sigma_x]; d_+-=-1/2",
+  "half_gap_hartree": 0.02,
+  "beads": 4,
+  "beta_inverse_hartree": 100.0,
+  "trajectories": 128,
+  "seed": 20261103,
+  "mass_electron": 1000.0,
+  "initial_center_bohr": -1.0,
+  "initial_position_std_bohr": 0.2,
+  "initial_mean_momentum_au": 100.0,
+  "initial_momentum_std_au": 2.5,
+  "internal_displacement_bohr": [
+    0.1,
+    1.0715659492539341e-17,
+    -0.1,
+    -1.3777276490407724e-17
+  ],
+  "duration_au": 15.707963267948966,
+  "output_dt_au": 3.9269908169872414,
+  "output_steps": 4,
+  "max_internal_step_au": 0.9817477042468103,
+  "rtol": 1e-09,
+  "atol": 1e-11,
+  "population_basis": "common_bead_adiabatic",
+  "population_order": [
+    "lower",
+    "upper"
+  ],
+  "population_estimator": "active_surface_indicator",
+  "mash_initial_populations": [
+    1.0,
+    0.0
+  ],
+  "mash_final_populations": [
+    0.546875,
+    0.453125
+  ],
+  "mash_population_sem": [
+    0.04417241936858356,
+    0.04417241936858356
+  ],
+  "fourier": {
+    "populations": [
+      0.5169380467065444,
+      0.4830619532934556
+    ],
+    "points": 2048,
+    "dt_au": 0.049866550056980846,
+    "steps": 315,
+    "max_edge_population": 4.847432178334799e-29,
+    "max_norm_error": 1.2245759961615477e-13
+  },
+  "analytic_infinite_line_populations": [
+    0.5169382415844122,
+    0.48306175841558785
+  ],
+  "analytic_momentum_quadrature_refinement_diff": 0.0,
+  "fourier_analytic_population_max_diff": 1.9487786773186855e-07,
+  "absolute_population_error": [
+    0.02993695329345558,
+    0.02993695329345558
+  ],
+  "fourier_time_refinement_max_diff": 5.797055712131183e-07,
+  "fourier_space_refinement_max_diff": 6.583622536027178e-14,
+  "mash_max_abs_energy_change_hartree": 1.4210854715202004e-14,
+  "mash_max_spin_norm_error": 4.496403249731884e-14,
+  "accepted_events": 58,
+  "frustrated_events": 0,
+  "mash_elapsed_seconds": 45.78781272899869,
+  "mash_microseconds_per_trajectory_output_step": 89429.32173632557,
+  "fourier_elapsed_seconds": 0.2670986939992872,
+  "execution": {
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "omp_num_threads": "1",
+    "openblas_num_threads": "1"
+  },
+  "physical_converged": false,
+  "limitations": [
+    "finite packet, finite trajectory ensemble and approximate trajectory method",
+    "SEM includes independent-trajectory sampling only, not method or discretization bias",
+    "constant gap/NAC isolates ring averaging; it does not establish general nuclear quantum effects",
+    "scalar centroid Wigner sampling omits position-dependent electronic Wigner corrections",
+    "specified internal ring deformation is not a coupled thermal equilibrium distribution",
+    "reference time/grid refinements are diagnostics, not proof of complete physical convergence"
+  ]
+}

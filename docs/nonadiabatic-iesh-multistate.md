@@ -13,6 +13,7 @@ time and the existing quantity fields.
 | `iesh` | Orthonormal orbitals of one spinless Slater determinant | Bare nuclear energy plus the sum of occupied adiabatic orbital energies | One-particle density; populations sum to the electron count |
 | `multistate-mash` | One normalized complex mapping vector | Adiabatic surface with largest mapping population | Runeson–Manolopoulos signed observable estimator; populations sum to one |
 | Existing `rp-mash` | Two-state centroid spin | CA-RP-MASH surface for the whole ring | Adiabatic active-state indicator with its own initial importance sampling |
+| `rp-mash-ba` | One common two-state adiabatic spin | BA-RP-MASH surface for the whole ring; bead-averaged electronic evolution | Adiabatic active-state indicator with population importance sampling |
 
 Completion of a workflow produces `completed=true` and
 `physical_converged=false`. Numerical identities, finite-model reference
@@ -213,6 +214,26 @@ default sampling distributions would test different observables. Existing
   direction fails without publishing a partial state.
 - No P>1 or complex-SOC extension is inferred. The original 2023 method is not
   size consistent when uncoupled spectator states are added.
+
+## T25: two-state bead-approximation RP-MASH
+
+The optional T25 extension selects **(b), bead-approximation RP-MASH**. Use
+`method="rp-mash-ba"` or the Python
+`pyrpmd.rp_mash_ba.RPMASHBADynamics` API for this two-state method.
+It follows the BA equations of
+[Cao, Suarez and Kretchmer (2025 preprint)](https://doi.org/10.26434/chemrxiv-2025-xps2g),
+Eqs. (34)–(43). The spin precession averages each bead's gap and velocity–NAC
+contraction. An equator event switches all beads simultaneously and balances
+the full ring energy gap by an impulse along the extended bead-space NAC.
+
+This is a distinct approximation from the existing centroid `rp-mash`, with
+its own method identity and adiabatic spin checkpoint representation. The
+classical `multistate-mash` method above still requires one bead; this addition
+does not infer a multistate ring-polymer generalization. It also does not
+change IESH or add a TDDFT provider. See the
+[two-state spin guide](nonadiabatic-spin-methods.md#ba-rp-mash) for the equations,
+population preparation, restart behavior, numerical controls and explicit
+limitations.
 
 ## Checkpoint, identity and output contracts
 
