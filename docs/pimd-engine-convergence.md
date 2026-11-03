@@ -176,7 +176,9 @@ envelope adds storage integrity without changing those scientific fields.
 `NativeEnsemble.load` accepts both new containers and untouched old native NPZ
 files. An old native workflow journal remains valid: its referenced old state
 file is read without rewriting it, and only subsequent committed blocks use
-the new writer.
+the new writer. Newly saved native containers need the new reader; older readers
+that require the exact bare-NPZ member inventory do not understand the added
+envelope.
 
 Native array data remain uncompressed. Compression of high-entropy float64
 state saves little space while adding substantial CPU cost. The reproducible
@@ -195,6 +197,23 @@ platform and thread setting, and verifies the payloads after writing. The new
 integrity copy/hash and directory sync have a cost; this is not a claim of
 checkpoint or propagation speedup. The numerical propagation loop is unchanged.
 
+The recorded Linux x86_64/Python 3.12.14/NumPy 2.3.5 run exposed 9 logical CPUs
+(CPU model unavailable), with `OMP_NUM_THREADS=1` and `OPENBLAS_NUM_THREADS=1`.
+Two regression suites were running concurrently, so these are illustrative I/O
+costs, not isolated throughput measurements. Medians of seven interleaved writes
+after one warmup were:
+
+| Beads | Atoms | Old native, uncompressed | Common, uncompressed | Common, compressed |
+| ---: | ---: | ---: | ---: | ---: |
+| 32 | 128 | 2.104 ms | 6.853 ms | 31.782 ms |
+| 32 | 4096 | 24.074 ms | 51.083 ms | 915.194 ms |
+
+For 4096 atoms, the respective files were 9,445,566, 9,450,842 and 9,071,886
+bytes. The new uncompressed writer pays for additional integrity verification;
+compression would save about 4% of the new file while substantially increasing
+the measured write cost. The complete timing samples and environment are in
+`docs/validation/t16b-pimd/checkpoint-storage.json`.
+
 ## Validation and remaining convergence route
 
 The regression tests cover literal pre-change scientific fingerprints,
@@ -210,6 +229,37 @@ uninterrupted reference, and the changed checkout resumes that checkpoint.
 Local full-suite, documentation-build and storage-benchmark evidence is recorded
 alongside the harness. These are compatibility/engineering checks; they do not
 certify physical convergence.
+
+The untouched main baseline was `ceee59cd5f702165b56c5e541a503d8810fb9111`.
+Both complete suites used the same Python 3.12.14 / NumPy 2.3.5 / Torch
+2.15.0+cpu environment, with OpenMP and OpenBLAS limited to one thread:
+
+| Suite | Passed | Failed | Skipped | Warnings | Passed subtests |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Untouched main | 11,469 | 1 | 356 | 68 | 493 |
+| T16b implementation | 11,530 | 1 | 356 | 68 | 493 |
+
+All 61 added test cases pass. The failure set is identical. The raw summaries
+are `1 failed, 11469 passed, 356 skipped, 68 warnings, 493 subtests passed in
+2791.17s (0:46:31)` and `1 failed, 11530 passed, 356 skipped, 68 warnings, 493
+subtests passed in 2853.64s (0:47:33)`. The suites ran concurrently; these wall
+times are not a performance comparison.
+
+All seven actual old-checkpoint resumes match uninterrupted baseline payloads
+by dtype, shape and bytes: legacy PILE/Andersen NVT and BZP NPT, native PILE/NHC
+NVT and BZP NPT, and a two-replica Torch CPU PILE NVT run. The three legacy cases
+also complete a memory-to-stream-to-memory round trip before resuming.
+
+The exact commands, environment, source hashes, raw pytest output, strict
+Sphinx build output and source-package inventory are in
+`docs/validation/t16b-pimd/validation.json` and its referenced files.
+
+The cloud executor used for this validation denies creation of `AF_UNIX`
+sockets. The unchanged baseline independently reproduces
+`tests/test_ipi_clients.py::test_existing_unix_address_is_not_removed_on_bind_failure`
+with `PermissionError: [Errno 1] Operation not permitted` at `socket.socket`,
+before binding a path. The validation records retain that environment failure;
+this change does not modify the socket code or add a skip for it.
 
 The implemented route is:
 

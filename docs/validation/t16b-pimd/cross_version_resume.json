@@ -137,8 +137,10 @@
   "comparison": "identical dtype, shape and C-order bytes for every retained state and sample array",
   "current_source": {
     "commit": "8834b4e14a0b07bf8d5638015d87b16bd03dbaa0",
+    "git_tree": "b6d439348d59e50ac97b79fc8b9a37ff0ae81b51",
     "numpy": "2.3.5",
     "package": "/workspace/scratch/6e18a371c00a/PyRPMD/src/pyrpmd",
+    "published_equivalent_commit": "6b0cec0f28320f05396a75d980b9ddbe1e4eb331",
     "python": "3.12.14",
     "source_sha256": {
       "checkpoint.py": "6f7d1172bb81bf9aa42ae2e6e61fe233b0b998c49d188d74d46365ebb21d6b59",
@@ -153,5 +155,6 @@
   },
   "passed": true,
   "physical_converged": false,
+  "publication_note": "The GitHub connector recreated the tested local commits with identical Git trees; source hashes and measured results above are unchanged.",
   "schema": "t16b.cross-version-resume.v1"
 }
