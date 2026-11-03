@@ -277,7 +277,9 @@ template<bool Numeric> struct Bias {
     double apply(const double* q,const double* centroid,double* force,size_t P,const Vec& mass,double thermal_beta) const {
         if(kind==1){
             const double z=cv[0].metric(centroid,grad.data(),direction.data(),hvp.data(),mass);
-            for(size_t i=0;i<d;++i)for(size_t b=0;b<P;++b)force[b*d+i]+=hvp[i]/(thermal_beta*z);
+            // The HVP has consumed direction; reuse it for a contiguous bead kick.
+            for(size_t i=0;i<d;++i)direction[i]=hvp[i]/(thermal_beta*z);
+            for(size_t b=0;b<P;++b)for(size_t i=0;i<d;++i)force[b*d+i]+=direction[i];
             return -static_cast<double>(P)*std::log(std::sqrt(z/(2.*3.14159265358979323846*thermal_beta)))/thermal_beta;
         }
         const size_t k=cv.size(),width=Numeric?d:P*d;double e=0.;
