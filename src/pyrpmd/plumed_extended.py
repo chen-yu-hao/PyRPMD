@@ -189,13 +189,22 @@ def configure_multiple_walkers(
 
 
 def ensure_checkpoint_flush(input_lines: str) -> str:
-    """Append a per-step FLUSH action unless the program already has one."""
+    """Ensure that an active per-step FLUSH action is present."""
     for line in input_lines.splitlines():
         try:
             tokens = shlex.split(line, comments=True, posix=True)
         except ValueError as error:
             raise ValueError("invalid quoted PLUMED input") from error
-        if _line_action(tokens) == "FLUSH":
+        if _line_action(tokens) != "FLUSH":
+            continue
+        head = 1 if tokens and tokens[0].endswith(":") else 0
+        options = {
+            key: value
+            for token in tokens[head + 1 :]
+            for key, separator, value in (token.partition("="),)
+            if separator
+        }
+        if options.get("STRIDE") == "1":
             return input_lines
     return input_lines.rstrip() + "\nFLUSH STRIDE=1\n"
 
