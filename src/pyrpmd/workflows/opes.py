@@ -10,6 +10,12 @@ from . import _distributed_opes_async as _async
 from . import _distributed_opes_async_io as _async_io
 from . import _distributed_opes_common as _common
 from . import _distributed_opes_mpi as _mpi
+from ..checkpoint import atomic_savez as _atomic_savez
+
+# The split helpers resolve checkpoint writes at call time. Inject the shared
+# atomic writer here so import-only modules stay side-effect free.
+_async.atomic_savez = _atomic_savez
+_mpi.atomic_savez = _atomic_savez
 
 OPES_FIELDS.add("walkers_mode")
 _original_resolve_opes = resolve_opes
