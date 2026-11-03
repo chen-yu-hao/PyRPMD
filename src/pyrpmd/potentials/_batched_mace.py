@@ -5,6 +5,8 @@ from __future__ import annotations
 from importlib.metadata import version
 from pathlib import Path
 
+import numpy as np
+
 from ..system import _Z
 from ._batched_ml_base import _TensorBatchPotential, _optional
 from .base import PotentialError
@@ -149,6 +151,98 @@ class MACEBatchedPotential(_TensorBatchPotential):
             output["forces"].reshape(frames, atoms, 3) * (self.energy_factor / self.length_factor),
             None if virial is None else virial * self.energy_factor,
         )
+
+    def _second_derivatives(self, positions, direction=None):
+        """Use second-order force autograd on one disconnected MACE graph.
+
+        Compute a full Cartesian Hessian with 3N VJPs (one per coordinate
+        shared across independent frames), or one VJP for a matrix-free
+        Hessian-vector product. No force finite differences or dense HVP
+        allocation. The graph neighbor list is fixed for each derivative.
+        """
+        from .base import coordinates
+
+        x = coordinates(positions)
+        if x.shape[1] != len(self.symbols):
+            raise PotentialError("MACE second-derivative atom count mismatch")
+        if self.closed:
+            raise PotentialError("mace-batched provider is closed")
+        torch = self.torch
+        if self.dtype != torch.float64:
+            raise PotentialError("MACE second derivatives require float64 model precision")
+        if torch.is_inference_mode_enabled():
+            raise PotentialError("inference_mode is unsupported for MACE second derivatives")
+        if torch.is_autocast_enabled(self.device.type):
+            raise PotentialError("autocast is unsupported for MACE second derivatives")
+        v = None
+        if direction is not None:
+            raw = np.asarray(direction)
+            if (raw.dtype != np.dtype("float64")
+                    or raw.shape != x.shape or not np.isfinite(raw).all()):
+                raise PotentialError("HVP direction must be finite float64 [B,N,3], matching coordinates")
+            v = torch.as_tensor(raw, dtype=self.dtype, device=self.device)
+        try:
+            with torch.enable_grad():
+                # _graph owns detached topology input; MACE activates gradients
+                # on graph["positions"], so the position tensor is the VJP target.
+                graph = self._graph(torch.as_tensor(x, dtype=self.dtype, device=self.device))
+                point = graph["positions"]
+                output = self.model(graph, training=True, compute_force=True,
+                                    compute_virials=False, compute_stress=False)
+                forces = output.get("forces") if isinstance(output, dict) else None
+                frames, n, dimension = x.shape[0], x.shape[1], x.shape[1] * 3
+                if (not isinstance(forces, torch.Tensor)
+                        or forces.dtype != torch.float64
+                        or tuple(forces.shape) != (frames * n, 3)
+                        or not forces.requires_grad):
+                    raise PotentialError("MACE second derivatives require differentiable float64 forces")
+                if not torch.isfinite(forces).all().item():
+                    raise PotentialError("MACE forces contain NaN/Inf")
+                # The MACE forward takes positions as an input leaf and makes
+                # them require grad in prepare_graph. The only reverse-mode
+                # target is this flattened model position tensor.
+                if v is not None:
+                    product = torch.autograd.grad(
+                        forces, point, grad_outputs=v.reshape(-1, 3),
+                        create_graph=False, retain_graph=False, allow_unused=False,
+                    )[0]
+                    result = -product.reshape(frames, n, 3)
+                else:
+                    f = forces.reshape(frames, dimension)
+                    rows = []
+                    for component in range(dimension):
+                        seed = torch.zeros_like(f)
+                        seed[:, component] = 1.0
+                        row = torch.autograd.grad(
+                            f, point, grad_outputs=seed,
+                            create_graph=False, retain_graph=component < dimension - 1,
+                            allow_unused=False,
+                        )[0]
+                        rows.append(-row.reshape(frames, dimension))
+                    result = torch.stack(rows, dim=1)
+                factor = self.energy_factor / self.length_factor**2
+                result = (result * factor).detach().cpu().numpy()
+            if not np.isfinite(result).all():
+                raise PotentialError("MACE second derivatives returned NaN/Inf")
+            if v is None:
+                if not np.allclose(
+                    result, result.transpose(0, 2, 1), rtol=1e-8, atol=1e-12,
+                ):
+                    raise PotentialError("MACE Hessian is not symmetric within float64 tolerance")
+                result = (result + result.transpose(0, 2, 1)) * 0.5
+            return np.ascontiguousarray(result)
+        except PotentialError:
+            raise
+        except Exception as exc:
+            raise PotentialError(f"MACE second-derivative evaluation failed: {exc}") from exc
+
+    def hessian(self, x):
+        """float64[B,3N,3N] Cartesian PES Hessians in hartree/bohr**2."""
+        return self._second_derivatives(x)
+
+    def hessian_vector_product(self, x, v):
+        """float64[B,N,3] exact Hessian-vector products, v in bohr."""
+        return self._second_derivatives(x, v)
 
     def _reset_engine(self):
         self._batch_cache = None
