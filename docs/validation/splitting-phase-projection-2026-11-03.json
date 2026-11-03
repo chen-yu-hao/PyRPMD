@@ -1,0 +1,241 @@
+{
+  "schema": "pyrpmd.splitting-phase-projection-benchmark.v1",
+  "hardware": {
+    "cpu": "AMD EPYC 9V74 80-Core Processor",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39"
+  },
+  "software": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "threads": 1,
+  "repeats": 5,
+  "scope": "phase removal plus complete dense symmetric eigensolve",
+  "input": "analytic quartic kink; mass=1822, height=0.01, duration=28/omega; atomic units",
+  "physical_converged": false,
+  "results": [
+    {
+      "interior_coordinates": 256,
+      "max_absolute_spectral_difference": 1.214306433183765e-17,
+      "timings": {
+        "qr_reference": {
+          "wall_s": [
+            0.004847528995014727,
+            0.004714030998002272,
+            0.004510519000177737,
+            0.0045870730027672835,
+            0.004400976999022532
+          ],
+          "process_cpu_s": [
+            0.0048419619999999775,
+            0.004712439999999984,
+            0.004508877000000022,
+            0.004585461000000013,
+            0.004399253999999964
+          ]
+        },
+        "householder": {
+          "wall_s": [
+            0.0028713889987557195,
+            0.0029161450001993217,
+            0.0028295970041654073,
+            0.0028702470008283854,
+            0.002840713001205586
+          ],
+          "process_cpu_s": [
+            0.0028687510000000027,
+            0.002914309000000004,
+            0.0028276300000000254,
+            0.002868972000000025,
+            0.0028389169999999964
+          ]
+        }
+      },
+      "qr_reference": {
+        "median_wall_s": 0.0045870730027672835,
+        "median_process_cpu_s": 0.004585461000000013,
+        "peak_traced_allocation_bytes": 1567776
+      },
+      "householder": {
+        "median_wall_s": 0.0028702470008283854,
+        "median_process_cpu_s": 0.0028687510000000027,
+        "peak_traced_allocation_bytes": 527746
+      },
+      "wall_speedup": 1.5981457349989052,
+      "process_cpu_speedup": 1.5984172205953073
+    },
+    {
+      "interior_coordinates": 512,
+      "max_absolute_spectral_difference": 6.938893903907228e-17,
+      "timings": {
+        "qr_reference": {
+          "wall_s": [
+            0.027969571005087346,
+            0.02761223999550566,
+            0.02730151000287151,
+            0.027745619001507293,
+            0.027614002996415365
+          ],
+          "process_cpu_s": [
+            0.027964747999999928,
+            0.027609460999999946,
+            0.027298719000000027,
+            0.02774291899999992,
+            0.027611563999999977
+          ]
+        },
+        "householder": {
+          "wall_s": [
+            0.014607735000026878,
+            0.014859577000606805,
+            0.01438375200086739,
+            0.014645670999016147,
+            0.014399495004909113
+          ],
+          "process_cpu_s": [
+            0.014605644999999945,
+            0.01485729899999999,
+            0.014381342000000075,
+            0.014643411000000106,
+            0.014396754999999928
+          ]
+        }
+      },
+      "qr_reference": {
+        "median_wall_s": 0.027614002996415365,
+        "median_process_cpu_s": 0.027611563999999977,
+        "peak_traced_allocation_bytes": 6280224
+      },
+      "householder": {
+        "median_wall_s": 0.014607735000026878,
+        "median_process_cpu_s": 0.014605644999999945,
+        "peak_traced_allocation_bytes": 2102658
+      },
+      "wall_speedup": 1.8903685613385344,
+      "process_cpu_speedup": 1.890472074324693
+    },
+    {
+      "interior_coordinates": 1024,
+      "max_absolute_spectral_difference": 4.718447854656915e-16,
+      "timings": {
+        "qr_reference": {
+          "wall_s": [
+            0.17540022900357144,
+            0.17366572700120742,
+            0.17425276600260986,
+            0.17346814300253754,
+            0.1735504160023993
+          ],
+          "process_cpu_s": [
+            0.17538745799999989,
+            0.17366345699999997,
+            0.1742351150000001,
+            0.17346666499999985,
+            0.1735170290000001
+          ]
+        },
+        "householder": {
+          "wall_s": [
+            0.08209361899935175,
+            0.08294928900431842,
+            0.08303360399440862,
+            0.08442783100326778,
+            0.07984096300060628
+          ],
+          "process_cpu_s": [
+            0.08209055600000004,
+            0.08294716800000002,
+            0.08302999199999994,
+            0.0844246930000001,
+            0.07983735400000036
+          ]
+        }
+      },
+      "qr_reference": {
+        "median_wall_s": 0.17366572700120742,
+        "median_process_cpu_s": 0.17366345699999997,
+        "peak_traced_allocation_bytes": 25142304
+      },
+      "householder": {
+        "median_wall_s": 0.08294928900431842,
+        "median_process_cpu_s": 0.08294716800000002,
+        "peak_traced_allocation_bytes": 8398210
+      },
+      "wall_speedup": 2.093637318484625,
+      "process_cpu_speedup": 2.0936634871006077
+    },
+    {
+      "interior_coordinates": 2048,
+      "max_absolute_spectral_difference": 2.886579864025407e-15,
+      "timings": {
+        "qr_reference": {
+          "wall_s": [
+            1.3568717309972271,
+            1.318576530997234,
+            1.3119937330047833,
+            1.28877646500041,
+            1.289022708995617
+          ],
+          "process_cpu_s": [
+            1.356822942,
+            1.3184159700000002,
+            1.3115511580000003,
+            1.2887352659999998,
+            1.2885218310000006
+          ]
+        },
+        "householder": {
+          "wall_s": [
+            0.7793155510007637,
+            0.714040955004748,
+            0.7630004520033253,
+            0.7222897839965299,
+            0.6654563949996373
+          ],
+          "process_cpu_s": [
+            0.7792685940000004,
+            0.7140060229999996,
+            0.7628257200000004,
+            0.7222659569999994,
+            0.6654470740000011
+          ]
+        }
+      },
+      "qr_reference": {
+        "median_wall_s": 1.3119937330047833,
+        "median_process_cpu_s": 1.3115511580000003,
+        "peak_traced_allocation_bytes": 100615200
+      },
+      "householder": {
+        "median_wall_s": 0.7222897839965299,
+        "median_process_cpu_s": 0.7222659569999994,
+        "peak_traced_allocation_bytes": 33572226
+      },
+      "wall_speedup": 1.8164367848944774,
+      "process_cpu_speedup": 1.815883948687895
+    }
+  ],
+  "threadpools": [
+    {
+      "user_api": "blas",
+      "internal_api": "openblas",
+      "num_threads": 1,
+      "prefix": "libscipy_openblas",
+      "filepath": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/numpy.libs/libscipy_openblas64_-fdde5778.so",
+      "version": "0.3.30",
+      "threading_layer": "pthreads",
+      "architecture": "SkylakeX"
+    },
+    {
+      "user_api": "blas",
+      "internal_api": "openblas",
+      "num_threads": 1,
+      "prefix": "libscipy_openblas",
+      "filepath": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/scipy.libs/libscipy_openblas-6cdc3b4a.so",
+      "version": "0.3.30",
+      "threading_layer": "pthreads",
+      "architecture": "SkylakeX"
+    }
+  ]
+}

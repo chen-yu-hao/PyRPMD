@@ -32,6 +32,7 @@ include_patterns = [
     "data-archive-plan.md",
     "plumed.md", "committor.md", "transition-interface-sampling.md", "transition-state-search.md", "rate-postprocessing.md",
     "general-coordinate-rates.md", "rate-studies.md", "instanton.md", "low-temperature.md",
+    "tunnelling-phase-projection.md",
     "rate-input-v2.md",
     "quantum-statistics.md", "performance-dynamics.md", "batched-dynamics.md",
     "batched-ml-potentials.md",
