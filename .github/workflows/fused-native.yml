@@ -16,7 +16,9 @@ defaults:
 jobs:
   fused:
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    # Runs the complete pytest suite, MPI and packaging; 25 min no longer fits
+    # after the exact all-bead NPT sampling regressions (about 3 min serial).
+    timeout-minutes: 40
     env:
       OMP_NUM_THREADS: '1'
       OPENBLAS_NUM_THREADS: '1'
