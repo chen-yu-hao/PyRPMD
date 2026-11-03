@@ -5,6 +5,7 @@
 #ifndef PYRPMD_PROPAGATION_H
 #define PYRPMD_PROPAGATION_H
 #include "include/pyrpmd/pes_api_v1.h"
+#include "cv_core.hpp"
 #include <array>
 #include <cstring>
 #include <memory>
@@ -12,204 +13,16 @@
 #include <map>
 
 namespace fused_blocks {
-using Vec = std::vector<double>;
-constexpr double pi = 3.1415926535897932384626433832795;
-
-struct PyRef {
-    PyObject* p;
-    explicit PyRef(PyObject* x): p(x) { if (!p) throw std::runtime_error("invalid native descriptor"); }
-    ~PyRef() { Py_DECREF(p); }
-    PyRef(const PyRef&) = delete;
-};
-static PyObject* field(PyObject* d, const char* name) {
-    if (!PyDict_Check(d)) throw std::invalid_argument("native descriptor must be a dictionary");
-    auto* v=PyDict_GetItemString(d,name);
-    if (!v) throw std::invalid_argument(std::string("missing native field: ")+name);
-    return v;
-}
-static double number(PyObject* v) {
-    double x=PyFloat_AsDouble(v);
-    if (PyErr_Occurred() || !std::isfinite(x)) throw std::invalid_argument("native parameter must be finite");
-    return x;
-}
-static std::string text(PyObject* v) {
-    if (!PyUnicode_Check(v)) throw std::invalid_argument("native tag must be a string");
-    Py_ssize_t size=0;
-    const char* s=PyUnicode_AsUTF8AndSize(v,&size);
-    if (!s) throw std::invalid_argument("invalid native string");
-    return std::string(s,static_cast<size_t>(size));
-}
-static Vec vector(PyObject* v, Py_ssize_t size=-1) {
-    PyRef seq(PySequence_Fast(v,"expected a numeric sequence"));
-    auto n=PySequence_Fast_GET_SIZE(seq.p);
-    if (size>=0 && n!=size) throw std::invalid_argument("native parameter length mismatch");
-    Vec out(n);
-    for (Py_ssize_t i=0;i<n;++i) out[i]=number(PySequence_Fast_GET_ITEM(seq.p,i));
-    return out;
-}
-static bool finite(const Vec& v) {
-    return std::all_of(v.begin(),v.end(),[](double x){return std::isfinite(x);});
-}
-struct Diff {
-    double v=0;
-    Vec g;
-    explicit Diff(Py_ssize_t n): g(n,0) {}
-    void add(const Diff& b,double scale) {
-        v+=scale*b.v;
-        for (size_t i=0;i<g.size();++i) g[i]+=scale*b.g[i];
-    }
-    void scale(double x) { v*=x;for(auto& y:g)y*=x; }
-};
-static double norm_value(const Vec& w,const double* q) {
-    double d[3]={0,0,0};
-    for (size_t a=0;a<w.size();++a) for(int c=0;c<3;++c) d[c]+=w[a]*q[3*a+c];
-    return std::sqrt(d[0]*d[0]+d[1]*d[1]+d[2]*d[2]);
-}
-// A norm's curvature needs only its three-dimensional unit displacement.
-// Keep this geometry from the gradient pass until the metric direction is known.
-struct NormHVP {
-    const Vec* weights=nullptr;
-    std::array<double,3> unit{};
-    double radius=0,scale=1;
-    bool product_surface=false;
-    void add(const Vec& direction,Vec& hv) const {
-        double tangent[3]={0,0,0};
-        for(size_t a=0;a<weights->size();++a)for(int c=0;c<3;++c)tangent[c]+=(*weights)[a]*direction[3*a+c];
-        const double radial=unit[0]*tangent[0]+unit[1]*tangent[1]+unit[2]*tangent[2];
-        for(int c=0;c<3;++c)tangent[c]=(tangent[c]-unit[c]*radial)/radius;
-        for(size_t a=0;a<weights->size();++a)for(int c=0;c<3;++c)hv[3*a+c]+=scale*(*weights)[a]*tangent[c];
-    }
-};
-struct MetricHVP {
-    // Supported descriptors contain at most the entry, forming and breaking norms.
-    std::array<NormHVP,3> norms;
-    size_t count=0;
-    int kind=0; // primitive, surface, or quotient
-    double a=0,b=0,xi=0;
-    Vec ga,gb,direction,hv,product_hv;
-    explicit MetricHVP(Py_ssize_t n):ga(n),gb(n),direction(n),hv(n),product_hv(n) {}
-    void apply() {
-        std::fill(hv.begin(),hv.end(),0.);std::fill(product_hv.begin(),product_hv.end(),0.);
-        for(size_t i=0;i<count;++i)norms[i].add(direction,norms[i].product_surface?product_hv:hv);
-        if(kind==1)for(size_t i=0;i<hv.size();++i)hv[i]=(1-xi)*hv[i]+xi*product_hv[i];
-        if(kind==2) {
-            double da=0,db=0;
-            for(size_t i=0;i<hv.size();++i){da+=ga[i]*direction[i];db+=gb[i]*direction[i];}
-            for(size_t i=0;i<hv.size();++i)
-                hv[i]=hv[i]/b-(ga[i]*db+gb[i]*da+a*(hv[i]-product_hv[i]))/(b*b)+2*a*gb[i]*db/(b*b*b);
-        }
-    }
-};
-static Diff norm(const Vec& w,const double* q,NormHVP* prepared=nullptr) {
-    const auto n=3*w.size();
-    Diff out(n);
-    double u[3]={0,0,0};
-    for(size_t a=0;a<w.size();++a) for(int c=0;c<3;++c) u[c]+=w[a]*q[3*a+c];
-    out.v=std::sqrt(u[0]*u[0]+u[1]*u[1]+u[2]*u[2]);
-    if (!(out.v>=1e-12)) throw std::runtime_error("CV derivative undefined at zero distance");
-    for(auto& c:u)c/=out.v;
-    for(size_t i=0;i<n;++i) out.g[i]=w[i/3]*u[i%3];
-    if(prepared)*prepared={&w,{u[0],u[1],u[2]},out.v,1,false};
-    return out;
-}
-struct Pair { Vec forming,breaking;double reference; };
-struct CV {
-    std::string kind;
-    bool bead_average=false;
-    Vec weights,other;
-    double rinf=0,xi=0;
-    std::vector<std::vector<Pair>> paths;
-    std::unique_ptr<CV> coordinate;
-    Py_ssize_t nd;
-    CV(PyObject* d,Py_ssize_t n): nd(n) {
-        kind=text(field(d,"kind"));
-        auto estimator=text(field(d,"estimator"));
-        if(estimator!="centroid" && estimator!="bead_average") throw std::invalid_argument("unknown native CV estimator");
-        bead_average=estimator=="bead_average";
-        if(kind=="norm" || kind=="difference" || kind=="rate") weights=vector(field(d,"weights"),nd/3);
-        if(kind=="linear") weights=vector(field(d,"weights"),nd);
-        if(kind=="difference") other=vector(field(d,"other"),nd/3);
-        if(kind=="rate") {
-            if(bead_average) throw std::invalid_argument("rate CV must use centroid");
-            rinf=number(field(d,"rinf"));
-            PyRef rows(PySequence_Fast(field(d,"paths"),"paths must be sequences"));
-            for(Py_ssize_t i=0;i<PySequence_Fast_GET_SIZE(rows.p);++i) {
-                PyRef row(PySequence_Fast(PySequence_Fast_GET_ITEM(rows.p,i),"pairs must be sequences"));
-                std::vector<Pair> pairs;
-                for(Py_ssize_t j=0;j<PySequence_Fast_GET_SIZE(row.p);++j) {
-                    auto* p=PySequence_Fast_GET_ITEM(row.p,j);
-                    pairs.push_back({vector(field(p,"forming"),nd/3),vector(field(p,"breaking"),nd/3),number(field(p,"reference"))});
-                }
-                if(pairs.empty() || (!paths.empty() && pairs.size()!=paths[0].size())) throw std::invalid_argument("invalid native rate paths");
-                paths.push_back(std::move(pairs));
-            }
-            if(paths.empty()) throw std::invalid_argument("empty native rate paths");
-        } else if(kind=="surface") {
-            if(bead_average) throw std::invalid_argument("surface must use centroid");
-            coordinate=std::make_unique<CV>(field(d,"coordinate"),nd);
-            if(coordinate->kind!="rate") throw std::invalid_argument("surface requires rate CV");
-            xi=number(field(d,"xi"));
-        } else if(kind!="linear" && kind!="norm" && kind!="difference") throw std::invalid_argument("unknown native CV kind");
-    }
-    std::pair<Diff,Diff> surfaces(const double* q,MetricHVP* prepared=nullptr) const {
-        auto s0=norm(weights,q,prepared?&prepared->norms[0]:nullptr);s0.scale(-1);s0.v+=rinf;
-        size_t selected_path=0,selected_bond=0;
-        double smallest=std::numeric_limits<double>::infinity();
-        for(size_t b=0;b<paths[0].size();++b) {
-            double largest=-std::numeric_limits<double>::infinity();size_t path=0;
-            for(size_t p=0;p<paths.size();++p) {
-                const auto& x=paths[p][b];
-                double v=x.reference-norm_value(x.forming,q)+norm_value(x.breaking,q);
-                if(v>largest){largest=v;path=p;}
-            }
-            if(largest<smallest){smallest=largest;selected_path=path;selected_bond=b;}
-        }
-        const auto& x=paths[selected_path][selected_bond];
-        auto s1=norm(x.forming,q,prepared?&prepared->norms[1]:nullptr);s1.scale(-1);s1.v+=x.reference;
-        s1.add(norm(x.breaking,q,prepared?&prepared->norms[2]:nullptr),1);
-        if(prepared) {
-            prepared->count=3;prepared->norms[0].scale=-1;prepared->norms[1].scale=-1;
-            prepared->norms[1].product_surface=true;prepared->norms[2].product_surface=true;
-        }
-        return {std::move(s0),std::move(s1)};
-    }
-    Diff eval(const double* q,MetricHVP* prepared=nullptr) const {
-        if(prepared){prepared->count=0;prepared->kind=0;}
-        if(kind=="norm") {if(prepared)prepared->count=1;return norm(weights,q,prepared?&prepared->norms[0]:nullptr);}
-        if(kind=="difference") {
-            auto d=norm(weights,q,prepared?&prepared->norms[0]:nullptr);
-            d.add(norm(other,q,prepared?&prepared->norms[1]:nullptr),-1);
-            if(prepared){prepared->count=2;prepared->norms[1].scale=-1;}
-            return d;
-        }
-        if(kind=="linear") {Diff d(nd);d.g=weights;for(Py_ssize_t i=0;i<nd;++i)d.v+=weights[i]*q[i];return d;}
-        if(kind=="surface") {
-            auto s=coordinate->surfaces(q,prepared);s.first.scale(1-xi);s.first.add(s.second,xi);
-            if(prepared){prepared->kind=1;prepared->xi=xi;}
-            return std::move(s.first);
-        }
-        auto s=surfaces(q,prepared);
-        const Diff& a=s.first;Diff b=a;b.add(s.second,-1);
-        if(std::abs(b.v)<1e-10) throw std::runtime_error("RPMDrate xi is singular where s0=s1");
-        Diff out(nd);out.v=a.v/b.v;
-        for(Py_ssize_t i=0;i<nd;++i) out.g[i]=a.g[i]/b.v-a.v*b.g[i]/(b.v*b.v);
-        if(prepared) {
-            prepared->kind=2;prepared->a=a.v;prepared->b=b.v;
-            std::copy(a.g.begin(),a.g.end(),prepared->ga.begin());std::copy(b.g.begin(),b.g.end(),prepared->gb.begin());
-        }
-        return out;
-    }
-    Diff ring(const Vec& q,const Vec& centroid,Py_ssize_t beads) const {
-        Diff out(q.size());
-        if(!bead_average) {
-            auto d=eval(centroid.data());out.v=d.v;
-            for(Py_ssize_t b=0;b<beads;++b) for(Py_ssize_t i=0;i<nd;++i) out.g[b*nd+i]=d.g[i]/beads;
-        } else {
-            for(Py_ssize_t b=0;b<beads;++b){auto d=eval(q.data()+b*nd);out.v+=d.v/beads;for(Py_ssize_t i=0;i<nd;++i)out.g[b*nd+i]=d.g[i]/beads;}
-        }
-        return out;
-    }
-};
+using native_cv::Vec;
+using native_cv::Diff;
+using native_cv::tagged::PyRef;
+using native_cv::tagged::field;
+using native_cv::tagged::number;
+using native_cv::tagged::text;
+using native_cv::tagged::vector;
+using native_cv::tagged::finite;
+using CV=native_cv::BlockCV;
+using Bias=native_cv::Bias<false>;
 static std::vector<CV> cvs(PyObject* obj,Py_ssize_t nd) {
     PyRef seq(PySequence_Fast(obj,"CVs must be a sequence"));std::vector<CV> out;
     for(Py_ssize_t i=0;i<PySequence_Fast_GET_SIZE(seq.p);++i)out.emplace_back(PySequence_Fast_GET_ITEM(seq.p,i),nd);
@@ -220,36 +33,6 @@ static void centroid(const Vec& q,Vec& c,Py_ssize_t beads,Py_ssize_t nd) {
     for(Py_ssize_t b=0;b<beads;++b) for(Py_ssize_t i=0;i<nd;++i)c[i]+=q[b*nd+i];
     for(auto& x:c)x/=beads;
 }
-struct Bias {
-    std::string kind;std::vector<CV> cv;Vec center,k,periods;
-    std::unique_ptr<MetricHVP> metric_hvp;
-    Bias(PyObject* d,Py_ssize_t nd): kind(text(field(d,"kind"))),cv(cvs(field(d,"cvs"),nd)) {
-        if(kind=="umbrella") {
-            center=vector(field(d,"center"),cv.size());k=vector(field(d,"stiffness"),cv.size()*cv.size());
-            periods=vector(field(d,"periods"),cv.size());
-        } else {
-            if(kind!="flux" || cv.size()!=1 || cv[0].bead_average)throw std::invalid_argument("invalid native bias");
-            metric_hvp=std::make_unique<MetricHVP>(nd);
-        }
-    }
-    double add(const Vec& q,const Vec& c,Vec& f,const Cayley& integrator,double beta) const {
-        const auto P=integrator.beads,nd=integrator.nd;
-        if(kind=="flux") {
-            auto& h=*metric_hvp;auto d=cv[0].eval(c.data(),&h);double z=0;
-            for(Py_ssize_t i=0;i<nd;++i){z+=d.g[i]*d.g[i]/integrator.mass[i/3];h.direction[i]=d.g[i]/integrator.mass[i/3];}
-            if(!(z>1e-30) || !std::isfinite(z))throw std::runtime_error("rate coordinate has zero/invalid mass metric");
-            h.apply();
-            for(Py_ssize_t i=0;i<nd;++i){double v=h.hv[i]/(beta*z);for(Py_ssize_t b=0;b<P;++b)f[b*nd+i]+=v;}
-            return -P*std::log(std::sqrt(z/(2*pi*beta)))/beta;
-        }
-        std::vector<Diff> values;Vec delta(cv.size()),derivative(cv.size(),0.);
-        for(size_t i=0;i<cv.size();++i){values.push_back(cv[i].ring(q,c,P));delta[i]=values[i].v-center[i];if(periods[i]>0)delta[i]-=periods[i]*std::floor((delta[i]+.5*periods[i])/periods[i]);}
-        for(size_t i=0;i<cv.size();++i)for(size_t j=0;j<cv.size();++j)derivative[i]+=k[i*cv.size()+j]*delta[j];
-        double e=0;
-        for(size_t i=0;i<cv.size();++i){e+=P*.5*delta[i]*derivative[i];for(size_t j=0;j<f.size();++j)f[j]-=P*derivative[i]*values[i].g[j];}
-        return e;
-    }
-};
 struct Fragment {Vec weights,reference;};
 static void project(Vec& q,Vec& p,const std::vector<Fragment>& fragments,const Cayley& c) {
     for(const auto& f:fragments){double total=std::accumulate(f.weights.begin(),f.weights.end(),0.);double center[3]={0,0,0},velocity[3]={0,0,0};
