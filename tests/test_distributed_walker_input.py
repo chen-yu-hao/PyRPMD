@@ -25,7 +25,7 @@ def metadynamics_config():
                  "axis": "x"}],
         "metadynamics": {"shared_walkers": True,
                          "walkers_mode": "mpi-sync", "sigma": [0.3],
-                         "height": 0.04, "pace": 2},
+                         "height": 0.04, "pace": 2, "bias_factor": 5.0},
         "analysis": {"bins": [5], "bootstrap": 0},
     }
 
