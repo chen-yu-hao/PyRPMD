@@ -84,11 +84,12 @@ def resolve_spectroscopy_job(data, *, base_directory=None, input_path=None):
     resolved["task"] = "spectroscopy"
     resolved["spectroscopy"] = deepcopy(dict(spec))
     resolved["properties"] = deepcopy(dict(properties))
-    if "fqcmd_model_file" in resolved["spectroscopy"]:
-        model = resolved["spectroscopy"]["fqcmd_model_file"]
-        if not isinstance(model, str) or not model.strip():
-            raise InputError("spectroscopy.fqcmd_model_file must be a file path")
-        resolved["spectroscopy"]["fqcmd_model_file"] = _path(base, model)
+    for key in ("fqcmd_model_file", "hcmd_model_file"):
+        if key in resolved["spectroscopy"]:
+            model = resolved["spectroscopy"][key]
+            if not isinstance(model, str) or not model.strip():
+                raise InputError(f"spectroscopy.{key} must be a file path")
+            resolved["spectroscopy"][key] = _path(base, model)
     _plugin_paths(resolved["properties"], base)
     if "model" in resolved["properties"]:
         if not isinstance(resolved["properties"]["model"], str) or not resolved["properties"]["model"]:
