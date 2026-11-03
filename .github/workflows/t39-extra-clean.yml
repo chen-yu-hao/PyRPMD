@@ -1,0 +1,63 @@
+name: T39 finish clean branch
+on:
+  push:
+    paths:
+      - '.github/workflows/t39-extra-clean.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  finish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: agent/t39-photo-initial-lvc-gpt56
+          fetch-depth: 0
+      - name: Wait for recovered core
+        shell: bash
+        run: |
+          set -euo pipefail
+          ready=false
+          for attempt in $(seq 1 90); do
+            git fetch origin agent/t39-photo-initial-lvc-clean
+            if git cat-file -e origin/agent/t39-photo-initial-lvc-clean:src/pyrpmd/photo_initial.py 2>/dev/null; then
+              ready=true
+              break
+            fi
+            sleep 10
+          done
+          test "$ready" = true
+      - name: Add tests documentation examples and validation
+        shell: bash
+        env:
+          OMP_NUM_THREADS: '1'
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/t39-extra
+          cat .github/t39-extra.part00 .github/t39-extra.part01 \
+            | base64 -d | xz -dc | tar -x -C /tmp/t39-extra
+          git fetch origin agent/t39-photo-initial-lvc-clean
+          git worktree add /tmp/t39-clean origin/agent/t39-photo-initial-lvc-clean
+          cd /tmp/t39-clean
+          git config user.name 'chen-yu-hao'
+          git config user.email '72141038+chen-yu-hao@users.noreply.github.com'
+          cp /tmp/t39-extra/tests/test_photo_cli.py tests/test_photo_cli.py
+          cp /tmp/t39-extra/tests/test_photo_nonadiabatic_input.py tests/test_photo_nonadiabatic_input.py
+          git add tests/test_photo_cli.py tests/test_photo_nonadiabatic_input.py
+          git commit -m 'test: cover photodynamics CLI and file-backed ensembles'
+          cp /tmp/t39-extra/docs/conf.py docs/conf.py
+          cp /tmp/t39-extra/docs/photo-initial-conditions.md docs/photo-initial-conditions.md
+          mkdir -p docs/validation/photo-initial-2026-11-03 examples/photodynamics
+          cp /tmp/t39-extra/docs/validation/photo-initial-2026-11-03/* docs/validation/photo-initial-2026-11-03/
+          cp /tmp/t39-extra/examples/photodynamics/* examples/photodynamics/
+          git add docs/conf.py docs/photo-initial-conditions.md \
+            docs/validation/photo-initial-2026-11-03 examples/photodynamics
+          git commit -m 'docs: add photodynamics guide examples and validation record'
+          python -m pip install -e '.[test,docs]'
+          python -m pytest -q \
+            tests/test_photo_initial.py tests/test_lvc_builder.py \
+            tests/test_photo_cli.py tests/test_photo_nonadiabatic_input.py
+          python -m sphinx -W --keep-going -b html docs docs/_build/html
+          git push origin HEAD:agent/t39-photo-initial-lvc-clean
