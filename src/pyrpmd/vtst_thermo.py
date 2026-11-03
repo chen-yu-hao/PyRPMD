@@ -112,8 +112,12 @@ def analyze_path_modes(
     # nonstationary points (Bao & Truhlar 2017, Eq. 85).
     saddle = path.saddle_index
     if 0 < saddle < len(mass_ratio) - 1:
-        mass_ratio[saddle] = 0.5 * (
-            mass_ratio[saddle - 1] + mass_ratio[saddle + 1]
+        mass_ratio[saddle] = float(
+            np.interp(
+                path.s_bohr[saddle],
+                path.s_bohr[[saddle - 1, saddle + 1]],
+                mass_ratio[[saddle - 1, saddle + 1]],
+            )
         )
     zpe = np.array([0.5 * float(np.sum(omega)) for omega in frequencies])
     return PathModeAnalysis(
