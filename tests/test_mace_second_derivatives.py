@@ -77,6 +77,25 @@ def test_mace_hessian_and_hvp_against_independent_ase_and_force_differences(pbc)
                                    rtol=1e-7, atol=3e-9)
 
 
+def test_named_mace_provider_exposes_derivatives(tmp_path):
+    q, cell = _structures()
+    model = make_random_mace(dtype="float64")
+    path = tmp_path / "mace-untrained.model"
+    torch.save(model, path)
+    provider = make_named_potential(
+        "mace", symbols=["D", "T", "H", "O"],
+        model=str(path), device="cpu", cell=cell, pbc=[False] * 3,
+    )
+    try:
+        h = provider.hessian(q[:1])
+        v = np.ones_like(q[:1])
+        hv = provider.hessian_vector_product(q[:1], v)
+        np.testing.assert_allclose(hv.ravel(), h[0] @ v.ravel(),
+                                   rtol=1e-7, atol=3e-9)
+    finally:
+        provider.close()
+
+
 def test_mace_second_derivative_strict_failures():
     q, cell = _structures()
     model = make_random_mace(dtype="float64")
