@@ -233,6 +233,39 @@ class RingPolymerAction:
                 "energy_hartree": energy, "spring_action_hbar": spring,
                 "potential_action_hbar": potential}
 
+    def hessian_vector_product(self, path, direction):
+        """Matrix-free action-Hessian product in bead-major active coordinates.
+
+        ``direction`` has the same [P,N,3] shape as the path (bohr).
+        The returned vector is [P,D_active] without allocating the dense
+        action Hessian. Requires the physical PES's exact HVP interface;
+        absent/invalid implementations fail rather than approximating.
+        This method is suitable for external iterative eigensolvers, but
+        the default instanton optimizer and Gaussian prefactor still use
+        the dense Hessian.
+        """
+        q, mask, mass = self._validate(path)
+        v = np.asarray(direction)
+        if (v.dtype != np.dtype("float64") or v.shape != q.shape
+                or not np.isfinite(v).all()):
+            raise ValueError("direction must be finite float64 [P,N,3]")
+        if np.any(v[:, ~mask] != 0):
+            raise ValueError("direction must vanish in inactive coordinates")
+        provider = getattr(self.potential, "hessian_vector_product", None)
+        if provider is None or not callable(provider):
+            raise ValueError("matrix-free action Hessian requires potential.hessian_vector_product(x, v)")
+        physical = np.asarray(provider(q, np.ascontiguousarray(v)))
+        if (physical.dtype != np.dtype("float64") or physical.shape != q.shape
+                or not np.isfinite(physical).all()):
+            raise ValueError("potential.hessian_vector_product must return finite float64 [P,N,3]")
+        dtau = self.beta / len(q)
+        active = v[:, mask]
+        spring = mass / dtau * (
+            2 * active - np.roll(active, 1, axis=0)
+            - np.roll(active, -1, axis=0)
+        )
+        return np.ascontiguousarray(spring + dtau * physical[:, mask])
+
     def hessian(self, path):
         """Dense action Hessian in bead-major active Cartesian coordinates."""
         q, mask, mass = self._validate(path)
