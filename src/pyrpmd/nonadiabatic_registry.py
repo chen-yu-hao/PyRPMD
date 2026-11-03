@@ -4,7 +4,7 @@ import numpy as np
 from .dynamics import State
 from .parallel import execution_plan
 
-METHODS = frozenset(("nrpmd", "sm-nrpmd", "rp-mash", "rpsh", "rpsh-ca",
+METHODS = frozenset(("nrpmd", "sm-nrpmd", "rp-mash", "rp-mash-ba", "rpsh", "rpsh-ca",
                      "rpsh-ba", "rpsh-dm", "soc-rpsh", "iesh", "multistate-mash"))
 EXTENDED_METHODS = METHODS - {"nrpmd", "rpsh"}
 
@@ -61,6 +61,12 @@ def make_dynamics(config, system, rng, *, potential=None):
             from .rp_mash import RPMASHDynamics
             return RPMASHDynamics(*args,seed=rng,**common,**{
                 k:options[k] for k in ("rtol","atol","max_step","max_events","gap_tolerance") if k in options})
+        if method == "rp-mash-ba":
+            from .rp_mash_bead import BARPMASHDynamics
+            if options["integrator"] != "adaptive-dop853":
+                raise ValueError("rp-mash-ba requires integrator='adaptive-dop853'")
+            return BARPMASHDynamics(*args,seed=rng,**common,**{
+                k:options[k] for k in ("rtol","atol","max_step","max_events","gap_tolerance") if k in options})
         common["integrator"] = options["integrator"]
         if method in ("nrpmd", "sm-nrpmd"):
             from .nonadiabatic import NRPMDDynamics
@@ -106,7 +112,7 @@ def initialize_state(config, system, dynamics, nuclear_rng, electronic_rng):
         return NRPMDState.from_nuclear(nuclear,dynamics.nstates,initial["initial_state"],electronic_rng)
     if method == "sm-nrpmd":
         return dynamics.initialize(nuclear,initial_state=initial["initial_state"],rng=electronic_rng)
-    if method == "rp-mash":
+    if method in ("rp-mash", "rp-mash-ba"):
         return dynamics.initialize(nuclear,active_surface=initial["active_surface"],
                                    sampling="population",rng=electronic_rng)
     return dynamics.initialize(nuclear,active_surface=initial["active_surface"])

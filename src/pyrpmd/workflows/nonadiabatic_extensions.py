@@ -21,6 +21,7 @@ from ..nonadiabatic import validate_diabatic_result
 from ..parallel import execution_plan, run_tasks
 from ..propagation import scientific_config
 from ..rp_mash import RPMASHState
+from ..rp_mash_bead import BARPMASHState
 from ..spin_mapping import SMNRPMDState, W_RADIUS
 from ..surface_hopping import RPSHState
 from ..system import System
@@ -29,10 +30,12 @@ from .nonadiabatic import _streams
 
 _KIND = "PyRPMD.extended_nonadiabatic_trajectory.v1"
 _RESULT_KIND = "PyRPMD.extended_nonadiabatic_ensemble.v1"
-_CLASSES = {"sm-nrpmd": SMNRPMDState, "rp-mash": RPMASHState,
+_CLASSES = {"sm-nrpmd": SMNRPMDState, "rp-mash": RPMASHState, "rp-mash-ba": BARPMASHState,
             "rpsh-ca": RPSHState, "rpsh-ba": RPSHBAState,
             "rpsh-dm": RPSHDMState, "soc-rpsh": RPSHState}
 _ROLES = ("nuclear", "electronic", "dynamics")
+_MASH = frozenset(("rp-mash", "rp-mash-ba"))
+_SPIN = _MASH | {"sm-nrpmd"}
 
 
 def _driver(config, system, rng):
@@ -48,11 +51,11 @@ def _driver(config, system, rng):
 
 def _history_names(method):
     result = ["steps", "population", "energy", "norm", "centroid_q", "centroid_p"]
-    if method != "rp-mash":
+    if method not in _MASH:
         result.append("density")
     if method != "sm-nrpmd":
         result.append("active")
-    if method not in ("sm-nrpmd", "rp-mash"):
+    if method not in _SPIN:
         result.append("amplitude")
     return tuple(result)
 
@@ -60,7 +63,7 @@ def _history_names(method):
 def _state_names(method):
     if method == "sm-nrpmd":
         return ("spin",)
-    if method == "rp-mash":
+    if method in _MASH:
         return ("spin", "active_surface", "sampling")
     if method == "rpsh-ba":
         return ("coefficients", "active_surface", "basis_vectors")
@@ -82,7 +85,7 @@ def _observe(dynamics, state, method):
     dynamics._check(state)
     if isinstance(state, SMNRPMDState):
         norm = np.sum(state.spin**2, axis=-1)
-    elif isinstance(state, RPMASHState):
+    elif isinstance(state, (RPMASHState, BARPMASHState)):
         if state.sampling != "population":
             raise ValueError("MASH ensemble workflow requires population importance sampling")
         norm = np.array([state.spin @ state.spin])
@@ -90,14 +93,14 @@ def _observe(dynamics, state, method):
         norm = np.atleast_1d(np.sum(np.abs(state.coefficients)**2, axis=-1))
     record = {"energy": np.float64(dynamics.energy(state)), "norm": np.asarray(norm, dtype=np.float64),
               "centroid_q": state.q.mean(axis=0), "centroid_p": state.p.mean(axis=0)}
-    if method == "rp-mash":
+    if method in _MASH:
         record["population"] = np.asarray(dynamics.populations(state), dtype=np.float64)
     else:
         rho = np.asarray(dynamics.density_matrix(state), dtype=np.complex128)
         record.update(density=rho, population=rho.diagonal().real.copy())
     if method != "sm-nrpmd":
         record["active"] = np.int64(state.active_surface)
-    if method not in ("sm-nrpmd", "rp-mash"):
+    if method not in _SPIN:
         record["amplitude"] = np.asarray(dynamics.populations(state), dtype=np.float64)
     if not all(np.isfinite(value).all() for value in record.values()):
         raise FloatingPointError("nonfinite extended nonadiabatic observation")
@@ -166,7 +169,7 @@ def _load(path, config, identity, index, dynamics, streams):
     shape = (beads, atoms, 3)
     for key in ("q", "p"):
         _typed(data[key], shape, "float64", key)
-    if method in ("sm-nrpmd", "rp-mash"):
+    if method in _SPIN:
         _typed(data["spin"], (beads, 3) if method == "sm-nrpmd" else (3,), "float64", "spin")
     else:
         _typed(data["coefficients"], (beads, states) if method == "rpsh-dm" else (states,), "complex128", "coefficients")
@@ -176,15 +179,15 @@ def _load(path, config, identity, index, dynamics, streams):
             raise CheckpointError("checkpoint active surface is out of range")
     if method == "rpsh-ba":
         _typed(data["basis_vectors"], (beads, states, states), "complex128", "basis_vectors")
-    if method == "rp-mash" and (data["sampling"].shape != () or data["sampling"].dtype.kind != "U"
+    if method in _MASH and (data["sampling"].shape != () or data["sampling"].dtype.kind != "U"
                                   or str(data["sampling"].item()) != "population"):
         raise CheckpointError("checkpoint MASH sampling must be population")
     common = (data["q"], data["p"], step, time)
     try:
         if method == "sm-nrpmd":
             state = SMNRPMDState(*common, data["spin"])
-        elif method == "rp-mash":
-            state = RPMASHState(*common, data["spin"], int(data["active_surface"]), str(data["sampling"].item()))
+        elif method in _MASH:
+            state = _CLASSES[method](*common, data["spin"], int(data["active_surface"]), str(data["sampling"].item()))
         elif method == "rpsh-ba":
             state = RPSHBAState(*common, data["coefficients"], int(data["active_surface"]), data["basis_vectors"])
         else:
@@ -209,11 +212,11 @@ def _load(path, config, identity, index, dynamics, streams):
     norm_count = beads if method in ("sm-nrpmd", "rpsh-dm") else 1
     shapes = {"steps": (frames,), "population": (frames, states), "energy": (frames,),
               "norm": (frames, norm_count), "centroid_q": (frames, atoms, 3), "centroid_p": (frames, atoms, 3)}
-    if method != "rp-mash":
+    if method not in _MASH:
         shapes["density"] = (frames, states, states)
     if method != "sm-nrpmd":
         shapes["active"] = (frames,)
-    if method not in ("sm-nrpmd", "rp-mash"):
+    if method not in _SPIN:
         shapes["amplitude"] = (frames, states)
     history = {}
     for key, expected_shape in shapes.items():
@@ -228,7 +231,7 @@ def _load(path, config, identity, index, dynamics, streams):
     population = data["history_population"]
     if not np.allclose(population.sum(axis=-1), 1., rtol=0., atol=1e-8):
         raise CheckpointError("checkpoint population must sum to one")
-    if method != "rp-mash":
+    if method not in _MASH:
         rho = data["history_density"]
         if (not np.allclose(rho, rho.conj().swapaxes(-1, -2), rtol=0., atol=1e-8)
                 or not np.allclose(np.trace(rho, axis1=-2, axis2=-1), 1., rtol=0., atol=1e-8)):
@@ -246,7 +249,7 @@ def _load(path, config, identity, index, dynamics, streams):
         active = data["history_active"]
         if np.any(active < 0) or np.any(active >= states):
             raise CheckpointError("checkpoint active surface history is out of range")
-        if method == "rp-mash":
+        if method in _MASH:
             if not np.array_equal(population, np.eye(states)[active]):
                 raise CheckpointError("checkpoint MASH population must equal active-surface indicators")
         else:
@@ -327,13 +330,14 @@ def _sem(values):
 
 
 def _estimator_metadata(method):
-    mash = method == "rp-mash"
-    result = {"population_basis": "centroid_adiabatic" if mash else "fixed_diabatic",
+    mash = method in _MASH
+    mash_basis = "common_bead_adiabatic" if method == "rp-mash-ba" else "centroid_adiabatic"
+    result = {"population_basis": mash_basis if mash else "fixed_diabatic",
               "population_estimator": "active_surface_indicator" if mash else "signed_w_spin" if method == "sm-nrpmd" else "amplitude_density",
               "density_basis": None if mash else "fixed_diabatic", "coherence_available": not mash}
     if method != "sm-nrpmd":
-        result["active_surface_basis"] = "common_bead_adiabatic" if method == "rpsh-ba" else "centroid_adiabatic"
-    if method not in ("sm-nrpmd", "rp-mash"):
+        result["active_surface_basis"] = "common_bead_adiabatic" if method in ("rpsh-ba", "rp-mash-ba") else "centroid_adiabatic"
+    if method not in _SPIN:
         result["amplitude_population_basis"] = "common_bead_adiabatic" if method == "rpsh-ba" else "centroid_adiabatic"
     if mash:
         result["electronic_initial_sampling"] = "adiabatic_hemisphere_importance_abs_Sz"
@@ -359,7 +363,7 @@ def _write_results(directory, config, identity, histories):
     population_sem = _sem(population)
     if population_sem is not None:
         arrays["population_sem"] = population_sem
-    if method != "rp-mash":
+    if method not in _MASH:
         density = stack("density")
         arrays.update(diabatic_density=density, density_mean=density.mean(axis=0))
         if len(histories) > 1:
@@ -371,7 +375,7 @@ def _write_results(directory, config, identity, histories):
                       active_surface_fractions=np.mean(indicators, axis=0))
         if len(histories) > 1:
             arrays["active_surface_sem"] = _sem(indicators)
-    if method not in ("sm-nrpmd", "rp-mash"):
+    if method not in _SPIN:
         amplitude = stack("amplitude")
         arrays.update(adiabatic_amplitude_populations=amplitude,
                       adiabatic_amplitude_population_mean=amplitude.mean(axis=0))
@@ -386,7 +390,7 @@ def _write_results(directory, config, identity, histories):
         fields.append(("population_sem", population_sem))
     if method != "sm-nrpmd":
         fields.append(("active_surface_fraction", arrays["active_surface_fractions"]))
-    if method not in ("sm-nrpmd", "rp-mash"):
+    if method not in _SPIN:
         fields.append(("adiabatic_amplitude_population", arrays["adiabatic_amplitude_population_mean"]))
     writer.writerow(["time_au"] + [f"{name}_{i}" for name, values in fields for i in range(nstates)])
     for frame, time in enumerate(arrays["time"]):
