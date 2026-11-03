@@ -72,13 +72,19 @@ def _mode(config):
 
 
 def _sync_legacy_globals():
-    for name in ("Dynamics", "State", "make_task_potential"):
+    for name in ("Dynamics", "State", "make_task_potential", "_new_bias"):
         value = globals()[name]
         setattr(_serial, name, value)
         setattr(_mpi, name, value)
         setattr(_async, name, value)
         setattr(_async_io, name, value)
         setattr(_common, name, value)
+
+
+def _sample_replica(task):
+    """Preserve the historical monkeypatch surface for direct worker tests."""
+    _sync_legacy_globals()
+    return _serial._sample_replica(task)
 
 
 def run_opes(config, system, output, executor=None, return_data=False):

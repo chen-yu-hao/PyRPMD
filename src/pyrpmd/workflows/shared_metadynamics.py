@@ -12,6 +12,9 @@ from . import _distributed_meta_async as _async
 from . import _distributed_meta_async_io as _async_io
 from . import _distributed_meta_mpi as _mpi
 
+MPI_KIND = _mpi.MPI_KIND
+ASYNC_KIND = _async.ASYNC_KIND
+
 
 def _mode(config):
     return config.get("metadynamics", {}).get("walkers_mode", "serial")
