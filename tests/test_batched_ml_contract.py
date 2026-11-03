@@ -170,6 +170,48 @@ def test_batch_failure_is_not_retried_or_split():
     assert evaluate.call_count == 1
 
 
+def test_native_reduction_dtypes_are_preserved_and_checked():
+    torch = pytest.importorskip("torch")
+    from pyrpmd.torch_backend import TensorPESResult
+
+    class MixedReductionBatch(AnalyticBatch):
+        def __init__(self):
+            super().__init__(dtype="float32", virial=True)
+            self.energy_dtype = self.virial_dtype = torch.float64
+            self.metadata.update(energy_dtype="float64", virial_dtype="float64")
+
+        def _evaluate_tensor(self, q):
+            self.calls += 1
+            geometry = q.to(dtype=torch.float64)
+            energy = (geometry * geometry).sum(dim=(1, 2)) / 2
+            virial = -torch.einsum("bna,bnc->bac", geometry, geometry)
+            return TensorPESResult(energy, -q, virial)
+
+    pes = MixedReductionBatch()
+    q = torch.arange(24, dtype=torch.float32).reshape(4, 2, 3) / 10
+    result = pes.evaluate_tensor(q)
+    assert result.energy.dtype == result.virial.dtype == torch.float64
+    assert result.forces.dtype == torch.float32
+    reference = q.to(dtype=torch.float64)
+    torch.testing.assert_close(result.energy, (reference * reference).sum((1, 2)) / 2)
+    torch.testing.assert_close(result.virial, -torch.einsum("bna,bnc->bac", reference, reference))
+    np.testing.assert_array_equal(pes.evaluate(q.numpy()).virial, result.virial.numpy())
+    with pytest.raises(ValueError, match="requires float64"):
+        pes.as_torch_pes()
+    with patch.object(pes, "_evaluate_tensor", return_value=TensorPESResult(
+            result.energy, result.forces, result.virial.float())):
+        with pytest.raises(PotentialError, match="virial must be torch.float64"):
+            pes.evaluate_tensor(q)
+
+
+def test_float64_torch_bridge_checks_requested_virial_precision():
+    torch = pytest.importorskip("torch")
+    pes = AnalyticBatch(virial=True)
+    pes.virial_dtype = torch.float32
+    with pytest.raises(ValueError, match="requires float64"):
+        pes.as_torch_pes()
+
+
 def test_binding_caches_are_rebuilt_and_failed_binding_preserves_state():
     pytest.importorskip("torch")
     pes = AnalyticBatch(cell=np.eye(3)*8, pbc=[True, True, True])

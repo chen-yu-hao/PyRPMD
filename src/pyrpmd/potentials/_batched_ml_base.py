@@ -30,7 +30,8 @@ class _TensorBatchPotential(_BoundPotential):
 
     Subclasses return atomic-unit ``TensorPESResult`` from ``_evaluate_tensor``.
     The NumPy boundary alone transfers coordinates/results between host/device.
-    Tensor calls never coerce coordinates to another precision or device.
+    Tensor calls require the declared input precision/device. Framework-native
+    geometry and reduction precisions are explicit in provider metadata.
     """
 
     def _setup(self, symbols, provider, *, device="cpu", dtype="float64", cell=None,
@@ -43,6 +44,7 @@ class _TensorBatchPotential(_BoundPotential):
             raise ValueError("virial must be a boolean")
         self.torch, self.dtype = torch, getattr(torch, dtype)
         self.energy_dtype = self.dtype
+        self.virial_dtype = self.dtype
         try:
             requested = torch.device(device)
         except (TypeError, RuntimeError) as exc:
@@ -64,7 +66,8 @@ class _TensorBatchPotential(_BoundPotential):
         self._bind(symbols, cell, pbc, charge, multiplicity)
         self.metadata = {
             "provider": provider, "execution_device": str(self.device),
-            "dtype": dtype, "energy_dtype": dtype, "native_batch": True, "batch_independent": True,
+            "dtype": dtype, "energy_dtype": dtype, "virial_dtype": dtype,
+            "native_batch": True, "batch_independent": True,
             "trajectory_batch_safe": True, "stateful": False,
             "thread_safety": "context_serial", "supports_pbc": True,
             "periodic": True, "energy_convention": "force-consistent",
@@ -136,7 +139,7 @@ class _TensorBatchPotential(_BoundPotential):
 
         Float64 is directly compatible with the current ``TorchPES`` contract.
         Explicit float32 models retain their native result precision here
-        (NequIP/FAIR-Chem accumulate energy in float64; see ``energy_dtype`` metadata).
+        (see ``energy_dtype`` and ``virial_dtype`` metadata for native reductions).
         The current float64 dynamics backend must not consume float32 forces.
         No model retry, precision change, device fallback, or frame splitting is
         performed after a backend failure, including CUDA out-of-memory errors.
@@ -171,7 +174,7 @@ class _TensorBatchPotential(_BoundPotential):
             if self.virial and result.virial is None:
                 raise PotentialError("virial was requested but the model did not return it")
             if result.virial is not None:
-                fields.append((result.virial, "virial", (len(positions), 3, 3), self.dtype))
+                fields.append((result.virial, "virial", (len(positions), 3, 3), self.virial_dtype))
             for value, name, shape, dtype in fields:
                 if (not isinstance(value, torch.Tensor) or tuple(value.shape) != shape
                         or value.dtype != dtype or value.device != self.device):
@@ -195,7 +198,8 @@ class _TensorBatchPotential(_BoundPotential):
         """
         from ..torch_backend import TorchPES
 
-        if self.dtype != self.torch.float64 or self.energy_dtype != self.torch.float64:
+        if (self.dtype != self.torch.float64 or self.energy_dtype != self.torch.float64
+                or (self.virial and self.virial_dtype != self.torch.float64)):
             raise ValueError("the current TorchPES dynamics contract requires float64; no precision conversion")
         if self.closed:
             raise PotentialError("cannot adapt a closed batched ML provider")

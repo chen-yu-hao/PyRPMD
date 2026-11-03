@@ -84,9 +84,31 @@ class MACEBatchedPotential(_TensorBatchPotential):
             })
         return dict(self._batch_cache[1])
 
-    def _evaluate_tensor(self, q):
-        from ..torch_backend import TensorPESResult
+    def _graph(self, q):
+        """Build one disconnected graph with owned neighbor tensors."""
+        torch = self.torch
+        if self.device.type == "cuda":
+            caller = torch.cuda.current_stream(self.device)
+            default = torch.cuda.default_stream(self.device)
+            if caller != default:
+                # Vesin 0.6.2 launches on the legacy default stream. Its
+                # completion sync follows output writes, so it cannot protect
+                # borrowed buffers from copies queued on another stream.
+                # Keep topology inputs, dtype promotion and ownership copies
+                # on its stream; inference still runs on the caller's stream.
+                default.wait_stream(caller)
+                q.record_stream(default)
+                try:
+                    with torch.cuda.stream(default):
+                        graph = self._graph_on_current_stream(q)
+                finally:
+                    caller.wait_stream(default)
+                for value in graph.values():
+                    value.record_stream(caller)
+                return graph
+        return self._graph_on_current_stream(q)
 
+    def _graph_on_current_stream(self, q):
         torch, frames, atoms = self.torch, len(q), len(self.symbols)
         positions = (q.detach() / self.length_factor).contiguous()
         cell, flags = self._cell_tensor(), self._pbc_tensor()
@@ -96,17 +118,27 @@ class MACEBatchedPotential(_TensorBatchPotential):
         # Its API is per-system; only topology assembly loops over systems.
         # Inference and force/strain differentiation below are one whole batch.
         for frame in range(frames):
-            i, j, shift = self._neighbors.compute(positions[frame], cell, flags,
-                                                  quantities="ijS", copy=True)
-            indices.append(torch.stack((i, j)) + frame * atoms)
-            shifts.append(shift)
-        unit_shifts = torch.cat(shifts).to(dtype=self.dtype)
+            pairs, shift = self._neighbors.compute(positions[frame], cell, flags,
+                                                   quantities="PS", copy=False)
+            # Own data before Vesin reuses its buffers. Adding the offset also
+            # copies both index columns in one operation. The final cat makes
+            # edge_index contiguous; shifts go directly to the model dtype.
+            indices.append((pairs + frame * atoms).T)
+            shifts.append(shift.to(dtype=self.dtype, copy=True))
+        unit_shifts = torch.cat(shifts)
         graph = self._template(frames)
         graph.update(positions=positions.reshape(-1, 3),
                      edge_index=torch.cat(indices, dim=1),
                      unit_shifts=unit_shifts, shifts=unit_shifts @ cell,
                      cell=cell.expand(frames, 3, 3).reshape(-1, 3),
                      pbc=flags.expand(frames, 3))
+        return graph
+
+    def _evaluate_tensor(self, q):
+        from ..torch_backend import TensorPESResult
+
+        frames, atoms = len(q), len(self.symbols)
+        graph = self._graph(q)
         output = self.model(graph, training=False, compute_force=True,
                             compute_virials=self.virial, compute_stress=False)
         if not isinstance(output, dict) or output.get("energy") is None or output.get("forces") is None:

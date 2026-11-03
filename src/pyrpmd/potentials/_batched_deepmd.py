@@ -13,10 +13,12 @@ from .python import unit_factors
 class DeepMDBatchedPotential(_TensorBatchPotential):
     """One batched atomic-energy call with sparse device-local neighbors.
 
-    Supports standard float64 DeePMD ``EnergyModel`` instances or their
-    TorchScript exports. Frame/atom parameters, spin models, data modifiers and
-    direct-force fitting heads are rejected. The existing ``deepmd`` provider
-    remains the general NumPy ``DeepPot`` interface.
+    Supports standard float32/float64 DeePMD ``EnergyModel`` instances or their
+    TorchScript exports. Learned parameters keep the requested precision;
+    DeePMD's native geometry, total-energy and virial precision remains float64.
+    Forces retain the input precision. Frame/atom parameters, spin models, data
+    modifiers and direct-force fitting heads are rejected. The existing
+    ``deepmd`` provider remains the general NumPy ``DeepPot`` interface.
 
     DeePMD's trained ``sel`` is respected: choose the nearest ``sum(sel)``
     neighbors, then retain each type's nearest ``sel[type]`` entries for a
@@ -34,16 +36,12 @@ class DeepMDBatchedPotential(_TensorBatchPotential):
             charge=charge, multiplicity=multiplicity, virial=virial,
             length_factor=length_factor, energy_factor=energy_factor,
         )
-        if dtype != "float64":
-            raise ValueError(
-                "deepmd-batched currently requires homogeneous float64 precision; "
-                "DeePMD's mixed-precision energy reduction is not silently converted"
-            )
         if self.charge != 0 or self.multiplicity != 1:
             raise ValueError("deepmd-batched supports neutral, multiplicity-one models only")
         try:
             deepmd_models = _optional("deepmd.pt.model.model", "deepmd-batched")
             neighbors = _optional("vesin_torch", "deepmd-batched")
+            region = _optional("deepmd.pt.utils.region", "deepmd-batched")
         except (ImportError, OSError, RuntimeError) as exc:
             raise BackendUnavailableError(
                 "deepmd-batched requires a DeePMD PyTorch build compatible with the "
@@ -75,7 +73,11 @@ class DeepMDBatchedPotential(_TensorBatchPotential):
         precision_names = model.reverse_precision_dict
         for precision in (model.global_pt_float_precision, model.global_pt_ener_float_precision):
             if precision_names[precision] != "float64":
-                raise ValueError("DeePMD model precision metadata must be float64 throughout")
+                raise ValueError("DeePMD global geometry and energy precision must be float64")
+        # Native forward promotes input geometry to this precision, then returns
+        # unreduced forces in the input dtype and reduced energy/virial in float64.
+        # Preserve that model contract without casting any learned parameters.
+        self.geometry_dtype = self.energy_dtype = self.virial_dtype = torch.float64
         definition = model.get_model_def_script()
         if definition:
             try:
@@ -88,6 +90,7 @@ class DeepMDBatchedPotential(_TensorBatchPotential):
                 or any(symbol not in species for symbol in self.symbols)):
             raise ValueError("DeePMD model type_map must uniquely cover every system element")
         self.model = self._prepare_module(model)
+        self._normalize_coord = region.normalize_coord
         self._types = torch.tensor([species.index(s) for s in self.symbols],
                                    dtype=torch.long, device=self.device)
         self._sel = tuple(int(value) for value in self.model.get_sel())
@@ -107,18 +110,28 @@ class DeepMDBatchedPotential(_TensorBatchPotential):
         self.metadata = dict(
             self.metadata, neighbor_backend="vesin-cell-list",
             model_calls_per_batch=1, neighbor_selection="trained-nearest-sel",
+            geometry_dtype="float64", energy_dtype="float64", virial_dtype="float64",
         )
 
-    @staticmethod
-    def _check_precision_metadata(value):
+    def _check_precision_metadata(self, value):
         if isinstance(value, dict):
             for key, item in value.items():
-                if key == "precision" and item not in ("float64", "double", "default"):
-                    raise ValueError("DeePMD model definition precision disagrees with float64")
-                DeepMDBatchedPotential._check_precision_metadata(item)
+                if key == "precision":
+                    aliases = {"double": "float64", "single": "float32", "default": "float64"}
+                    normalized = aliases.get(item, item) if isinstance(item, str) else None
+                    if normalized != str(self.dtype).removeprefix("torch."):
+                        raise ValueError("DeePMD model definition precision disagrees with requested dtype")
+                self._check_precision_metadata(item)
         elif isinstance(value, list):
             for item in value:
-                DeepMDBatchedPotential._check_precision_metadata(item)
+                self._check_precision_metadata(item)
+
+    def _cell_tensor(self):
+        if self._cached_cell is None:
+            # Round model inputs to the public dtype first, as native forward
+            # does, then cache the model's promoted geometry representation.
+            self._cached_cell = super()._cell_tensor().to(dtype=self.geometry_dtype)
+        return self._cached_cell
 
     def _check_boundary(self, pbc):
         if pbc.any() and not pbc.all():
@@ -188,7 +201,7 @@ class DeepMDBatchedPotential(_TensorBatchPotential):
                 )
                 target = i * self._nsel + self._offsets[neighbor_type] + ranks
             ghost = atoms + target
-            extended[frame, ghost] = positions[frame, j] + shifts.to(self.dtype) @ cell
+            extended[frame, ghost] = positions[frame, j] + shifts.to(positions.dtype) @ cell
             types[frame, ghost] = self._types[j]
             mapping[frame, ghost] = j
             nlist[frame, target] = ghost
@@ -204,12 +217,21 @@ class DeepMDBatchedPotential(_TensorBatchPotential):
 
         torch = self.torch
         with torch.enable_grad():
-            q = (positions.detach() / self.length_factor).requires_grad_(True)
+            q = (positions.detach() / self.length_factor).to(
+                dtype=self.geometry_dtype,
+            )
             cell = self._cell_tensor()
+            if self.pbc.any():
+                # Native DeePMD wraps in global precision before casting to a
+                # descriptor's network dtype. Keep that order: large unwrapped
+                # float32 coordinates otherwise lose neighbor displacements.
+                # A single 3x3 cell broadcasts over all frames on the device.
+                q = self._normalize_coord(q, cell)
+            q.requires_grad_(True)
             extended, types, nlist, mapping = self._sparse_inputs(q, cell)
             strain = None
             if self.virial:
-                strain = torch.eye(3, dtype=self.dtype, device=self.device).expand(
+                strain = torch.eye(3, dtype=self.geometry_dtype, device=self.device).expand(
                     len(q), 3, 3,
                 ).clone().requires_grad_(True)
                 extended = torch.bmm(extended, strain.transpose(-1, -2))
@@ -222,13 +244,13 @@ class DeepMDBatchedPotential(_TensorBatchPotential):
             atomic_energy = outputs["energy"]
             if tuple(atomic_energy.shape) != (len(q), len(self.symbols), 1):
                 raise PotentialError("DeePMD atomic energy must have shape [batch,atoms,1]")
-            energy = atomic_energy.sum(dim=(1, 2)) * self.energy_factor
+            energy = atomic_energy.sum(dim=(1, 2), dtype=self.energy_dtype) * self.energy_factor
             differentiated = (q,) if strain is None else (q, strain)
             if not energy.requires_grad:
                 raise PotentialError("DeePMD atomic energy must remain differentiable")
             gradients = torch.autograd.grad(energy.sum(), differentiated)
             return TensorPESResult(
-                energy.detach(), (-gradients[0] / self.length_factor).detach(),
+                energy.detach(), (-gradients[0] / self.length_factor).to(self.dtype).detach(),
                 None if strain is None else (-gradients[1]).detach(),
             )
 
@@ -236,4 +258,5 @@ class DeepMDBatchedPotential(_TensorBatchPotential):
         if not self.closed:
             super().close()
             self.model = self._neighbors = None
+            self._normalize_coord = None
             self._types = self._selection = self._offsets = None

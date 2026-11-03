@@ -27,6 +27,8 @@ Tests create small random models locally; no pretrained weights are downloaded.
 python -m pip install -e '.[mace-batched,test]'
 # In separate environments, as appropriate:
 python -m pip install -e '.[nequip-batched,test]'
+# For the tested NequIP AOTInductor toolchain:
+python -m pip install -e '.[nequip-batched-aoti,test]'
 python -m pip install -e '.[fairchem-batched,test]'
 python -m pip install -e '.[deepmd-batched,test]'
 python -m pip install -e '.[metatomic,test]'
@@ -37,7 +39,7 @@ The APIs used here were checked against these versions:
 | Provider | Framework | CPU validation runtime | Model input |
 | --- | --- | --- | --- |
 | `mace-batched` | MACE 0.3.17, Vesin 0.6.2 | Torch 2.7.1, e3nn 0.4.4 | Local `.model`, or energy `MACE` / `ScaleShiftMACE` module |
-| `nequip-batched` | NequIP 0.19.1 | Torch 2.7.1, e3nn 0.6.0 | Local `.nequip.pth`, batch-target `.nequip.pt2`, or `GraphModel` |
+| `nequip-batched` | NequIP 0.19.1 | Torch 2.7.1 eager/TorchScript; Torch 2.13.0 eager/AOTI; e3nn 0.6.0 | Local `.nequip.pth`, batch-target `.nequip.pt2`, or `GraphModel` |
 | `fairchem-batched` | fairchem-core 2.25.0 | Torch 2.13.0, e3nn 0.6.0 | Local `MLIPInferenceCheckpoint`, or configured `MLIPPredictUnit` |
 | `deepmd-batched` | DeePMD-kit 3.2.0, Vesin 0.6.2 | Torch 2.11.0 | Supported local PyTorch energy export, or initialized energy model |
 | `metatomic` | metatomic-torch 0.1.19, Vesin 0.6.2 | Torch 2.7.1, metatensor-torch 0.10.8 | Exported `AtomisticModel` file, or initialized `AtomisticModel` |
@@ -107,12 +109,25 @@ are supported. A multi-head model without a `Default` head requires an explicit
 `potential.params.head`. Polar, magnetic, dipole-only and extra-input embedding
 models are rejected. Standard MACE inputs use angstrom/eV, as in the default ASE
 adapter; this subset does not accept custom MACE unit scales.
+Topology assembly uses Vesin's combined pair output and takes ownership while
+applying each frame's index offset. Periodic shifts are copied directly into
+the model dtype before Vesin reuses its buffers. This reduces intermediate
+copies while preserving the exact disconnected graph and one model call.
+Vesin 0.6.2 launches CUDA topology kernels on the legacy default stream. For
+a caller using another CUDA stream, the adapter orders graph preparation on
+the default stream, waits before returning it to the caller stream, and
+records tensor lifetimes on the consuming stream. Model inference remains on
+the caller's stream. This also orders float32-to-float64 topology promotion and
+copies from Vesin's reused buffers; no extra per-frame host synchronization is
+introduced by the adapter. Vesin's own completion synchronizations remain.
 
-**NequIP.** The eager and TorchScript routes are tested with a locally initialized
-small NequIP model. AOTInductor files must be compiled with `--target batch`;
-an ASE-only artifact does not carry the required batch input contract. The AOTI
-loader validates input/output fields, precision and the requested device, but
-AOTI compilation and execution were not measured in the CPU acceptance run.
+**NequIP.** Eager, TorchScript and native AOTInductor routes are tested with
+locally initialized small NequIP models. AOTI requires Torch >=2.13, with
+2.13.0 the tested version. Recompile `.nequip.pt2` files with that toolchain and
+`--target batch`; an ASE-only artifact does not carry the batch contract.
+The official artifact metadata does not expose a reliable compiler Torch
+version, so the provider cannot verify the compiler's provenance. It checks
+the current runtime, input/output fields, precision and requested device.
 CUDA loading selects the requested device index explicitly even when the
 artifact records only the device type. `params.energy_units_to_eV` and
 `params.length_units_to_A` have the same meanings as in `NequIPCalculator`.
@@ -120,6 +135,16 @@ artifact records only the device type. `params.energy_units_to_eV` and
 names. CPU graph construction defaults to `matscipy`; CUDA requires
 `neighborlist_backend="alchemiops"`. Requesting CPU graph construction for a
 CUDA tensor evaluation raises an error instead of copying coordinates to host.
+
+Set `AOTI_RUNTIME_CHECK_INPUTS=1` in the process environment before loading an
+AOTI model and retain it throughout evaluation. The provider verifies the
+setting on every call; the native runtime enforces the artifact's compiled
+frame/node/edge shape, stride, dtype and device constraints before kernels run.
+Out-of-range inputs raise an error without padding, silent fallback or an
+inference retry. A concrete Torch 2.7.1 CPU compile specialized the node count
+despite dynamic export metadata; this is why older AOTI runtimes are rejected
+and native guards are mandatory. Eager/TorchScript inference remains available
+on its supported older runtime.
 
 **FAIR-Chem.** Set `potential.params.task_name` to the trained chemistry domain.
 The provider uses `MLIPPredictUnit.predict` on one `AtomicData` graph batch,
@@ -130,13 +155,18 @@ automatic compilation/precision fallback and single-atom lookup substitutions
 are not part of this subset. Its strict inference settings are explicit in the
 provider; the old `fairchem` path is unaffected.
 
-**DeePMD.** The new Torch route supports a conservative, homogeneous float64
-energy-model subset. It uses device-local sparse neighbors and the native
-atomic energy core, then differentiates the whole batch once. This avoids the
-dense neighbor-preparation intermediates in the standard Torch forward path.
-The trained neighbor selection remains part of the model; unsupported models
-or ambiguous truncation are rejected. Full or no PBC is supported. The
-existing NumPy `deepmd` provider remains available for its wider backend support.
+**DeePMD.** The new Torch route supports conservative float32 and float64
+energy models without changing learned parameter precision. It preserves
+DeePMD's high-precision interface: internal geometry, total energy and virial
+are float64, while forces have the requested input precision. This requires
+the native `DP_INTERFACE_PREC=high` convention; alternative global precisions
+are rejected. It uses device-local sparse neighbors and the native atomic
+energy core, then differentiates the whole batch once, avoiding dense neighbor
+intermediates. Periodic positions are normalized in float64 before descriptor
+evaluation, as in native DeePMD, while the caller's unwrapped positions remain
+unchanged. The trained neighbor selection remains part of the model;
+unsupported models or ambiguous truncation are rejected. Full or no PBC is
+supported. The existing NumPy `deepmd` provider retains its wider backend support.
 
 **Metatomic.** The minimum supported interface is the standard differentiable
 `energy` output of metatomic-torch 0.1.19. The adapter honors exported atomic
@@ -210,9 +240,19 @@ is distinct from doing per-frame model inference.
 `torch.no_grad()` around the caller is supported: coordinate derivatives are
 enabled internally. `inference_mode`, active autocast and implicit CUDA TF32
 are rejected. `dtype="float32"` is an explicit model choice, with correspondingly
-looser numerical tolerances. NequIP and FAIR-Chem natively accumulate total energy in float64
-even for a float32 model; `metadata["energy_dtype"]` records that fact and the
-provider preserves it. Forces remain in the model's declared precision.
+looser numerical tolerances. Native reduction precision is recorded separately
+in `metadata["energy_dtype"]` and `metadata["virial_dtype"]`; DeePMD also records
+its internal `geometry_dtype`. For a float32 model, the output contract is:
+
+| Provider | Energy | Forces | Optional virial |
+| --- | --- | --- | --- |
+| MACE / metatomic | float32 | float32 | float32 |
+| NequIP / FAIR-Chem | float64 | float32 | float32 |
+| DeePMD | float64 | float32 | float64 |
+
+Float64 models return all three fields in float64. Model weights are not cast
+to obtain these native reduction dtypes. DeePMD explicitly promotes geometry
+to its float64 interface precision before model preprocessing.
 The NumPy `evaluate` boundary always returns ordinary float64 `PESResult`
 arrays, after the explicit host/device transfer.
 
@@ -245,18 +285,56 @@ atomic replacement and RNG serialization are unchanged. Passing an adapter
 regression does not establish trajectory convergence or a trustworthy trained
 potential for a particular chemistry.
 
+The public `pyrpmd.run` regression exercises a locally exported random MACE
+model with P=8, three O/D/T trajectories, a PILE-L thermostat, and full/no PBC.
+It checks K=2 batches (16 frames plus an 8-frame tail), then interrupts a K=1
+run and resumes with K=3 (24 frames). Final coordinates, momenta and recorded
+observables agree with the uninterrupted reference at `rtol=1e-10`,
+`atol=2e-12`; clocks and per-trajectory RNG states match exactly. Thus changing
+the execution grouping is checked through actual inference and checkpoint
+orchestration as well as the individual provider interface.
+
 ## Reproduce correctness and performance checks
 
 Run the optional framework tests in their matching environments:
 
 ```bash
 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q \
-  tests/test_batched_ml_contract.py tests/test_batched_ml_mace.py
+  tests/test_batched_ml_contract.py tests/test_batched_ml_mace.py \
+  tests/test_batched_ml_metatomic.py tests/test_batched_ml_workflow.py
 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_batched_ml_nequip.py
 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_batched_ml_fairchem.py
 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_batched_ml_deepmd.py
 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_batched_ml_metatomic.py
 ```
+
+For the real NequIP AOTI checks, use the `nequip-batched-aoti` extra, a working
+C++ compiler and the native runtime's temporary directory (including `/tmp`
+on Linux):
+
+```bash
+AOTI_RUNTIME_CHECK_INPUTS=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
+  python -m pytest -q tests/test_batched_ml_nequip.py
+```
+
+The test compiles one 54-parameter random float64 model locally on CPU and
+checks B=1/2/3/5, full/no/partial PBC, D/T aliases, and energy/force/virial
+against eager single-frame results. It also checks that B=6 and a zero-edge graph are
+rejected by the fixture's native bounds. Those bounds belong to that test
+artifact, not to every NequIP model. Missing optional compiler/runtime support
+is skipped; export, compilation, loading or numerical failures in a supported
+environment fail the test.
+Float32 eager inference retains its separate tolerance tests; float32 and
+CUDA AOTI execution have not been validated here.
+
+For singleton batches, the fixture uses Torch 2.13's experimental compile-time
+`torch.fx.experimental._config.patch(backed_size_oblivious=True)` while keeping
+`aot_inductor.check_lowerbound=True`. Without that opt-in, the tested compiler
+specializes the native frame lower bound to 2 even with an explicit export
+`Dim(min=1)`. Production providers never change compiler flags or environment
+variables. Users must compile for their required shape ranges and validate
+their own artifact; a valid eager input is not automatically within compiled
+bounds.
 
 The tests use `pytest.importorskip`, random initialized small models, local
 export roundtrips, batch sizes 1/2/5, frame permutations, periodic/nonperiodic
@@ -272,31 +350,50 @@ use the corresponding atomic unit (hartree, hartree/bohr or hartree for virial).
 | Provider and checked quantity | Relative tolerance | Absolute tolerance |
 | --- | ---: | ---: |
 | MACE energy, forces and periodic virial | `3e-5` | `3e-9` |
+| MACE virial in the additional large periodic-image test | `3e-5` | `3e-8` |
 | NequIP / FAIR-Chem energy and forces | `3e-5` | `3e-7` |
+| DeePMD energy, forces and virial | `3e-5` | `3e-8` |
 | Metatomic energy | `3e-6` | `3e-8` |
 | Metatomic forces | `3e-5` | `3e-8` |
 
-The new DeePMD subset explicitly rejects float32; it does not promote a
-float32 checkpoint silently.
+The independent float32 DeePMD finite-difference check uses a larger step
+(`3e-3` bohr or strain) and `rtol=3e-3`, `atol=2e-6` to resolve derivatives
+above network quantization noise. This does not relax the frame/batch
+consistency tolerance in the table.
 
-The CPU validation on 2026-11-02 produced the following summaries. Each row
-uses its matching isolated framework environment listed above.
+The additional MACE periodic-image case has near-zero virial components.
+Its maximum absolute difference from ASE is `2.24e-8` hartree. The published
+and refined graph builders produce bit-identical energy, forces and virial
+on that case; the larger absolute tolerance describes existing float32
+rounding, not a precision change in the copy optimization.
+
+The latest refinement validation on 2026-11-02 produced these summaries.
+Each row uses its matching isolated framework environment listed above;
+NequIP is deliberately checked on two Torch versions.
 
 | Test files | Observed pytest summary |
 | --- | --- |
-| `test_batched_ml_contract.py`, `test_batched_ml_mace.py`, `test_batched_ml_metatomic.py` | `75 passed, 2 skipped, 84 warnings in 90.81s` |
-| `test_batched_ml_nequip.py` | `31 passed, 1 skipped in 43.32s` |
-| `test_batched_ml_fairchem.py` | `14 passed, 1 skipped, 1 warning in 38.50s` |
-| `test_batched_ml_deepmd.py` | `24 passed, 1 skipped, 58 warnings in 53.42s` |
+| Common/MACE/metatomic/public workflow plus the six existing files below | `210 passed, 12 skipped, 98 warnings in 38.56s` |
+| `test_batched_ml_nequip.py`, Torch 2.7.1 | `37 passed, 5 skipped in 9.52s` |
+| `test_batched_ml_nequip.py`, Torch 2.13.0, real AOTI | `40 passed, 2 skipped, 16 warnings in 31.19s` |
+| `test_batched_ml_fairchem.py` | `14 passed, 1 skipped, 1 warning in 9.07s` |
+| `test_batched_ml_deepmd.py` | `45 passed, 2 skipped, 61 warnings in 7.67s` |
 
-The five skipped cases require CUDA hardware; the FAIR-Chem device-selection
-case requires two GPUs. Framework/TorchScript deprecation warnings remain
-visible. The NequIP AOTI cases exercise metadata and layout guards with a mock
-loader; they do not compile or execute an AOTI artifact.
+The six existing files in the first row are `test_potential_adapters.py`,
+`test_potential_input_v2.py`, `test_potential_energy_identity.py`,
+`test_trajectory_batch.py`, `test_ase_trajectory_batch.py` and
+`test_python_potential_rebinding.py`. Its skips are five CUDA cases and seven
+PySCF/tblite cases. NequIP skips four native AOTI cases on Torch 2.7.1, or one
+upstream-unsupported TorchScript compile case on Torch 2.13.0, plus CUDA on both.
+The FAIR-Chem skip requires two GPUs; DeePMD skips both CUDA precision cases.
+Framework/TorchScript deprecation warnings remain visible. No CUDA execution
+was available for this validation. The graph benchmark CLI also passed a
+separate smoke run after being packaged as a reusable example.
 
 ### Existing-suite regression record
 
-The full repository suite ran in separate baseline and T04 worktrees with
+Before these refinements, the full repository suite ran in separate baseline
+and T04 worktrees with
 the same CPU environment and each worktree's own `src` on `PYTHONPATH`:
 
 ```bash
@@ -323,17 +420,19 @@ The six existing adapter/input/identity/trajectory-batching test files also
 returned `170 passed, 7 skipped` before and after the implementation.
 Missing optional packages and CUDA cases remain skipped, not counted as passes.
 
-A final refinement of the random-model helper seeds only the CPU generator,
-preserving accelerator RNG state. Independent checks for float64
+At `ef7c468`, the random-model helper was adjusted to seed only the CPU
+generator, preserving accelerator RNG state. Independent checks for float64
 and float32 confirmed all 75 model state tensors and 1,968 parameters were
 bit-identical to the recorded implementation, while CPU RNG/default dtype were
 preserved and no accelerator seed entry point was called. Thus the recorded
 CPU model and benchmark data are unchanged by that helper refinement.
 
-### Throughput benchmark
+### Original whole-step throughput benchmark
 
-The real MACE throughput benchmark includes graph construction, energy,
-forces, virial and the NumPy boundary on both paths:
+The original real MACE throughput benchmark includes graph construction,
+energy, forces, virial and the NumPy boundary on both paths. The recorded
+numbers below predate the graph-copy refinement; they remain the original
+acceptance record, rather than a new whole-step measurement:
 
 ```bash
 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
@@ -369,13 +468,68 @@ The complete hardware/model/settings/timings record is
 Use `--device cuda` on a suitable CUDA installation to measure that machine;
 the script synchronizes CUDA when timing it and reports the GPU model.
 
+### Graph-construction refinement benchmark
+
+The additional CPU benchmark isolates graph construction and compares the
+published `ef7c468` operations with the refined provider. It checks every graph
+field for bit equality and requires the final `edge_index` to be contiguous.
+The reference graph operations are included in the script for reproduction:
+
+```bash
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
+  python examples/potentials/benchmark_mace_graph.py --output mace-graph.json
+```
+
+This uses the same random model and periodic geometry generator as the
+whole-step benchmark, one CPU thread, three warmups and 15 repetitions in
+alternating order. Other task agents paused CPU-heavy work for this final
+matrix; shared-host timing noise remains possible. Values are median
+milliseconds for the graph stage, excluding inference, autograd and public
+boundary validation:
+
+| Precision | Atoms N | Frames B | Published graph, ms | Refined graph, ms | Published / refined |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| float64 | 64 | 8 | 2.172 | 2.107 | 1.031 |
+| float64 | 64 | 32 | 8.414 | 8.084 | 1.041 |
+| float64 | 64 | 64 | 23.999 | 22.544 | 1.065 |
+| float64 | 512 | 8 | 12.978 | 12.598 | 1.030 |
+| float64 | 512 | 32 | 48.766 | 49.764 | 0.980 |
+| float64 | 512 | 64 | 103.474 | 105.922 | 0.977 |
+| float32 | 64 | 8 | 2.750 | 2.571 | 1.069 |
+| float32 | 64 | 32 | 10.674 | 9.930 | 1.075 |
+| float32 | 64 | 64 | 20.463 | 19.264 | 1.062 |
+| float32 | 512 | 8 | 12.710 | 12.412 | 1.024 |
+| float32 | 512 | 32 | 55.014 | 53.021 | 1.038 |
+| float32 | 512 | 64 | 109.966 | 106.134 | 1.036 |
+
+The N=512 float64 cases at B=32 and B=64 are 2.0% and 2.4% slower in this
+final measurement. The other ten cases have ratios of 1.024–1.075. Timing
+varies across runs on the shared host; these are the final script's complete
+results, including both slower cases.
+
+At B=32, `aten::clone` calls fall from 33 to 1 and `aten::stack` calls from
+32 to 0. The sum of positive `self_cpu_memory_usage` over Torch profiler
+operator groups falls by about 11.6% for float64 and 24.5–24.6% for float32 at both atom
+counts. This allocation metric excludes Vesin's native allocations and does
+not measure peak process memory. All 12 graph comparisons are bit-identical.
+The allocation counts establish reduced intermediate storage and copy calls;
+the timings do not establish a uniform graph-stage, end-to-end or GPU speedup.
+
+All repetitions, edge counts, allocation metrics and version details are in
+[`mace_graph_cpu_benchmark.json`](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/potentials/mace_graph_cpu_benchmark.json).
+
 ## API references
 
 - [MACE batch construction and model evaluation](https://github.com/ACEsuit/mace/blob/v0.3.17/mace/tools/multihead_tools.py)
 - [NequIP compilation and target contracts](https://nequip.readthedocs.io/en/latest/guide/getting-started/workflow.html)
+- [NequIP Torch version compatibility](https://nequip.readthedocs.io/en/latest/guide/reference/pytorch_compatibility.html)
 - [FAIR-Chem native batch inference](https://facebookresearch.github.io/fairchem/batch-inference/)
 - [DeePMD PyTorch model API](https://docs.deepmodeling.com/projects/deepmd/en/v3.2.0/autoapi/deepmd/pt/model/model/index.html)
+- [DeePMD native interface and network precision](https://docs.deepmodeling.com/projects/deepmd/en/v3.2.0/model/precision.html)
 - [Metatomic exported model interface](https://docs.metatensor.org/metatomic/latest/torch/reference/models/export.html)
 - [Metatomic energy and strain-gradient conventions](https://docs.metatensor.org/metatomic/latest/quantities/energy.html)
 - [Metatomic's recommended scientific citation](https://docs.metatensor.org/metatomic/latest/cite.html)
 - [Vesin device neighbor lists](https://luthaf.fr/vesin/latest/torch-api.html)
+- [Vesin 0.6.2 CUDA kernels and synchronization order](https://github.com/Luthaf/vesin/blob/v0.6.2/vesin/src/vesin_cuda.cpp)
+- [Vesin's pinned gpulite stream defaults](https://github.com/metatensor/gpu-lite/blob/6c221167aeca7e113ea6f27e9a2e12391bdb189a/gpulite/gpulite.hpp)
+- [CUDA default and nonblocking stream ordering](https://docs.nvidia.com/cuda/cuda-runtime-api/stream-sync-behavior.html)
