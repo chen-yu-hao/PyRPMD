@@ -41,7 +41,7 @@ include_patterns = [
     "builtin-native-potentials.md",
     "torch-materials-workflows.md",
     "implementation-review-2026-11-03.md",
-    "rpc-mts.md", "mixed-sampling.md", "trpmd-spectroscopy.md", "propagation-stack.md", "condensed-phase-nqe.md",
+    "rpc-mts.md", "mixed-sampling.md", "trpmd-spectroscopy.md", "propagation-stack.md", "auxiliary-operators.md", "condensed-phase-nqe.md",
     "nonadiabatic-workflow.md", "nonadiabatic-models.md",
     "nonadiabatic-ensembles.md", "nonadiabatic-comparison.md",
     "nonadiabatic-spin-methods.md", "nonadiabatic-hopping-extensions.md",
@@ -89,4 +89,3 @@ html_context = {
     ],
 }
 html_show_sourcelink = True
-
