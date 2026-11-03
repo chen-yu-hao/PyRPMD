@@ -162,7 +162,10 @@ class MACEBatchedPotential(_TensorBatchPotential):
         """
         from .base import coordinates
 
-        x = coordinates(positions)
+        raw_positions = np.asarray(positions)
+        if raw_positions.dtype != np.dtype("float64"):
+            raise PotentialError("MACE second-derivative positions must be float64; no implicit precision conversion")
+        x = coordinates(raw_positions)
         if x.shape[1] != len(self.symbols):
             raise PotentialError("MACE second-derivative atom count mismatch")
         if self.closed:
