@@ -146,6 +146,51 @@ def test_straight_path_sct_reduces_exactly_to_zct_and_cvt_is_symmetric():
     assert result.physical_converged is False
 
 
+def test_sct_saddle_mass_uses_nonuniform_linear_interpolation(monkeypatch):
+    from types import SimpleNamespace
+
+    import pyrpmd.vtst_thermo as thermo
+
+    s = np.array([-2.0, -0.5, 0.0, 1.5, 3.0])
+    angle = 0.08 * s**2 + 0.03 * s
+    tangent = np.column_stack((np.cos(angle), np.sin(angle), np.zeros_like(s)))
+
+    def fake_modes(_geometry, _masses, _hessian, *, tangent_scaled, **_options):
+        normal = np.array([-tangent_scaled[1], tangent_scaled[0], 0.0])
+        return SimpleNamespace(
+            frequencies_au=np.array([0.01]),
+            vectors_scaled=normal[:, None],
+            removed_rigid_modes=2,
+        )
+
+    monkeypatch.setattr(thermo, "generalized_normal_modes", fake_modes)
+    path = MEPPath(
+        s_bohr=s,
+        geometries_bohr=np.zeros((len(s), 1, 3)),
+        energies_hartree=np.zeros(len(s)),
+        gradients_hartree_per_bohr=np.zeros((len(s), 1, 3)),
+        hessians_hartree_per_bohr2=np.zeros((len(s), 3, 3)),
+        tangent_scaled=tangent,
+        side_converged=(True, True),
+        saddle_eigenvalues_omega2=np.array([-1.0]),
+        scaling_mass=AMU_TO_AU,
+    )
+    analysis = thermo.analyze_path_modes(path, [AMU_TO_AU])
+    saddle = path.saddle_index
+    expected = np.interp(
+        s[saddle],
+        s[[saddle - 1, saddle + 1]],
+        analysis.effective_mass_ratio_sct[[saddle - 1, saddle + 1]],
+    )
+    arithmetic_mean = np.mean(
+        analysis.effective_mass_ratio_sct[[saddle - 1, saddle + 1]]
+    )
+    assert analysis.effective_mass_ratio_sct[saddle] == pytest.approx(expected)
+    assert analysis.effective_mass_ratio_sct[saddle] != pytest.approx(
+        arithmetic_mean, abs=1.0e-10
+    )
+
+
 def test_reactant_partition_matches_low_temperature_harmonic_state():
     from pyrpmd.low_temperature import HarmonicState
 
@@ -202,7 +247,6 @@ def test_eckart_wkb_action_matches_independent_continuous_integral():
     assert reflected["probability"] == pytest.approx(
         1.0 - expected_probability, rel=4.0e-5
     )
-
 
 
 def test_workflow_publishes_versioned_identity_and_complete_bundle(monkeypatch, tmp_path):
