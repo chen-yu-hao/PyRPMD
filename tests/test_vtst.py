@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 from scipy.integrate import quad
 
-from pyrpmd.constants import AMU_TO_AU
+from pyrpmd.constants import AMU_TO_AU, KB_AU
 from pyrpmd.potentials import PESResult
 from pyrpmd.vtst import (
     MEPOptions,
@@ -144,6 +144,33 @@ def test_straight_path_sct_reduces_exactly_to_zct_and_cvt_is_symmetric():
         assert row["zct"]["kappa"] == row["sct"]["kappa"]
         assert row["cvt_zct"]["rate"] == row["cvt_sct"]["rate"]
     assert result.physical_converged is False
+
+
+def test_reactant_partition_matches_low_temperature_harmonic_state():
+    from pyrpmd.low_temperature import HarmonicState
+
+    path, masses, reactant = _straight_h3_path()
+    beta = 1.0 / (KB_AU * 500.0)
+    reference = HarmonicState(
+        path.geometries_bohr[0],
+        masses,
+        path.energies_hartree[0],
+        path.hessians_hartree_per_bohr2[0],
+        rigid_body=True,
+    ).partition_diagnostics(beta)
+    actual = reactant.partition_diagnostics(beta)
+    assert actual["log_partition"] == pytest.approx(
+        reference["log_partition"], rel=2.0e-12, abs=2.0e-12
+    )
+    assert actual["log_vibrational_partition"] == pytest.approx(
+        reference["log_vibrational_partition"], rel=2.0e-12, abs=2.0e-12
+    )
+    assert actual["log_rotation_partition"] == pytest.approx(
+        reference["log_rotation_partition"], rel=2.0e-12, abs=2.0e-12
+    )
+    assert actual["log_translation_partition_per_bohr3"] == pytest.approx(
+        reference["log_translation_partition"], rel=2.0e-12, abs=2.0e-12
+    )
 
 
 def test_eckart_wkb_action_matches_independent_continuous_integral():
