@@ -210,14 +210,76 @@ def test_scheduler_fixed_full_cohort_never_exceeds_two_workers(tmp_path):
 
 
 def test_worker_failure_stops_admissions_and_drains_all_owned_processes(tmp_path):
-    command, verify = fake_commands(tmp_path, fail_seed=1, delay=.1)
+    started = {}
+    def command(seed, cpu):
+        return [sys.executable, "-c", "import signal; signal.pause()"]
+    def verify(seed):
+        pytest.fail(f"blocked or failed seed {seed} must not be verified")
+    def fail_after_both_started(row):
+        if row["event"] != "worker_started":
+            return
+        started[row["seed"]] = row["pid"]
+        if row["seed"] == 2:
+            # Equal sleeps do not order independent children: seed 2 could
+            # succeed first and legitimately free a slot for seed 3. Keep
+            # both alive until the first cohort exists, then fail seed 1.
+            os.kill(started[1], signal.SIGKILL)
+            # Observe the failure without taking ownership of reaping it.
+            exited = os.waitid(os.P_PID, started[1], os.WEXITED | os.WNOWAIT)
+            assert (exited.si_code, exited.si_status) == (os.CLD_KILLED, signal.SIGKILL)
     attempt = tmp_path / "attempt"; attempt.mkdir()
     with campaign.campaign_lock(tmp_path / "campaign") as lease:
         result = campaign.dispatch_jobs(tuple(range(1, 9)), command, verify, cpus=[0, 1],
-            deadline=time.monotonic() + 5, attempt=attempt, lease=lease)
-    assert result["errors"] and result["all_workers_drained"]
+            deadline=time.monotonic() + 5, attempt=attempt, lease=lease, event_hook=fail_after_both_started)
+        assert lease["release"]
+    # dispatch_jobs catches callback exceptions; require the worker failure
+    # itself so an assertion in the hook cannot accidentally pass this test.
+    assert result["errors"] == [f"ValueError: seed 1 worker exited {-signal.SIGKILL}"]
+    assert result["all_workers_drained"] and result["results"] == {}
     assert result["launched_seeds"] == [1, 2]
     assert result["unstarted_seeds"] == list(range(3, 9))
+    assert list(started) == [1, 2]
+    assert not (tmp_path / ".campaign-p256-parent-lock").exists()
+    for pid in started.values():
+        with pytest.raises(ChildProcessError):
+            os.waitpid(pid, os.WNOHANG)
+
+
+def test_successful_worker_can_be_replaced_before_another_worker_fails(tmp_path):
+    started, verified = {}, []
+    def command(seed, cpu):
+        code = "pass" if seed == 2 else "import signal; signal.pause()"
+        return [sys.executable, "-c", code]
+    def verify(seed):
+        assert seed == 2
+        verified.append(seed)
+        return {"seed": seed}
+    def fail_after_replacement_started(row):
+        if row["event"] != "worker_started":
+            return
+        started[row["seed"]] = row["pid"]
+        if row["seed"] == 3:
+            # Seed 1 cannot finish on its own. Only seed 2's successful
+            # completion can make room for this replacement admission.
+            assert verified == [2]
+            os.kill(started[1], signal.SIGKILL)
+            exited = os.waitid(os.P_PID, started[1], os.WEXITED | os.WNOWAIT)
+            assert (exited.si_code, exited.si_status) == (os.CLD_KILLED, signal.SIGKILL)
+    attempt = tmp_path / "attempt"; attempt.mkdir()
+    with campaign.campaign_lock(tmp_path / "campaign") as lease:
+        result = campaign.dispatch_jobs(tuple(range(1, 9)), command, verify, cpus=[0, 1],
+            deadline=time.monotonic() + 5, attempt=attempt, lease=lease,
+            event_hook=fail_after_replacement_started)
+        assert lease["release"]
+    assert result["errors"] == [f"ValueError: seed 1 worker exited {-signal.SIGKILL}"]
+    assert result["all_workers_drained"] and result["results"] == {2: {"seed": 2}}
+    assert verified == [2] and result["launched_seeds"] == [1, 2, 3]
+    assert result["unstarted_seeds"] == list(range(4, 9))
+    assert list(started) == [1, 2, 3]
+    assert not (tmp_path / ".campaign-p256-parent-lock").exists()
+    for pid in started.values():
+        with pytest.raises(ChildProcessError):
+            os.waitpid(pid, os.WNOHANG)
 
 
 def test_wall_deadline_preserves_failure_without_launching_remaining_seeds(tmp_path):
