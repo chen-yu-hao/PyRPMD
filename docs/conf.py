@@ -40,6 +40,7 @@ include_patterns = [
     "t19-performance.md",
     "builtin-native-potentials.md",
     "torch-materials-workflows.md",
+    "pimd-engine-convergence.md",
     "implementation-review-2026-11-03.md",
     "rpc-mts.md", "mixed-sampling.md", "trpmd-spectroscopy.md", "propagation-stack.md", "condensed-phase-nqe.md",
     "nonadiabatic-workflow.md", "nonadiabatic-models.md",
