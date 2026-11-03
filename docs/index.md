@@ -145,6 +145,7 @@ General-coordinate rates <general-coordinate-rates>
 Rate studies <rate-studies>
 Precision-driven rate controller <rate_precision>
 Torch PIMD and diffusion <torch-materials-workflows>
+Native PIMD workflows <native-pimd-workflow>
 Classical IESH and multistate MASH <nonadiabatic-iesh-multistate>
 f-QCMD <qcmd>
 Instantons <instanton>
