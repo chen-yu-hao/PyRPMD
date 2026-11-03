@@ -44,27 +44,6 @@ _WINDOWS_LIMITATIONS = (
         }),
     ),
     (
-        "Windows drive-letter file/factory paths are omitted from source hashes; "
-        "source-change and resume preflight checks need a separate runtime fix",
-        frozenset({
-            "test_drpmd_extend.py::test_identity_and_all_checkpoints_are_validated_before_any_continuation[model]",
-            "test_electrochemistry_integration.py::test_existing_two_dimensional_fes_workflow_and_resume_use_electrode_factory",
-            "test_input_cli.py::InputTests::test_python_build_relative_plugin_and_source_hash",
-            "test_ml_lifecycle.py::test_nested_relative_models_and_named_fairchem_identity",
-            "test_pcet_workflow.py::PCETInputTests::test_tabulated_units_origins_relative_paths_and_dependency_hash",
-            "test_plumed_workflow.py::test_plumed_input_paths_units_and_default_destination",
-            "test_rate_extend.py::test_referenced_potential_change_is_rejected_before_growth",
-            "test_rate_fes_source.py::test_rate_executes_from_saved_source_and_hashes_it_for_resume",
-            "test_rate_pmf_input.py::test_external_source_is_resolved_to_hashable_paths",
-            "test_reaction_network.py::NetworkIdentityTests::test_relative_xyz_pes_paths_and_dependency_guard",
-            "test_spectroscopy_trace_identity.py::test_offline_reanalysis_retains_original_model_provenance",
-            "test_spectroscopy_workflow.py::test_property_model_content_change_invalidates_restart",
-            "test_spectroscopy_workflow.py::test_spectroscopy_frontend_resolves_units_defaults_and_property_sources",
-            "test_studies.py::test_study_collects_shared_files_once_without_losing_case_inputs",
-            "test_surface_source.py::test_saved_3d_source_runs_consistent_conditional_rate_and_exact_resume",
-        }),
-    ),
-    (
         "Windows archived rate-generation keys use backslashes but the report "
         "reader looks up POSIX keys; generation-source lookup needs a runtime fix",
         frozenset({

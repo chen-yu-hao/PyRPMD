@@ -1,0 +1,26 @@
+{
+  "base_commit": "f87705115c7496821b283a0966c991abd541231c",
+  "candidate_tree": "81864871055658b2485374172b347c4513af38dc",
+  "fixtures": 11,
+  "fingerprint_values": 33,
+  "byte_identical": true,
+  "snapshot_sha256": "563aae8ef75a894380adbc7e46256e8dbe41f383bedb1f99c7404c863c0c177b",
+  "unchanged_functions": {
+    "plugin_module": {
+      "source_unchanged": true,
+      "sha256": "3d95e6b572f5852fe1b625e4312c3e1c626dde5f7ece94a9037e0bc332d1fd3d"
+    },
+    "referenced_files": {
+      "source_unchanged": true,
+      "sha256": "d649f8ab6c505ec0e85839286c2a494743e6a11ccb8493bc72d8517560e28063"
+    },
+    "fingerprint": {
+      "source_unchanged": true,
+      "sha256": "07230d62031a0f2f77362be8739cb586155344164e1293e1c331d37a85f03fe9"
+    },
+    "fingerprint_payload": {
+      "source_unchanged": true,
+      "sha256": "fb1c96c8d8bbf8b90d95b036f574a506c1dcbeee7467285193286731ba17c766"
+    }
+  }
+}
