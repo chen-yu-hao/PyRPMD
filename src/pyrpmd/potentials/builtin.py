@@ -2,7 +2,7 @@
 
 import numpy as np
 from .base import Potential, PESResult, coordinates
-from ..geometry import validate_cell_pbc
+from ..geometry import FixedCellGeometry, validate_cell_pbc
 
 
 class _BuiltinPotential(Potential):
@@ -100,6 +100,127 @@ class PeriodicCosinePotential(_BuiltinPotential):
         else:
             forces[:, self.atoms] = force
         return PESResult(e, forces)
+
+
+class LennardJonesPotential(Potential):
+    """Periodic shifted Lennard-Jones reference with an explicit backend.
+
+    All values are canonical atomic units: ``epsilon`` in hartree and
+    ``sigma``, ``cutoff`` and ``skin`` in bohr. Lattice vectors are rows. The
+    cutoff must not exceed half the shortest cell face height, so one exact
+    minimum image represents every interacting pair. ``backend='native'`` uses
+    the C ABI v2 evaluator and deterministic cached Verlet lists;
+    ``backend='numpy'`` is the independent all-pairs reference implementation.
+    """
+
+    metadata = {
+        "provider": "lj",
+        "thread_safety": "context_serial",
+        "execution_device": "cpu",
+        "periodic": True,
+        "capabilities": {"virial": True, "native_batch": True, "stateful": False},
+        "virial_convention": "minus_dE_dstrain",
+        "model_scope": "analytic_validation_only",
+    }
+
+    def __init__(
+        self, cell, *, epsilon=1.0, sigma=1.0, cutoff=None, skin=0.3,
+        pbc=None, backend="native",
+    ):
+        values = (epsilon, sigma, skin) if cutoff is None else (epsilon, sigma, cutoff, skin)
+        if any(isinstance(value, (bool, np.bool_)) for value in values):
+            raise ValueError("Lennard-Jones parameters must be real physical scalars, not booleans")
+        try:
+            self.epsilon = float(epsilon)
+            self.sigma = float(sigma)
+            self.cutoff = 2.5 * self.sigma if cutoff is None else float(cutoff)
+            self.skin = float(skin)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ValueError("Lennard-Jones parameters must be real physical scalars") from exc
+        if backend not in ("native", "numpy"):
+            raise ValueError("Lennard-Jones backend must be 'native' or 'numpy'")
+        self.backend = backend
+        if (
+            not np.isfinite([self.epsilon, self.sigma, self.cutoff, self.skin]).all()
+            or self.epsilon <= 0
+            or self.sigma <= 0
+            or self.cutoff <= 0
+            or self.skin < 0
+            or not np.isfinite(self.cutoff + self.skin)
+        ):
+            raise ValueError("Lennard-Jones parameters must be finite with positive epsilon, sigma and cutoff and nonnegative skin")
+        with np.errstate(over="ignore", invalid="ignore"):
+            cutoff64 = np.float64(self.cutoff)
+            list_cutoff64 = np.float64(self.cutoff + self.skin)
+            self._cutoff2 = float(cutoff64 * cutoff64)
+            self._list_cutoff2 = float(list_cutoff64 * list_cutoff64)
+            sr = np.float64(self.sigma / self.cutoff)
+            sr6 = sr ** 6
+            self._energy_shift = float(4.0 * self.epsilon * (sr6 * sr6 - sr6))
+        if not np.isfinite([self._cutoff2, self._list_cutoff2, self._energy_shift]).all():
+            raise ValueError("Lennard-Jones parameters overflow in atomic units")
+        self.set_cell(cell, pbc=pbc)
+
+    def set_cell(self, cell, pbc=None):
+        cell, flags = validate_cell_pbc(cell, pbc)
+        if cell is None or not flags.all():
+            raise ValueError("Lennard-Jones requires a full-rank cell with three periodic axes")
+        inverse = np.linalg.inv(cell)
+        face_heights = 1.0 / np.linalg.norm(inverse, axis=0)
+        if self.cutoff > 0.5 * float(np.min(face_heights)) * (1.0 + 64.0 * np.finfo(float).eps):
+            raise ValueError(
+                "Lennard-Jones cutoff exceeds half the shortest cell face height"
+            )
+        self.cell = cell
+        self.pbc = flags
+        self._geometry = FixedCellGeometry(cell, flags)
+
+    def native_binding(self, natoms=None):
+        from ..propagation import NativeUnavailableError
+        raise NativeUnavailableError(
+            "periodic Lennard-Jones uses the cell-aware C ABI v2 evaluator and cannot be leased as a C ABI v1 fused binding"
+        )
+
+    def _evaluate_numpy(self, x):
+        x = coordinates(x)
+        batches, natoms, _ = x.shape
+        energy = np.zeros(batches)
+        forces = np.zeros_like(x)
+        virial = np.zeros((batches, 3, 3))
+        for batch in range(batches):
+            for i in range(natoms - 1):
+                displacement = self._geometry.minimum_image(x[batch, i + 1:] - x[batch, i])
+                r2 = np.einsum("ij,ij->i", displacement, displacement)
+                if np.any(r2 <= np.finfo(float).tiny):
+                    raise ValueError("coincident Lennard-Jones atoms")
+                active = np.nonzero(r2 < self._cutoff2)[0]
+                for offset in active:
+                    j = i + 1 + int(offset)
+                    d = displacement[offset]
+                    inverse_r2 = 1.0 / r2[offset]
+                    sr2 = self.sigma * self.sigma * inverse_r2
+                    sr6 = sr2 * sr2 * sr2
+                    sr12 = sr6 * sr6
+                    energy[batch] += (
+                        4.0 * self.epsilon * (sr12 - sr6) - self._energy_shift
+                    )
+                    pair_force = (
+                        24.0 * self.epsilon * (2.0 * sr12 - sr6) * inverse_r2 * d
+                    )
+                    # displacement is q_j - q_i, hence the force on i is -pair_force.
+                    forces[batch, i] -= pair_force
+                    forces[batch, j] += pair_force
+                    virial[batch] += np.outer(d, pair_force)
+        self._native_natoms = natoms
+        return PESResult(energy, forces, virial=virial)
+
+    def evaluate(self, x):
+        if self.backend == "numpy":
+            return self._evaluate_numpy(x)
+        from ._builtin_native import evaluate_lj
+        result = evaluate_lj(self, x)
+        self._native_natoms = result.forces.shape[1]
+        return result
 
 
 class HarmonicPotential(_BuiltinPotential):

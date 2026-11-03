@@ -14,11 +14,13 @@ from .builtin import (
     MorsePairPotential,
     DoubleWellPotential,
     PeriodicCosinePotential,
+    LennardJonesPotential,
 )
 from .python import PythonPotential, RPMDratePotential, import_object
 from .cabi import CABIPotential, build_object
 from .batched_ml import BATCHED_ML_PROVIDERS as _BATCHED_ML_PROVIDERS
 from ..geometry import validate_cell_pbc
+from ..units import parse_quantity
 import numpy as np
 
 
@@ -53,8 +55,6 @@ def energy_convention_identity(config):
     ) in ("ase", "mace", "nequip", "fairchem"):
         return "ase-force-consistent-v1"
     if config.get("task") == "network":
-        # Resolved networks store effective PES specifications in path jobs;
-        # arbitrary plugin parameters are not potential declarations.
         for job in config.get("network", {}).get("jobs", []):
             if energy_convention_identity(job["config"]) is not None:
                 return "ase-force-consistent-v1"
@@ -125,12 +125,17 @@ def validate_periodic_spec(config, system=None, *, _nested=False):
         raise PotentialError("OpenMM requires all or no periodic axes; partial PBC is unsupported")
     if kind in ("openmm", "lammps") and "units" in config:
         raise PotentialError(f"{kind} reads fixed engine units; potential.units is unsupported")
-    if kind in ("builtin", "free", "harmonic", "morse_pair", "double_well", "periodic_cosine"):
+    if kind in (
+        "builtin", "free", "harmonic", "morse_pair", "double_well",
+        "periodic_cosine", "lj", "lennard_jones",
+    ):
         model = config.get("name", config.get("model", kind if kind != "builtin" else "harmonic"))
-        if periodic and model not in ("free", "periodic_cosine"):
+        if periodic and model not in ("free", "periodic_cosine", "lj", "lennard_jones"):
             raise PotentialError(f"Builtin {model!r} is nonperiodic; periodic cells require a cell-aware PES")
         if model == "periodic_cosine" and not periodic:
             raise PotentialError("periodic_cosine requires a periodic cell")
+        if model in ("lj", "lennard_jones") and not pbc.all():
+            raise PotentialError("Lennard-Jones requires a cell with three periodic axes")
 
 
 def make_potential(config, system=None):
@@ -209,20 +214,19 @@ def _make_potential(config, system=None):
             if "contracted_beads" not in spec:
                 return combined
             split = combined.split(spec["nbeads"], spec["contracted_beads"])
-            # The factory owns children while the generic SplitPotential API
-            # deliberately borrows them. Transfer close ownership explicitly.
             split.close = combined.close
             return split
         except BaseException:
             try:
                 _close_all(providers)
             except BaseException:
-                # Preserve the construction failure while still attempting
-                # every provider's cleanup, including after a failed close.
                 pass
             raise
 
-    if kind in ("builtin", "free", "harmonic", "morse_pair", "double_well", "periodic_cosine"):
+    if kind in (
+        "builtin", "free", "harmonic", "morse_pair", "double_well",
+        "periodic_cosine", "lj", "lennard_jones",
+    ):
         model = spec.get(
             "name", spec.get("model", kind if kind != "builtin" else "harmonic")
         )
@@ -232,6 +236,26 @@ def _make_potential(config, system=None):
             if "cell" in params or "pbc" in params:
                 raise ValueError("periodic_cosine obtains cell/PBC from System")
             return PeriodicCosinePotential(cell=cell, pbc=pbc, **params)
+        if model in ("lj", "lennard_jones"):
+            if "cell" in params or "pbc" in params:
+                raise ValueError("Lennard-Jones obtains cell/PBC from System")
+            allowed = {"epsilon", "sigma", "cutoff", "skin", "backend"}
+            unknown = set(params) - allowed
+            if unknown:
+                raise ValueError(
+                    "unknown Lennard-Jones parameters: "
+                    + ", ".join(sorted(map(str, unknown)))
+                )
+            epsilon = parse_quantity(params.pop("epsilon", 1.0), "energy")
+            sigma = parse_quantity(params.pop("sigma", 1.0), "length")
+            cutoff_value = params.pop("cutoff", None)
+            cutoff = None if cutoff_value is None else parse_quantity(cutoff_value, "length")
+            skin = parse_quantity(params.pop("skin", 0.3), "length")
+            backend = params.pop("backend", "native")
+            return LennardJonesPotential(
+                cell, pbc=pbc, epsilon=epsilon, sigma=sigma,
+                cutoff=cutoff, skin=skin, backend=backend,
+            )
         if model == "harmonic":
             for key in ("k", "center"):
                 if key in spec:
@@ -265,9 +289,6 @@ def _make_potential(config, system=None):
                 cell=cell, pbc=pbc,
             )
         except BaseException:
-            # A constructed model may own a socket, accelerator or calculator.
-            # Constructor-level contract errors happen before make_potential's
-            # binding cleanup, so release factory-owned providers here too.
             if "factory" in spec and callable(getattr(obj, "close", None)):
                 obj.close()
             raise
@@ -288,40 +309,32 @@ def _make_potential(config, system=None):
         )
     if kind == "ase":
         from .optional import ASEPotential
-
         return ASEPotential(
             get("symbols"), import_object(spec["factory"])(**params), cell=cell, pbc=pbc
         )
     if kind == "openmm":
         from .openmm import OpenMMPotential
-
         return OpenMMPotential(
             spec.get("model"), get("symbols"), factory=spec.get("factory"),
             device=spec.get("device", "cpu"), cell=cell, pbc=pbc, **params,
         )
     if kind == "lammps":
         from .lammps import LAMMPSPotential
-
         return LAMMPSPotential(
             get("symbols"), spec.get("model"), factory=spec.get("factory"),
             device=spec.get("device", "cpu"), cell=cell, pbc=pbc, **params,
         )
     if kind == "torch":
         from .optional import TorchPotential
-
         return TorchPotential(
-            spec.get("model"),
-            factory=spec.get("factory"),
-            params=params,
-            device=spec.get("device", "cuda"),
-            units=spec.get("units"),
+            spec.get("model"), factory=spec.get("factory"), params=params,
+            device=spec.get("device", "cuda"), units=spec.get("units"),
             dtype=spec.get("dtype", params.get("dtype", "float64")),
             cell=cell, pbc=pbc, periodic=spec.get("periodic", False),
             virial=spec.get("virial", "auto"),
         )
     if kind in ("mace", "nequip", "deepmd", "fairchem", "tblite", "xtb", "pyscf") or kind in _BATCHED_ML_PROVIDERS:
         from .adapters import make_named_potential
-
         if "units" in spec:
             if kind not in ("deepmd", "deepmd-batched"):
                 raise ValueError(f"{kind} has fixed backend units; potential.units is unsupported")
@@ -339,7 +352,6 @@ def _make_potential(config, system=None):
         )
     if kind in ("ipi", "socket"):
         from .socket import IPIPotential
-
         if "cell" in params or "pbc" in params:
             raise ValueError("i-PI cell/PBC are supplied by System, not potential.params")
         return IPIPotential(**params, cell=cell, pbc=pbc)
@@ -347,33 +359,18 @@ def _make_potential(config, system=None):
 
 
 __all__ = [
-    "PESResult",
-    "Potential",
-    "PotentialError",
-    "BackendUnavailableError",
-    "validate_result",
-    "check_potential",
-    "make_potential",
-    "FreePotential",
-    "HarmonicPotential",
-    "MorsePairPotential",
-    "DoubleWellPotential",
-    "PeriodicCosinePotential",
-    "PythonPotential",
-    "RPMDratePotential",
-    "CABIPotential",
-    "build_object",
-    "MACEBatchedPotential",
-    "NequIPBatchedPotential",
-    "FairchemBatchedPotential",
-    "DeepMDBatchedPotential",
-    "MetatomicBatchedPotential",
+    "PESResult", "Potential", "PotentialError", "BackendUnavailableError",
+    "validate_result", "check_potential", "make_potential", "FreePotential",
+    "HarmonicPotential", "MorsePairPotential", "DoubleWellPotential",
+    "PeriodicCosinePotential", "LennardJonesPotential", "PythonPotential",
+    "RPMDratePotential", "CABIPotential", "build_object",
+    "MACEBatchedPotential", "NequIPBatchedPotential", "FairchemBatchedPotential",
+    "DeepMDBatchedPotential", "MetatomicBatchedPotential",
 ]
 
 
 def __getattr__(name):
     from . import batched_ml
-
     if name in batched_ml.__all__:
         value = getattr(batched_ml, name)
         globals()[name] = value

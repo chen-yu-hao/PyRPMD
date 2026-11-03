@@ -1,4 +1,4 @@
-"""Shape-aware leases for the stateless analytic C ABI v1 evaluators.
+"""Shape-aware leases for analytic C ABI evaluators.
 
 Process-local capsules live outside provider instances so deepcopy/pickle and
 scientific identities retain their original, parameter-only representation.
@@ -15,14 +15,21 @@ import weakref
 
 import numpy as np
 
+from .base import PESResult, PotentialError, coordinates
+from .cabi import DP, Error, I32, InputV2, OutputV2
 from .native import NativePESBinding
 
 
 _CACHE = weakref.WeakKeyDictionary()
+_LJ_CACHE = weakref.WeakKeyDictionary()
 _CACHE_LOCK = threading.RLock()
 _EVALUATE = ctypes.CFUNCTYPE(
     ctypes.c_int32, ctypes.c_void_p, ctypes.c_void_p,
     ctypes.c_void_p, ctypes.c_void_p,
+)
+_EVALUATE_V2 = ctypes.CFUNCTYPE(
+    ctypes.c_int32, ctypes.c_void_p, ctypes.POINTER(InputV2),
+    ctypes.POINTER(OutputV2), ctypes.POINTER(Error),
 )
 
 
@@ -143,6 +150,98 @@ def builtin_binding(potential, natoms=None):
             )
             cached[natoms] = (key, binding)
         return cached[natoms][1]
+
+
+def _lj_binding(potential):
+    from ..propagation import NativeUnavailableError
+
+    try:
+        from .. import _native
+    except ImportError as exc:
+        raise NativeUnavailableError(
+            "compiled periodic Lennard-Jones extension is unavailable; select backend='numpy' explicitly"
+        ) from exc
+    if not hasattr(_native, "builtin_lj"):
+        raise NativeUnavailableError(
+            "installed native extension lacks periodic Lennard-Jones C ABI v2 support; rebuild it"
+        )
+    key = (potential.epsilon, potential.sigma, potential.cutoff, potential.skin)
+    with _CACHE_LOCK:
+        previous = _LJ_CACHE.get(potential)
+        if previous is None or previous[0] != key:
+            capsule, address, context = _native.builtin_lj(*key)
+            previous = (
+                key,
+                _EVALUATE_V2(address),
+                context,
+                (capsule, _native),
+                threading.RLock(),
+            )
+            _LJ_CACHE[potential] = previous
+        return previous
+
+
+def evaluate_lj(potential, x):
+    """Evaluate the built-in periodic LJ context through the physical ABI v2."""
+    q = coordinates(x)
+    batches, natoms, _ = q.shape
+    cells = np.ascontiguousarray(
+        np.broadcast_to(np.asarray(potential.cell), (batches, 3, 3)), dtype=np.float64
+    )
+    pbc = np.ones((batches, 3), dtype=np.int32)
+    energy = np.empty(batches, dtype=np.float64)
+    forces = np.empty_like(q)
+    virial = np.empty((batches, 3, 3), dtype=np.float64)
+    status = np.empty(batches, dtype=np.int32)
+    message_stride = 192
+    messages = ctypes.create_string_buffer(batches * message_stride)
+    error_buffer = ctypes.create_string_buffer(512)
+    error = Error(ctypes.addressof(error_buffer), len(error_buffer), 0)
+    inp = InputV2(
+        abi_version=2,
+        struct_size=ctypes.sizeof(InputV2),
+        layout=1,
+        scalar_type=1,
+        nstructures=batches,
+        natoms=natoms,
+        positions=q.ctypes.data_as(DP),
+        positions_count=q.size,
+        cells=cells.ctypes.data_as(DP),
+        cells_count=cells.size,
+        pbc=pbc.ctypes.data_as(ctypes.POINTER(I32)),
+        pbc_count=pbc.size,
+    )
+    out = OutputV2(
+        abi_version=2,
+        struct_size=ctypes.sizeof(OutputV2),
+        energies=energy.ctypes.data_as(DP),
+        energies_count=energy.size,
+        forces=forces.ctypes.data_as(DP),
+        forces_count=forces.size,
+        structure_status=status.ctypes.data_as(ctypes.POINTER(I32)),
+        structure_status_count=status.size,
+        structure_messages=ctypes.addressof(messages),
+        structure_message_stride=message_stride,
+        structure_messages_capacity=len(messages),
+        virials=virial.ctypes.data_as(DP),
+        virials_count=virial.size,
+    )
+    _, function, context, owner, lock = _lj_binding(potential)
+    del owner  # Kept alive by the cache entry throughout this call.
+    with lock:
+        rc = function(context, ctypes.byref(inp), ctypes.byref(out), ctypes.byref(error))
+    if rc:
+        detail = error_buffer.value.decode("utf-8", "replace")
+        raise PotentialError(
+            f"periodic Lennard-Jones C ABI v2 evaluation failed ({rc})"
+            + (f": {detail}" if detail else "")
+        )
+    decoded = tuple(
+        messages.raw[i * message_stride:(i + 1) * message_stride]
+        .split(b"\0", 1)[0].decode("utf-8", "replace")
+        for i in range(batches)
+    )
+    return PESResult(energy, forces, status, decoded, virial)
 
 
 def builtin_identity(potential, natoms):
