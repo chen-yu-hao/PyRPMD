@@ -185,6 +185,8 @@ def reference_case(dimension, target, *, iterations=300, replicas=6, block_size=
             "samples_per_replica": iterations*block_size,
             "umbrella_samples_per_window": samples_per_window,
             "bootstrap_replicates": bootstrap, "reference_bin": list(reference),
+            "edges": [edge.tolist() for edge in edges],
+            "ranges_au": [list(RANGE)]*dimension,
             "quadrature_order_8_vs_5_max_hartree": integration_error,
             "ves_quadrature_rmse_hartree": float(np.sqrt(np.mean(difference[supported]**2))),
             "mbar_quadrature_rmse_hartree": float(np.sqrt(np.mean((mbar[supported] - exact[supported])**2))),
@@ -218,6 +220,11 @@ class _ValidationPotential:
 
     def evaluate(self, q):
         from pyrpmd.potentials.base import PESResult
+        q = np.asarray(q)
+        if (q.ndim != 3 or q.shape[1:] != (1, 3) or len(q) == 0
+                or q.dtype.kind not in "fiu" or not np.isfinite(q).all()):
+            raise ValueError("validation potential requires finite [B,1,3] coordinates for one atom")
+        q = np.asarray(q, dtype=float)
         points = q[:, 0, :self.dimension]
         energy = model_energy(points) + .5*np.sum(q[:, 0, self.dimension:]**2, axis=1)
         forces = -np.array(q, copy=True)
@@ -325,6 +332,9 @@ def md_validation(directory, *, replicas=6, production_steps=30000, timestep=.04
             "dimension": dimension, "target": target, "beta": BETA,
             "replicas": replicas, "production_steps": production_steps, "timestep_au": timestep,
             "trajectory_workers": workers, "threads_per_rank": 1,
+            "edges": [edge.tolist() for edge in result.edges],
+            "ranges_au": [[float(edge[0]), float(edge[-1])] for edge in result.edges],
+            "reference_bin": list(mbar_reference),
             "freeze_after_steps": job["fes"]["ves"]["freeze_after_steps"],
             "retained_samples_per_replica": summary["retained_samples_per_replica"],
             "outside_observations_per_replica": summary["outside_observations_per_replica"],

@@ -6,10 +6,13 @@ moments or the true coefficients.  This deliberately isolates VES optimization
 from MD mixing.  The companion example records actual MD workflow evidence.
 """
 
+import json
+
 import numpy as np
 import pytest
 
 from examples.ves_validation import _ValidationPotential, reference_case
+from pyrpmd.io import write_report_json
 
 
 @pytest.mark.parametrize("dimension", [1, 2])
@@ -50,3 +53,28 @@ def test_validation_md_potential_force_matches_independent_finite_differences(di
             minus[:, atom, axis] -= step
             force = -(provider.evaluate(plus).energy - provider.evaluate(minus).energy)/(2*step)
             np.testing.assert_allclose(force, analytic.forces[:, atom, axis], atol=2e-10)
+
+
+@pytest.mark.parametrize("shape", [(2, 2, 3), (1, 0, 3), (1, 1, 2)])
+def test_validation_potential_rejects_non_single_atom_systems(shape):
+    with pytest.raises(ValueError, match="one atom"):
+        _ValidationPotential(2).evaluate(np.zeros(shape))
+
+
+def test_validation_report_contains_portable_grid_and_gauge_metadata(tmp_path):
+    # A short, deliberately unconverged run checks report portability, not
+    # physical accuracy.  The sampling acceptance test above has its own budget.
+    result = reference_case(1, "uniform", iterations=2, replicas=2,
+                            samples_per_window=1500, bootstrap=4)
+    path = tmp_path / "report.json"
+    write_report_json(path, result)
+    saved = json.loads(path.read_text())
+    edge, = saved["edges"]
+    assert len(edge) == len(saved["ves_mean"]) + 1
+    assert edge[0] == -1.5 and edge[-1] == 1.5
+    assert np.all(np.diff(edge) > 0)
+    reference, = saved["reference_bin"]
+    assert saved["reference_free_energy"][reference] == 0.0
+    assert saved["ves_mean"][reference] == 0.0
+    assert saved["ves_sem"][reference] == 0.0
+    assert not saved["physical_converged"]

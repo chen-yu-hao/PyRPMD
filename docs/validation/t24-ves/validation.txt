@@ -1,0 +1,124 @@
+T24 VES validation evidence (2026-11-03)
+======================================
+
+Scope
+-----
+All models are synthetic, in atomic units, with beta = 1 hartree^-1 and P = 1
+for the MD checks. No molecular, bead, timestep, basis-resolution or general
+physical convergence is claimed. Production FESResult.physical_converged stays
+false. The stochastic optimizer checks and actual MD checks are separate.
+
+Models on [-1.5,1.5]^D
+---------------------
+1D: F(x) = (x^2 - 1)^2 + 0.2*x.
+2D: F(x,y) = (x^2 + 1.4*y^2)/2 + 0.35*x*y + 0.2*x - 0.1*y.
+The 2D model includes an explicit mixed term. Unobserved Cartesian directions
+in the single-atom MD model have independent harmonic confinement.
+
+References are Gauss-Legendre integrals of probability within each histogram
+bin, divided by its volume. The error is computed in the same gauge as the
+MBAR estimate. Order-8 versus order-5 quadrature differences are recorded in
+reference.json. Umbrella configurations are independent continuous rejection
+draws from each exact umbrella ensemble, followed by the existing PyRPMD
+reconstruct_fes/MBAR implementation and 24 bootstrap draws. They are not draws
+from a discretized grid.
+
+Stochastic optimization checks
+------------------------------
+Six independently optimized VES histories per dimension/target; each uses
+300 iterations x 64 actual stochastic observations = 19,200 observations.
+At every coefficient block, exact continuous rejection sampling generates
+configurations under the current VES bias. A grid plus a rigorous derivative
+bound supplies the rejection envelope; the samples themselves are continuous.
+Samples pass through VESBias.observe. No true moments or true coefficients are
+injected. Learning rate = 3 hartree, gamma = 4, target update every 10 optimizer
+iterations, quadrature order = 32, Legendre degrees [4] or [2,2].
+
+Fixed regression criteria were RMSE below 0.1 kBT, at least fivefold improvement
+over a zero-bias estimate, and a 99% simultaneous Bonferroni Student-t band
+using five degrees of freedom (six independent histories). The wider finite-
+replica band cannot conceal a failure to learn because of the separate RMSE
+and improvement requirements. Seeds were not changed during tuning.
+
+Model/target           VES-exact RMSE   Max replica SEM   VES-MBAR max combined SEM
+1D uniform             0.009920572      3.239086          1.269801
+1D well_tempered       0.008851482      3.032068          1.412825
+2D uniform             0.005856662      4.297645          2.114507
+2D well_tempered       0.006028644      1.167550          2.125037
+
+All RMSE values are in hartree (= kBT for these toy models). There is support
+in every bin; the gauge bin is excluded from standardized-error comparisons,
+leaving 19/20 bins in 1D and 99/100 in 2D. The final RMSE is 0.53--1.20% of the
+zero-bias error. The earlier 200-iteration/four-history pilot, including its
+large near-gauge standardized error in 2D, is retained in reference.json.
+
+Actual public-workflow MD checks
+-------------------------------
+Both cases use the public runner, six independent replicas, 1,000 equilibration
+steps and 30,000 production steps per replica, dt = 0.04 atomic time units,
+PILE-L centroid friction = 1 atomic frequency unit, VES learning rate = 1
+hartree, pace = 100, walls = 20 hartree/bohr^2. The bias is frozen at production
+step 10,000; 1,000 further steps are discarded for fixed-bias relaxation. Each
+replica retains 3,800 frozen samples at interval 5. Reweighting uses beta*V,
+including the walls, and reports the common supported region.
+
+Model/target           VES-exact RMSE   Max replica SEM   VES-MBAR max combined SEM
+1D uniform             0.098103681      2.414758          1.607420
+2D well_tempered       0.127165007      2.286214          2.173162
+
+The 1D comparison uses all 12 bins (11 after excluding the gauge). The 2D
+comparison uses 62/64 bins after excluding one unsupported bin and the gauge.
+Exact finished-run resume and saved-state reanalysis reproduce the FES arrays
+bit for bit for both cases. This is separate from the injected-interruption
+unit tests in tests/test_ves_workflow.py.
+
+Runtime context
+---------------
+Linux x86_64, Python 3.12.14; the environment reported 9 logical CPUs but did not
+expose a CPU model. OMP_NUM_THREADS=1 and OPENBLAS_NUM_THREADS=1 throughout.
+MD uses two trajectory-worker processes, one thread each. The MD sampling
+times were 389.071 seconds (1D, 478.061 aggregate steps/second) and 301.372
+seconds (2D, 617.178 aggregate steps/second), including checkpoint publication.
+Full test suites and other validation jobs ran concurrently. These timings are
+indicative shared-environment measurements, not isolated performance claims.
+
+Commands actually used
+----------------------
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 .venv/bin/python examples/ves_validation.py --output docs/validation/t24-ves/reference.json
+
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 .venv/bin/python examples/ves_validation.py --md-only --output ../t24-md-evidence.json --md-directory ../t24-md-production
+
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 .venv/bin/python -m pytest -q tests/test_ves_reference.py -k 'potential or metadata'
+
+Focused final test output:
+......                                                                   [100%]
+6 passed, 4 deselected in 12.27s
+
+Source and artifact provenance
+------------------------------
+The exact MD factory/driver was preserved in commit 822fdb664110393d0ac0b9c2c885491bb0aa46d0 at
+examples/ves_validation.py, SHA256:
+8ee2538583e9fa65aaa25ae0ca738ce210a5a9739a9a8b79d5875558aba5ba28
+
+After all MD and resume checks completed, only explicit output grid/gauge
+metadata and an example-only guard rejecting systems other than one atom were
+added. The positive single-atom potential and sampling algorithms are unchanged.
+The two original FES array-file hashes, raw report hashes and postprocessing
+details are recorded in molecular_dynamics.json. Exact edges and gauges were
+added to the saved evidence without changing numerical estimates or errors.
+MD checkpoints are not part of this evidence directory.
+
+Files
+-----
+reference.json / reference.log: complete stochastic estimates, uncertainties,
+grids, seeds/protocol, pilot summary and machine-readable comparison metrics.
+molecular_dynamics.json / molecular_dynamics.log: actual workflow MD metrics,
+uncertainty arrays, support masks, timings and source/output hashes.
+stochastic_validation.png / stochastic_validation.pdf: visual comparison of
+the stochastic optimizer experiments, explicitly labelled as non-MD evidence.
+example-final-tests.log: focused post-metadata/shape-guard verification.
+
+Reproduce the complete scientific checks with tests/test_ves_reference.py.
+The plotting script examples/plot_ves_validation.py reads saved evidence and
+does not rerun simulations. Full-suite, baseline, workflow and documentation
+verification are reported by the main T24 delivery report.
