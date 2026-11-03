@@ -50,7 +50,10 @@ class MACEASEPotential(ModelASEPotential):
     def _mace_setup(self, x):
         if self.closed:
             raise PotentialError("mace provider is closed")
-        q = coordinates(x)
+        raw = np.asarray(x)
+        if raw.dtype != np.dtype("float64"):
+            raise PotentialError("MACE second-derivative positions must be float64; no implicit precision conversion")
+        q = coordinates(raw)
         if q.shape[1] != len(self.atoms):
             raise PotentialError("MACE derivative atom count mismatch")
         calculator = self.atoms.calc
