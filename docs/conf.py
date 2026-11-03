@@ -34,7 +34,7 @@ include_patterns = [
     "general-coordinate-rates.md", "rate-studies.md", "instanton.md", "low-temperature.md",
     "tunnelling-phase-projection.md",
     "rate-input-v2.md",
-    "rate_precision.md", "releases/0.2.0.md", "native-pimd-workflow.md", "instanton.md",
+    "rate_precision.md", "releases/0.2.0.md", "releases/development-2026-11-03.md", "native-pimd-workflow.md", "instanton.md",
     "quantum-statistics.md", "performance-dynamics.md", "batched-dynamics.md",
     "batched-ml-potentials.md",
     "t19-performance.md",
