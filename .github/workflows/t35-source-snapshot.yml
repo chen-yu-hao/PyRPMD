@@ -16,10 +16,10 @@ jobs:
         with:
           fetch-depth: 1
       - name: Create source snapshot
-        run: tar --exclude=.git -czf pyrpmd-source.tar.gz .
+        run: tar --exclude=.git -czf /tmp/pyrpmd-source.tar.gz .
       - uses: actions/upload-artifact@v4
         with:
           name: pyrpmd-t35-source
-          path: pyrpmd-source.tar.gz
+          path: /tmp/pyrpmd-source.tar.gz
           if-no-files-found: error
           retention-days: 1
