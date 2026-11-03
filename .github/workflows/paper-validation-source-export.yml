@@ -22,3 +22,4 @@ jobs:
           name: pyrpmd-paper-validation-source-with-authors-dac-refs
           path: pyrpmd-paper-validation-source.tar.gz
 # Temporary T39 full-source snapshot trigger; removed before the pull request.
+# Snapshot after payload upload.
