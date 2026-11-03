@@ -1,11 +1,25 @@
 # Original papers and implemented features
 
 This inventory groups implemented **scientific methods, models and interfaces**, rather than inventing
-a paper for every helper function. It audits commit
-[`cb60679`](https://github.com/chen-yu-hao/PyRPMD/commit/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d) on **2026-11-02**.
-The **111 entries and 170 bibliographic records** connect implementation paths to primary sources
+a paper for every helper function. The 2026-11-03 incremental audit covers `main` at `ceee59c` and preserves the earlier full code-level inventory.
+The **119 entries and 174 bibliographic records** connect implementation paths to primary sources
 and explicit scope boundaries. The [reproduction checklist](reproduction.md) adds the original systems,
 observables, existing entry points, missing ingredients and priorities.
+
+## Additional merged-method provenance (2026-11-03)
+
+The following entries extend the original source audit without claiming that a passing unit test is a physically converged calculation.
+
+| Feature | Primary sources | Implemented scope |
+| --- | --- | --- |
+| Partial-path TIS and replica-exchange PPTIS | [samp-pptis2004](#samp-pptis2004), [samp-retis2007](#samp-retis2007) | Python API; no TOML workflow; numerical model checks do not establish rate convergence. |
+| Direct forward-flux sampling | [samp-ffs2009](#samp-ffs2009) | Python API for a supplied Markov process; not a general path-sampling TOML task. |
+| Independent-electron surface hopping | [na-iesh2009](#na-iesh2009), [na-iesh2023](#na-iesh2023) | P=1 spinless determinant, real nondegenerate single-electron Hamiltonian; not ring-polymer IESH. |
+| Classical multistate MASH | [na-mash2023](#na-mash2023), [na-mashrates2024](#na-mashrates2024) | P=1 classical multistate implementation; distinct from two-state RP-MASH. |
+| Precision-driven thermal-rate planning and metered execution | [rate05](#rate05), [bimol09](#bimol09), [samp-mbar2008](#samp-mbar2008) | Original algorithms cited by component; no original paper asserted for the package's precision ledger or CLI. |
+| Explicit device-resident tensor PIMD and diffusion | [cw81](#cw81), [pile10](#pile10), [torch2019](#torch2019) | Fixed-cell PIMD/diffusion only; CPU benchmark is not a CUDA benchmark. |
+| Fermionic sign reweighting and periodic winding exchange | [bose19](#bose19), [bose23](#bose23) | Fermionic observables use sign gates; periodic winding and all-bead BZP have explicit restrictions. |
+| Golden-rule and molecular ring-polymer instanton workflows | [rpi09](#rpi09), [rpi16](#rpi16) | Results are model and discretization comparisons; physical_converged remains false. |
 
 ## How to cite a calculation
 
@@ -2387,3 +2401,27 @@ Role: Original Morse potential and analytic vibrational levels.
 Z. Xie; J. M. Bowman. **Permutationally Invariant Polynomial Basis for Molecular Energy Surface Fitting via Monomial Symmetrization**. *J. Chem. Theory Comput. 6, 26–34 (online 2009)* (2010). DOI: [10.1021/ct9004917](https://doi.org/10.1021/ct9004917).
 
 Role: Original monomial-symmetrization PIP basis method.
+
+### samp-pptis2004
+
+D. Moroni; P. G. Bolhuis; T. S. van Erp. **Rate constants for diffusive processes by partial path sampling**. *J. Chem. Phys. 120, 4055–4065* (2004). DOI: [10.1063/1.1644537](https://doi.org/10.1063/1.1644537).
+
+Role: Original PPTIS partial-path sampling.
+
+### samp-ffs2009
+
+R. J. Allen; C. Valeriani; P. R. ten Wolde. **Forward flux sampling for rare event simulations**. *J. Phys.: Condens. Matter 21, 463102* (2009). DOI: [10.1088/0953-8984/21/46/463102](https://doi.org/10.1088/0953-8984/21/46/463102).
+
+Role: FFS method review and original-context formulation.
+
+### na-iesh2009
+
+N. Shenvi; S. Roy; J. C. Tully. **Nonadiabatic dynamics at metal surfaces: Independent-electron surface hopping**. *J. Chem. Phys. 130* (2009). DOI: [10.1063/1.3125436](https://doi.org/10.1063/1.3125436).
+
+Role: Independent-electron surface hopping origin.
+
+### na-iesh2023
+
+Gardner et al.. **Independent-electron surface-hopping implementation analysis**. *J. Chem. Phys.* (2023). DOI: [10.1063/5.0137137](https://doi.org/10.1063/5.0137137).
+
+Role: Follow-up IESH analysis.
