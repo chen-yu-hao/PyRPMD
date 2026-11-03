@@ -85,13 +85,12 @@ def resolve_torch_materials(config, system):
     if config.get("output", {}).get("trajectory_storage", "stream") != "stream":
         raise ValueError("Torch materials require output.trajectory_storage='stream'")
     # Reuse the mature schedule, transport-selection and analysis validation.
-    # Only this local validation copy uses the legacy selector. No execution
-    # or fallback can follow it, and the real scientific identity is untouched.
+    # This local copy only selects compatible validation controls; it never
+    # changes the engine or re-enters dispatch. Scientific identity is untouched.
     legacy = copy.deepcopy(config)
-    legacy.setdefault("sampling", {})["engine"] = "legacy"
     legacy.setdefault("dynamics", {})["integrator"] = "cayley-bcb"
-    from .materials import resolve_materials
-    options = resolve_materials(legacy, system)
+    from .materials import _resolve_legacy_materials
+    options = _resolve_legacy_materials(legacy, system)
     if not np.isclose(options["sample_dt"], float(config["dt_au"]), rtol=1e-14, atol=0):
         raise ValueError("Torch materials sampling and production timesteps must match")
     options.update(device=device, normal_mode_layout=layout, block_steps=block,
