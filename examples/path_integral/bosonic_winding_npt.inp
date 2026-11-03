@@ -1,0 +1,48 @@
+# Periodic Gaussian image sums with all-bead isotropic BZP pressure control.
+# Atomic-unit toy free Bose gas; these short settings demonstrate restart/reporting.
+# Establish time-step, block-length, sampling and bead convergence for applications.
+task = "pimd"
+temperature = "200000 K"
+beads = 4
+seed = 2083
+
+[system]
+symbols = ["H", "H"]
+masses = [1.0, 1.0]
+geometry = [[0.4, 0.5, 0.6], [1.0, 0.7, 0.4]]
+geometry_unit = "bohr"
+cell = [[4.0, 0.0, 0.0], [0.0, 4.0, 0.0], [0.0, 0.0, 4.0]]
+cell_unit = "bohr"
+pbc = [true, true, true]
+
+[potential]
+provider = "free"
+
+[dynamics]
+integrator = "velocity-verlet"
+timestep = "0.01 au"
+
+[sampling]
+thermostat = "andersen"
+andersen_interval = 10
+equilibration_steps = 500
+production_steps = 2000
+sample_interval = 5
+
+[barostat]
+method = "bzp"
+pressure = "0.04 au"
+time_constant = "2.0 au"
+
+[path_integral]
+method = "bosonic"
+groups = [[0, 1]]
+periodic_mode = "full_winding"
+winding_tolerance = 1e-12
+winding_max_terms = 100000
+block_size = 20
+
+[output]
+directory = "runs/bosonic_winding_npt"
+trajectory_storage = "memory"
+checkpoint_steps = 250

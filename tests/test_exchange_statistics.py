@@ -88,6 +88,38 @@ def test_mapping_order_does_not_change_report_after_checkpoint_json_sorting():
     assert exchange_thermodynamics(sorted_rows, block_size=1) == expected
 
 
+def test_npt_volume_and_enthalpy_use_signed_numerators_and_joint_errors():
+    sign = np.array([1.0, 0.7, 0.9, 0.8, 0.6, 0.95])
+    volume = np.array([2.0, 5.0, 3.0, 4.0, 7.0, 3.0])
+    pressure = 0.2
+    data = columns(sign)
+    data["volume_numerator_bohr3"] = sign * volume
+    data["enthalpy_numerator_hartree"] = (
+        data["internal_energy_numerator_hartree"] + pressure * sign * volume)
+    result = exchange_thermodynamics(data, block_size=1)
+    expected_volume = np.sum(sign * volume) / sign.sum()
+    leave_volume = np.array([np.delete(sign * volume, i).sum()
+                             / np.delete(sign, i).sum() for i in range(len(sign))])
+    expected_error = math.sqrt(5 / 6 * np.sum((leave_volume - leave_volume.mean())**2))
+    assert result["volume_bohr3"] == pytest.approx(expected_volume)
+    assert result["volume_bohr3"] != pytest.approx(volume.mean())
+    assert result["volume_standard_error_bohr3"] == pytest.approx(expected_error)
+    assert result["enthalpy_hartree"] == pytest.approx(3.0 + pressure * expected_volume)
+    assert result["enthalpy_standard_error_hartree"] == pytest.approx(pressure * expected_error)
+
+
+def test_unresolved_sign_withholds_npt_volume_and_enthalpy():
+    data = columns(np.full(8, 0.01))
+    data["volume_numerator_bohr3"] = np.full(8, 0.05)
+    data["enthalpy_numerator_hartree"] = np.full(8, 0.2)
+    result = exchange_thermodynamics(data, block_size=1)
+    assert result["volume_bohr3"] is None
+    assert result["volume_standard_error_bohr3"] is None
+    assert result["enthalpy_hartree"] is None
+    assert result["enthalpy_standard_error_hartree"] is None
+    assert "average_sign_below_threshold" in warning_codes(result)
+
+
 def test_block_remainder_is_explicit_and_all_estimates_use_same_prefix():
     data = columns(np.r_[np.ones(8), -1.0], np.r_[np.arange(8.0), 1e6])
     result = exchange_thermodynamics(data, block_size=2)

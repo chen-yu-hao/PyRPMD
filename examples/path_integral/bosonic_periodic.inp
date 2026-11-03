@@ -1,4 +1,4 @@
-# Explicit minimum-image approximation; no full winding sum and no NPT.
+# Explicit minimum-image approximation in a fixed cell.
 # A free-particle smoke example, not a converged Bose-gas calculation.
 task = "pimd"
 temperature = "200000 K"

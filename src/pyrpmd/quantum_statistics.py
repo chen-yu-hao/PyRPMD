@@ -484,7 +484,10 @@ def exchange_thermodynamics(estimator_samples, *, block_size=None,
     columns are ``sign`` and ``potential_energy_numerator_hartree``,
     ``kinetic_energy_numerator_hartree``, and
     ``internal_energy_numerator_hartree``.  Optional columns are
-    ``virial_internal_energy_numerator_hartree`` and ``pressure_numerator_au``.
+    ``virial_internal_energy_numerator_hartree``, ``pressure_numerator_au``,
+    ``volume_numerator_bohr3``, and ``enthalpy_numerator_hartree``.  The latter
+    two are NPT observables: pass ``sign * volume`` and the signed internal
+    energy numerator plus ``pressure_external * sign * volume``.
     Every numerator is *already* signed.  In particular, a thermodynamic
     fermion energy numerator contains a derivative of the signed exchange
     weight; multiplying the boson energy estimator by ``sign`` is incorrect.
@@ -515,6 +518,8 @@ def exchange_thermodynamics(estimator_samples, *, block_size=None,
         "internal_energy_numerator_hartree": ("internal_energy_hartree", "internal_energy_standard_error_hartree"),
         "virial_internal_energy_numerator_hartree": ("virial_internal_energy_hartree", "virial_internal_energy_standard_error_hartree"),
         "pressure_numerator_au": ("pressure_au", "pressure_standard_error_au"),
+        "volume_numerator_bohr3": ("volume_bohr3", "volume_standard_error_bohr3"),
+        "enthalpy_numerator_hartree": ("enthalpy_hartree", "enthalpy_standard_error_hartree"),
     }
     required = {"sign", *list(channels)[:3]}
     if isinstance(estimator_samples, Mapping):

@@ -1,7 +1,7 @@
 """Reproducible single-process exchange timings; no convergence claims.
 
 Run with OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 before Python starts.
-The three variants share the same positions and are interleaved to reduce
+The variants share the same positions and are interleaved to reduce
 timing drift. Both elapsed and process CPU times are reported in milliseconds.
 """
 
@@ -31,6 +31,8 @@ def main():
     parser.add_argument("--beads", type=positive_integer, default=32)
     parser.add_argument("--rounds", type=positive_integer, default=7)
     parser.add_argument("--calls", type=positive_integer, default=5)
+    parser.add_argument("--periodic-sums", action="store_true",
+                        help="also time full periodic image sums, including a small-cell reciprocal case")
     args = parser.parse_args()
     records = []
     for particles in args.particles:
@@ -40,6 +42,15 @@ def main():
             "fermionic_diagnostics": {"statistics": "fermionic"},
             "minimum_image_bosonic": {"cell": np.eye(3) * 8, "periodic_mode": "minimum_image"},
         }
+        if args.periodic_sums:
+            variants.update({
+                "full_winding_bosonic": {"cell": np.eye(3) * 8, "periodic_mode": "full_winding"},
+                "full_winding_fermionic": {"cell": np.eye(3) * 8,
+                    "periodic_mode": "full_winding", "statistics": "fermionic"},
+                "full_winding_skew": {"cell": [[8., 0., 0.], [.8, 8., 0.], [.5, .4, 8.]],
+                    "periodic_mode": "full_winding"},
+                "full_winding_small_cell": {"cell": np.eye(3) * .7, "periodic_mode": "full_winding"},
+            })
         timings = {name: [] for name in variants}
         for options in variants.values():
             bosonic_exchange(q, 1., 4., **options)

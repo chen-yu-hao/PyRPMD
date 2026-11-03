@@ -1,0 +1,44 @@
+# Fully periodic free-fermion estimators from positive bosonic sampling.
+# Atomic-unit toy masses; the sign gate may withhold short-run conclusions.
+task = "pimd"
+temperature = "200000 K"
+beads = 4
+seed = 2084
+
+[system]
+symbols = ["H", "H"]
+masses = [1.0, 1.0]
+geometry = [[0.4, 0.5, 0.6], [1.0, 0.7, 0.4]]
+geometry_unit = "bohr"
+cell = [[4.0, 0.0, 0.0], [0.4, 4.2, 0.0], [0.2, 0.3, 4.4]]
+cell_unit = "bohr"
+pbc = [true, true, true]
+
+[potential]
+provider = "free"
+
+[dynamics]
+integrator = "velocity-verlet"
+timestep = "0.01 au"
+
+[sampling]
+thermostat = "andersen"
+andersen_interval = 10
+equilibration_steps = 500
+production_steps = 2000
+sample_interval = 5
+
+[path_integral]
+method = "fermionic"
+groups = [[0, 1]]
+periodic_mode = "full_winding"
+winding_tolerance = 1e-12
+winding_max_terms = 100000
+block_size = 20
+minimum_average_sign = 0.05
+sign_sigma = 3.0
+
+[output]
+directory = "runs/fermionic_winding"
+trajectory_storage = "memory"
+checkpoint_steps = 250

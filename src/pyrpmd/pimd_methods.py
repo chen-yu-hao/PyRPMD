@@ -192,16 +192,17 @@ class ExchangeResult:
     spring_energy: float | None = None
     fermionic_sign: float | None = None
     fermionic_spring_energy_numerator: float | None = None
+    winding_diagnostics: dict | None = None
 
 
 def _exchange_geometry(cell, pbc, periodic_mode):
     from .geometry import FixedCellGeometry
     geometry = FixedCellGeometry(cell, pbc)
     if periodic_mode is not None and (not isinstance(periodic_mode, str)
-                                      or periodic_mode != "minimum_image"):
-        raise ValueError("periodic_mode must be 'minimum_image'; full winding sums are not implemented")
-    if geometry.pbc.any() and periodic_mode != "minimum_image":
-        raise ValueError("periodic exchange requires explicit periodic_mode='minimum_image'; winding sums are not implemented")
+                                      or periodic_mode not in ("minimum_image", "full_winding")):
+        raise ValueError("periodic_mode must be 'minimum_image' or 'full_winding' for winding sums")
+    if geometry.pbc.any() and periodic_mode is None:
+        raise ValueError("periodic exchange requires explicit periodic_mode='minimum_image' or 'full_winding'")
     if not geometry.pbc.any() and periodic_mode is not None:
         raise ValueError("periodic_mode requires periodic boundary conditions")
     return geometry
@@ -214,8 +215,9 @@ def _exchange_statistics(statistics):
 
 
 def bosonic_exchange(positions, mass, beta, *, cell=None, pbc=None,
-                     periodic_mode=None, statistics="bosonic"):
-    """Feldman--Hirshberg spring energy/forces in O(N² + PN) work.
+                     periodic_mode=None, statistics="bosonic",
+                     winding_tolerance=1e-12, winding_max_terms=100000):
+    """Feldman--Hirshberg springs, with O(N² + PN) exchange recursion.
 
     One group of equal-mass indistinguishable particles. The recurrence samples
     representative permutations; its pointwise potential is NOT the factorial
@@ -223,18 +225,26 @@ def bosonic_exchange(positions, mass, beta, *, cell=None, pbc=None,
     joining last bead i to first j. The physical potential must be invariant
     under exchange within the group.
 
-    Periodic cells require explicit ``periodic_mode="minimum_image"``. Every
-    interior and endpoint link then uses the shortest Euclidean lattice image,
-    including triclinic cells. This is an approximation to the periodic free
-    density matrix, not a winding sum; derivatives are undefined on image ties.
+    Periodic cells require an explicit mode. ``minimum_image`` uses the
+    shortest Euclidean lattice image for every link, an approximation with
+    undefined derivatives on image ties. ``full_winding`` sums all periodic
+    Gaussian images to controlled per-link truncation bounds, using a Poisson
+    dual for broad Gaussians and separable sums for orthogonal cells. Its work
+    includes the numerical terms per link; a budget failure raises ValueError.
     With ``statistics="fermionic"``, the forces still sample the positive
     bosonic density and the result additionally contains signed estimator
     ingredients. No division by a configuration's fermionic sign is performed.
     """
+    from .exchange_winding import GaussianWindingKernel, validate_winding_options
     geometry = _exchange_geometry(cell, pbc, periodic_mode)
-    return _bosonic_exchange(coordinates(positions), _positive(mass, "mass"),
-                             _positive(beta, "beta"), geometry,
-                             _exchange_statistics(statistics))
+    tolerance, budget = validate_winding_options(winding_tolerance, winding_max_terms, periodic_mode)
+    q, mass, beta = coordinates(positions), _positive(mass, "mass"), _positive(beta, "beta")
+    statistics = _exchange_statistics(statistics)
+    if periodic_mode == "full_winding":
+        kernel = GaussianWindingKernel(geometry, mass * len(q) / (2 * beta),
+                                       tolerance=tolerance, max_terms=budget)
+        return _winding_exchange(q, mass, beta, kernel, statistics)
+    return _bosonic_exchange(q, mass, beta, geometry, statistics)
 
 
 def _bosonic_exchange(q, mass, beta, geometry, statistics):
@@ -313,6 +323,86 @@ def _bosonic_exchange(q, mass, beta, geometry, statistics):
     return ExchangeResult(energy, force, connections, virial, spring_energy, sign, numerator)
 
 
+def _winding_exchange(q, mass, beta, kernel, statistics):
+    """Representative exchange recurrence with separate log-weight and moments.
+
+    A link's free energy is -log(K)/beta_P; its thermodynamic spring moment
+    is coefficient*<delta squared>/2. Only the latter differentiates beta
+    correctly. Keeping these channels separate is essential at small volume,
+    where the link free energy is negative but its quadratic moment is positive.
+    """
+    p, n, _ = q.shape
+    coefficient = mass * (p / beta) ** 2
+    beta_p = beta / p
+    interior_count = (p - 1) * n
+    delta = np.concatenate(((q[1:] - q[:-1]).reshape(-1, 3),
+                            (q[-1, :, None] - q[0, None, :]).reshape(-1, 3)))
+    moments = kernel.evaluate(delta)
+    inner_mean = moments.mean_displacement[:interior_count].reshape(p - 1, n, 3)
+    link_mean = moments.mean_displacement[interior_count:].reshape(n, n, 3)
+    inner_second = moments.second_moment[:interior_count]
+    link_second = moments.second_moment[interior_count:].reshape(n, n, 3, 3)
+    interior_free = -float(np.sum(moments.log_kernel[:interior_count])) / beta_p
+    interior_spring = 0.5 * coefficient * float(np.trace(inner_second, axis1=1, axis2=2).sum())
+    link = -moments.log_kernel[interior_count:].reshape(n, n) / beta_p
+    spring = 0.5 * coefficient * np.trace(link_second, axis1=2, axis2=3)
+    adjacent = np.concatenate(([0.0], np.cumsum(np.diag(link, k=1))))
+    adjacent_spring = np.concatenate(([0.0], np.cumsum(np.diag(spring, k=1))))
+    cycle, cycle_spring = np.zeros((n, n)), np.zeros((n, n))
+    for end in range(n):
+        starts = np.arange(end + 1)
+        cycle[starts, end] = adjacent[end] - adjacent[starts] + link[end, starts]
+        cycle_spring[starts, end] = adjacent_spring[end] - adjacent_spring[starts] + spring[end, starts]
+    prefix = np.zeros(n + 1)
+    signed = np.zeros(n + 1)
+    signed[0] = 1.0
+    signed_spring = np.zeros(n + 1)
+    for end in range(1, n + 1):
+        terms = prefix[:end] - beta_p * cycle[:end, end - 1]
+        prefix[end] = logsumexp(terms) - math.log(end)
+        if statistics == "fermionic":
+            parity = np.where((end - np.arange(end) - 1) % 2, -1.0, 1.0)
+            raw_weight = np.exp(terms - np.max(terms))
+            normalization = math.fsum(raw_weight)
+            signed[end] = math.fsum(raw_weight * parity * signed[:end]) / normalization
+            weight = raw_weight * parity / normalization
+            signed_spring[end] = math.fsum(weight * (signed_spring[:end]
+                + cycle_spring[:end, end - 1] * signed[:end]))
+    suffix = np.zeros(n + 1)
+    log_indices = np.log(np.arange(1, n + 1))
+    for start in range(n - 1, -1, -1):
+        suffix[start] = logsumexp(-beta_p * cycle[start, start:] + suffix[start + 1:] - log_indices[start:])
+    connections = np.zeros((n, n))
+    for end in range(n):
+        starts = np.arange(end + 1)
+        connections[end, starts] = np.exp(prefix[starts] + suffix[end + 1]
+            - beta_p * cycle[starts, end] - math.log(end + 1) - prefix[n])
+        if end + 1 < n:
+            exponent = prefix[end + 1] + suffix[end + 1] - prefix[n]
+            connections[end, end + 1] = -np.expm1(min(0.0, exponent))
+    force = np.zeros_like(q)
+    force[:-1] += coefficient * inner_mean
+    force[1:] -= coefficient * inner_mean
+    force[-1] -= coefficient * np.einsum("ij,ijc->ic", connections, link_mean)
+    force[0] += coefficient * np.einsum("ij,ijc->jc", connections, link_mean)
+    energy = interior_free - float(prefix[n]) / beta_p
+    spring_energy = interior_spring + float(np.sum(connections * spring))
+    virial = -coefficient * (np.sum(inner_second, axis=0)
+                            + np.einsum("ij,ijab->ab", connections, link_second))
+    sign = float(signed[n]) if statistics == "fermionic" else None
+    numerator = (float(signed_spring[n] + interior_spring * signed[n])
+                 if statistics == "fermionic" else None)
+    if (not math.isfinite(energy) or not np.isfinite(force).all()
+            or not math.isfinite(spring_energy) or not np.isfinite(virial).all()
+            or (sign is not None and (not math.isfinite(sign) or not math.isfinite(numerator)))):
+        raise ValueError("full winding exchange overflow; check mass, beta, cell and coordinates")
+    diagnostics = dict(kernel.metadata)
+    diagnostics["representative_weight_relative_truncation_bound"] = math.expm1(
+        p * n * math.log1p(kernel.error_bounds[0]))
+    diagnostics["links_per_representative"] = p * n
+    return ExchangeResult(energy, force, connections, virial, spring_energy, sign, numerator, diagnostics)
+
+
 def _ring_virial(q, masses, beta):
     delta = q - np.roll(q, -1, axis=0)
     return -(len(q) / beta) ** 2 * np.einsum("n,pna,pnb->ab", masses, delta, delta)
@@ -326,20 +416,25 @@ class BosonicExchangePotential(_SamplingPotential):
     reweighting, never the positive sampling density. Distinct spin species
     can be represented by separate groups; spin degeneracies are not inferred.
 
-    Periodic minimum-image sampling is an explicit approximation, with all
-    links including those of unlisted particles treated consistently. The raw
+    Periodic minimum-image sampling is an explicit approximation. Full winding
+    sampling sums the periodic Gaussian images with controlled truncation.
+    All links including those of unlisted particles are consistent. The raw
     springs added by Dynamics are subtracted exactly once. The affine virial
     describes this correction, but does not make the existing centroid BZP
     propagator compatible with the all-bead periodic coordinate domain.
     """
 
     def __init__(self, potential, masses, beta, nbeads, *, groups=None,
-                 statistics="bosonic", cell=None, pbc=None, periodic_mode=None):
+                 statistics="bosonic", cell=None, pbc=None, periodic_mode=None,
+                 winding_tolerance=1e-12, winding_max_terms=100000):
+        from .exchange_winding import validate_winding_options
         super().__init__(potential, masses, beta, nbeads)
         self.statistics = _exchange_statistics(statistics)
         self.geometry = _exchange_geometry(cell, pbc, periodic_mode)
         self.cell, self.pbc = self.geometry.cell, self.geometry.pbc
         self.periodic_mode = periodic_mode
+        self.winding_tolerance, self.winding_max_terms = validate_winding_options(
+            winding_tolerance, winding_max_terms, periodic_mode)
         if groups is None:
             groups = [list(range(len(self.masses)))]
         if not isinstance(groups, (list, tuple)) or not groups:
@@ -361,20 +456,93 @@ class BosonicExchangePotential(_SamplingPotential):
         self._sampling_groups = list(self.groups)
         if self.pbc.any():
             self._sampling_groups += [np.array([i]) for i in self._unlisted]
+        self._winding_kernels = self._make_winding_kernels(self.geometry)
         self.metadata.pop("virial", None)
         self.metadata.update({
             "action": "bosonic_exchange", "statistics": self.statistics,
             "sampling_statistics": "bosonic", "periodic_mode": periodic_mode,
             "virial_requires": "physical_provider_configurational_virials",
             "virial_convention": "negative_affine_strain_derivative_of_sampling_potential",
-            "pressure_estimator": "primitive_thermodynamic_fixed_cell_only",
-            "winding_sum": False,
+            "pressure_estimator": "primitive_thermodynamic_given_cell",
+            "npt_coordinate_coupling": "all_beads",
+            "winding_sum": periodic_mode == "full_winding",
         })
+        self._winding_metadata()
 
-    def set_cell(self, cell):
-        """Reject centroid BZP coupling even though fixed-cell virials exist."""
-        raise PotentialError("exchange NPT is unsupported: centroid-only BZP scaling is incompatible "
-                             "with the all-bead minimum-image periodic domain; use a fixed cell")
+    def _make_winding_kernels(self, geometry):
+        if self.periodic_mode != "full_winding":
+            return {}
+        from .exchange_winding import GaussianWindingKernel
+        return {mass: GaussianWindingKernel(geometry, mass * self.nbeads / (2 * self.beta),
+            tolerance=self.winding_tolerance, max_terms=self.winding_max_terms)
+            for mass in dict.fromkeys(float(self.masses[ids[0]]) for ids in self._sampling_groups)}
+
+    def _winding_metadata(self):
+        if self.periodic_mode == "full_winding":
+            self.metadata.update({"winding_tolerance": self.winding_tolerance,
+                "winding_max_terms": self.winding_max_terms,
+                "winding_kernels": [{"mass": mass, **kernel.metadata}
+                                    for mass, kernel in self._winding_kernels.items()]})
+
+    def _exchange_group(self, q, mass, statistics):
+        if self.periodic_mode == "full_winding":
+            return _winding_exchange(q, mass, self.beta, self._winding_kernels[float(mass)], statistics)
+        return _bosonic_exchange(q, mass, self.beta, self.geometry, statistics)
+
+    def set_cell(self, cell, *, barostat_coupling=None):
+        """Transactionally update periodic geometry for explicit all-bead scaling.
+
+        The keyword prevents the existing centroid-only BZP class from
+        accidentally using an incompatible periodic coordinate measure.
+        """
+        if barostat_coupling != "all_beads":
+            raise PotentialError("centroid-only BZP scaling is incompatible with periodic exchange; "
+                                 "set_cell requires barostat_coupling='all_beads'")
+        if not self.pbc.any():
+            raise PotentialError("all-bead exchange cell updates require a periodic action")
+        geometry = _exchange_geometry(cell, self.pbc, self.periodic_mode)
+        kernels = self._make_winding_kernels(geometry)
+        setter = getattr(self.potential, "set_cell", None)
+        if not callable(setter):
+            raise PotentialError("exchange cell updates require physical set_cell(cell_bohr) support")
+        try:
+            setter(geometry.cell.copy())
+        except BaseException:
+            try:
+                setter(self.cell.copy())
+            except BaseException as rollback_error:
+                raise PotentialError("physical set_cell failed and restoring its previous cell also failed") from rollback_error
+            raise
+        self.geometry = geometry
+        self.cell, self.pbc = geometry.cell, geometry.pbc
+        self._winding_kernels = kernels
+        self._winding_metadata()
+
+    def evaluate_sampling(self, positions):
+        """Return the complete physical-plus-exchange sampling action.
+
+        Unlike :meth:`evaluate`, this entry point does not subtract any raw
+        integrator springs. Its row sums provide the full potential energy
+        and affine virial for a Cartesian all-bead periodic propagator.
+        """
+        q = self._q(positions)
+        result = validate_result(self.potential.evaluate(q), q.shape)
+        energy, force = result.energy.copy(), result.forces.copy()
+        virial = None if result.virial is None else result.virial.copy()
+        for ids in self._sampling_groups:
+            exchanged = self._exchange_group(q[:, ids], self.masses[ids[0]], "bosonic")
+            energy += exchanged.energy / self.nbeads
+            force[:, ids] += exchanged.forces
+            if virial is not None:
+                virial += exchanged.virial / self.nbeads
+        if not self.pbc.any() and len(self._unlisted):
+            ids = self._unlisted
+            ring, ordinary = _ring_terms(q[:, ids], self.masses[ids], self.beta)
+            energy += ring / self.nbeads
+            force[:, ids] += ordinary
+            if virial is not None:
+                virial += _ring_virial(q[:, ids], self.masses[ids], self.beta) / self.nbeads
+        return validate_result(PESResult(energy, force, virial=virial), q.shape)
 
     def evaluate(self, positions):
         q = self._q(positions)
@@ -383,8 +551,7 @@ class BosonicExchangePotential(_SamplingPotential):
         virial = None if result.virial is None else result.virial.copy()
         for ids in self._sampling_groups:
             ring, ordinary = _ring_terms(q[:, ids], self.masses[ids], self.beta)
-            exchanged = _bosonic_exchange(q[:, ids], self.masses[ids[0]], self.beta,
-                                           self.geometry, "bosonic")
+            exchanged = self._exchange_group(q[:, ids], self.masses[ids[0]], "bosonic")
             energy += (exchanged.energy - ring) / self.nbeads
             force[:, ids] += exchanged.forces - ordinary
             if virial is not None:
@@ -417,8 +584,7 @@ class BosonicExchangePotential(_SamplingPotential):
             raise PotentialError("exchange pressure requires volume and physical configurational virials")
         signs, springs = [], []
         for ids in self._sampling_groups:
-            exchanged = _bosonic_exchange(q[:, ids], self.masses[ids[0]], self.beta,
-                                           self.geometry, self.statistics)
+            exchanged = self._exchange_group(q[:, ids], self.masses[ids[0]], self.statistics)
             signs.append(exchanged.fermionic_sign if self.statistics == "fermionic" else 1.0)
             springs.append(exchanged.fermionic_spring_energy_numerator
                            if self.statistics == "fermionic" else exchanged.spring_energy)

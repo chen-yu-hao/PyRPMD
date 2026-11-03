@@ -155,11 +155,14 @@ def test_periodic_exchange_requires_explicit_mic_and_cartesian_propagation():
 
 
 @pytest.mark.parametrize("method", ["bosonic", "fermionic"])
-def test_exchange_bzp_is_explicitly_rejected(method):
+def test_exchange_bzp_selects_all_bead_periodic_measure(method):
     raw = exchange_input(method, periodic=True)
     raw["barostat"] = {"method": "bzp", "pressure": "1 bar", "time_constant": "10 fs"}
-    with pytest.raises(InputError, match="exchange.*BZP.*centroid"):
-        JobSpec.from_mapping(raw).resolve()
+    checked = prepare(raw, numerical=True)
+    assert checked["ready"]
+    assert checked["path_integral_preparation"]["ensemble"] == "npt"
+    assert checked["path_integral_preparation"]["barostat_coordinate_scaling"] == "all_beads"
+    assert np.isfinite(checked["pes_check"]["initial_configurational_pressure_au"])
 
 
 @pytest.mark.parametrize("damage", ["missing", "length", "sign", "nan", "unknown", "schema",
