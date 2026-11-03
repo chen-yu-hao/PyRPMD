@@ -1,0 +1,13 @@
+........................................................................ [ 20%]
+.................................................................... [ 40%]
+................................................ [ 53%]
+........................................................................ [ 74%]
+............................................................. [ 91%]
+............................                                             [100%]
+=============================== warnings summary ===============================
+tests/test_surface_source.py: 13 warnings
+  /workspace/scratch/5d4ac7a89933/PyRPMD/tests/test_surface_source.py:35: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    cfg, system = JobSpec.from_mapping(original).resolve()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+349 passed, 13 warnings, 39 subtests passed in 75.57s (0:01:15)

@@ -87,6 +87,16 @@ The three remaining groups depend on [PR #83](https://github.com/chen-yu-hao/PyR
 which was still unmerged when this cleanup was prepared against `main@f877051`.
 Remove them after that repair is integrated and its Windows library job passes.
 
+The [T18b Windows job](https://github.com/chen-yu-hao/PyRPMD/actions/runs/41582846451/job/125741769206)
+passed on code revision `b013bc2`: **8206 passed, 285 skipped**, compared with
+8146 passed and 301 skipped on the baseline. The 60 additional passing cases
+are the 16 restored cases plus 44 new provenance regressions. The additional
+warning is an existing metadynamics deprecation warning from a restored test.
+The [verification record](validation/t18b-windows-2026-11-03/validation.json)
+contains complete commands and logs, the exact remaining registry, and the
+33 unchanged Linux identity values. Its full Linux baseline and candidate runs
+have the same single sandbox-denied Unix-socket failure and no new failures.
+
 | Limitation | Affected checks | Status / removal requirement |
 | --- | --- | --- |
 | Native trajectory publication calls `os.fsync()` on a read-only descriptor and can unlink a mapped file on Windows. | 19 registrations / 40 parametrized native streaming, journal, publication and restart cases. In-memory native dynamics and pre-publication failure checks remain enabled. | Retained: integrate PR #83's portable publication and rollback repair, then validate on Windows. |
@@ -152,6 +162,8 @@ its existing diagnostic. POSIX identities, manifest/checkpoint schemas and
 authenticated schema-1 migration are unchanged. The new regression module
 `tests/test_windows_resume_provenance.py` emulates drive paths and
 `os.path.isabs` on Linux and uses actual drive paths in the Windows CI job.
+
+### Other portability checks
 
 The macOS fixes canonicalize temporary paths and keep Unix socket names short.
 The symmetric teaching-saddle tests accept either physically equivalent

@@ -1,0 +1,630 @@
+﻿2026-11-02T20:22:03.0634348Z Current runner version: '2.338.2'
+2026-11-02T20:22:03.0658291Z ##[group]Runner Image Provisioner
+2026-11-02T20:22:03.0659045Z Hosted Compute Agent
+2026-11-02T20:22:03.0659558Z Version: 20261021.618
+2026-11-02T20:22:03.0660164Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-11-02T20:22:03.0660861Z Build Date: 2026-10-21T00:45:21Z
+2026-11-02T20:22:03.0661475Z Worker ID: {fd1d55e4-47c3-4414-8985-b4ffaab8d7b6}
+2026-11-02T20:22:03.0662128Z Region: southcentralus
+2026-11-02T20:22:03.0662653Z Cloud: Azure
+2026-11-02T20:22:03.0663132Z ##[endgroup]
+2026-11-02T20:22:03.0664400Z ##[group]Operating System
+2026-11-02T20:22:03.0665040Z Microsoft Windows Server 2022
+2026-11-02T20:22:03.0665591Z 10.0.20348
+2026-11-02T20:22:03.0666062Z Datacenter
+2026-11-02T20:22:03.0666517Z ##[endgroup]
+2026-11-02T20:22:03.0666990Z ##[group]Runner Image
+2026-11-02T20:22:03.0667514Z Image: windows-2022
+2026-11-02T20:22:03.0668075Z Version: 20261025.346.1
+2026-11-02T20:22:03.0669466Z Included Software: https://github.com/actions/runner-images/blob/win22/20261025.346/images/windows/Windows2022-Readme.md
+2026-11-02T20:22:03.0670918Z Image Release: https://github.com/actions/runner-images/releases/tag/win22%2F20261025.346
+2026-11-02T20:22:03.0671771Z ##[endgroup]
+2026-11-02T20:22:03.0672819Z ##[group]GITHUB_TOKEN Permissions
+2026-11-02T20:22:03.0674551Z Contents: read
+2026-11-02T20:22:03.0675111Z Metadata: read
+2026-11-02T20:22:03.0675590Z ##[endgroup]
+2026-11-02T20:22:03.0677578Z Secret source: Actions
+2026-11-02T20:22:03.0678385Z Cache mode: write
+2026-11-02T20:22:03.0679087Z Prepare workflow directory
+2026-11-02T20:22:03.1076106Z Prepare all required actions
+2026-11-02T20:22:03.1123475Z Getting action download info
+2026-11-02T20:22:03.4024297Z Download action repository 'actions/checkout@v6' (SHA:d23441a48e516b6c34aea4fa41551a30e30af803)
+2026-11-02T20:22:03.5280710Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-11-02T20:22:03.7897124Z Complete job name: library-windows
+2026-11-02T20:22:03.9472927Z ##[group]Run git config --global core.autocrlf false
+2026-11-02T20:22:03.9473797Z [36;1mgit config --global core.autocrlf false[0m
+2026-11-02T20:22:03.9583889Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-02T20:22:03.9584809Z env:
+2026-11-02T20:22:03.9585205Z   OMP_NUM_THREADS: 1
+2026-11-02T20:22:03.9585653Z   OPENBLAS_NUM_THREADS: 1
+2026-11-02T20:22:03.9586099Z ##[endgroup]
+2026-11-02T20:22:04.7167637Z ##[group]Run actions/checkout@v6
+2026-11-02T20:22:04.7168387Z with:
+2026-11-02T20:22:04.7168975Z   repository: chen-yu-hao/PyRPMD
+2026-11-02T20:22:04.7173275Z   token: ***
+2026-11-02T20:22:04.7173716Z   ssh-strict: true
+2026-11-02T20:22:04.7174161Z   ssh-user: git
+2026-11-02T20:22:04.7174608Z   persist-credentials: true
+2026-11-02T20:22:04.7175107Z   clean: true
+2026-11-02T20:22:04.7175551Z   sparse-checkout-cone-mode: true
+2026-11-02T20:22:04.7176083Z   fetch-depth: 1
+2026-11-02T20:22:04.7176521Z   fetch-tags: false
+2026-11-02T20:22:04.7176998Z   show-progress: true
+2026-11-02T20:22:04.7177449Z   lfs: false
+2026-11-02T20:22:04.7177859Z   submodules: false
+2026-11-02T20:22:04.7178316Z   set-safe-directory: true
+2026-11-02T20:22:04.7178849Z   allow-unsafe-pr-checkout: false
+2026-11-02T20:22:04.7179379Z env:
+2026-11-02T20:22:04.7179781Z   OMP_NUM_THREADS: 1
+2026-11-02T20:22:04.7180245Z   OPENBLAS_NUM_THREADS: 1
+2026-11-02T20:22:04.7180725Z ##[endgroup]
+2026-11-02T20:22:04.8557807Z Syncing repository: chen-yu-hao/PyRPMD
+2026-11-02T20:22:04.8559642Z ##[group]Getting Git version info
+2026-11-02T20:22:04.8560327Z Working directory is 'D:\a\PyRPMD\PyRPMD'
+2026-11-02T20:22:04.9486059Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-11-02T20:22:04.9752566Z git version 2.56.0.windows.3
+2026-11-02T20:22:04.9790574Z ##[endgroup]
+2026-11-02T20:22:04.9802354Z Copying 'C:\Users\runneradmin\.gitconfig' to 'D:\a\_temp\cf01b476-5853-4500-b11c-66bec7779b88\.gitconfig'
+2026-11-02T20:22:04.9821772Z Temporarily overriding HOME='D:\a\_temp\cf01b476-5853-4500-b11c-66bec7779b88' before making global git config changes
+2026-11-02T20:22:04.9825968Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-02T20:22:04.9832589Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\PyRPMD\PyRPMD
+2026-11-02T20:22:05.0102027Z Deleting the contents of 'D:\a\PyRPMD\PyRPMD'
+2026-11-02T20:22:05.0107081Z ##[group]Determining repository object format
+2026-11-02T20:22:05.0109929Z ##[endgroup]
+2026-11-02T20:22:05.0110864Z ##[group]Initializing the repository
+2026-11-02T20:22:05.0118196Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\PyRPMD\PyRPMD
+2026-11-02T20:22:05.0872576Z Initialized empty Git repository in D:/a/PyRPMD/PyRPMD/.git/
+2026-11-02T20:22:05.0906547Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/chen-yu-hao/PyRPMD
+2026-11-02T20:22:05.1466623Z ##[endgroup]
+2026-11-02T20:22:05.1467596Z ##[group]Disabling automatic garbage collection
+2026-11-02T20:22:05.1474584Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-11-02T20:22:05.1744249Z ##[endgroup]
+2026-11-02T20:22:05.1745071Z ##[group]Setting up auth
+2026-11-02T20:22:05.1745925Z Removing SSH command configuration
+2026-11-02T20:22:05.1761581Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-02T20:22:05.2056977Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-02T20:22:06.5000346Z Removing HTTP extra header
+2026-11-02T20:22:06.5009117Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-02T20:22:06.5282873Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-02T20:22:06.9530891Z Removing includeIf entries pointing to credentials config files
+2026-11-02T20:22:06.9542284Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-02T20:22:06.9831037Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-02T20:22:07.4086213Z [command]"C:\Program Files\Git\bin\git.exe" config --file D:\a\_temp\git-credentials-cfdb48c5-30e3-42a6-8c1b-ab829aecd80c.config http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-11-02T20:22:07.4379845Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/PyRPMD/PyRPMD/.git.path D:\a\_temp\git-credentials-cfdb48c5-30e3-42a6-8c1b-ab829aecd80c.config
+2026-11-02T20:22:07.4661430Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/PyRPMD/PyRPMD/.git/worktrees/*.path D:\a\_temp\git-credentials-cfdb48c5-30e3-42a6-8c1b-ab829aecd80c.config
+2026-11-02T20:22:07.4986339Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-cfdb48c5-30e3-42a6-8c1b-ab829aecd80c.config
+2026-11-02T20:22:07.5265174Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-cfdb48c5-30e3-42a6-8c1b-ab829aecd80c.config
+2026-11-02T20:22:07.5573263Z ##[endgroup]
+2026-11-02T20:22:07.5573893Z ##[group]Fetching the repository
+2026-11-02T20:22:07.5585742Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +f87705115c7496821b283a0966c991abd541231c:refs/remotes/origin/main
+2026-11-02T20:22:10.3157847Z From https://github.com/chen-yu-hao/PyRPMD
+2026-11-02T20:22:10.3159968Z  * [new ref]         f87705115c7496821b283a0966c991abd541231c -> origin/main
+2026-11-02T20:22:10.3197559Z [command]"C:\Program Files\Git\bin\git.exe" branch --list --remote origin/main
+2026-11-02T20:22:10.3567884Z   origin/main
+2026-11-02T20:22:10.3600737Z [command]"C:\Program Files\Git\bin\git.exe" rev-parse refs/remotes/origin/main
+2026-11-02T20:22:10.3895770Z f87705115c7496821b283a0966c991abd541231c
+2026-11-02T20:22:10.3917371Z ##[endgroup]
+2026-11-02T20:22:10.3917731Z ##[group]Determining the checkout info
+2026-11-02T20:22:10.3918908Z ##[endgroup]
+2026-11-02T20:22:10.3926905Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-11-02T20:22:10.4250917Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-11-02T20:22:10.4517693Z ##[group]Checking out the ref
+2026-11-02T20:22:10.4524963Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force -B main refs/remotes/origin/main
+2026-11-02T20:22:11.5099581Z Updating files:  66% (3294/4985)
+2026-11-02T20:22:11.5321205Z Updating files:  67% (3340/4985)
+2026-11-02T20:22:11.5478660Z Updating files:  68% (3390/4985)
+2026-11-02T20:22:11.5639384Z Updating files:  69% (3440/4985)
+2026-11-02T20:22:11.5759395Z Updating files:  70% (3490/4985)
+2026-11-02T20:22:11.5933839Z Updating files:  71% (3540/4985)
+2026-11-02T20:22:11.6087281Z Updating files:  72% (3590/4985)
+2026-11-02T20:22:11.6227663Z Updating files:  73% (3640/4985)
+2026-11-02T20:22:11.6515041Z Updating files:  74% (3689/4985)
+2026-11-02T20:22:11.6869623Z Updating files:  75% (3739/4985)
+2026-11-02T20:22:11.7195005Z Updating files:  76% (3789/4985)
+2026-11-02T20:22:11.7536813Z Updating files:  77% (3839/4985)
+2026-11-02T20:22:11.7793413Z Updating files:  78% (3889/4985)
+2026-11-02T20:22:11.7992949Z Updating files:  79% (3939/4985)
+2026-11-02T20:22:11.8134863Z Updating files:  80% (3988/4985)
+2026-11-02T20:22:11.8260214Z Updating files:  81% (4038/4985)
+2026-11-02T20:22:11.8357242Z Updating files:  82% (4088/4985)
+2026-11-02T20:22:11.8446854Z Updating files:  83% (4138/4985)
+2026-11-02T20:22:11.8537454Z Updating files:  84% (4188/4985)
+2026-11-02T20:22:11.8639019Z Updating files:  85% (4238/4985)
+2026-11-02T20:22:11.8756587Z Updating files:  86% (4288/4985)
+2026-11-02T20:22:11.8880801Z Updating files:  87% (4337/4985)
+2026-11-02T20:22:11.9004319Z Updating files:  88% (4387/4985)
+2026-11-02T20:22:11.9148027Z Updating files:  89% (4437/4985)
+2026-11-02T20:22:11.9269602Z Updating files:  90% (4487/4985)
+2026-11-02T20:22:11.9374632Z Updating files:  91% (4537/4985)
+2026-11-02T20:22:11.9485242Z Updating files:  92% (4587/4985)
+2026-11-02T20:22:11.9581782Z Updating files:  93% (4637/4985)
+2026-11-02T20:22:11.9678384Z Updating files:  94% (4686/4985)
+2026-11-02T20:22:11.9775886Z Updating files:  95% (4736/4985)
+2026-11-02T20:22:11.9872494Z Updating files:  96% (4786/4985)
+2026-11-02T20:22:11.9977495Z Updating files:  97% (4836/4985)
+2026-11-02T20:22:12.0076499Z Updating files:  98% (4886/4985)
+2026-11-02T20:22:12.0166537Z Updating files:  99% (4936/4985)
+2026-11-02T20:22:12.0167016Z Updating files: 100% (4985/4985)
+2026-11-02T20:22:12.0167427Z Updating files: 100% (4985/4985), done.
+2026-11-02T20:22:12.0338645Z Switched to a new branch 'main'
+2026-11-02T20:22:12.0402613Z branch 'main' set up to track 'origin/main'.
+2026-11-02T20:22:12.0556622Z ##[endgroup]
+2026-11-02T20:22:12.1023159Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-11-02T20:22:12.1287332Z f87705115c7496821b283a0966c991abd541231c
+2026-11-02T20:22:12.1631177Z ##[group]Run actions/setup-python@v5
+2026-11-02T20:22:12.1631507Z with:
+2026-11-02T20:22:12.1631697Z   python-version: 3.12
+2026-11-02T20:22:12.1631921Z   check-latest: false
+2026-11-02T20:22:12.1634429Z   token: ***
+2026-11-02T20:22:12.1634628Z   update-environment: true
+2026-11-02T20:22:12.1634860Z   allow-prereleases: false
+2026-11-02T20:22:12.1635065Z   freethreaded: false
+2026-11-02T20:22:12.1635248Z env:
+2026-11-02T20:22:12.1635602Z   OMP_NUM_THREADS: 1
+2026-11-02T20:22:12.1635794Z   OPENBLAS_NUM_THREADS: 1
+2026-11-02T20:22:12.1635993Z ##[endgroup]
+2026-11-02T20:22:12.3079545Z ##[group]Installed versions
+2026-11-02T20:22:12.3214429Z (node:7652) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-02T20:22:12.3215132Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-02T20:22:12.3216559Z Successfully set up CPython (3.12.10)
+2026-11-02T20:22:12.3217302Z ##[endgroup]
+2026-11-02T20:22:12.3435764Z ##[group]Run python -m pip install -e '.[test]'
+2026-11-02T20:22:12.3436167Z [36;1mpython -m pip install -e '.[test]'[0m
+2026-11-02T20:22:12.3479957Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-02T20:22:12.3480295Z env:
+2026-11-02T20:22:12.3480457Z   OMP_NUM_THREADS: 1
+2026-11-02T20:22:12.3480651Z   OPENBLAS_NUM_THREADS: 1
+2026-11-02T20:22:12.3480947Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-02T20:22:12.3481434Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-11-02T20:22:12.3481883Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-02T20:22:12.3482277Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-02T20:22:12.3482671Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-02T20:22:12.3482978Z ##[endgroup]
+2026-11-02T20:22:17.0290666Z Obtaining file:///D:/a/PyRPMD/PyRPMD
+2026-11-02T20:22:17.0324091Z   Installing build dependencies: started
+2026-11-02T20:22:20.1204241Z   Installing build dependencies: finished with status 'done'
+2026-11-02T20:22:20.1220793Z   Checking if build backend supports build_editable: started
+2026-11-02T20:22:20.6422796Z   Checking if build backend supports build_editable: finished with status 'done'
+2026-11-02T20:22:20.6444546Z   Getting requirements to build editable: started
+2026-11-02T20:22:24.4932512Z   Getting requirements to build editable: finished with status 'done'
+2026-11-02T20:22:24.4958946Z   Preparing editable metadata (pyproject.toml): started
+2026-11-02T20:22:28.0511380Z   Preparing editable metadata (pyproject.toml): finished with status 'done'
+2026-11-02T20:22:28.5376273Z Collecting numpy>=1.26 (from PyRPMD==0.2.0)
+2026-11-02T20:22:28.7133214Z   Downloading numpy-2.5.4-cp312-cp312-win_amd64.whl.metadata (6.6 kB)
+2026-11-02T20:22:28.8869602Z Collecting scipy>=1.11 (from PyRPMD==0.2.0)
+2026-11-02T20:22:28.9009316Z   Downloading scipy-1.18.1-cp312-cp312-win_amd64.whl.metadata (61 kB)
+2026-11-02T20:22:29.0573881Z Collecting h5py>=3.10 (from PyRPMD==0.2.0)
+2026-11-02T20:22:29.0719143Z   Downloading h5py-3.16.0-cp312-cp312-win_amd64.whl.metadata (3.1 kB)
+2026-11-02T20:22:29.1233802Z Collecting threadpoolctl>=3.1 (from PyRPMD==0.2.0)
+2026-11-02T20:22:29.1373913Z   Downloading threadpoolctl-3.7.0-py3-none-any.whl.metadata (24 kB)
+2026-11-02T20:22:29.2023535Z Collecting pytest>=8 (from PyRPMD==0.2.0)
+2026-11-02T20:22:29.2172198Z   Downloading pytest-9.2.0-py3-none-any.whl.metadata (7.9 kB)
+2026-11-02T20:22:29.2395538Z Requirement already satisfied: colorama>=0.4 in C:\hostedtoolcache\windows\Python\3.12.10\x64\Lib\site-packages (from pytest>=8->PyRPMD==0.2.0) (0.4.6)
+2026-11-02T20:22:29.2710291Z Collecting iniconfig>=2 (from pytest>=8->PyRPMD==0.2.0)
+2026-11-02T20:22:29.2853347Z   Downloading iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+2026-11-02T20:22:29.3024676Z Requirement already satisfied: packaging>=24 in C:\hostedtoolcache\windows\Python\3.12.10\x64\Lib\site-packages (from pytest>=8->PyRPMD==0.2.0) (26.3)
+2026-11-02T20:22:29.3356669Z Collecting pluggy<2,>=1.6 (from pytest>=8->PyRPMD==0.2.0)
+2026-11-02T20:22:29.3492723Z   Downloading pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)
+2026-11-02T20:22:29.4041312Z Collecting pygments>=2.15 (from pytest>=8->PyRPMD==0.2.0)
+2026-11-02T20:22:29.4206730Z   Downloading pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+2026-11-02T20:22:29.4597353Z Downloading h5py-3.16.0-cp312-cp312-win_amd64.whl (3.2 MB)
+2026-11-02T20:22:29.5642915Z    ---------------------------------------- 3.2/3.2 MB 37.4 MB/s  0:00:00
+2026-11-02T20:22:29.5806526Z Downloading numpy-2.5.4-cp312-cp312-win_amd64.whl (12.6 MB)
+2026-11-02T20:22:29.7091888Z    ---------------------------------------- 12.6/12.6 MB 98.5 MB/s  0:00:00
+2026-11-02T20:22:29.7242578Z Downloading pytest-9.2.0-py3-none-any.whl (411 kB)
+2026-11-02T20:22:29.7600219Z Downloading pluggy-1.7.0-py3-none-any.whl (27 kB)
+2026-11-02T20:22:29.7880125Z Downloading iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+2026-11-02T20:22:29.8192750Z Downloading pygments-2.21.0-py3-none-any.whl (1.3 MB)
+2026-11-02T20:22:29.8483653Z    ---------------------------------------- 1.3/1.3 MB 30.9 MB/s  0:00:00
+2026-11-02T20:22:29.8650021Z Downloading scipy-1.18.1-cp312-cp312-win_amd64.whl (36.7 MB)
+2026-11-02T20:22:30.4419294Z    ---------------------------------------- 36.7/36.7 MB 63.0 MB/s  0:00:00
+2026-11-02T20:22:30.4555082Z Downloading threadpoolctl-3.7.0-py3-none-any.whl (26 kB)
+2026-11-02T20:22:30.5907782Z Building wheels for collected packages: PyRPMD
+2026-11-02T20:22:30.5985432Z   Building editable for PyRPMD (pyproject.toml): started
+2026-11-02T20:22:58.9743798Z   Building editable for PyRPMD (pyproject.toml): finished with status 'done'
+2026-11-02T20:22:58.9781722Z   Created wheel for PyRPMD: filename=pyrpmd-0.2.0-0.editable-cp312-cp312-win_amd64.whl size=27285 sha256=cb931dbcfd4d2d22bebd6cc1d2d925dd29af3c4400263ba8033ca47c6d4ae466
+2026-11-02T20:22:58.9784547Z   Stored in directory: C:\Users\runneradmin\AppData\Local\Temp\pip-ephem-wheel-cache-c5w61_ja\wheels\41\a4\97\98b13feb49c520e84cf999d6fd79acbf494be27e8202ed10b5
+2026-11-02T20:22:58.9832635Z Successfully built PyRPMD
+2026-11-02T20:22:59.0454590Z Installing collected packages: threadpoolctl, pygments, pluggy, numpy, iniconfig, scipy, pytest, h5py, PyRPMD
+2026-11-02T20:23:16.5020404Z 
+2026-11-02T20:23:16.5043054Z Successfully installed PyRPMD-0.2.0 h5py-3.16.0 iniconfig-2.3.1 numpy-2.5.4 pluggy-1.7.0 pygments-2.21.0 pytest-9.2.0 scipy-1.18.1 threadpoolctl-3.7.0
+2026-11-02T20:23:16.7645949Z ##[group]Run python -m pytest -q -m "not campaign"
+2026-11-02T20:23:16.7646381Z [36;1mpython -m pytest -q -m "not campaign"[0m
+2026-11-02T20:23:16.7690265Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-02T20:23:16.7690612Z env:
+2026-11-02T20:23:16.7690785Z   OMP_NUM_THREADS: 1
+2026-11-02T20:23:16.7690994Z   OPENBLAS_NUM_THREADS: 1
+2026-11-02T20:23:16.7691298Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-02T20:23:16.7691756Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-11-02T20:23:16.7692198Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-02T20:23:16.7692596Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-02T20:23:16.7692988Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-02T20:23:16.7693301Z ##[endgroup]
+2026-11-02T20:23:49.8479639Z ........................................................................ [  0%]
+2026-11-02T20:23:58.9857889Z ........................................................................ [  1%]
+2026-11-02T20:24:22.8772273Z ...sss...............ss...............ssssss............................ [  2%]
+2026-11-02T20:24:37.3755316Z ........................................................................ [  3%]
+2026-11-02T20:24:59.1465291Z ........................................................................ [  4%]
+2026-11-02T20:25:01.1598858Z .............sssss...................................................... [  5%]
+2026-11-02T20:25:10.7585816Z ........................................................................ [  5%]
+2026-11-02T20:25:20.9032170Z .....ssssssssssssssssss.s......................sss...................... [  6%]
+2026-11-02T20:26:11.2100290Z ..............s......................................................... [  7%]
+2026-11-02T20:26:12.3804703Z ........................................................................ [  8%]
+2026-11-02T20:26:16.7107277Z .....ssssssss........................................................... [  9%]
+2026-11-02T20:26:16.9596894Z ........................................................................ [ 10%]
+2026-11-02T20:26:17.7841429Z ........................................................................ [ 11%]
+2026-11-02T20:26:19.3002241Z ........................................................................ [ 11%]
+2026-11-02T20:26:20.5454814Z ........................................................................ [ 12%]
+2026-11-02T20:26:22.4625587Z ........................................................................ [ 13%]
+2026-11-02T20:26:30.6353307Z ........................................................................ [ 14%]
+2026-11-02T20:26:36.8858096Z ...........................s................................................................... [ 15%]
+2026-11-02T20:26:41.8962858Z ........................................................................ [ 16%]
+2026-11-02T20:26:43.7162888Z ...................ss............................................................................... [ 17%]
+2026-11-02T20:26:43.8009221Z ........................................................................ [ 18%]
+2026-11-02T20:26:45.9755137Z .............................................................. [ 19%]
+2026-11-02T20:26:57.4147061Z .......................................................s................ [ 20%]
+2026-11-02T20:27:07.0262615Z ...........s........................ [ 20%]
+2026-11-02T20:27:07.1124236Z ........................................................................ [ 21%]
+2026-11-02T20:27:14.8282130Z ........................................................................ [ 22%]
+2026-11-02T20:27:16.4701516Z ..........s............................................................. [ 23%]
+2026-11-02T20:27:58.6576015Z ........................................................................ [ 23%]
+2026-11-02T20:28:00.6244992Z ........................................................................ [ 24%]
+2026-11-02T20:28:03.1945169Z ........sssss....................................................ss..... [ 25%]
+2026-11-02T20:28:07.5146347Z ................................................................... [ 26%]
+2026-11-02T20:28:20.3142152Z ........................................................................ [ 27%]
+2026-11-02T20:28:26.2832877Z ........................................................................ [ 28%]
+2026-11-02T20:28:47.7459102Z ........................................................................ [ 29%]
+2026-11-02T20:28:55.3492740Z ........................................................................ [ 29%]
+2026-11-02T20:29:07.9559207Z ........................................................................ [ 30%]
+2026-11-02T20:29:12.9720397Z ........................................................................ [ 31%]
+2026-11-02T20:29:25.6543959Z ........................................................................ [ 32%]
+2026-11-02T20:29:36.0368667Z ........................................................................ [ 33%]
+2026-11-02T20:29:40.0913858Z ........................................................................ [ 34%]
+2026-11-02T20:29:59.1202551Z ........................................................................ [ 34%]
+2026-11-02T20:29:59.6297378Z ........................................................................ [ 35%]
+2026-11-02T20:30:03.8577434Z ........................................................................ [ 36%]
+2026-11-02T20:30:05.1983129Z ...ss................................................................... [ 37%]
+2026-11-02T20:30:15.4678958Z ..................................................s... [ 38%]
+2026-11-02T20:30:15.6929618Z ........................................................................ [ 39%]
+2026-11-02T20:30:16.4018692Z ........................................................................ [ 39%]
+2026-11-02T20:30:18.8174017Z ........................................................................ [ 40%]
+2026-11-02T20:30:20.0746283Z ..................s.......................................ssssssss...... [ 41%]
+2026-11-02T20:30:20.5745561Z sss..................sssssssss...........................sssssssssssss.. [ 42%]
+2026-11-02T20:30:27.9650469Z .......sss.s.sssssssss.................................................. [ 43%]
+2026-11-02T20:30:56.3055589Z ........................................................................ [ 44%]
+2026-11-02T20:31:08.1027316Z ........................................................................ [ 45%]
+2026-11-02T20:31:21.4821269Z ................................................................... [ 45%]
+2026-11-02T20:31:22.2884167Z ........................................................................ [ 46%]
+2026-11-02T20:31:22.4078725Z ........................................................................ [ 47%]
+2026-11-02T20:31:22.5053987Z ........................................................................ [ 48%]
+2026-11-02T20:31:22.5970922Z ................................................ssssssssssssssssssssssss [ 49%]
+2026-11-02T20:31:37.3789063Z ssssssssssssssssss............ssss...................................... [ 50%]
+2026-11-02T20:31:48.6737963Z ................s.........ss............................................ [ 50%]
+2026-11-02T20:31:51.4905005Z ................................s....................................sss [ 51%]
+2026-11-02T20:32:08.0121203Z ss...................................................................... [ 52%]
+2026-11-02T20:32:09.5049430Z ........s............................................................... [ 53%]
+2026-11-02T20:32:10.7244653Z ........................................................................ [ 54%]
+2026-11-02T20:32:11.4027951Z ............................sss.sssssssssssssssss........sss.......ssss. [ 55%]
+2026-11-02T20:32:12.4696115Z ........................................................................ [ 56%]
+2026-11-02T20:32:12.7927775Z ........................................................................ [ 56%]
+2026-11-02T20:32:13.2757507Z .....................................................ss................. [ 57%]
+2026-11-02T20:32:15.2817829Z ........................................................................ [ 58%]
+2026-11-02T20:32:16.2643845Z ........................................................................ [ 59%]
+2026-11-02T20:32:16.5782777Z ........................................................................ [ 60%]
+2026-11-02T20:32:17.3930903Z ........................................................................ [ 61%]
+2026-11-02T20:32:27.0010722Z ........................................................................ [ 62%]
+2026-11-02T20:32:27.0780488Z ........................................................................ [ 62%]
+2026-11-02T20:32:32.8583985Z ........................................................................ [ 63%]
+2026-11-02T20:32:42.1578872Z .....................................................................sss [ 64%]
+2026-11-02T20:32:54.8103295Z ssssss...............................................................s.. [ 65%]
+2026-11-02T20:33:01.4650049Z .................................s.....................s........................s...s........... [ 66%]
+2026-11-02T20:33:03.4235798Z ......sssssss........................................................... [ 67%]
+2026-11-02T20:33:05.9049507Z ....................s................................................... [ 68%]
+2026-11-02T20:33:08.0347289Z ...................ssssssss............................................. [ 69%]
+2026-11-02T20:33:17.2136047Z ............s..................................................sssss..ss [ 70%]
+2026-11-02T20:33:17.5185065Z sssss......................................................ssssss....... [ 70%]
+2026-11-02T20:34:24.5958207Z ................sss.................................................. [ 71%]
+2026-11-02T20:34:31.0409460Z ........................................................................ [ 72%]
+2026-11-02T20:34:31.2075977Z ........................................................................ [ 73%]
+2026-11-02T20:34:49.8257987Z ........................................................................ [ 74%]
+2026-11-02T20:34:50.4716872Z .................................................................. [ 75%]
+2026-11-02T20:35:08.1277420Z ........................................................................ [ 75%]
+2026-11-02T20:36:34.9389308Z ....s.........................s...................s................................................................................... [ 77%]
+2026-11-02T20:36:41.8937063Z s....................................................................... [ 78%]
+2026-11-02T20:37:06.8893907Z .......................................................s..... [ 79%]
+2026-11-02T20:37:27.6913935Z ........................................................................ [ 79%]
+2026-11-02T20:37:29.3956977Z ........................................................................ [ 80%]
+2026-11-02T20:37:32.8207357Z .....................................................................s.. [ 81%]
+2026-11-02T20:37:34.4813637Z ...........................................................s............ [ 82%]
+2026-11-02T20:37:37.2768828Z ...................................................................sss.. [ 83%]
+2026-11-02T20:39:51.1517572Z ........................................................................ [ 84%]
+2026-11-02T20:39:53.5188064Z ........................................................................ [ 85%]
+2026-11-02T20:39:59.9623055Z ..................................................................................................... [ 86%]
+2026-11-02T20:40:12.8649381Z ........................................................................ [ 87%]
+2026-11-02T20:40:29.7808749Z ................................................s......s...........s.... [ 87%]
+2026-11-02T20:40:36.5515126Z .........................s.s..................................................... [ 88%]
+2026-11-02T20:40:49.9016388Z ........................................................................ [ 89%]
+2026-11-02T20:41:05.6162560Z ................s....................................................... [ 90%]
+2026-11-02T20:41:13.1629704Z ......sss.s.........................................................s... [ 91%]
+2026-11-02T20:41:18.0165077Z ..........................s............................................. [ 92%]
+2026-11-02T20:41:30.9960148Z ........................................................ [ 92%]
+2026-11-02T20:41:54.8652396Z ..............................................................ss........ [ 93%]
+2026-11-02T20:41:54.9919980Z ........................................................................ [ 94%]
+2026-11-02T20:41:55.3679878Z ..................................................................ssssss [ 95%]
+2026-11-02T20:42:10.2142178Z ss.........................ssssss...s....ss......s...................... [ 96%]
+2026-11-02T20:42:31.9242884Z ........................................................................ [ 97%]
+2026-11-02T20:42:33.4764568Z ........................................................................ [ 98%]
+2026-11-02T20:42:37.2133644Z ..................................................................................................... [ 99%]
+2026-11-02T20:42:39.3808375Z .............................................................            [100%]
+2026-11-02T20:42:39.3809537Z ============================== warnings summary ===============================
+2026-11-02T20:42:39.3810900Z tests/test_constraint_workflow_guards.py::test_run_resolved_rejects_before_creating_run_manifest[metadynamics]
+2026-11-02T20:42:39.3812298Z tests/test_fes_entry.py::test_old_run_manifest_and_streams_migrate_without_changing_samples[metadynamics]
+2026-11-02T20:42:39.3813898Z   D:\a\PyRPMD\PyRPMD\src\pyrpmd\runner.py:163: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+2026-11-02T20:42:39.3815734Z     config = normalize_fes_task(copy.deepcopy(config))
+2026-11-02T20:42:39.3816193Z 
+2026-11-02T20:42:39.3816792Z tests/test_constraint_workflow_guards.py::test_run_resolved_rejects_before_creating_run_manifest[opes]
+2026-11-02T20:42:39.3818064Z tests/test_fes_entry.py::test_old_run_manifest_and_streams_migrate_without_changing_samples[opes]
+2026-11-02T20:42:39.3819361Z   D:\a\PyRPMD\PyRPMD\src\pyrpmd\runner.py:163: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+2026-11-02T20:42:39.3820365Z     config = normalize_fes_task(copy.deepcopy(config))
+2026-11-02T20:42:39.3820755Z 
+2026-11-02T20:42:39.3821364Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[nhc-metadynamics]
+2026-11-02T20:42:39.3822764Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[svr-metadynamics]
+2026-11-02T20:42:39.3824237Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[gle-metadynamics]
+2026-11-02T20:42:39.3825678Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[pile-g-metadynamics]
+2026-11-02T20:42:39.3827082Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[ffl-metadynamics]
+2026-11-02T20:42:39.3828496Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[pile-l-metadynamics]
+2026-11-02T20:42:39.3830151Z   D:\a\PyRPMD\PyRPMD\tests\test_enhanced_sampling_composition.py:140: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+2026-11-02T20:42:39.3831490Z     resolved, _ = JobSpec.from_mapping(cfg).resolve()
+2026-11-02T20:42:39.3831870Z 
+2026-11-02T20:42:39.3832462Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[nhc-opes]
+2026-11-02T20:42:39.3834006Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[svr-opes]
+2026-11-02T20:42:39.3835306Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[gle-opes]
+2026-11-02T20:42:39.3836620Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[pile-g-opes]
+2026-11-02T20:42:39.3837932Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[ffl-opes]
+2026-11-02T20:42:39.3839239Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[pile-l-opes]
+2026-11-02T20:42:39.3840769Z   D:\a\PyRPMD\PyRPMD\tests\test_enhanced_sampling_composition.py:140: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+2026-11-02T20:42:39.3841899Z     resolved, _ = JobSpec.from_mapping(cfg).resolve()
+2026-11-02T20:42:39.3842265Z 
+2026-11-02T20:42:39.3842802Z tests/test_fes_entry.py::test_nested_and_legacy_namespaces_have_same_scientific_identity[metadynamics]
+2026-11-02T20:42:39.3844188Z   D:\a\PyRPMD\PyRPMD\tests\test_fes_entry.py:51: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+2026-11-02T20:42:39.3845360Z     historical, _ = JobSpec.from_mapping(legacy).resolve()
+2026-11-02T20:42:39.3845792Z 
+2026-11-02T20:42:39.3846236Z tests/test_fes_entry.py::test_nested_and_legacy_namespaces_have_same_scientific_identity[opes]
+2026-11-02T20:42:39.3847607Z   D:\a\PyRPMD\PyRPMD\tests\test_fes_entry.py:51: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+2026-11-02T20:42:39.3848709Z     historical, _ = JobSpec.from_mapping(legacy).resolve()
+2026-11-02T20:42:39.3849110Z 
+2026-11-02T20:42:39.3849609Z tests/test_grid_metadynamics.py::test_grid_frontend_explicit_and_declared_units_and_defaults
+2026-11-02T20:42:39.3852638Z   D:\a\PyRPMD\PyRPMD\tests\test_grid_metadynamics.py:285: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+2026-11-02T20:42:39.3854119Z     cfg, system = JobSpec.from_mapping(job).resolve()
+2026-11-02T20:42:39.3854529Z 
+2026-11-02T20:42:39.3854970Z tests/test_grid_metadynamics.py::test_grid_frontend_explicit_and_declared_units_and_defaults
+2026-11-02T20:42:39.3856475Z   D:\a\PyRPMD\PyRPMD\tests\test_grid_metadynamics.py:291: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+2026-11-02T20:42:39.3857651Z     JobSpec.from_mapping(job).resolve()
+2026-11-02T20:42:39.3857969Z 
+2026-11-02T20:42:39.3858323Z tests/test_metadynamics.py::test_metadynamics_default_production_budget
+2026-11-02T20:42:39.3859739Z   D:\a\PyRPMD\PyRPMD\tests\test_metadynamics.py:293: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+2026-11-02T20:42:39.3860918Z     cfg, _ = spec.resolve()
+2026-11-02T20:42:39.3861172Z 
+2026-11-02T20:42:39.3861623Z tests/test_metadynamics.py::test_frontend_resolves_width_units_and_rejects_bad_options
+2026-11-02T20:42:39.3862996Z   D:\a\PyRPMD\PyRPMD\tests\test_metadynamics.py:365: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+2026-11-02T20:42:39.3864145Z     cfg, sys = JobSpec.from_mapping(job).resolve()
+2026-11-02T20:42:39.3864524Z 
+2026-11-02T20:42:39.3864931Z tests/test_metadynamics.py::test_frontend_resolves_width_units_and_rejects_bad_options
+2026-11-02T20:42:39.3866291Z   D:\a\PyRPMD\PyRPMD\tests\test_metadynamics.py:372: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+2026-11-02T20:42:39.3867406Z     JobSpec.from_mapping(job).resolve()
+2026-11-02T20:42:39.3867731Z 
+2026-11-02T20:42:39.3868179Z tests/test_sampling_public_api.py::test_opes_public_default_and_frozen_run_resume_offline
+2026-11-02T20:42:39.3870288Z   D:\a\PyRPMD\PyRPMD\src\pyrpmd\runner.py:532: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+2026-11-02T20:42:39.3871315Z     config, system = spec.resolve()
+2026-11-02T20:42:39.3871623Z 
+2026-11-02T20:42:39.3872033Z tests/test_sampling_public_api.py::test_opes_public_default_and_frozen_run_resume_offline
+2026-11-02T20:42:39.3873212Z   D:\a\PyRPMD\PyRPMD\src\pyrpmd\runner.py:158: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+2026-11-02T20:42:39.3874143Z     config, system = spec.resolve()
+2026-11-02T20:42:39.3874442Z 
+2026-11-02T20:42:39.3874899Z tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[reaction]
+2026-11-02T20:42:39.3875912Z tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[rate]
+2026-11-02T20:42:39.3877010Z tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[recrossing]
+2026-11-02T20:42:39.3878121Z tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[collision]
+2026-11-02T20:42:39.3879267Z tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[outcomes]
+2026-11-02T20:42:39.3880611Z   D:\a\PyRPMD\PyRPMD\tests\test_sampling_public_api.py:77: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+2026-11-02T20:42:39.3881672Z     JobSpec.from_mapping(job).resolve()
+2026-11-02T20:42:39.3882011Z 
+2026-11-02T20:42:39.3882490Z tests/test_shared_metadynamics.py::test_shared_input_and_cli_run_resume_and_offline_analyze
+2026-11-02T20:42:39.3883962Z   D:\a\PyRPMD\PyRPMD\tests\test_shared_metadynamics.py:305: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+2026-11-02T20:42:39.3885178Z     cfg, _ = JobSpec.from_file(source).resolve()
+2026-11-02T20:42:39.3885527Z 
+2026-11-02T20:42:39.3885993Z tests/test_shared_metadynamics.py::test_shared_input_and_cli_run_resume_and_offline_analyze
+2026-11-02T20:42:39.3887790Z   D:\a\PyRPMD\PyRPMD\src\pyrpmd\runner.py:158: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+2026-11-02T20:42:39.3888905Z     config, system = spec.resolve()
+2026-11-02T20:42:39.3889220Z 
+2026-11-02T20:42:39.3889426Z tests/test_surface_source.py: 12 warnings
+2026-11-02T20:42:39.3890555Z   D:\a\PyRPMD\PyRPMD\tests\test_surface_source.py:35: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+2026-11-02T20:42:39.3891786Z     cfg, system = JobSpec.from_mapping(original).resolve()
+2026-11-02T20:42:39.3892170Z 
+2026-11-02T20:42:39.3892717Z tests/test_surface_workflow.py::test_metadynamics_input_accepts_fixed_atoms_and_periodic_cell[fixed]
+2026-11-02T20:42:39.3893933Z tests/test_surface_workflow.py::test_metadynamics_input_accepts_fixed_atoms_and_periodic_cell[periodic]
+2026-11-02T20:42:39.3895450Z   D:\a\PyRPMD\PyRPMD\tests\test_surface_workflow.py:56: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+2026-11-02T20:42:39.3896809Z     return JobSpec.from_mapping(cluster_job() if job is None else job).resolve()
+2026-11-02T20:42:39.3897374Z 
+2026-11-02T20:42:39.3897799Z -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+2026-11-02T20:42:39.3898619Z campaign: omitted 101 modules before import (-m 'not campaign')
+2026-11-02T20:42:39.3899340Z =========================== short test summary info ===========================
+2026-11-02T20:42:39.3900231Z SKIPPED [1] tests\test_batched_ml_deepmd.py:6: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.3901316Z SKIPPED [1] tests\test_batched_ml_fairchem.py:9: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.3902401Z SKIPPED [1] tests\test_batched_ml_mace.py:8: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.3903484Z SKIPPED [1] tests\test_batched_ml_metatomic.py:9: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.3904797Z SKIPPED [1] tests\test_batched_ml_nequip.py:9: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.3905980Z SKIPPED [1] tests\test_h3_p256_parent_archive.py:11: The historical parent audit uses the pinned Linux verifier
+2026-11-02T20:42:39.3907013Z SKIPPED [1] tests\test_onnx_native.py:20: optional native ONNX plugin not configured
+2026-11-02T20:42:39.3908102Z SKIPPED [1] tests\test_pesgen_native.py:10: the optional native Caracal workflow requires POSIX advisory locks
+2026-11-02T20:42:39.3909240Z SKIPPED [1] tests\test_pyscf_multistate.py:18: could not import 'pyscf': No module named 'pyscf'
+2026-11-02T20:42:39.3910352Z SKIPPED [1] tests\test_report_render.py:11: could not import 'matplotlib': No module named 'matplotlib'
+2026-11-02T20:42:39.3911571Z SKIPPED [1] tests\test_report_render_validation.py:13: could not import 'matplotlib': No module named 'matplotlib'
+2026-11-02T20:42:39.3912752Z SKIPPED [1] tests\test_torch_backend.py:7: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.3913878Z SKIPPED [3] tests\test_active_learning_labeling.py:199: longdouble has no wider exponent range than float64
+2026-11-02T20:42:39.3915087Z SKIPPED [1] tests\test_active_learning_labeling.py:306: could not import 'pyscf': No module named 'pyscf'
+2026-11-02T20:42:39.3916330Z SKIPPED [1] tests\test_active_learning_labeling.py:306: could not import 'tblite.interface': No module named 'tblite'
+2026-11-02T20:42:39.3917584Z SKIPPED [1] tests\test_active_learning_mace.py:50: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.3918704Z SKIPPED [1] tests\test_active_learning_mace.py:65: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.3919838Z SKIPPED [1] tests\test_active_learning_mace.py:74: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.3920992Z SKIPPED [1] tests\test_active_learning_mace.py:96: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.3922104Z SKIPPED [1] tests\test_active_learning_mace.py:115: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.3923396Z SKIPPED [1] tests\test_active_learning_mace.py:133: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.3924470Z SKIPPED [3] tests\test_advanced_cv.py:150: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.3925499Z SKIPPED [1] tests\test_advanced_cv.py:167: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.3926516Z SKIPPED [1] tests\test_advanced_cv.py:180: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.3927578Z SKIPPED [3] tests\test_ase_force_consistency.py:12: could not import 'ase': No module named 'ase'
+2026-11-02T20:42:39.3928694Z SKIPPED [3] tests\test_ase_force_consistency.py:86: could not import 'ase': No module named 'ase'
+2026-11-02T20:42:39.3929785Z SKIPPED [1] tests\test_ase_force_consistency.py:112: could not import 'ase': No module named 'ase'
+2026-11-02T20:42:39.3930895Z SKIPPED [1] tests\test_ase_trajectory_batch.py:41: could not import 'ase': No module named 'ase'
+2026-11-02T20:42:39.3931975Z SKIPPED [1] tests\test_ase_trajectory_batch.py:63: could not import 'ase': No module named 'ase'
+2026-11-02T20:42:39.3933085Z SKIPPED [6] tests\test_ase_trajectory_batch.py:77: could not import 'ase': No module named 'ase'
+2026-11-02T20:42:39.3934158Z SKIPPED [1] tests\test_ase_trajectory_batch.py:91: could not import 'ase': No module named 'ase'
+2026-11-02T20:42:39.3935239Z SKIPPED [2] tests\test_ase_trajectory_batch.py:110: could not import 'ase': No module named 'ase'
+2026-11-02T20:42:39.3936339Z SKIPPED [1] tests\test_ase_trajectory_batch.py:139: could not import 'ase': No module named 'ase'
+2026-11-02T20:42:39.3937946Z SKIPPED [3] tests\test_atomic_json.py:57: Windows simultaneous os.replace calls for one JSON destination can raise WinError 5; concurrent publication needs a separate runtime fix
+2026-11-02T20:42:39.3939304Z SKIPPED [1] tests\test_barostat.py:414: optional ASE
+2026-11-02T20:42:39.3940300Z SKIPPED [2] tests\test_batched_ml_contract.py:124: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.3941447Z SKIPPED [1] tests\test_batched_ml_contract.py:144: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.3942622Z SKIPPED [1] tests\test_batched_ml_contract.py:165: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.3943771Z SKIPPED [1] tests\test_batched_ml_contract.py:174: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.3944891Z SKIPPED [1] tests\test_batched_ml_contract.py:187: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.3945978Z SKIPPED [1] tests\test_batched_ml_contract.py:198: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.3947046Z SKIPPED [1] tests\test_batched_ml_contract.py:206: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.3948095Z SKIPPED [1] tests\test_cli_ux.py:83: Creating symlinks may need Windows administrator privileges
+2026-11-02T20:42:39.3949735Z SKIPPED [2] tests\test_condensed_phase_ensembles.py:379: Windows native trajectory publication fsyncs a read-only descriptor and raises EBADF; native_ensemble.py needs a separate runtime fix
+2026-11-02T20:42:39.3951951Z SKIPPED [1] tests\test_drpmd_extend.py:194: Windows drive-letter file/factory paths are omitted from source hashes; source-change and resume preflight checks need a separate runtime fix
+2026-11-02T20:42:39.3953367Z SKIPPED [1] tests\test_dynamics.py:88: OpenMP extension not built
+2026-11-02T20:42:39.3954863Z SKIPPED [1] tests\test_electrochemistry_integration.py: Windows drive-letter file/factory paths are omitted from source hashes; source-change and resume preflight checks need a separate runtime fix
+2026-11-02T20:42:39.3956576Z SKIPPED [4] tests\test_electronic_backends.py:130: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.3957677Z SKIPPED [1] tests\test_electronic_backends.py:145: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.3959020Z SKIPPED [2] tests\test_engine_subcommunicators.py:67: could not import 'lammps': No module named 'lammps'
+2026-11-02T20:42:39.3960101Z SKIPPED [2] tests\test_heom.py:94: could not import 'qutip': No module named 'qutip'
+2026-11-02T20:42:39.3961569Z SKIPPED [1] tests\test_input_cli.py: Windows drive-letter file/factory paths are omitted from source hashes; source-change and resume preflight checks need a separate runtime fix
+2026-11-02T20:42:39.3963080Z SKIPPED [1] tests\test_ipi_clients.py:199: this Python build does not expose AF_UNIX sockets
+2026-11-02T20:42:39.3964103Z SKIPPED [1] tests\test_jaxpip_export_link.py:47: JaxPIP export writes require POSIX advisory locks
+2026-11-02T20:42:39.3965201Z SKIPPED [2] tests\test_jaxpip_export_link.py:72: JaxPIP export writes require POSIX advisory locks
+2026-11-02T20:42:39.3966273Z SKIPPED [5] tests\test_jaxpip_export_link.py:83: JaxPIP export writes require POSIX advisory locks
+2026-11-02T20:42:39.3967326Z SKIPPED [3] tests\test_jaxpip_pesgen.py:34: JaxPIP dataset writes require POSIX advisory locks
+2026-11-02T20:42:39.3968333Z SKIPPED [4] tests\test_jaxpip_pesgen.py:139: optional real JaxPIP environment
+2026-11-02T20:42:39.3969201Z SKIPPED [2] tests\test_jaxpip_pesgen.py:168: optional real JaxPIP environment
+2026-11-02T20:42:39.3970053Z SKIPPED [1] tests\test_jaxpip_pesgen.py:190: optional real JaxPIP environment
+2026-11-02T20:42:39.3970881Z SKIPPED [1] tests\test_jaxpip_pesgen.py:197: optional real JaxPIP environment
+2026-11-02T20:42:39.3971705Z SKIPPED [1] tests\test_jaxpip_pesgen.py:209: optional real PySCF
+2026-11-02T20:42:39.3972645Z SKIPPED [16] tests\test_lammps_batch_provider.py:16: could not import 'lammps': No module named 'lammps'
+2026-11-02T20:42:39.3973804Z SKIPPED [1] tests\test_lammps_batch_provider.py:265: could not import 'mpi4py.MPI': No module named 'mpi4py'
+2026-11-02T20:42:39.3974933Z SKIPPED [9] tests\test_lammps_provider.py:15: could not import 'lammps': No module named 'lammps'
+2026-11-02T20:42:39.3976112Z SKIPPED [24] tests\test_metric_hvp.py:432: POSIX C compiler required for C ABI fixture
+2026-11-02T20:42:39.3977061Z SKIPPED [8] tests\test_metric_hvp.py:452: POSIX C compiler required for C ABI fixture
+2026-11-02T20:42:39.3977974Z SKIPPED [8] tests\test_metric_hvp.py:471: POSIX C compiler required for C ABI fixture
+2026-11-02T20:42:39.3978888Z SKIPPED [2] tests\test_metric_hvp.py:497: Linux virtual-memory limit regression
+2026-11-02T20:42:39.3980364Z SKIPPED [4] tests\test_mixed_workflows.py:124: Windows native trajectory publication fsyncs a read-only descriptor and raises EBADF; native_ensemble.py needs a separate runtime fix
+2026-11-02T20:42:39.3982428Z SKIPPED [1] tests\test_ml_lifecycle.py: Windows drive-letter file/factory paths are omitted from source hashes; source-change and resume preflight checks need a separate runtime fix
+2026-11-02T20:42:39.3984039Z SKIPPED [2] tests\test_mlcolvar_cv.py:13: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.3985672Z SKIPPED [1] tests\test_native_ensemble_portability.py: Windows native trajectory publication fsyncs a read-only descriptor and raises EBADF; native_ensemble.py needs a separate runtime fix
+2026-11-02T20:42:39.3987839Z SKIPPED [4] tests\test_native_ensembles.py:66: Windows native trajectory publication fsyncs a read-only descriptor and raises EBADF; native_ensemble.py needs a separate runtime fix
+2026-11-02T20:42:39.3989926Z SKIPPED [2] tests\test_native_ensembles.py: Windows native trajectory publication fsyncs a read-only descriptor and raises EBADF; native_ensemble.py needs a separate runtime fix
+2026-11-02T20:42:39.3991936Z SKIPPED [8] tests\test_native_pimd_followup.py: Windows native trajectory publication fsyncs a read-only descriptor and raises EBADF; native_ensemble.py needs a separate runtime fix
+2026-11-02T20:42:39.3994003Z SKIPPED [2] tests\test_native_pimd_followup.py:64: Windows native trajectory publication fsyncs a read-only descriptor and raises EBADF; native_ensemble.py needs a separate runtime fix
+2026-11-02T20:42:39.3996321Z SKIPPED [9] tests\test_native_pimd_followup.py:127: Windows native trajectory publication fsyncs a read-only descriptor and raises EBADF; native_ensemble.py needs a separate runtime fix
+2026-11-02T20:42:39.7925567Z SKIPPED [4] tests\test_native_pimd_followup.py:142: Windows native trajectory publication fsyncs a read-only descriptor and raises EBADF; native_ensemble.py needs a separate runtime fix
+2026-11-02T20:42:39.7927962Z SKIPPED [4] tests\test_native_pimd_nhc_metadata.py:12: Windows native trajectory publication fsyncs a read-only descriptor and raises EBADF; native_ensemble.py needs a separate runtime fix
+2026-11-02T20:42:39.7929537Z SKIPPED [2] tests\test_native_sampling.py:363: OpenMP build required
+2026-11-02T20:42:39.7930460Z SKIPPED [9] tests\test_openmm_provider.py:14: could not import 'openmm': No module named 'openmm'
+2026-11-02T20:42:39.7931454Z SKIPPED [1] tests\test_parallel.py:106: optional ASE runtime not installed
+2026-11-02T20:42:39.7933024Z SKIPPED [1] tests\test_pcet_workflow.py: Windows drive-letter file/factory paths are omitted from source hashes; source-change and resume preflight checks need a separate runtime fix
+2026-11-02T20:42:39.7934730Z SKIPPED [1] tests\test_periodic_basis_reduction.py:82: could not import 'ase.geometry': No module named 'ase'
+2026-11-02T20:42:39.7935694Z SKIPPED [1] tests\test_periodic_materials.py:124: ASE runtime required
+2026-11-02T20:42:39.7936445Z SKIPPED [1] tests\test_periodic_materials.py:140: ASE runtime required
+2026-11-02T20:42:39.7937292Z SKIPPED [1] tests\test_pesgen.py:86: could not import 'pyscf': No module named 'pyscf'
+2026-11-02T20:42:39.7938227Z SKIPPED [3] tests\test_pesgen.py:101: could not import 'pyscf': No module named 'pyscf'
+2026-11-02T20:42:39.7939136Z SKIPPED [1] tests\test_pesgen.py:111: could not import 'pyscf': No module named 'pyscf'
+2026-11-02T20:42:39.7940085Z SKIPPED [1] tests\test_pesgen.py:120: could not import 'pyscf': No module named 'pyscf'
+2026-11-02T20:42:39.7940974Z SKIPPED [1] tests\test_pesgen_bridge_failures.py:12: Caracal bridge is Linux-only
+2026-11-02T20:42:39.7943071Z SKIPPED [1] tests\test_plumed.py:379: optional PLUMED Python wrapper unavailable
+2026-11-02T20:42:39.7944235Z SKIPPED [2] tests\test_plumed_live_workflow.py:36: Optional real PLUMED runtime unavailable: No module named 'plumed'
+2026-11-02T20:42:39.7945577Z SKIPPED [4] tests\test_plumed_live_workflow.py:87: Optional real PLUMED runtime unavailable: No module named 'plumed'
+2026-11-02T20:42:39.7947308Z SKIPPED [2] tests\test_plumed_workflow.py:87: Windows drive-letter file/factory paths are omitted from source hashes; source-change and resume preflight checks need a separate runtime fix
+2026-11-02T20:42:39.7948907Z SKIPPED [1] tests\test_pmf_2d_accuracy.py:117: independent optional reference solver
+2026-11-02T20:42:39.7949897Z SKIPPED [3] tests\test_potential_adapters.py:93: could not import 'ase': No module named 'ase'
+2026-11-02T20:42:39.7950958Z SKIPPED [1] tests\test_potential_adapters.py:181: could not import 'ase': No module named 'ase'
+2026-11-02T20:42:39.7952021Z SKIPPED [1] tests\test_potential_adapters.py:208: could not import 'ase': No module named 'ase'
+2026-11-02T20:42:39.7953854Z SKIPPED [1] tests\test_potential_adapters.py:266: could not import 'pyscf': No module named 'pyscf'
+2026-11-02T20:42:39.7955042Z SKIPPED [1] tests\test_potential_adapters.py:276: could not import 'tblite.interface': No module named 'tblite'
+2026-11-02T20:42:39.7956266Z SKIPPED [1] tests\test_potential_adapters.py:289: could not import 'tblite.interface': No module named 'tblite'
+2026-11-02T20:42:39.7957464Z SKIPPED [1] tests\test_potential_adapters.py:305: could not import 'pyscf': No module named 'pyscf'
+2026-11-02T20:42:39.7958541Z SKIPPED [1] tests\test_potential_adapters.py:325: could not import 'pyscf': No module named 'pyscf'
+2026-11-02T20:42:39.7959599Z SKIPPED [2] tests\test_potential_adapters.py:339: could not import 'pyscf': No module named 'pyscf'
+2026-11-02T20:42:39.7960691Z SKIPPED [2] tests\test_potential_energy_identity.py:179: could not import 'ase': No module named 'ase'
+2026-11-02T20:42:39.7962028Z SKIPPED [2] tests\test_potential_energy_identity.py:191: could not import 'ase': No module named 'ase'
+2026-11-02T20:42:39.7963114Z SKIPPED [2] tests\test_potential_energy_identity.py:208: could not import 'ase': No module named 'ase'
+2026-11-02T20:42:39.7964411Z SKIPPED [2] C:\hostedtoolcache\windows\Python\3.12.10\x64\Lib\site-packages\_pytest\unittest.py:521: optional PyTorch runtime not installed
+2026-11-02T20:42:39.7965906Z SKIPPED [1] C:\hostedtoolcache\windows\Python\3.12.10\x64\Lib\site-packages\_pytest\unittest.py:521: optional ASE runtime not installed
+2026-11-02T20:42:39.7967645Z SKIPPED [1] tests\test_rate_extend.py: Windows drive-letter file/factory paths are omitted from source hashes; source-change and resume preflight checks need a separate runtime fix
+2026-11-02T20:42:39.7969746Z SKIPPED [1] tests\test_rate_extension_artifacts.py: Windows archived rate-generation keys use backslashes but the report reader looks up POSIX keys; generation-source lookup needs a runtime fix
+2026-11-02T20:42:39.7971862Z SKIPPED [1] tests\test_rate_fes_source.py: Windows drive-letter file/factory paths are omitted from source hashes; source-change and resume preflight checks need a separate runtime fix
+2026-11-02T20:42:39.7973904Z SKIPPED [1] tests\test_rate_pmf_input.py: Windows drive-letter file/factory paths are omitted from source hashes; source-change and resume preflight checks need a separate runtime fix
+2026-11-02T20:42:39.7975980Z SKIPPED [1] tests\test_reaction_network.py: Windows drive-letter file/factory paths are omitted from source hashes; source-change and resume preflight checks need a separate runtime fix
+2026-11-02T20:42:39.7978114Z SKIPPED [1] tests\test_report_rate_pmf_stage.py: Windows archived rate-generation keys use backslashes but the report reader looks up POSIX keys; generation-source lookup needs a runtime fix
+2026-11-02T20:42:39.7979756Z SKIPPED [1] tests\test_report_review.py:485: could not import 'matplotlib': No module named 'matplotlib'
+2026-11-02T20:42:39.7981001Z SKIPPED [1] tests\test_reporting.py:143: could not import 'matplotlib': No module named 'matplotlib'
+2026-11-02T20:42:39.7982076Z SKIPPED [1] tests\test_reporting.py:165: could not import 'matplotlib': No module named 'matplotlib'
+2026-11-02T20:42:39.7983135Z SKIPPED [1] tests\test_reporting.py:180: could not import 'matplotlib': No module named 'matplotlib'
+2026-11-02T20:42:39.7984817Z SKIPPED [1] tests\test_spectroscopy_trace_identity.py: Windows drive-letter file/factory paths are omitted from source hashes; source-change and resume preflight checks need a separate runtime fix
+2026-11-02T20:42:39.7987007Z SKIPPED [2] tests\test_spectroscopy_workflow.py: Windows drive-letter file/factory paths are omitted from source hashes; source-change and resume preflight checks need a separate runtime fix
+2026-11-02T20:42:39.7988564Z SKIPPED [2] tests\test_spin_mapping.py:206: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.7990044Z SKIPPED [1] tests\test_studies.py: Windows drive-letter file/factory paths are omitted from source hashes; source-change and resume preflight checks need a separate runtime fix
+2026-11-02T20:42:39.7991511Z SKIPPED [3] tests\test_surface_examples.py:18: could not import 'ase': No module named 'ase'
+2026-11-02T20:42:39.7992483Z SKIPPED [1] tests\test_surface_examples.py:45: could not import 'ase': No module named 'ase'
+2026-11-02T20:42:39.7993490Z SKIPPED [1] tests\test_surface_geometry.py:246: could not import 'ase': No module named 'ase'
+2026-11-02T20:42:39.7995008Z SKIPPED [1] tests\test_surface_source.py: Windows drive-letter file/factory paths are omitted from source hashes; source-change and resume preflight checks need a separate runtime fix
+2026-11-02T20:42:39.7996496Z SKIPPED [2] tests\test_thermostats.py:12: could not import 'ase': No module named 'ase'
+2026-11-02T20:42:39.7997499Z SKIPPED [1] tests\test_tier2_spectroscopy.py:296: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.7998692Z SKIPPED [7] tests\test_torch_periodic.py:13: could not import 'torch': No module named 'torch'
+2026-11-02T20:42:39.7999704Z SKIPPED [1] tests\test_trajectory_export.py:33: could not import 'ase': No module named 'ase'
+2026-11-02T20:42:39.8000775Z SKIPPED [2] tests\test_trajectory_export.py:53: could not import 'ase': No module named 'ase'
+2026-11-02T20:42:39.8001764Z SKIPPED [1] tests\test_trajectory_export.py:74: could not import 'ase': No module named 'ase'
+2026-11-02T20:42:39.8002846Z SKIPPED [2] tests\test_trajectory_export.py:92: could not import 'MDAnalysis': No module named 'MDAnalysis'
+2026-11-02T20:42:39.8003896Z SKIPPED [1] tests\test_trajectory_export.py:134: could not import 'ase': No module named 'ase'
+2026-11-02T20:42:39.8004886Z SKIPPED [2] tests\test_trajectory_export.py:202: could not import 'ase': No module named 'ase'
+2026-11-02T20:42:39.8006231Z SKIPPED [1] tests\test_trajectory_stream.py:104: directory fsync is a POSIX-only durability step
+2026-11-02T20:42:39.8007209Z 8146 passed, 301 skipped, 46 warnings, 410 subtests passed in 1159.16s (0:19:19)
+2026-11-02T20:42:41.0793819Z Post job cleanup.
+2026-11-02T20:42:41.2241385Z (node:2372) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-02T20:42:41.2242225Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-02T20:42:41.2525734Z Post job cleanup.
+2026-11-02T20:42:41.4668519Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-11-02T20:42:41.4960622Z git version 2.56.0.windows.3
+2026-11-02T20:42:41.5033565Z Copying 'C:\Users\runneradmin\.gitconfig' to 'D:\a\_temp\e9807ce8-6d4d-4643-ae59-8032b2dfc909\.gitconfig'
+2026-11-02T20:42:41.5059657Z Temporarily overriding HOME='D:\a\_temp\e9807ce8-6d4d-4643-ae59-8032b2dfc909' before making global git config changes
+2026-11-02T20:42:41.5061107Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-02T20:42:41.5072355Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\PyRPMD\PyRPMD
+2026-11-02T20:42:41.5435723Z Removing SSH command configuration
+2026-11-02T20:42:41.5447136Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-02T20:42:41.5752828Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-02T20:42:42.0596706Z Removing HTTP extra header
+2026-11-02T20:42:42.0606874Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-02T20:42:42.0915417Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-02T20:42:42.5439116Z Removing includeIf entries pointing to credentials config files
+2026-11-02T20:42:42.5450700Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-02T20:42:42.5717493Z includeif.gitdir:D:/a/PyRPMD/PyRPMD/.git.path
+2026-11-02T20:42:42.5718068Z includeif.gitdir:D:/a/PyRPMD/PyRPMD/.git/worktrees/*.path
+2026-11-02T20:42:42.5718686Z includeif.gitdir:/github/workspace/.git.path
+2026-11-02T20:42:42.5719128Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-02T20:42:42.5751571Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/PyRPMD/PyRPMD/.git.path
+2026-11-02T20:42:42.6023211Z D:\a\_temp\git-credentials-cfdb48c5-30e3-42a6-8c1b-ab829aecd80c.config
+2026-11-02T20:42:42.6060819Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/PyRPMD/PyRPMD/.git.path D:\a\_temp\git-credentials-cfdb48c5-30e3-42a6-8c1b-ab829aecd80c.config
+2026-11-02T20:42:42.6359496Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/PyRPMD/PyRPMD/.git/worktrees/*.path
+2026-11-02T20:42:42.6629220Z D:\a\_temp\git-credentials-cfdb48c5-30e3-42a6-8c1b-ab829aecd80c.config
+2026-11-02T20:42:42.6663857Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/PyRPMD/PyRPMD/.git/worktrees/*.path D:\a\_temp\git-credentials-cfdb48c5-30e3-42a6-8c1b-ab829aecd80c.config
+2026-11-02T20:42:42.6960050Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-02T20:42:42.7228463Z /github/runner_temp/git-credentials-cfdb48c5-30e3-42a6-8c1b-ab829aecd80c.config
+2026-11-02T20:42:42.7262125Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-cfdb48c5-30e3-42a6-8c1b-ab829aecd80c.config
+2026-11-02T20:42:42.7565800Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-02T20:42:42.7833622Z /github/runner_temp/git-credentials-cfdb48c5-30e3-42a6-8c1b-ab829aecd80c.config
+2026-11-02T20:42:42.7870241Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-cfdb48c5-30e3-42a6-8c1b-ab829aecd80c.config
+2026-11-02T20:42:42.8170293Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-02T20:42:43.2940208Z Removing credentials config 'D:\a\_temp\git-credentials-cfdb48c5-30e3-42a6-8c1b-ab829aecd80c.config'
+2026-11-02T20:42:43.3129908Z Cleaning up orphan processes
+2026-11-02T20:42:43.3384749Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/setup-python@v5. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+
