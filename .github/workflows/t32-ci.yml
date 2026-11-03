@@ -8,7 +8,7 @@ permissions:
   contents: write
 jobs:
   baseline:
-    if: github.event.head_commit.message == 'ci: record T32 relevant baseline'
+    if: "${{ github.event.head_commit.message == 'ci: record T32 relevant baseline' }}"
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -32,7 +32,7 @@ jobs:
           path: t32-pytest.txt
           if-no-files-found: ignore
   apply:
-    if: github.event.head_commit.message == 'build: apply T32 implementation'
+    if: "${{ github.event.head_commit.message == 'build: apply T32 implementation' }}"
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
