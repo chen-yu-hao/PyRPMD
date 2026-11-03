@@ -1,29 +1,35 @@
 """Extended PLUMED coordinate mapping and native multiple-walker helpers.
 
-This module is deliberately separate from :mod:`pyrpmd.plumed`: existing
-single-trajectory centroid inputs continue to use that implementation and its
-v1 checkpoint contract.  The extended workflow opts into this module only
-when replicas, bead-resolved coordinates, or native PLUMED walkers are
-requested.
+The legacy :mod:`pyrpmd.plumed` bridge remains the implementation for existing
+single-trajectory centroid inputs.  This module is used only by the opt-in
+replica, native-walker, and bead-resolved workflow.
 """
 
 from __future__ import annotations
 
 import importlib
 import math
-import re
 import shlex
-from pathlib import Path
+from pathlib import PurePosixPath
 
 import numpy as np
 
 from .plumed import PlumedBias, PlumedBiasResult
 
 
-_WALKER_ACTIONS = {
-    "files": frozenset({"METAD", "PBMETAD"}),
-    "mpi": frozenset({"METAD", "PBMETAD", "OPES_METAD", "OPES_EXPANDED"}),
-}
+_FILE_WALKER_ACTIONS = frozenset({"METAD", "PBMETAD"})
+_MPI_WALKER_ACTIONS = frozenset({
+    "METAD",
+    "PBMETAD",
+    "OPES_METAD",
+    "OPES_METAD_EXPLORE",
+    "OPES_EXPANDED",
+})
+_VES_WALKER_ACTIONS = frozenset({
+    "OPT_AVERAGED_SGD",
+    "OPT_ROBBINS_MONRO_SGD",
+    "OPT_ADAM",
+})
 
 
 def _checked_mode(mode: str) -> str:
@@ -41,11 +47,17 @@ def _checked_walkers(walkers: str) -> str:
 def plumed_atom_map(nbeads: int, natoms: int, mode: str = "centroid") -> list[dict]:
     """Return the explicit one-based PLUMED-to-ring-polymer atom map."""
     mode = _checked_mode(mode)
-    if (isinstance(nbeads, bool) or not isinstance(nbeads, (int, np.integer))
-            or int(nbeads) < 1):
+    if (
+        isinstance(nbeads, (bool, np.bool_))
+        or not isinstance(nbeads, (int, np.integer))
+        or int(nbeads) < 1
+    ):
         raise ValueError("nbeads must be an integer >= 1")
-    if (isinstance(natoms, bool) or not isinstance(natoms, (int, np.integer))
-            or int(natoms) < 1):
+    if (
+        isinstance(natoms, (bool, np.bool_))
+        or not isinstance(natoms, (int, np.integer))
+        or int(natoms) < 1
+    ):
         raise ValueError("natoms must be an integer >= 1")
     nbeads, natoms = int(nbeads), int(natoms)
     if mode == "centroid":
@@ -72,6 +84,14 @@ def _line_action(tokens: list[str]) -> str | None:
     return tokens[head] if head < len(tokens) else None
 
 
+def _append_keyword(line: str, keyword: str, tokens: list[str]) -> list[str]:
+    if tokens and tokens[-1] == "...":
+        return [line, "  " + keyword]
+    body, marker, comment = line.partition("#")
+    body = body.rstrip() + " " + keyword
+    return [body + ((" #" + comment) if marker else "")]
+
+
 def configure_multiple_walkers(
     input_lines: str,
     *,
@@ -81,17 +101,32 @@ def configure_multiple_walkers(
     read_stride: int = 1,
     directory: str = "../shared",
 ) -> str:
-    """Inject workflow-owned PLUMED walker keywords into supported actions.
+    """Inject workflow-owned PLUMED walker options into supported actions.
 
-    User-provided ``WALKERS_*`` options are rejected so the configured replica
-    count, ID and communicator cannot disagree with PLUMED's scientific state.
-    File walkers are supported for METAD/PBMETAD.  MPI walkers additionally
-    cover OPES_METAD and OPES_EXPANDED, whose PLUMED contracts use
-    ``WALKERS_MPI``.
+    File sharing is admitted for METAD/PBMETAD.  MPI multi-sim walkers are
+    admitted for METAD/PBMETAD, OPES variants, and the supported VES
+    optimizers.  PyRPMD owns every walker ID and communicator option; users may
+    not provide a second, conflicting walker topology in the PLUMED program.
     """
     walkers = _checked_walkers(walkers)
-    if not isinstance(input_lines, str) or not input_lines.strip() or "\x00" in input_lines:
+    if (
+        not isinstance(input_lines, str)
+        or not input_lines.strip()
+        or "\x00" in input_lines
+    ):
         raise ValueError("PLUMED input must be nonempty text")
+    for line in input_lines.splitlines():
+        try:
+            tokens = shlex.split(line, comments=True, posix=True)
+        except ValueError as error:
+            raise ValueError("invalid quoted PLUMED input") from error
+        for token in tokens:
+            key = token.partition("=")[0]
+            if key.startswith("WALKERS_") or key == "MULTIPLE_WALKERS":
+                raise ValueError(
+                    "PLUMED WALKERS_* and MULTIPLE_WALKERS options are owned "
+                    "by the PyRPMD workflow"
+                )
     if walkers == "independent":
         return input_lines
     for value, name, minimum in (
@@ -99,25 +134,27 @@ def configure_multiple_walkers(
         (walker_id, "walker id", 0),
         (read_stride, "walker read stride", 1),
     ):
-        if (isinstance(value, bool) or not isinstance(value, (int, np.integer))
-                or int(value) < minimum):
+        if (
+            isinstance(value, (bool, np.bool_))
+            or not isinstance(value, (int, np.integer))
+            or int(value) < minimum
+        ):
             raise ValueError(f"{name} must be an integer >= {minimum}")
     count, walker_id, read_stride = int(count), int(walker_id), int(read_stride)
     if walker_id >= count:
         raise ValueError("walker id must be smaller than walker count")
-    if walkers == "files":
-        if (not isinstance(directory, str) or not directory or any(c.isspace() for c in directory)
-                or "\x00" in directory):
-            raise ValueError("walker directory must be a nonempty whitespace-free path")
-    if re.search(r"\bWALKERS_[A-Z0-9_]*\b", input_lines):
-        raise ValueError("PLUMED WALKERS_* keywords are owned by the PyRPMD workflow")
+    if walkers == "files" and (
+        not isinstance(directory, str)
+        or not directory
+        or any(character.isspace() for character in directory)
+        or "\x00" in directory
+    ):
+        raise ValueError("walker directory must be a nonempty whitespace-free path")
 
-    keywords = (
+    file_keyword = (
         f"WALKERS_N={count} WALKERS_ID={walker_id} "
         f"WALKERS_DIR={directory} WALKERS_RSTRIDE={read_stride}"
-        if walkers == "files" else "WALKERS_MPI"
     )
-    targets = _WALKER_ACTIONS[walkers]
     output: list[str] = []
     injected = 0
     for line in input_lines.splitlines():
@@ -126,27 +163,33 @@ def configure_multiple_walkers(
         except ValueError as error:
             raise ValueError("invalid quoted PLUMED input") from error
         action = _line_action(tokens)
-        if action not in targets:
+        keyword = None
+        if walkers == "files" and action in _FILE_WALKER_ACTIONS:
+            keyword = file_keyword
+        elif walkers == "mpi" and action in _MPI_WALKER_ACTIONS:
+            keyword = "WALKERS_MPI"
+        elif walkers == "mpi" and action in _VES_WALKER_ACTIONS:
+            keyword = "MULTIPLE_WALKERS"
+        if keyword is None:
             output.append(line)
-            continue
-        injected += 1
-        if tokens and tokens[-1] == "...":
-            output.append(line)
-            output.append("  " + keywords)
         else:
-            body, marker, comment = line.partition("#")
-            body = body.rstrip() + " " + keywords
-            output.append(body + ((" #" + comment) if marker else ""))
+            injected += 1
+            output.extend(_append_keyword(line, keyword, tokens))
     if injected == 0:
-        supported = ", ".join(sorted(targets))
+        supported = (
+            sorted(_FILE_WALKER_ACTIONS)
+            if walkers == "files"
+            else sorted(_MPI_WALKER_ACTIONS | _VES_WALKER_ACTIONS)
+        )
         raise ValueError(
-            f"plumed.walkers={walkers!r} requires a supported bias action ({supported})"
+            f"plumed.walkers={walkers!r} requires a supported action "
+            f"({', '.join(supported)})"
         )
     return "\n".join(output) + ("\n" if input_lines.endswith("\n") else "")
 
 
 def ensure_checkpoint_flush(input_lines: str) -> str:
-    """Append a per-step FLUSH action unless the script already has one."""
+    """Append a per-step FLUSH action unless the program already has one."""
     for line in input_lines.splitlines():
         try:
             tokens = shlex.split(line, comments=True, posix=True)
@@ -158,13 +201,7 @@ def ensure_checkpoint_flush(input_lines: str) -> str:
 
 
 def validate_managed_output_paths(input_lines: str) -> None:
-    """Reject output/state paths that can escape an extended run directory.
-
-    PLUMED has many actions, so this check is intentionally lexical and
-    conservative: write-like ``*FILE`` keywords must be normalized relative
-    paths.  Explicit read-file keywords (``*RFILE``) are not treated as output
-    state; users remain responsible for keeping those immutable.
-    """
+    """Reject write-like PLUMED paths that escape a managed replica directory."""
     for line in input_lines.splitlines():
         try:
             tokens = shlex.split(line, comments=True, posix=True)
@@ -172,15 +209,26 @@ def validate_managed_output_paths(input_lines: str) -> None:
             raise ValueError("invalid quoted PLUMED input") from error
         for token in tokens:
             key, separator, value = token.partition("=")
-            if not separator or not value or "FILE" not in key or key.endswith("RFILE"):
+            if not separator or not value or "FILE" not in key:
                 continue
             if key == "WALKERS_DIR":
+                # This exact path is injected by the workflow and resolves from
+                # replica-NNNN to the managed sibling directory.
+                if value != "../shared":
+                    raise ValueError("PLUMED WALKERS_DIR is owned by the workflow")
                 continue
-            path = Path(value)
-            if (path.is_absolute() or ".." in path.parts or str(path) != value
-                    or any(ord(char) < 32 for char in value)):
+            path = PurePosixPath(value)
+            if (
+                path.is_absolute()
+                or ".." in path.parts
+                or str(path) != value
+                or ":" in value
+                or "\\" in value
+                or any(ord(character) < 32 for character in value)
+            ):
                 raise ValueError(
-                    f"PLUMED state path {key}={value!r} must stay below the replica directory"
+                    f"PLUMED state path {key}={value!r} must be a normalized "
+                    "relative path below the replica directory"
                 )
 
 
@@ -197,7 +245,11 @@ def _configured_kernel(kernel_path, injected_kernel, replica_comm, multi_sim_com
                 "Optional PLUMED bridge requires the PLUMED Python wrapper and "
                 "a compatible libplumedKernel; see docs/plumed.md"
             ) from exc
-        kernel = module.Plumed() if kernel_path is None else module.Plumed(kernel=str(kernel_path))
+        kernel = (
+            module.Plumed()
+            if kernel_path is None
+            else module.Plumed(kernel=str(kernel_path))
+        )
     else:
         kernel = injected_kernel
     try:
@@ -214,13 +266,12 @@ def _configured_kernel(kernel_path, injected_kernel, replica_comm, multi_sim_com
 
 
 class ExtendedPlumedBias(PlumedBias):
-    """PLUMED bias with explicit centroid or bead-resolved coordinate mapping.
+    """PLUMED bias with explicit centroid or bead-resolved atom mapping.
 
-    ``mode='centroid'`` has the original Hamiltonian contribution
-    ``P W(q_centroid)``.  ``mode='beads'`` presents ``P*N`` atoms to PLUMED in
-    bead-major order and adds the returned bias once to the ring-polymer
-    Hamiltonian; PLUMED's force on each synthetic atom is applied directly to
-    the corresponding bead coordinate.
+    ``mode='centroid'`` retains the legacy sum-beads contribution
+    ``P W(q_centroid)``.  ``mode='beads'`` presents ``P*N`` synthetic atoms to
+    PLUMED in bead-major order and adds the returned bias once; each synthetic
+    atom force is applied directly to the corresponding bead coordinate.
     """
 
     def __init__(
@@ -247,17 +298,31 @@ class ExtendedPlumedBias(PlumedBias):
         raw_masses = np.asarray(masses)
         if raw_masses.ndim != 1:
             raise ValueError("masses must be a real nonempty vector")
-        original_masses = np.array(raw_masses, dtype=np.float64, order="C", copy=True)
-        original_charges = None if charges is None else np.array(
-            np.asarray(charges), dtype=np.float64, order="C", copy=True
+        original_masses = np.array(
+            raw_masses, dtype=np.float64, order="C", copy=True
         )
-        p = int(nbeads) if not isinstance(nbeads, bool) else 0
-        if p < 1:
+        original_charges = (
+            None
+            if charges is None
+            else np.array(
+                np.asarray(charges), dtype=np.float64, order="C", copy=True
+            )
+        )
+        if (
+            isinstance(nbeads, (bool, np.bool_))
+            or not isinstance(nbeads, (int, np.integer))
+            or int(nbeads) < 1
+        ):
             raise ValueError("nbeads must be an integer >= 1")
-        configured = _configured_kernel(kernel_path, _kernel, replica_comm, multi_sim_comm)
+        p = int(nbeads)
+        configured = _configured_kernel(
+            kernel_path, _kernel, replica_comm, multi_sim_comm
+        )
         if mode == "beads":
             plumed_masses = np.tile(original_masses, p)
-            plumed_charges = None if original_charges is None else np.tile(original_charges, p)
+            plumed_charges = (
+                None if original_charges is None else np.tile(original_charges, p)
+            )
             super().__init__(
                 input_lines,
                 plumed_masses,
@@ -273,8 +338,8 @@ class ExtendedPlumedBias(PlumedBias):
                 start_step=start_step,
                 _kernel=configured,
             )
-            # Restore the physical Dynamics contract after the parent has
-            # initialized PLUMED with P*N synthetic atoms.
+            # Restore the physical Dynamics shape after PLUMED has been
+            # initialized with P*N synthetic atoms.
             self.nbeads = p
             self._masses = original_masses
             self._charges = original_charges
@@ -329,14 +394,19 @@ class ExtendedPlumedBias(PlumedBias):
             self._kernel.cmd("isEnergyNeeded", needed)
             if needed[0]:
                 raise ValueError(
-                    "PLUMED ENERGY-dependent actions are unsupported by the bead bridge; "
-                    "their force chain is not available"
+                    "PLUMED ENERGY-dependent actions are unsupported by the "
+                    "bead bridge because their PES force chain is unavailable"
                 )
             self._kernel.cmd("performCalcNoUpdate")
             self._kernel.cmd("getBias", bias)
-            if not (np.isfinite(bias).all() and np.isfinite(force).all()
-                    and np.isfinite(virial).all()):
-                raise FloatingPointError("PLUMED returned nonfinite bias energy, force, or virial")
+            if not (
+                np.isfinite(bias).all()
+                and np.isfinite(force).all()
+                and np.isfinite(virial).all()
+            ):
+                raise FloatingPointError(
+                    "PLUMED returned nonfinite bias energy, force, or virial"
+                )
             energy = float(bias[0])
             if not math.isfinite(energy):
                 raise FloatingPointError("PLUMED bead-resolved bias energy overflow")
@@ -354,24 +424,33 @@ class ExtendedPlumedBias(PlumedBias):
         )
 
     def _prime_file_restart(self, q):
-        """Prime a restored extended kernel without constraining its actions."""
+        """Prime a restored extended kernel and verify replay invariance."""
         with self._lock:
             self._check_open()
-            if (not self._restart or self._completed_step == 0
-                    or self._restart_primed or self._busy):
+            if (
+                not self._restart
+                or self._completed_step == 0
+                or self._restart_primed
+                or self._busy
+            ):
                 raise RuntimeError(
-                    "PLUMED file restart clock can only be primed once at a restored positive step"
+                    "PLUMED file restart clock can only be primed once at a "
+                    "restored positive step"
                 )
             before = self._calculate(q, self._completed_step)
             try:
                 self._kernel.cmd("update")
                 after = self._calculate(q, self._completed_step)
-                if (before.physical_energy != after.physical_energy
-                        or not np.array_equal(before.forces, after.forces)
-                        or not np.array_equal(before.plumed_virial, after.plumed_virial)):
+                if (
+                    before.physical_energy != after.physical_energy
+                    or not np.array_equal(before.forces, after.forces)
+                    or not np.array_equal(
+                        before.plumed_virial, after.plumed_virial
+                    )
+                ):
                     raise RuntimeError(
-                        "PLUMED restart clock replay changed its bias; this kernel/action "
-                        "is not restart-compatible"
+                        "PLUMED restart replay changed its bias; this action "
+                        "state is not restart-compatible"
                     )
                 self._restart_primed = True
                 self._bound_q = np.array(q, dtype=np.float64, copy=True)
