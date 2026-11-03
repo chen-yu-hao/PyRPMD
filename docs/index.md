@@ -185,6 +185,7 @@ Troubleshooting <manual/troubleshooting>
 Developer guide <manual/development>
 Distribution and releases <distribution>
 Release notes 0.2.0 <releases/0.2.0>
+Development integration notes <releases/development-2026-11-03>
 Literature validation <literature-validation>
 Publication readiness <publication-readiness>
 Dynamics validation <validation/tier1-2026-10-31/README>
