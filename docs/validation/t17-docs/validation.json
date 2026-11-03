@@ -1,0 +1,732 @@
+{
+  "schema": "pyrpmd.documentation-validation",
+  "schema_version": 1,
+  "recorded_at_utc": "2026-11-03 18:24:29 UTC",
+  "task": "T17 documentation entry-point consolidation",
+  "status": {
+    "implementation": "prepared_for_draft_review",
+    "final_acceptance": "pending_T16b_merge_and_complete_external_link_validation",
+    "pull_request": "https://github.com/chen-yu-hao/PyRPMD/pull/107",
+    "dependency": {
+      "pull_request": 93,
+      "observed_state": "open; not merged"
+    },
+    "overlapping_draft": {
+      "pull_request": 100,
+      "disposition": "Independent proposal; consolidate into one final T17 change. No changes to that branch."
+    },
+    "execution_environment": "Became unavailable during the external-link remainder check.",
+    "raw_logs": "Captured during local validation but not retrievable after environment loss; full log files are not included in this remote record. Exact observed summary lines are preserved below.",
+    "github_ci": "GitHub Actions is the remaining source of complete external-link results. At the last observed source head the Documentation/manual job was queued; no pending result is represented as passed."
+  },
+  "source": {
+    "repository": "chen-yu-hao/PyRPMD",
+    "branch": "codex/t17-docs-entrypoints",
+    "baseline_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+    "validated_remote_commit": "57b661f6313e605c61fa25a83cff78786c0cd7d2",
+    "equivalent_validated_local_commit": "3fa31a965e375bcd017deacfbaf2316f10111020",
+    "validated_tree": "6c51aaed9e024025ddfea355e59e0e42f9127eae",
+    "remote_local_tree_equality_verified": true,
+    "implementation_files_before_this_record": 60,
+    "added": 10,
+    "modified": 50,
+    "publication_mapping": [
+      {
+        "local": "1972007edf20cc060c2f98eff19ff2e1487a09e0",
+        "remote": "4e2dd8e3cd0ad6445f3f9c5d577035a5d4a5e167",
+        "tree": "51e8e1e46b001329d07ca7be2fe69a4afadc8cd3"
+      },
+      {
+        "local": "044a45fd17db2f31c65a767589324fbab37bd362",
+        "remote": "b3ddf83b52c42059cb0125e1f59bb778f3bcf958",
+        "tree": "e849ba6e871ecf2fbf70e9965ef335de837db034"
+      },
+      {
+        "local": "6d9f9829e05069d3ab97380bd0fddafcb0edcedf",
+        "remote": "94b72aa663926f69e99f7b61d3109489f547b5f8",
+        "tree": "cf0298448db4cc853b42f562272da89d02952ad0"
+      },
+      {
+        "local": "350afe4d92b988ee833fa3e5534325d2306a5859",
+        "remote": "d0a03c456d681441f94a7bad6bcf84d1ed4337e0",
+        "tree": "922300898dd5a2dbf465e3a0684895db4ae2c547"
+      },
+      {
+        "local": "3fa31a965e375bcd017deacfbaf2316f10111020",
+        "remote": "57b661f6313e605c61fa25a83cff78786c0cd7d2",
+        "tree": "6c51aaed9e024025ddfea355e59e0e42f9127eae"
+      }
+    ],
+    "runtime_and_existing_scientific_test_changes": [],
+    "identical_baseline_and_candidate_subtrees": {
+      "native": "28567f3568a767f1905f75dd8409bcaedcfb11f4",
+      "src": "b39b1e5387ab9570c08f2229c45df4364bf53e59",
+      "tests": "53fd8d0d80239f2e02bd73f6019bec68718e7c54"
+    },
+    "subtree_proof": "Compared the baseline and candidate Git tree objects locally and through the GitHub Git data API.",
+    "package_version": "0.2.0",
+    "changed_files_before_this_record": [
+      {
+        "path": ".github/workflows/docs.yml",
+        "status": "modified",
+        "blob_sha": "540e2104c4d3fb91e1b5e6add3ae027b8721dbfb",
+        "additions": 52,
+        "deletions": 2
+      },
+      {
+        "path": "MANIFEST.in",
+        "status": "modified",
+        "blob_sha": "bc226313b66367da43368224c679e91b0c7f5290",
+        "additions": 1,
+        "deletions": 0
+      },
+      {
+        "path": "README.md",
+        "status": "modified",
+        "blob_sha": "b2200942683fd8e88c7102cca7142c415692c223",
+        "additions": 85,
+        "deletions": 477
+      },
+      {
+        "path": "README.zh-CN.md",
+        "status": "modified",
+        "blob_sha": "5ce4f930dc2afa532b0dd3029251f0b0d4fe80fb",
+        "additions": 74,
+        "deletions": 388
+      },
+      {
+        "path": "docs/_tools/check_external_results.py",
+        "status": "added",
+        "blob_sha": "6c882c741062f2a884adae5c963bbcaa3e1eb5c3",
+        "additions": 41,
+        "deletions": 0
+      },
+      {
+        "path": "docs/_tools/check_links.py",
+        "status": "added",
+        "blob_sha": "fbc8641a41b7c2180fc85b7414f2531deb7439f1",
+        "additions": 416,
+        "deletions": 0
+      },
+      {
+        "path": "docs/_tools/sphinx_singlehtml.py",
+        "status": "added",
+        "blob_sha": "dbcbca6d44d9c275a07429dd871519a00effe5c1",
+        "additions": 135,
+        "deletions": 0
+      },
+      {
+        "path": "docs/_tools/test_check_links.py",
+        "status": "added",
+        "blob_sha": "3f494ed536526646a4c32bf15dea3b1e7ffb2070",
+        "additions": 146,
+        "deletions": 0
+      },
+      {
+        "path": "docs/_tools/test_external_results.py",
+        "status": "added",
+        "blob_sha": "db4d40d9fe6e5eb249288ed1a03bee1a5e78669d",
+        "additions": 22,
+        "deletions": 0
+      },
+      {
+        "path": "docs/_tools/test_sphinx_singlehtml.py",
+        "status": "added",
+        "blob_sha": "5ba2cf24de6b64af3f7545919cf6013278dbf0bd",
+        "additions": 63,
+        "deletions": 0
+      },
+      {
+        "path": "docs/batched-ml-potentials.md",
+        "status": "modified",
+        "blob_sha": "6bec9b36d62c6184c55e1fe97682961fb1c8f361",
+        "additions": 0,
+        "deletions": 4
+      },
+      {
+        "path": "docs/builtin-native-potentials.md",
+        "status": "modified",
+        "blob_sha": "a1e1e1541ee8d6a536aa3aa86a176585d9fd51ca",
+        "additions": 0,
+        "deletions": 4
+      },
+      {
+        "path": "docs/conf.py",
+        "status": "modified",
+        "blob_sha": "e91e7bbf9a5846dc630ae2a31882c2a17b6f5944",
+        "additions": 6,
+        "deletions": 3
+      },
+      {
+        "path": "docs/data-archive-plan.md",
+        "status": "modified",
+        "blob_sha": "2e7ae391a4f9b21efc453f7704847b02f147816d",
+        "additions": 0,
+        "deletions": 4
+      },
+      {
+        "path": "docs/development.md",
+        "status": "modified",
+        "blob_sha": "40479f41e08386785e2ab39d5b7a36ea0538f8b0",
+        "additions": 7,
+        "deletions": 6
+      },
+      {
+        "path": "docs/implementation-review-2026-11-03.md",
+        "status": "modified",
+        "blob_sha": "77dd640f572cfd24a8f91ad0856bc7a5e7897759",
+        "additions": 6,
+        "deletions": 4
+      },
+      {
+        "path": "docs/index.md",
+        "status": "modified",
+        "blob_sha": "9cf32d5600b002fd5e6be2ae42677e50144e723c",
+        "additions": 62,
+        "deletions": 54
+      },
+      {
+        "path": "docs/manual/api.md",
+        "status": "modified",
+        "blob_sha": "e46348ec2eae04931b5d558b14b4f623e65ebf5a",
+        "additions": 4,
+        "deletions": 2
+      },
+      {
+        "path": "docs/manual/capabilities.md",
+        "status": "added",
+        "blob_sha": "287f5729139bcb543a18783da3259c6bd71fbb85",
+        "additions": 169,
+        "deletions": 0
+      },
+      {
+        "path": "docs/manual/development.md",
+        "status": "modified",
+        "blob_sha": "25cb4eb7074ab04280e4b3cce783e779d4418c07",
+        "additions": 32,
+        "deletions": 1
+      },
+      {
+        "path": "docs/manual/input.md",
+        "status": "modified",
+        "blob_sha": "ad99b889d31b44e67d61eba86459c1756602ef2f",
+        "additions": 3,
+        "deletions": 1
+      },
+      {
+        "path": "docs/manual/nonadiabatic.md",
+        "status": "modified",
+        "blob_sha": "dd7583b48d5a3b182827a41a4c11f50d0ee71263",
+        "additions": 10,
+        "deletions": 4
+      },
+      {
+        "path": "docs/manual/periodic.md",
+        "status": "modified",
+        "blob_sha": "2819bd631a19ce0f3961bfef70f56cc4afb07544",
+        "additions": 4,
+        "deletions": 2
+      },
+      {
+        "path": "docs/manual/potentials.md",
+        "status": "modified",
+        "blob_sha": "5751390f92e06902cc18123e67a4006633a23f03",
+        "additions": 5,
+        "deletions": 2
+      },
+      {
+        "path": "docs/manual/references.md",
+        "status": "modified",
+        "blob_sha": "ec437c08222aa4acc94e6af8698de17a4c2e338f",
+        "additions": 609,
+        "deletions": 79
+      },
+      {
+        "path": "docs/manual/reproduction.md",
+        "status": "modified",
+        "blob_sha": "cfd6a0a52196824b0509f9e58e7a40f30330b745",
+        "additions": 6,
+        "deletions": 0
+      },
+      {
+        "path": "docs/manual/science.md",
+        "status": "modified",
+        "blob_sha": "5d67f7034132a4b2898e4c39e1a7606067d77727",
+        "additions": 11,
+        "deletions": 7
+      },
+      {
+        "path": "docs/method-references.json",
+        "status": "modified",
+        "blob_sha": "bf2509617337b6916df28f7fb9b2b81a183c56de",
+        "additions": 1032,
+        "deletions": 131
+      },
+      {
+        "path": "docs/native-ensembles.md",
+        "status": "modified",
+        "blob_sha": "5b648519dd844909198e78441d77ebd36cafc00b",
+        "additions": 1,
+        "deletions": 4
+      },
+      {
+        "path": "docs/native-pimd-workflow.md",
+        "status": "modified",
+        "blob_sha": "50a1088a38c832d4d0643cde26b2a2f017ea2697",
+        "additions": 0,
+        "deletions": 3
+      },
+      {
+        "path": "docs/nonadiabatic-hopping-extensions.md",
+        "status": "modified",
+        "blob_sha": "3e8dae16295444ede8ce2a918481e0ed1c3d848c",
+        "additions": 1,
+        "deletions": 1
+      },
+      {
+        "path": "docs/nonadiabatic-performance.md",
+        "status": "modified",
+        "blob_sha": "bd178f39924e8a1b505b5ef05b222ac58ea9f6e0",
+        "additions": 6,
+        "deletions": 4
+      },
+      {
+        "path": "docs/nonadiabatic-spin-methods.md",
+        "status": "modified",
+        "blob_sha": "0b66d81c5c9aad8d9d6906e5be1bf3c733e61c9d",
+        "additions": 1,
+        "deletions": 2
+      },
+      {
+        "path": "docs/portable-persistence.md",
+        "status": "modified",
+        "blob_sha": "1fd33e4d228f3fae85a9f58a3560a7e7cb95d9a2",
+        "additions": 18,
+        "deletions": 19
+      },
+      {
+        "path": "docs/potential-adapters.md",
+        "status": "modified",
+        "blob_sha": "bfa216cfd3c69ebc45f2678b51b9cd1cc7f48cf2",
+        "additions": 2,
+        "deletions": 2
+      },
+      {
+        "path": "docs/qcmd.md",
+        "status": "modified",
+        "blob_sha": "1cbd55f82f57c3c4be1c7a83550b0a5fc1eded2a",
+        "additions": 0,
+        "deletions": 4
+      },
+      {
+        "path": "docs/rate_precision.md",
+        "status": "modified",
+        "blob_sha": "cf948f6182ae16d26748135e55d4a40f780cc9c5",
+        "additions": 0,
+        "deletions": 4
+      },
+      {
+        "path": "docs/references.bib",
+        "status": "modified",
+        "blob_sha": "f2e7457cf4a2ea30c6f9a2ec6eb65683cf8e9708",
+        "additions": 356,
+        "deletions": 15
+      },
+      {
+        "path": "docs/releases/unreleased.md",
+        "status": "added",
+        "blob_sha": "57304b468ba4927039d420d20cc015d4766274ba",
+        "additions": 133,
+        "deletions": 0
+      },
+      {
+        "path": "docs/roadmap.md",
+        "status": "modified",
+        "blob_sha": "5305f6ca3c23d8e57da5efa27b1968fa0b160496",
+        "additions": 2,
+        "deletions": 2
+      },
+      {
+        "path": "docs/t19-performance.md",
+        "status": "modified",
+        "blob_sha": "12f1691afce78e59351928918e832a9aa5d8e601",
+        "additions": 2,
+        "deletions": 4
+      },
+      {
+        "path": "docs/tier2-methods.md",
+        "status": "modified",
+        "blob_sha": "7d164b5378311bd023299401bad242931396136e",
+        "additions": 3,
+        "deletions": 1
+      },
+      {
+        "path": "docs/tier2-nonadiabatic.md",
+        "status": "modified",
+        "blob_sha": "89476147912dbe8f0efb2999c21a09574ba6211f",
+        "additions": 3,
+        "deletions": 2
+      },
+      {
+        "path": "docs/tier2-path-integral.md",
+        "status": "modified",
+        "blob_sha": "51ff7dc0c01248317564dd5b97722e8587a2f6a5",
+        "additions": 14,
+        "deletions": 9
+      },
+      {
+        "path": "docs/tier2-sampling.md",
+        "status": "modified",
+        "blob_sha": "05e06c94c08f7856e2406951c43294e64f937c77",
+        "additions": 7,
+        "deletions": 7
+      },
+      {
+        "path": "docs/tier2-spectroscopy.md",
+        "status": "modified",
+        "blob_sha": "2c01f025adfaa37926a45305e83aaa3bb73f9c47",
+        "additions": 11,
+        "deletions": 7
+      },
+      {
+        "path": "docs/torch-materials-workflows.md",
+        "status": "modified",
+        "blob_sha": "271ebb84891e28d5f9e29fcf66abaf9b60fd93a3",
+        "additions": 8,
+        "deletions": 12
+      },
+      {
+        "path": "docs/tunnelling-phase-projection.md",
+        "status": "modified",
+        "blob_sha": "3cd41f32c5bb1d002f52e89785dd6218c4eed908",
+        "additions": 0,
+        "deletions": 4
+      },
+      {
+        "path": "docs/zh/index.md",
+        "status": "modified",
+        "blob_sha": "095689ca33e82cf3804fe622ae09b75481cd659c",
+        "additions": 44,
+        "deletions": 45
+      },
+      {
+        "path": "docs/zh/manual/api.md",
+        "status": "modified",
+        "blob_sha": "36ab4761deefde5793aa1225b2692aefa9bc3545",
+        "additions": 2,
+        "deletions": 1
+      },
+      {
+        "path": "docs/zh/manual/capabilities.md",
+        "status": "added",
+        "blob_sha": "b07a007c63b4f4eecc60987e22d8b98b176b442c",
+        "additions": 126,
+        "deletions": 0
+      },
+      {
+        "path": "docs/zh/manual/development.md",
+        "status": "modified",
+        "blob_sha": "2ec847af20fe3ca5cc7b62a7b3208cace7aaf25b",
+        "additions": 22,
+        "deletions": 1
+      },
+      {
+        "path": "docs/zh/manual/input.md",
+        "status": "modified",
+        "blob_sha": "f433152009eb938afc8e600b87c1705a2917c2a7",
+        "additions": 3,
+        "deletions": 1
+      },
+      {
+        "path": "docs/zh/manual/nonadiabatic.md",
+        "status": "modified",
+        "blob_sha": "e14b35e380f048ca4cfbd212ff1e1b5334d5f723",
+        "additions": 8,
+        "deletions": 4
+      },
+      {
+        "path": "docs/zh/manual/periodic.md",
+        "status": "modified",
+        "blob_sha": "14eb3e5fc99b5ac632ffa830736b3446c4f43331",
+        "additions": 4,
+        "deletions": 2
+      },
+      {
+        "path": "docs/zh/manual/potentials.md",
+        "status": "modified",
+        "blob_sha": "314c4b8251a99bb35ccd8a8b50e0ea6a7b467698",
+        "additions": 4,
+        "deletions": 1
+      },
+      {
+        "path": "docs/zh/manual/references.md",
+        "status": "modified",
+        "blob_sha": "a276af3407b1951b2fffb39b79672338817bf77f",
+        "additions": 608,
+        "deletions": 77
+      },
+      {
+        "path": "docs/zh/manual/reproduction.md",
+        "status": "modified",
+        "blob_sha": "27d082e8af39d24b869389f020c31b3c96392eae",
+        "additions": 4,
+        "deletions": 0
+      },
+      {
+        "path": "docs/zh/manual/science.md",
+        "status": "modified",
+        "blob_sha": "ed28f3d8b8e608170a85128f18078b9905d1c527",
+        "additions": 10,
+        "deletions": 6
+      },
+      {
+        "path": "docs/zh/releases/unreleased.md",
+        "status": "added",
+        "blob_sha": "cee849276dcf36fa7bd870ef58f00f4839428103",
+        "additions": 92,
+        "deletions": 0
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "logical_cpus": 9,
+    "cpu_model": null,
+    "cpu_model_note": "Unavailable; not inferred.",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "installation": "Editable .[test,docs] in a venv with system-site-packages; native extensions built successfully.",
+    "versions": {
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "pytest": "9.2.0",
+      "Sphinx": "8.2.3",
+      "myst-parser": "4.0.1",
+      "pydata-sphinx-theme": "0.16.1"
+    },
+    "absent_optional_runtimes": [
+      "torch",
+      "ase",
+      "openmm",
+      "pyscf",
+      "MDAnalysis"
+    ],
+    "cuda_performance_measured": false
+  },
+  "baseline_validation": [
+    {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 TMPDIR=/workspace/scratch/3ddab28a03f9/t17-tmp .venv/bin/python -m pytest -q tests/test_rate_postprocess_docs.py",
+      "exit_code": 0,
+      "raw_summary": "2 passed in 2.70s"
+    },
+    {
+      "command": ".venv/bin/python -m sphinx -W --keep-going -b html docs /workspace/scratch/3ddab28a03f9/t17-baseline-html",
+      "exit_code": 0,
+      "raw_summary": "build succeeded."
+    },
+    {
+      "command": ".venv/bin/python -m sphinx -W --keep-going -b html docs/zh /workspace/scratch/3ddab28a03f9/t17-baseline-html/zh",
+      "exit_code": 0,
+      "raw_summary": "build succeeded."
+    }
+  ],
+  "final_local_validation": {
+    "sphinx_builds": [
+      {
+        "command": ".venv/bin/python -m sphinx -W --keep-going -b html docs docs/_build/html",
+        "exit_code": 0,
+        "warnings": 0,
+        "raw_summary": "build succeeded."
+      },
+      {
+        "command": ".venv/bin/python -m sphinx -W --keep-going -b html docs/zh docs/_build/html/zh",
+        "exit_code": 0,
+        "warnings": 0,
+        "raw_summary": "build succeeded."
+      },
+      {
+        "command": ".venv/bin/python -m sphinx -W --keep-going -b singlehtml docs docs/_build/singlehtml",
+        "exit_code": 0,
+        "warnings": 0,
+        "raw_summary": "build succeeded."
+      },
+      {
+        "command": ".venv/bin/python -m sphinx -W --keep-going -b singlehtml docs/zh docs/_build/singlehtml/zh",
+        "exit_code": 0,
+        "warnings": 0,
+        "raw_summary": "build succeeded."
+      }
+    ],
+    "sphinx_note": "Strict incremental builds of the final FairChem-corrected sources; no -E or -a flags were used. Real singlehtml incremental builds were also run twice to verify idempotence.",
+    "documentation_tools": {
+      "command": ".venv/bin/python -m unittest discover -s docs/_tools -p 'test_*.py' -v",
+      "exit_code": 0,
+      "raw_summary": "Ran 20 tests in 0.392s\n\nOK"
+    },
+    "offline_links": {
+      "command": ".venv/bin/python docs/_tools/check_links.py --html docs/_build/html --html docs/_build/singlehtml --external-project docs/_build/external-links",
+      "exit_code": 0,
+      "raw_summary": "Checked 2 READMEs and 120 HTML pages: 35958 links, 429 external URLs, 0 errors.",
+      "readmes": 2,
+      "html_pages": 120,
+      "links": 35958,
+      "external_urls": 429,
+      "errors": 0
+    },
+    "full_pytest": {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 TMPDIR=/workspace/scratch/3ddab28a03f9/t17-tmp .venv/bin/python -m pytest -q",
+      "exit_code": 1,
+      "raw_summary": "1 failed, 10543 passed, 392 skipped, 48 warnings, 493 subtests passed in 2618.37s (0:43:38)",
+      "failed_test": "tests/test_ipi_clients.py::test_existing_unix_address_is_not_removed_on_bind_failure",
+      "failure": "PermissionError: [Errno 1] Operation not permitted",
+      "operation": "socket.socket(AF_UNIX, SOCK_STREAM), before bind",
+      "independent_reproduction": "The same errno 1 was reproduced with only Python's standard-library socket module, without importing PyRPMD.",
+      "exact_node_rerun_summary": "1 failed in 11.61s",
+      "test_node_reproduction_command": ".venv/bin/python -m pytest -q tests/test_ipi_clients.py::test_existing_unix_address_is_not_removed_on_bind_failure",
+      "reproduction_command_note": "Equivalent command using the exact failed node; the original shell environment wrapper was not retained in its raw log.",
+      "full_untouched_baseline_suite_run_by_this_task": false,
+      "comparison_scope": "Focused baseline tests and builds preceded the edits. The src/native/tests trees are unchanged from the base. No separate full-baseline run by this task is claimed.",
+      "classification": "Completed with one independently reproduced environment failure; not an entirely passing suite."
+    },
+    "readme_quickstart": {
+      "commands": [
+        "python -m pyrpmd init my-first-run",
+        "python -m pyrpmd validate my-first-run/quickstart.inp --check-pes --output my-first-run/run",
+        "python -m pyrpmd run my-first-run/quickstart.inp --output my-first-run/run",
+        "python -m pyrpmd analyze my-first-run/run",
+        "python -m pyrpmd resume my-first-run/run"
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "raw_summary": "README quickstart: all five commands exit 0",
+      "result": {
+        "task": "fes",
+        "windows": 3,
+        "streams": 6,
+        "samples": 120,
+        "converged": false
+      },
+      "scope": "Short harmonic tutorial; not a converged scientific calculation."
+    },
+    "low_level_example": {
+      "command": ".venv/bin/python examples/manual/low_level.py",
+      "exit_code": 0,
+      "observed_output": [
+        "steps: 100",
+        "centroid / bohr: [[0.45420153 0.         0.        ]]",
+        "ring-Hamiltonian change / hartree: -8.13103137988283e-10",
+        "backend counters: {'native_steps': 100, 'python_steps': 0, 'fallback_reasons': {}}"
+      ]
+    }
+  },
+  "external_links": {
+    "status": "incomplete_after_environment_loss",
+    "final_inventory_urls": 429,
+    "first_attempt": {
+      "command": "timeout 25m .venv/bin/python -m sphinx -W --keep-going -b linkcheck docs/_build/external-links docs/_build/linkcheck-final",
+      "process_exit_code": 124,
+      "evidence_validator_exit_code": 1,
+      "persisted_results": 312,
+      "working": 92,
+      "redirected": 219,
+      "broken": 1,
+      "successful": 311,
+      "unverified_or_failed": 118,
+      "raw_summary": "External URL results: {'working': 92, 'redirected': 219, 'broken': 1}; 118 unverified or failed URLs out of 429."
+    },
+    "corrected_broken_url": {
+      "old_url": "https://fair-chem.github.io/core/common_tasks/ase_calculator.html",
+      "old_status": "404 Not Found",
+      "replacement_url": "https://facebookresearch.github.io/fairchem/ase-calculator/",
+      "replacement_status": "working",
+      "verification": "Official migration destination verified. The replacement was the first successful, individually flushed Sphinx result in the remainder check."
+    },
+    "remainder_check": {
+      "requested_urls": 118,
+      "doi_urls": 0,
+      "strategy": "Check only final-inventory URLs lacking an earlier successful result.",
+      "observed_successful_results_before_disconnect": 6,
+      "completion": "Not established: the execution environment became unavailable during the run.",
+      "final_merged_result": null
+    },
+    "configuration": {
+      "workers": 1,
+      "timeout_seconds": 20,
+      "retries": 2,
+      "rate_limit_timeout_seconds": 120,
+      "process_timeout_minutes": 25,
+      "report_timeouts_as_broken": true,
+      "remote_anchors": false,
+      "local_anchors": "strictly checked",
+      "doi_accept_header": "application/vnd.citationstyles.csl+json",
+      "tls_verification": true,
+      "ignored_url_regexes": []
+    },
+    "acceptance_note": "All 429 external targets have not been confirmed successful. The known FairChem 404 was fixed and its replacement checked; complete validation requires an available runner."
+  },
+  "readme_and_references": {
+    "README.md": {
+      "baseline_bytes": 36534,
+      "current_bytes": 9477,
+      "reduction_percent": 74.0598
+    },
+    "README.zh-CN.md": {
+      "baseline_bytes": 31278,
+      "current_bytes": 8667,
+      "reduction_percent": 72.2904
+    },
+    "readme_budget_bytes": 12000,
+    "matching_readme_section_ids": [
+      "installation",
+      "first-run",
+      "capabilities",
+      "documentation"
+    ],
+    "capability_rows": 14,
+    "rate_precision_decision": "Included in Sphinx navigation and visible from both documentation indexes; no longer orphaned.",
+    "methods": 127,
+    "references": 204,
+    "bibtex_entries": 204,
+    "bibtex_keys_unique_and_equal_to_json_reference_ids": true,
+    "matching_english_chinese_reference_h3_ids": 331,
+    "updated_existing_methods": 16,
+    "new_methods": 16,
+    "new_references": 34,
+    "original_audit_commit": "cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d",
+    "original_audit_date": "2026-11-02",
+    "integration_reference_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111"
+  },
+  "source_package": {
+    "command": ".venv/bin/python setup.py egg_info",
+    "exit_code": 0,
+    "initial_raw_assertion": "Source-package inventory: 9 required documentation files present.",
+    "subsequent_complete_read_only_check": {
+      "source": "src/PyRPMD.egg-info/SOURCES.txt",
+      "all_ten_new_implementation_files_present": true,
+      "docs_references_bib_present": true,
+      "changed_implementation_paths_present": 59,
+      "repository_only_path_absent": ".github/workflows/docs.yml"
+    },
+    "boundary_exception": {
+      "path": "MANIFEST.in",
+      "added_line": "recursive-include docs *.bib",
+      "purpose": "Include the bibliography in source archives."
+    },
+    "this_record": "Existing docs *.json rules cover this record, but regeneration after adding the record could not be run in the unavailable environment."
+  },
+  "limits": [
+    "T16b must merge and its public behavior must be reconciled before T17 is finalized.",
+    "The local full suite retains one visible environment failure and optional-dependency skips.",
+    "External-link validation is incomplete.",
+    "No runtime code, existing scientific tests, defaults, checkpoint identities or package version changed.",
+    "No measured CUDA performance, propagation speedup, physical convergence, completed h-CMD implementation or delivered paired f-QCMD spectral evidence is claimed.",
+    "Validation elapsed times are not performance benchmarks.",
+    "Release notes remain unreleased; no version, tag or publication date was assigned."
+  ]
+}
