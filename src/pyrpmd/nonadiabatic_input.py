@@ -279,18 +279,18 @@ def _dynamics(raw, method, root):
         allowed |= _RPSH
     if method in _ADVANCED_SH:
         allowed |= {"dboc", "dboc_step", "geometric_force"}
-    if method in {"rp-mash", "multistate-mash"}:
+    if method in {"rp-mash", "rp-mash-ba", "multistate-mash"}:
         allowed |= {"rtol", "atol", "max_step", "max_events", "gap_tolerance"}
     if method == "iesh":
         allowed |= {"nelectrons", "electronic_substeps", "gap_tolerance", "max_hop_probability"}
     spec = _table(raw, "dynamics", allowed)
-    native = _native(root.get("native", method not in {"rp-mash", "multistate-mash"}), "native")
+    native = _native(root.get("native", method not in {"rp-mash", "rp-mash-ba", "multistate-mash"}), "native")
     if "native" in spec:
         chosen = _native(spec["native"], "dynamics.native")
         if "native" in root and chosen != native:
             raise _error("native and dynamics.native conflict; supply only one or the same value")
         native = chosen
-    if method in {"rp-mash", "multistate-mash"}:
+    if method in {"rp-mash", "rp-mash-ba", "multistate-mash"}:
         integrator = _choice(spec.get("integrator", "adaptive-dop853"), "dynamics.integrator", {"adaptive-dop853"})
         if native is not False:
             raise _error(f"{method} uses adaptive-dop853 event integration and requires native=false")
@@ -314,12 +314,15 @@ def _dynamics(raw, method, root):
         if backend != "torch" and device != "cpu":
             raise _error("a CUDA electronic_device requires electronic_backend='torch'")
         options.update(electronic_backend=backend,electronic_device=device)
-    if method in {"rp-mash", "multistate-mash"}:
+    if method in {"rp-mash", "rp-mash-ba", "multistate-mash"}:
         options.update(rtol=_quantity(spec.get("rtol",1e-9),"dynamics.rtol",(0,0,0,0,0,0)),
                        atol=_quantity(spec.get("atol",1e-11),"dynamics.atol",(0,0,0,0,0,0)),
                        max_step=_quantity(spec.get("max_step",dt/4),"dynamics.max_step","time"),
                        max_events=_integer(spec.get("max_events",64),"dynamics.max_events"),
                        gap_tolerance=_quantity(spec.get("gap_tolerance",1e-10),"dynamics.gap_tolerance","energy"))
+        if method == "rp-mash-ba" and options["rtol"] < 100.0 * np.finfo(float).eps:
+            raise _error("dynamics.rtol is below DOP853's double-precision minimum; "
+                         "it would be silently increased")
     if method == "iesh":
         options.update(
             electronic_substeps=_integer(spec.get("electronic_substeps", 4), "dynamics.electronic_substeps"),
@@ -384,15 +387,15 @@ def _check_reference(model, geometry, method, options):
 
     try:
         result = model.evaluate(geometry[None])
-        if method in ("sm-nrpmd", "rp-mash") and model.nstates != 2:
+        if method in ("sm-nrpmd", "rp-mash", "rp-mash-ba") and model.nstates != 2:
             raise ValueError(f"{method} currently requires exactly two electronic states")
         if method == "multistate-mash" and model.nstates < 2:
             raise ValueError("multistate-mash requires at least two electronic states")
         if method in _MAPPING:
             return
-        if method in {"rpsh","rpsh-ba","rp-mash","iesh","multistate-mash"} and (
+        if method in {"rpsh","rpsh-ba","rp-mash","rp-mash-ba","iesh","multistate-mash"} and (
                 np.any(np.imag(result.matrix) != 0) or np.any(np.imag(result.gradients) != 0)):
-            label = method if method in {"iesh", "multistate-mash"} else "RPSH"
+            label = method if method in {"iesh", "multistate-mash", "rp-mash-ba"} else "RPSH"
             raise ValueError(f"{label} requires a real symmetric matrix and real gradients; "
                              "choose a method supporting complex Hermitian models")
         energies = np.linalg.eigvalsh(result.matrix)[0]
