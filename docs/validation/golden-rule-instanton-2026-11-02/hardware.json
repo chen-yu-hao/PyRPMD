@@ -1,0 +1,7 @@
+{
+  "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+  "guest_logical_cpus": 9,
+  "cpu_max": "800000 100000",
+  "memory_max_bytes": 8589934592,
+  "runner_shared_with_other_jobs": true
+}

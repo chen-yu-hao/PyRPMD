@@ -27,6 +27,7 @@ separate from the path-only result documented here.
 | Ground-doublet splitting | `pyrpmd.tunnelling.tunnelling_splitting`; equivalent bound/constrained wells, open path |
 | Bead convergence | `run_instanton(..., mode="rate")`; interpolation, optimization and rate diagnostics at every P |
 | Splitting convergence | `run_instanton(..., mode="splitting")`; independent duration and time-step scans |
+| Nonadiabatic golden-rule rate | `run_instanton(..., mode="golden_rule")`; two bound/constrained diabatic surfaces, constant weak coupling, normal regime |
 | Command line | `pyrpmd instanton INPUT.py --output report.json` |
 
 No transverse vibrational, rotational, translational, molecular symmetry, or
@@ -418,5 +419,245 @@ The source-distribution manifest already includes the new Python workflow,
 tests, examples and these small JSON/log validation records. The production
 path keeps the 4096-coordinate dense-Hessian limit; P=512 for full Cartesian
 H3 would exceed it. Sparse fluctuation determinants, uniform crossover theory,
-free-molecule rovibrational splitting networks, and golden-rule instantons
-remain outside this implementation.
+and free-molecule rovibrational splitting networks remain outside this
+implementation. The separate golden-rule extension is described below.
+
+## Golden-rule nonadiabatic rates
+
+The optional second stage implements the normal-regime golden-rule instanton
+of [Richardson, Bauer and Thoss (2015)](https://doi.org/10.1063/1.4932361) and
+[Richardson (2015)](https://doi.org/10.1063/1.4932362). It evaluates a weak-coupling,
+leading semiclassical rate between two diabatic surfaces. The electronic
+coupling is the real, constant off-diagonal Hamiltonian element `Delta`, in
+hartree. Its squared magnitude multiplies the rate; a global sign change does
+not change the result. Convergence does not establish that a chosen coupling
+is physically in the golden-rule limit.
+
+This implementation supports **bound or Cartesian-constrained coordinates**,
+one explicitly normalized reactant, and positive imaginary times on both
+surfaces. It does not supply free-molecule translation/rotation factors,
+coordinate-dependent electronic couplings, or negative-time paths in the
+Marcus inverted regime. Those extensions need different prefactors or saddle
+searches; they are rejected rather than approximated by clipping a time split
+or deleting small Hessian eigenvalues. The molecular rigid-mode extension is
+discussed by [Ansari et al. (2022)](https://doi.org/10.1098/rsta.2020.0378), and
+negative-time instantons by
+[Heller and Richardson (2020)](https://doi.org/10.1063/1.5137823).
+
+### Two paths and the time saddle
+
+For `tau0 + tau1 = beta`, the action is
+
+$$
+S(q,\tau_1)=S_0(q_0,\beta-\tau_1)+S_1(q_1,\tau_1),
+\qquad 0<\tau_1<\beta.
+$$
+
+Each segment has `Pi` intervals, `Pi+1` nodes, and step `dtaui=taui/Pi`.
+Its spring action is analytic; each interval assigns half its potential
+weight to each endpoint. The directed paths close as
+`path0[0] == path1[-1]` and `path0[-1] == path1[0]`. Both hopping coordinates
+remain independent integration variables in the fluctuation Hessian, even
+when they coincide at the optimized solution.
+
+At fixed time allocation, spring-preconditioned L-BFGS minimizes the nuclear
+action. The preconditioner factors a matrix of size `P0+P1`, shared by all
+mass-weighted coordinates. An outer root search matches the segment energies,
+`E1-E0=0`. The search must establish a normal-regime sign bracket; merely
+finding an energy mismatch smaller than an absolute tolerance does not prove
+that such a root exists. Hessian-based Newton refinement is available when
+gradient or energy roundoff prevents the requested accuracy. Every physical
+Hessian and force evaluation is counted, including final diagnostics.
+
+The final coordinate Hessian must be positive definite, and the reduced time
+curvature must be resolved and negative:
+
+$$
+\kappa=S_{\tau\tau}-S_{\tau q}H_{qq}^{-1}S_{q\tau}<0.
+$$
+
+This Schur complement includes relaxation of all nuclear coordinates when the
+time split changes. Using only `S_tautau` gives the wrong prefactor. In atomic
+units, with `f` active coordinates and `K=M^(-1/2) Hqq M^(-1/2)`, the complete
+coordinate Gaussian factor is
+
+$$
+\log A=-\frac12\left[f(P_0\log\Delta\tau_0+P_1\log\Delta\tau_1)
+                         +\log\det K\right],
+\qquad
+k=\frac{g|\Delta|^2}{Q_R}\sqrt{\frac{2\pi}{-\kappa}}\,A e^{-S}.
+$$
+
+Here `M` repeats the physical active-coordinate masses on all independent
+nodes. The free-particle normalization and Gaussian integrations cancel the
+remaining mass determinants and coordinate powers of `2*pi`. There is
+**no adiabatic time-translation zero-mode factor**: the two labelled hopping
+points already fix the segment boundaries. The only unstable direction is
+the time saddle. The algorithm does not apply the adiabatic crossover test or
+require a noncollapsed orbit; the high-temperature limit can recover Marcus
+theory.
+
+### Python and existing diabatic providers
+
+The low-level APIs are in `pyrpmd.golden_rule`:
+
+```python
+from pyrpmd.golden_rule import optimize_golden_rule_instanton, golden_rule_rate
+
+orbit = optimize_golden_rule_instanton(
+    surface0, surface1, masses, temperature_kelvin, path0, path1,
+    active_mask=mask, energy_reference_hartree=energy_reference,
+)
+rate = golden_rule_rate(
+    orbit, coupling_hartree=delta,
+    log_reactant_partition=log_Qr, reaction_degeneracy=1,
+)
+```
+
+Each surface implements the ordinary physical `Potential.evaluate` contract
+and may supply the existing optional analytic `hessian(x)` interface.
+`log_Qr` must be dimensionless and include the electronic minimum-energy
+Boltzmann factor with the same reference as the action. Subtracting a common
+reference from both surfaces shifts the total action by `-beta*reference`,
+not by twice that amount. Reported rates are in s^-1, with logarithmic values
+retained through floating-point underflow or overflow.
+
+An existing two-state `DiabaticResult` provider can instead be adapted:
+
+```python
+from pyrpmd.golden_rule_adapters import diabatic_surfaces
+
+surface0, surface1 = diabatic_surfaces(
+    matrix_potential, coupling_hartree=delta,
+)
+```
+
+The adapter checks the real constant off-diagonal value and its zero gradient
+on every evaluation, including finite-difference Hessian displacements. The
+rate coupling must have the same magnitude as the adapter declaration. Full
+provider errors and failed matrix frames propagate; extra electronic states
+and non-Condon couplings are not silently discarded. The adapters borrow the
+matrix provider, whose owner remains responsible for closing it. They expose
+finite-difference scalar Hessians through the common fallback rather than
+inventing a matrix-Hessian protocol.
+
+### Independent segment convergence and CLI
+
+The same production entry supports this calculation:
+
+```python
+report = run_instanton(
+    potential=(surface0, surface1), masses=masses,
+    initial_path=(path0, path1), mode="golden_rule",
+    temperature_kelvin=temperature_kelvin, reactants=[reactant],
+    active_mask=mask, energy_reference_hartree=energy_reference,
+    bead_counts=[(8, 8), (16, 16), (32, 32), (64, 64)],
+    potential_identity={"surface0": identity0, "surface1": identity1},
+    golden_rule_options={"coupling_hartree": delta,
+                         "partition_discretization": "matched"},
+    convergence_relative_tolerance=0.01,
+    output="golden-rule.json",
+)
+```
+
+With `m` refinement levels, this evaluates `3*m-2` grids: the joint refinement
+and each segment refined independently with the other at its finest requested
+resolution. **Time allocation is reoptimized at every grid.** All three scans
+must pass two successive refinements, each increasing the relevant interval
+count by at least 1.5. Four requested levels therefore require ten complete
+optimizations. A converged joint scan alone cannot hide cancellation between
+the two discretization errors.
+
+Harmonic reactants default to a partition matched to both optimized segment
+steps; see [nonuniform harmonic normalization](low-temperature.md#golden-rule-reactant-normalization).
+`partition_discretization="continuous"` explicitly selects continuum harmonic
+reactants. An externally supplied `log_reactant_partition` requires
+`partition_discretization="external"` and no `reactants` argument. Each choice
+is recorded, and none infers molecular standard states or rotational factors.
+
+The golden-rule report has a separate versioned identity. Both PES identities,
+coupling, all resolved controls, paths, active mask, masses, reactant data and
+three convergence scans enter that identity. Original thermal-rate and splitting
+identity contents are unchanged. Outputs are atomic result files, not new
+optimizer checkpoints; `physical_converged` remains false.
+
+```bash
+pyrpmd instanton examples/instanton/golden_rule.py --output golden-rule.json
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python examples/instanton/validate_golden_rule.py \
+  --modes 4 8 --intervals 8 16 32 64 --output golden-rule-validation.json
+```
+
+The first example uses the existing `DiscreteSpinBoson` matrix potential and
+the checked diabatic adapter. The validation script additionally compares
+against independent analytic harmonic instantons, the classical Marcus limit,
+and the full quantum golden-rule correlation integral for a continuous Ohmic
+bath. It reports **bead discretization, bath discretization, and semiclassical
+approximation errors separately**. A finite set of isolated oscillators has
+an unbroadened delta-function spectrum; it is never labelled as having an
+exact smooth irreversible rate. The companion
+`examples/instanton/golden_rule_reference.py` evaluates its reference formulas
+without importing the production optimizer or partition implementation.
+
+### Golden-rule validation results
+
+The reproducible continuous-bath test uses atomic units, `beta=2000`
+(`T=157.887512 K`), exponential Ohmic cutoff `omega_c=0.001`, total
+reorganization energy `lambda=0.01`, driving bias `epsilon=0.002`, and constant
+electronic coupling `Delta=1e-6`. These are specified validation parameters,
+not rates copied from a publication. Gauss-Laguerre quadrature supplies the
+four- and eight-mode discretizations. The production path uses the existing
+matrix provider, its checked Condon adapters, finite-difference Hessians,
+`gradient_tolerance=1e-8`, and `energy_tolerance_hartree=1e-10`.
+
+| Bath modes | Final intervals `(P0, P1)` | Production rate / atomic time^-1 | Bead error vs finite-bath analytic SCI | Bath error vs continuous SCI |
+| ---: | --- | ---: | ---: | ---: |
+| 4 | (64, 64) | 5.478111387e-11 | -0.017426% | +0.265920% |
+| 8 | (64, 64) | 5.463387745e-11 | -0.017415% | -0.003578% |
+
+For comparison, the independently evaluated continuum SCI rate is
+`5.464534872e-11`, while quadrature of the full quantum golden-rule correlation
+function gives `5.544580321e-11` in the same units. Their difference is
+**-1.443670%**, which persists after bead and bath convergence. The final
+eight-mode production result is `2.258639524e6 s^-1`, or 1.464359% below the
+continuous-bath exact GR result. The exact reference is exact within the
+golden-rule weak-coupling model; it is not arbitrary-coupling dynamics.
+
+All three eight-mode scans pass the requested 1% criterion:
+
+| Scan | Penultimate rate change | Final rate change |
+| --- | ---: | ---: |
+| Refine both segments | 0.208801% | 0.052241% |
+| Refine surface 0 with `P1=64` | 0.160348% | 0.040252% |
+| Refine surface 1 with `P0=64` | 0.047949% | 0.011967% |
+
+Each reported change is `max(k_old,k_new)/min(k_old,k_new)-1`, not an error
+estimate against the analytic reference. The finite-bath SCI comparison above
+provides that independent estimate. A separate high-temperature one-mode test
+at `beta=40`, with `(4,4)`, `(8,8)`, and `(16,16)` grids, is 0.003228% above the
+classical Marcus rate. It checks the mathematical high-temperature limit;
+it does not validate a molecular potential at that temperature.
+
+| Complete study | Optimizations | Force batch calls | Evaluated configurations | Physical-Hessian batches | Measured time / s |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Four-mode bath, four levels | 10 | 7834 | 286922 | 28 | 4.936 |
+| Eight-mode bath, four levels | 10 | 28062 | 1101750 | 72 | 16.963 |
+| One-mode Marcus limit, three levels | 7 | 2924 | 34764 | 22 | 1.340 |
+
+Counts include time-bracketing searches, any accuracy refinement, all three
+grid scans, and final fluctuation Hessians on both surfaces. All Hessians in
+this matrix-adapter benchmark use force differences. Additional Hessian
+batches appear only when a coordinate or coupled refinement requires them.
+These are individual measured runs on the same AMD EPYC 9V74 guest described
+above, with Python 3.12.14, NumPy 2.3.5, SciPy 1.17.0, and both thread controls
+set to one. Other work shared the machine; the timings are reproducibility
+records and do not establish a speedup over another golden-rule code.
+
+The [complete compact validation report](validation/golden-rule-instanton-2026-11-02/validation.json)
+preserves every grid result, partition and prefactor, residual, cost counter,
+resolved control, model identity, and source hash. Large paths, full Hessian
+spectra, and iteration histories can be regenerated with `run_instanton`;
+the [CLI example result](validation/golden-rule-instanton-2026-11-02/workflow.json)
+retains those arrays for its smaller example. The [run record](validation/golden-rule-instanton-2026-11-02/run.json)
+links the raw test and documentation-build logs. Numerical and discretization
+success are reported separately; every study retains
+`physical_converged=false`.

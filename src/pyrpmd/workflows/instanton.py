@@ -199,7 +199,7 @@ def run_instanton(potential, masses, initial_path, *, bead_counts, potential_ide
                   mode="rate", temperature_kelvin=None, reactants=None,
                   active_mask=None, transition_state=None, energy_reference_hartree=0.0,
                   optimizer_options=None, rate_options=None, imaginary_times_au=None,
-                  splitting_options=None, convergence_relative_tolerance=0.01,
+                  splitting_options=None, golden_rule_options=None, convergence_relative_tolerance=0.01,
                   output=None):
     """Run a complete deterministic convergence study and optionally save JSON.
 
@@ -218,6 +218,14 @@ def run_instanton(potential, masses, initial_path, *, bead_counts, potential_ide
     ``initial_path`` belongs to the shortest duration.  Assert equivalent
     wells explicitly in ``splitting_options={'equivalent_wells': True}``.
 
+    ``mode='golden_rule'`` uses two ordinary diabatic-surface potentials and two
+    directed open paths. ``bead_counts`` then contains (P0,P1) INTERVAL pairs.
+    The second path closes the first: path0[0]=path1[-1], path0[-1]=path1[0].
+    Supply separate ``potential_identity['surface0']`` and ``['surface1']``
+    records plus a constant ``golden_rule_options['coupling_hartree']``. Both
+    segment grids and their optimized imaginary-time allocation are studied;
+    see :func:`pyrpmd.workflows.golden_rule.run_golden_rule_study` for scope.
+
     ``potential_identity`` is a required nonempty mapping identifying the PES,
     its parameters, model files/checksums and any remote model version.  Code
     and metadata are recorded too, but cannot infer hidden external parameters.
@@ -227,8 +235,22 @@ def run_instanton(potential, masses, initial_path, *, bead_counts, potential_ide
     remains false: grid convergence is not a validation of the PES, harmonic
     reactant approximation or leading semiclassical theory.
     """
+    if mode == "golden_rule":
+        if any(value is not None for value in (transition_state, optimizer_options, rate_options,
+                                               imaginary_times_au, splitting_options)):
+            raise ValueError("golden_rule mode accepts golden_rule_options, not thermal TS/optimizer/rate or splitting settings")
+        from .golden_rule import run_golden_rule_study
+        return run_golden_rule_study(
+            potential, masses, initial_path, bead_counts=bead_counts,
+            potential_identity=potential_identity, temperature_kelvin=temperature_kelvin,
+            reactants=reactants, active_mask=active_mask,
+            energy_reference_hartree=energy_reference_hartree,
+            golden_rule_options=golden_rule_options,
+            convergence_relative_tolerance=convergence_relative_tolerance, output=output)
     if mode not in ("rate", "splitting"):
-        raise ValueError("mode must be rate or splitting")
+        raise ValueError("mode must be rate, splitting or golden_rule")
+    if golden_rule_options is not None:
+        raise ValueError("golden_rule_options requires mode='golden_rule'")
     q = coordinates(initial_path).copy()
     mask, _ = _mask_and_masses(q.shape[1:], masses, active_mask)
     masses = np.array(masses, dtype=float, copy=True)
@@ -416,7 +438,15 @@ def load_instanton_input(path):
     identity = _mapping(mapping.get("potential_identity"), "potential_identity")
     if not identity:
         raise ValueError("potential_identity must explicitly identify the PES and its scientific parameters")
-    mapping["potential_identity"] = {"declared": identity, "input_sha256": before}
+    if mapping.get("mode") == "golden_rule":
+        from .golden_rule import surface_identities
+        declarations = surface_identities(identity)
+        mapping["potential_identity"] = {
+            f"surface{index}": {"declared": declaration, "input_sha256": before}
+            for index, declaration in enumerate(declarations)
+        }
+    else:
+        mapping["potential_identity"] = {"declared": identity, "input_sha256": before}
     return mapping
 
 
@@ -433,7 +463,7 @@ def _command(args):
 
 def register_parser(commands):
     """Register the standalone command with no changes to the RPMD input schema."""
-    parser = commands.add_parser("instanton", help="Run a thermal-rate or ground-splitting instanton convergence study")
+    parser = commands.add_parser("instanton", help="Run thermal-rate, ground-splitting or golden-rule instanton convergence studies")
     parser.add_argument("input", help="Trusted Python .py file defining build(); values use atomic units")
     parser.add_argument("--output", help="Atomically written JSON report file")
     parser.set_defaults(_instanton_handler=_command)
