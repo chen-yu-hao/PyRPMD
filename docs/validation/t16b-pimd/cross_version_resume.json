@@ -1,0 +1,157 @@
+{
+  "baseline_source": {
+    "commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+    "numpy": "2.3.5",
+    "package": "/workspace/scratch/6e18a371c00a/PyRPMD-baseline/src/pyrpmd",
+    "python": "3.12.14",
+    "source_sha256": {
+      "checkpoint.py": "058a4be46de68b812a27ab37960b3dcf57fcf18b5bd89d55e3e9472268100aec",
+      "native_ensemble.py": "ddfcd1bb0c491d40f728d56a36cd283a3b7dee108af8d607e853fb6c2a85b85a",
+      "runner.py": "6a105cad192ca0dbbaedd4812445a6db222bf63376999ff55eac55ccb55cbdd2",
+      "workflows/materials.py": "a4e1a826a8bf675fba30eb29a7de24a207c004b19226300cfa09cc3aad8599a5",
+      "workflows/native_pimd.py": "63188ab7b6a75348739f9de7a5b5bbd21610c39804ea6a61079e76f250dcb32b",
+      "workflows/torch_materials.py": "72edd0a33b4f8fc2e12667eb1bf2767a9aac06ee508874573434a14e903bceb2"
+    }
+  },
+  "cases": [
+    {
+      "engine": "legacy",
+      "final_container": {
+        "integrity": "verified",
+        "schema": "pyrpmd.checkpoint"
+      },
+      "final_step": 19,
+      "matched_arrays": 13,
+      "name": "legacy-pile-nvt",
+      "partial_step": 8,
+      "passed": true,
+      "source_container": {
+        "integrity": "verified",
+        "schema": "pyrpmd.checkpoint"
+      },
+      "storage_roundtrip": true
+    },
+    {
+      "engine": "legacy",
+      "final_container": {
+        "integrity": "verified",
+        "schema": "pyrpmd.checkpoint"
+      },
+      "final_step": 19,
+      "matched_arrays": 13,
+      "name": "legacy-andersen-nvt",
+      "partial_step": 8,
+      "passed": true,
+      "source_container": {
+        "integrity": "verified",
+        "schema": "pyrpmd.checkpoint"
+      },
+      "storage_roundtrip": true
+    },
+    {
+      "engine": "legacy",
+      "final_container": {
+        "integrity": "verified",
+        "schema": "pyrpmd.checkpoint"
+      },
+      "final_step": 19,
+      "matched_arrays": 17,
+      "name": "legacy-bzp-npt",
+      "partial_step": 8,
+      "passed": true,
+      "source_container": {
+        "integrity": "verified",
+        "schema": "pyrpmd.checkpoint"
+      },
+      "storage_roundtrip": true
+    },
+    {
+      "engine": "native",
+      "final_container": {
+        "integrity": "verified",
+        "schema": "pyrpmd.checkpoint"
+      },
+      "final_step": 19,
+      "matched_arrays": 10,
+      "name": "native-pile-nvt",
+      "partial_step": 7,
+      "passed": true,
+      "source_container": {
+        "integrity": "unverified_legacy",
+        "schema": "legacy.npz"
+      },
+      "storage_roundtrip": false
+    },
+    {
+      "engine": "native",
+      "final_container": {
+        "integrity": "verified",
+        "schema": "pyrpmd.checkpoint"
+      },
+      "final_step": 19,
+      "matched_arrays": 10,
+      "name": "native-nhc-nvt",
+      "partial_step": 7,
+      "passed": true,
+      "source_container": {
+        "integrity": "unverified_legacy",
+        "schema": "legacy.npz"
+      },
+      "storage_roundtrip": false
+    },
+    {
+      "engine": "native",
+      "final_container": {
+        "integrity": "verified",
+        "schema": "pyrpmd.checkpoint"
+      },
+      "final_step": 19,
+      "matched_arrays": 10,
+      "name": "native-bzp-npt",
+      "partial_step": 7,
+      "passed": true,
+      "source_container": {
+        "integrity": "unverified_legacy",
+        "schema": "legacy.npz"
+      },
+      "storage_roundtrip": false
+    },
+    {
+      "engine": "torch",
+      "final_container": {
+        "integrity": "verified",
+        "schema": "pyrpmd.checkpoint"
+      },
+      "final_step": 19,
+      "matched_arrays": 20,
+      "name": "torch-cpu-pile-nvt",
+      "partial_step": 8,
+      "passed": true,
+      "source_container": {
+        "integrity": "verified",
+        "schema": "pyrpmd.checkpoint"
+      },
+      "storage_roundtrip": false
+    }
+  ],
+  "comparison": "identical dtype, shape and C-order bytes for every retained state and sample array",
+  "current_source": {
+    "commit": "8834b4e14a0b07bf8d5638015d87b16bd03dbaa0",
+    "numpy": "2.3.5",
+    "package": "/workspace/scratch/6e18a371c00a/PyRPMD/src/pyrpmd",
+    "python": "3.12.14",
+    "source_sha256": {
+      "checkpoint.py": "6f7d1172bb81bf9aa42ae2e6e61fe233b0b998c49d188d74d46365ebb21d6b59",
+      "native_ensemble.py": "def881238502e5fbcc99021ea0cee22706b919bf62517a63c7ffc050eced80a6",
+      "pimd_checkpoint.py": "f4c036a5a5b0cd42be1227d092d0c5184de1b7e058a38c146af24627353e6d91",
+      "runner.py": "38c49344868b3ba4f385ebe7c7eb3beb661c9e790642a1b9bff5e52a1b09e709",
+      "workflows/materials.py": "6aa44901786ad2cde9870cc690c5566a57e7d1e850ea6b1d300eedad110f3611",
+      "workflows/native_pimd.py": "d5ccd91038c2dfac55b5bece623ec56762da5da2f9affe1e5930d60657e6f44e",
+      "workflows/pimd.py": "ce4f91bd2153897d1b59a38e618b51eb36837626d2ecf2a0784be6c3ece742ac",
+      "workflows/torch_materials.py": "cd6bc4d8a06af777b2dff53cdcefe97b5c31c04b4d5572e83318b212059dae76"
+    }
+  },
+  "passed": true,
+  "physical_converged": false,
+  "schema": "t16b.cross-version-resume.v1"
+}
