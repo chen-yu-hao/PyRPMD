@@ -262,6 +262,10 @@ class QuadraticCentroidPotential(Potential):
     translation/rotation/permutation invariant and must not be presented as a
     general molecular ML force field. Use a conservative invariant ML model
     fitted to ``centroid_force_training_data`` for general systems.
+
+    This object represents the full PMF, not a correction to a physical PES.
+    Molecular h-CMD instead uses centroid-target IBI corrections through
+    ``pyrpmd.qcmd.HCMDModel``; it must not add this quadratic PMF to that PES.
     """
 
     metadata = {"provider": "quadratic_centroid_pmf", "thread_safety": "reentrant",
