@@ -36,6 +36,10 @@ env:
   MPLBACKEND: Agg
   PYTHONUNBUFFERED: '1'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   preflight:
     name: PMF equations, failure semantics and study plan

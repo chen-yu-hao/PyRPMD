@@ -71,11 +71,17 @@ orphan: true
 | `agent/t27-native-threading`（#105） | 退回 | `native/ring_fft.h` 中 `forward_two_real` 使用未声明的 `j`，无法编译；源文件被按字节切成 `*_part1..4.hpp` 并删去原有注释；中大体系轨迹与 `ceee59c` 不再逐位一致（未版本化）；N=3、P=1 单线程变慢约 46%（Cayley）至 110%（normal-mode）；N=1000、P=32 的 4 线程加速 1.43×，未达 2.5× |
 | `agent/t36-plumed-bridge`（无 PR） | 退回 | 测试向 `sys.modules` 注入的模拟 `plumed` 模块未清理，导致已有的真实内核测试报错而非跳过；包含导出源码的临时工作流；兼容层同为复制加补丁 |
 | `agent/t30-kinetics-export`、`agent/t32-scalable-instanton`、`agent/t35-quantum-free-energy`、`agent/t39-photo-initial-lvc-gpt56` | 拒绝 | 不含源码，只有编码载荷和带 `contents: write` 权限、在 CI 中解码并提交代码的工作流（T32 对载荷执行 `exec`；T39 改写了已有工作流 `paper-validation-source-export.yml` 并以维护者身份提交）。T30 载荷与其自带校验和不符；T39 载荷被截断；T32 载荷是只使用 `pathlib` 的文件改写脚本，可以由人工审查后作为普通提交重新提交 |
-| `agent/t31-vtst-sct`（无 PR） | 未完成 | 只有 MEP/CVT/ZCT/SCT 数值核心；测试引用的 `workflows/vtst.py` 与 CLI 不存在 |
+| `agent/t31-vtst-sct`（#108） | 退回 | 后续补齐了 CLI 与工作流，单元测试通过；但 `pyrpmd vtst` 对 `examples/rate/` 的 `minimal`、`pilot`、`research`、`from_endpoints` 四个输入均报错 `WKB action quadrature did not converge`（`vtst_tunnelling.py` 的 `wkb_transmission_probability`）；工作流测试用 mock 替代了真实输入解析 |
 | #95 | 关闭 | 与 #94 重复 |
 | #92（T20）、#98（MACE Hessian）、#100（T17）、#101（T35） | 草稿 | #92 待上传验证归档；#98 未运行测试且修改 T32 独占的 `instanton.py`；#100 需在本轮合并后变基；#101 只有占位内容 |
 
-`agent/t16b-pimd-engine-convergence`、`agent/t28-ab-initio-socket`、`agent/t29-product-states`、`agent/t34-structure-transport`、`agent/t37-source-export`、`agent/t39-photo-initial-lvc`、`agent/t39-photo-initial-lvc-clean` 没有任何提交。
+`agent/t16b-pimd-engine-convergence`、`agent/t28-ab-initio-socket`、`agent/t29-product-states`、`agent/t34-structure-transport`、`agent/t37-source-export`、`agent/t39-photo-initial-lvc`、`agent/t39-photo-initial-lvc-clean` 在审查时没有任何提交。
+
+### 合并后的处理（2026-11-03）
+
+- 取消了约 230 个排队中的 Actions 运行：载荷分支上的全部运行（包括三个带写权限的 T39 恢复工作流），以及已合并分支和已被后续提交取代的提交上的运行。只保留 `main` 当前提交和各开放分支当前提交的运行。
+- 载荷分支的提交已在本地打包备份：`agent/t30-kinetics-export` `25ac67e`、`agent/t32-scalable-instanton` `249a3b5`、`agent/t35-quantum-free-energy` `496be2f`、`agent/t39-photo-initial-lvc-gpt56` `ab48a4f`。这些远程分支以及空分支 `agent/t39-photo-initial-lvc`、`agent/t39-photo-initial-lvc-clean` 需由维护者删除。
+- 新增 `tools/check_workflow_policy.py`、`Workflow policy` 工作流与 `.github/CODEOWNERS`，并为缺少并发控制的 15 个工作流加入按分支取消旧运行的 `concurrency` 设置（`main` 上不取消）。CODEOWNERS 要在分支保护中开启 “Require review from Code Owners” 后才生效。
 
 ## 待办
 
