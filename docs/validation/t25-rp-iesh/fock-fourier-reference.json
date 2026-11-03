@@ -1,0 +1,191 @@
+{
+  "method": "rp-iesh",
+  "method_variant": "gardner-2023-centroid",
+  "model_identity": {
+    "schema": "pyrpmd.newns_anderson_model",
+    "version": 1,
+    "model": "newns-anderson",
+    "parameters": {
+      "nband": 2,
+      "band_min": -0.1,
+      "band_max": 0.1,
+      "chemical_potential": 0.0,
+      "discretization": "gauss-legendre",
+      "level_energy": 0.0,
+      "level_slope": 0.08,
+      "hybridization": 0.04,
+      "hybridization_slope": 0.0,
+      "bare_force_constant": 0.4,
+      "center": 0.0,
+      "coordinate": 0,
+      "natoms": 1
+    }
+  },
+  "nelectrons": 2,
+  "fock_basis": [
+    [
+      0,
+      1
+    ],
+    [
+      0,
+      2
+    ],
+    [
+      1,
+      2
+    ]
+  ],
+  "trajectories": 128,
+  "beads": 8,
+  "seed": 20261103,
+  "dt_au": 0.2,
+  "duration_au": 20.0,
+  "electronic_substeps": 2,
+  "mass_electron": 1000.0,
+  "beta_hartree_inverse": 80.0,
+  "harmonic_omega_au": 0.02,
+  "initial_electronic_basis": "fixed_diabatic",
+  "initial_occupied": [
+    0,
+    1
+  ],
+  "initial_active_sampling": "squared_adiabatic_Slater_minors_at_centroid",
+  "population_basis": "fixed_diabatic",
+  "population_normalization": 2,
+  "rp_iesh_initial_mean": [
+    0.9999999999999999,
+    1.0,
+    4.8600545356808526e-32
+  ],
+  "rp_iesh_final_mean": [
+    0.8032487111344098,
+    0.9874770841991642,
+    0.2092742046664177
+  ],
+  "rp_iesh_final_sem": [
+    0.0008134794202680534,
+    9.218566255937648e-06,
+    0.0008155006321695744
+  ],
+  "fourier_final_populations": [
+    0.8025800809540242,
+    0.9874959720166689,
+    0.20992394703069567
+  ],
+  "population_difference": [
+    0.0006686301803855432,
+    -1.8887817504698035e-05,
+    -0.0006497423642779776
+  ],
+  "absolute_population_error": [
+    0.0006686301803855432,
+    1.8887817504698035e-05,
+    0.0006497423642779776
+  ],
+  "difference_in_sampling_sem": [
+    0.8219386547790228,
+    -2.0488888380590047,
+    -0.7967404789734985
+  ],
+  "rp_iesh_final_density_real": [
+    [
+      0.8032487111344098,
+      -0.02441866581662537,
+      -0.200746627443382
+    ],
+    [
+      -0.02441866581662537,
+      0.9874770841991642,
+      0.04871882897647114
+    ],
+    [
+      -0.200746627443382,
+      0.04871882897647114,
+      0.2092742046664177
+    ]
+  ],
+  "rp_iesh_final_density_imag": [
+    [
+      -2.248440027916462e-18,
+      -0.04315419094863134,
+      0.3351203936767668
+    ],
+    [
+      0.043154190948631335,
+      1.7367600619429777e-18,
+      0.08623847701151154
+    ],
+    [
+      -0.33512039367676677,
+      -0.08623847701151154,
+      1.436785713089418e-19
+    ]
+  ],
+  "fourier_final_density_real": [
+    [
+      0.8025800809540242,
+      -0.024653496530301168,
+      -0.1944215174650982
+    ],
+    [
+      -0.02465349653030117,
+      0.9874959720166689,
+      0.04957058830043761
+    ],
+    [
+      -0.19442151746509817,
+      0.04957058830043761,
+      0.20992394703069567
+    ]
+  ],
+  "fourier_final_density_imag": [
+    [
+      -5.321932913791301e-18,
+      -0.043053684975959336,
+      0.3374497579024502
+    ],
+    [
+      0.043053684975959336,
+      -6.2209908293917894e-18,
+      0.08538105615323692
+    ],
+    [
+      -0.3374497579024502,
+      -0.0853810561532369,
+      -8.10457364848211e-19
+    ]
+  ],
+  "fourier_points": 384,
+  "fourier_half_box_bohr": 3.0,
+  "fourier_dt_au": 0.025,
+  "fourier_time_refinement_max_density_diff": 5.193463905076611e-09,
+  "fourier_space_refinement_max_density_diff": 3.281819261452073e-13,
+  "fourier_box_refinement_max_density_diff": 3.479438959192644e-13,
+  "fourier_max_edge_population": 9.07676053462434e-30,
+  "fourier_max_norm_error": 6.943334796005729e-13,
+  "fourier_omitted_thermal_weight": 3.106840237543357e-13,
+  "rp_iesh_accepted_hops": 1,
+  "rp_iesh_frustrated_hops": 1,
+  "rp_iesh_max_step_hop_probability": 0.0030058587487858533,
+  "rp_iesh_max_abs_centroid_hop_balance_error_hartree": 2.7755575615628914e-17,
+  "rp_iesh_max_abs_ring_hop_energy_change_hartree": 0.0008843404644920949,
+  "rp_iesh_max_abs_total_energy_change_hartree": 0.0008847391433850493,
+  "rp_iesh_max_abs_accumulated_ring_hop_energy_change_hartree": 0.0008843404644920949,
+  "rp_iesh_max_accumulated_absolute_ring_hop_energy_change_hartree": 0.0008843404644920949,
+  "rp_iesh_max_abs_energy_change_after_subtracting_hop_changes_hartree": 2.1689834792670837e-06,
+  "rp_iesh_elapsed_seconds": 68.04984419999892,
+  "rp_iesh_microseconds_per_step": 5316.394078124915,
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "processor": "x86_64",
+  "physical_converged": false,
+  "limitations": [
+    "finite isolated two-electron, three-orbital bath; no metallic continuum limit",
+    "finite-bead harmonic nuclear preparation; initially factorized diabatic determinant",
+    "centroid RPIESH is approximate and need not agree with exact coupled quantum dynamics",
+    "full ring Hamiltonian changes at hops; centroid balance and ring jumps are distinct diagnostics",
+    "pointwise SEM measures independent-trajectory sampling only, not method bias",
+    "RP-IESH timestep, bead and ensemble convergence are not established by this comparison",
+    "Fourier refinements probe only this finite grid, box, time and thermal truncation"
+  ]
+}

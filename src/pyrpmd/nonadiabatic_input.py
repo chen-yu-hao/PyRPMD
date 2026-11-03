@@ -210,7 +210,7 @@ def _coordinates(value, count, natoms):
 
 def _initial(raw, method, model, system_spec, *, nelectrons=None):
     electronic_key = "initial_state" if method in _MAPPING else "active_surface"
-    if method == "iesh":
+    if method in {"iesh", "rp-iesh"}:
         electronic_key = "occupied"
     common = {"kind", electronic_key}
     if not isinstance(raw, Mapping):
@@ -219,7 +219,7 @@ def _initial(raw, method, model, system_spec, *, nelectrons=None):
     fields = {"momenta"} if kind == "point" else {
         "frequencies", "coordinates", "centers", "centroid_momenta"}
     spec = _table(raw, "initial", common | fields)
-    if method == "iesh":
+    if method in {"iesh", "rp-iesh"}:
         electronic = spec.get("occupied", list(range(nelectrons)))
         _no_booleans(electronic, "initial.occupied")
         try:
@@ -281,7 +281,7 @@ def _dynamics(raw, method, root):
         allowed |= {"dboc", "dboc_step", "geometric_force"}
     if method in {"rp-mash", "multistate-mash"}:
         allowed |= {"rtol", "atol", "max_step", "max_events", "gap_tolerance"}
-    if method == "iesh":
+    if method in {"iesh", "rp-iesh"}:
         allowed |= {"nelectrons", "electronic_substeps", "gap_tolerance", "max_hop_probability"}
     spec = _table(raw, "dynamics", allowed)
     native = _native(root.get("native", method not in {"rp-mash", "multistate-mash"}), "native")
@@ -320,7 +320,7 @@ def _dynamics(raw, method, root):
                        max_step=_quantity(spec.get("max_step",dt/4),"dynamics.max_step","time"),
                        max_events=_integer(spec.get("max_events",64),"dynamics.max_events"),
                        gap_tolerance=_quantity(spec.get("gap_tolerance",1e-10),"dynamics.gap_tolerance","energy"))
-    if method == "iesh":
+    if method in {"iesh", "rp-iesh"}:
         options.update(
             electronic_substeps=_integer(spec.get("electronic_substeps", 4), "dynamics.electronic_substeps"),
             gap_tolerance=_quantity(spec.get("gap_tolerance", 1e-10), "dynamics.gap_tolerance", "energy"),
@@ -390,9 +390,9 @@ def _check_reference(model, geometry, method, options):
             raise ValueError("multistate-mash requires at least two electronic states")
         if method in _MAPPING:
             return
-        if method in {"rpsh","rpsh-ba","rp-mash","iesh","multistate-mash"} and (
+        if method in {"rpsh","rpsh-ba","rp-mash","iesh","rp-iesh","multistate-mash"} and (
                 np.any(np.imag(result.matrix) != 0) or np.any(np.imag(result.gradients) != 0)):
-            label = method if method in {"iesh", "multistate-mash"} else "RPSH"
+            label = method if method in {"iesh", "rp-iesh", "multistate-mash"} else "RPSH"
             raise ValueError(f"{label} requires a real symmetric matrix and real gradients; "
                              "choose a method supporting complex Hermitian models")
         energies = np.linalg.eigvalsh(result.matrix)[0]
@@ -445,7 +445,9 @@ def resolve_nonadiabatic_job(raw, *, base_directory=".", input_path=None):
         raise _error("beta and its corresponding temperature must be representable positive finite floats")
     beads = _integer(root.get("beads", 1), "beads")
     if method in {"iesh", "multistate-mash"} and beads != 1:
-        raise _error(f"{method} currently requires beads=1; no ring-polymer extension is implemented")
+        detail = ("use method='rp-iesh' for the separately identified centroid research variant"
+                  if method == "iesh" else "no ring-polymer extension is implemented")
+        raise _error(f"{method} currently requires beads=1; {detail}")
     seed = _integer(root.get("seed", 0), "seed", 0)
     system_spec = _table(root.get("system", {}), "system", {"masses", "positions", "symbols", "unit"})
     if "symbols" in system_spec:
@@ -470,8 +472,9 @@ def resolve_nonadiabatic_job(raw, *, base_directory=".", input_path=None):
                 raise _error("model.params.symbols and system.symbols disagree")
         params["symbols"] = system_spec["symbols"]
     model = _model(model_spec)
-    if isinstance(model, NewnsAndersonModel) and method != "iesh":
-        raise _error("newns_anderson requires method='iesh' so its bare nuclear potential is counted once")
+    if isinstance(model, NewnsAndersonModel) and method not in {"iesh", "rp-iesh"}:
+        raise _error("newns_anderson requires method='iesh' or 'rp-iesh' "
+                     "so its bare nuclear potential is counted once per bead")
     symbols = tuple(getattr(model,"symbols",("X",)*model.natoms))
     if "symbols" in system_spec and tuple(system_spec["symbols"]) != symbols:
         raise _error("system.symbols must match the molecular PES atom order; reduced models use X")
@@ -482,7 +485,7 @@ def resolve_nonadiabatic_job(raw, *, base_directory=".", input_path=None):
         system_spec["positions"] = (_real_array(system_spec["positions"],"system.positions",(model.natoms,3))
                                     *parse_quantity("1 "+unit,"length")).tolist()
     masses = _masses(system_spec.get("masses", _MISSING), model)
-    if method == "iesh":
+    if method in {"iesh", "rp-iesh"}:
         options, dt, native = _dynamics(root.get("dynamics", {}), method, root)
         options.setdefault("nelectrons", max(model.nstates // 2, 1))
         if not 1 <= options["nelectrons"] <= model.nstates:
@@ -503,7 +506,7 @@ def resolve_nonadiabatic_job(raw, *, base_directory=".", input_path=None):
         "steps": _integer(ensemble["steps"], "ensemble.steps", 0),
         "sample_stride": _integer(ensemble.get("sample_stride", 1), "ensemble.sample_stride"),
     }
-    if method != "iesh":
+    if method not in {"iesh", "rp-iesh"}:
         options, dt, native = _dynamics(root.get("dynamics", {}), method, root)
     parallel = _parallel(root.get("parallel", {}))
     output = _table(root.get("output", {}), "output", {"directory"})
@@ -521,6 +524,11 @@ def resolve_nonadiabatic_job(raw, *, base_directory=".", input_path=None):
     notes = [warning]
     if beads == 1:
         notes.append("beads=1 contains no nuclear ring-polymer delocalization")
+    if method == "rp-iesh":
+        notes.append("rp-iesh uses the Gardner 2023 research centroid approximation: "
+                     "hops balance the centroid energy gap and generally change the full ring-polymer "
+                     "Hamiltonian. The saved hop_energy_change diagnostics separate these changes "
+                     "from integration error; quantum accuracy requires independent validation.")
     resolved = {
         "schema_version": 1, "task": "nonadiabatic", "method": method,
         "model": model.to_dict(), "system": system.to_dict(),

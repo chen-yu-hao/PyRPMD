@@ -1,0 +1,58 @@
+# Short operational example of the research centroid RP-IESH approximation.
+# The harmonic reference is not the coupled electron-nuclear thermal state.
+# Four trajectories and eight beads do not establish physical convergence.
+schema_version = 1
+task = "nonadiabatic"
+method = "rp-iesh"
+beads = 8
+beta = 2000.0
+seed = 20261103
+description = "Centroid RP-IESH demonstration; finite spinless band, harmonic-reference nuclei, no convergence claim."
+
+[model]
+name = "newns_anderson"
+
+[model.params]
+nband = 12
+band_min = -0.25
+band_max = 0.25
+chemical_potential = 0.0
+discretization = "gauss-legendre"
+level_energy = 0.0
+level_slope = 0.02
+hybridization = 0.05
+hybridization_slope = 0.0
+bare_force_constant = 0.001
+center = 0.0
+
+[system]
+masses = [2000.0]
+
+[initial]
+kind = "harmonic_ring"
+coordinates = [0]
+frequencies = [0.005]
+centers = [-0.5]
+centroid_momenta = [20.0]
+occupied = [0, 1, 2, 3, 4, 5]
+
+[dynamics]
+dt = 0.2
+native = false
+nelectrons = 6
+electronic_substeps = 4
+max_hop_probability = 0.2
+gap_tolerance = 1e-10
+block_steps = 10
+
+[ensemble]
+trajectories = 4
+steps = 40
+sample_stride = 5
+
+[parallel]
+trajectory_workers = 1
+threads = 1
+
+[output]
+directory = "runs/rp-iesh"
