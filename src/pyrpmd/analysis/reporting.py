@@ -554,6 +554,10 @@ def collect_run(directory, *, label=None, prefix="run-001", energy_unit="kcal/mo
         _finding(run, "resolved_input_missing", "Saved resolved input is unavailable; missing temperatures, CV names and physics identity are not guessed.")
     _finding(run, "convergence_scope", summary.get("convergence_note", "This report preserves producer diagnostics; numerical and physical convergence require controlled comparisons."), "info")
     _rate_metrics(run)
+    if run["task"] == "path_sampling":
+        from .report_path_sampling import collect_path_sampling_summary
+
+        collect_path_sampling_summary(run)
     def adaptive_progress(folder):
         from .report_sampling import collect_adaptive_progress
         if run["task"] == "unknown":

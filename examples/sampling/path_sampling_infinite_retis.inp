@@ -1,0 +1,56 @@
+# Exact infinite exchanges among free ensembles, with two concurrent workers.
+# Ticket-ordered commits make restart independent of wall-clock finish order.
+# python -m pyrpmd run examples/sampling/path_sampling_infinite_retis.inp
+task = "path_sampling"
+temperature = "315775.02480398706 K"
+beads = 1
+seed = 981
+native = false
+
+[system]
+symbols = ["H"]
+masses = [1.0]
+geometry = [[0.0, 0.0, 0.0]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "python"
+factory = "path_sampling_quartic.py:make_potential"
+
+[dynamics]
+timestep = 0.04
+integrator = "cayley-bcb"
+
+[[cvs]]
+name = "x"
+kind = "cartesian"
+atom = 0
+axis = "x"
+
+[path_sampling]
+method = "retis"
+exchange = "infinite"
+workers = 2
+cv = "x"
+basin_a = -1.0
+basin_b = 1.0
+interfaces = [-1.0, -0.5]
+minus = true
+# samples counts committed production events, not whole-ladder sweeps.
+samples = 4000
+burn_in = 400
+block_size = 200
+max_path_steps = 600
+seeds = [{q = [[-0.3, 0.0, 0.0]], p = [[1.4, 0.0, 0.0]]}]
+minus_seed = {q = [[-1.1, 0.0, 0.0]], p = [[-0.7, 0.0, 0.0]]}
+
+[parallel]
+backend = "process"
+mode = "serial"
+scheduling = "dynamic"
+trajectory_workers = 2
+threads_per_rank = 1
+
+[output]
+directory = "runs/path-infinite-retis"
+checkpoint_steps = 100

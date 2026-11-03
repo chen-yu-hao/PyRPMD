@@ -253,8 +253,16 @@ def run_resolved(config, system, *, output=None, resume=False):
         from .workflows.fes_dispatch import validate_fes
 
         root_call(validate_fes, config, system)
+    if config["task"] == "path_sampling":
+        from .workflows.path_sampling import resolve_path_sampling
+
+        root_call(resolve_path_sampling, config, system)
     root_call(_initialize_output, config, system, target, resume)
-    if config["task"] == "spectroscopy":
+    if config["task"] == "path_sampling":
+        from .workflows.path_sampling import run_path_sampling
+
+        result = run_path_sampling(config, system, Path(target))
+    elif config["task"] == "spectroscopy":
         from .workflows.spectroscopy import run_spectroscopy
 
         result = run_spectroscopy(config, system, Path(target))
