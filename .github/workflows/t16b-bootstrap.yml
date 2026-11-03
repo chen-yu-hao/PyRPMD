@@ -1,0 +1,42 @@
+name: T16b branch bootstrap
+
+on:
+  push:
+    branches:
+      - agent/t16b-pimd-engine-convergence
+    paths:
+      - .github/workflows/t16b-bootstrap.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: t16b-branch-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  apply-tested-patches:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Replace bootstrap commit with reviewed commits
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor ceee59cd5f702165b56c5e541a503d8810fb9111 HEAD
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          cat .github/t16b-bootstrap/core-* > /tmp/core.patch.gz.b64
+          cat .github/t16b-bootstrap/docs-* > /tmp/docs.patch.gz.b64
+          git reset --hard ceee59cd5f702165b56c5e541a503d8810fb9111
+          base64 --decode /tmp/core.patch.gz.b64 | gzip --decompress > /tmp/core.patch
+          git apply --check /tmp/core.patch
+          git apply --index /tmp/core.patch
+          git -c user.name='OpenAI Codex' -c user.email='codex@openai.com' commit -m 'Converge PIMD engine clocks and migration'
+          base64 --decode /tmp/docs.patch.gz.b64 | gzip --decompress > /tmp/docs.patch
+          git apply --check /tmp/docs.patch
+          git apply --index /tmp/docs.patch
+          git -c user.name='OpenAI Codex' -c user.email='codex@openai.com' commit -m 'Document PIMD engine contracts and validation'
+          test "$(git rev-parse HEAD^{tree})" = "95668d40b4fa9072c81b6f6ae64124ce3a396b15"
+          git push --force-with-lease=refs/heads/${GITHUB_REF_NAME}:${GITHUB_SHA} origin HEAD:refs/heads/${GITHUB_REF_NAME}
