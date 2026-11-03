@@ -2,7 +2,7 @@
 
 This inventory groups implemented **scientific methods, models and interfaces**, rather than inventing
 a paper for every helper function. The 2026-11-03 incremental audit covers `main` at `ceee59c` and preserves the earlier full code-level inventory.
-The **119 entries and 174 bibliographic records** connect implementation paths to primary sources
+The **119 entries and 176 bibliographic records** connect implementation paths to primary sources
 and explicit scope boundaries. The [reproduction checklist](reproduction.md) adds the original systems,
 observables, existing entry points, missing ingredients and priorities.
 
@@ -19,7 +19,7 @@ The following entries extend the original source audit without claiming that a p
 | Precision-driven thermal-rate planning and metered execution | [rate05](#rate05), [bimol09](#bimol09), [samp-mbar2008](#samp-mbar2008) | Original algorithms cited by component; no original paper asserted for the package's precision ledger or CLI. |
 | Explicit device-resident tensor PIMD and diffusion | [cw81](#cw81), [pile10](#pile10), [torch2019](#torch2019) | Fixed-cell PIMD/diffusion only; CPU benchmark is not a CUDA benchmark. |
 | Fermionic sign reweighting and periodic winding exchange | [bose19](#bose19), [bose23](#bose23) | Fermionic observables use sign gates; periodic winding and all-bead BZP have explicit restrictions. |
-| Golden-rule and molecular ring-polymer instanton workflows | [rpi09](#rpi09), [rpi16](#rpi16) | Results are model and discretization comparisons; physical_converged remains false. |
+| Golden-rule and molecular ring-polymer instanton workflows | [gr-instanton2015a](#gr-instanton2015a), [gr-instanton2015b](#gr-instanton2015b), [rpi16](#rpi16) | Results are model and discretization comparisons; physical_converged remains false. |
 
 ## How to cite a calculation
 
@@ -2425,3 +2425,15 @@ Role: Independent-electron surface hopping origin.
 Gardner et al.. **Independent-electron surface-hopping implementation analysis**. *J. Chem. Phys.* (2023). DOI: [10.1063/5.0137137](https://doi.org/10.1063/5.0137137).
 
 Role: Follow-up IESH analysis.
+
+### gr-instanton2015a
+
+J. O. Richardson, R. Bauer, M. Thoss. **Semiclassical Green's functions and an instanton formulation of electron-transfer rates in the nonadiabatic limit**. *J. Chem. Phys. 143, 134115* (2015). DOI: [10.1063/1.4932361](https://doi.org/10.1063/1.4932361).
+
+Role: Original golden-rule instanton derivation.
+
+### gr-instanton2015b
+
+J. O. Richardson. **Ring-polymer instanton theory of electron transfer in the nonadiabatic limit**. *J. Chem. Phys. 143, 134116* (2015). DOI: [10.1063/1.4932362](https://doi.org/10.1063/1.4932362).
+
+Role: Original nonadiabatic ring-polymer instanton formulation.
