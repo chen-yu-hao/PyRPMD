@@ -158,12 +158,12 @@ __________ test_existing_unix_address_is_not_removed_on_bind_failure ___________
 >           pes = IPIPotential(unix=address)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-tests/test_ipi_clients.py:205: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_ipi_clients.py:205:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 src/pyrpmd/potentials/socket.py:136: in __init__
     self.server = socket.socket(socket.AF_UNIX if unix else socket.AF_INET, socket.SOCK_STREAM)
                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
 self = <socket.socket fd=-1, family=0, type=0, proto=0>
 family = <AddressFamily.AF_UNIX: 1>, type = <SocketKind.SOCK_STREAM: 1>

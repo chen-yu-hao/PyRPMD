@@ -134,22 +134,22 @@
 2026-11-03T05:16:53.5905502Z Updating files: 100% (4986/4986)
 2026-11-03T05:16:53.5905718Z Updating files: 100% (4986/4986), done.
 2026-11-03T05:16:53.6021551Z Note: switching to 'refs/remotes/pull/85/merge'.
-2026-11-03T05:16:53.6021852Z 
+2026-11-03T05:16:53.6021852Z
 2026-11-03T05:16:53.6023083Z You are in 'detached HEAD' state. You can look around, make experimental
 2026-11-03T05:16:53.6023728Z changes and commit them, and you can discard any commits you make in this
 2026-11-03T05:16:53.6024093Z state without impacting any branches by switching back to a branch.
-2026-11-03T05:16:53.6024303Z 
+2026-11-03T05:16:53.6024303Z
 2026-11-03T05:16:53.6024443Z If you want to create a new branch to retain commits you create, you may
 2026-11-03T05:16:53.6024800Z do so (now or later) by using -c with the switch command. Example:
-2026-11-03T05:16:53.6024991Z 
+2026-11-03T05:16:53.6024991Z
 2026-11-03T05:16:53.6025135Z   git switch -c <new-branch-name>
-2026-11-03T05:16:53.6025286Z 
+2026-11-03T05:16:53.6025286Z
 2026-11-03T05:16:53.6025367Z Or undo this operation with:
-2026-11-03T05:16:53.6025483Z 
+2026-11-03T05:16:53.6025483Z
 2026-11-03T05:16:53.6025552Z   git switch -
-2026-11-03T05:16:53.6025645Z 
+2026-11-03T05:16:53.6025645Z
 2026-11-03T05:16:53.6025799Z Turn off this advice by setting config variable advice.detachedHead to false
-2026-11-03T05:16:53.6026027Z 
+2026-11-03T05:16:53.6026027Z
 2026-11-03T05:16:53.6026288Z HEAD is now at 7a549fb Merge b013bc2d0032df42719f2454b7e909f6cd80de3a into f87705115c7496821b283a0966c991abd541231c
 2026-11-03T05:16:53.6309643Z ##[endgroup]
 2026-11-03T05:16:53.6899705Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
@@ -229,9 +229,9 @@
 2026-11-03T05:17:46.0391349Z   Stored in directory: C:\Users\runneradmin\AppData\Local\Temp\pip-ephem-wheel-cache-9mb9k4gj\wheels\41\a4\97\98b13feb49c520e84cf999d6fd79acbf494be27e8202ed10b5
 2026-11-03T05:17:46.0436816Z Successfully built PyRPMD
 2026-11-03T05:17:46.0944106Z Installing collected packages: threadpoolctl, pygments, pluggy, numpy, iniconfig, scipy, pytest, h5py, PyRPMD
-2026-11-03T05:18:07.4414264Z 
+2026-11-03T05:18:07.4414264Z
 2026-11-03T05:18:07.4432161Z Successfully installed PyRPMD-0.2.0 h5py-3.16.0 iniconfig-2.3.1 numpy-2.5.4 pluggy-1.7.0 pygments-2.21.0 pytest-9.2.0 scipy-1.18.1 threadpoolctl-3.7.0
-2026-11-03T05:18:07.4449365Z 
+2026-11-03T05:18:07.4449365Z
 2026-11-03T05:18:07.4451778Z [notice] A new release of pip is available: 26.2.2 -> 26.3
 2026-11-03T05:18:07.4452266Z [notice] To update, run: python.exe -m pip install --upgrade pip
 2026-11-03T05:18:07.6812628Z ##[group]Run python -m pytest -q -m "not campaign"
@@ -368,12 +368,12 @@
 2026-11-03T05:37:21.6614253Z tests/test_fes_entry.py::test_old_run_manifest_and_streams_migrate_without_changing_samples[metadynamics]
 2026-11-03T05:37:21.6615453Z   D:\a\PyRPMD\PyRPMD\src\pyrpmd\runner.py:216: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
 2026-11-03T05:37:21.6616371Z     config = normalize_fes_task(copy.deepcopy(config))
-2026-11-03T05:37:21.6616716Z 
+2026-11-03T05:37:21.6616716Z
 2026-11-03T05:37:21.6617079Z tests/test_constraint_workflow_guards.py::test_run_resolved_rejects_before_creating_run_manifest[opes]
 2026-11-03T05:37:21.6617885Z tests/test_fes_entry.py::test_old_run_manifest_and_streams_migrate_without_changing_samples[opes]
 2026-11-03T05:37:21.6618755Z   D:\a\PyRPMD\PyRPMD\src\pyrpmd\runner.py:216: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
 2026-11-03T05:37:21.6619510Z     config = normalize_fes_task(copy.deepcopy(config))
-2026-11-03T05:37:21.6619771Z 
+2026-11-03T05:37:21.6619771Z
 2026-11-03T05:37:21.6620242Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[nhc-metadynamics]
 2026-11-03T05:37:21.6621251Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[svr-metadynamics]
 2026-11-03T05:37:21.6622250Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[gle-metadynamics]
@@ -382,7 +382,7 @@
 2026-11-03T05:37:21.6625337Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[pile-l-metadynamics]
 2026-11-03T05:37:21.6626531Z   D:\a\PyRPMD\PyRPMD\tests\test_enhanced_sampling_composition.py:140: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
 2026-11-03T05:37:21.6627429Z     resolved, _ = JobSpec.from_mapping(cfg).resolve()
-2026-11-03T05:37:21.6627689Z 
+2026-11-03T05:37:21.6627689Z
 2026-11-03T05:37:21.6628386Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[nhc-opes]
 2026-11-03T05:37:21.6629344Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[svr-opes]
 2026-11-03T05:37:21.6630256Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[gle-opes]
@@ -391,43 +391,43 @@
 2026-11-03T05:37:21.6633121Z tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[pile-l-opes]
 2026-11-03T05:37:21.6634182Z   D:\a\PyRPMD\PyRPMD\tests\test_enhanced_sampling_composition.py:140: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
 2026-11-03T05:37:21.6634993Z     resolved, _ = JobSpec.from_mapping(cfg).resolve()
-2026-11-03T05:37:21.6635276Z 
+2026-11-03T05:37:21.6635276Z
 2026-11-03T05:37:21.6635622Z tests/test_fes_entry.py::test_nested_and_legacy_namespaces_have_same_scientific_identity[metadynamics]
 2026-11-03T05:37:21.6636587Z   D:\a\PyRPMD\PyRPMD\tests\test_fes_entry.py:51: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
 2026-11-03T05:37:21.6637396Z     historical, _ = JobSpec.from_mapping(legacy).resolve()
-2026-11-03T05:37:21.6637663Z 
+2026-11-03T05:37:21.6637663Z
 2026-11-03T05:37:21.6639543Z tests/test_fes_entry.py::test_nested_and_legacy_namespaces_have_same_scientific_identity[opes]
 2026-11-03T05:37:21.6640487Z   D:\a\PyRPMD\PyRPMD\tests\test_fes_entry.py:51: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
 2026-11-03T05:37:21.6641245Z     historical, _ = JobSpec.from_mapping(legacy).resolve()
-2026-11-03T05:37:21.6641508Z 
+2026-11-03T05:37:21.6641508Z
 2026-11-03T05:37:21.6641853Z tests/test_grid_metadynamics.py::test_grid_frontend_explicit_and_declared_units_and_defaults
 2026-11-03T05:37:21.6642864Z   D:\a\PyRPMD\PyRPMD\tests\test_grid_metadynamics.py:285: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
 2026-11-03T05:37:21.6643714Z     cfg, system = JobSpec.from_mapping(job).resolve()
-2026-11-03T05:37:21.6644011Z 
+2026-11-03T05:37:21.6644011Z
 2026-11-03T05:37:21.6644336Z tests/test_grid_metadynamics.py::test_grid_frontend_explicit_and_declared_units_and_defaults
 2026-11-03T05:37:21.6645342Z   D:\a\PyRPMD\PyRPMD\tests\test_grid_metadynamics.py:291: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
 2026-11-03T05:37:21.6646303Z     JobSpec.from_mapping(job).resolve()
-2026-11-03T05:37:21.6646530Z 
+2026-11-03T05:37:21.6646530Z
 2026-11-03T05:37:21.6646803Z tests/test_metadynamics.py::test_metadynamics_default_production_budget
 2026-11-03T05:37:21.6647756Z   D:\a\PyRPMD\PyRPMD\tests\test_metadynamics.py:293: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
 2026-11-03T05:37:21.6648588Z     cfg, _ = spec.resolve()
-2026-11-03T05:37:21.6648815Z 
+2026-11-03T05:37:21.6648815Z
 2026-11-03T05:37:21.6649134Z tests/test_metadynamics.py::test_frontend_resolves_width_units_and_rejects_bad_options
 2026-11-03T05:37:21.6650150Z   D:\a\PyRPMD\PyRPMD\tests\test_metadynamics.py:365: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
 2026-11-03T05:37:21.6651032Z     cfg, sys = JobSpec.from_mapping(job).resolve()
-2026-11-03T05:37:21.6651306Z 
+2026-11-03T05:37:21.6651306Z
 2026-11-03T05:37:21.6651635Z tests/test_metadynamics.py::test_frontend_resolves_width_units_and_rejects_bad_options
 2026-11-03T05:37:21.6652654Z   D:\a\PyRPMD\PyRPMD\tests\test_metadynamics.py:372: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
 2026-11-03T05:37:21.6653482Z     JobSpec.from_mapping(job).resolve()
-2026-11-03T05:37:21.6653735Z 
+2026-11-03T05:37:21.6653735Z
 2026-11-03T05:37:21.6654940Z tests/test_sampling_public_api.py::test_opes_public_default_and_frozen_run_resume_offline
 2026-11-03T05:37:21.6655934Z   D:\a\PyRPMD\PyRPMD\src\pyrpmd\runner.py:588: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
 2026-11-03T05:37:21.6656678Z     config, system = spec.resolve()
-2026-11-03T05:37:21.6656923Z 
+2026-11-03T05:37:21.6656923Z
 2026-11-03T05:37:21.6657243Z tests/test_sampling_public_api.py::test_opes_public_default_and_frozen_run_resume_offline
 2026-11-03T05:37:21.6658151Z   D:\a\PyRPMD\PyRPMD\src\pyrpmd\runner.py:211: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
 2026-11-03T05:37:21.6658863Z     config, system = spec.resolve()
-2026-11-03T05:37:21.6659067Z 
+2026-11-03T05:37:21.6659067Z
 2026-11-03T05:37:21.6659431Z tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[reaction]
 2026-11-03T05:37:21.6660216Z tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[rate]
 2026-11-03T05:37:21.6661058Z tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[recrossing]
@@ -435,24 +435,24 @@
 2026-11-03T05:37:21.6663066Z tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[outcomes]
 2026-11-03T05:37:21.6664059Z   D:\a\PyRPMD\PyRPMD\tests\test_sampling_public_api.py:77: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
 2026-11-03T05:37:21.6664802Z     JobSpec.from_mapping(job).resolve()
-2026-11-03T05:37:21.6665054Z 
+2026-11-03T05:37:21.6665054Z
 2026-11-03T05:37:21.6665373Z tests/test_shared_metadynamics.py::test_shared_input_and_cli_run_resume_and_offline_analyze
 2026-11-03T05:37:21.6666611Z   D:\a\PyRPMD\PyRPMD\tests\test_shared_metadynamics.py:305: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
 2026-11-03T05:37:21.6667491Z     cfg, _ = JobSpec.from_file(source).resolve()
-2026-11-03T05:37:21.6667769Z 
+2026-11-03T05:37:21.6667769Z
 2026-11-03T05:37:21.6668092Z tests/test_shared_metadynamics.py::test_shared_input_and_cli_run_resume_and_offline_analyze
 2026-11-03T05:37:21.6669179Z   D:\a\PyRPMD\PyRPMD\src\pyrpmd\runner.py:211: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
 2026-11-03T05:37:21.6670199Z     config, system = spec.resolve()
-2026-11-03T05:37:21.6670502Z 
+2026-11-03T05:37:21.6670502Z
 2026-11-03T05:37:21.6670635Z tests/test_surface_source.py: 13 warnings
 2026-11-03T05:37:21.6671444Z   D:\a\PyRPMD\PyRPMD\tests\test_surface_source.py:35: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
 2026-11-03T05:37:21.6672344Z     cfg, system = JobSpec.from_mapping(original).resolve()
-2026-11-03T05:37:21.6672662Z 
+2026-11-03T05:37:21.6672662Z
 2026-11-03T05:37:21.6673042Z tests/test_surface_workflow.py::test_metadynamics_input_accepts_fixed_atoms_and_periodic_cell[fixed]
 2026-11-03T05:37:21.6673913Z tests/test_surface_workflow.py::test_metadynamics_input_accepts_fixed_atoms_and_periodic_cell[periodic]
 2026-11-03T05:37:21.6674973Z   D:\a\PyRPMD\PyRPMD\tests\test_surface_workflow.py:56: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
 2026-11-03T05:37:21.6675899Z     return JobSpec.from_mapping(cluster_job() if job is None else job).resolve()
-2026-11-03T05:37:21.6676295Z 
+2026-11-03T05:37:21.6676295Z
 2026-11-03T05:37:21.6676636Z -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 2026-11-03T05:37:21.6677448Z campaign: omitted 101 modules before import (-m 'not campaign')
 2026-11-03T05:37:21.6677940Z =========================== short test summary info ===========================
@@ -620,4 +620,3 @@
 2026-11-03T05:37:25.7638174Z Removing credentials config 'D:\a\_temp\git-credentials-93d330b9-3da3-49df-8179-b9360d97aef3.config'
 2026-11-03T05:37:25.7812917Z Cleaning up orphan processes
 2026-11-03T05:37:25.8087811Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/setup-python@v5. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-
