@@ -1,0 +1,227 @@
+{
+  "schema": "PyRPMD.golden-rule-validation-run.v1",
+  "repository": "https://github.com/chen-yu-hao/PyRPMD",
+  "branch": "codex/t09-production-instanton",
+  "phase_one_base": "fe9cb7ffb7360e37ec8079096cca41ffbba06bb8",
+  "source_commit": "f5d92ddaebc482db113a36b7291824425b6b94e7",
+  "source_tree": "aad4ae1932f1b358b4f5bf9e37563b4eddb286df",
+  "source_sha256": {
+    "src/pyrpmd/golden_rule.py": "f3cebd03f2645f3fe567a717e22ab6b4cc546e95a19b86b2d43babc53391a38f",
+    "src/pyrpmd/golden_rule_adapters.py": "72149737cc215b6bee3c8c66134cc0f754122174b7e40e5f74e78c8403797d03",
+    "tests/test_golden_rule_adapters.py": "e259add7cab4ee8768f7206bd15f6e109f882c7b0ac4dee75e94bcaf283dde8f",
+    "tests/test_golden_rule_instanton.py": "3735457603a51162de25a5a7526926f514a074fb744a0b1d6b763a905e83bc74",
+    "tests/test_golden_rule_invariants.py": "598023930b0f290df30dc486f3599b41d64e4574b7b3b1100f2151a8c9d0852d",
+    "examples/instanton/golden_rule.py": "7f29735eaa8bc01a10d4352960f077413a4e250fea3a58faf9c0ce0f141bf619",
+    "src/pyrpmd/golden_rule_partition.py": "05bfe73270c15401f1920d44efa246807010f97dc05892f34698a5b087cf5011",
+    "src/pyrpmd/workflows/golden_rule.py": "d7ced4de7405dfe16945eec02f13166fada80d8e8c35f595db82b84e34a29748",
+    "src/pyrpmd/workflows/instanton.py": "527287c7806d9e9de3e9ca1a282ed74c80d4592171ca68b34df2ce4ffc3f1016",
+    "tests/test_golden_rule_partition.py": "98c9f4a926d812b107f319a64b840b5391119f4e0c615954f89965afc7f68697",
+    "tests/test_golden_rule_workflow.py": "405cef2841e305391cb025d9d7c6ef141f0b2777be024b72d0811fefa622c614",
+    "examples/instanton/golden_rule_reference.py": "09fd6f1d4306fc4424d852ed8013fbf21d730c22f9db1b4dce9317263af9810b",
+    "examples/instanton/validate_golden_rule.py": "8bd2f7eb17df5220e8b51c4b08080ec720e23a5585236d82815e2f4eb4aa075f",
+    "tests/test_golden_rule_reference.py": "0f698fe587eb94c569e2695ebe6709ca5708f9b795ce91bca27d3d51f00852c8",
+    "tests/test_golden_rule_validation.py": "4a6279f3e7f9b811344b85f6605841bdac6e0d2a5578a7d3b62da9c4edb22722"
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "logical_cpus": 9,
+    "threads": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "guest_logical_cpus": 9,
+    "cpu_max": "800000 100000",
+    "memory_max_bytes": 8589934592,
+    "runner_shared_with_other_jobs": true
+  },
+  "checks": {
+    "targeted": {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../t09-venv/bin/python -m pytest -q tests/test_instanton.py tests/test_instanton_optimizer.py tests/test_instanton_diagnostics.py tests/test_instanton_workflow.py tests/test_instanton_validation.py tests/test_low_temperature.py tests/test_tunnelling.py tests/test_golden_rule_instanton.py tests/test_golden_rule_adapters.py tests/test_golden_rule_invariants.py tests/test_golden_rule_partition.py tests/test_golden_rule_reference.py tests/test_golden_rule_validation.py tests/test_golden_rule_workflow.py --tb=short",
+      "exit_code": 0,
+      "summary": "227 passed in 14.92s",
+      "log": "targeted-tests.log"
+    },
+    "sphinx": {
+      "command": "../t09-venv/bin/python -m sphinx -W --keep-going -b html docs docs/_build/html",
+      "exit_code": 0,
+      "summary": "build succeeded.",
+      "log": "sphinx.log"
+    },
+    "numerical_validation": {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../t09-venv/bin/python examples/instanton/validate_golden_rule.py --output ../t09-golden-rule-validation.json",
+      "exit_code": 0,
+      "log": "validation.log",
+      "result": "validation.json",
+      "all_numerical_and_discretization_checks_passed": true
+    },
+    "cli_example": {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../t09-venv/bin/python -m pyrpmd.cli instanton examples/instanton/golden_rule.py --output ../t09-golden-rule-workflow.json",
+      "exit_code": 0,
+      "result": "workflow.json",
+      "stdout_identical_to_result_json": true,
+      "number_of_optimizations": 10,
+      "numerical_converged": true,
+      "discretization_converged": true,
+      "log": "workflow.log"
+    },
+    "full": {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../t09-venv/bin/python -m pytest -q --tb=short",
+      "environment": "default execution sandbox; local sockets are forbidden",
+      "exit_code": 1,
+      "log": "full-tests.log",
+      "summary": "14 failed, 8288 passed, 196 skipped, 48 warnings, 494 subtests passed in 734.19s (0:12:14)",
+      "passed": 8288,
+      "failed": 14,
+      "skipped": 196,
+      "warnings": 48,
+      "subtests_passed": 494,
+      "elapsed_seconds": 734.19,
+      "failed_nodeids": [
+        "tests/test_ipi_clients.py::test_multiple_clients_are_concurrent_ordered_and_persistent",
+        "tests/test_ipi_clients.py::test_fast_client_takes_more_work_than_slow_client",
+        "tests/test_ipi_clients.py::test_bad_client_closes_entire_pool_and_cannot_return_stale_forces[header]",
+        "tests/test_ipi_clients.py::test_bad_client_closes_entire_pool_and_cannot_return_stale_forces[disconnect]",
+        "tests/test_ipi_clients.py::test_bad_client_closes_entire_pool_and_cannot_return_stale_forces[truncate]",
+        "tests/test_ipi_clients.py::test_missing_clients_timeout_and_close_listener",
+        "tests/test_ipi_clients.py::test_existing_unix_address_is_not_removed_on_bind_failure",
+        "tests/test_ipi_clients.py::test_close_while_accept_completes_does_not_leak_the_new_connection",
+        "tests/test_ipi_clients.py::test_rebind_cannot_mix_cells_inside_one_batch_and_rejects_closed[bind_system]",
+        "tests/test_ipi_clients.py::test_rebind_cannot_mix_cells_inside_one_batch_and_rejects_closed[set_cell]",
+        "tests/test_ipi_clients.py::test_evaluate_rechecks_close_after_coordinate_preparation",
+        "tests/test_ipi_clients.py::test_accept_oserror_closes_provider_and_uses_potential_error",
+        "tests/test_periodic_materials.py::PeriodicPotentialTests::test_ipi_real_cell_inverse_and_virial_wire",
+        "tests/test_potentials.py::SocketTests::test_ipi_protocol"
+      ],
+      "failure_resolution": "All failed nodes are included in the successful socket recheck below; no source or test changes were made.",
+      "skips_scope": "Unconfigured optional runtimes and reference PES builds; see raw log."
+    },
+    "socket_sandbox_reproducer": {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../t09-venv/bin/python -m pytest -q tests/test_potentials.py::SocketTests::test_ipi_protocol",
+      "exit_code": 1,
+      "log": "socket-sandbox-evidence.log",
+      "summary": "1 failed in 0.28s",
+      "error": "PermissionError: [Errno 1] Operation not permitted when creating a socket; before bind/listen"
+    },
+    "socket_recheck": {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../t09-venv/bin/python -m pytest -q tests/test_ipi_clients.py tests/test_periodic_materials.py::PeriodicPotentialTests::test_ipi_real_cell_inverse_and_virial_wire tests/test_potentials.py::SocketTests::test_ipi_protocol",
+      "environment": "same private Python environment; local socket operations permitted via require_escalated",
+      "status": "passed",
+      "summary": "21 passed in 4.67s",
+      "log": "socket-recheck.log",
+      "exit_code": null,
+      "exit_code_note": "The runner exit-code field was not retained. The complete pytest log contains the successful termination summary; no direct exit-code observation is claimed.",
+      "passed": 21,
+      "elapsed_seconds": 4.67,
+      "covers_all_full_run_failures": true,
+      "source_changes": false
+    },
+    "socket_source_unchanged": {
+      "command": "git diff fe9cb7f --exit-code -- tests/test_ipi_clients.py tests/test_periodic_materials.py tests/test_potentials.py src/pyrpmd/potentials/socket.py",
+      "exit_code": 0,
+      "stdout": ""
+    },
+    "source_and_document_whitespace": {
+      "command": "git diff --check fe9cb7ffb7360e37ec8079096cca41ffbba06bb8 -- '*.py' '*.md' '*.json'",
+      "exit_code": 0,
+      "note": "Raw logs are preserved byte-for-byte and excluded from whitespace normalization."
+    }
+  },
+  "physical_converged": false,
+  "limitations": [
+    "Normal regime with positive imaginary times; Marcus inverted regime is rejected.",
+    "Two real, weak, constant-coupling diabatic states; no non-Condon prefactor.",
+    "Bound/constrained coordinates and a dimensionless reactant partition; no free molecular translation/rotation factors.",
+    "Dense fluctuation Hessians limited to 4096 active ring coordinates.",
+    "The exact reference is a continuous Ohmic bath in the golden-rule limit; finite isolated baths are compared with analytic SCI."
+  ],
+  "provenance_note": "Commit IDs identify the local validation checkout; source SHA-256 values and Git tree hashes identify code independently of publication commit metadata. The numeric report retains its actual earlier checkout HEAD and dirty flag.",
+  "format_only_changes_after_full_test_start": [
+    {
+      "path": "tests/test_golden_rule_instanton.py",
+      "change": "remove one final blank line",
+      "ast_unchanged": true
+    },
+    {
+      "path": "examples/instanton/golden_rule.py",
+      "change": "remove one final blank line",
+      "ast_unchanged": true
+    }
+  ],
+  "recorded_utc": "2026-11-02T17:41:17.383899+00:00",
+  "handoff": {
+    "readme_suggested_entry": "Normal-regime golden-rule instanton rates: run `pyrpmd instanton examples/instanton/golden_rule.py`. The two-state, weak real constant-coupling workflow optimizes both path segments and their imaginary-time allocation, evaluates matched harmonic reactants, and checks joint plus independent segment-grid convergence. See docs/instanton.md and docs/low-temperature.md for scope, API and validation.",
+    "bibliography": [
+      {
+        "authors": "Jeremy O. Richardson; Rainer Bauer; Michael Thoss",
+        "title": "Semiclassical Green’s functions and an instanton formulation of electron-transfer rates in the nonadiabatic limit",
+        "journal": "Journal of Chemical Physics",
+        "volume": "143",
+        "article": "134115",
+        "year": 2015,
+        "doi": "10.1063/1.4932361"
+      },
+      {
+        "authors": "Jeremy O. Richardson",
+        "title": "Ring-polymer instanton theory of electron transfer in the nonadiabatic limit",
+        "journal": "Journal of Chemical Physics",
+        "volume": "143",
+        "article": "134116",
+        "year": 2015,
+        "doi": "10.1063/1.4932362"
+      },
+      {
+        "authors": "Eric R. Heller; Jeremy O. Richardson",
+        "title": "Instanton formulation of Fermi’s golden rule in the Marcus inverted regime",
+        "journal": "Journal of Chemical Physics",
+        "volume": "152",
+        "article": "034106",
+        "year": 2020,
+        "doi": "10.1063/1.5137823",
+        "role": "Documented extension outside the implemented positive-time scope"
+      }
+    ],
+    "shared_readme_and_bibliography_files_modified": false
+  },
+  "overall_status": "All task-specific checks pass. Full-suite failures are confined to forbidden socket operations; all affected tests pass when local sockets are allowed.",
+  "unresolved_test_failures": 0,
+  "document_sha256": {
+    "docs/instanton.md": "8b561c79df38c6dabad1afc0c370ee13871474a88204da80b289728c7320f8ca",
+    "docs/low-temperature.md": "1fc9d475772447a5d4313af8ce7613883b7e9a075274970ee5469eae619db6ba"
+  },
+  "evidence_sha256": {
+    "full-tests.log": "f1f89b4eec77f405cec28db297ef673f478d87080e8c7c9819226741243d831d",
+    "hardware.json": "afb50d268e9ef00f4ffe40ddb0a665f31072ccbdb2680eb03bcad6fc39803f0c",
+    "socket-recheck.log": "eb280696dd480aa7b39ab7e149e79646d50a2da2fba2f66e92c167434d65e703",
+    "socket-sandbox-evidence.log": "df8f88c7e1bbf35f5024934ce6da351cba4cc4ee5f3a72ca3b81b33834ee6fc1",
+    "sphinx.log": "a55e811801895b5f8e8c4b970b5e9bb77b749e962d94077083ab5723bba1a954",
+    "targeted-tests.log": "1f0beb10ff184929ea00b44ab96ebfc14c0d1cf34351b1f3346196a585dddba6",
+    "validation.json": "b5c670d39d4e3cce2d8f42430a24424de7d4369be44be881607429ffa929f30b",
+    "validation.log": "c0aeee82e14226b59d6b3a212ed97782449ae365cac52224249a53fb86e14328",
+    "workflow.json": "627c0c2662249c60d2922e908c863ea51ff2b05aa6c278823ab440bc813c5102",
+    "workflow.log": "627c0c2662249c60d2922e908c863ea51ff2b05aa6c278823ab440bc813c5102"
+  },
+  "published_source_commits": [
+    {
+      "local_sha": "a735b0296d012947b93eb6dd941e7b712a203035",
+      "remote_sha": "7b332959ff092c6d486f2914a48c36f23115544f",
+      "tree": "43246c5846adc6d3def1859a8f9d64e1ecb7630b",
+      "message": "Add normal-regime golden-rule instanton optimization and Condon adapters"
+    },
+    {
+      "local_sha": "969a4b982419afff0efb8c0d877d9d0301e4e45e",
+      "remote_sha": "cd429d32a41be4f0ebcbff6bb0758f0b7a768d2c",
+      "tree": "c6f1fc60a5eaa58c23fe0719afd6eda04feb64e1",
+      "message": "Integrate golden-rule workflows with matched reactants and independent grid scans"
+    },
+    {
+      "local_sha": "f5d92ddaebc482db113a36b7291824425b6b94e7",
+      "remote_sha": "edcfe3bcf2e575a7324d76d6787fabf3e71a117c",
+      "tree": "aad4ae1932f1b358b4f5bf9e37563b4eddb286df",
+      "message": "Validate golden-rule rates against independent harmonic and continuous-bath references"
+    }
+  ]
+}

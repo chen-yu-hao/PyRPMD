@@ -1,10 +1,15 @@
 """Real, locally initialized NequIP models: batching and force references."""
 
 import copy
+import os
+import shlex
+import shutil
+import sys
 from contextlib import contextmanager
 
 import numpy as np
 import pytest
+from packaging.version import Version
 
 torch = pytest.importorskip("torch")
 pytest.importorskip("nequip", minversion="0.19.1")
@@ -13,17 +18,17 @@ ase = pytest.importorskip("ase")
 from nequip.model import NequIPGNNModel
 from nequip.utils.global_state import set_global_state
 from pyrpmd.potentials._batched_nequip import NequIPBatchedPotential
-from pyrpmd.potentials.base import PotentialError
+from pyrpmd.potentials.base import BackendUnavailableError, PotentialError
 from pyrpmd.potentials.python import BOHR_ANGSTROM, EV_HARTREE
 
 
-def small_nequip(dtype="float64"):
+def small_nequip(dtype="float64", *, features=4):
     """One local interaction block, random weights, no downloaded model."""
     set_global_state(allow_tf32=False)
     return NequIPGNNModel(
         seed=173, model_dtype=dtype, type_names=["H", "O"], r_max=3.0,
-        num_layers=1, l_max=1, parity=False, num_features=4,
-        radial_mlp_depth=1, radial_mlp_width=8, avg_num_neighbors=4.0,
+        num_layers=1, l_max=1, parity=False, num_features=features,
+        radial_mlp_depth=1, radial_mlp_width=2 * features, avg_num_neighbors=4.0,
         per_type_energy_scales=1.0, per_type_energy_shifts=0.0,
     ).eval()
 
@@ -137,6 +142,8 @@ def test_nequip_float32_has_explicit_tolerance():
 
 
 def test_nequip_compiled_torchscript_local_round_trip(model64, tmp_path):
+    if Version(torch.__version__) >= Version("2.10"):
+        pytest.skip("NequIP does not support TorchScript compilation on PyTorch >=2.10")
     from nequip.model.inference_models.torchscript import save_torchscript_model
 
     path = tmp_path / "random.nequip.pth"
@@ -191,6 +198,46 @@ def fake_aoti_metadata():
     }
 
 
+@pytest.fixture
+def mock_aoti_runtime(monkeypatch):
+    """Only fake-loader tests use this; real AOTI tests retain the actual version."""
+    monkeypatch.setattr(torch, "__version__", "2.13.0")
+    monkeypatch.setenv("AOTI_RUNTIME_CHECK_INPUTS", "1")
+
+
+@pytest.mark.parametrize("version", ["2.7.1+cpu", "2.12.0", "2.13.0rc1"])
+def test_nequip_aoti_rejects_unsupported_runtime_before_loading(tmp_path, monkeypatch, version):
+    import nequip.model.inference_models as loaders
+
+    path = tmp_path / "unloaded.nequip.pt2"
+    path.touch()
+    monkeypatch.setattr(torch, "__version__", version)
+    monkeypatch.setenv("AOTI_RUNTIME_CHECK_INPUTS", "1")
+    def unexpected_load(*_args):
+        raise AssertionError("unsupported runtime must be rejected before native loading")
+    monkeypatch.setattr(loaders, "load_aotinductor_model", unexpected_load)
+    with pytest.raises(BackendUnavailableError, match="PyTorch >=2.13"):
+        NequIPBatchedPotential(["O", "D", "T"], path)
+
+
+@pytest.mark.parametrize("checks", [None, "0", "true"])
+def test_nequip_aoti_requires_native_input_checks_before_loading(tmp_path, monkeypatch,
+                                                                mock_aoti_runtime, checks):
+    import nequip.model.inference_models as loaders
+
+    path = tmp_path / "unloaded.nequip.pt2"
+    path.touch()
+    if checks is None:
+        monkeypatch.delenv("AOTI_RUNTIME_CHECK_INPUTS", raising=False)
+    else:
+        monkeypatch.setenv("AOTI_RUNTIME_CHECK_INPUTS", checks)
+    def unexpected_load(*_args):
+        raise AssertionError("disabled native checks must be rejected before loading")
+    monkeypatch.setattr(loaders, "load_aotinductor_model", unexpected_load)
+    with pytest.raises(PotentialError, match="AOTI_RUNTIME_CHECK_INPUTS=1"):
+        NequIPBatchedPotential(["O", "D", "T"], path)
+
+
 @pytest.mark.parametrize("key,value,match", [
     ("nequip_aoti_inputs", None, "recompile with --target batch"),
     ("nequip_aoti_outputs", None, "recompile with --target batch"),
@@ -204,6 +251,7 @@ def fake_aoti_metadata():
     ("allow_tf32", "1", "TF32"),
 ])
 def test_nequip_aoti_requires_explicit_batch_and_precision_metadata(tmp_path, monkeypatch,
+                                                                 mock_aoti_runtime,
                                                                  key, value, match):
     import nequip.model.inference_models as loaders
 
@@ -220,7 +268,8 @@ def test_nequip_aoti_requires_explicit_batch_and_precision_metadata(tmp_path, mo
         NequIPBatchedPotential(["O", "D", "T"], path)
 
 
-def test_nequip_aoti_receives_contiguous_native_device_batch(tmp_path, monkeypatch):
+def test_nequip_aoti_receives_contiguous_native_device_batch(tmp_path, monkeypatch,
+                                                          mock_aoti_runtime):
     import nequip.model.inference_models as loaders
     from nequip.data import AtomicDataDict
     from nequip.scripts._compile_utils import BATCH_INPUTS, ASE_OUTPUTS
@@ -250,10 +299,15 @@ def test_nequip_aoti_receives_contiguous_native_device_batch(tmp_path, monkeypat
     result = provider.evaluate_tensor(q)
     assert observed == [2]
     assert result.forces.shape == q.shape and result.forces.dtype == q.dtype
+    monkeypatch.delenv("AOTI_RUNTIME_CHECK_INPUTS")
+    with pytest.raises(PotentialError, match="AOTI_RUNTIME_CHECK_INPUTS=1"):
+        provider.evaluate_tensor(q)
+    assert observed == [2]
 
 
 @pytest.mark.parametrize("ordinal", [0, 1])
-def test_nequip_aoti_type_only_cuda_metadata_uses_requested_device(tmp_path, monkeypatch, ordinal):
+def test_nequip_aoti_type_only_cuda_metadata_uses_requested_device(tmp_path, monkeypatch,
+                                                                mock_aoti_runtime, ordinal):
     import nequip.model.inference_models as loaders
 
     # Exercise device selection/metadata on CPU without pretending to execute
@@ -288,6 +342,119 @@ def test_nequip_aoti_type_only_cuda_metadata_uses_requested_device(tmp_path, mon
     wrong_device["AOTI_DEVICE_KEY"] = f"cuda:{1 - ordinal}"
     with pytest.raises(ValueError, match="compile device differs"):
         provider._check_aoti_metadata(wrong_device)
+
+
+@pytest.fixture(scope="module")
+def real_aoti_artifact(tmp_path_factory):
+    """Compile once, retaining native bounds checks and NequIP's output check."""
+    if Version(torch.__version__) < Version("2.13"):
+        pytest.skip("native NequIP AOTI batching requires PyTorch >=2.13")
+    compiler = shlex.split(os.environ.get("CXX", "g++"))
+    if not compiler or shutil.which(compiler[0]) is None:
+        pytest.skip("a C++ compiler is required for the optional AOTI integration test")
+    if sys.platform == "linux" and not os.access("/tmp", os.W_OK | os.X_OK):
+        pytest.skip("the native Linux AOTI package loader requires accessible /tmp")
+    from nequip.scripts._compile_utils import BATCH_INPUTS, ASE_OUTPUTS
+    from nequip.utils.aot import aot_export_model
+    from nequip.utils.aoti_metadata import (
+        NEQUIP_AOTI_INPUTS_KEY, NEQUIP_AOTI_OUTPUTS_KEY, serialize_aoti_keys,
+    )
+    from torch.fx.experimental import _config as fx_config
+
+    model = small_nequip(features=2)
+    symbols = ["O", "D", "T"] * 4
+    cell = np.array([[12.0, 0.0, 0.0], [0.4, 13.0, 0.0], [0.2, 0.3, 14.0]])
+    rng = np.random.default_rng(901)
+    positions = rng.uniform(0.0, 7.0, size=(12, 3))
+    sample = positions + rng.normal(0.0, 0.04, size=(2, 12, 3))
+    provider = NequIPBatchedPotential(symbols, model, cell=cell, pbc=[True] * 3)
+    captured = []
+    def capture(_model, args):
+        captured.append({key: value.detach().clone().contiguous()
+                         for key, value in args[0].items()})
+    handle = model.register_forward_pre_hook(capture)
+    try:
+        provider.evaluate(sample)
+    finally:
+        handle.remove()
+    metadata = dict(model.metadata, allow_tf32="0")
+    metadata[NEQUIP_AOTI_INPUTS_KEY] = serialize_aoti_keys(BATCH_INPUTS)
+    metadata[NEQUIP_AOTI_OUTPUTS_KEY] = serialize_aoti_keys(ASE_OUTPUTS)
+    metadata = {key: str(value) for key, value in metadata.items()}
+    bounds = {
+        "graph": torch.export.Dim("num_frames", min=1, max=5),
+        "node": torch.export.Dim("num_nodes", min=2, max=120),
+        "edge": torch.export.Dim("num_edges", min=2, max=2048),
+    }
+    path = tmp_path_factory.mktemp("nequip-aoti") / "random.nequip.pt2"
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setenv("AOTI_RUNTIME_CHECK_INPUTS", "1")
+        # Without native size-oblivious export, Torch 2.13 specializes the
+        # frame lower bound to 2 even when Dim(min=1) was requested. This is a
+        # compile-time opt-in only; the provider never changes compiler flags.
+        with fx_config.patch(backed_size_oblivious=True):
+            aot_export_model(
+                copy.deepcopy(model), "cpu", list(BATCH_INPUTS), list(ASE_OUTPUTS),
+                captured[0], bounds, str(path), inductor_configs={
+                    "compile_threads": 1,
+                    "aot_inductor.metadata": metadata,
+                    "aot_inductor.check_lowerbound": True,
+                },
+            )
+        # Missing dependencies/compiler are skipped above; export, compile,
+        # load or numerical failures in a supported environment must fail.
+        yield path, model, symbols, cell, positions
+
+
+@pytest.mark.parametrize("pbc", [[False] * 3, [True] * 3, [True, False, True]])
+def test_nequip_real_aoti_matches_single_frame_forces_and_virial(real_aoti_artifact, pbc):
+    path, model, symbols, cell, positions = real_aoti_artifact
+    cell = cell if any(pbc) else None
+    compiled = NequIPBatchedPotential(symbols, path, cell=cell, pbc=pbc, virial=True)
+    eager = NequIPBatchedPotential(symbols, model, cell=cell, pbc=pbc, virial=True)
+    rng = np.random.default_rng(417)
+    calls = []
+    handle = compiled.model.register_forward_hook(lambda *_args: calls.append(1))
+    try:
+        for batch in (1, 2, 5, 3):
+            coords = positions + rng.normal(0.0, 0.04, size=(batch, 12, 3))
+            q = torch.tensor(coords, dtype=torch.float64)
+            before = len(calls)
+            with torch.no_grad():
+                actual = compiled.evaluate_tensor(q)
+            assert len(calls) == before + 1
+            expected = [eager.evaluate(frame[None]) for frame in coords]
+            for field in ("energy", "forces", "virial"):
+                value = getattr(actual, field)
+                assert value.dtype == torch.float64 and value.device == torch.device("cpu")
+                assert not value.requires_grad
+                np.testing.assert_allclose(
+                    value.numpy(), np.concatenate([getattr(result, field) for result in expected]),
+                    rtol=1e-10, atol=1e-12,
+                )
+        with pytest.raises(PotentialError, match="dtype"):
+            compiled.evaluate_tensor(q.float())
+    finally:
+        handle.remove()
+        compiled.close()
+
+
+def test_nequip_real_aoti_enforces_compiled_shape_bounds(real_aoti_artifact):
+    path, _model, symbols, cell, positions = real_aoti_artifact
+    compiled = NequIPBatchedPotential(symbols, path, cell=cell, pbc=[True] * 3)
+    # Nodes and edges are within their own bounds; the frame count exceeds 5.
+    with pytest.raises(PotentialError, match=r"dim value is too large.*<= 5"):
+        compiled.evaluate(np.broadcast_to(positions, (6, 12, 3)).copy())
+    isolated = NequIPBatchedPotential(symbols, path)
+    far_apart = np.arange(12)[:, None] * np.array([[10.0, 0.0, 0.0]])
+    # Zero-edge graphs are outside this artifact's native lower bound. They
+    # must raise before kernels run, without padding or per-frame fallback.
+    with pytest.raises(PotentialError, match="dim value is too small"):
+        isolated.evaluate(far_apart[None])
+    with pytest.raises(ValueError, match="precision differs"):
+        NequIPBatchedPotential(symbols, path, dtype="float32")
+    compiled.close()
+    isolated.close()
 
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is unavailable")

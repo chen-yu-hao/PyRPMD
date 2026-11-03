@@ -1,0 +1,113 @@
+{
+  "schema": "pyrpmd.implementation-review-validation.v1",
+  "recorded_utc": "2026-11-02T18:47:26.087302+00:00",
+  "environment": {
+    "os": "Linux x86_64",
+    "cpu": "AMD EPYC 9V74",
+    "available_vcpus": 9,
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "torch": "2.15.0+cpu",
+    "openmp_threads": 1,
+    "openblas_threads": 1,
+    "native_extensions_built": true,
+    "notes": [
+      "Socket tests used permitted loopback/AF_UNIX and a short /tmp temporary root.",
+      "Independent suites ran concurrently in separate worktrees on a shared host.",
+      "The PR81 source had its own native extensions rebuilt; main binaries were not substituted."
+    ]
+  },
+  "source_components": {
+    "splitting_local_head": "63b9fbc6eeb1b6532febfa88a96fb06ba2c72150",
+    "portability_local_head": "0c0104014fb417a623bcb79cbc5a6ca2b2e71fa9",
+    "torch_runtime_local_head": "eca1c0638c8d697cfccff9d9c784fb719af8e835"
+  },
+  "full_runs": [
+    {
+      "name": "untouched main",
+      "source_commit": "8cc402fb12391e4fb644d3e186e5e58d1699759a",
+      "source_tree": "b57babbfd426d4c78cbb9b2f38b758478568fcb9",
+      "base_commit": "8cc402fb12391e4fb644d3e186e5e58d1699759a",
+      "command": "TMPDIR=/tmp OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=src python -m pytest -q",
+      "exit_code": 0,
+      "summary_raw": "8777 passed, 205 skipped, 71 warnings, 486 subtests passed in 802.10s (0:13:22)",
+      "raw_log": "validation/implementation-review-2026-11-03/main-baseline.log",
+      "raw_log_sha256": "53d7a517c4a33ba8ee84ff1072aeb8286770ec8739164995332b156846ced3f4"
+    },
+    {
+      "name": "main plus all three independent changes",
+      "source_commit": "1ec080694b6a0b889dba7d68c654ec8a26dd43fe",
+      "source_tree": "134a4f53af5345edec472596fb0db7713f4747c7",
+      "base_commit": "8cc402fb12391e4fb644d3e186e5e58d1699759a",
+      "command": "TMPDIR=/tmp OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=src python -m pytest -q",
+      "exit_code": 0,
+      "summary_raw": "9082 passed, 207 skipped, 71 warnings, 486 subtests passed in 829.94s (0:13:49)",
+      "raw_log": "validation/implementation-review-2026-11-03/main-combined.log",
+      "raw_log_sha256": "4dc03f08bcb9ad9855edac95e76fdc97b77523780a584e5d67d9c9cf0b1e393a"
+    },
+    {
+      "name": "PR81 plus all three independent changes",
+      "source_commit": "e91329dbc4317990780db9a837b6d170e086402e",
+      "source_tree": "87fbb825ca1f50558db2c17a1882d6cdcc234950",
+      "base_commit": "8fd652a18d4f9990e2079c550d1e27a8b8cb77da",
+      "command": "TMPDIR=/tmp OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=src python -m pytest -q",
+      "exit_code": 0,
+      "summary_raw": "11100 passed, 263 skipped, 71 warnings, 493 subtests passed in 1077.01s (0:17:57)",
+      "raw_log": "validation/implementation-review-2026-11-03/pr81-combined.log",
+      "raw_log_sha256": "71d13efb3538e03c051851708044a70d1da9c0c5b793c6916c13c4d42510be35"
+    }
+  ],
+  "combined_main_delta": {
+    "passed": 305,
+    "skipped": 2,
+    "new_skips": "Explicit CUDA hardware tests; no CUDA runtime is available."
+  },
+  "initial_restricted_baseline_attempt": {
+    "summary_raw": "14 failed, 8763 passed, 205 skipped, 68 warnings, 486 subtests passed in 757.35s (0:12:37)",
+    "diagnosis": "13 socket EPERM failures and one AF_UNIX path-length failure in the restricted environment; no source changes were made to pass them.",
+    "corrected_socket_command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=src python -m pytest -q tests/test_ipi_clients.py tests/test_periodic_materials.py tests/test_potentials.py --basetemp=/tmp/pyrpmd-baseline-sockets",
+    "corrected_socket_summary_raw": "38 passed, 3 warnings, 12 subtests passed in 5.27s",
+    "authoritative_baseline": "The complete unrestricted main baseline above, not the initial restricted run."
+  },
+  "documentation": {
+    "commands": [
+      "python -m sphinx -b html -W --keep-going docs OUT",
+      "python -m sphinx -b html -W --keep-going docs/zh OUT/zh"
+    ],
+    "root_english": "build succeeded.",
+    "root_chinese": "build succeeded."
+  },
+  "public_route_review": {
+    "valid_baselines": 5,
+    "rejected_field_injections": 36,
+    "routes": [
+      "nonadiabatic",
+      "pcet",
+      "spectroscopy",
+      "network",
+      "plumed"
+    ],
+    "result": "Each new device/layout/engine key was explicitly validated or rejected; no silently ignored keys were found."
+  },
+  "limitations": [
+    "CUDA hardware and external trained batched ML models were not available.",
+    "Windows persistence contracts were fault-injected on Linux; actual Windows CI was not run here.",
+    "Source-hash/drive-letter migration was deliberately deferred to preserve old identities.",
+    "Skipped optional integrations and exact reasons are preserved in the raw logs.",
+    "Harmonic and ballistic tests do not establish molecular or material physical convergence."
+  ],
+  "upstream_followup": {
+    "upstream_pr81_commit": "15aafbb6990143ed1d8b69206291ebd8fb367b6b",
+    "integration_commit": "1c8e9a81981e7de8f2aa1a8aa40d50a429bc0c3d",
+    "integration_tree": "fa7118555cd7ac0b57f7ac3283f8b0ee5f9cbd94",
+    "change": "Upstream native/builtin_pes.hpp sums perpendicular coordinates directly to avoid FMA cancellation; no change to the three PR branches.",
+    "build_command": "PYTHONPATH=src python setup.py build_ext --inplace",
+    "test_command": "PYTHONPATH=src OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q --basetemp=/tmp/pyrpmd-pr81-final-native tests/test_builtin_native_pes.py tests/test_builtin_native_propagation.py tests/test_native_propagation.py tests/test_fused_propagation.py tests/test_native_outcomes.py",
+    "exit_code": 0,
+    "summary_raw": "455 passed, 1 skipped in 8.03s",
+    "raw_log": "validation/implementation-review-2026-11-03/pr81-latest-native.log",
+    "raw_log_sha256": "474414d8f018045aafa484b9e41bf8a5b936c8975ab9a65b001d524a771133cf",
+    "full_suite_rerun": false
+  }
+}

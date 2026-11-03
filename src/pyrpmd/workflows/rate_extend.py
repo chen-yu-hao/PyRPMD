@@ -21,6 +21,7 @@ import tempfile
 import numpy as np
 
 from .. import __version__
+from .._archive_paths import archive_path_mapping
 from ..input import InputError, rate_pmf_options, rate_pmf_stage
 from ..io import file_sha256, write_json
 from ..parallel import root_call, run_tasks
@@ -101,8 +102,22 @@ def _pointer(request):
 
 
 def _checkpoint_hashes(records, path):
-    return {str(Path(record["checkpoint"]).relative_to(path)):
+    return {Path(record["checkpoint"]).relative_to(path).as_posix():
             file_sha256(record["checkpoint"]) for record in records}
+
+
+def _generation_identity(value):
+    """Compare old separator spellings without rewriting published evidence."""
+    result = dict(value)
+    try:
+        if "source_checkpoints" in result:
+            result["source_checkpoints"] = archive_path_mapping(result["source_checkpoints"])
+        if "sample_stream_sources" in result:
+            result["sample_stream_sources"] = archive_path_mapping(
+                result["sample_stream_sources"], path_values=True)
+    except ValueError as error:
+        raise InputError(f"Invalid rate generation source paths: {error}") from error
+    return result
 
 
 def _snapshot_checkpoint(source, target):
@@ -219,7 +234,7 @@ def _prepare_extension(directory, target):
         last = ledger["requests"][-1]
         binding = path / last["generation"] / "generation.json"
         if binding.is_file():
-            saved = _json(binding)
+            saved = _generation_identity(_json(binding))
             if (saved.get("format") != "PyRPMD.rate.generation.v1"
                     or saved.get("production_steps") != maximum
                     or saved.get("physics_fingerprint") != identity["physics_fingerprint"]
@@ -229,7 +244,7 @@ def _prepare_extension(directory, target):
     if ledger["requests"] and ledger["requests"][-1]["status"] == "completed":
         last = ledger["requests"][-1]
         generation, _, _ = read_generation(path, _pointer(last))
-        source = _json(generation / "generation.json")["source_checkpoints"]
+        source = _generation_identity(_json(generation / "generation.json"))["source_checkpoints"]
         if _checkpoint_hashes(records, path) != source:
             raise InputError("Umbrella checkpoints differ from the completed rate generation")
     if ledger["requests"] and target == ledger["requests"][-1]["production_steps"]:
@@ -267,14 +282,14 @@ def _bind_generation(prepared, pmf, tasks):
     sources = {}
     for record in records:
         source = Path(record["checkpoint"])
-        relative = str(source.relative_to(path))
+        relative = source.relative_to(path).as_posix()
         snapshot = generation / relative
         if snapshot.exists():
             if file_sha256(snapshot) != file_sha256(source):
                 raise InputError("Archived umbrella checkpoint differs from the generation source")
         else:
             _snapshot_checkpoint(source, snapshot)
-        sources[relative] = str(source.with_suffix(".chunks").relative_to(path))
+        sources[relative] = source.with_suffix(".chunks").relative_to(path).as_posix()
     identity = {
         "format": "PyRPMD.rate.generation.v1",
         "physics_fingerprint": prepared["ledger"]["physics_fingerprint"],
@@ -285,7 +300,7 @@ def _bind_generation(prepared, pmf, tasks):
     }
     file = generation / "generation.json"
     if file.exists():
-        if _json(file) != identity:
+        if _generation_identity(_json(file)) != identity:
             raise InputError("Rate generation source, surface or parent starting states changed")
     else:
         # Do not adopt caches whose parent origins were never committed.
@@ -327,7 +342,7 @@ def _finish_extension(prepared, summary):
              "rate_pmf.npz", "rate_pmf.csv", "recrossing.npz", "recrossing.csv",
              "umbrella/fes.npz", "umbrella/fes.h5", "umbrella/fes.csv",
              "umbrella/summary.json"]
-    names.extend(str(file.relative_to(generation)) for file in sorted(
+    names.extend(file.relative_to(generation).as_posix() for file in sorted(
         (generation / "umbrella" / "checkpoints").glob("window_*_replica_*.npz")))
     receipt = {"format": RECEIPT_FORMAT, "generation": request["generation"],
                "physics_fingerprint": ledger["physics_fingerprint"],
@@ -351,7 +366,7 @@ def _recover_receipt(prepared):
     request.update(status="completed", receipt_sha256=file_sha256(generation / "receipt.json"))
     # Validation must precede publishing a receipt left by an interrupted commit.
     read_generation(prepared["output"], _pointer(request))
-    source = _json(generation / "generation.json")["source_checkpoints"]
+    source = _generation_identity(_json(generation / "generation.json"))["source_checkpoints"]
     if _checkpoint_hashes(prepared["checkpoint_records"], Path(prepared["output"])) != source:
         raise InputError("Umbrella checkpoints differ from the completed rate generation")
     request.setdefault("completed_at", _now())

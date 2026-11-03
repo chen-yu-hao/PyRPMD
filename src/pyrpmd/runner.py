@@ -166,6 +166,11 @@ def run_resolved(config, system, *, output=None, resume=False):
 
     validate_bond_constraint_workflow(system, config.get("task"))
     validate_andersen_schedule(config, config.get("task"))
+    if config.get("sampling", {}).get("engine") == "torch":
+        # Direct resolved calls must reject unsupported tensor combinations
+        # before creating or migrating an output directory.
+        from .workflows.torch_materials import resolve_torch_materials
+        resolve_torch_materials(config, system)
     if getattr(system, "bond_constraints", ()):
         # Direct resolved callers must fail before output creation, provider
         # construction or dispatch when the materials engine is incompatible.
@@ -683,6 +688,8 @@ def prepare(job, *, numerical=False):
                 "fermionic_sign_reweighted_thermodynamics" if method == "fermionic" else
                 "even_bead_potential_alpha_zero_only" if method == "suzuki_chin" else "symmetric_bead_potential",
         }
+        if method in ("bosonic", "fermionic") and options["barostat"] is not None:
+            result["path_integral_preparation"]["barostat_coordinate_scaling"] = "all_beads"
     elif config["task"] in ("pimd", "diffusion"):
         from .workflows.materials import resolve_materials
 
@@ -711,6 +718,13 @@ def prepare(job, *, numerical=False):
         }
         if native_pimd:
             result["materials_preparation"]["engine"] = "native"
+        elif config.get("sampling", {}).get("engine") == "torch":
+            result["materials_preparation"].update(
+                engine="torch", device=materials_options["device"], dtype="float64",
+                normal_mode_layout=materials_options["normal_mode_layout"],
+                sampling_integrator="bcocb", batch_replicas=materials_options["replicas"],
+                checkpoint="atomic_tensor_batch_with_owned_rng_states",
+            )
     elif config["task"] == "site_rate":
         from .workflows.site_rate import validate_site_rate
 
@@ -728,7 +742,10 @@ def prepare(job, *, numerical=False):
                 x = np.repeat(x, config["beads"], axis=0)
             from .potentials import validate_result
 
-            if config["task"] == "pimd" and config.get("sampling", {}).get("engine", "legacy") == "native":
+            if config.get("sampling", {}).get("engine") == "torch":
+                from .workflows.torch_materials import check_torch_materials
+                result["pes_check"] = check_torch_materials(config, system, provider)
+            elif config["task"] == "pimd" and config.get("sampling", {}).get("engine", "legacy") == "native":
                 from .potentials.base import PESResult
                 from .workflows.native_pimd import _engine
 
@@ -778,7 +795,17 @@ def prepare(job, *, numerical=False):
                         result["pes_check"]["initial_configurational_pressure_au"] = piston.pressure(State(q, np.zeros_like(q)))
                 elif config["path_integral"].get("method") in ("bosonic", "fermionic"):
                     volume = float(abs(np.linalg.det(system.cell))) if all(system.pbc) else None
-                    result["pes_check"]["initial_exchange_estimators"] = action.estimators(q, volume=volume)
+                    result["pes_check"]["initial_exchange_estimators"] = action.estimators(
+                        q, volume=volume, require_pressure=options["barostat"] is not None)
+                    if action.periodic_mode == "full_winding":
+                        result["pes_check"]["winding_kernel_plans"] = copy.deepcopy(
+                            action.metadata["winding_kernels"])
+                    if options["barostat"] is not None:
+                        from .workflows.path_integral import _make_barostat
+                        from .dynamics import State
+                        piston = _make_barostat(action, system, config["beads"], options["barostat"])
+                        result["pes_check"]["initial_configurational_pressure_au"] = piston.pressure(
+                            State(q, np.zeros_like(q)))
             elif "nonadiabatic" in config:
                 evaluated = provider.evaluate(x)
                 from .nonadiabatic import validate_diabatic_result

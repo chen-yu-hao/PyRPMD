@@ -1,0 +1,44 @@
+# Short CPU tensor-workflow example; statistical/physical convergence is not certified.
+# Run: pyrpmd run examples/materials/torch_pimd.inp --output runs/torch-pimd
+# Resume: pyrpmd resume runs/torch-pimd
+# Requires the optional PyTorch dependency (pyrpmd[gpu]); CPU is selected explicitly.
+# The harmonic model is an analytic reference, not a fitted molecular potential.
+task = "pimd"
+preset = "pilot"
+temperature = "300 K"
+beads = 8
+seed = 1306
+
+[system]
+symbols = ["H", "H"]
+geometry = [[0.1, 0.0, 0.0], [-0.1, 0.0, 0.0]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "harmonic"
+# Harmonic force constant in hartree/bohr^2; independent Cartesian oscillators.
+params = {k = 0.05}
+
+[dynamics]
+integrator = "cayley-bcb"
+timestep = "0.1 fs"
+block_steps = 32
+
+[sampling]
+engine = "torch"
+device = "cpu"
+normal_mode_layout = "rfft"
+integrator = "bcocb"
+thermostat = "pile-l"
+gamma_centroid = "0.01 fs^-1"
+# All replicas and beads are evaluated in one tensor batch.
+replicas = 4
+equilibration_steps = 40
+production_steps = 160
+sample_interval = 10
+
+[output]
+directory = "runs/torch-pimd"
+trajectory_storage = "stream"
+checkpoint_steps = 32
+chunk_frames = 8

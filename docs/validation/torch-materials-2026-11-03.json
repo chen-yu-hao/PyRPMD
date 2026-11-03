@@ -1,0 +1,308 @@
+{
+  "schema": "pyrpmd.torch-materials-validation.v1",
+  "created_utc": "2026-11-02T18:35:05.631630+00:00",
+  "hardware": "AMD EPYC 9V74; 9 vCPUs available; each propagation and BLAS/OpenMP pool uses 1 thread; shared host",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "torch": "2.15.0+cpu",
+  "torch_num_threads": 1,
+  "threadpools": [
+    {
+      "user_api": "blas",
+      "internal_api": "openblas",
+      "num_threads": 1,
+      "prefix": "libscipy_openblas",
+      "filepath": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/numpy.libs/libscipy_openblas64_-fdde5778.so",
+      "version": "0.3.30",
+      "threading_layer": "pthreads",
+      "architecture": "SkylakeX"
+    },
+    {
+      "user_api": "openmp",
+      "internal_api": "openmp",
+      "num_threads": 1,
+      "prefix": "libgomp",
+      "filepath": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/torch/lib/libgomp.so.1",
+      "version": null
+    },
+    {
+      "user_api": "blas",
+      "internal_api": "openblas",
+      "num_threads": 1,
+      "prefix": "libscipy_openblas",
+      "filepath": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/scipy.libs/libscipy_openblas-6cdc3b4a.so",
+      "version": "0.3.30",
+      "threading_layer": "pthreads",
+      "architecture": "SkylakeX"
+    }
+  ],
+  "scope": "fixed-cell float64 CPU harmonic workflow; no GPU or molecular convergence claim",
+  "timing_scope": "end-to-end PIMD including construction, immutable trajectory/checkpoint I/O and analysis; warmed imports",
+  "harmonic": [
+    {
+      "beads": 8,
+      "replicas": 32,
+      "equilibration_steps": 2000,
+      "production_steps": 8000,
+      "dt_au": 0.5,
+      "beta_au": 4.0,
+      "names": [
+        "potential_energy",
+        "kinetic_centroid_virial",
+        "internal_energy_centroid_virial"
+      ],
+      "mean_hartree": [
+        0.7578578541544413,
+        0.7562714491581544,
+        1.5141293033125953
+      ],
+      "sem_between_replicas_hartree": [
+        0.0018119373714652815,
+        0.0007296850134416019,
+        0.0021942130599283305
+      ],
+      "exact_finite_beads_hartree": [
+        0.7559023609443777,
+        0.7559023609443777,
+        1.5118047218887554
+      ],
+      "relative_error": [
+        0.0025869653424821504,
+        0.00048827498476855524,
+        0.0015376201636252418
+      ],
+      "quantum_continuum_internal_energy_hartree": 1.555972081091322,
+      "radius_gyration_squared_bohr2": 0.38127144915815436,
+      "exact_radius_gyration_squared_bohr2": 0.3809023609443777,
+      "workflow_physical_converged": false,
+      "within_six_standard_errors": true
+    },
+    {
+      "beads": 16,
+      "replicas": 32,
+      "equilibration_steps": 2000,
+      "production_steps": 8000,
+      "dt_au": 0.5,
+      "beta_au": 4.0,
+      "names": [
+        "potential_energy",
+        "kinetic_centroid_virial",
+        "internal_energy_centroid_virial"
+      ],
+      "mean_hartree": [
+        0.7725017480585529,
+        0.7731272171661165,
+        1.5456289652246695
+      ],
+      "sem_between_replicas_hartree": [
+        0.002396721917936875,
+        0.0009432172952277955,
+        0.0030519707918016045
+      ],
+      "exact_finite_beads_hartree": [
+        0.772272526442342,
+        0.772272526442342,
+        1.544545052884684
+      ],
+      "relative_error": [
+        0.00029681441248063933,
+        0.0011067216487836706,
+        0.000701768030632044
+      ],
+      "quantum_continuum_internal_energy_hartree": 1.555972081091322,
+      "radius_gyration_squared_bohr2": 0.39812721716611654,
+      "exact_radius_gyration_squared_bohr2": 0.397272526442342,
+      "workflow_physical_converged": false,
+      "within_six_standard_errors": true
+    },
+    {
+      "beads": 32,
+      "replicas": 32,
+      "equilibration_steps": 2000,
+      "production_steps": 8000,
+      "dt_au": 0.5,
+      "beta_au": 4.0,
+      "names": [
+        "potential_energy",
+        "kinetic_centroid_virial",
+        "internal_energy_centroid_virial"
+      ],
+      "mean_hartree": [
+        0.7769065579183239,
+        0.7776120544495014,
+        1.5545186123678256
+      ],
+      "sem_between_replicas_hartree": [
+        0.0016137746414059916,
+        0.0007398995528851022,
+        0.0021054634880381244
+      ],
+      "exact_finite_beads_hartree": [
+        0.7765450391585778,
+        0.7765450391585778,
+        1.5530900783171555
+      ],
+      "relative_error": [
+        0.00046554770363083087,
+        0.0013740546099938467,
+        0.0009198011568125608
+      ],
+      "quantum_continuum_internal_energy_hartree": 1.555972081091322,
+      "radius_gyration_squared_bohr2": 0.40261205444950154,
+      "exact_radius_gyration_squared_bohr2": 0.40154503915857775,
+      "workflow_physical_converged": false,
+      "within_six_standard_errors": true
+    }
+  ],
+  "timings": [
+    {
+      "replicas": 1,
+      "beads": 32,
+      "atoms": 3,
+      "steps_per_replica": 320,
+      "repeats": 3,
+      "samples": {
+        "legacy": [
+          {
+            "wall_seconds": 0.16510907600604696,
+            "process_cpu_seconds": 0.15550692899999774
+          },
+          {
+            "wall_seconds": 0.14760836800269317,
+            "process_cpu_seconds": 0.14013304400000237
+          },
+          {
+            "wall_seconds": 0.1680960480007343,
+            "process_cpu_seconds": 0.14801783800000123
+          }
+        ],
+        "torch": [
+          {
+            "wall_seconds": 0.17159158299909905,
+            "process_cpu_seconds": 0.15941991100000052
+          },
+          {
+            "wall_seconds": 0.20208895299583673,
+            "process_cpu_seconds": 0.1891243820000028
+          },
+          {
+            "wall_seconds": 0.22977275899756933,
+            "process_cpu_seconds": 0.21720896599999406
+          }
+        ]
+      },
+      "median": {
+        "legacy": {
+          "wall_seconds": 0.16510907600604696,
+          "process_cpu_seconds": 0.14801783800000123
+        },
+        "torch": {
+          "wall_seconds": 0.20208895299583673,
+          "process_cpu_seconds": 0.1891243820000028
+        }
+      },
+      "wall_speedup": 0.8170118829278531,
+      "cpu_speedup": 0.7826480987522753
+    },
+    {
+      "replicas": 8,
+      "beads": 32,
+      "atoms": 3,
+      "steps_per_replica": 320,
+      "repeats": 3,
+      "samples": {
+        "legacy": [
+          {
+            "wall_seconds": 1.1434570479977992,
+            "process_cpu_seconds": 1.077071992999997
+          },
+          {
+            "wall_seconds": 1.164114300001529,
+            "process_cpu_seconds": 1.093884990999996
+          },
+          {
+            "wall_seconds": 1.2423361539986217,
+            "process_cpu_seconds": 1.1614057819999957
+          }
+        ],
+        "torch": [
+          {
+            "wall_seconds": 0.4449922150015482,
+            "process_cpu_seconds": 0.37584961299999975
+          },
+          {
+            "wall_seconds": 0.3824605980043998,
+            "process_cpu_seconds": 0.31914723899999586
+          },
+          {
+            "wall_seconds": 0.38576101299986476,
+            "process_cpu_seconds": 0.3260350389999971
+          }
+        ]
+      },
+      "median": {
+        "legacy": {
+          "wall_seconds": 1.164114300001529,
+          "process_cpu_seconds": 1.093884990999996
+        },
+        "torch": {
+          "wall_seconds": 0.38576101299986476,
+          "process_cpu_seconds": 0.3260350389999971
+        }
+      },
+      "wall_speedup": 3.017708531374935,
+      "cpu_speedup": 3.3551148194228464
+    },
+    {
+      "replicas": 32,
+      "beads": 32,
+      "atoms": 3,
+      "steps_per_replica": 320,
+      "repeats": 3,
+      "samples": {
+        "legacy": [
+          {
+            "wall_seconds": 4.624954229002469,
+            "process_cpu_seconds": 4.382618725
+          },
+          {
+            "wall_seconds": 4.920634214999154,
+            "process_cpu_seconds": 4.6410439359999955
+          },
+          {
+            "wall_seconds": 4.548411233001389,
+            "process_cpu_seconds": 4.3363911109999975
+          }
+        ],
+        "torch": [
+          {
+            "wall_seconds": 1.0101174249939504,
+            "process_cpu_seconds": 0.7773213020000043
+          },
+          {
+            "wall_seconds": 0.9840483730004053,
+            "process_cpu_seconds": 0.7945051510000027
+          },
+          {
+            "wall_seconds": 0.9282085579980048,
+            "process_cpu_seconds": 0.7205611500000018
+          }
+        ]
+      },
+      "median": {
+        "legacy": {
+          "wall_seconds": 4.624954229002469,
+          "process_cpu_seconds": 4.382618725
+        },
+        "torch": {
+          "wall_seconds": 0.9840483730004053,
+          "process_cpu_seconds": 0.7773213020000043
+        }
+      },
+      "wall_speedup": 4.699925690543838,
+      "cpu_speedup": 5.638104492600122
+    }
+  ]
+}
