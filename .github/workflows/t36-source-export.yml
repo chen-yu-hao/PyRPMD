@@ -1,0 +1,25 @@
+name: T36 source export
+
+on:
+  push:
+    branches:
+      - agent/t36-plumed-bridge
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Archive checkout
+        run: |
+          git status --short --branch
+          tar --exclude=.git -czf /tmp/pyrpmd-t36-source.tar.gz .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pyrpmd-t36-source
+          path: /tmp/pyrpmd-t36-source.tar.gz
+          if-no-files-found: error
+          retention-days: 1
