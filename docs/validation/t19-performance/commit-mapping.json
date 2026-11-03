@@ -1,0 +1,23 @@
+{
+  "reason": "GitHub Git Data publication preserves each tested tree; local commit IDs differ because publication constructs commit objects with connector identity and timestamps.",
+  "commits": [
+    {
+      "local_commit": "119970fc3e50c5768b6df60fb814f6f38a9cbb0f",
+      "remote_commit": "1a7adb8bbedeac97d9cfbeada8b56c241a0c5ba7",
+      "tree": "02acdd01533d1eab0ba76b4258660a0faed9072f",
+      "message": "perf(lammps): make repeated atom identity validation linear time\n\nRetain the original wrapping, neighbor rebuild and metadata contracts. Add independent LJ/force checks and an alternating-round profiler for boundary-aligned and translated large-system batches."
+    },
+    {
+      "local_commit": "9762edfef89a062cb482c885d28ac34251d64650",
+      "remote_commit": "1004a66d6a6498b8e8c671fcef8334be64eff691",
+      "tree": "3b0bf99fdc6280a321bbbcb469eea14f627eba08",
+      "message": "feat(openmm): add exact fixed-cell RPMD copy evaluation\n\nKeep all rows in one unstepped copy bank, return physical PES forces, and validate virtual-site copy selection. Reject constraints and changed cells explicitly, preserve serial metadata, and add Reference/finite-difference/restart checks plus a CUDA-ready timing matrix."
+    },
+    {
+      "local_commit": "e983daaa21e769826403454b21d203330c199050",
+      "remote_commit": "6dc3b527531369f1f9fae7ea5f6dfa3800ef9af1",
+      "tree": "addfcf296872d991386fa1f5505e1ba36f887544",
+      "message": "bench: add strict CUDA provider and public workflow validation matrix\n\nRecord CPU float64 references, synchronized timings, caller-stream checks, actual imported sources and explicit blocked cases. Validate complete public-workflow work before timing summaries, support isolated framework environments, and never claim physical or CUDA acceptance from CPU-only evidence."
+    }
+  ]
+}

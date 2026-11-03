@@ -13,7 +13,7 @@ import shutil
 import sys
 from . import __version__
 from .input import JobSpec, InputError, fes_method, normalize_fes_task
-from .io import write_json, referenced_files, fingerprint, jsonable
+from .io import write_json, referenced_files, fingerprint, jsonable, _windows_drive_files
 from .system import System
 
 
@@ -35,6 +35,85 @@ def _spec(value):
     return JobSpec.from_mapping(value)
 
 
+def _validate_resume_identity(config, system, path, old, hashes, digest):
+    """Authenticate a resume without changing saved inputs or manifest bytes."""
+    from .propagation import scientific_config
+
+    schema = old.get("schema_version", 1)
+    if type(schema) is not int or schema not in (1, 2):
+        raise InputError(f"Unsupported run manifest schema version: {schema}")
+    # Legacy manifests omitted the schema name. An explicit foreign name
+    # must never be reinterpreted as a PyRPMD manifest during migration.
+    if (schema == 2 or "schema" in old) and old.get("schema") != "pyrpmd.run":
+        raise InputError("Unknown run manifest schema")
+    old_digest = old["physics_fingerprint"]
+    if schema == 1:
+        # Authenticate the saved input before migrating an old identity.
+        # A v0.1 run may have included execution-only block/backend options.
+        stored_config = json.loads((path / "input" / "resolved.json").read_text())
+        stored_system = _read_identity(stored_config, path)
+        if fingerprint(stored_config, stored_system) != old_digest:
+            raise InputError("Legacy saved input does not match its run manifest")
+        old_digest = fingerprint(scientific_config(stored_config), stored_system)
+    migrated_fes = False
+    if old_digest != digest:
+        stored_config = json.loads((path / "input" / "resolved.json").read_text())
+        stored_system = _read_identity(stored_config, path)
+        authenticated = fingerprint(scientific_config(stored_config), stored_system) == old_digest
+        if authenticated and stored_config.get("task") in ("fes", "metadynamics", "opes"):
+            normalized = normalize_fes_task(copy.deepcopy(stored_config), warn=False)
+            migrated_fes = fingerprint(scientific_config(normalized), stored_system) == digest
+        if not migrated_fes:
+            raise InputError("Cannot resume with changed scientific settings or system")
+    for file, sha in old.get("files", {}).items():
+        if hashes.get(file) != sha:
+            raise InputError(f"Input/model file changed or is missing: {file}")
+
+    # Before f9e85b4, explicit drive-letter inputs could be absent from files.
+    # Today's content cannot establish the provenance of an existing trajectory.
+    # Use the saved platform and saved references, not execution overrides or
+    # the current host; a copied Windows run has the same evidence gap.
+    if str(old.get("platform", "")).startswith("Windows"):
+        stored_config = json.loads((path / "input" / "resolved.json").read_text())
+        missing = sorted(_windows_drive_files(stored_config, hashes)
+                         - old.get("files", {}).keys())
+        if missing:
+            raise InputError(
+                "Cannot resume this Windows run: its manifest has no recorded "
+                "source/model hashes for: " + ", ".join(missing) + ". "
+                "Older drive-letter path handling (before f9e85b4) could omit "
+                "these inputs. Their original contents cannot be verified; "
+                "hashing the current files cannot prove their historical source. "
+                "Keep the old run for inspection and rerun the original input "
+                "in a new, empty output directory (pyrpmd run INPUT --output NEW_RUN). "
+                "Do not edit the manifest or copy current hashes into it."
+            )
+    return schema, migrated_fes
+
+
+def _check_extension_provenance(directory):
+    """Refuse unprovable Windows extensions before acquiring/writing a lock."""
+    from .propagation import scientific_config
+
+    path = Path(directory).resolve()
+    if path.name == "checkpoints":
+        path = path.parent
+    manifest_path = path / "manifest.json"
+    if not manifest_path.is_file():
+        raise InputError(f"No run manifest in {path}")
+    old = json.loads(manifest_path.read_text())
+    if not str(old.get("platform", "")).startswith("Windows"):
+        return
+    config = json.loads((path / "input" / "resolved.json").read_text())
+    system = _read_identity(config, path)
+    if config.get("_base_directory") and config["_base_directory"] not in sys.path:
+        sys.path.insert(0, config["_base_directory"])
+    _validate_resume_identity(
+        config, system, path, old, referenced_files(config),
+        fingerprint(scientific_config(config), system),
+    )
+
+
 def _initialize_output(config, system, output, resume=False):
     from .propagation import scientific_config
 
@@ -48,35 +127,9 @@ def _initialize_output(config, system, output, resume=False):
         if not manifest_path.is_file():
             raise InputError(f"No run manifest in {path}")
         old = json.loads(manifest_path.read_text())
-        schema = old.get("schema_version", 1)
-        if type(schema) is not int or schema not in (1, 2):
-            raise InputError(f"Unsupported run manifest schema version: {schema}")
-        # Legacy manifests omitted the schema name. An explicit foreign name
-        # must never be reinterpreted as a PyRPMD manifest during migration.
-        if (schema == 2 or "schema" in old) and old.get("schema") != "pyrpmd.run":
-            raise InputError("Unknown run manifest schema")
-        old_digest = old["physics_fingerprint"]
-        if schema == 1:
-            # Authenticate the saved input before migrating an old identity.
-            # A v0.1 run may have included execution-only block/backend options.
-            stored_config = json.loads((path / "input" / "resolved.json").read_text())
-            stored_system = _read_identity(stored_config, path)
-            if fingerprint(stored_config, stored_system) != old_digest:
-                raise InputError("Legacy saved input does not match its run manifest")
-            old_digest = fingerprint(scientific_config(stored_config), stored_system)
-        migrated_fes = False
-        if old_digest != digest:
-            stored_config = json.loads((path / "input" / "resolved.json").read_text())
-            stored_system = _read_identity(stored_config, path)
-            authenticated = fingerprint(scientific_config(stored_config), stored_system) == old_digest
-            if authenticated and stored_config.get("task") in ("fes", "metadynamics", "opes"):
-                normalized = normalize_fes_task(copy.deepcopy(stored_config), warn=False)
-                migrated_fes = fingerprint(scientific_config(normalized), stored_system) == digest
-            if not migrated_fes:
-                raise InputError("Cannot resume with changed scientific settings or system")
-        for file, sha in old.get("files", {}).items():
-            if hashes.get(file) != sha:
-                raise InputError(f"Input/model file changed or is missing: {file}")
+        schema, migrated_fes = _validate_resume_identity(
+            config, system, path, old, hashes, digest,
+        )
         if schema == 1 or migrated_fes:
             write_json(manifest_path, {
                 **old,
@@ -406,6 +459,9 @@ def extend_run(directory, *, max_time=None, production_steps=None):
     """
     if (max_time is None) == (production_steps is None):
         raise InputError("Specify exactly one of max_time or production_steps")
+    from .parallel import root_call
+
+    root_call(_check_extension_provenance, directory)
     if production_steps is not None:
         from .workflows.rate_extend import extend_rate
 

@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import ntpath
 import os
 import sys
 import tempfile
@@ -280,6 +281,47 @@ def plugin_module(value):
         return value
     head, separator, _ = value.rpartition(":")
     return head if separator else value
+
+
+def _windows_drive_files(config, discovered):
+    """Locate explicit drive-path inputs for legacy provenance diagnostics.
+
+    Preserve ``referenced_files`` hashing rules. Accept arbitrary references
+    only when discovered as files today, but retain explicitly declared plugin
+    and model inputs even if they have since disappeared. Existing directories
+    and unrelated configuration strings are not source evidence.
+    ``ntpath`` recognizes a saved Windows reference on any current host.
+    """
+    files = set()
+    declared_keys = {
+        "model", "weights", "reference", "references", "library", "manifest",
+        "_input_path", "hessian_file", "modes_file", "asset_files",
+    }
+
+    def visit(value, key=None):
+        if isinstance(value, dict):
+            for k, v in value.items():
+                if k not in ("directory", "_base_directory"):
+                    visit(v, k)
+        elif isinstance(value, (list, tuple)):
+            for v in value:
+                visit(v, key if key in declared_keys else None)
+        elif isinstance(value, str):
+            declared = key in declared_keys
+            if key in ("factory", "module", "function", "initializer"):
+                value = plugin_module(value)
+                if not value.endswith((".py", ".so")):
+                    return
+                declared = True
+            drive, tail = ntpath.splitdrive(value)
+            if (len(drive) == 2 and drive[0].isalpha() and drive[1] == ":"
+                    and tail.startswith(("/", "\\"))):
+                path = Path(value).resolve()
+                if str(path) in discovered or (declared and not path.is_dir()):
+                    files.add(str(path))
+
+    visit(config)
+    return files
 
 
 def referenced_files(config):

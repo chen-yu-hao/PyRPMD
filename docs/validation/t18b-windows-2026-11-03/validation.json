@@ -1,0 +1,305 @@
+{
+  "schema": "PyRPMD.t18b.windows-validation.v1",
+  "written_at_utc": "2026-11-03T05:39:15.512666+00:00",
+  "base_commit": "f87705115c7496821b283a0966c991abd541231c",
+  "verified_code_commit": "b013bc2d0032df42719f2454b7e909f6cd80de3a",
+  "verified_code_tree": "81864871055658b2485374172b347c4513af38dc",
+  "local_verified_commit": "fceebb3f4e3f41bc3094e7053ead9c1d405d0ba3",
+  "pull_request": "https://github.com/chen-yu-hao/PyRPMD/pull/85",
+  "branch": "codex/t18b-windows-identity-20261103",
+  "decision": "Option (a): explicit refusal; rerun into a new empty directory. No identity bypass, migration or new scientific options.",
+  "dependency": {
+    "pull_request": "https://github.com/chen-yu-hao/PyRPMD/pull/83",
+    "state_when_verified": "open, unmerged",
+    "head": "b995ec4563794294c5b2c4be201a1fa4fa7193db",
+    "deferred_groups": [
+      "native publication",
+      "authenticated rate archive paths",
+      "concurrent Windows replacement"
+    ]
+  },
+  "tests": {
+    "baseline_related": {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../.venv-t18b/bin/python -m pytest -q tests/test_checkpoint.py tests/test_shared_io.py tests/test_plugin_module.py tests/test_campaign_marker.py tests/test_input_cli.py tests/test_drpmd_extend.py tests/test_electrochemistry_integration.py tests/test_ml_lifecycle.py tests/test_pcet_workflow.py tests/test_plumed_workflow.py tests/test_rate_extend.py tests/test_rate_fes_source.py tests/test_rate_pmf_input.py tests/test_reaction_network.py tests/test_spectroscopy_trace_identity.py tests/test_spectroscopy_workflow.py tests/test_studies.py tests/test_surface_source.py",
+      "working_directory": "PyRPMD before edits",
+      "summary": "349 passed, 13 warnings, 39 subtests passed in 75.57s (0:01:15)",
+      "log": "baseline-related.log",
+      "sha256": "d8ea280366a6a5b6dd82c868044470afeacb88f32b5ce8e3f2bc32eef1c0c9b3",
+      "failed_nodes": [],
+      "raw_log_sha256": "d8ea280366a6a5b6dd82c868044470afeacb88f32b5ce8e3f2bc32eef1c0c9b3"
+    },
+    "candidate_related": {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../.venv-t18b/bin/python -m pytest -q tests/test_checkpoint.py tests/test_shared_io.py tests/test_plugin_module.py tests/test_campaign_marker.py tests/test_input_cli.py tests/test_drpmd_extend.py tests/test_electrochemistry_integration.py tests/test_ml_lifecycle.py tests/test_pcet_workflow.py tests/test_plumed_workflow.py tests/test_rate_extend.py tests/test_rate_fes_source.py tests/test_rate_pmf_input.py tests/test_reaction_network.py tests/test_spectroscopy_trace_identity.py tests/test_spectroscopy_workflow.py tests/test_studies.py tests/test_surface_source.py tests/test_windows_resume_provenance.py",
+      "working_directory": "PyRPMD",
+      "summary": "393 passed, 13 warnings, 39 subtests passed in 123.81s (0:02:03)",
+      "log": "final-related.log",
+      "sha256": "712816b8ebefe3c53e4945f99a20ed779353fa89ed3e27e8e3bf25f8943fb789",
+      "failed_nodes": [],
+      "raw_log_sha256": "712816b8ebefe3c53e4945f99a20ed779353fa89ed3e27e8e3bf25f8943fb789"
+    },
+    "new_regressions": {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../.venv-t18b/bin/python -m pytest -q tests/test_windows_resume_provenance.py",
+      "working_directory": "PyRPMD",
+      "summary": "44 passed in 4.39s",
+      "log": "windows-provenance.log",
+      "sha256": "4b3052370d9aa3c14065d13bf6250c5054f01a4e124fecc6d663ad025d46aa57",
+      "failed_nodes": [],
+      "raw_log_sha256": "4b3052370d9aa3c14065d13bf6250c5054f01a4e124fecc6d663ad025d46aa57"
+    },
+    "full_baseline": {
+      "command": "TMPDIR=/workspace/scratch/5d4ac7a89933/t18b-tmp/base PYTHONPATH=src OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../.venv-t18b/bin/python -m pytest -q",
+      "working_directory": "PyRPMD-baseline",
+      "summary": "1 failed, 10070 passed, 340 skipped, 48 warnings, 493 subtests passed in 1356.34s (0:22:36)",
+      "log": "full-baseline.log",
+      "sha256": "6e366587657cc63cf527ae2af89e2f6e585ee3e18ad1e59cb7ac9adec1fc3928",
+      "failed_nodes": [
+        "tests/test_ipi_clients.py::test_existing_unix_address_is_not_removed_on_bind_failure"
+      ],
+      "raw_log_sha256": "2d7a9296d936d0ae13246abddb4e5ad6154d7a16ce925fabcca099a20fb0f8fb"
+    },
+    "full_candidate": {
+      "command": "TMPDIR=/workspace/scratch/5d4ac7a89933/t18b-tmp/final PYTHONPATH=src OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../.venv-t18b/bin/python -m pytest -q",
+      "working_directory": "PyRPMD",
+      "summary": "1 failed, 10114 passed, 340 skipped, 48 warnings, 493 subtests passed in 1350.68s (0:22:30)",
+      "log": "full-final.log",
+      "sha256": "11a1bdc0fa40724ba4930d3e5ca802f1b38e556dc316bfe3b435890a87ac667b",
+      "failed_nodes": [
+        "tests/test_ipi_clients.py::test_existing_unix_address_is_not_removed_on_bind_failure"
+      ],
+      "raw_log_sha256": "3bb60ea762067dfe813b69fc3c5d18d1a31bd8f178e5a503962357aa4839c626"
+    },
+    "windows_baseline": {
+      "command": "python -m pytest -q -m \"not campaign\"",
+      "working_directory": "GitHub windows-2022 runner, one OpenMP/BLAS thread",
+      "summary": "8146 passed, 301 skipped, 46 warnings, 410 subtests passed in 1159.16s (0:19:19)",
+      "log": "windows-baseline.log",
+      "sha256": "b7f2be32c71c5b6e9d17e8c37c7c113440d52029f4e0baa54c6d8d6d88050368",
+      "failed_nodes": [],
+      "url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41518522419/job/125528228876",
+      "raw_log_sha256": "c9623a49d61681cabe57583fe8c0693d9821a5664640e45d2fed458ee73d13da"
+    },
+    "windows_candidate": {
+      "command": "python -m pytest -q -m \"not campaign\"",
+      "working_directory": "GitHub windows-2022 runner, one OpenMP/BLAS thread",
+      "summary": "8206 passed, 285 skipped, 47 warnings, 410 subtests passed in 1153.00s (0:19:13)",
+      "log": "windows-final.log",
+      "sha256": "82c75e330cdeb2635e2b80fd4e435d3aefd4a9cda09fa78c3cf6ad244804f6b9",
+      "failed_nodes": [],
+      "url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41582846451/job/125741769206",
+      "raw_log_sha256": "acd69be7f1bb30d1a32c4d75138d84da90e707946233c101637c494f229a5c2d"
+    },
+    "documentation": {
+      "command": "../.venv-t18b/bin/python -m sphinx -W --keep-going -b html docs docs/_build/html",
+      "summary": "build succeeded.",
+      "log": "docs-build.log",
+      "raw_log_sha256": "f9a6fa0e6a950cafbf1251f38b69e7f4be115d6b7c5a41636da0031ed6ce816c",
+      "sha256": "e82fc4fde561a2bee38fdc93423be655c8246f42cb5e79b22b52b9611bd8a49a"
+    },
+    "macos_library": {
+      "url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41582846451/job/125741769159",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  },
+  "full_comparison": {
+    "new_failure_nodes": [],
+    "fixed_failure_nodes": [],
+    "same_failure_nodes": true,
+    "environment_failure_explanation": "Unix socket creation is denied by the execution sandbox (PermissionError, errno 1). No additional skip guard was added."
+  },
+  "linux_identity_comparison": {
+    "base_commit": "f87705115c7496821b283a0966c991abd541231c",
+    "candidate_tree": "81864871055658b2485374172b347c4513af38dc",
+    "fixtures": 11,
+    "fingerprint_values": 33,
+    "byte_identical": true,
+    "snapshot_sha256": "563aae8ef75a894380adbc7e46256e8dbe41f383bedb1f99c7404c863c0c177b",
+    "unchanged_functions": {
+      "plugin_module": {
+        "source_unchanged": true,
+        "sha256": "3d95e6b572f5852fe1b625e4312c3e1c626dde5f7ece94a9037e0bc332d1fd3d"
+      },
+      "referenced_files": {
+        "source_unchanged": true,
+        "sha256": "d649f8ab6c505ec0e85839286c2a494743e6a11ccb8493bc72d8517560e28063"
+      },
+      "fingerprint": {
+        "source_unchanged": true,
+        "sha256": "07230d62031a0f2f77362be8739cb586155344164e1293e1c331d37a85f03fe9"
+      },
+      "fingerprint_payload": {
+        "source_unchanged": true,
+        "sha256": "fb1c96c8d8bbf8b90d95b036f574a506c1dcbeee7467285193286731ba17c766"
+      }
+    }
+  },
+  "windows_skip_registry": {
+    "baseline_groups": [
+      {
+        "reason": "Windows native trajectory publication fsyncs a read-only descriptor and raises EBADF; native_ensemble.py needs a separate runtime fix",
+        "nodes": [
+          "test_condensed_phase_ensembles.py::test_native_pressure_metadata_matches_saved_momenta_not_configured_temperature",
+          "test_mixed_workflows.py::test_mixed_native_pimd_actual_input_journal_and_restart",
+          "test_native_ensemble_portability.py::test_native_streaming_unicode_path",
+          "test_native_ensembles.py::test_cli_streams_and_resumes_without_python_step_loop",
+          "test_native_ensembles.py::test_npt_exact_restart_and_streaming",
+          "test_native_ensembles.py::test_stream_zero_frames_and_no_overwrite",
+          "test_native_pimd_followup.py::test_compiled_periodic_provider_preflight_and_native_workflow",
+          "test_native_pimd_followup.py::test_concurrent_output_is_not_overwritten_or_removed",
+          "test_native_pimd_followup.py::test_fixed_atoms_work_only_in_native_nvt",
+          "test_native_pimd_followup.py::test_native_moments_and_offset_clock",
+          "test_native_pimd_followup.py::test_native_workflow_committed_prefix_recovery",
+          "test_native_pimd_followup.py::test_native_workflow_corrupt_record_rejected",
+          "test_native_pimd_followup.py::test_native_workflow_process_replicas",
+          "test_native_pimd_followup.py::test_publication_failure_rolls_back_state_and_does_not_leave_file[link]",
+          "test_native_pimd_followup.py::test_publication_failure_rolls_back_state_and_does_not_leave_file[load]",
+          "test_native_pimd_followup.py::test_standard_native_workflow_calls_once_per_checkpoint_not_save",
+          "test_native_pimd_followup.py::test_standard_npt_workflow",
+          "test_native_pimd_followup.py::test_standard_workflow_is_native_and_chunk_independent",
+          "test_native_pimd_nhc_metadata.py::test_native_nhc_resolved_scheme_matches_executor_and_summary"
+        ]
+      },
+      {
+        "reason": "Windows drive-letter file/factory paths are omitted from source hashes; source-change and resume preflight checks need a separate runtime fix",
+        "nodes": [
+          "test_drpmd_extend.py::test_identity_and_all_checkpoints_are_validated_before_any_continuation[model]",
+          "test_electrochemistry_integration.py::test_existing_two_dimensional_fes_workflow_and_resume_use_electrode_factory",
+          "test_input_cli.py::InputTests::test_python_build_relative_plugin_and_source_hash",
+          "test_ml_lifecycle.py::test_nested_relative_models_and_named_fairchem_identity",
+          "test_pcet_workflow.py::PCETInputTests::test_tabulated_units_origins_relative_paths_and_dependency_hash",
+          "test_plumed_workflow.py::test_plumed_input_paths_units_and_default_destination",
+          "test_rate_extend.py::test_referenced_potential_change_is_rejected_before_growth",
+          "test_rate_fes_source.py::test_rate_executes_from_saved_source_and_hashes_it_for_resume",
+          "test_rate_pmf_input.py::test_external_source_is_resolved_to_hashable_paths",
+          "test_reaction_network.py::NetworkIdentityTests::test_relative_xyz_pes_paths_and_dependency_guard",
+          "test_spectroscopy_trace_identity.py::test_offline_reanalysis_retains_original_model_provenance",
+          "test_spectroscopy_workflow.py::test_property_model_content_change_invalidates_restart",
+          "test_spectroscopy_workflow.py::test_spectroscopy_frontend_resolves_units_defaults_and_property_sources",
+          "test_studies.py::test_study_collects_shared_files_once_without_losing_case_inputs",
+          "test_surface_source.py::test_saved_3d_source_runs_consistent_conditional_rate_and_exact_resume"
+        ]
+      },
+      {
+        "reason": "Windows archived rate-generation keys use backslashes but the report reader looks up POSIX keys; generation-source lookup needs a runtime fix",
+        "nodes": [
+          "test_rate_extension_artifacts.py::test_archived_sample_prefix_survives_a_later_pending_generation",
+          "test_report_rate_pmf_stage.py::test_independent_pmf_report_reads_published_generation_prefix_after_later_extension"
+        ]
+      },
+      {
+        "reason": "Windows simultaneous os.replace calls for one JSON destination can raise WinError 5; concurrent publication needs a separate runtime fix",
+        "nodes": [
+          "test_atomic_json.py::test_independent_json_writers_do_not_share_a_temporary_file"
+        ]
+      }
+    ],
+    "remaining_groups": [
+      {
+        "reason": "Windows native trajectory publication fsyncs a read-only descriptor and raises EBADF; native_ensemble.py needs a separate runtime fix",
+        "nodes": [
+          "test_condensed_phase_ensembles.py::test_native_pressure_metadata_matches_saved_momenta_not_configured_temperature",
+          "test_mixed_workflows.py::test_mixed_native_pimd_actual_input_journal_and_restart",
+          "test_native_ensemble_portability.py::test_native_streaming_unicode_path",
+          "test_native_ensembles.py::test_cli_streams_and_resumes_without_python_step_loop",
+          "test_native_ensembles.py::test_npt_exact_restart_and_streaming",
+          "test_native_ensembles.py::test_stream_zero_frames_and_no_overwrite",
+          "test_native_pimd_followup.py::test_compiled_periodic_provider_preflight_and_native_workflow",
+          "test_native_pimd_followup.py::test_concurrent_output_is_not_overwritten_or_removed",
+          "test_native_pimd_followup.py::test_fixed_atoms_work_only_in_native_nvt",
+          "test_native_pimd_followup.py::test_native_moments_and_offset_clock",
+          "test_native_pimd_followup.py::test_native_workflow_committed_prefix_recovery",
+          "test_native_pimd_followup.py::test_native_workflow_corrupt_record_rejected",
+          "test_native_pimd_followup.py::test_native_workflow_process_replicas",
+          "test_native_pimd_followup.py::test_publication_failure_rolls_back_state_and_does_not_leave_file[link]",
+          "test_native_pimd_followup.py::test_publication_failure_rolls_back_state_and_does_not_leave_file[load]",
+          "test_native_pimd_followup.py::test_standard_native_workflow_calls_once_per_checkpoint_not_save",
+          "test_native_pimd_followup.py::test_standard_npt_workflow",
+          "test_native_pimd_followup.py::test_standard_workflow_is_native_and_chunk_independent",
+          "test_native_pimd_nhc_metadata.py::test_native_nhc_resolved_scheme_matches_executor_and_summary"
+        ]
+      },
+      {
+        "reason": "Windows archived rate-generation keys use backslashes but the report reader looks up POSIX keys; generation-source lookup needs a runtime fix",
+        "nodes": [
+          "test_rate_extension_artifacts.py::test_archived_sample_prefix_survives_a_later_pending_generation",
+          "test_report_rate_pmf_stage.py::test_independent_pmf_report_reads_published_generation_prefix_after_later_extension"
+        ]
+      },
+      {
+        "reason": "Windows simultaneous os.replace calls for one JSON destination can raise WinError 5; concurrent publication needs a separate runtime fix",
+        "nodes": [
+          "test_atomic_json.py::test_independent_json_writers_do_not_share_a_temporary_file"
+        ]
+      }
+    ],
+    "baseline_registered_nodes": 37,
+    "remaining_registered_nodes": 22,
+    "removed_nodes": [
+      "test_drpmd_extend.py::test_identity_and_all_checkpoints_are_validated_before_any_continuation[model]",
+      "test_electrochemistry_integration.py::test_existing_two_dimensional_fes_workflow_and_resume_use_electrode_factory",
+      "test_input_cli.py::InputTests::test_python_build_relative_plugin_and_source_hash",
+      "test_ml_lifecycle.py::test_nested_relative_models_and_named_fairchem_identity",
+      "test_pcet_workflow.py::PCETInputTests::test_tabulated_units_origins_relative_paths_and_dependency_hash",
+      "test_plumed_workflow.py::test_plumed_input_paths_units_and_default_destination",
+      "test_rate_extend.py::test_referenced_potential_change_is_rejected_before_growth",
+      "test_rate_fes_source.py::test_rate_executes_from_saved_source_and_hashes_it_for_resume",
+      "test_rate_pmf_input.py::test_external_source_is_resolved_to_hashable_paths",
+      "test_reaction_network.py::NetworkIdentityTests::test_relative_xyz_pes_paths_and_dependency_guard",
+      "test_spectroscopy_trace_identity.py::test_offline_reanalysis_retains_original_model_provenance",
+      "test_spectroscopy_workflow.py::test_property_model_content_change_invalidates_restart",
+      "test_spectroscopy_workflow.py::test_spectroscopy_frontend_resolves_units_defaults_and_property_sources",
+      "test_studies.py::test_study_collects_shared_files_once_without_losing_case_inputs",
+      "test_surface_source.py::test_saved_3d_source_runs_consistent_conditional_rate_and_exact_resume"
+    ]
+  },
+  "environment": {
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "logical_cpus_reported": 9,
+    "cpu_model": "not exposed by this sandbox",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "dependencies": {
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "h5py": "3.16.0",
+      "pytest": "9.2.0",
+      "sphinx": "8.2.3"
+    },
+    "OMP_NUM_THREADS": 1,
+    "OPENBLAS_NUM_THREADS": 1,
+    "numerical_kernel_changes": false,
+    "timing_caution": "The final related suite ran concurrently with two full comparison suites. Test durations are validation evidence, not a speedup or performance-regression benchmark.",
+    "socket_limit": "Unix domain socket creation returns PermissionError: [Errno 1] Operation not permitted; full baseline and candidate are compared in the same environment."
+  },
+  "source_files_sha256": {
+    "src/pyrpmd/io.py": "b6e47da10bd97323bce0cd02487b6edb96ba698203b26722681da2ae316e490b",
+    "src/pyrpmd/runner.py": "bc14fcf93834338d0145b0ac2458fe4637d32af03dd4247bc799b448019fda9b",
+    "tests/conftest.py": "d84b27bcb5a9e14d24720b242c49ec8cf694890bc44c0a7e2199102592ea6551",
+    "tests/test_campaign_marker.py": "f5cf4a69950df1783cc79cd422beb3a2552aaaf0648d22c88d3b02fed092ecac",
+    "tests/test_windows_resume_provenance.py": "e692c9e8e6e0da2c57e44b7b52982b0b0de71feaec8e05963841c3a59650b989"
+  },
+  "boundary_exception": "One existing assertion in tests/test_campaign_marker.py no longer requires the repaired source-hash skip.",
+  "readme_and_bibliography_additions": [],
+  "packaging": "All new tests (*.py) and validation data (*.json, *.log) are covered by the existing MANIFEST.in rules.",
+  "evidence_commit_scope": "The subsequent evidence commits change documentation/validation records only; the code and tests listed above match the Windows-tested code revision.",
+  "windows_observed_delta": {
+    "passed": 60,
+    "reenabled_cases": 16,
+    "new_regression_cases": 44,
+    "skipped": -16,
+    "warnings": 1,
+    "warning_explanation": "One restored test in test_surface_source.py emits the existing metadynamics deprecation warning; that file now reports 13 such warnings instead of 12. No new warning category.",
+    "remaining_registry_skips": {
+      "native_publication": 40,
+      "drive_source_hashing": 0,
+      "rate_archive_paths": 2,
+      "concurrent_json_replace": 3
+    }
+  },
+  "log_normalization": {
+    "policy": "Only trailing horizontal whitespace and redundant final blank lines were removed for Git whitespace checks; output text, timestamps, summaries and failures are unchanged.",
+    "raw_logs_commit": "b7669d81304ce7e1804152804db643584259cc70",
+    "raw_logs_directory": "docs/validation/t18b-windows-2026-11-03",
+    "original_captured_logs_remain_in_git_history": true
+  }
+}

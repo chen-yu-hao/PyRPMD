@@ -1,0 +1,57 @@
+{
+  "base": {
+    "manifest": "cd3b069a8c4f635e682dc081bb92e5d9f1703ba36e196db3e7f21c13aaf1f95d",
+    "scientific_manifest": "f2ec2a9d35562cd9d44fae136bf1c0c340386a7022343ac5b9b9f9f6e25b93b9",
+    "stream": "06c62f0ad918712536e5269b8ad110b16f8a9d9f288b59fa045e7efd768603e7"
+  },
+  "execution": {
+    "manifest": "cd3b069a8c4f635e682dc081bb92e5d9f1703ba36e196db3e7f21c13aaf1f95d",
+    "scientific_manifest": "f2ec2a9d35562cd9d44fae136bf1c0c340386a7022343ac5b9b9f9f6e25b93b9",
+    "stream": "06c62f0ad918712536e5269b8ad110b16f8a9d9f288b59fa045e7efd768603e7"
+  },
+  "loop_tuning": {
+    "manifest": "7404095f7e77f77c3467177dc6494b02e4ec21c5594e8a96ed1a5c633332ddaa",
+    "scientific_manifest": "f2ec2a9d35562cd9d44fae136bf1c0c340386a7022343ac5b9b9f9f6e25b93b9",
+    "stream": "06c62f0ad918712536e5269b8ad110b16f8a9d9f288b59fa045e7efd768603e7"
+  },
+  "reanalysis": {
+    "manifest": "3f8857f2caa25b176db37782696d01ec8a9f428cfc415e3dcd04ca60a9343c9d",
+    "scientific_manifest": "9b69096b60f7c6263d8345a9407691dffb2fa32f9c0859ef3a62a2fc8d2f5c92",
+    "stream": "06c62f0ad918712536e5269b8ad110b16f8a9d9f288b59fa045e7efd768603e7"
+  },
+  "measure": {
+    "manifest": "ff1953debe74924e31753e95f9ed6ffdac99e073e6ae4e1460183a6670cdc457",
+    "scientific_manifest": "f406ad1e13e2ae133a1b496e5e8aee896330281186d27e867f87dc981db4b53a",
+    "stream": "8137cf3587d52b0ff712d177609e31b6166886d9c2f20a8348da8ce3369576cb"
+  },
+  "flux_axis": {
+    "manifest": "9c4b4bc2b202046edf58900d4eb8c1e7d7f3a8cfa1f7777e0ad9994aa35faa5c",
+    "scientific_manifest": "650537704271e3bd0c5f3ea78d26e444d1c86dc86e6bac352bf2f76575535327",
+    "stream": "4bab99f7aadc8a2358515e6b566957b2d8fb12abdd50cfa0ad931ae1d8184049"
+  },
+  "geometry": {
+    "manifest": "ffc716e395a9aa1f03badd4bcccbf54c7d68190873e00de69d5b97bf5ce44314",
+    "scientific_manifest": "408d61219fb00cec471fbf994e6e15f109e75c13c92e2d18db9a7bda42e3a2eb",
+    "stream": "f3d8cf3cab8c97e7f9179ebb8e9fd77280ce8d8425cb1eaffe9c48443a62b1d9"
+  },
+  "periodic": {
+    "manifest": "251bb89b421f0d405e1b35ebd02023677c2eb6d60cff6636ec233de707487238",
+    "scientific_manifest": "c860caf5bce1b8ecdc18409f4cf29ad12b1900e3a57505b0a6468a6cdd31e81c",
+    "stream": "4c360a2a852a3e019f668a3b06b1a6a5d5ec0c4dde7dcd7251863eb1c5d9a6cb"
+  },
+  "explicit_periodic": {
+    "manifest": "a177e3915f7f209b251fadf3dd5c75f6cfd42e4ff2013a39f4e6857b6a350104",
+    "scientific_manifest": "ca47773fc3cecd89ed06e7c071a787603df08945cd70b40d0b8620e6bd583ab0",
+    "stream": "8d95717f92680bfd5c746322756141f6b7150ff4641150a1bc9ad8388625b3be"
+  },
+  "dataclass": {
+    "manifest": "13f4a826cb7153146b39c3bfe1006baed5579e03856a225bd70ae39569d88cae",
+    "scientific_manifest": "dedd02029e412b44ddcd13385bcc96627ed34f5f7f786bc11ba518fe7a24e55e",
+    "stream": "06e37f6dc3e211c0693dbc5a0a90b6aff9d201ad2eb48892489f65989fa600ae"
+  },
+  "array_to_dict": {
+    "manifest": "cd02c316a476aa49b2137c80e9cb7dd436e881233dce1b03e02e4fd8eaa16899",
+    "scientific_manifest": "c9a65a78335193c50b2c4e7f8c5e667940a3fe043d81d4283655df2ee62350ab",
+    "stream": "fa5b42bb9fd92c2e0fd9a6665fa14eb4c5ae6fcfb78ad8fdee9967a8aa211666"
+  }
+}

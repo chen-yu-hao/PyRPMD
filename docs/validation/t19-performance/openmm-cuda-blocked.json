@@ -1,0 +1,173 @@
+{
+  "schema": "pyrpmd.t19.openmm.v1",
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "cpu_count": 9,
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OPENMM_CPU_THREADS": "1"
+    },
+    "versions": {
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "pyrpmd": "0.2.0",
+      "openmm": "8.6.1",
+      "lammps": "2025.7.22.4.0",
+      "mpi4py": "4.1.2",
+      "mpich": "5.0.2"
+    },
+    "nvidia_smi": null,
+    "nvidia_device_nodes": [],
+    "cpu_affinity": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "cpu_model": "unavailable",
+    "cpu_quota": "unavailable",
+    "memory_limit_bytes": "unavailable",
+    "openmm_platforms": [
+      "Reference",
+      "CPU"
+    ],
+    "gpu_driver_query": null,
+    "nvidia_smi_summary": null,
+    "cuda_toolkit_nvcc": null,
+    "nvidia_smi_cuda_version_semantics": "maximum driver-supported CUDA API, not an installed runtime/toolkit",
+    "openmm_source_revision": "b399af4725573963b46d6c1083fdcf7a37615857",
+    "source_commit": "6dc3b527531369f1f9fae7ea5f6dfa3800ef9af1",
+    "source_sha256": {
+      "benchmarks/efficiency/t19_openmm.py": "a37368bf0fa868422a15b42a8b5b7a8d51642adcccd6a11cd053f5d8a119c9e0",
+      "src/pyrpmd/potentials/openmm.py": "ef394552b4ef8014dec1f179adebd5e27ca06f032d35c574c1efa65d3a8f7e89",
+      "benchmarks/efficiency/force_engine_adapters.py": "d5d946c5712757bfe43f1fb7e4d9321b85787d04172cf3d62e7d631ea58075e3",
+      "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61"
+    }
+  },
+  "invocation": {
+    "argv": [
+      "/workspace/scratch/998803105056/PyRPMD/../.venv/bin/python",
+      "/workspace/scratch/998803105056/PyRPMD/benchmarks/efficiency/t19_openmm.py",
+      "--output",
+      "../t19-validation/openmm-cuda-blocked.json"
+    ],
+    "parsed_arguments": {
+      "device": "cuda:0",
+      "platform": null,
+      "model": "lj",
+      "beads": [
+        8,
+        32,
+        64
+      ],
+      "atoms": [
+        64,
+        512,
+        4096
+      ],
+      "workers": [
+        1,
+        4
+      ],
+      "warmup": 2,
+      "repeats": 7,
+      "rounds": 3,
+      "seed": 1903,
+      "output": "../t19-validation/openmm-cuda-blocked.json"
+    }
+  },
+  "requested_device": "cuda:0",
+  "requested_platform": "CUDA",
+  "claims_cuda_measurement": false,
+  "physical_converged": false,
+  "cases": [
+    {
+      "model": "lj",
+      "beads": 8,
+      "atoms": 64,
+      "device": "cuda:0",
+      "platform": "CUDA",
+      "status": "unmeasured",
+      "reason": "OpenMM CUDA platform is unavailable"
+    },
+    {
+      "model": "lj",
+      "beads": 32,
+      "atoms": 64,
+      "device": "cuda:0",
+      "platform": "CUDA",
+      "status": "unmeasured",
+      "reason": "OpenMM CUDA platform is unavailable"
+    },
+    {
+      "model": "lj",
+      "beads": 64,
+      "atoms": 64,
+      "device": "cuda:0",
+      "platform": "CUDA",
+      "status": "unmeasured",
+      "reason": "OpenMM CUDA platform is unavailable"
+    },
+    {
+      "model": "lj",
+      "beads": 8,
+      "atoms": 512,
+      "device": "cuda:0",
+      "platform": "CUDA",
+      "status": "unmeasured",
+      "reason": "OpenMM CUDA platform is unavailable"
+    },
+    {
+      "model": "lj",
+      "beads": 32,
+      "atoms": 512,
+      "device": "cuda:0",
+      "platform": "CUDA",
+      "status": "unmeasured",
+      "reason": "OpenMM CUDA platform is unavailable"
+    },
+    {
+      "model": "lj",
+      "beads": 64,
+      "atoms": 512,
+      "device": "cuda:0",
+      "platform": "CUDA",
+      "status": "unmeasured",
+      "reason": "OpenMM CUDA platform is unavailable"
+    },
+    {
+      "model": "lj",
+      "beads": 8,
+      "atoms": 4096,
+      "device": "cuda:0",
+      "platform": "CUDA",
+      "status": "unmeasured",
+      "reason": "OpenMM CUDA platform is unavailable"
+    },
+    {
+      "model": "lj",
+      "beads": 32,
+      "atoms": 4096,
+      "device": "cuda:0",
+      "platform": "CUDA",
+      "status": "unmeasured",
+      "reason": "OpenMM CUDA platform is unavailable"
+    },
+    {
+      "model": "lj",
+      "beads": 64,
+      "atoms": 4096,
+      "device": "cuda:0",
+      "platform": "CUDA",
+      "status": "unmeasured",
+      "reason": "OpenMM CUDA platform is unavailable"
+    }
+  ]
+}

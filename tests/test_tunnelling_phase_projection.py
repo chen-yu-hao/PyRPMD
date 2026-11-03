@@ -65,5 +65,12 @@ def test_phase_projection_keeps_degenerate_modes():
     tangent = np.linspace(-2., 3., 19)
     tangent /= np.linalg.norm(tangent)
     matrix = 2.75 * np.eye(len(tangent)) - 10. * np.outer(tangent, tangent)
+    # A backward-stable symmetric eigensolver guarantees only
+    # |error| <= c*n*eps*||H||_2. The observed error is 2-4 eps*||H||_2 and
+    # depends on the BLAS kernel (OpenBLAS Haswell/Zen differ from SkylakeX,
+    # and a Windows runner reached 3.6), so a fixed rtol of a few eps is not a
+    # property of this code. Wrongly keeping the removed mode would put
+    # 2.75 - 10 = -7.25 in the spectrum, far outside this bound.
+    bound = len(tangent) * np.finfo(float).eps * np.linalg.norm(matrix, 2)
     np.testing.assert_allclose(_phase_projected_spectrum(matrix, tangent),
-                               np.full(len(tangent) - 1, 2.75), rtol=2e-15)
+                               np.full(len(tangent) - 1, 2.75), rtol=0, atol=bound)

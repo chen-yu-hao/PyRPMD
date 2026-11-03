@@ -1,0 +1,19 @@
+{
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "machine": "x86_64",
+  "logical_cpus_reported": 9,
+  "cpu_model": "not exposed by this sandbox",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "dependencies": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "h5py": "3.16.0",
+    "pytest": "9.2.0",
+    "sphinx": "8.2.3"
+  },
+  "OMP_NUM_THREADS": 1,
+  "OPENBLAS_NUM_THREADS": 1,
+  "numerical_kernel_changes": false,
+  "timing_caution": "The final related suite ran concurrently with two full comparison suites. Test durations are validation evidence, not a speedup or performance-regression benchmark.",
+  "socket_limit": "Unix domain socket creation returns PermissionError: [Errno 1] Operation not permitted; full baseline and candidate are compared in the same environment."
+}

@@ -50,6 +50,8 @@ jobs:
           python -m pytest -q \
             tests/test_openmm_provider.py tests/test_lammps_provider.py \
             tests/test_openmm_batch_provider.py tests/test_lammps_batch_provider.py \
+            tests/test_openmm_resident.py tests/test_lammps_performance.py \
+            tests/test_t19_openmm_benchmark.py \
             tests/test_engine_subcommunicators.py \
             tests/test_trajectory_export.py tests/test_bond_constraints.py \
             tests/test_constraint_workflow_guards.py \

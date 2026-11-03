@@ -1,0 +1,40 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.2.0, pluggy-1.7.0 -- /workspace/scratch/998803105056/PyRPMD/../.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /workspace/scratch/998803105056/PyRPMD
+configfile: pyproject.toml
+collecting ... collected 31 items
+
+tests/test_openmm_provider.py::test_missing_openmm_has_actionable_error PASSED [  3%]
+tests/test_openmm_provider.py::test_openmm_input_contracts_fail_before_loading_model PASSED [  6%]
+tests/test_openmm_provider.py::test_actual_harmonic_bond_atomic_units_batch_and_reuse PASSED [  9%]
+tests/test_openmm_provider.py::test_actual_virtual_site_coordinates_and_parent_force_redistribution PASSED [ 12%]
+tests/test_openmm_provider.py::test_actual_periodic_electrostatics_forces_translation_and_cell[PME] PASSED [ 16%]
+tests/test_openmm_provider.py::test_actual_periodic_electrostatics_forces_translation_and_cell[Ewald] PASSED [ 19%]
+tests/test_openmm_provider.py::test_openmm_constraint_model_requires_matching_pyrpmd_constraints PASSED [ 22%]
+tests/test_openmm_provider.py::test_openmm_rejects_propagators_bad_particle_count_and_geometry_contracts PASSED [ 25%]
+tests/test_openmm_provider.py::test_openmm_gpu_requests_are_not_silently_routed_to_cpu PASSED [ 29%]
+tests/test_openmm_provider.py::test_bound_openmm_constraints_cannot_be_dropped_by_direct_dynamics[False] PASSED [ 32%]
+tests/test_openmm_provider.py::test_bound_openmm_constraints_cannot_be_dropped_by_direct_dynamics[True] PASSED [ 35%]
+tests/test_openmm_batch_provider.py::test_batch_configuration_is_explicit_and_strict[kwargs0] PASSED [ 38%]
+tests/test_openmm_batch_provider.py::test_batch_configuration_is_explicit_and_strict[kwargs1] PASSED [ 41%]
+tests/test_openmm_batch_provider.py::test_batch_configuration_is_explicit_and_strict[kwargs2] PASSED [ 45%]
+tests/test_openmm_batch_provider.py::test_batch_configuration_is_explicit_and_strict[kwargs3] PASSED [ 48%]
+tests/test_openmm_batch_provider.py::test_batch_configuration_is_explicit_and_strict[kwargs4] PASSED [ 51%]
+tests/test_openmm_batch_provider.py::test_batch_configuration_is_explicit_and_strict[kwargs5] PASSED [ 54%]
+tests/test_openmm_batch_provider.py::test_batch_configuration_is_explicit_and_strict[kwargs6] PASSED [ 58%]
+tests/test_openmm_batch_provider.py::test_serial_metadata_and_run_identity_inputs_are_unchanged PASSED [ 61%]
+tests/test_openmm_batch_provider.py::test_context_options_enter_manifest_and_checkpoint_fingerprints PASSED [ 64%]
+tests/test_openmm_batch_provider.py::test_context_batch_matches_analytic_energy_force_and_serial[1] PASSED [ 67%]
+tests/test_openmm_batch_provider.py::test_context_batch_matches_analytic_energy_force_and_serial[2] PASSED [ 70%]
+tests/test_openmm_batch_provider.py::test_batch_virtual_sites_have_independent_parent_gradients PASSED [ 74%]
+tests/test_openmm_batch_provider.py::test_cpu_qtip4pf_pme_batch_matches_serial_at_platform_precision PASSED [ 77%]
+tests/test_openmm_batch_provider.py::test_context_pool_recreation_resumes_rng_and_trajectory_exactly PASSED [ 80%]
+tests/test_openmm_batch_provider.py::test_context_mode_requires_declared_constraints_but_never_projects PASSED [ 83%]
+tests/test_openmm_batch_provider.py::test_factory_routes_new_execution_options PASSED [ 87%]
+tests/test_openmm_batch_provider.py::test_periodic_cell_updates_all_resident_copies_and_future_copies PASSED [ 90%]
+tests/test_openmm_batch_provider.py::test_failed_context_growth_leaves_existing_copies_usable PASSED [ 93%]
+tests/test_openmm_batch_provider.py::test_failed_cell_update_rolls_back_every_context PASSED [ 96%]
+tests/test_openmm_batch_provider.py::test_failed_parallel_frame_drains_workers_before_retry PASSED [100%]
+
+============================== 31 passed in 8.54s ==============================
