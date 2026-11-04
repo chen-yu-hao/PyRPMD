@@ -6,11 +6,12 @@ import pytest
 from pyrpmd.auxiliary import (
     AuxiliaryCompatibility,
     AuxiliaryLayout,
+    AuxiliaryPropagationCore,
     AuxiliarySplitPoint,
     validate_auxiliary_operator,
 )
 from pyrpmd.dynamics import CayleyIntegrator
-from pyrpmd.engine import ForceSplitting
+from pyrpmd.engine import AuxiliaryLayout as EngineAuxiliaryLayout, ForceSplitting
 from pyrpmd.input import InputError
 from pyrpmd.nonadiabatic import (
     DiabaticResult,
@@ -140,6 +141,29 @@ class DummyAuxiliary:
         return {"kind": "dummy", "layout": self.layout.value}
 
 
+class _AuxiliaryHolder:
+    def __init__(self, nbeads):
+        self.q = np.zeros((nbeads, 1, 3))
+        self.p = np.zeros_like(self.q)
+        self.values = np.zeros((nbeads, 3))
+        self.step = 0
+        self.time = 0.0
+
+    def copy(self):
+        result = _AuxiliaryHolder(len(self.q))
+        result.q[:] = self.q
+        result.p[:] = self.p
+        result.values[:] = self.values
+        result.step, result.time = self.step, self.time
+        return result
+
+
+class _BoundDummyAuxiliary(DummyAuxiliary):
+    def __init__(self, holder):
+        super().__init__(AuxiliaryLayout.PER_BEAD, len(holder.q))
+        self.values = holder.values
+
+
 def _focused_state(q, p=None):
     q = np.asarray(q, dtype=float)
     p = np.zeros_like(q) if p is None else np.asarray(p, dtype=float)
@@ -149,6 +173,7 @@ def _focused_state(q, p=None):
 
 
 def test_protocol_accepts_per_ring_and_per_bead_layouts():
+    assert EngineAuxiliaryLayout is AuxiliaryLayout
     validate_auxiliary_operator(
         DummyAuxiliary(AuxiliaryLayout.PER_RING, 1), nbeads=8, checkpoint=True
     )
@@ -159,6 +184,21 @@ def test_protocol_accepts_per_ring_and_per_bead_layouts():
         validate_auxiliary_operator(
             DummyAuxiliary(AuxiliaryLayout.PER_BEAD, 1), nbeads=8
         )
+
+
+def test_auxiliary_core_commits_operator_owned_arrays():
+    holder = _AuxiliaryHolder(2)
+    core = AuxiliaryPropagationCore(
+        dt=0.25,
+        nbeads=2,
+        operator_factory=_BoundDummyAuxiliary,
+        free_step=lambda q, p: None,
+        validate_state=lambda state: None,
+    )
+    core.step(holder)
+    np.testing.assert_allclose(holder.values, 0.25)
+    assert holder.step == 1
+    assert holder.time == 0.25
 
 
 def test_nrpmd_auxiliary_core_is_bitwise_legacy_equivalent_for_10000_steps():

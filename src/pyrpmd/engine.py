@@ -768,4 +768,24 @@ class _Composition:
         return state
 
 
-__all__ = ["ForceSplitting", "PropagationPlan", "normalize_thermostat", "normalize_barostat"]
+from .auxiliary import (  # noqa: E402
+    AuxiliaryCompatibility,
+    AuxiliaryLayout,
+    AuxiliaryOperator,
+    AuxiliaryPropagationCore,
+    AuxiliarySplitPoint,
+    validate_auxiliary_operator,
+)
+
+__all__ = [
+    "ForceSplitting",
+    "PropagationPlan",
+    "normalize_thermostat",
+    "normalize_barostat",
+    "AuxiliaryCompatibility",
+    "AuxiliaryLayout",
+    "AuxiliaryOperator",
+    "AuxiliaryPropagationCore",
+    "AuxiliarySplitPoint",
+    "validate_auxiliary_operator",
+]

@@ -7,8 +7,7 @@ import math
 
 import numpy as np
 
-from ._nonadiabatic_legacy import (
-    NRPMDDynamics as _LegacyNRPMDDynamics,
+from .nonadiabatic import (
     NRPMDState,
     _mint,
     validate_diabatic_result,
@@ -208,8 +207,8 @@ class _FrozenMappingPotential(Potential):
         pass
 
 
-class NRPMDDynamics(_LegacyNRPMDDynamics):
-    """Legacy-compatible NRPMD adapter using the auxiliary propagation core."""
+class _NRPMDAdapterMixin:
+    """Implementation mixed into the public class in ``nonadiabatic.py``."""
 
     checkpoint_version = 2
 
