@@ -2,7 +2,7 @@
   "included": [
     {
       "path": "README.md",
-      "bytes": 9487
+      "bytes": 9486
     },
     {
       "path": "baseline-dynamics.json",
@@ -133,7 +133,7 @@
       "bytes": 50602
     }
   ],
-  "total_bytes_excluding_inventory": 472253,
+  "total_bytes_excluding_inventory": 472252,
   "excluded": [
     "Checkpoint NPZs in /tmp/t49-legacy and /tmp/t49-legacy-fma",
     "Compiled shared libraries and standalone profiling binaries",

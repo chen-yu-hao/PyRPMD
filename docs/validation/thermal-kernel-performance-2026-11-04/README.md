@@ -2,7 +2,7 @@
 
 Date: 2026-11-04 (Europe/Berlin). Baseline: `main@801953d`; implementation branch:
 `agent/t49-thermal-kernel-performance`, based on last verified `main@cb28829`.
-A later HTTPS refresh of GitHub timed out; the branch must be refreshed before a PR.
+The final remote refresh confirmed `main@cb28829`; no additional rebase was needed.
 
 **Acceptance is incomplete: 5/6 performance gates passed.** The full
 non-campaign suite, all three native builds, the pure Python package, and
