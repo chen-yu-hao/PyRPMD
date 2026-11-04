@@ -234,15 +234,15 @@ class RingPolymerAction:
                 "potential_action_hbar": potential}
 
     def hessian_vector_product(self, path, direction):
-        """Matrix-free action-Hessian product in bead-major active coordinates.
+        """Matrix-free action-Hessian product in full Cartesian shape.
 
-        ``direction`` has the same [P,N,3] shape as the path (bohr).
-        The returned vector is [P,D_active] without allocating the dense
-        action Hessian. Requires the physical PES's exact HVP interface;
-        absent/invalid implementations fail rather than approximating.
-        This method is suitable for external iterative eigensolvers, but
-        the default instanton optimizer and Gaussian prefactor still use
-        the dense Hessian.
+        ``direction`` has the same float64 ``[P,N,3]`` shape as ``path``.
+        The returned vector has that same shape; inactive components are zero.
+        The calculation does not allocate the dense action Hessian and requires
+        the physical PES's exact HVP interface. Missing or invalid provider
+        implementations fail rather than being approximated. This method is
+        suitable for external iterative eigensolvers, while the default
+        instanton optimizer and Gaussian prefactor still use the dense Hessian.
         """
         q, mask, mass = self._validate(path)
         v = np.asarray(direction)
@@ -264,7 +264,9 @@ class RingPolymerAction:
             2 * active - np.roll(active, 1, axis=0)
             - np.roll(active, -1, axis=0)
         )
-        return np.ascontiguousarray(spring + dtau * physical[:, mask])
+        product = np.zeros_like(v)
+        product[:, mask] = spring + dtau * physical[:, mask]
+        return np.ascontiguousarray(product)
 
     def hessian(self, path):
         """Dense action Hessian in bead-major active Cartesian coordinates."""
@@ -359,381 +361,246 @@ def _phase_projected_spectrum(hessian, tangent):
     reduced -= 2*np.outer(vector[1:], product[1:])
     reduced -= 2*np.outer(product[1:], vector[1:])
     reduced += 4*float(vector @ product)*np.outer(vector[1:], vector[1:])
-    return np.linalg.eigvalsh(reduced)
+    return np.linalg.eigvalsh(0.5*(reduced+reduced.T))
 
 
-def _bofill_stationary(evaluate, hessian, x, scale, multiplicity, dimension,
-                       tolerance, max_iterations, trust_radius, refresh_interval):
-    """Damped Newton solution of stationarity equations with Bofill updates.
+def _check_stationary_result(result, action, q, mask, mass, gradient_tolerance,
+                             minimum_spread, hessian, *, require_convergence,
+                             function_evaluations, message, optimizer_diagnostics=None):
+    result = action._from_values(q, mask, mass, result.energy, result.forces)
+    active = q[:, mask]
+    gradient = result["gradient"][:, mask].ravel()
+    # Translation in imaginary time is the instanton phase/zero mode.
+    tangent = (np.roll(active, -1, axis=0)-np.roll(active, 1, axis=0)).ravel()
+    tangent_norm = float(np.linalg.norm(tangent))
+    if tangent_norm <= 1e-12:
+        raise InstantonError("collapsed instanton has no phase tangent")
+    residual = float(np.linalg.norm(hessian @ tangent) /
+                     max(np.linalg.norm(hessian) * tangent_norm, np.finfo(float).tiny))
+    spectrum = _phase_projected_spectrum(hessian, tangent)
+    scale = max(float(np.max(np.abs(spectrum))), 1.0)
+    cutoff = scale*1e-8
+    negative = int(np.count_nonzero(spectrum < -cutoff))
+    zero = int(np.count_nonzero(np.abs(spectrum) <= cutoff))
+    spread = float(np.max(np.linalg.norm(q-q.mean(axis=0), axis=(1, 2))))
+    if np.max(np.abs(gradient)) > gradient_tolerance:
+        raise InstantonError("instanton gradient exceeds the requested tolerance")
+    if spread < minimum_spread:
+        raise InstantonError("instanton collapsed to the transition state")
+    if negative != 1:
+        raise InstantonError("instanton Hessian must have one negative mode after phase projection")
+    if not np.isfinite(residual) or residual > 0.1:
+        raise InstantonError("imaginary-time phase direction is not sufficiently stationary")
+    converged = bool(result.get("converged", True))
+    if require_convergence and not converged:
+        raise InstantonError("instanton solver did not report convergence")
+    return InstantonResult(q.copy(), action.temperature_kelvin,
+                           result["action_hbar"], result["energy_hartree"],
+                           result["spring_action_hbar"], result["potential_action_hbar"],
+                           float(np.max(np.abs(gradient))), spread, negative, zero,
+                           residual, spectrum, converged, function_evaluations,
+                           str(message), hessian.copy(),
+                           dict(optimizer_diagnostics or {}))
 
-    The merit function is the squared gradient, never the action: a thermal
-    instanton is an action saddle. A scaled symmetric Hessian retains negative
-    curvature; the pseudoinverse omits only numerically unresolved directions.
-    Trust acceptance tests the actual gradient reduction against the model.
+
+def solve_instanton(potential, initial_path, masses, temperature_kelvin, *,
+                    active_mask=None, energy_reference_hartree=0.0,
+                    hessian_step_bohr=1e-4, gradient_tolerance=1e-7,
+                    minimum_spread_bohr=1e-3, max_evaluations=400,
+                    require_convergence=True, method="bofill"):
+    """Solve a folded thermal instanton and validate the full-ring stationary path.
+
+    ``method='root'`` uses SciPy's hybr root solver and is retained for small
+    exact calculations. ``method='bofill'`` is the production path: it performs
+    one exact finite-difference or provider Hessian evaluation, then uses Bofill
+    updates with a trust radius and periodic exact refreshes. The returned
+    full-ring path and Hessian are validated against the same potential. This
+    is a constrained stationary action, not a proof of rate convergence.
     """
-    statistics = {"hessian_updates": 0, "hessian_refreshes": 0,
-                  "accepted_steps": 0, "rejected_steps": 0,
-                  "iterations": 0, "history": []}
-    z = x * scale
-    g = evaluate(x) * scale**-1
-    nfev = 1
-    row_scale = scale / np.repeat(multiplicity, dimension)
-    residual = float(np.max(np.abs(g * row_scale)))
-    statistics["history"].append({"gradient_max": residual, "trust_radius_bohr": trust_radius})
-    if residual <= tolerance or max_iterations == 1:
-        statistics["termination"] = "gradient tolerance" if residual <= tolerance else "evaluation budget"
-        return x, nfev, statistics
-    h = hessian(x) / (scale[:, None]*scale[None, :])
-    radius = trust_radius
-    consecutive_rejections = 0
-    refresh_due = False
-    termination = "evaluation budget"
-    while nfev < max_iterations:
-        if refresh_due:
-            h = hessian(z / scale) / (scale[:, None]*scale[None, :])
-            statistics["hessian_refreshes"] += 1
-            refresh_due = False
-        eigenvalues, vectors = np.linalg.eigh(h)
-        cutoff = max(float(np.max(np.abs(eigenvalues))) * 1e-10, np.finfo(float).tiny)
-        usable = np.abs(eigenvalues) > cutoff
-        projection = vectors.T @ g
-        inverse = np.zeros_like(eigenvalues)
-        inverse[usable] = 1/eigenvalues[usable]
-        delta = -vectors @ (projection*inverse)
-        size = float(np.max(np.linalg.norm((delta/scale).reshape(-1, dimension), axis=1)))
-        if not np.isfinite(size):
-            raise InstantonError("nonfinite Bofill Newton step")
-        if size <= 10*np.finfo(float).eps*max(1.0, float(np.max(np.abs(z/scale)))):
-            termination = "unresolved Hessian null-space or floating-point step"
-            break
-        limited = size > radius
-        if limited:
-            delta *= radius/size
-        model_gradient = g + h @ delta
-        norm2 = float(g @ g)
-        predicted = norm2 - float(model_gradient @ model_gradient)
-        trial = z + delta
-        new_g = evaluate(trial / scale) / scale
-        nfev += 1
-        statistics["iterations"] += 1
-        actual = norm2 - float(new_g @ new_g)
-        ratio = actual/predicted if predicted > 0 else -math.inf
-        new_residual = float(np.max(np.abs(new_g * row_scale)))
-        accepted = bool(actual > 0 and ratio > 1e-4)
-        # A sub-roundoff norm change still counts if the requested physical
-        # force tolerance is reached. No solver status alone implies success.
-        accepted |= new_residual <= tolerance
-        if accepted:
-            h, updated = _bofill_update(h, delta, new_g-g)
-            statistics["hessian_updates"] += int(updated)
-            z, g, residual = trial, new_g, new_residual
-            statistics["accepted_steps"] += 1
-            consecutive_rejections = 0
-            if ratio < 0.25:
-                radius *= 0.5
-            elif ratio > 0.75 and limited:
-                radius = min(trust_radius, 2*radius)
-            statistics["history"].append({"gradient_max": residual,
-                                          "trust_radius_bohr": radius})
-            if residual <= tolerance:
-                termination = "gradient tolerance"
-                break
-            if refresh_interval and statistics["accepted_steps"] % refresh_interval == 0:
-                refresh_due = True
-        else:
-            statistics["rejected_steps"] += 1
-            consecutive_rejections += 1
-            radius *= 0.5
-            if consecutive_rejections >= 3:
-                refresh_due = True
-                consecutive_rejections = 0
-        if radius < 1e-12:
-            termination = "trust radius exhausted"
-            break
-    statistics["termination"] = termination
-    return z / scale, nfev, statistics
-
-
-def optimize_instanton(potential, masses, temperature_kelvin, initial_path, *,
-                      active_mask=None, transition_state=None,
-                      energy_reference_hartree=0.0, hessian_step_bohr=1e-4,
-                      gradient_tolerance=1e-8, max_iterations=200,
-                      minimum_spread_bohr=1e-5, raise_on_failure=True,
-                      retain_hessian=False, method="root",
-                      hessian_update_interval=0, trust_radius_bohr=0.3,
-                      phase_tolerance=0.05):
-    """Find a folded periodic stationary orbit from a noncollapsed path seed.
-
-    ``initial_path[P,N,3]`` must obey link reflection q[j]=q[P-1-j],
-    as produced by ``instanton_seed``. Bead reflection q[j]=q[P-j] is also
-    accepted, but may have an extra unstable discretized phase at small P.
-    The half-ring stationarity equations are solved with their analytic spring
-    and provider or finite-difference physical Hessian. This removes the phase freedom
-    without adding a centroid constraint that would distort asymmetric barriers.
-    A root must be noncollapsed, stationary, and have exactly one physical
-    unstable mode, with the resolved discrete phase treated as described below.
-    Optional ``transition_state`` also rejects T >= Tc.
-
-    This is a local solver: different paths can exist, and an appropriate seed,
-    bead study and independent PES validation remain necessary.  The default
-    raises on failure.  ``raise_on_failure=False`` returns diagnostics only.
-    ``method='root'`` retains the SciPy hybrid solver. ``method='bofill'`` uses
-    a mass-scaled Newton trust method with symmetric Bofill Hessian updates;
-    it solves for an action saddle, rather than minimizing the action.
-    ``trust_radius_bohr`` bounds the Euclidean displacement of each bead.
-    A physical Hessian is computed initially, on trust-model stagnation, every
-    ``hessian_update_interval`` accepted steps when nonzero, and at the final
-    path for mode diagnostics. Zero disables scheduled Hessian refreshes.
-    At finite P the imaginary-time phase curvature may be slightly negative.
-    If the raw spectrum has extra negative modes, the geometric Fourier phase
-    direction is projected out only when its relative Hessian residual is at
-    most ``phase_tolerance``. The projected spectrum must still have exactly
-    one negative mode. Raw counts and whether projection was used are retained
-    in diagnostics; ``hessian_eigenvalues`` always contains the full spectrum.
-    A single-negative path retains the legacy path-only convergence criterion;
-    the rate API independently requires a resolved phase even for that case.
-    ``max_iterations`` bounds the solver's residual-evaluation budget.
-    Both methods evaluate only the unique folded beads; the final spectrum
-    and cached Hessian still describe the entire ring. Provider call counts
-    and evaluated configurations are in ``result.optimizer_diagnostics``.
-    ``retain_hessian=True`` retains the final unweighted Cartesian action
-    Hessian for pyrpmd.low_temperature.instanton_rate, avoiding another set
-    of PES finite differences. The cache is excluded from JSON diagnostics.
-    """
-    if not isinstance(retain_hessian, (bool, np.bool_)):
-        raise ValueError("retain_hessian must be boolean")
-    if not isinstance(raise_on_failure, (bool, np.bool_)):
-        raise ValueError("raise_on_failure must be boolean")
+    q0 = coordinates(initial_path)
+    if len(q0) < 8 or len(q0) % 2:
+        raise ValueError("an instanton path requires an even number of beads >= 8")
     if method not in ("root", "bofill"):
         raise ValueError("method must be 'root' or 'bofill'")
-    if (isinstance(hessian_update_interval, (bool, np.bool_))
-            or not isinstance(hessian_update_interval, (int, np.integer))
-            or hessian_update_interval < 0):
-        raise ValueError("hessian_update_interval must be a nonnegative integer")
-    trust_radius = _positive(trust_radius_bohr, "trust_radius_bohr")
-    phase_limit = _positive(phase_tolerance, "phase_tolerance")
-    if method == "root" and (hessian_update_interval or trust_radius != 0.3):
-        raise ValueError("Hessian update and trust radius options require method='bofill'")
+    if isinstance(max_evaluations, (bool, np.bool_)) or not isinstance(max_evaluations, (int, np.integer)) or max_evaluations < 2:
+        raise ValueError("max_evaluations must be an integer >= 2")
+    gradient_tolerance = _positive(gradient_tolerance, "gradient_tolerance")
+    minimum_spread = _positive(minimum_spread_bohr, "minimum_spread_bohr")
     counted = _CountingPotential(potential)
     action = RingPolymerAction(counted, masses, temperature_kelvin,
-                              active_mask=active_mask,
-                              energy_reference_hartree=energy_reference_hartree,
-                              hessian_step_bohr=hessian_step_bohr)
-    q, mask, mass = action._validate(initial_path)
-    tolerance = _positive(gradient_tolerance, "gradient_tolerance")
-    minimum_spread = _positive(minimum_spread_bohr, "minimum_spread_bohr")
-    if isinstance(max_iterations, (bool, np.bool_)) or not isinstance(max_iterations, (int, np.integer)) or max_iterations < 1:
-        raise ValueError("max_iterations must be a positive integer")
-    p, d = len(q), len(mass)
-    if p*d > 4096:
-        raise ValueError("dense instanton Hessian is limited to 4096 active bead coordinates")
-    half = p // 2
-    mapping = np.concatenate((np.arange(half), np.arange(half - 1, -1, -1)))
-    if not np.allclose(q, q[:half][mapping], atol=1e-9, rtol=1e-9):
-        half = p // 2 + 1
-        mapping = np.concatenate((np.arange(half), np.arange(half - 2, 0, -1)))
-        if not np.allclose(q, q[:half][mapping], atol=1e-9, rtol=1e-9):
-            raise ValueError("initial_path must be folded under link or bead reflection")
-    if float(np.max(np.ptp(q[:, mask], axis=0))) <= minimum_spread:
-        raise InstantonError("initial path is collapsed; use a nonzero instanton_seed")
-    if transition_state is not None:
-        ts_geometry = coordinates(np.asarray(transition_state)[None])[0]
-        if ts_geometry.shape != q.shape[1:] or not np.allclose(ts_geometry[~mask], q[0, ~mask], rtol=0, atol=1e-12):
-            raise ValueError("transition_state inactive coordinates must match the constrained path slice")
-        tc = crossover_temperature(counted, ts_geometry, masses,
-                                   active_mask=mask, hessian_step_bohr=hessian_step_bohr)
-        if action.temperature_kelvin >= tc:
-            raise InstantonError(f"thermal instanton requires temperature below crossover ({tc:.8g} K)")
-    template = q.copy()
-    multiplicity = np.bincount(mapping, minlength=half)
-    dtau = action.beta / p
-    # Normalize each row by its multiplicity.  The equations still find exactly
-    # the same stationary point; endpoint and interior residuals are comparable.
-    def unpack(x):
-        path = template.copy()
-        path[:, mask] = x.reshape(half, d)[mapping]
-        return path
+                               active_mask=active_mask,
+                               energy_reference_hartree=energy_reference_hartree,
+                               hessian_step_bohr=hessian_step_bohr)
+    q0, mask, mass = action._validate(q0)
+    half = len(q0)//2
+    if not np.allclose(q0[half:], q0[:half][::-1], rtol=0, atol=1e-10):
+        raise ValueError("initial_path must have folded reflection symmetry")
+    shape = q0[:half, mask].shape
+    inactive = q0[0, ~mask].copy()
 
-    def evaluate_folded(x):
-        path = unpack(x)
-        unique = path[:half]
-        value = validate_result(counted.evaluate(unique), unique.shape)
-        return action._from_values(path, mask, mass, value.energy[mapping], value.forces[mapping])
+    def expand(x):
+        first = np.asarray(x).reshape(shape)
+        q = np.empty_like(q0)
+        q[:half, mask] = first
+        q[half:, mask] = first[::-1]
+        q[:, ~mask] = inactive
+        return q
 
-    def folded_gradient(x):
-        g = evaluate_folded(x)["gradient"][:, mask]
-        reduced = np.zeros((half, d))
-        np.add.at(reduced, mapping, g)
-        return reduced.ravel()
+    def folded_values(x):
+        q = expand(x)
+        value = validate_result(counted.evaluate(q[:half]), q[:half].shape)
+        energies = np.concatenate((value.energy, value.energy[::-1]))
+        forces = np.concatenate((value.forces, value.forces[::-1]))
+        return q, value, action._from_values(q, mask, mass, energies, forces)
 
-    def folded_hessian(x):
-        physical = _physical_hessians(counted, unpack(x)[:half], mask, action.hessian_step)
-        reduced = np.zeros((half, d, half, d))
-        for j in range(half):
-            reduced[j, :, j, :] += multiplicity[j]*dtau*physical[j]
-        spring = np.diag(mass/dtau)
-        for j in range(p):
-            a, b = mapping[j], mapping[(j-1) % p]
-            reduced[a, :, a, :] += spring
-            reduced[b, :, b, :] += spring
-            reduced[a, :, b, :] -= spring
-            reduced[b, :, a, :] -= spring
-        return reduced.reshape(half * d, half * d)
-
-    x0 = q[:half, mask].ravel()
     if method == "root":
-        rows = np.repeat(multiplicity, d)
-        solution = root(lambda x: folded_gradient(x)/rows, x0,
-                        jac=lambda x: folded_hessian(x)/rows[:, None], method="hybr",
-                        options={"xtol": min(tolerance, 1e-9), "maxfev": int(max_iterations)})
-        x, nfev = solution.x, int(solution.nfev)
-        diagnostics = {"hessian_updates": 0, "hessian_refreshes": max(0, int(solution.njev)-1),
-                       "termination": str(solution.message)}
-    else:
-        # Scaling includes the folded multiplicity, preserving a symmetric
-        # Hessian even for bead-reflected endpoints. Dividing mass by its mean
-        # keeps the scaled coordinates near the magnitude of Cartesian bohr.
-        scale = np.sqrt(multiplicity[:, None]*mass[None, :]/float(np.mean(mass))).ravel()
-        x, nfev, diagnostics = _bofill_stationary(
-            folded_gradient, folded_hessian, x0, scale, multiplicity, d,
-            tolerance, int(max_iterations), trust_radius, int(hessian_update_interval))
-    path = unpack(x)
-    evaluation = evaluate_folded(x)
-    physical = _physical_hessians(counted, path[:half], mask, action.hessian_step)
-    h = action._from_hessians(physical[mapping], mass, dtau)
-    if method == "root":
-        diagnostics["hessian_refreshes"] = max(
-            0, counted.statistics["physical_hessian_evaluations"]
-            - int(transition_state is not None) - 2)
-    repeated_mass = np.tile(mass, p)
-    hmw = h / np.sqrt(repeated_mass[:, None] * repeated_mass[None, :])
-    eigenvalues = np.linalg.eigvalsh(hmw)
-    # Scaling by the smallest curvature, rather than the largest spring mode,
-    # prevents large P from hiding the true unstable mode.
-    curvature_scale = max(abs(float(eigenvalues[0])), np.finfo(float).tiny)
-    mode_cutoff = curvature_scale * 1e-5
-    negative = int(np.count_nonzero(eigenvalues < -mode_cutoff))
-    near_zero = int(np.count_nonzero(np.abs(eigenvalues) <= mode_cutoff))
-    frequencies = np.fft.fftfreq(p)
-    tangent = np.fft.ifft(2j * np.pi * frequencies[:, None]
-                         * np.fft.fft(path[:, mask], axis=0), axis=0).real
-    tangent = (tangent * np.sqrt(mass)).ravel()
-    tangent_norm = float(np.linalg.norm(tangent))
-    phase_residual = (float(np.linalg.norm(hmw @ tangent)) /
-                      max(curvature_scale * tangent_norm, np.finfo(float).tiny))
-    diagnostics.update(raw_negative_modes=negative, raw_near_zero_modes=near_zero,
-                       phase_projection_applied=False,
-                       projected_negative_modes=None, projected_near_zero_modes=None,
-                       phase_tolerance=phase_limit,
-                       hessian_spectrum_scope="full_ring_including_discrete_phase")
-    if negative > 1 and tangent_norm > 1e-12 and phase_residual <= phase_limit:
-        projected = _phase_projected_spectrum(hmw, tangent)
-        negative = int(np.count_nonzero(projected < -mode_cutoff))
-        diagnostics.update(phase_projection_applied=True,
-                           projected_negative_modes=negative,
-                           projected_near_zero_modes=int(np.count_nonzero(np.abs(projected) <= mode_cutoff)))
-    spread = float(np.max(np.ptp(path[:, mask], axis=0)))
-    gradient_max = float(np.max(np.abs(evaluation["gradient"][:, mask])))
-    # A phase eigenvalue is only approximately zero on a finite primitive ring.
-    # Report its residual for P convergence; do not call it an exact zero mode.
-    converged = bool(gradient_max <= tolerance and spread > minimum_spread and negative == 1)
-    reasons = []
-    if gradient_max > tolerance:
-        reasons.append(f"stationary residual {gradient_max:.3g} exceeds tolerance")
-    if spread <= minimum_spread:
-        reasons.append("orbit collapsed")
-    if negative != 1:
-        reasons.append(f"expected one negative mode, found {negative}")
-    if diagnostics["raw_negative_modes"] > 1 and phase_residual > phase_limit:
-        reasons.append(f"imaginary-time phase residual {phase_residual:.3g} exceeds "
-                       f"phase_tolerance {phase_limit:.3g}; phase unresolved, increase beads "
-                       "and refine the orbit before classifying the additional negative modes")
-    result = InstantonResult(
-        path, action.temperature_kelvin, evaluation["action_hbar"],
-        evaluation["energy_hartree"], evaluation["spring_action_hbar"],
-        evaluation["potential_action_hbar"], gradient_max, spread, negative,
-        near_zero, phase_residual, eigenvalues, converged, nfev,
-        "; ".join(reasons) if reasons else "stationary noncollapsed first-order orbit",
-        h if retain_hessian else None,
-        dict(counted.statistics, method=method, unique_beads=half,
-             hessian_update_interval=int(hessian_update_interval),
-             trust_radius_bohr=trust_radius if method == "bofill" else None,
-             **diagnostics),
-    )
-    if not converged and raise_on_failure:
-        raise InstantonError(result.message)
+        def residual(x):
+            return folded_values(x)[2]["gradient"][:half, mask].ravel()
+        solution = root(residual, q0[:half, mask].ravel(), method="hybr",
+                        options={"maxfev": int(max_evaluations), "xtol": 1e-10})
+        q = expand(solution.x)
+        final = validate_result(counted.evaluate(q), q.shape)
+        hessian = RingPolymerAction._from_hessians(
+            _physical_hessians(counted, q, mask, action.hessian_step),
+            mass, action.beta/len(q))
+        diagnostics = {"method": "root", "exact_hessian_refreshes": 1,
+                       **counted.statistics}
+        return _check_stationary_result(final, action, q, mask, mass,
+                                        gradient_tolerance, minimum_spread, hessian,
+                                        require_convergence=require_convergence,
+                                        function_evaluations=int(solution.nfev),
+                                        message=str(solution.message),
+                                        optimizer_diagnostics=diagnostics)
+
+    q, value, assembled = folded_values(q0[:half, mask].ravel())
+    x = q0[:half, mask].ravel().copy()
+    gradient = assembled["gradient"][:half, mask].ravel()
+    full_hessian = RingPolymerAction._from_hessians(
+        _physical_hessians(counted, q, mask, action.hessian_step),
+        mass, action.beta/len(q))
+    hessian = full_hessian[:len(x), :len(x)].copy()
+    trust = min(max(float(np.linalg.norm(q0-q0.mean(axis=0)))/4, 0.02), 0.5)
+    refreshes = 1
+    accepted = 0
+    rejected = 0
+    converged = False
+    message = "maximum evaluations reached"
+    evaluations = 1
+    tiny = np.finfo(float).tiny
+    while evaluations < int(max_evaluations):
+        max_gradient = float(np.max(np.abs(gradient)))
+        if max_gradient <= gradient_tolerance:
+            converged = True
+            message = "gradient tolerance reached"
+            break
+        spectrum, vectors = np.linalg.eigh(0.5*(hessian+hessian.T))
+        floor = max(float(np.max(np.abs(spectrum)))*1e-10, 1e-10)
+        inverse = np.sign(spectrum)/np.maximum(np.abs(spectrum), floor)
+        step = -(vectors*inverse) @ (vectors.T @ gradient)
+        norm = float(np.linalg.norm(step))
+        if norm > trust:
+            step *= trust/norm
+        candidate = x + step
+        cq, cvalue, cassem = folded_values(candidate)
+        evaluations += 1
+        cgradient = cassem["gradient"][:half, mask].ravel()
+        predicted = -float(gradient @ step + 0.5*step @ hessian @ step)
+        actual = 0.5*float(gradient @ gradient-cgradient @ cgradient)
+        ratio = actual/max(abs(predicted), tiny)
+        if actual > 0 and ratio > 0.05:
+            hessian, updated = _bofill_update(hessian, step, cgradient-gradient)
+            x, q, value, assembled, gradient = candidate, cq, cvalue, cassem, cgradient
+            accepted += 1
+            trust = min(0.5, trust*(1.5 if ratio > 0.75 else 1.0))
+            if not updated or accepted % 8 == 0:
+                full_hessian = RingPolymerAction._from_hessians(
+                    _physical_hessians(counted, q, mask, action.hessian_step),
+                    mass, action.beta/len(q))
+                hessian = full_hessian[:len(x), :len(x)].copy()
+                refreshes += 1
+        else:
+            rejected += 1
+            trust = max(trust*0.25, 1e-6)
+            if rejected % 3 == 0:
+                full_hessian = RingPolymerAction._from_hessians(
+                    _physical_hessians(counted, q, mask, action.hessian_step),
+                    mass, action.beta/len(q))
+                hessian = full_hessian[:len(x), :len(x)].copy()
+                refreshes += 1
+    final = validate_result(counted.evaluate(q), q.shape)
+    hessian = RingPolymerAction._from_hessians(
+        _physical_hessians(counted, q, mask, action.hessian_step),
+        mass, action.beta/len(q))
+    refreshes += 1
+    diagnostics = {"method": "bofill", "exact_hessian_refreshes": refreshes,
+                   "accepted_steps": accepted, "rejected_steps": rejected,
+                   "final_trust_radius_bohr": trust, **counted.statistics}
+    result = _check_stationary_result(final, action, q, mask, mass,
+                                      gradient_tolerance, minimum_spread, hessian,
+                                      require_convergence=require_convergence,
+                                      function_evaluations=evaluations,
+                                      message=message,
+                                      optimizer_diagnostics=diagnostics)
+    result.converged = converged
     return result
 
 
-def instanton_rate_1d(potential, masses, temperature_kelvin, initial_path, *,
-                     active_mask, reactant_partition, normalization="dimensionless",
-                     beta_relative_step=0.01, **optimizer_options):
-    """Compute a 1D canonical steepest-descent instanton rate cross-check.
+def gaussian_rate(instanton, *, reactant_frequencies_au, reactant_energy_hartree=0.0,
+                  symmetry_factor=1.0):
+    """Multidimensional Gaussian instanton rate, with explicit assumptions.
 
-    k*Qr = sqrt[-(dE/dbeta)/(2*pi)] * exp(-S), in atomic units.
-    ``reactant_partition`` must be positive, dimensionless for a bound reactant
-    (rate in s^-1), or per bohr for a 1D scattering entrance (velocity in m/s).
-    It must use the same energy zero as ``energy_reference_hartree``.  No 3D
-    bimolecular standard-state conversion or transverse prefactor is inferred.
-
-    E=dS/dbeta is differentiated using optimized orbits at beta*(1+-h).
-    h and h/2 are both evaluated to report derivative-discretization error;
-    bead and semiclassical error are independent.  This approximation is not
-    uniform close to crossover and is not an exact quantum rate.
+    The reactant frequencies are positive angular frequencies in atomic units;
+    zero and rotational modes must already be removed. The instanton Hessian
+    is the full dimensionless S/hbar Hessian in bead-major Cartesian coordinates.
+    Exactly one negative mode is required after geometric phase projection.
+    The logarithmic formula uses the conventional thermal-instanton determinant
+    ratio and a user-supplied symmetry factor.  This is not a substitute for
+    path/bead/temperature convergence or independent physical validation.
     """
-    q = coordinates(initial_path)
-    mask, _ = _mask_and_masses(q.shape[1:], masses, active_mask)
-    if int(mask.sum()) != 1:
-        raise ValueError("instanton_rate_1d requires exactly one active Cartesian coordinate")
-    partition = _positive(reactant_partition, "reactant_partition")
-    h = _positive(beta_relative_step, "beta_relative_step")
-    if h >= 0.1:
-        raise ValueError("beta_relative_step must be smaller than 0.1")
-    if normalization not in ("dimensionless", "per_bohr"):
-        raise ValueError("normalization must be dimensionless or per_bohr")
-    if "raise_on_failure" in optimizer_options:
-        raise ValueError("rate calculation requires successful orbit optimization")
-    central = optimize_instanton(potential, masses, temperature_kelvin, q,
-                                active_mask=mask, **optimizer_options)
-    beta = 1.0 / (KB_AU * central.temperature_kelvin)
-    energies = []
-    derivatives = []
-    for step in (h, h / 2):
-        pair = []
-        for sign in (-1, 1):
-            nearby = optimize_instanton(potential, masses, central.temperature_kelvin / (1 + sign * step),
-                                       central.path_bohr, active_mask=mask, **optimizer_options)
-            pair.append(nearby.energy_hartree)
-        energies.append(pair)
-        derivatives.append((pair[1] - pair[0]) / (2 * step * beta))
-    derivative = derivatives[-1]
-    if not np.isfinite(derivative) or derivative >= 0:
-        raise InstantonError("one-dimensional instanton requires dE/dbeta < 0")
-    relative_error = abs(derivatives[1] - derivatives[0]) / abs(derivative)
-    if relative_error > 0.05:
-        raise InstantonError("period-energy derivative is not resolved; refine beta step and orbit tolerance")
-    log_prefactor = 0.5 * math.log(-derivative / (2 * np.pi))
-    log_rate = log_prefactor - central.action_hbar - math.log(partition)
-    conversion = 1 / ATOMIC_TIME_S if normalization == "dimensionless" else BOHR_M / ATOMIC_TIME_S
-    log_rate_si = log_rate + math.log(conversion)
-    if log_rate_si > math.log(np.finfo(float).max):
-        raise InstantonError("rate exceeds floating-point range; inspect partition normalization")
-    return {
-        "method": "one_dimensional_canonical_steepest_descent_instanton",
-        "temperature_kelvin": central.temperature_kelvin,
-        "rate": float(math.exp(log_rate_si)),
-        "rate_unit": "s^-1" if normalization == "dimensionless" else "m/s",
-        "log_rate_au": log_rate,
-        "log_rate_si": log_rate_si,
-        "reactant_partition": partition,
-        "reactant_partition_normalization": normalization,
-        "d_energy_d_beta_hartree2": derivative,
-        "beta_derivative_relative_difference": relative_error,
-        "beta_relative_step": h / 2,
-        "numerical_converged": central.converged,
-        "physical_converged": False,
-        "instanton": central.to_dict(),
-        "limitations": ["one active Cartesian degree of freedom",
-                        "semiclassical, nonuniform near crossover",
-                        "bead/PES/partition convergence must be checked separately"],
-    }
+    if instanton.action_hessian is None:
+        raise ValueError("instanton result does not retain its action Hessian")
+    frequencies = np.asarray(reactant_frequencies_au, dtype=float)
+    if frequencies.ndim != 1 or len(frequencies) == 0 or not np.isfinite(frequencies).all() or np.any(frequencies <= 0):
+        raise ValueError("reactant_frequencies_au must be a nonempty positive vector")
+    symmetry = _positive(symmetry_factor, "symmetry_factor")
+    reactant_energy = float(reactant_energy_hartree)
+    if not np.isfinite(reactant_energy):
+        raise ValueError("reactant_energy_hartree must be finite")
+    beta = 1.0/(KB_AU*instanton.temperature_kelvin)
+    # Reactant vibrational partition includes zero-point energy explicitly.
+    log_q = -np.sum(0.5*beta*frequencies + np.log(-np.expm1(-beta*frequencies)))
+    tangent = (np.roll(instanton.path_bohr, -1, axis=0)
+               - np.roll(instanton.path_bohr, 1, axis=0)).ravel()
+    spectrum = _phase_projected_spectrum(instanton.action_hessian, tangent)
+    scale = max(float(np.max(np.abs(spectrum))), 1.0)
+    cutoff = scale*1e-8
+    negative = spectrum[spectrum < -cutoff]
+    positive = spectrum[spectrum > cutoff]
+    if len(negative) != 1 or len(positive) != len(spectrum)-1:
+        raise InstantonError("Gaussian rate requires one negative and no unresolved fluctuation modes")
+    log_prefactor = (math.log(symmetry) - math.log(beta)
+                     + 0.5*(np.sum(np.log(beta*frequencies**2))
+                            - np.sum(np.log(positive))))
+    log_rate_au = (log_prefactor - instanton.action_hbar + beta*reactant_energy - log_q)
+    return float(np.exp(log_rate_au)/ATOMIC_TIME_S)
+
+
+def instanton_rate_1d(potential, path, mass, temperature_kelvin, *,
+                      barrier_angular_frequency, reactant_angular_frequency,
+                      symmetry_factor=1.0):
+    """Return a semiclassical one-dimensional rate in s^-1.
+
+    This is an independently testable special case. The supplied angular
+    frequencies are positive atomic units; the barrier value enters the
+    fluctuation prefactor and the reactant value the harmonic partition factor.
+    The instanton must be validated by solve_instanton before calling this.
+    """
+    if not isinstance(path, InstantonResult):
+        raise TypeError("path must be an InstantonResult")
+    barrier = _positive(barrier_angular_frequency, "barrier_angular_frequency")
+    reactant = _positive(reactant_angular_frequency, "reactant_angular_frequency")
+    symmetry = _positive(symmetry_factor, "symmetry_factor")
+    beta = 1.0/(KB_AU*temperature_kelvin)
+    q_reactant = np.exp(-0.5*beta*reactant)/(1-np.exp(-beta*reactant))
+    prefactor = symmetry/(beta*math.sqrt(2*math.pi))*math.sqrt(barrier/reactant)
+    return float(prefactor*np.exp(-path.action_hbar)/(q_reactant*ATOMIC_TIME_S))
