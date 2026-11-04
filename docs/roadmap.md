@@ -81,6 +81,13 @@ orphan: true
 
 - 取消了约 230 个排队中的 Actions 运行：载荷分支上的全部运行（包括三个带写权限的 T39 恢复工作流），以及已合并分支和已被后续提交取代的提交上的运行。只保留 `main` 当前提交和各开放分支当前提交的运行。
 - 载荷分支的提交已在本地打包备份：`agent/t30-kinetics-export` `25ac67e`、`agent/t32-scalable-instanton` `249a3b5`、`agent/t35-quantum-free-energy` `496be2f`、`agent/t39-photo-initial-lvc-gpt56` `ab48a4f`。这些远程分支以及空分支 `agent/t39-photo-initial-lvc`、`agent/t39-photo-initial-lvc-clean` 需由维护者删除。
+- 合并后 GitHub CI 发现本轮代码引入的三个测试问题，本地 MPICH 环境中没有出现，已修复：
+  - T37 和 T38 的 4 进程 MPI 测试在 Open MPI 5 的 PRRTE 启动器下因槽位不足失败。T37 使用的
+    `--oversubscribe` 对该启动器无效，T38 没有设置任何超额订阅选项。现改为由 `tests/conftest.py` 的
+    `mpi_launch` 统一构造启动命令：Open MPI 5 及以上使用 `--map-by :OVERSUBSCRIBE`，Open MPI 4 使用
+    `--oversubscribe`，MPICH 不加选项。
+  - T25a 的 `test_rp_iesh_reference.py` 中，迹的 `atol=2e-15` 在 macOS Accelerate 下偏紧，现按电子数
+    缩放为 `16*eps*nelectrons`。
 - 新增 `tools/check_workflow_policy.py`、`Workflow policy` 工作流与 `.github/CODEOWNERS`，并为缺少并发控制的 15 个工作流加入按分支取消旧运行的 `concurrency` 设置（`main` 上不取消）。CODEOWNERS 要在分支保护中开启 “Require review from Code Owners” 后才生效。
 
 ## 待办

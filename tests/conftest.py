@@ -5,6 +5,8 @@ from __future__ import annotations
 import ast
 from functools import lru_cache
 from pathlib import Path
+import re
+import subprocess
 import sys
 
 import pytest
@@ -175,3 +177,35 @@ def pytest_terminal_summary(terminalreporter, config):
         terminalreporter.write_line(
             f"campaign: omitted {len(omitted)} modules before import (-m 'not campaign')"
         )
+
+
+def mpi_launch_prefix(launcher, ranks, *, version_text=None):
+    """Return ``[launcher, <oversubscription flags>, "-n", ranks]`` for any MPI.
+
+    CI runners may expose fewer cores than the ranks a test requests. Open MPI
+    then refuses to start unless oversubscription is explicit, and the spelling
+    differs between releases: the Open MPI 5 PRRTE launcher needs the public
+    ``--map-by :OVERSUBSCRIBE`` modifier (see ``.github/workflows/tests.yml``),
+    while Open MPI 4 accepts ``--oversubscribe``. MPICH oversubscribes without
+    a flag. Rank placement never changes a test's numerical result.
+    """
+    if version_text is None:
+        try:
+            version_text = subprocess.run(
+                [str(launcher), "--version"], text=True, stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT, timeout=10, check=False,
+            ).stdout
+        except (OSError, subprocess.TimeoutExpired):
+            version_text = ""
+    command = [str(launcher)]
+    match = re.search(r"\((?:Open MPI|OpenRTE)\)\s+(\d+)", version_text)
+    if match or "Open MPI" in version_text or "OpenRTE" in version_text:
+        major = int(match.group(1)) if match else 5
+        command += ["--map-by", ":OVERSUBSCRIBE"] if major >= 5 else ["--oversubscribe"]
+    return command + ["-n", str(int(ranks))]
+
+
+@pytest.fixture
+def mpi_launch():
+    """Fixture form of :func:`mpi_launch_prefix` for tests that spawn ``mpiexec``."""
+    return mpi_launch_prefix

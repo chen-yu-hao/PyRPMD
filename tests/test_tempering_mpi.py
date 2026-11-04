@@ -57,7 +57,7 @@ def _compare_npz(left, right):
             np.testing.assert_array_equal(a[name], b[name], err_msg=name)
 
 
-def test_four_rank_mpi_matches_serial_bitwise(tmp_path):
+def test_four_rank_mpi_matches_serial_bitwise(tmp_path, mpi_launch):
     pytest.importorskip("mpi4py")
     launcher = shutil.which("mpiexec") or shutil.which("mpirun")
     if launcher is None:
@@ -74,17 +74,7 @@ def test_four_rank_mpi_matches_serial_bitwise(tmp_path):
     if hasattr(os, "geteuid") and os.geteuid() == 0:
         env.setdefault("OMPI_ALLOW_RUN_AS_ROOT", "1")
         env.setdefault("OMPI_ALLOW_RUN_AS_ROOT_CONFIRM", "1")
-    command = [launcher]
-    try:
-        version = subprocess.run(
-            [launcher, "--version"], text=True, stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT, timeout=10,
-        ).stdout
-    except (OSError, subprocess.TimeoutExpired):
-        version = ""
-    if "Open MPI" in version or "OpenRTE" in version:
-        command.append("--oversubscribe")
-    command.extend(["-n", "4", sys.executable, str(script), str(spec), str(mpi)])
+    command = mpi_launch(launcher, 4) + [sys.executable, str(script), str(spec), str(mpi)]
     completed = subprocess.run(
         command,
         text=True,
