@@ -1,0 +1,79 @@
+name: Repair PR 98 merge
+
+on:
+  push:
+    branches:
+      - feat/mace-analytic-hessian-hvp-20261103
+    paths:
+      - .github/workflows/repair-pr98-merge.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: github.repository == 'chen-yu-hao/PyRPMD'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: feat/mace-analytic-hessian-hvp-20261103
+      - name: Restore current main instanton and apply the focused HVP addition
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main:refs/remotes/origin/main
+          git show origin/main:src/pyrpmd/instanton.py > src/pyrpmd/instanton.py
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("src/pyrpmd/instanton.py")
+          text = path.read_text()
+          marker = "    def hessian(self, path):\n"
+          if text.count(marker) != 1 or "def hessian_vector_product" in text:
+              raise SystemExit("unexpected RingPolymerAction layout")
+          method = '''    def hessian_vector_product(self, path, direction):
+              """Matrix-free action-Hessian product in full Cartesian shape.
+
+              ``direction`` has the same float64 ``[P,N,3]`` shape as ``path``.
+              The returned vector has that same shape; inactive components are zero.
+              The calculation does not allocate the dense action Hessian and requires
+              the physical PES's exact HVP interface. Missing or invalid provider
+              implementations fail rather than being approximated. This method is
+              suitable for external iterative eigensolvers, while the default
+              instanton optimizer and Gaussian prefactor still use the dense Hessian.
+              """
+              q, mask, mass = self._validate(path)
+              v = np.asarray(direction)
+              if (v.dtype != np.dtype("float64") or v.shape != q.shape
+                      or not np.isfinite(v).all()):
+                  raise ValueError("direction must be finite float64 [P,N,3]")
+              if np.any(v[:, ~mask] != 0):
+                  raise ValueError("direction must vanish in inactive coordinates")
+              provider = getattr(self.potential, "hessian_vector_product", None)
+              if provider is None or not callable(provider):
+                  raise ValueError("matrix-free action Hessian requires potential.hessian_vector_product(x, v)")
+              physical = np.asarray(provider(q, np.ascontiguousarray(v)))
+              if (physical.dtype != np.dtype("float64") or physical.shape != q.shape
+                      or not np.isfinite(physical).all()):
+                  raise ValueError("potential.hessian_vector_product must return finite float64 [P,N,3]")
+              dtau = self.beta / len(q)
+              active = v[:, mask]
+              spring = mass / dtau * (
+                  2 * active - np.roll(active, 1, axis=0)
+                  - np.roll(active, -1, axis=0)
+              )
+              product = np.zeros_like(v)
+              product[:, mask] = spring + dtau * physical[:, mask]
+              return np.ascontiguousarray(product)
+
+          '''
+          path.write_text(text.replace(marker, method + marker, 1))
+          PY
+          rm .github/workflows/repair-pr98-merge.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add src/pyrpmd/instanton.py .github/workflows/repair-pr98-merge.yml
+          git commit -m "Fix PR 98 merge to retain current instanton implementation"
+          git push origin HEAD:feat/mace-analytic-hessian-hvp-20261103
