@@ -5,6 +5,7 @@ from ._nonadiabatic_legacy import (
     DiagonalPotential,
     NRPMDState,
     _mint,
+    _positive_integer,
     validate_diabatic_result,
 )
 from .nrpmd_auxiliary import (
