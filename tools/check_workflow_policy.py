@@ -139,8 +139,6 @@ def check_repository(root):
         return problems
     for path in sorted(p for p in github.rglob("*") if p.is_file()):
         relative = path.relative_to(github)
-        if "__pycache__" in relative.parts:
-            continue
         if not _github_file_allowed(relative):
             problems.append(f".github/{relative.as_posix()}: only workflows and GitHub metadata belong in .github")
             continue

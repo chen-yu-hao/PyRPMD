@@ -91,6 +91,7 @@ def test_id_token_is_allowed_only_for_the_release_workflow(tmp_path):
     "t30-payload.part00", "t32/payload-0", "workflows/nested/x.yml", "workflows/notes.txt",
     "ISSUE_TEMPLATE/payload.part00", "PULL_REQUEST_TEMPLATE/payload.zip",
     "ISSUE_TEMPLATE/nested/bug.md", "PULL_REQUEST_TEMPLATE/x.md.b64",
+    "__pycache__/payload.part00", "workflows/__pycache__/x.cpython-312.pyc",
 ])
 def test_non_metadata_files_under_github_fail(tmp_path, relative):
     path = tmp_path / ".github" / relative
