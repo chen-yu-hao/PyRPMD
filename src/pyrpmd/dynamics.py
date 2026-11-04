@@ -19,6 +19,9 @@ from .potentials.base import evaluate_checked, validate_result  # noqa: F401 (re
 from .validation import checked_integer, finite_real
 
 
+INTEGRATORS = ("cayley-bcb", "normal-mode-bab", "velocity-verlet")
+
+
 def _state_clock(step, time):
     """Validate a live clock and normalize NumPy scalars without integer wrap."""
     return (
