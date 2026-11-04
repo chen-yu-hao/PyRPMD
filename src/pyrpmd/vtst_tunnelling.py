@@ -114,22 +114,30 @@ def wkb_transmission_probability(
         local_ratio = min(max(float(mass_ratio(coordinate)), 1.0e-15), 1.0)
         return math.sqrt(2.0 * mu * local_ratio * barrier)
 
-    # Integrate each monotone PCHIP interval separately.  Gauss-Legendre
-    # nodes exclude the square-root turning points, and splitting at every
-    # interpolation knot gives a stable deterministic error estimate even
-    # when the barrier is sampled on a nonuniform MEP grid.
+    # Remove the square-root endpoint behaviour with
+    # s = left + (right-left) sin(theta)**2, theta in [0, pi/2].  Splitting
+    # the transformed interval at every PCHIP knot retains deterministic
+    # convergence on nonuniform MEP grids without sampling a turning point.
     internal = s[(s > left) & (s < right)]
-    breaks = np.concatenate(([left], internal, [right]))
+    width = right - left
+    theta_breaks = np.concatenate((
+        [0.0],
+        np.arcsin(np.sqrt((internal - left) / width)),
+        [0.5 * np.pi],
+    ))
 
     def integrate(order: int) -> float:
         nodes, weights = np.polynomial.legendre.leggauss(order)
         total = 0.0
-        for lower, upper in zip(breaks[:-1], breaks[1:]):
-            midpoint = 0.5 * (lower + upper)
-            half_width = 0.5 * (upper - lower)
-            coordinates = midpoint + half_width * nodes
+        for lower_theta, upper_theta in zip(theta_breaks[:-1], theta_breaks[1:]):
+            midpoint = 0.5 * (lower_theta + upper_theta)
+            half_width = 0.5 * (upper_theta - lower_theta)
+            theta = midpoint + half_width * nodes
+            sine = np.sin(theta)
+            coordinates = left + width * sine**2
+            jacobian = width * np.sin(2.0 * theta)
             values = np.array([integrand(float(value)) for value in coordinates])
-            total += half_width * float(np.dot(weights, values))
+            total += half_width * float(np.dot(weights, values * jacobian))
         return total
 
     coarse = integrate(16)
