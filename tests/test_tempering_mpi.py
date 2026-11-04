@@ -74,7 +74,7 @@ def test_four_rank_mpi_matches_serial_bitwise(tmp_path, mpi_launch):
     if hasattr(os, "geteuid") and os.geteuid() == 0:
         env.setdefault("OMPI_ALLOW_RUN_AS_ROOT", "1")
         env.setdefault("OMPI_ALLOW_RUN_AS_ROOT_CONFIRM", "1")
-    command = mpi_launch(launcher, 4) + [sys.executable, str(script), str(spec), str(mpi)]
+    command = mpi_launch(launcher, 4, env=env) + [sys.executable, str(script), str(spec), str(mpi)]
     completed = subprocess.run(
         command,
         text=True,

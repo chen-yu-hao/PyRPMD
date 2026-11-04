@@ -60,7 +60,7 @@ def test_real_mpi_shared_walker_history_and_trajectory_are_bitwise_serial(
     environment.update(OMPI_ALLOW_RUN_AS_ROOT="1",
                        OMPI_ALLOW_RUN_AS_ROOT_CONFIRM="1")
     completed = subprocess.run(
-        mpi_launch(launcher, walkers) + [sys.executable, str(helper),
+        mpi_launch(launcher, walkers, env=environment) + [sys.executable, str(helper),
                                          str(distributed), str(walkers)],
         text=True, capture_output=True, env=environment, timeout=120)
     assert completed.returncode == 0, completed.stdout + "\n" + completed.stderr
