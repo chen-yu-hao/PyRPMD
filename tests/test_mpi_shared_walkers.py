@@ -43,7 +43,7 @@ def read(path, name, kind):
 
 @pytest.mark.parametrize("walkers", [2, 4])
 def test_real_mpi_shared_walker_history_and_trajectory_are_bitwise_serial(
-        tmp_path, walkers):
+        tmp_path, walkers, mpi_launch):
     pytest.importorskip("mpi4py")
     launcher = shutil.which("mpiexec") or shutil.which("mpirun")
     if launcher is None:
@@ -60,8 +60,8 @@ def test_real_mpi_shared_walker_history_and_trajectory_are_bitwise_serial(
     environment.update(OMPI_ALLOW_RUN_AS_ROOT="1",
                        OMPI_ALLOW_RUN_AS_ROOT_CONFIRM="1")
     completed = subprocess.run(
-        [launcher, "-n", str(walkers), sys.executable, str(helper),
-         str(distributed), str(walkers)],
+        mpi_launch(launcher, walkers, env=environment) + [sys.executable, str(helper),
+                                         str(distributed), str(walkers)],
         text=True, capture_output=True, env=environment, timeout=120)
     assert completed.returncode == 0, completed.stdout + "\n" + completed.stderr
     reference = read(serial, "shared_metadynamics.npz",

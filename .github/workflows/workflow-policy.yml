@@ -1,0 +1,28 @@
+name: Workflow policy
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  # main runs get a unique group: GitHub keeps only one pending run per group,
+  # so a shared group would cancel a queued main commit's validation.
+  group: ${{ github.workflow }}-${{ github.ref == 'refs/heads/main' && github.run_id || github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  policy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'pyyaml>=6'
+      - name: Reject payloads and write-capable workflows (rule G13)
+        run: python tools/check_workflow_policy.py

@@ -72,7 +72,9 @@ SHARC/Newton-X、LAMMPS/CP2K/Tinker-HP、PLUMED/infretis、TorchSim 的比较）
 
 - **G13 只提交可审查的源码。** 不提交编码载荷（base64、base85、压缩包）；不新增或修改带
   `contents: write` 权限的工作流；不在 CI 中生成、解码或推送代码；不以他人身份提交。
-  环境无法直接推送时，停止工作并报告，不要绕过。
+  环境无法直接推送时，停止工作并报告，不要绕过。`tools/check_workflow_policy.py`（由
+  “Workflow policy” 工作流和 `tests/test_workflow_policy.py` 运行）会自动拒绝 `.github/` 中的
+  非元数据文件、写权限请求，以及推送、解码或动态执行代码的工作流步骤。
 - **G14 先跑测试再提交。** 本地无法克隆仓库、安装包或运行测试时，不要只凭 `py_compile`
   或 CI 排队就提交 PR；应停止并报告环境问题。推送的代码必须与实际测试过的代码完全一致：
   不要事后“重建”或“物化”源码。

@@ -52,7 +52,10 @@ def test_fock_exponential_and_one_particle_density_match_slater_exactly(norbital
     density = space.one_particle_density(exact[:, None]*exact.conj()[None, :])
     np.testing.assert_allclose(density, propagated@propagated.conj().T, atol=2e-15, rtol=0.)
     assert np.max(abs(density.imag)) > .01  # Detect transposed-density conventions.
-    np.testing.assert_allclose(np.trace(density), nelectrons, atol=2e-15, rtol=0.)
+    # A trace sums nelectrons-sized diagonal terms; scale the roundoff bound by
+    # the magnitude (Accelerate on macOS differs from OpenBLAS by a few ulp).
+    np.testing.assert_allclose(np.trace(density), nelectrons,
+                               atol=16*np.finfo(float).eps*nelectrons, rtol=0.)
 
 
 @pytest.mark.parametrize("beads", [1, 8])
