@@ -1,0 +1,27 @@
+{
+  "dt": "0.001 fs",
+  "restart_step": 10,
+  "total_steps": 26,
+  "mpi": {
+    "uninterrupted": {
+      "time_hex": "0x1.132b0de79a749p+0",
+      "q_sha256": "fe760b60f3e27d58375524603218e3b1fc7896c6331225a3e93709dfa1c532e1",
+      "p_sha256": "6576feb045f4564809b68b81f40a9921000c675a75968345dbcdd2d2bd3df8d3",
+      "rng": "[{\"bit_generator\": \"PCG64\", \"state\": {\"state\": 75448766541304564713784820881467273475, \"inc\": 274053665417623412021264854236960812827}, \"has_uint32\": 0, \"uinteger\": 0}, {\"bit_generator\": \"PCG64\", \"state\": {\"state\": 116168878027187376373709312037339625161, \"inc\": 154904448900597425440902643203735237589}, \"has_uint32\": 0, \"uinteger\": 0}]"
+    },
+    "baseline_resume": {
+      "time_hex": "0x1.132b0de79a748p+0",
+      "q_sha256": "fe760b60f3e27d58375524603218e3b1fc7896c6331225a3e93709dfa1c532e1",
+      "p_sha256": "6576feb045f4564809b68b81f40a9921000c675a75968345dbcdd2d2bd3df8d3",
+      "rng": "[{\"bit_generator\": \"PCG64\", \"state\": {\"state\": 75448766541304564713784820881467273475, \"inc\": 274053665417623412021264854236960812827}, \"has_uint32\": 0, \"uinteger\": 0}, {\"bit_generator\": \"PCG64\", \"state\": {\"state\": 116168878027187376373709312037339625161, \"inc\": 154904448900597425440902643203735237589}, \"has_uint32\": 0, \"uinteger\": 0}]"
+    },
+    "t48_resume": {
+      "time_hex": "0x1.132b0de79a748p+0",
+      "q_sha256": "fe760b60f3e27d58375524603218e3b1fc7896c6331225a3e93709dfa1c532e1",
+      "p_sha256": "6576feb045f4564809b68b81f40a9921000c675a75968345dbcdd2d2bd3df8d3",
+      "rng": "[{\"bit_generator\": \"PCG64\", \"state\": {\"state\": 75448766541304564713784820881467273475, \"inc\": 274053665417623412021264854236960812827}, \"has_uint32\": 0, \"uinteger\": 0}, {\"bit_generator\": \"PCG64\", \"state\": {\"state\": 116168878027187376373709312037339625161, \"inc\": 154904448900597425440902643203735237589}, \"has_uint32\": 0, \"uinteger\": 0}]"
+    }
+  },
+  "async_error_both_versions": "shared metadynamics hills must increase by (step, walker) with consistent times",
+  "interpretation": "Existing 801953d distributed restart reconstructs state.time as elapsed * dt, which can differ from accumulated saved time. Unchanged by T48. Acceptance snapshots for distributed cases use step 8 (nonempty history and equal saved/reconstructed clocks)."
+}

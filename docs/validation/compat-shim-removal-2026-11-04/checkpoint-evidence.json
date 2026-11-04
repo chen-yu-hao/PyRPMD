@@ -1,0 +1,3456 @@
+{
+  "baseline": "801953dc9e2ca620f36069eb4551c41c529c432a",
+  "generator_sha256": "a3546c325ab70c2ac68652a5863e1297baabc6c968794d897f8e20b564b3031f",
+  "accepted": 32,
+  "expected": 32,
+  "array_comparisons": 1333,
+  "output_files": 206,
+  "comparison": "dtype, shape and tobytes equality; output-directory strings normalized only in textual metadata; NPZ integrity envelopes verified by loader, excluded from content comparison",
+  "cases": [
+    {
+      "case": "example-metadynamics__grid_fixed_slab",
+      "prefix_sha256": {
+        "checkpoints/metadynamics_0000.npz": "3614cb30ba2bc9476e786ef357e16d2f1fcc3de49a8d8bf507e9ea202b277049"
+      },
+      "reference_sha256": {
+        "checkpoints/metadynamics_0000.npz": "4556ca4cd1bd98945efdfe5b5265e1ef24a92d84d3f52b829e8223e166aebe16",
+        "fes.csv": "9717d1e42d5d5403d2d1297b85cbd143b4f293d235665e040ea8a370968cfa18",
+        "fes.json": "912d748b4aaff0f903da3b78f8fb6c7437745723a2e143952f03ecf22bad37f1",
+        "fes.npz": "4807b468632b8c12f80e04b1676b2be87d7293a4c7f44ca2fdec913ca7e9a744",
+        "replicas/0000/HILLS.csv": "e7bf7194149600a1a351c7eacb9107857429906049acf54a7ac984ad7f572ac5",
+        "summary.json": "912d748b4aaff0f903da3b78f8fb6c7437745723a2e143952f03ecf22bad37f1"
+      },
+      "bitwise_equal": true,
+      "arrays": 39,
+      "files": 6,
+      "resumed_sha256": {
+        "checkpoints/metadynamics_0000.npz": "4556ca4cd1bd98945efdfe5b5265e1ef24a92d84d3f52b829e8223e166aebe16",
+        "fes.csv": "9717d1e42d5d5403d2d1297b85cbd143b4f293d235665e040ea8a370968cfa18",
+        "fes.json": "46168ad41a5b687e790590ad29bf23037e5eb4935af2b265355721e5c0816ff6",
+        "fes.npz": "926fac0a8676f6c04623e9da3b2c56465d273c44ab2b09dc9f32ee92f4c8b92c",
+        "replicas/0000/HILLS.csv": "e7bf7194149600a1a351c7eacb9107857429906049acf54a7ac984ad7f572ac5",
+        "summary.json": "46168ad41a5b687e790590ad29bf23037e5eb4935af2b265355721e5c0816ff6"
+      },
+      "input": {
+        "task": "metadynamics",
+        "temperature": "300 K",
+        "beads": 4,
+        "seed": 173,
+        "system": {
+          "symbols": [
+            "Cu",
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.4,
+              0.2,
+              0.8
+            ]
+          ],
+          "geometry_unit": "bohr",
+          "cell": [
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              4.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              12.0
+            ]
+          ],
+          "cell_unit": "bohr",
+          "pbc": [
+            true,
+            true,
+            false
+          ],
+          "fixed_atoms": [
+            0
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "periodic_cosine",
+          "params": {
+            "height": [
+              0.005,
+              0.005,
+              0.0
+            ],
+            "confinement": 0.01
+          }
+        },
+        "dynamics": {
+          "timestep": "0.1 fs"
+        },
+        "sampling": {
+          "equilibration_steps": 100,
+          "production_steps": 400,
+          "sample_interval": 5,
+          "andersen_interval": 20,
+          "replicas": 1
+        },
+        "cvs": [
+          {
+            "name": "lateral",
+            "kind": "surface_lateral",
+            "atoms": [
+              1
+            ],
+            "reference_atoms": [
+              0
+            ],
+            "direction": [
+              1.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "height",
+            "kind": "surface_height",
+            "atoms": [
+              1
+            ],
+            "reference_atoms": [
+              0
+            ]
+          }
+        ],
+        "metadynamics": {
+          "cvs": [
+            "lateral",
+            "height"
+          ],
+          "mode": "well_tempered",
+          "sigma": [
+            "0.25 bohr",
+            "0.25 bohr"
+          ],
+          "height": "0.02 kcal/mol",
+          "pace": 20,
+          "bias_factor": 8.0,
+          "grid": {
+            "ranges": [
+              [
+                "-4 bohr",
+                "4 bohr"
+              ],
+              [
+                "-3 bohr",
+                "3 bohr"
+              ]
+            ],
+            "bins": [
+              160,
+              120
+            ]
+          }
+        },
+        "analysis": {
+          "method": "bias_estimate",
+          "bins": [
+            20,
+            16
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "directory": "runs/meta_grid_fixed_slab",
+          "checkpoint_steps": 100
+        }
+      },
+      "fingerprint": "895e1674eb8b40e56f7e5b7fe7dd28a4f1b5689bdc8eef380b28b93cbe4c65c3"
+    },
+    {
+      "case": "example-metadynamics__multiple_walkers",
+      "prefix_sha256": {
+        "checkpoints/metadynamics_walkers.npz": "ef6918bf73bde15a060c4b61877394e048baf52d9f269ded00af4a6dbd3b949c"
+      },
+      "reference_sha256": {
+        "HILLS.csv": "5e8e8ca87115830dcd1fafcf711ee2f1120fa5f069726dcd8f8fbf66f1bd501f",
+        "checkpoints/metadynamics_walkers.npz": "ede60754dbdf90bd82389647ede6be2a52e677a2b1e0a781c242e2d44d126331",
+        "fes.csv": "5875e3e86608c5856ba3b8e1aa35cfba772953762f8dd3b4f3589aaf84e24103",
+        "fes.json": "daaa32e2a82b49edf99f1a54a1a258a96d20b3b6efa6c231577a197fc5d5738a",
+        "fes.npz": "e2cf50b09f86ba41be19ae8999de00132ece5b7879eb68e02efba77dfe67a203",
+        "summary.json": "daaa32e2a82b49edf99f1a54a1a258a96d20b3b6efa6c231577a197fc5d5738a"
+      },
+      "bitwise_equal": true,
+      "arrays": 37,
+      "files": 6,
+      "resumed_sha256": {
+        "HILLS.csv": "5e8e8ca87115830dcd1fafcf711ee2f1120fa5f069726dcd8f8fbf66f1bd501f",
+        "checkpoints/metadynamics_walkers.npz": "ede60754dbdf90bd82389647ede6be2a52e677a2b1e0a781c242e2d44d126331",
+        "fes.csv": "5875e3e86608c5856ba3b8e1aa35cfba772953762f8dd3b4f3589aaf84e24103",
+        "fes.json": "0946bf043008aa1d1c7a4dc6f70fd06071a4118ced409aafb9f641f3b4dcca5f",
+        "fes.npz": "8c8138601bbe657f1bf6c423f4858d7d686d84b6feeaf0131643d1a9b5e0dc60",
+        "summary.json": "0946bf043008aa1d1c7a4dc6f70fd06071a4118ced409aafb9f641f3b4dcca5f"
+      },
+      "input": {
+        "task": "fes",
+        "temperature": "300 K",
+        "beads": 4,
+        "seed": 719,
+        "fes": {
+          "method": "metadynamics",
+          "sampling": {
+            "equilibration_steps": 100,
+            "production_steps": 600,
+            "sample_interval": 5,
+            "andersen_interval": 40,
+            "replicas": 3
+          },
+          "cvs": [
+            {
+              "name": "x",
+              "kind": "cartesian",
+              "atom": 0,
+              "axis": "x",
+              "estimator": "centroid"
+            },
+            {
+              "name": "y",
+              "kind": "cartesian",
+              "atom": 0,
+              "axis": "y",
+              "estimator": "bead_average"
+            }
+          ],
+          "metadynamics": {
+            "cvs": [
+              "x",
+              "y"
+            ],
+            "mode": "well_tempered",
+            "sigma": [
+              "0.25 bohr",
+              "0.25 bohr"
+            ],
+            "height": "0.02 kcal/mol",
+            "pace": 20,
+            "bias_factor": 8.0,
+            "multiple_walkers": true,
+            "block_steps": 100
+          },
+          "analysis": {
+            "method": "bias_estimate",
+            "bins": [
+              24,
+              24
+            ],
+            "ranges": [
+              [
+                -2.0,
+                2.0
+              ],
+              [
+                -2.0,
+                2.0
+              ]
+            ],
+            "bootstrap": 0
+          }
+        },
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.1 fs"
+        },
+        "output": {
+          "directory": "runs/meta_multiple_walkers",
+          "checkpoint_steps": 100
+        }
+      },
+      "fingerprint": "e0a6a000e887f0d65edd75d2b6d35b9ab1b866a302d5de347612bbaa81bc4843"
+    },
+    {
+      "case": "example-metadynamics__standard",
+      "prefix_sha256": {
+        "checkpoints/metadynamics_0000.npz": "c0f927723761a98a98b2bd8bcfa698a34da90a31780dfec6739c6c6b83e4364c"
+      },
+      "reference_sha256": {
+        "checkpoints/metadynamics_0000.npz": "3dcc13ea8b6baefefa9b2369e90019b821813dfad6a2b4ea16f7bdd6c79a6f41",
+        "fes.csv": "678ffeb245728b282961d799428a87b7c995289c30be23a0424f62cc5d41bbc9",
+        "fes.json": "6e9c20fd7aadab2959ade7c7dd39ffe459660d93ceee1729fecfa0b3061c89ef",
+        "fes.npz": "bbf13af4dcf8c57817539b7e97d8b1f25cfb5d94c43364a4412b0216742626fb",
+        "replicas/0000/HILLS.csv": "ea15fc9d95a1305b25c27a4c76728556d4ed026413a62819410f0c7da1245a57",
+        "summary.json": "6e9c20fd7aadab2959ade7c7dd39ffe459660d93ceee1729fecfa0b3061c89ef"
+      },
+      "bitwise_equal": true,
+      "arrays": 36,
+      "files": 6,
+      "resumed_sha256": {
+        "checkpoints/metadynamics_0000.npz": "3dcc13ea8b6baefefa9b2369e90019b821813dfad6a2b4ea16f7bdd6c79a6f41",
+        "fes.csv": "678ffeb245728b282961d799428a87b7c995289c30be23a0424f62cc5d41bbc9",
+        "fes.json": "ee2f064ce8e7f0c42f6f08633706b5a08ad6dc63aa05b3aa7fa28d1639e15f33",
+        "fes.npz": "1bb5322e534856d4c85acee0ed4cd5e1825d3a7833fba8e01123c223c579fcdc",
+        "replicas/0000/HILLS.csv": "ea15fc9d95a1305b25c27a4c76728556d4ed026413a62819410f0c7da1245a57",
+        "summary.json": "ee2f064ce8e7f0c42f6f08633706b5a08ad6dc63aa05b3aa7fa28d1639e15f33"
+      },
+      "input": {
+        "task": "metadynamics",
+        "temperature": "300 K",
+        "beads": 4,
+        "seed": 711,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "double_well",
+          "params": {
+            "height": 0.001,
+            "width": 1.0,
+            "confinement": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.1 fs",
+          "loop_backend": "auto"
+        },
+        "sampling": {
+          "equilibration_steps": 100,
+          "production_steps": 1000,
+          "sample_interval": 5,
+          "andersen_interval": 40
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x",
+            "estimator": "centroid",
+            "unit": "bohr"
+          }
+        ],
+        "metadynamics": {
+          "cvs": [
+            "x"
+          ],
+          "mode": "standard",
+          "sigma": [
+            "0.2 bohr"
+          ],
+          "height": "0.02 kcal/mol",
+          "pace": 20
+        },
+        "analysis": {
+          "method": "bias_estimate",
+          "bins": 40,
+          "ranges": [
+            [
+              -2.0,
+              2.0
+            ]
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "directory": "runs/meta_standard",
+          "checkpoint_steps": 100
+        }
+      },
+      "fingerprint": "0b3c77058cfb2b676f177f5d890df8d18f451f8779fdfa98048c2723d5de6ec9"
+    },
+    {
+      "case": "example-metadynamics__well_tempered_2d",
+      "prefix_sha256": {
+        "checkpoints/metadynamics_0000.npz": "432fb389c4de5b9066f1f55c514df4f472f1771faa3989b45f17f7ff467fdd39",
+        "checkpoints/metadynamics_0001.npz": "0475a7f963ca859001f12187dbe15703b7f6404a201a8544b18246b040e32655"
+      },
+      "reference_sha256": {
+        "checkpoints/metadynamics_0000.npz": "4f06e4322913d5790554a2f275bc5d4e61bc1d913718802cff1824bcc9c4990b",
+        "checkpoints/metadynamics_0001.npz": "ab0dbf28b75dfb9835941335bdb94d92afa6df3d3348ca79aa8439002a4651c1",
+        "fes.csv": "8dde5b15fb317fd2da5dc4d06a23d42cd99199c3663f98b397979eafd75ec1d8",
+        "fes.json": "e7c5eaa260407504493c371fc8b038364d3c02639b06c8d5b3798aafaf09af55",
+        "fes.npz": "112db995eaceab261a90d6cab79d28dffdd409de7cd6c22162bbf99f5d8834eb",
+        "replicas/0000/HILLS.csv": "22e24d8cae25cae14afb5164474953a9484493c7ba7797303530a65590f8d6d5",
+        "replicas/0001/HILLS.csv": "0e1a28f85e2adf9e7cbef88b801b131f91cecee2738cce2b615953aa0a0c22c1",
+        "summary.json": "e7c5eaa260407504493c371fc8b038364d3c02639b06c8d5b3798aafaf09af55"
+      },
+      "bitwise_equal": true,
+      "arrays": 51,
+      "files": 8,
+      "resumed_sha256": {
+        "checkpoints/metadynamics_0000.npz": "4f06e4322913d5790554a2f275bc5d4e61bc1d913718802cff1824bcc9c4990b",
+        "checkpoints/metadynamics_0001.npz": "ab0dbf28b75dfb9835941335bdb94d92afa6df3d3348ca79aa8439002a4651c1",
+        "fes.csv": "8dde5b15fb317fd2da5dc4d06a23d42cd99199c3663f98b397979eafd75ec1d8",
+        "fes.json": "810c5f147f5421ca22a1d22c41b8b4cbc80f245ef19c5cb013273f2742425ce6",
+        "fes.npz": "694aee8ee497e7fbc96bf16f2d56770e25b339a5bd974c001fed5f0c212ea1db",
+        "replicas/0000/HILLS.csv": "22e24d8cae25cae14afb5164474953a9484493c7ba7797303530a65590f8d6d5",
+        "replicas/0001/HILLS.csv": "0e1a28f85e2adf9e7cbef88b801b131f91cecee2738cce2b615953aa0a0c22c1",
+        "summary.json": "810c5f147f5421ca22a1d22c41b8b4cbc80f245ef19c5cb013273f2742425ce6"
+      },
+      "input": {
+        "task": "metadynamics",
+        "temperature": "300 K",
+        "beads": 4,
+        "seed": 719,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.1 fs"
+        },
+        "sampling": {
+          "equilibration_steps": 100,
+          "production_steps": 600,
+          "sample_interval": 5,
+          "andersen_interval": 40,
+          "replicas": 2
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x",
+            "estimator": "centroid"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y",
+            "estimator": "bead_average"
+          }
+        ],
+        "metadynamics": {
+          "cvs": [
+            "x",
+            "y"
+          ],
+          "mode": "well_tempered",
+          "sigma": [
+            "0.25 bohr",
+            "0.25 bohr"
+          ],
+          "height": "0.02 kcal/mol",
+          "pace": 20,
+          "bias_factor": 8.0
+        },
+        "analysis": {
+          "method": "bias_estimate",
+          "bins": [
+            24,
+            24
+          ],
+          "ranges": [
+            [
+              -2.0,
+              2.0
+            ],
+            [
+              -2.0,
+              2.0
+            ]
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "directory": "runs/meta_well_tempered_2d",
+          "checkpoint_steps": 100
+        }
+      },
+      "fingerprint": "d21375b76a64df33f7345f20c5f98a22b737b7eac068a0e8d209eaf80638bc40"
+    },
+    {
+      "case": "example-opes__adaptive_explore",
+      "prefix_sha256": {
+        "checkpoints/opes_0000.npz": "3324d96fc4139f576d014b93c83c82f631f5aadfd14c0ae3c7f75ce3de6393ce",
+        "checkpoints/opes_0001.npz": "c9b3692f0a5599455e4636820a9c7feea32d293f0cfc4adfd769597f7697707f"
+      },
+      "reference_sha256": {
+        "checkpoints/opes_0000.npz": "c6a25fc750add4ea91743eb27dbd9d12e4979fa730f4d636d8fab94cb2239892",
+        "checkpoints/opes_0001.npz": "f0cd72a8055df8456b7381608831053196028cd7a99b9ad781bba3ac1badb142",
+        "fes.csv": "5323c313a4bb8f1079b8b08ff36e1ba2d566cb5b153d275b4ec2980d1a5894f2",
+        "fes.json": "18a1bff3711d8a5b435eabcf958be9620e9511ca5e21c89a09db105270e6eed4",
+        "fes.npz": "3cb14d50a1c843d0ef5cdc07a83cbc335cd483731f3a2bd00009153fa8a55431",
+        "summary.json": "18a1bff3711d8a5b435eabcf958be9620e9511ca5e21c89a09db105270e6eed4"
+      },
+      "bitwise_equal": true,
+      "arrays": 48,
+      "files": 6,
+      "resumed_sha256": {
+        "checkpoints/opes_0000.npz": "c6a25fc750add4ea91743eb27dbd9d12e4979fa730f4d636d8fab94cb2239892",
+        "checkpoints/opes_0001.npz": "f0cd72a8055df8456b7381608831053196028cd7a99b9ad781bba3ac1badb142",
+        "fes.csv": "5323c313a4bb8f1079b8b08ff36e1ba2d566cb5b153d275b4ec2980d1a5894f2",
+        "fes.json": "06a1f0eaf15a8b953a31397b2eef8a3ecdcaa13cff834b1e306d45a6c66e9530",
+        "fes.npz": "c876644581b727fdca70bcd185b85bd00eeadf617b3a56ce7e03d101073a8a10",
+        "summary.json": "06a1f0eaf15a8b953a31397b2eef8a3ecdcaa13cff834b1e306d45a6c66e9530"
+      },
+      "input": {
+        "task": "opes",
+        "temperature": "300 K",
+        "beads": 4,
+        "seed": 811,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.1 fs"
+        },
+        "sampling": {
+          "equilibration_steps": 100,
+          "production_steps": 1000,
+          "sample_interval": 5,
+          "andersen_interval": 40,
+          "replicas": 2
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "opes": {
+          "cvs": [
+            "x",
+            "y"
+          ],
+          "mode": "explore",
+          "sigma": [
+            "0.3 bohr",
+            "0.3 bohr"
+          ],
+          "adaptive_sigma": true,
+          "sigma_min": [
+            "0.03 bohr",
+            "0.03 bohr"
+          ],
+          "barrier": "2 kcal/mol",
+          "bias_factor": 8.0,
+          "pace": 20,
+          "freeze_after_steps": 400,
+          "freeze_equilibration_steps": 100
+        },
+        "analysis": {
+          "method": "reweighted_histogram",
+          "bins": [
+            12,
+            12
+          ],
+          "ranges": [
+            [
+              -2.0,
+              2.0
+            ],
+            [
+              -2.0,
+              2.0
+            ]
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "directory": "runs/opes_adaptive_explore",
+          "checkpoint_steps": 100
+        }
+      },
+      "fingerprint": "2dabfe8d44082c2d3d6558e09321677de780a860484fa8250ef830aa6a9e9f91"
+    },
+    {
+      "case": "example-opes__harmonic_2d",
+      "prefix_sha256": {
+        "checkpoints/opes_0000.npz": "537d8240c47d7032ff2686c0f3861dfc0d6074fd88ae7254e2ff325ff0a55b5b",
+        "checkpoints/opes_0001.npz": "20d3be480f7cb0adec90cc28cf1bb342feb06e2a7a7bd883cb0c72cfc28cf352"
+      },
+      "reference_sha256": {
+        "checkpoints/opes_0000.npz": "c0ebe638f8f9f62fc3db90aeebec0b4c56220ae7c00f49ee8837d267bd81e858",
+        "checkpoints/opes_0001.npz": "a331aa7ce6dbcb02c3dde185900f8472185529f07ae17f5b9337a32f51504767",
+        "fes.csv": "73171d52e91b6627e354a47b7211a2901ead6bf32c5f68cddc00e5404cd2259f",
+        "fes.json": "9c41c0f25570259b338bba21893bcb299de2a722150cbc84fbd4ca6b76d82c1c",
+        "fes.npz": "aca41b79e8133f48a5561041a0abd0a56a29bf77e023ee79a039cee93167f525",
+        "summary.json": "9c41c0f25570259b338bba21893bcb299de2a722150cbc84fbd4ca6b76d82c1c"
+      },
+      "bitwise_equal": true,
+      "arrays": 48,
+      "files": 6,
+      "resumed_sha256": {
+        "checkpoints/opes_0000.npz": "c0ebe638f8f9f62fc3db90aeebec0b4c56220ae7c00f49ee8837d267bd81e858",
+        "checkpoints/opes_0001.npz": "a331aa7ce6dbcb02c3dde185900f8472185529f07ae17f5b9337a32f51504767",
+        "fes.csv": "73171d52e91b6627e354a47b7211a2901ead6bf32c5f68cddc00e5404cd2259f",
+        "fes.json": "2a1b93cb22f7aa6a6e76bb6f57921899f9bd55e0bb55f4856d2f2e5773ac476f",
+        "fes.npz": "6c56c3d7992dedb2910e6878de5fa0a728027065a3d507b298c997e7218f7d6b",
+        "summary.json": "2a1b93cb22f7aa6a6e76bb6f57921899f9bd55e0bb55f4856d2f2e5773ac476f"
+      },
+      "input": {
+        "task": "opes",
+        "temperature": "300 K",
+        "beads": 4,
+        "seed": 811,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.1 fs"
+        },
+        "sampling": {
+          "equilibration_steps": 100,
+          "production_steps": 1000,
+          "sample_interval": 5,
+          "andersen_interval": 40,
+          "replicas": 2
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x",
+            "estimator": "centroid"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y",
+            "estimator": "centroid"
+          }
+        ],
+        "opes": {
+          "cvs": [
+            "x",
+            "y"
+          ],
+          "sigma": [
+            "0.3 bohr",
+            "0.3 bohr"
+          ],
+          "barrier": "2 kcal/mol",
+          "bias_factor": 8.0,
+          "pace": 20,
+          "freeze_after_steps": 400,
+          "freeze_equilibration_steps": 100
+        },
+        "analysis": {
+          "method": "reweighted_histogram",
+          "bins": [
+            12,
+            12
+          ],
+          "ranges": [
+            [
+              -2.0,
+              2.0
+            ],
+            [
+              -2.0,
+              2.0
+            ]
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "directory": "runs/opes_harmonic_2d",
+          "checkpoint_steps": 100
+        }
+      },
+      "fingerprint": "303f58412d1dd2dd9af228238c02b49e733693ea77943d33de7aaaf12c1afec6"
+    },
+    {
+      "case": "metadynamics-async-files-andersen",
+      "prefix_sha256": {
+        "checkpoints/shared_metadynamics_async_0000.npz": "289e3d4151368c22b76aef230d5687ddb7339735801a62d345c2b08000a2b139",
+        "checkpoints/shared_metadynamics_async_0001.npz": "a987312c3bc41b0246d518f1370df910aafc9e11491e95b85f574cccc0370864",
+        "walkers/metadynamics/manifest.json": "ff5e40256809547b243f71bdb3cc4fa69ea37299ac3c1269b4f0433af76851e0",
+        "walkers/metadynamics/walker-0000.jsonl": "913cb62957a7c79c544f2eb4493954638e83534e29e1ef884735fc0e4927ad42",
+        "walkers/metadynamics/walker-0001.jsonl": "f3082a66976c875fb5f8251bfdf997c0082db1c977770337db811026a5697ee1"
+      },
+      "reference_sha256": {
+        "checkpoints/shared_metadynamics_async_0000.npz": "289e3d4151368c22b76aef230d5687ddb7339735801a62d345c2b08000a2b139",
+        "checkpoints/shared_metadynamics_async_0001.npz": "4318682da4374aae38192b5c1ecdc08e691372eab2b1edab768296dd370f6f06",
+        "fes.csv": "1efd8989ddb23174f10af17a8057677046bf56639aa37e8129236ea0f7807dea",
+        "fes.npz": "f597bba2769a3a3b85e1d9c6ae707a1e4952b54a6ce883bbde551b69c69d32dc",
+        "shared-hills.csv": "e28f6694ee6aeea1d6c7144610629208458e6dad0ec6f86ce42d258f4552cdf9",
+        "summary.json": "6592b746451766d6826fca7836495c33419d267d6c1a5f5d4563851d085ff474",
+        "walkers/metadynamics/manifest.json": "ff5e40256809547b243f71bdb3cc4fa69ea37299ac3c1269b4f0433af76851e0",
+        "walkers/metadynamics/walker-0000.jsonl": "913cb62957a7c79c544f2eb4493954638e83534e29e1ef884735fc0e4927ad42",
+        "walkers/metadynamics/walker-0001.jsonl": "b1ba130c690ca7722fe0166ae68093109e5d6fbda67c95da767e1032d0b145de"
+      },
+      "bitwise_equal": true,
+      "arrays": 37,
+      "files": 9,
+      "resumed_sha256": {
+        "checkpoints/shared_metadynamics_async_0000.npz": "289e3d4151368c22b76aef230d5687ddb7339735801a62d345c2b08000a2b139",
+        "checkpoints/shared_metadynamics_async_0001.npz": "4318682da4374aae38192b5c1ecdc08e691372eab2b1edab768296dd370f6f06",
+        "fes.csv": "1efd8989ddb23174f10af17a8057677046bf56639aa37e8129236ea0f7807dea",
+        "fes.npz": "f597bba2769a3a3b85e1d9c6ae707a1e4952b54a6ce883bbde551b69c69d32dc",
+        "shared-hills.csv": "e28f6694ee6aeea1d6c7144610629208458e6dad0ec6f86ce42d258f4552cdf9",
+        "summary.json": "57622e92e492221935d94b169e0e9141a3cf8868fd6a21596a6c58029b8f899a",
+        "walkers/metadynamics/manifest.json": "ff5e40256809547b243f71bdb3cc4fa69ea37299ac3c1269b4f0433af76851e0",
+        "walkers/metadynamics/walker-0000.jsonl": "913cb62957a7c79c544f2eb4493954638e83534e29e1ef884735fc0e4927ad42",
+        "walkers/metadynamics/walker-0001.jsonl": "b1ba130c690ca7722fe0166ae68093109e5d6fbda67c95da767e1032d0b145de"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "metadynamics"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "andersen"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "metadynamics": {
+          "mode": "well_tempered",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "height": "0.02 kcal/mol",
+          "bias_factor": 5.0,
+          "shared_walkers": true,
+          "walkers_mode": "async-files"
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 8,
+          "store_configurations": true
+        }
+      },
+      "fingerprint": "f67614bef85a2f3f198cafbe295e6b9ecf464ba894293da94f3b31355de1ce15"
+    },
+    {
+      "case": "metadynamics-async-files-pile-l",
+      "prefix_sha256": {
+        "checkpoints/shared_metadynamics_async_0000.npz": "ce712dcb112a335175312d7e940bae8c08182f46a53e0996ffbf1f47836c63c2",
+        "checkpoints/shared_metadynamics_async_0001.npz": "d82a0834cd5a15d411bdf58937e6c5665eff1dd46a0b990b6475fe8d79e62f8d",
+        "walkers/metadynamics/manifest.json": "4760b485c339db833c8c48ba294c172040e09578e5cc96a7fda755bdf8d6e679",
+        "walkers/metadynamics/walker-0000.jsonl": "e91a6170be915635a6d7c00a367915fc6159cdafa5e0beeb802f2adb480dbb1a",
+        "walkers/metadynamics/walker-0001.jsonl": "bb690291c092b8a95f641b0d19ffb28ee8da7d275e24ebf92cae242ae0de8d53"
+      },
+      "reference_sha256": {
+        "checkpoints/shared_metadynamics_async_0000.npz": "ce712dcb112a335175312d7e940bae8c08182f46a53e0996ffbf1f47836c63c2",
+        "checkpoints/shared_metadynamics_async_0001.npz": "b3d8109e42ae082d4866b8150d1618e9d893cd37a06afa35c8194ca670cb28bf",
+        "fes.csv": "c3c3e8036ac397b6d5b401ed93eedcb46c0d6f9cb5055f86b0350883431fad82",
+        "fes.npz": "2eff686edd979389f45acf249f0e9341cf5ac249eb393e1c35594ab6a78abf42",
+        "shared-hills.csv": "ab76bf8f166beddf9975a80e421035a44026e2b90c1db76b577de296a4de7d45",
+        "summary.json": "8d9a6e98bf36d273527a81120ef90e8da1df049390b22baaed082e4f12e832b7",
+        "walkers/metadynamics/manifest.json": "4760b485c339db833c8c48ba294c172040e09578e5cc96a7fda755bdf8d6e679",
+        "walkers/metadynamics/walker-0000.jsonl": "e91a6170be915635a6d7c00a367915fc6159cdafa5e0beeb802f2adb480dbb1a",
+        "walkers/metadynamics/walker-0001.jsonl": "13e7d1c88c0b488ed5f145066e21813993feb3706ca0afc9d2507b5dfe102cc7"
+      },
+      "bitwise_equal": true,
+      "arrays": 37,
+      "files": 9,
+      "resumed_sha256": {
+        "checkpoints/shared_metadynamics_async_0000.npz": "ce712dcb112a335175312d7e940bae8c08182f46a53e0996ffbf1f47836c63c2",
+        "checkpoints/shared_metadynamics_async_0001.npz": "b3d8109e42ae082d4866b8150d1618e9d893cd37a06afa35c8194ca670cb28bf",
+        "fes.csv": "c3c3e8036ac397b6d5b401ed93eedcb46c0d6f9cb5055f86b0350883431fad82",
+        "fes.npz": "2eff686edd979389f45acf249f0e9341cf5ac249eb393e1c35594ab6a78abf42",
+        "shared-hills.csv": "ab76bf8f166beddf9975a80e421035a44026e2b90c1db76b577de296a4de7d45",
+        "summary.json": "e66e12213faff6c44d0708a8863b4784c1c3999a57ea21dfbc4f679243933801",
+        "walkers/metadynamics/manifest.json": "4760b485c339db833c8c48ba294c172040e09578e5cc96a7fda755bdf8d6e679",
+        "walkers/metadynamics/walker-0000.jsonl": "e91a6170be915635a6d7c00a367915fc6159cdafa5e0beeb802f2adb480dbb1a",
+        "walkers/metadynamics/walker-0001.jsonl": "13e7d1c88c0b488ed5f145066e21813993feb3706ca0afc9d2507b5dfe102cc7"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "metadynamics"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.01 fs^-1"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "metadynamics": {
+          "mode": "well_tempered",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "height": "0.02 kcal/mol",
+          "bias_factor": 5.0,
+          "shared_walkers": true,
+          "walkers_mode": "async-files"
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 8,
+          "store_configurations": true
+        }
+      },
+      "fingerprint": "f7c3935215ecf80604a7a2259ec6255ea0f728a7a169b6a145075b6e292e72c8"
+    },
+    {
+      "case": "metadynamics-mpi-sync-andersen",
+      "prefix_sha256": {
+        "checkpoints/shared_metadynamics_mpi.npz": "cf7b45aef82a49ebe0d26c20901f3fcb4967f8acbd6afbf86a8a4462d2720a46"
+      },
+      "reference_sha256": {
+        "checkpoints/shared_metadynamics_mpi.npz": "437df7e9477d6d8d35330db76e372e259ffdce787e3cd3acaac41c1f9f063595",
+        "fes.csv": "7ea757c2efbc5a1043f8906d2d86693914bcc36d66f3f629bb427790154cef0e",
+        "fes.npz": "f692cb12171e73692d6ea28bdda5e0c9997886095f2f3ac76bc159e29be15ec5",
+        "shared-hills.csv": "ef0a8f534fac69580c99b7d7f17b6d1ea1f013737b40615099b9ac9fe3926031",
+        "summary.json": "8a27b8a9ea4386e793f20b47d4b92ce841bbda6b6b7ab46abe0e3bb3e3995dfd"
+      },
+      "bitwise_equal": true,
+      "arrays": 22,
+      "files": 5,
+      "resumed_sha256": {
+        "checkpoints/shared_metadynamics_mpi.npz": "437df7e9477d6d8d35330db76e372e259ffdce787e3cd3acaac41c1f9f063595",
+        "fes.csv": "7ea757c2efbc5a1043f8906d2d86693914bcc36d66f3f629bb427790154cef0e",
+        "fes.npz": "f692cb12171e73692d6ea28bdda5e0c9997886095f2f3ac76bc159e29be15ec5",
+        "shared-hills.csv": "ef0a8f534fac69580c99b7d7f17b6d1ea1f013737b40615099b9ac9fe3926031",
+        "summary.json": "00103d0c2f1393543b59b7e5b2b505b174c289aa220b33bcf5d92a73e266942f"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "metadynamics"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "andersen"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "metadynamics": {
+          "mode": "well_tempered",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "height": "0.02 kcal/mol",
+          "bias_factor": 5.0,
+          "shared_walkers": true,
+          "walkers_mode": "mpi-sync"
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 8,
+          "store_configurations": true
+        }
+      },
+      "fingerprint": "b618eaac64125f12ba6e7a34d61158cbb3ff89eff353076dbd55444dcf957181"
+    },
+    {
+      "case": "metadynamics-mpi-sync-pile-l",
+      "prefix_sha256": {
+        "checkpoints/shared_metadynamics_mpi.npz": "314a9478734e8915a74db26dfa6acbe4429cb009b784bd03db6e1e0d322836fa"
+      },
+      "reference_sha256": {
+        "checkpoints/shared_metadynamics_mpi.npz": "28d4975a6c6962d17ccf89703be6cc3fa18aa61933567109fcb63ae5ad923362",
+        "fes.csv": "e63fb1eb474b9f86a2321ed64d30cfec8fa70f8a09175492d3976ae59090acf5",
+        "fes.npz": "99b1286dc0168ae6efc7ad1fd935bab92eec1b1beaed2a63c63bb47c91d695b7",
+        "shared-hills.csv": "b9d4918b9788b89c9d081dd2dfcd9887e5ec66ccb8ad1ab9d21fcd92b7c4b4a2",
+        "summary.json": "0a78c62ca8567f5c64e9fa778e2365d3a5626865a065774bdc369a06f0d01c68"
+      },
+      "bitwise_equal": true,
+      "arrays": 22,
+      "files": 5,
+      "resumed_sha256": {
+        "checkpoints/shared_metadynamics_mpi.npz": "28d4975a6c6962d17ccf89703be6cc3fa18aa61933567109fcb63ae5ad923362",
+        "fes.csv": "e63fb1eb474b9f86a2321ed64d30cfec8fa70f8a09175492d3976ae59090acf5",
+        "fes.npz": "99b1286dc0168ae6efc7ad1fd935bab92eec1b1beaed2a63c63bb47c91d695b7",
+        "shared-hills.csv": "b9d4918b9788b89c9d081dd2dfcd9887e5ec66ccb8ad1ab9d21fcd92b7c4b4a2",
+        "summary.json": "d7483330bb6acd5c013bcf32caeeada849f114b35a2717a1b358b879e9a91c61"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "metadynamics"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.01 fs^-1"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "metadynamics": {
+          "mode": "well_tempered",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "height": "0.02 kcal/mol",
+          "bias_factor": 5.0,
+          "shared_walkers": true,
+          "walkers_mode": "mpi-sync"
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 8,
+          "store_configurations": true
+        }
+      },
+      "fingerprint": "225cd7d95101a331faa816f0f7195e584986da41d75067524cbc25983c5736b4"
+    },
+    {
+      "case": "metadynamics-standard-andersen",
+      "prefix_sha256": {
+        "checkpoints/metadynamics_0000.npz": "fa3e5797527fe99196c92f395403625bc05edf9184679c1524897960516bcdb2",
+        "checkpoints/metadynamics_0001.npz": "ecdc2bc6905b66df9b15d9f74143d0e742ad81a6b033b849acb180ba956b6ec3"
+      },
+      "reference_sha256": {
+        "checkpoints/metadynamics_0000.npz": "3255b3e263104ae07e122dc299a19572576c540bc3b500a3f63298febdee01f5",
+        "checkpoints/metadynamics_0001.npz": "0aedd38c6ab951b52be69b3edda8bf666099f1f78135994c317ed2d15717208c",
+        "fes.csv": "b6ad15f6646e1b7216b4df718a532eac5f8e0197839d2cb059049f452ab703b2",
+        "fes.json": "2be7efe082202406af863f817288ace0694ae64f156bc36e58d9bcd434a2f995",
+        "fes.npz": "7fb036c2367c921b6dc957822b7228a95d2f58c2ba6736d8eafefd2ceb697e49",
+        "replicas/0000/HILLS.csv": "2a8cf773b2824108dffd4bf3ab3cea72c8769caf44a2a568d7d7d471baabb04c",
+        "replicas/0001/HILLS.csv": "31661ccd004d5a394a6588db65805bf2fc33e4b1cec4b2167ab90e156a50558a",
+        "summary.json": "2be7efe082202406af863f817288ace0694ae64f156bc36e58d9bcd434a2f995"
+      },
+      "bitwise_equal": true,
+      "arrays": 53,
+      "files": 8,
+      "resumed_sha256": {
+        "checkpoints/metadynamics_0000.npz": "3255b3e263104ae07e122dc299a19572576c540bc3b500a3f63298febdee01f5",
+        "checkpoints/metadynamics_0001.npz": "0aedd38c6ab951b52be69b3edda8bf666099f1f78135994c317ed2d15717208c",
+        "fes.csv": "b6ad15f6646e1b7216b4df718a532eac5f8e0197839d2cb059049f452ab703b2",
+        "fes.json": "2a89350f289b3e20a9fa39255fad756f0f93194284c3b1924d463fcbe9442966",
+        "fes.npz": "164d6d00720cafcf0ab8655b065b324562f600599b3335b128f645a40da542fe",
+        "replicas/0000/HILLS.csv": "2a8cf773b2824108dffd4bf3ab3cea72c8769caf44a2a568d7d7d471baabb04c",
+        "replicas/0001/HILLS.csv": "31661ccd004d5a394a6588db65805bf2fc33e4b1cec4b2167ab90e156a50558a",
+        "summary.json": "2a89350f289b3e20a9fa39255fad756f0f93194284c3b1924d463fcbe9442966"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "metadynamics"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "andersen"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "metadynamics": {
+          "mode": "standard",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "height": "0.02 kcal/mol"
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 10,
+          "store_configurations": true
+        }
+      },
+      "fingerprint": "a3748b3addaf4c27cefa43ba6f71898118bc0cebfa6d8aec35e6d298e1b1952a"
+    },
+    {
+      "case": "metadynamics-standard-pile-l",
+      "prefix_sha256": {
+        "checkpoints/metadynamics_0000.npz": "fa4e912919a800ea48916b5048f02eaa048bda6c2e8278a14c17ecf8c9f70439",
+        "checkpoints/metadynamics_0001.npz": "a2bdfb4bf1500637ba3a0faf3fa407ecd9dbbb63badc739e17a54ea3760c8050"
+      },
+      "reference_sha256": {
+        "checkpoints/metadynamics_0000.npz": "349c964c0ba3dc2fc6b31b33053d2a7556b9d39837564bd346a83577455a8394",
+        "checkpoints/metadynamics_0001.npz": "17e059ea4f85f10a6943e1c47c9f70d325255ee0987baef41175eed9fdd6a1ce",
+        "fes.csv": "64a69321b03cd28a4827994b075e70879619472a6c84fd54ee0ebad15971b12e",
+        "fes.json": "23e544a4447c9bd3522751f071dbc3ab1c06274b5bc3631de1495144d22a0e30",
+        "fes.npz": "e742369f1fddddbccb491375b02c08c84df45787c77986e22cb529cae5f2ae3f",
+        "replicas/0000/HILLS.csv": "746f7a2175b0d2a17befce66c34206fce7a730612fb5eab36d5287788e25e38f",
+        "replicas/0001/HILLS.csv": "8374d2cc8a75f54ba17cdda646cb79fdfbc046907fccbd8cb135d311878be359",
+        "summary.json": "23e544a4447c9bd3522751f071dbc3ab1c06274b5bc3631de1495144d22a0e30"
+      },
+      "bitwise_equal": true,
+      "arrays": 53,
+      "files": 8,
+      "resumed_sha256": {
+        "checkpoints/metadynamics_0000.npz": "349c964c0ba3dc2fc6b31b33053d2a7556b9d39837564bd346a83577455a8394",
+        "checkpoints/metadynamics_0001.npz": "17e059ea4f85f10a6943e1c47c9f70d325255ee0987baef41175eed9fdd6a1ce",
+        "fes.csv": "64a69321b03cd28a4827994b075e70879619472a6c84fd54ee0ebad15971b12e",
+        "fes.json": "226ba56ec5ae2f425762fb4b95e4c7cb3b83850bb21eef6fcf5254426577b580",
+        "fes.npz": "9f472c407d7d91ab96536aa9f5926c3d4229f208795521f91d65c5d78969fefb",
+        "replicas/0000/HILLS.csv": "746f7a2175b0d2a17befce66c34206fce7a730612fb5eab36d5287788e25e38f",
+        "replicas/0001/HILLS.csv": "8374d2cc8a75f54ba17cdda646cb79fdfbc046907fccbd8cb135d311878be359",
+        "summary.json": "226ba56ec5ae2f425762fb4b95e4c7cb3b83850bb21eef6fcf5254426577b580"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "metadynamics"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.01 fs^-1"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "metadynamics": {
+          "mode": "standard",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "height": "0.02 kcal/mol"
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 10,
+          "store_configurations": true
+        }
+      },
+      "fingerprint": "bf8b947956cde4bf2644305a2f5105c8efa2975501aa75591392ec1291e6c001"
+    },
+    {
+      "case": "metadynamics-well_tempered-andersen",
+      "prefix_sha256": {
+        "checkpoints/metadynamics_0000.npz": "d9c8b08b7be7adc2badbdb57c22bc87ea1e84885389b77106c5a3ea82d49c16e",
+        "checkpoints/metadynamics_0001.npz": "165b3da20347804b63f04a9221b21fe76a394a7865240070b56aed68e0cc16b5"
+      },
+      "reference_sha256": {
+        "checkpoints/metadynamics_0000.npz": "76595be044b49e400c6f2dbe27d4e6e453b0f208543718ea90bae25436929270",
+        "checkpoints/metadynamics_0001.npz": "818ddb5a3ad54dfd452f7aec257ac8c4f5c2e7b8857d5c56bfbbb0b3b5832f43",
+        "fes.csv": "062db29475df30f4a47fe85d7b6bc7c03650b55fd767f0698a441ad20281b306",
+        "fes.json": "aee1527d228d172c3e9610cde51057b4b0327f6b0346162c05cabfe9636680cb",
+        "fes.npz": "2577ff97ac16a297fe799b9e43f85e7c4fb5c6ebaf67b1fc9149063e4f4aca05",
+        "replicas/0000/HILLS.csv": "377285415fd47bcb5f5bc3632e2a5225644471be6fa0b1c485e1c61a1150324a",
+        "replicas/0001/HILLS.csv": "c9ebbfb34ecbdd6c25e7a6ff5008ea1b09887ccda96807c3b8f25b1f13526a19",
+        "summary.json": "aee1527d228d172c3e9610cde51057b4b0327f6b0346162c05cabfe9636680cb"
+      },
+      "bitwise_equal": true,
+      "arrays": 53,
+      "files": 8,
+      "resumed_sha256": {
+        "checkpoints/metadynamics_0000.npz": "76595be044b49e400c6f2dbe27d4e6e453b0f208543718ea90bae25436929270",
+        "checkpoints/metadynamics_0001.npz": "818ddb5a3ad54dfd452f7aec257ac8c4f5c2e7b8857d5c56bfbbb0b3b5832f43",
+        "fes.csv": "062db29475df30f4a47fe85d7b6bc7c03650b55fd767f0698a441ad20281b306",
+        "fes.json": "74af846c55ee8c95361685edb6cb8df34cec887b5de6c6e7dda44a3be6b72aaa",
+        "fes.npz": "378594a811da0d52d778be2f08497ea7b6e54cb55b99409512e16f0c92cb3b17",
+        "replicas/0000/HILLS.csv": "377285415fd47bcb5f5bc3632e2a5225644471be6fa0b1c485e1c61a1150324a",
+        "replicas/0001/HILLS.csv": "c9ebbfb34ecbdd6c25e7a6ff5008ea1b09887ccda96807c3b8f25b1f13526a19",
+        "summary.json": "74af846c55ee8c95361685edb6cb8df34cec887b5de6c6e7dda44a3be6b72aaa"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "metadynamics"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "andersen"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "metadynamics": {
+          "mode": "well_tempered",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "height": "0.02 kcal/mol",
+          "bias_factor": 5.0
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 10,
+          "store_configurations": true
+        }
+      },
+      "fingerprint": "596ef81b08dbd3a190e55eac7aea25f8c3a147397be9d53e51dff0127353d859"
+    },
+    {
+      "case": "metadynamics-well_tempered-pile-l",
+      "prefix_sha256": {
+        "checkpoints/metadynamics_0000.npz": "82f4984ca745454edb0cce77a4c7faa07d21a0b47eda8192aca1e18ccf573873",
+        "checkpoints/metadynamics_0001.npz": "501f1308e60867e2bbaa5b0de5893debbc1c9d1b9d331632cf5f9f3b57080ca8"
+      },
+      "reference_sha256": {
+        "checkpoints/metadynamics_0000.npz": "906ef43378c5020b56ffabf3ad589229f9d7239896346d205aad5c777dd8d504",
+        "checkpoints/metadynamics_0001.npz": "25d86eed52ecaa0a9216436e27f25e5b05ed3a813e13c71b43f65a64fbb237ae",
+        "fes.csv": "a6bfbf3051d88af8ad603410782863a0ecf7e3c41f3650b277e437b20d5ee4cf",
+        "fes.json": "56852a5e813a2f656c3aae1cb2785fd261305e994e50495eb132bcbbf7982cb2",
+        "fes.npz": "d7979fe504065c0bae87661b8254ffa0833929e03c12a930affaa4438affb522",
+        "replicas/0000/HILLS.csv": "4f1c0aaff58ad36ab6bfbd430541908e8edd1c3b88f07da1b5131157da317c1a",
+        "replicas/0001/HILLS.csv": "06be0f1a3fc4b9a14b8ecede228ec79f0fce100a3bf814f3c594f9bf661a9ffd",
+        "summary.json": "56852a5e813a2f656c3aae1cb2785fd261305e994e50495eb132bcbbf7982cb2"
+      },
+      "bitwise_equal": true,
+      "arrays": 53,
+      "files": 8,
+      "resumed_sha256": {
+        "checkpoints/metadynamics_0000.npz": "906ef43378c5020b56ffabf3ad589229f9d7239896346d205aad5c777dd8d504",
+        "checkpoints/metadynamics_0001.npz": "25d86eed52ecaa0a9216436e27f25e5b05ed3a813e13c71b43f65a64fbb237ae",
+        "fes.csv": "a6bfbf3051d88af8ad603410782863a0ecf7e3c41f3650b277e437b20d5ee4cf",
+        "fes.json": "969ad5f33bf80a9a53f0110c664f8c2eb1a48f4bed730e85d5cf91321d3156dd",
+        "fes.npz": "6aad27008ff090ec554147c015a080d9aade5d28e39eb7598be5c3edac10e2b7",
+        "replicas/0000/HILLS.csv": "4f1c0aaff58ad36ab6bfbd430541908e8edd1c3b88f07da1b5131157da317c1a",
+        "replicas/0001/HILLS.csv": "06be0f1a3fc4b9a14b8ecede228ec79f0fce100a3bf814f3c594f9bf661a9ffd",
+        "summary.json": "969ad5f33bf80a9a53f0110c664f8c2eb1a48f4bed730e85d5cf91321d3156dd"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "metadynamics"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.01 fs^-1"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "metadynamics": {
+          "mode": "well_tempered",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "height": "0.02 kcal/mol",
+          "bias_factor": 5.0
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 10,
+          "store_configurations": true
+        }
+      },
+      "fingerprint": "00e0287ca9f38c60baaf2e3e7ec26c813523890ecf54cc8da4c914dbffe57503"
+    },
+    {
+      "case": "opes-async-files-andersen",
+      "prefix_sha256": {
+        "checkpoints/opes_shared_async_0000.npz": "c5ecf633db35ef06b280756527def30b0e59eaa8aed6186ebe65577c39e56a12",
+        "checkpoints/opes_shared_async_0001.npz": "795e3a9e7e1ecb6c928dbc732cd07075f5a237c2723961b5d766c1d49e85f76b",
+        "walkers/opes/manifest.json": "aebb27c14ddd4863ac4b0388a7246078b7fe428a7563a21e315d530b0fc72631",
+        "walkers/opes/walker-0000.jsonl": "91805f03aab32befd3941e1888f3acdd4769e886a8ffa0fa29740c90bfdc80ea",
+        "walkers/opes/walker-0001.jsonl": "edf234fd8ff87da5d48198e0570d1ae2c2017a2d561effe9322ea701c06ef43a"
+      },
+      "reference_sha256": {
+        "checkpoints/opes_shared_async_0000.npz": "c5ecf633db35ef06b280756527def30b0e59eaa8aed6186ebe65577c39e56a12",
+        "checkpoints/opes_shared_async_0001.npz": "86b5d31d9feeb811ac0070916a4b2ea2f6ee67cdde39aa211b6c136679ee4629",
+        "fes.csv": "4dc07cab7304dca9e82bb6b89946ee1d61ff16661a24d01f514ba7d94fae92eb",
+        "fes.json": "db49fca7c3006f3d2d132f8d695d088a0604f28c60c5559b1b2a77907f1d9608",
+        "fes.npz": "a08c8cb1fca1eb4fce97039a7678bdf14656c0f9cdfe486af4c47dba14128395",
+        "summary.json": "db49fca7c3006f3d2d132f8d695d088a0604f28c60c5559b1b2a77907f1d9608",
+        "walkers/opes/manifest.json": "aebb27c14ddd4863ac4b0388a7246078b7fe428a7563a21e315d530b0fc72631",
+        "walkers/opes/walker-0000.jsonl": "91805f03aab32befd3941e1888f3acdd4769e886a8ffa0fa29740c90bfdc80ea",
+        "walkers/opes/walker-0001.jsonl": "fea33ae33a1e117d0dbc61a15bf5bbd883f6a303180e33c32b92a660fae7a62a"
+      },
+      "bitwise_equal": true,
+      "arrays": 53,
+      "files": 9,
+      "resumed_sha256": {
+        "checkpoints/opes_shared_async_0000.npz": "c5ecf633db35ef06b280756527def30b0e59eaa8aed6186ebe65577c39e56a12",
+        "checkpoints/opes_shared_async_0001.npz": "86b5d31d9feeb811ac0070916a4b2ea2f6ee67cdde39aa211b6c136679ee4629",
+        "fes.csv": "4dc07cab7304dca9e82bb6b89946ee1d61ff16661a24d01f514ba7d94fae92eb",
+        "fes.json": "90911eae7c5581756ce1a8161db9d68160831477b6fd2083a7df6ede51f4a742",
+        "fes.npz": "564cc6f514754f837e8ccd21c63d3c69b4ef12bbe908243bd782d93fa5f27bf9",
+        "summary.json": "90911eae7c5581756ce1a8161db9d68160831477b6fd2083a7df6ede51f4a742",
+        "walkers/opes/manifest.json": "aebb27c14ddd4863ac4b0388a7246078b7fe428a7563a21e315d530b0fc72631",
+        "walkers/opes/walker-0000.jsonl": "91805f03aab32befd3941e1888f3acdd4769e886a8ffa0fa29740c90bfdc80ea",
+        "walkers/opes/walker-0001.jsonl": "fea33ae33a1e117d0dbc61a15bf5bbd883f6a303180e33c32b92a660fae7a62a"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "opes"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "andersen"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "opes": {
+          "mode": "explore",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "barrier": "2 kcal/mol",
+          "bias_factor": 5.0,
+          "walkers_mode": "async-files"
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 8
+        }
+      },
+      "fingerprint": "435719088d8805bc135bf3a5ea398ea2c3a2e7b5c6b17be890eaf887a6bda745"
+    },
+    {
+      "case": "opes-async-files-pile-l",
+      "prefix_sha256": {
+        "checkpoints/opes_shared_async_0000.npz": "0bbb345d293cdaa96281cd1b05833ba6ef3b53d4df83d76b522f4d0b2f103ce0",
+        "checkpoints/opes_shared_async_0001.npz": "0d3e211e9518a899375d16771b3be5c1a3ae30f3af5e8c70be1569ff5b11eadf",
+        "walkers/opes/manifest.json": "107007f817e7a478813434928bf5285799a670a16aa28257af393bceee482e8f",
+        "walkers/opes/walker-0000.jsonl": "c58f75fd1e6a76b7f748d7ce28bb287afc2d9bdaad9f878d58becde8115e2f19",
+        "walkers/opes/walker-0001.jsonl": "42b9d3b21c12a9b4bd1f8a00f4bec1553db88817d0affb73176876c34065d5be"
+      },
+      "reference_sha256": {
+        "checkpoints/opes_shared_async_0000.npz": "0bbb345d293cdaa96281cd1b05833ba6ef3b53d4df83d76b522f4d0b2f103ce0",
+        "checkpoints/opes_shared_async_0001.npz": "b62dd138e17878abc372b930993cd47c41b69f2a147988009e030d07295d37da",
+        "fes.csv": "14c0db1416c098493f9c28d584f8a783e525156c961f2e5600430edbddf2d433",
+        "fes.json": "b704351677305a4d4348da289e6ce85c404059a73c2d66c4883cd1522c229e14",
+        "fes.npz": "7a62841156ea5da9f8bcf76675046f941fe532d169e2f1770766d4ef6f66d986",
+        "summary.json": "b704351677305a4d4348da289e6ce85c404059a73c2d66c4883cd1522c229e14",
+        "walkers/opes/manifest.json": "107007f817e7a478813434928bf5285799a670a16aa28257af393bceee482e8f",
+        "walkers/opes/walker-0000.jsonl": "c58f75fd1e6a76b7f748d7ce28bb287afc2d9bdaad9f878d58becde8115e2f19",
+        "walkers/opes/walker-0001.jsonl": "f11f78489d9b8cc08682baae0065df5557bb2d79b635bf94871655667f6dc86a"
+      },
+      "bitwise_equal": true,
+      "arrays": 53,
+      "files": 9,
+      "resumed_sha256": {
+        "checkpoints/opes_shared_async_0000.npz": "0bbb345d293cdaa96281cd1b05833ba6ef3b53d4df83d76b522f4d0b2f103ce0",
+        "checkpoints/opes_shared_async_0001.npz": "b62dd138e17878abc372b930993cd47c41b69f2a147988009e030d07295d37da",
+        "fes.csv": "14c0db1416c098493f9c28d584f8a783e525156c961f2e5600430edbddf2d433",
+        "fes.json": "e3e4556e51a5f0407f4fb8e8d1cf6036a6106f7d2a7b1e1fa544e8b76c0677a1",
+        "fes.npz": "010af0d59e22ca5520821893b09868be908cce87630164d98ea1281852a0f6b1",
+        "summary.json": "e3e4556e51a5f0407f4fb8e8d1cf6036a6106f7d2a7b1e1fa544e8b76c0677a1",
+        "walkers/opes/manifest.json": "107007f817e7a478813434928bf5285799a670a16aa28257af393bceee482e8f",
+        "walkers/opes/walker-0000.jsonl": "c58f75fd1e6a76b7f748d7ce28bb287afc2d9bdaad9f878d58becde8115e2f19",
+        "walkers/opes/walker-0001.jsonl": "f11f78489d9b8cc08682baae0065df5557bb2d79b635bf94871655667f6dc86a"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "opes"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.01 fs^-1"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "opes": {
+          "mode": "explore",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "barrier": "2 kcal/mol",
+          "bias_factor": 5.0,
+          "walkers_mode": "async-files"
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 8
+        }
+      },
+      "fingerprint": "9562f1ab4dc3fc5e24b992f0a8dbe0cfdec98aa5b15d9fe3781b79c14d99bdcf"
+    },
+    {
+      "case": "opes-explore-adaptive-schema1",
+      "prefix_sha256": {
+        "checkpoints/opes_0000.npz": "a115967a6afc94bcead3ff3da525ca14fd5610f04a47e7e11a9dfe06ee56557c",
+        "checkpoints/opes_0001.npz": "34bb20ea40476b15839073a640f2fc6251e7e87dd2eba6c820f40f1ba3857954"
+      },
+      "reference_sha256": {
+        "checkpoints/opes_0000.npz": "34221a7762b7bcdb96c3a00cbdcb7d6c104be6e33af70e289d4bd6ed1dd420b2",
+        "checkpoints/opes_0001.npz": "14b628410ed119563a638a70d6074b00facc2f3d8075d05cae1dbb0d7a98a7d4",
+        "fes.csv": "349e0bdbb0187b09ba1c0f28ecdbc91a947accf41580ad760f68368de25872df",
+        "fes.json": "2b72ca56cdd37ede906dd2138853fd813dec266ee25120fc238dd27a6ef23fb9",
+        "fes.npz": "7cd8e5d7a150d7d4c7824d80624957e9875d6754e4567cd2691161fd79f24231",
+        "summary.json": "2b72ca56cdd37ede906dd2138853fd813dec266ee25120fc238dd27a6ef23fb9"
+      },
+      "bitwise_equal": true,
+      "arrays": 48,
+      "files": 6,
+      "resumed_sha256": {
+        "checkpoints/opes_0000.npz": "34221a7762b7bcdb96c3a00cbdcb7d6c104be6e33af70e289d4bd6ed1dd420b2",
+        "checkpoints/opes_0001.npz": "14b628410ed119563a638a70d6074b00facc2f3d8075d05cae1dbb0d7a98a7d4",
+        "fes.csv": "349e0bdbb0187b09ba1c0f28ecdbc91a947accf41580ad760f68368de25872df",
+        "fes.json": "a3347ddb99d814284f52f57c244df3bb25ea53cdd83ea198d38d1464a9eeebcd",
+        "fes.npz": "94febc95d2b4e192d59718c7e0b1646b26115ecdb57fdd7f760b8ae3197128c7",
+        "summary.json": "a3347ddb99d814284f52f57c244df3bb25ea53cdd83ea198d38d1464a9eeebcd"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "opes"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "andersen"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "opes": {
+          "mode": "explore",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "barrier": "2 kcal/mol",
+          "bias_factor": 5.0,
+          "adaptive_sigma": true,
+          "sigma_min": [
+            0.03,
+            0.04
+          ]
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 10
+        }
+      },
+      "fingerprint": "d4be701afcf37ac8b8e52700f69792b0afb03bbe91a7cc0afc790076577af774"
+    },
+    {
+      "case": "opes-explore-adaptive-schema2",
+      "prefix_sha256": {
+        "checkpoints/opes_0000.npz": "e19f37099ec70d40388d94ff078aeb33f8d7e97d001eb517a72560e0baf98bfa",
+        "checkpoints/opes_0001.npz": "c1a41dd6cf0268816c5f51f4bbdbce937228ee1d84e89edccc616cf2b81adf5c"
+      },
+      "reference_sha256": {
+        "checkpoints/opes_0000.npz": "e283f38e1c466512386b36600596bf8f3dc80f388118ac65cf50d73ce54e09ad",
+        "checkpoints/opes_0001.npz": "b5f02fdba680fad58d92222d7c01763b4f87d07c664a1b8ebf9c1cd516742791",
+        "fes.csv": "349e0bdbb0187b09ba1c0f28ecdbc91a947accf41580ad760f68368de25872df",
+        "fes.json": "238582e3ab24eeb076ef317dad9d0c6a6013edca959f9124a3314a1ac162b4cb",
+        "fes.npz": "ef06a798fda5290b204057c317621f0baeaf34d0a1f1cfbcbcf34c4e12038681",
+        "summary.json": "238582e3ab24eeb076ef317dad9d0c6a6013edca959f9124a3314a1ac162b4cb"
+      },
+      "bitwise_equal": true,
+      "arrays": 48,
+      "files": 6,
+      "resumed_sha256": {
+        "checkpoints/opes_0000.npz": "e283f38e1c466512386b36600596bf8f3dc80f388118ac65cf50d73ce54e09ad",
+        "checkpoints/opes_0001.npz": "b5f02fdba680fad58d92222d7c01763b4f87d07c664a1b8ebf9c1cd516742791",
+        "fes.csv": "349e0bdbb0187b09ba1c0f28ecdbc91a947accf41580ad760f68368de25872df",
+        "fes.json": "f6aa5ea19e9796261e3931b32c79cc6fdb438c22846212ff1aa79fa601fd25a0",
+        "fes.npz": "36a36c870fc9d46bf40e6e9e0cf570e27f1c6b5693d35e50142afca11cda7829",
+        "summary.json": "f6aa5ea19e9796261e3931b32c79cc6fdb438c22846212ff1aa79fa601fd25a0"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "opes"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "andersen"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "opes": {
+          "mode": "explore",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "barrier": "2 kcal/mol",
+          "bias_factor": 5.0,
+          "adaptive_sigma": true,
+          "sigma_min": [
+            0.03,
+            0.04
+          ]
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 10
+        }
+      },
+      "fingerprint": "d4be701afcf37ac8b8e52700f69792b0afb03bbe91a7cc0afc790076577af774"
+    },
+    {
+      "case": "opes-explore-andersen",
+      "prefix_sha256": {
+        "checkpoints/opes_0000.npz": "ae2850613fd67b2e3654e7dfc3742c123a0d042e851865a41225852f4331d5cc",
+        "checkpoints/opes_0001.npz": "09b06c2e0a9de0d883050d9dcb3883ae37fa347f6eee0cc5ebad55d3d04f2242"
+      },
+      "reference_sha256": {
+        "checkpoints/opes_0000.npz": "892a4c6177ccf7668d5deff5a692886c8049e1dca87742509bc5ff575a4877db",
+        "checkpoints/opes_0001.npz": "f22a6725dac6dad5d26a2177549a77b3cdf0f2447c76a272fdd326fd04508126",
+        "fes.csv": "25a36ebe8edcc9b902e1b89f09aa1d0cdc31acb7aeccdc49c06a45faa57582be",
+        "fes.json": "4f9e333d6502371f1138fbacef5641052b9b3f550f81f8bfd915879aca4eb1e1",
+        "fes.npz": "b52c0245a8fbdc20e697a6b5fe1fd796076c222b3ee58be5523b6a0de85dd142",
+        "summary.json": "4f9e333d6502371f1138fbacef5641052b9b3f550f81f8bfd915879aca4eb1e1"
+      },
+      "bitwise_equal": true,
+      "arrays": 48,
+      "files": 6,
+      "resumed_sha256": {
+        "checkpoints/opes_0000.npz": "892a4c6177ccf7668d5deff5a692886c8049e1dca87742509bc5ff575a4877db",
+        "checkpoints/opes_0001.npz": "f22a6725dac6dad5d26a2177549a77b3cdf0f2447c76a272fdd326fd04508126",
+        "fes.csv": "25a36ebe8edcc9b902e1b89f09aa1d0cdc31acb7aeccdc49c06a45faa57582be",
+        "fes.json": "3c55cc0cb2ebe685ecd7b062048102f671078910e48e889a9093af04a0782939",
+        "fes.npz": "75e261ee9b5063ba26455e2069d52396a68bba6e94f7f1206f75cc81ec728a20",
+        "summary.json": "3c55cc0cb2ebe685ecd7b062048102f671078910e48e889a9093af04a0782939"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "opes"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "andersen"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "opes": {
+          "mode": "explore",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "barrier": "2 kcal/mol",
+          "bias_factor": 5.0
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 10
+        }
+      },
+      "fingerprint": "259947edc158718b0700f08cf96cd2240dc12052ab1ac22df777a0af458bb833"
+    },
+    {
+      "case": "opes-explore-pile-l",
+      "prefix_sha256": {
+        "checkpoints/opes_0000.npz": "eb24f1e9df62ee0597af0fb20a0580f6e6720341f847859b930211c15dec5c70",
+        "checkpoints/opes_0001.npz": "8ff5d19904b433bda7e251af0ab26cbcee2e0e86b633a09c80e2bee5937bec85"
+      },
+      "reference_sha256": {
+        "checkpoints/opes_0000.npz": "b9d5b607274ed571f51b6b4428f30f4b5a760b028687f2bfde2eb680614c20b0",
+        "checkpoints/opes_0001.npz": "624508ff2df25ba3c9286368a4e2f53b6b2d66f68d62a225a85982d7a1ea5161",
+        "fes.csv": "9002dcb67a1adb7947c2400a0aef521dd30585eaa2d9bb39893a777af056d8db",
+        "fes.json": "a17a7d5c6bce1b4043330a2beb78b6f1532a763d5f82a7ea984328e07998632c",
+        "fes.npz": "532dafd085eb6a9d4ff11ce7a0d5f6ad2e4171aa372cba9e2e8d0c858d068205",
+        "summary.json": "a17a7d5c6bce1b4043330a2beb78b6f1532a763d5f82a7ea984328e07998632c"
+      },
+      "bitwise_equal": true,
+      "arrays": 48,
+      "files": 6,
+      "resumed_sha256": {
+        "checkpoints/opes_0000.npz": "b9d5b607274ed571f51b6b4428f30f4b5a760b028687f2bfde2eb680614c20b0",
+        "checkpoints/opes_0001.npz": "624508ff2df25ba3c9286368a4e2f53b6b2d66f68d62a225a85982d7a1ea5161",
+        "fes.csv": "9002dcb67a1adb7947c2400a0aef521dd30585eaa2d9bb39893a777af056d8db",
+        "fes.json": "2d7b5683387e6b794cc8f4a6f4791c18b944d4a8ee7dcbc19df47daf835d71ed",
+        "fes.npz": "398e4fcbadd26b38a02daddab2b3bc7549e80659909eeab52e410447e5915307",
+        "summary.json": "2d7b5683387e6b794cc8f4a6f4791c18b944d4a8ee7dcbc19df47daf835d71ed"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "opes"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.01 fs^-1"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "opes": {
+          "mode": "explore",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "barrier": "2 kcal/mol",
+          "bias_factor": 5.0
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 10
+        }
+      },
+      "fingerprint": "73e4d8b1db0901f9077492d8d4072e26789f331ed9ecaf5a9bdba234d5176685"
+    },
+    {
+      "case": "opes-metad-adaptive-schema1",
+      "prefix_sha256": {
+        "checkpoints/opes_0000.npz": "f153ad3f2106aa5255ec0812e680ce5a124f9a70d89b9ada8e101bedb7bea821",
+        "checkpoints/opes_0001.npz": "d97bc968e625dbb175529d90e14feb6789c6ae450cd6a6ae9b6bfee38a4fd847"
+      },
+      "reference_sha256": {
+        "checkpoints/opes_0000.npz": "3f3a76ece7ac955a5caae95d3ec795d97b5555e3365bd1dbc133c721c9925fdc",
+        "checkpoints/opes_0001.npz": "4f53a4fabc295e50dedf65e7f13967dfc95631d46eafb1e8e58c38a1d1876b25",
+        "fes.csv": "76e82678d59d363961707dc836eaed3a25634bd236f22b3b2d2d5ef6fb139bcc",
+        "fes.json": "d0793d93bd0c2f827f400a0807ba7dd664aca3f8f2cf53463bd96c095b03b7e1",
+        "fes.npz": "2e0f7fe4f7e768b805235d5eced7a7ee164a2524e13cd05162ee990d5ac6f4ad",
+        "summary.json": "d0793d93bd0c2f827f400a0807ba7dd664aca3f8f2cf53463bd96c095b03b7e1"
+      },
+      "bitwise_equal": true,
+      "arrays": 48,
+      "files": 6,
+      "resumed_sha256": {
+        "checkpoints/opes_0000.npz": "3f3a76ece7ac955a5caae95d3ec795d97b5555e3365bd1dbc133c721c9925fdc",
+        "checkpoints/opes_0001.npz": "4f53a4fabc295e50dedf65e7f13967dfc95631d46eafb1e8e58c38a1d1876b25",
+        "fes.csv": "76e82678d59d363961707dc836eaed3a25634bd236f22b3b2d2d5ef6fb139bcc",
+        "fes.json": "906bd545f1e3e55c68611ff1ccce1fcf0bbaaff732cc24d6b367653b49614786",
+        "fes.npz": "e7551f01dfef0e9ddf8fccb10c31fef45060a70a252945e9b82f60147e746a77",
+        "summary.json": "906bd545f1e3e55c68611ff1ccce1fcf0bbaaff732cc24d6b367653b49614786"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "opes"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "andersen"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "opes": {
+          "mode": "metad",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "barrier": "2 kcal/mol",
+          "bias_factor": 5.0,
+          "adaptive_sigma": true,
+          "sigma_min": [
+            0.03,
+            0.04
+          ]
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 10
+        }
+      },
+      "fingerprint": "ca570fa89f0ab0b1157b1da1ba8de8bcdcc71742ff1849282f67c4c8c408484b"
+    },
+    {
+      "case": "opes-metad-adaptive-schema2",
+      "prefix_sha256": {
+        "checkpoints/opes_0000.npz": "d43b0677a20255824a5a4516ae36abf015a0545430042411a4e4317bb0a6d1d8",
+        "checkpoints/opes_0001.npz": "03404163ccfdfd50f4d91aad1e6ece87c730bbabf7f379eb2e7f7731a20f1ddb"
+      },
+      "reference_sha256": {
+        "checkpoints/opes_0000.npz": "883aedf0aab0a339bbb7ca1c89357746cc2f1121b4a25cc8136a84ad35cc7531",
+        "checkpoints/opes_0001.npz": "c5fc0b92ce64c0805fa7a24b5ae54b088025d2cc6709518a02de5ea0d0f9836c",
+        "fes.csv": "8ee8ac5a8e7bd039b311d2e3e0612491e163edadb0a513f6c80b77d37e67c301",
+        "fes.json": "93ea46c720b7382e1fb78df9e63876f881efa2573d5d96aae2fa3ed6ecd12587",
+        "fes.npz": "b6615ba4dc1821a60a7d7e539f36b1123b51a31330eff13933f49816ec7d765d",
+        "summary.json": "93ea46c720b7382e1fb78df9e63876f881efa2573d5d96aae2fa3ed6ecd12587"
+      },
+      "bitwise_equal": true,
+      "arrays": 48,
+      "files": 6,
+      "resumed_sha256": {
+        "checkpoints/opes_0000.npz": "883aedf0aab0a339bbb7ca1c89357746cc2f1121b4a25cc8136a84ad35cc7531",
+        "checkpoints/opes_0001.npz": "c5fc0b92ce64c0805fa7a24b5ae54b088025d2cc6709518a02de5ea0d0f9836c",
+        "fes.csv": "8ee8ac5a8e7bd039b311d2e3e0612491e163edadb0a513f6c80b77d37e67c301",
+        "fes.json": "639fd565f363e84492d8ead1f40b44892a4be33750ddd151b072aed6843eaa99",
+        "fes.npz": "0e1724a8cd63136022e1d89fbf95a25260339e1d684b588148a600e05cc78916",
+        "summary.json": "639fd565f363e84492d8ead1f40b44892a4be33750ddd151b072aed6843eaa99"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "opes"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "andersen"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "opes": {
+          "mode": "metad",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "barrier": "2 kcal/mol",
+          "bias_factor": 5.0,
+          "adaptive_sigma": true,
+          "sigma_min": [
+            0.03,
+            0.04
+          ]
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 10
+        }
+      },
+      "fingerprint": "ca570fa89f0ab0b1157b1da1ba8de8bcdcc71742ff1849282f67c4c8c408484b"
+    },
+    {
+      "case": "opes-metad-andersen",
+      "prefix_sha256": {
+        "checkpoints/opes_0000.npz": "e3b487bba2c14c8370eb64a499db5ba0a3418951d2c672c230e0fd0a2a44e92b",
+        "checkpoints/opes_0001.npz": "0065b64fd7e9931a8789dd9eefa2957f7cd105bd1a8e0f051d84a2c78b17897e"
+      },
+      "reference_sha256": {
+        "checkpoints/opes_0000.npz": "b91cdbb1fe95944c1ee342d9255830714dc3aff9c4bb553aef3e100427bf03e4",
+        "checkpoints/opes_0001.npz": "77cc477c2186edf286000bff6a179831e754045a0801a87107f809415cf7d608",
+        "fes.csv": "ad07164ce98192fdfcb62c25e73be4c6b6229e9e3283c540defd061c24b7d545",
+        "fes.json": "dc24cba38847f1562013adf1cad5d80fe898f81f369b98206d8f5f2d955b5dd8",
+        "fes.npz": "c2d883fca1efd3d2591b4387264c51382186260b2fc5d97e4f565929df0b791d",
+        "summary.json": "dc24cba38847f1562013adf1cad5d80fe898f81f369b98206d8f5f2d955b5dd8"
+      },
+      "bitwise_equal": true,
+      "arrays": 48,
+      "files": 6,
+      "resumed_sha256": {
+        "checkpoints/opes_0000.npz": "b91cdbb1fe95944c1ee342d9255830714dc3aff9c4bb553aef3e100427bf03e4",
+        "checkpoints/opes_0001.npz": "77cc477c2186edf286000bff6a179831e754045a0801a87107f809415cf7d608",
+        "fes.csv": "ad07164ce98192fdfcb62c25e73be4c6b6229e9e3283c540defd061c24b7d545",
+        "fes.json": "d5e34502ee24a7ba1a1a4e32b8987dd9bdd4a0eb11bfa0f80967a4243ab326a8",
+        "fes.npz": "fb209002562d85162b14193e5c9be88a0d5dd65e6aec8f971828e2c46416b305",
+        "summary.json": "d5e34502ee24a7ba1a1a4e32b8987dd9bdd4a0eb11bfa0f80967a4243ab326a8"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "opes"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "andersen"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "opes": {
+          "mode": "metad",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "barrier": "2 kcal/mol",
+          "bias_factor": 5.0
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 10
+        }
+      },
+      "fingerprint": "083e3353270c13f78bf31cf26bbec4a3b02b98aebef3d1020a20171df8369547"
+    },
+    {
+      "case": "opes-metad-fixed-schema1",
+      "prefix_sha256": {
+        "checkpoints/opes_0000.npz": "9d454a60e462b8028d7e2693717c1cc5a130e492a40c3eaaf2c79b3f35cc35d0",
+        "checkpoints/opes_0001.npz": "49c94212d8f38fd8301313cbd2f93a7d08973b0230af6b9bc4f9a60d69b99095"
+      },
+      "reference_sha256": {
+        "checkpoints/opes_0000.npz": "9da195c432089b8fe8c0d1a98057bd10c30234864a64f4fec334e108c0bf90ee",
+        "checkpoints/opes_0001.npz": "438fc0a8d69102455a946c529e4523d160be7c3deb181542206908e0fd94d092",
+        "fes.csv": "dca74e6775a803a1e94a756bb1e4d469758081a3f5d9956e4019a9b5fa98e24e",
+        "fes.json": "f1998d2490437805b3ff2a5e78835fc8b18538e4f4d754e07856e5b2da0f38e9",
+        "fes.npz": "9601bd0c4bb2e97e50896f219752fd209bf4b6926f2b0fd31101e348f298e8e0",
+        "summary.json": "f1998d2490437805b3ff2a5e78835fc8b18538e4f4d754e07856e5b2da0f38e9"
+      },
+      "bitwise_equal": true,
+      "arrays": 48,
+      "files": 6,
+      "resumed_sha256": {
+        "checkpoints/opes_0000.npz": "9da195c432089b8fe8c0d1a98057bd10c30234864a64f4fec334e108c0bf90ee",
+        "checkpoints/opes_0001.npz": "438fc0a8d69102455a946c529e4523d160be7c3deb181542206908e0fd94d092",
+        "fes.csv": "dca74e6775a803a1e94a756bb1e4d469758081a3f5d9956e4019a9b5fa98e24e",
+        "fes.json": "a641df2d14867dee001d9909edf771b8bf16b6e8b7a2b408b055d77731e3820f",
+        "fes.npz": "b9f9175863baa33387f24e3be7ae8600b4a8af6c438f6e8fc9ac894518cec4cf",
+        "summary.json": "a641df2d14867dee001d9909edf771b8bf16b6e8b7a2b408b055d77731e3820f"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "opes"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "andersen"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "opes": {
+          "mode": "metad",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "barrier": "2 kcal/mol",
+          "bias_factor": 5.0
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 10
+        }
+      },
+      "fingerprint": "083e3353270c13f78bf31cf26bbec4a3b02b98aebef3d1020a20171df8369547"
+    },
+    {
+      "case": "opes-metad-fixed-schema2",
+      "prefix_sha256": {
+        "checkpoints/opes_0000.npz": "e3b487bba2c14c8370eb64a499db5ba0a3418951d2c672c230e0fd0a2a44e92b",
+        "checkpoints/opes_0001.npz": "0065b64fd7e9931a8789dd9eefa2957f7cd105bd1a8e0f051d84a2c78b17897e"
+      },
+      "reference_sha256": {
+        "checkpoints/opes_0000.npz": "b91cdbb1fe95944c1ee342d9255830714dc3aff9c4bb553aef3e100427bf03e4",
+        "checkpoints/opes_0001.npz": "77cc477c2186edf286000bff6a179831e754045a0801a87107f809415cf7d608",
+        "fes.csv": "ad07164ce98192fdfcb62c25e73be4c6b6229e9e3283c540defd061c24b7d545",
+        "fes.json": "714d43cecca28cfe734269ac822f3accd83fee353feba6de12dbda3bb40e6a70",
+        "fes.npz": "61dbcc95867f623407dd36eb42c25aa39cbc2ed20d20f1752fc4818122b5dd51",
+        "summary.json": "714d43cecca28cfe734269ac822f3accd83fee353feba6de12dbda3bb40e6a70"
+      },
+      "bitwise_equal": true,
+      "arrays": 48,
+      "files": 6,
+      "resumed_sha256": {
+        "checkpoints/opes_0000.npz": "b91cdbb1fe95944c1ee342d9255830714dc3aff9c4bb553aef3e100427bf03e4",
+        "checkpoints/opes_0001.npz": "77cc477c2186edf286000bff6a179831e754045a0801a87107f809415cf7d608",
+        "fes.csv": "ad07164ce98192fdfcb62c25e73be4c6b6229e9e3283c540defd061c24b7d545",
+        "fes.json": "907583216048afde5986089eb3a877ced5f2856390dd99246455217e824f5dd9",
+        "fes.npz": "bc8ac3e21b5560f51140cb15cf5cd28f86d5458384dcaafe4a6c36d2a439e808",
+        "summary.json": "907583216048afde5986089eb3a877ced5f2856390dd99246455217e824f5dd9"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "opes"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "andersen"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "opes": {
+          "mode": "metad",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "barrier": "2 kcal/mol",
+          "bias_factor": 5.0
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 10
+        }
+      },
+      "fingerprint": "083e3353270c13f78bf31cf26bbec4a3b02b98aebef3d1020a20171df8369547"
+    },
+    {
+      "case": "opes-metad-pile-l",
+      "prefix_sha256": {
+        "checkpoints/opes_0000.npz": "c50847eeb6de0e3b7892e9d8ed6dc9936094b98a184f67197700460cfe5bfcde",
+        "checkpoints/opes_0001.npz": "7f5b3c449854aa707418e5cf07586472622d16591263da6bbf9d209175677faa"
+      },
+      "reference_sha256": {
+        "checkpoints/opes_0000.npz": "662af551302ece1513eeb13d02f8a356015fe8b74b619a0a27ffc5a544173231",
+        "checkpoints/opes_0001.npz": "56b23fe8fc830128190c0cdb1af879f215f93721b066164b4fbae08b6acccebe",
+        "fes.csv": "3fb3e2eca687ff0a7b7fb9a5338854f1e02e17171c8288c7d0b271276d49cd62",
+        "fes.json": "03883222ba4728cc0585f1689ec5ec81591cfe8a1fc4b3af3e3dc0afc6515b2d",
+        "fes.npz": "231d62d0c2d528d9a00157393a8980ab12611c89fb0d28ae169ce6a54f4dc9d6",
+        "summary.json": "03883222ba4728cc0585f1689ec5ec81591cfe8a1fc4b3af3e3dc0afc6515b2d"
+      },
+      "bitwise_equal": true,
+      "arrays": 48,
+      "files": 6,
+      "resumed_sha256": {
+        "checkpoints/opes_0000.npz": "662af551302ece1513eeb13d02f8a356015fe8b74b619a0a27ffc5a544173231",
+        "checkpoints/opes_0001.npz": "56b23fe8fc830128190c0cdb1af879f215f93721b066164b4fbae08b6acccebe",
+        "fes.csv": "3fb3e2eca687ff0a7b7fb9a5338854f1e02e17171c8288c7d0b271276d49cd62",
+        "fes.json": "1b0e80b1c10ecb4c7bd3fb967307f7ab30bb515fbe6332707046592653304979",
+        "fes.npz": "d7af81e9d48b1e41afef9e4ca1c97238bffd6be6699ecd1c88a69c708c6b6157",
+        "summary.json": "1b0e80b1c10ecb4c7bd3fb967307f7ab30bb515fbe6332707046592653304979"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "opes"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.01 fs^-1"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "opes": {
+          "mode": "metad",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "barrier": "2 kcal/mol",
+          "bias_factor": 5.0
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 10
+        }
+      },
+      "fingerprint": "a04fd6bc4533630486397ce895a1b86e9dd82468910a778c2796b2bc43aaa007"
+    },
+    {
+      "case": "opes-mpi-sync-andersen",
+      "prefix_sha256": {
+        "checkpoints/opes_shared_mpi.npz": "6dd0a99106ee8947ed5e3a91fed88935dd931b264e6f4bc4888428271fe184e4"
+      },
+      "reference_sha256": {
+        "checkpoints/opes_shared_mpi.npz": "77c7f3ef1ba09b06167cf21ea1dd071061236b58be105f4c7b0d3c8a63fe29b6",
+        "fes.csv": "9f8621580173dff40f1c3d1cc63f80775597b02fc28910474a54c817713ca4bb",
+        "fes.json": "cc7ef5242b22ec83a716e657df30f3fb173f5158cda7958e509cef16b2e3a2a3",
+        "fes.npz": "9c027d9f2ab4a5261007abbd55e685c8a661215423bbc77b61a5d4771a72a9c6",
+        "summary.json": "cc7ef5242b22ec83a716e657df30f3fb173f5158cda7958e509cef16b2e3a2a3"
+      },
+      "bitwise_equal": true,
+      "arrays": 35,
+      "files": 5,
+      "resumed_sha256": {
+        "checkpoints/opes_shared_mpi.npz": "77c7f3ef1ba09b06167cf21ea1dd071061236b58be105f4c7b0d3c8a63fe29b6",
+        "fes.csv": "9f8621580173dff40f1c3d1cc63f80775597b02fc28910474a54c817713ca4bb",
+        "fes.json": "f6b7adf6fc8f9ee7f94355723cfc6e9d1db123bf3492dc2187bafdaf3a8e75b1",
+        "fes.npz": "8bae8b040f30b3982550b4564045719669642e2dd594b73679a90e95d1e82fc4",
+        "summary.json": "f6b7adf6fc8f9ee7f94355723cfc6e9d1db123bf3492dc2187bafdaf3a8e75b1"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "opes"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "andersen"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "opes": {
+          "mode": "explore",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "barrier": "2 kcal/mol",
+          "bias_factor": 5.0,
+          "walkers_mode": "mpi-sync"
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 8
+        }
+      },
+      "fingerprint": "dca4990911b830e43c1b13a1fff66e0012ebf6edb8545665cc2ae6e413c8d077"
+    },
+    {
+      "case": "opes-mpi-sync-pile-l",
+      "prefix_sha256": {
+        "checkpoints/opes_shared_mpi.npz": "db240c2a4d09b76686c1137965970dfa0592a57c78b1b35bcea6d9ad972eb718"
+      },
+      "reference_sha256": {
+        "checkpoints/opes_shared_mpi.npz": "1c4767a1af2c738a2cdd9063726ecb3d7b74407460bc8bff77ab3c5237aa9241",
+        "fes.csv": "8c87603c8a92bcb1b4bd62820967e51b91f18015959aefaec16e37eb959b0fed",
+        "fes.json": "2988a830b38bda4f4887021552036a0c339997fbb457c8fcc6a753a6236ef7b0",
+        "fes.npz": "c6fe95d16ee18343ef44e310c898ba4c6fed2b745cafa9b82d20b7cf5412c1e5",
+        "summary.json": "2988a830b38bda4f4887021552036a0c339997fbb457c8fcc6a753a6236ef7b0"
+      },
+      "bitwise_equal": true,
+      "arrays": 35,
+      "files": 5,
+      "resumed_sha256": {
+        "checkpoints/opes_shared_mpi.npz": "1c4767a1af2c738a2cdd9063726ecb3d7b74407460bc8bff77ab3c5237aa9241",
+        "fes.csv": "8c87603c8a92bcb1b4bd62820967e51b91f18015959aefaec16e37eb959b0fed",
+        "fes.json": "d9cc76f195f1e53d01c537f2f6bae9fc703f7e39518ecc356e15688b7ca2456f",
+        "fes.npz": "d9695302e2e9a3a3b30e32d1fb345b1796d795b5124a6a552a7b314864d2ad92",
+        "summary.json": "d9cc76f195f1e53d01c537f2f6bae9fc703f7e39518ecc356e15688b7ca2456f"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "opes"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.01 fs^-1"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "opes": {
+          "mode": "explore",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "barrier": "2 kcal/mol",
+          "bias_factor": 5.0,
+          "walkers_mode": "mpi-sync"
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 8
+        }
+      },
+      "fingerprint": "51c6836b34c93f29113bf68fd8e75804e2bda01d00d032bf534787b424d9a6ec"
+    },
+    {
+      "case": "shared-standard-andersen",
+      "prefix_sha256": {
+        "checkpoints/shared_metadynamics.npz": "493957b6bf3a6ce8ac2b56e3eb4f3a596b71a226d99096b8cd56b840d414b18c"
+      },
+      "reference_sha256": {
+        "checkpoints/shared_metadynamics.npz": "4c7ea4e31392f31bffb082741eeac4fa846ae3de75f362baf636156e66d0ffc1",
+        "fes.csv": "5e1eb82c8d175fbb2fd188e18063b74cd8128cfe9f975606e37e06014061ab56",
+        "fes.npz": "47e0a625e7a17026c03698deaedc449f1d301ccaaeeb5b10744388bc4bf8d2b4",
+        "shared-hills.csv": "e33a86a9188d953ee630d4189fd9636d255241a5c5fcac5418ab6bdbbd7a3dbd",
+        "summary.json": "8c40648d1bbb9bf3bf71c4a089500d0e93902538883517fc633a86891a698235"
+      },
+      "bitwise_equal": true,
+      "arrays": 22,
+      "files": 5,
+      "resumed_sha256": {
+        "checkpoints/shared_metadynamics.npz": "4c7ea4e31392f31bffb082741eeac4fa846ae3de75f362baf636156e66d0ffc1",
+        "fes.csv": "5e1eb82c8d175fbb2fd188e18063b74cd8128cfe9f975606e37e06014061ab56",
+        "fes.npz": "47e0a625e7a17026c03698deaedc449f1d301ccaaeeb5b10744388bc4bf8d2b4",
+        "shared-hills.csv": "e33a86a9188d953ee630d4189fd9636d255241a5c5fcac5418ab6bdbbd7a3dbd",
+        "summary.json": "b6a317999d68d1d39b2d0d4760f9538525cc66928dcda0798e078481fdf9a9c7"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "metadynamics"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "andersen"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "metadynamics": {
+          "mode": "standard",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "height": "0.02 kcal/mol",
+          "shared_walkers": true
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 10,
+          "store_configurations": true
+        }
+      },
+      "fingerprint": "ddf67a3bd6e1282fa34d25616b24b571f01ffb82c0151d57d48ae6cdc6cede0d"
+    },
+    {
+      "case": "shared-standard-pile-l",
+      "prefix_sha256": {
+        "checkpoints/shared_metadynamics.npz": "1397183963f10edf173a074ecf1a6a46cb039d347fc16537ed6436e1ac828d09"
+      },
+      "reference_sha256": {
+        "checkpoints/shared_metadynamics.npz": "5ab5c1984d0560c83fe937f92960ba41b39db6135e1b6e8d7864854739eb5beb",
+        "fes.csv": "883ffea81dd6679b806024901baa23497eeefaaa4e0d7287bb36208cd58e0aef",
+        "fes.npz": "75b27d1102e31a6d2cd9ade6cf15b03166c0faee72f9a37448782c05be925cce",
+        "shared-hills.csv": "1d08f05f9d0b4c421a6a6a0fb3d9d3017de75c2ee9312bb17521af924f9b80a2",
+        "summary.json": "670a6dad7fb1ce7bc5e872341baebb90ec03f506655735182fb1ab4f9c727908"
+      },
+      "bitwise_equal": true,
+      "arrays": 22,
+      "files": 5,
+      "resumed_sha256": {
+        "checkpoints/shared_metadynamics.npz": "5ab5c1984d0560c83fe937f92960ba41b39db6135e1b6e8d7864854739eb5beb",
+        "fes.csv": "883ffea81dd6679b806024901baa23497eeefaaa4e0d7287bb36208cd58e0aef",
+        "fes.npz": "75b27d1102e31a6d2cd9ade6cf15b03166c0faee72f9a37448782c05be925cce",
+        "shared-hills.csv": "1d08f05f9d0b4c421a6a6a0fb3d9d3017de75c2ee9312bb17521af924f9b80a2",
+        "summary.json": "dca0e92a89b672d03a254290ede47fc8205c1b141f60ba4d623d87e5206fc0d4"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "metadynamics"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.01 fs^-1"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "metadynamics": {
+          "mode": "standard",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "height": "0.02 kcal/mol",
+          "shared_walkers": true
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 10,
+          "store_configurations": true
+        }
+      },
+      "fingerprint": "4cd42707dda90f488de2cfb116fa159587081d2de5e7d102a1cb33b4e23efe7f"
+    },
+    {
+      "case": "shared-well_tempered-andersen",
+      "prefix_sha256": {
+        "checkpoints/shared_metadynamics.npz": "3d86b24986da9401701f20c278ca6049411240fba7693b14f3f422dcf2cf065f"
+      },
+      "reference_sha256": {
+        "checkpoints/shared_metadynamics.npz": "4c66610715ca06f02bf635ae4d190140cc4288415757cfd068baa0b6d5e527fa",
+        "fes.csv": "7ea757c2efbc5a1043f8906d2d86693914bcc36d66f3f629bb427790154cef0e",
+        "fes.npz": "f692cb12171e73692d6ea28bdda5e0c9997886095f2f3ac76bc159e29be15ec5",
+        "shared-hills.csv": "ef0a8f534fac69580c99b7d7f17b6d1ea1f013737b40615099b9ac9fe3926031",
+        "summary.json": "81138afd0cbefc6e962d36988bb21dc76ba8bd38da6cec732d569b891aec8c4c"
+      },
+      "bitwise_equal": true,
+      "arrays": 22,
+      "files": 5,
+      "resumed_sha256": {
+        "checkpoints/shared_metadynamics.npz": "4c66610715ca06f02bf635ae4d190140cc4288415757cfd068baa0b6d5e527fa",
+        "fes.csv": "7ea757c2efbc5a1043f8906d2d86693914bcc36d66f3f629bb427790154cef0e",
+        "fes.npz": "f692cb12171e73692d6ea28bdda5e0c9997886095f2f3ac76bc159e29be15ec5",
+        "shared-hills.csv": "ef0a8f534fac69580c99b7d7f17b6d1ea1f013737b40615099b9ac9fe3926031",
+        "summary.json": "8dcd4302d76ed48dcef4b1e891cf1aa5252cdc1be96ffa59f99b5f2dde014e2f"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "metadynamics"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "andersen"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "metadynamics": {
+          "mode": "well_tempered",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "height": "0.02 kcal/mol",
+          "bias_factor": 5.0,
+          "shared_walkers": true
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 10,
+          "store_configurations": true
+        }
+      },
+      "fingerprint": "38b20924fc50e7e2a0e306cf99f4c649fe93d55474490fd788aeb9df27a5db33"
+    },
+    {
+      "case": "shared-well_tempered-pile-l",
+      "prefix_sha256": {
+        "checkpoints/shared_metadynamics.npz": "63dbb4eabad3ab5e68e0a24d58ea20eb989be321458baea986dfefbe25bbc027"
+      },
+      "reference_sha256": {
+        "checkpoints/shared_metadynamics.npz": "49ebdd844e2d7857453df69848d30305728db68c9a3ac069d7c9861dcd1aa6a8",
+        "fes.csv": "e63fb1eb474b9f86a2321ed64d30cfec8fa70f8a09175492d3976ae59090acf5",
+        "fes.npz": "99b1286dc0168ae6efc7ad1fd935bab92eec1b1beaed2a63c63bb47c91d695b7",
+        "shared-hills.csv": "b9d4918b9788b89c9d081dd2dfcd9887e5ec66ccb8ad1ab9d21fcd92b7c4b4a2",
+        "summary.json": "c76a0d1a68bd6823299f26f88c2327a762c1f010a4c2237071b20d20ac287172"
+      },
+      "bitwise_equal": true,
+      "arrays": 22,
+      "files": 5,
+      "resumed_sha256": {
+        "checkpoints/shared_metadynamics.npz": "49ebdd844e2d7857453df69848d30305728db68c9a3ac069d7c9861dcd1aa6a8",
+        "fes.csv": "e63fb1eb474b9f86a2321ed64d30cfec8fa70f8a09175492d3976ae59090acf5",
+        "fes.npz": "99b1286dc0168ae6efc7ad1fd935bab92eec1b1beaed2a63c63bb47c91d695b7",
+        "shared-hills.csv": "b9d4918b9788b89c9d081dd2dfcd9887e5ec66ccb8ad1ab9d21fcd92b7c4b4a2",
+        "summary.json": "02f3d268b84d8d7a72166c92f90441bbc08e1a2b189a82375382ec72b7efe59c"
+      },
+      "input": {
+        "task": "fes",
+        "fes": {
+          "method": "metadynamics"
+        },
+        "temperature": "300 K",
+        "beads": 3,
+        "seed": 321,
+        "system": {
+          "symbols": [
+            "H"
+          ],
+          "geometry": [
+            [
+              0.1,
+              -0.05,
+              0.0
+            ]
+          ]
+        },
+        "potential": {
+          "provider": "builtin",
+          "name": "harmonic",
+          "params": {
+            "k": 0.002
+          }
+        },
+        "dynamics": {
+          "timestep": "0.001 fs",
+          "native": false
+        },
+        "sampling": {
+          "equilibration_steps": 2,
+          "production_steps": 24,
+          "sample_interval": 2,
+          "andersen_interval": 4,
+          "replicas": 2,
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.01 fs^-1"
+        },
+        "cvs": [
+          {
+            "name": "x",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "x"
+          },
+          {
+            "name": "y",
+            "kind": "cartesian",
+            "atom": 0,
+            "axis": "y"
+          }
+        ],
+        "metadynamics": {
+          "mode": "well_tempered",
+          "sigma": [
+            0.3,
+            0.4
+          ],
+          "pace": 2,
+          "height": "0.02 kcal/mol",
+          "bias_factor": 5.0,
+          "shared_walkers": true
+        },
+        "analysis": {
+          "bins": [
+            6,
+            5
+          ],
+          "bootstrap": 0
+        },
+        "output": {
+          "checkpoint_steps": 10,
+          "store_configurations": true
+        }
+      },
+      "fingerprint": "7c4a64d70ab4c3676c239d647cfcd5f8b777636345eb07c5946b140c9d09512c"
+    }
+  ]
+}

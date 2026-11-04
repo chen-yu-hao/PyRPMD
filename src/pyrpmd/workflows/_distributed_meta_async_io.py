@@ -1,26 +1,15 @@
 """Distributed shared-metadynamics workflow helpers."""
 from __future__ import annotations
 
-import copy
 import json
 import os
 from pathlib import Path
-
 import numpy as np
-
-from . import _shared_metadynamics_serial as _serial
-for _name, _value in vars(_serial).items():
-    if not _name.startswith("__"):
-        globals()[_name] = _value
-
-from ..checkpoint import atomic_savez, load_checkpoint
+from ..checkpoint import load_checkpoint
 from ..shared_metadynamics import AsynchronousMetadynamicsBias
-from ..walker_exchange import (
-    AsyncWalkerStore, allgather_centers, ensure_manifest, make_record, mpi_world,
-    read_committed_records, validate_record)
-
-MPI_KIND = "PyRPMD.shared-metadynamics.mpi.v1"
-ASYNC_KIND = "PyRPMD.shared-metadynamics.async-walker.v1"
+from ..walker_exchange import ensure_manifest, mpi_world, read_committed_records, validate_record
+from .common import _fingerprint, fingerprint_matches, write_json
+from .shared_metadynamics import ASYNC_KIND, _analyze
 
 def _new_async_bias(cv, config, options, records=None):
     return AsynchronousMetadynamicsBias(
@@ -168,7 +157,7 @@ def _collect_async(config, system, output, cv, options, *, return_data):
                 "samples": list(samples), "sample_steps": list(clocks[0]),
                 "sample_bias": list(sampled_bias),
                 "configurations": list(configurations)}
-    result = _serial._analyze(
+    result = _analyze(
         config, system, output, cv, options, ensemble, return_data)
     summary = result["summary"] if return_data else result
     summary["walkers_mode"] = "async-files"
