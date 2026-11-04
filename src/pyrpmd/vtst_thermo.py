@@ -87,6 +87,14 @@ def analyze_path_modes(
         components.append(component)
         kappa = float(np.linalg.norm(component))
         curvature[index] = kappa
+        if omega.size == 0:
+            # Removing the rigid modes and reaction tangent can exhaust the
+            # vibrational subspace, for example for a diatomic stretch.  This
+            # is the exact zero-curvature limit: keep finite diagnostics and
+            # leave the SCT effective-mass ratio at one.
+            effective_frequency[index] = 0.0
+            turning[index] = 0.0
+            continue
         if kappa <= 1.0e-14:
             # The limiting value is irrelevant because a = kappa*tbar is zero;
             # retain a finite value for stable differentiation.
