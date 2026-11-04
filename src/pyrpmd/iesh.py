@@ -320,6 +320,19 @@ class IESHDynamics:
     ``native=True`` requires the compiled nuclear map; False selects Python.
     ``native=None`` explicitly permits the existing nuclear API's auto selection.
     """
+    _state_type = IESHState
+
+    @staticmethod
+    def _validate_nbeads(nbeads):
+        if isinstance(nbeads, (bool, np.bool_)) or nbeads != 1:
+            raise ValueError("IESH supports classical nuclei, P=1 only")
+
+    def _electronic_coordinates(self, q):
+        return q
+
+    def _endpoint_adiabatic(self, q):
+        return self._adiabatic(q, couplings=True)
+
     def __init__(self, potential, masses, beta, nbeads, dt, nstates=None, *,
                  nelectrons=None, seed=0, native=True, threads=1,
                  integrator="cayley-bcb", electronic_substeps=4,
@@ -331,8 +344,7 @@ class IESHDynamics:
             max(self.nstates//2, 1) if nelectrons is None else nelectrons, "nelectrons")
         if self.nelectrons > self.nstates:
             raise ValueError("nelectrons cannot exceed nstates (spinless Pauli exclusion)")
-        if isinstance(nbeads, (bool, np.bool_)) or nbeads != 1:
-            raise ValueError("IESH supports classical nuclei, P=1 only")
+        self._validate_nbeads(nbeads)
         if (native is not None and not isinstance(native, (bool, np.bool_))
                 and not (isinstance(native, str) and native == "required")):
             raise ValueError("native must be True/False/None/'required'")
@@ -343,7 +355,7 @@ class IESHDynamics:
         if native is True and not self.integrator.native:
             raise ValueError("IESH native=True requires the compiled nuclear kernel; "
                              "install/rebuild the extension or use native=False")
-        self.dt, self.beta, self.nbeads = self.integrator.dt, self.integrator.beta, 1
+        self.dt, self.beta, self.nbeads = self.integrator.dt, self.integrator.beta, self.integrator.nbeads
         if self.dt <= 0.:
             raise ValueError("IESH dt must be positive")
         self.masses = self.integrator.masses
@@ -366,13 +378,13 @@ class IESHDynamics:
     def _check_parameters(self):
         if (self._parameter_values() != self._parameters
                 or self.dt != self.integrator.dt or self.beta != self.integrator.beta
-                or self.integrator_name != self.integrator.scheme or self.integrator.nbeads != 1):
+                or self.integrator_name != self.integrator.scheme or self.integrator.nbeads != self.nbeads):
             raise ValueError("IESHDynamics parameters are immutable")
 
     def _check(self, state):
         self._check_parameters()
-        if not isinstance(state, IESHState):
-            raise ValueError("IESHDynamics requires IESHState")
+        if not isinstance(state, self._state_type):
+            raise ValueError(f"{type(self).__name__} requires {self._state_type.__name__}")
         self.integrator._check(state.q, state.p)
         c, occupied = state.coefficients, state.occupied
         if (not isinstance(c, np.ndarray) or c.dtype != np.complex128
@@ -426,11 +438,11 @@ class IESHDynamics:
         self.integrator._check(nuclear.q, nuclear.p)
         occupied = _occupied(np.arange(self.nelectrons) if occupied is None else occupied,
                              self.nstates, self.nelectrons)
-        _, u, _ = self._adiabatic(nuclear.q)
+        _, u, _ = self._adiabatic(self._electronic_coordinates(nuclear.q))
         c = np.eye(self.nstates, dtype=complex)[:, occupied] if adiabatic_coefficients is None else _orbitals(adiabatic_coefficients)
         if c.shape != (self.nstates, self.nelectrons):
             raise ValueError("adiabatic_coefficients shape disagrees with nstates/nelectrons")
-        state = IESHState(nuclear.q, nuclear.p, nuclear.step, nuclear.time, u[0] @ c, occupied)
+        state = self._state_type(nuclear.q, nuclear.p, nuclear.step, nuclear.time, u[0] @ c, occupied)
         self._check(state)
         return state
 
@@ -439,7 +451,7 @@ class IESHDynamics:
         self._check(state)
         c = state.coefficients
         if basis == "adiabatic":
-            _, u, _ = self._adiabatic(state.q)
+            _, u, _ = self._adiabatic(self._electronic_coordinates(state.q))
             c = u[0].T @ c
         elif basis != "diabatic":
             raise ValueError("basis must be diabatic or adiabatic")
@@ -464,13 +476,15 @@ class IESHDynamics:
     def _electronic_step(self, state, new_q):
         z = state.coefficients.copy()
         probabilities = np.zeros((self.nelectrons, self.nstates))
-        velocity = (new_q[0]-state.q[0])/self.dt
+        old_q = self._electronic_coordinates(state.q)
+        new_q = self._electronic_coordinates(new_q)
+        velocity = (new_q[0]-old_q[0])/self.dt
         duration = self.dt/self.electronic_substeps
         # All quadrature geometries are known after the nuclear drift.  Evaluate
         # them in one provider batch and use NumPy's stacked eigensolver; only
         # the wavefunction products remain ordered in time.
         fractions = (np.arange(self.electronic_substeps)+0.5)/self.electronic_substeps
-        q = state.q+(new_q-state.q)*fractions[:, None, None]
+        q = old_q+(new_q-old_q)*fractions[:, None, None]
         energies, vectors, _, couplings = self._adiabatic(q, couplings=True)
         velocity_couplings = np.einsum("ac,bijac->bij", velocity, couplings, optimize=True)
         for k in range(self.electronic_substeps):
@@ -531,9 +545,14 @@ class IESHDynamics:
         trial = state.copy()
         result = self._hop(trial, electron, target)
         self._check(trial)
-        state.p[:], state.occupied[:] = trial.p, trial.occupied
+        self._commit_state(state, trial)
         self.last_hop = result
         return result
+
+    def _commit_state(self, state, trial):
+        state.q[:], state.p[:], state.coefficients[:] = trial.q, trial.p, trial.coefficients
+        state.occupied[:] = trial.occupied
+        state.step, state.time = trial.step, trial.time
 
     def step(self, state):
         self._check(state)
@@ -544,7 +563,7 @@ class IESHDynamics:
             force = self._bare(trial.q).forces-gradients[:, trial.occupied].sum(axis=1)
             trial.p += 0.5*self.dt*force
             self.integrator.free_step(trial.q, trial.p)
-            energies, vectors, gradients, couplings = self._adiabatic(trial.q, couplings=True)
+            energies, vectors, gradients, couplings = self._endpoint_adiabatic(trial.q)
             force = self._bare(trial.q).forces-gradients[:, trial.occupied].sum(axis=1)
             trial.p += 0.5*self.dt*force
             z, probabilities = self._electronic_step(state, trial.q)
@@ -562,8 +581,6 @@ class IESHDynamics:
         except BaseException:
             self.rng.bit_generator.state = saved_rng
             raise
-        state.q[:], state.p[:], state.coefficients[:] = trial.q, trial.p, trial.coefficients
-        state.occupied[:] = trial.occupied
-        state.step, state.time = trial.step, trial.time
+        self._commit_state(state, trial)
         self.last_hop, self.last_probabilities = hop, probabilities.copy()
         return state

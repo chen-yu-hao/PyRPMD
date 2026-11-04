@@ -22,7 +22,7 @@ import numpy as np
 from scipy.fft import dct, idct
 
 from .constants import KB_AU
-from .potentials.base import coordinates, validate_result
+from .potentials.base import coordinates, evaluate_checked
 from .units import parse_quantity
 from .validation import checked_integer as _integer
 from .validation import finite_positive
@@ -115,7 +115,7 @@ class PathIntegralAction:
         q = np.asarray(q, dtype=float)
         nsamples, beads, natoms, _ = q.shape
         flat = np.ascontiguousarray(q.reshape(nsamples * beads, natoms, 3))
-        result = validate_result(self.potential.evaluate(flat), flat.shape)
+        result = evaluate_checked(self.potential, flat)
         delta = q - np.roll(q, 1, axis=1)
         spring = beads / (2 * self.beta) * np.sum(self.masses_au[None, None, :, None] * delta**2, axis=(1, 2, 3))
         potential = self.beta * result.energy.reshape(nsamples, beads).mean(axis=1)
@@ -263,7 +263,7 @@ class OpenPathAction:
     def evaluate(self, q):
         q = self._coordinates(q)
         beads = len(q) - 1
-        result = validate_result(self.potential.evaluate(q), q.shape)
+        result = evaluate_checked(self.potential, q)
         spring = beads / (2 * self.beta) * np.sum(self.masses_au[None, :, None] * np.diff(q, axis=0)**2)
         potential = self.beta / beads * (result.energy.sum() - 0.5 * (result.energy[0] + result.energy[-1]))
         if not np.isfinite(spring + potential):

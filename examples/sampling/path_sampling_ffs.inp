@@ -1,0 +1,49 @@
+# NVE excursion dynamics plus Maxwell collisions only inside the A/B basins.
+# This is an explicit stationary Markov process; it is not globally NVE RPMD.
+# Initial relaxation alone does not certify equilibrium. Use independent runs.
+# python -m pyrpmd run examples/sampling/path_sampling_ffs.inp
+task = "path_sampling"
+temperature = "315775.02480398706 K"
+beads = 1
+seed = 20261103
+native = false
+
+[system]
+symbols = ["H"]
+masses = [1.0]
+geometry = [[-1.0, 0.0, 0.0]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "python"
+factory = "path_sampling_quartic.py:make_potential"
+
+[dynamics]
+timestep = 0.04
+integrator = "cayley-bcb"
+
+[[cvs]]
+name = "x"
+kind = "cartesian"
+atom = 0
+axis = "x"
+
+[path_sampling]
+method = "ffs"
+cv = "x"
+basin_a = -1.0
+basin_b = 1.0
+interfaces = [-1.0, -0.5]
+dynamics = "basin-andersen"
+# Numeric frequencies, timestep and explicit phase-point arrays use AU.
+collision_rate = 1.0
+initial_state = {q = [[-1.0, 0.0, 0.0]], p = [[0.5, 0.0, 0.0]]}
+equilibration_steps = 2000
+flux_steps = 12000
+trials_per_interface = [320, 320]
+max_trial_steps = 2000
+block_size = 100
+
+[output]
+directory = "runs/path-ffs"
+checkpoint_steps = 200

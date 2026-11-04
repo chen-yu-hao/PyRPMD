@@ -5,6 +5,7 @@ from .base import (
     Potential,
     PotentialError,
     BackendUnavailableError,
+    evaluate_checked,
     validate_result,
     check_potential,
 )
@@ -351,6 +352,7 @@ __all__ = [
     "Potential",
     "PotentialError",
     "BackendUnavailableError",
+    "evaluate_checked",
     "validate_result",
     "check_potential",
     "make_potential",

@@ -20,7 +20,7 @@ from .path_integral import (
     OpenPathSamples, PathIntegralAction, PathIntegralSamples,
     _integer, _masses, _positive,
 )
-from .potentials.base import validate_result
+from .potentials.base import evaluate_checked
 
 
 def _series(values, name, minimum=1):
@@ -357,7 +357,7 @@ def quantum_kinetic_energy(samples, *, estimator="auto", block_size=None):
         raise ValueError("kinetic estimates require at least two finite closed configurations")
     frames, beads, atoms, _ = q.shape
     flat = np.ascontiguousarray(q.reshape(frames * beads, atoms, 3))
-    forces = validate_result(action.potential.evaluate(flat), flat.shape).forces.reshape(q.shape)
+    forces = evaluate_checked(action.potential, flat).forces.reshape(q.shape)
     if estimator == "centroid_virial":
         values = 1.5 / action.beta - np.sum((q - q.mean(axis=1, keepdims=True)) * forces, axis=(1, 3)) / (2 * beads)
     else:

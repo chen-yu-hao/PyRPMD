@@ -20,7 +20,7 @@ from ..dynamics import Dynamics, State
 from ..initial_states import prepare_initial_ensemble
 from ..input import InputError, JobSpec, load_input
 from ..io import jsonable, write_json
-from ..potentials import make_potential, validate_result
+from ..potentials import make_potential, evaluate_checked
 from ..propagation import loop_options
 from ..units import time_steps
 from ..validation import positive_integer
@@ -169,7 +169,7 @@ def check_state_selected(spec, *, duration="100 fs", samples=8, stride=10, outpu
         )
         dynamics_rng = _rng_snapshot(dynamics.rng)
         reference_q = system.geometry[None].copy()
-        reference_result = validate_result(potential.evaluate(reference_q), reference_q.shape)
+        reference_result = evaluate_checked(potential, reference_q)
         reference_energy = float(reference_result.energy[0])
         reference_forces = reference_result.forces[0]
         reference_fragment_forces = [reference_forces[list(fragment)].sum(axis=0).tolist()

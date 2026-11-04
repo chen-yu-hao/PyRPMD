@@ -1,0 +1,9 @@
+{
+  "baseline_commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+  "old_ca_reference_analyzed": true,
+  "old_ca_interrupted_resumed": true,
+  "all_checkpoint_payload_arrays_bitwise_equal": true,
+  "trajectories": 3,
+  "final_steps": 7,
+  "physics_fingerprint": "a15b26d13219cc07185f63a65e1e17a0a6da598ffc9020a2d123dfdff9efc402"
+}

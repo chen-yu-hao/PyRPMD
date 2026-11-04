@@ -1,0 +1,150 @@
+{
+  "baseline": {
+    "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=/workspace/scratch/6e18a371c00a/PyRPMD-baseline/src ../t16b-venv/bin/python -m pytest -q",
+    "commit": "ceee59cd5f702165b56c5e541a503d8810fb9111",
+    "cwd": "/workspace/scratch/6e18a371c00a/PyRPMD-baseline",
+    "exit_code": 1,
+    "failed": 1,
+    "failed_tests": [
+      "tests/test_ipi_clients.py::test_existing_unix_address_is_not_removed_on_bind_failure"
+    ],
+    "passed": 11469,
+    "raw_log": "full-baseline.log",
+    "raw_summary": "1 failed, 11469 passed, 356 skipped, 68 warnings, 493 subtests passed in 2791.17s (0:46:31)",
+    "seconds": 2791.17,
+    "skipped": 356,
+    "subtests_passed": 493,
+    "warnings": 68
+  },
+  "benchmark": {
+    "physical_converged": false,
+    "propagation_speedup_claimed": false,
+    "report": "checkpoint-storage.json"
+  },
+  "comparison": {
+    "all_tests_green": false,
+    "new_passed_tests": 61,
+    "no_new_failures": true,
+    "same_failed_tests": true,
+    "same_skipped_count": true,
+    "same_subtests_count": true,
+    "same_warning_count": true
+  },
+  "cross_version_resume": {
+    "comparison": "identical dtype, shape and C-order bytes for every retained state and sample array",
+    "passed_cases": 7,
+    "report": "cross_version_resume.json",
+    "runtime_sha256_match": true,
+    "total_cases": 7
+  },
+  "current": {
+    "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=/workspace/scratch/6e18a371c00a/PyRPMD/src ../t16b-venv/bin/python -m pytest -q",
+    "cwd": "/workspace/scratch/6e18a371c00a/PyRPMD",
+    "exit_code": 1,
+    "failed": 1,
+    "failed_tests": [
+      "tests/test_ipi_clients.py::test_existing_unix_address_is_not_removed_on_bind_failure"
+    ],
+    "functional_commit": "e3dbb84c55f808a93a8c37a96482d2ecbcfda0a2",
+    "passed": 11530,
+    "raw_log": "full-current.log",
+    "raw_summary": "1 failed, 11530 passed, 356 skipped, 68 warnings, 493 subtests passed in 2853.64s (0:47:33)",
+    "seconds": 2853.64,
+    "skipped": 356,
+    "subtests_passed": 493,
+    "warnings": 68
+  },
+  "documentation": {
+    "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../t16b-venv/bin/python -m sphinx -W --keep-going -b html docs docs/_build/html",
+    "exit_code": 0,
+    "raw_log": "docs-build.log",
+    "raw_result": "build succeeded.",
+    "status": "passed"
+  },
+  "environment": {
+    "concurrency_note": "The full baseline and changed suites ran concurrently. Their wall times are not a performance comparison.",
+    "cpu_model": null,
+    "cpu_model_note": "CPU model and /proc are unavailable in this executor.",
+    "cuda_tested": false,
+    "logical_cpus_exposed": 9,
+    "machine": "x86_64",
+    "optional_dependencies": "See the unmodified skip inventories in the two full raw logs.",
+    "packages": {
+      "h5py": "3.16.0",
+      "numpy": "2.3.5",
+      "pytest": "9.2.0",
+      "scipy": "1.17.0",
+      "sphinx": "8.2.3",
+      "torch": "2.15.0+cpu"
+    },
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "python": "3.12.14",
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    }
+  },
+  "environment_failure": {
+    "isolated_baseline_command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=/workspace/scratch/6e18a371c00a/PyRPMD-baseline/src ../t16b-venv/bin/python -m pytest -q tests/test_ipi_clients.py::test_existing_unix_address_is_not_removed_on_bind_failure",
+    "isolated_baseline_summary": "1 failed in 8.25s",
+    "new_skip_added": false,
+    "raw_log": "baseline-ipi-recheck.log",
+    "reason": "The executor denies socket.socket(AF_UNIX, SOCK_STREAM) with PermissionError errno 1 before bind.",
+    "test": "tests/test_ipi_clients.py::test_existing_unix_address_is_not_removed_on_bind_failure",
+    "test_or_socket_code_changed": false
+  },
+  "focused_runs": [
+    {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../t16b-venv/bin/python -m pytest -q tests/test_checkpoint.py tests/test_native_ensembles.py tests/test_native_ensemble_portability.py tests/test_native_pimd_followup.py tests/test_native_pimd_integration_review.py tests/test_native_pimd_nhc_metadata.py tests/test_native_pimd_preflight.py tests/test_materials_workflows.py tests/test_materials_stream_failures.py tests/test_materials_stream_validation.py tests/test_materials_integration_review.py tests/test_materials_batch.py tests/test_torch_materials.py tests/test_torch_materials_input.py tests/test_torch_materials_io.py",
+      "name": "untouched pre-edit focused baseline",
+      "note": "Torch was not installed at collection; the matching full suites below both include CPU Torch.",
+      "raw_log": "focused-baseline.log",
+      "raw_summary": "358 passed, 3 skipped in 57.57s"
+    },
+    {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../t16b-venv/bin/python -m pytest -q tests/test_torch_materials.py tests/test_torch_materials_input.py tests/test_torch_materials_io.py",
+      "name": "untouched Torch baseline",
+      "raw_log": "torch-baseline.log",
+      "raw_summary": "126 passed, 1 skipped in 40.15s"
+    },
+    {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../t16b-venv/bin/python -m pytest -q tests/test_materials_workflows.py tests/test_materials_stream_failures.py tests/test_materials_stream_validation.py tests/test_materials_integration_review.py tests/test_materials_batch.py tests/test_native_pimd_followup.py tests/test_native_pimd_integration_review.py tests/test_torch_materials.py tests/test_torch_materials_io.py",
+      "name": "materials/native/Torch integration",
+      "raw_log": "integration-focused.log",
+      "raw_summary": "251 passed in 58.70s"
+    },
+    {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../t16b-venv/bin/python -m pytest -q tests/test_pimd_engine_dispatch.py tests/test_native_pimd_preflight.py tests/test_torch_materials_input.py",
+      "name": "early dispatcher and preparation regression",
+      "note": "A focused intermediate check; final dispatcher coverage is included in full-current.log.",
+      "raw_log": "dispatch-focused.log",
+      "raw_summary": "87 passed, 1 skipped in 15.19s"
+    }
+  ],
+  "new_test_cases": {
+    "tests/test_native_checkpoint_container.py": 13,
+    "tests/test_pimd_checkpoint_compat.py": 21,
+    "tests/test_pimd_engine_dispatch.py": 27
+  },
+  "physical_converged": false,
+  "publication_note": "Runtime source hashes identify the measured implementation; the final evidence-only commit does not change runtime or tests.",
+  "runtime_source_sha256": {
+    "checkpoint.py": "6f7d1172bb81bf9aa42ae2e6e61fe233b0b998c49d188d74d46365ebb21d6b59",
+    "native_ensemble.py": "def881238502e5fbcc99021ea0cee22706b919bf62517a63c7ffc050eced80a6",
+    "pimd_checkpoint.py": "f4c036a5a5b0cd42be1227d092d0c5184de1b7e058a38c146af24627353e6d91",
+    "runner.py": "38c49344868b3ba4f385ebe7c7eb3beb661c9e790642a1b9bff5e52a1b09e709",
+    "workflows/materials.py": "6aa44901786ad2cde9870cc690c5566a57e7d1e850ea6b1d300eedad110f3611",
+    "workflows/native_pimd.py": "d5ccd91038c2dfac55b5bece623ec56762da5da2f9affe1e5930d60657e6f44e",
+    "workflows/pimd.py": "ce4f91bd2153897d1b59a38e618b51eb36837626d2ecf2a0784be6c3ece742ac",
+    "workflows/torch_materials.py": "cd6bc4d8a06af777b2dff53cdcefe97b5c31c04b4d5572e83318b212059dae76"
+  },
+  "schema": "t16b.validation.v1",
+  "source_distribution": {
+    "changed_paths_checked": 27,
+    "check": "Every changed/new file is present in the source archive and its bytes match the checkout.",
+    "command": "../t16b-venv/bin/python setup.py sdist --dist-dir ../t16b-dist",
+    "exit_code": 0,
+    "inventory": "sdist-inventory.json",
+    "status": "passed"
+  }
+}

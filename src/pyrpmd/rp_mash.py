@@ -89,13 +89,15 @@ class RPMASHDynamics:
     control internal integration and event resolution.  This CPU reference
     driver does not use a Cayley splitting or claim a symplectic MASH map.
     """
+    _method_label = "CA-RP-MASH"
+
     def __init__(self, potential, masses, beta, nbeads, dt, nstates=2, *, seed=0,
                  rtol=1e-9, atol=1e-11, max_step=None, max_events=64,
                  gap_tolerance=1e-10, native=False, threads=1):
         if _positive_integer(nstates, "nstates") != 2:
             raise ValueError("RPMASHDynamics implements exactly two electronic states")
         if native is not False:
-            raise ValueError("CA-RP-MASH currently uses the CPU adaptive reference solver; native must be False")
+            raise ValueError(f"{self._method_label} currently uses the CPU adaptive reference solver; native must be False")
         self._validator = CayleyIntegrator(masses, beta, nbeads, dt, native=False, threads=threads)
         self.masses = self._validator.masses
         self.beta, self.dt, self.nbeads, self.nstates = float(beta), float(dt), int(nbeads), 2
@@ -121,7 +123,7 @@ class RPMASHDynamics:
     def _evaluate(self, q):
         value = validate_diabatic_result(self.potential.evaluate(q), q.shape, 2)
         if np.any(np.abs(value.matrix.imag) > 1e-12) or np.any(np.abs(value.gradients.imag) > 1e-12):
-            raise PotentialError("CA-RP-MASH requires real symmetric matrices; complex SOC is not implemented")
+            raise PotentialError(f"{self._method_label} requires real symmetric matrices; complex SOC is not implemented")
         # Treat accepted imaginary roundoff as zero consistently: the real
         # adiabatic frame below must not contain a residual y-field.
         value.matrix = np.ascontiguousarray(value.matrix.real)
@@ -133,7 +135,7 @@ class RPMASHDynamics:
         scalar, field, dscalar, dfield = _pauli_components(value.matrix, value.gradients)
         magnitude = np.linalg.norm(field, axis=1)
         if np.any(2.0 * magnitude <= self.gap_tolerance):
-            raise PotentialError("CA-RP-MASH requires a nondegenerate adiabatic gap")
+            raise PotentialError(f"{self._method_label} requires a nondegenerate adiabatic gap")
         axis = field / magnitude[:, None]
         dmag = np.einsum("bi,biac->bac", axis, dfield)
         return scalar, field, magnitude, axis, dscalar, dfield, dmag
@@ -290,13 +292,13 @@ class RPMASHDynamics:
                                  method="DOP853", rtol=self.rtol, atol=self.atol,
                                  max_step=self.max_step, events=event)
             if not solution.success or not np.isfinite(solution.y[:, -1]).all():
-                raise ValueError("CA-RP-MASH integration failed: " + solution.message)
+                raise ValueError(self._method_label + " integration failed: " + solution.message)
             y = solution.y[:, -1].copy()
             elapsed = float(solution.t[-1])
             if not solution.t_events[0].size:
                 break
             if len(events) >= self.max_events:
-                raise ValueError("too many CA-RP-MASH equator events; reduce dt or inspect a grazing crossing")
+                raise ValueError(f"too many {self._method_label} equator events; reduce dt or inspect a grazing crossing")
             q, p, spin = self._unpack(y)
             updated, hop = self._impulse(q, p, active, state.time + elapsed)
             p[:] = updated

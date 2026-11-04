@@ -36,12 +36,12 @@ def prepare_network(config, system, numerical=False):
             "potential_scope": job["potential_scope"],
         }
         if numerical:
-            from ..potentials import make_potential, validate_result
+            from ..potentials import make_potential, evaluate_checked
 
             provider = make_potential(local["potential"], path_system)
             try:
                 q = path_system.geometry[None]
-                evaluated = validate_result(provider.evaluate(q), q.shape)
+                evaluated = evaluate_checked(provider, q)
                 item["pes_check"] = {
                     "energy_hartree": evaluated.energy.tolist(),
                     "maximum_reference_force_hartree_per_bohr": float(np.max(np.abs(evaluated.forces))),

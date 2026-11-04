@@ -65,11 +65,11 @@ def graph_fragments(natoms, bonds):
 
 
 def _potential_values(provider, q):
-    from ..potentials.base import PotentialError, coordinates, validate_result
+    from ..potentials.base import PotentialError, coordinates, evaluate_checked
 
     try:
         batch = coordinates(np.asarray(q)[None])
-        r = validate_result(provider.evaluate(batch), batch.shape)
+        r = evaluate_checked(provider, batch)
     except PotentialError as error:
         raise ValueError(f"PES failed during transition-state preparation: {error}") from error
     # Retain this evaluation across later PES calls. Compiled and Python

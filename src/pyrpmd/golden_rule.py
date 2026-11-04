@@ -23,7 +23,7 @@ from scipy.optimize import brentq, minimize
 from .constants import ATOMIC_TIME_S, KB_AU
 from .instanton import (InstantonError, _CountingPotential, _mask_and_masses,
                        _physical_hessians, _positive)
-from .potentials.base import coordinates, validate_result
+from .potentials.base import coordinates, evaluate_checked
 from .validation import finite_real, positive_integer
 
 
@@ -92,7 +92,7 @@ class GoldenRuleAction:
         mappings = (np.arange(n0+1), np.r_[np.arange(n0, p), 0])
         for potential, path, mapping, duration, dtau, sign in zip(
                 self.potentials, _segments(q, n0, n1), mappings, times, steps, (-1, 1)):
-            value = validate_result(potential.evaluate(path), path.shape)
+            value = evaluate_checked(potential, path)
             weights = np.ones(len(path))
             weights[[0, -1]] = 0.5
             delta = np.diff(path[:, mask], axis=0)

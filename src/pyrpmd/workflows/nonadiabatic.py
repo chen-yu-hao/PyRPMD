@@ -273,7 +273,7 @@ def _trajectory(task):
 
 
 def prepare_nonadiabatic(config, system, *, numerical=False):
-    if config["method"] in {"iesh", "multistate-mash"}:
+    if config["method"] in {"iesh", "rp-iesh", "multistate-mash"}:
         from .nonadiabatic_multistate import prepare_multistate_nonadiabatic
         return prepare_multistate_nonadiabatic(config, system, numerical=numerical)
     if config["method"] not in {"nrpmd", "rpsh"}:
@@ -301,7 +301,7 @@ def prepare_nonadiabatic(config, system, *, numerical=False):
 def run_nonadiabatic(config, system, directory):
     from . import validate_bond_constraint_workflow
     validate_bond_constraint_workflow(system, "nonadiabatic")
-    if config["method"] in {"iesh", "multistate-mash"}:
+    if config["method"] in {"iesh", "rp-iesh", "multistate-mash"}:
         from .nonadiabatic_multistate import run_multistate_nonadiabatic
         return run_multistate_nonadiabatic(config, system, directory)
     if config["method"] not in {"nrpmd", "rpsh"}:
@@ -322,7 +322,7 @@ def analyze_nonadiabatic(config, system, directory):
     """Verify and reduce all completed trajectory checkpoints, without propagation."""
     from . import validate_bond_constraint_workflow
     validate_bond_constraint_workflow(system, "nonadiabatic")
-    if config["method"] in {"iesh", "multistate-mash"}:
+    if config["method"] in {"iesh", "rp-iesh", "multistate-mash"}:
         from .nonadiabatic_multistate import analyze_multistate_nonadiabatic
         return analyze_multistate_nonadiabatic(config, system, directory)
     if config["method"] not in {"nrpmd", "rpsh"}:

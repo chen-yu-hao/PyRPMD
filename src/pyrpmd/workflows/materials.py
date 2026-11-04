@@ -20,7 +20,7 @@ from ..checkpoint import atomic_savez, load_checkpoint
 from ..constants import FS_TO_AU
 from ..dynamics import Dynamics, State
 from ..parallel import make_task_potential, root_call
-from ..potentials.base import validate_result
+from ..potentials.base import evaluate_checked
 from ..potentials.cache import StepEvaluationCache
 from ..propagation import loop_options
 from ..trajectory import TrajectoryStream, _descriptor, _walk_reverse, materialize_stream
@@ -29,17 +29,11 @@ from ..trajectory_batch import (
 )
 from ..units import parse_quantity
 from .common import _fingerprint, checked_integer, write_json
+from .pimd import OBSERVABLE_NAMES, select_engine
 
 
 CHECKPOINT_KIND = "PyRPMD.materials.v1"
 STREAM_CHECKPOINT_KIND = "PyRPMD.materials-stream.v1"
-OBSERVABLE_NAMES = (
-    "potential_energy",
-    "kinetic_primitive",
-    "kinetic_centroid_virial",
-    "internal_energy_centroid_virial",
-    "ring_polymer_hamiltonian",
-)
 CONSTRAINED_OBSERVABLE_NAMES = ("potential_energy", "ring_polymer_hamiltonian")
 
 
@@ -65,31 +59,12 @@ def _indices(value, size, name, *, default=None):
 
 
 def resolve_materials(config, system):
-    """Validate the scientific choices also for direct resolved-workflow calls."""
-    batch_size = trajectory_batch_size(config)
-    if batch_size > 1 and "active_learning" in config:
-        raise ValueError("materials trajectory batching does not support active-learning uncertainty callbacks")
-    from ..potentials.lifecycle import active_learning_options
-    active_learning_options(config)
-    if system.bond_constraints:
-        from ..bond_constraints import BondConstraints
-        BondConstraints(system.masses, system.bond_constraints, cell=system.cell, pbc=system.pbc)
-        loop = loop_options(config)
-        if (config.get("sampling", {}).get("engine", "legacy") != "legacy"
-                or loop["integrator"] != "velocity-verlet" or loop["loop_backend"] == "native"):
-            raise ValueError("bond constraints require the legacy Python RATTLE loop and velocity-verlet")
-        if config.get("barostat") or config.get("electronic_friction"):
-            raise ValueError("bond constraints currently require a fixed cell without electronic friction")
-        if config.get("native", config.get("dynamics", {}).get("native", True)) == "required":
-            raise ValueError("native='required' is not supported by the Python bond-constraint solver")
-    if config.get("sampling", {}).get("engine", "legacy") == "native":
-        from .native_pimd import resolve_native_pimd
-        return resolve_native_pimd(config, system)
-    if config.get("sampling", {}).get("engine") == "torch":
-        from .torch_materials import resolve_torch_materials
-        return resolve_torch_materials(config, system)
-    if config.get("sampling", {}).get("engine", "legacy") != "legacy":
-        raise ValueError("sampling.engine must be legacy, native or torch")
+    """Validate through the single PIMD/diffusion engine dispatch point."""
+    return select_engine(config).resolve(config, system)
+
+
+def _resolve_legacy_materials(config, system):
+    """Historical numerical controls, also reused by tensor schedule validation."""
     from ..electronic_friction import validate_electronic_friction
     friction_spec = validate_electronic_friction(config, system)
     if not np.any(system.mobile_mask):
@@ -275,7 +250,7 @@ def quantum_observables(state, potential, masses, beta, mobile_mask=None):
     if (getattr(potential, "metadata", {}) or {}).get("action") == "suzuki_chin":
         raise ValueError("primitive quantum_observables do not apply to Suzuki-Chin; use action.estimators")
     q, p = state.q, state.p
-    result = validate_result(potential.evaluate(q), q.shape)
+    result = evaluate_checked(potential, q)
     beads, natoms, _ = q.shape
     mobile = np.ones(natoms, dtype=bool) if mobile_mask is None else np.asarray(mobile_mask)
     if mobile.shape != (natoms,) or mobile.dtype.kind != "b" or not mobile.any():
@@ -306,7 +281,7 @@ def constrained_observables(state, potential, masses, beta):
     terms. They must not be reported for a bead-constrained Hamiltonian.
     """
     q, p = state.q, state.p
-    result = validate_result(potential.evaluate(q), q.shape)
+    result = evaluate_checked(potential, q)
     mass = np.asarray(masses)[None, :, None]
     spring = 0.5 * (len(q) / beta)**2 * np.sum(mass * (q - np.roll(q, -1, axis=0))**2)
     hamiltonian = np.sum(result.energy) + spring + np.sum(p * p / (2 * mass))
@@ -535,26 +510,10 @@ def _sample_replica(task):
     if saved is not None and saved["complete"]:
         if saved["storage"] == options["storage"]:
             return _read_stream(config, system, output, replica, options, materialize=materialize) if materialize else saved
-        # A completed storage migration must work without the original PES,
-        # calculator process or electronic-structure driver being available.
-        payload = dict(fingerprint=_identity(config, system, replica), elapsed=saved["elapsed"],
-                       q=saved["state"].q, p=saved["state"].p,
-                       step=saved["state"].step, time=saved["state"].time,
-                       rng=json.dumps(saved["rng"]), propagation=json.dumps(saved["propagation"]))
-        if saved["barostat"] is not None:
-            payload["barostat"] = json.dumps(saved["barostat"])
-        if "active_learning" in saved:
-            payload["active_learning"] = json.dumps(saved["active_learning"])
-        if options["storage"] == "stream":
-            writer = TrajectoryStream(_stream_directory(output, replica), schema=schema,
-                                      chunk_frames=options["chunk_frames"])
-            writer.extend({name: saved[name] for name in schema})
-            payload["trajectory"] = json.dumps(writer.prepare_commit())
-            kind = STREAM_CHECKPOINT_KIND
-        else:
-            payload.update(materialize_stream(saved["trajectory_directory"], saved["trajectory"]))
-            kind = CHECKPOINT_KIND
-        atomic_savez(checkpoint, kind=kind, **payload)
+        # The same offline migration serves completed and interrupted runs.
+        from ..pimd_checkpoint import migrate_legacy_checkpoint
+
+        migrate_legacy_checkpoint(config, system, output, replica, storage=options["storage"])
         return _read_stream(config, system, output, replica, options, materialize=materialize)
     provider = StepEvaluationCache(make_trajectory_potential(task, factory=make_task_potential))
     friction_provider = None
@@ -964,16 +923,13 @@ def _completed_batch_replicas(tasks, options):
 
 
 def run_materials(config, system, output, executor=None, return_data=False):
-    """Execute independent replica streams via serial/process/MPI task groups."""
-    from .sampling import validate_andersen_schedule
-    validate_andersen_schedule(config, "materials")
-    if config.get("sampling", {}).get("engine", "legacy") == "native":
-        from .native_pimd import run_native_pimd
-        return run_native_pimd(config, system, output, executor, return_data)
-    if config.get("sampling", {}).get("engine") == "torch":
-        from .torch_materials import run_torch_materials
-        return run_torch_materials(config, system, output, executor, return_data)
-    options = resolve_materials(config, system)
+    """Execute the selected compatibility, native or tensor backend."""
+    return select_engine(config).run(config, system, output, executor, return_data)
+
+
+def _run_legacy_materials(config, system, output, executor=None, return_data=False):
+    """Historical replica lifecycle; numeric and RNG semantics stay unchanged."""
+    options = _resolve_legacy_materials(config, system)
     tasks = [{"config": copy.deepcopy(config), "system": system, "output": str(output), "replica": replica,
               "materialize": False}
              for replica in range(options["replicas"])]
@@ -989,15 +945,12 @@ def run_materials(config, system, output, executor=None, return_data=False):
 
 def reanalyze_diffusion(config, system, output, return_data=False):
     """Analyze saved unwrapped production trajectories; never evaluate a PES."""
-    if config.get("task") != "diffusion":
-        raise ValueError("reanalyze_diffusion requires a diffusion run")
-    if config.get("sampling", {}).get("engine") == "torch":
-        from .torch_materials import analyze_torch_materials
-        return root_call(analyze_torch_materials, config, system, output, return_data)
-    def analyze():
-        options = resolve_materials(config, system)
-        streams = [_read_stream(config, system, output, replica, options,
-                                materialize=return_data, analysis=not return_data)
-                   for replica in range(options["replicas"])]
-        return _analyze(streams, config, system, output, return_data, stream_data_prepared=True)
-    return root_call(analyze)
+    return select_engine(config).reanalyze(config, system, output, return_data)
+
+
+def _reanalyze_legacy_diffusion(config, system, output, return_data=False):
+    options = _resolve_legacy_materials(config, system)
+    streams = [_read_stream(config, system, output, replica, options,
+                            materialize=return_data, analysis=not return_data)
+               for replica in range(options["replicas"])]
+    return _analyze(streams, config, system, output, return_data, stream_data_prepared=True)

@@ -88,10 +88,10 @@ def validate_task_sections(d):
         raise InputError("[metadynamics] requires fes.method='metadynamics' or rate.pmf.method='metadynamics'")
     if "opes" in d and method != "opes" and rate_pmf_method != "opes":
         raise InputError("[opes] requires fes.method='opes' or rate.pmf.method='opes'")
-    for name in ("abf", "eabf", "steered"):
+    for name in ("abf", "eabf", "steered", "ves"):
         if name in d and method != name:
             raise InputError(f"[{name}] requires fes.method='{name}'")
-    if method in ("abf", "eabf", "steered") and any(
+    if method in ("abf", "eabf", "steered", "ves") and any(
         name in d for name in ("reaction", "collision", "outcomes", "rate", "recrossing")
     ):
         raise InputError(f"{method} does not accept reaction, collision or rate settings")
@@ -111,6 +111,8 @@ def validate_task_sections(d):
         raise InputError("Adaptive umbrellas require task='fes' or task='rate'")
     if "replica_exchange" in d and (task != "fes" or method != "umbrella"):
         raise InputError("[replica_exchange] requires task='fes'")
+    if "tempering" in d and task not in ("pimd", "fes"):
+        raise InputError("[tempering] requires task='pimd' or task='fes'")
     if method in ("metadynamics", "opes"):
         analysis = d.setdefault("analysis", {})
         analysis.setdefault("method", "kde" if method == "opes" else "bias_estimate")
@@ -345,6 +347,10 @@ def validate_workflow(resolved, system, *, materials, source_pmf):
             from .workflows.replica_exchange import exchange_options
 
             exchange_options(resolved, system)
+        if "tempering" in resolved:
+            from .workflows.tempering import validate_tempering
+
+            validate_tempering(resolved, system)
         if source_pmf:
             from .workflows.surface_source import source_context
             source_context(resolved, system, verify=True)

@@ -19,7 +19,7 @@ import numpy as np
 
 from .constants import KB_AU
 from .path_integral import _positive
-from .potentials.base import PotentialError, validate_result
+from .potentials.base import PotentialError, evaluate_checked
 from .quantum_statistics import _block_layout, _jackknife_error, _series
 
 
@@ -103,7 +103,7 @@ def suzuki_chin_estimators_batch(potential, positions, *, volumes=None,
         scale = 1 + shift
         scaled = centroid + np.sqrt(scale) * offsets
         q = scaled.reshape(flat.shape)
-        result = validate_result(potential.potential.evaluate(q), q.shape)
+        result = evaluate_checked(potential.potential, q)
         v = (result.energy.reshape(samples, beads) * potential.weights).mean(axis=1)
         f = result.forces.reshape(paths.shape)
         g = np.sum(f * f / potential.masses[None, None, :, None], axis=(2, 3))

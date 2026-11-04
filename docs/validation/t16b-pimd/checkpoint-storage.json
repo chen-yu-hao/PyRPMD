@@ -1,0 +1,145 @@
+{
+  "purpose": "atomic checkpoint container publication using synthetic arrays; no dynamics",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "machine": "x86_64",
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "cpu_count": 9,
+  "threads": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": null,
+    "NUMEXPR_NUM_THREADS": null
+  },
+  "repetitions": 7,
+  "warmups": 1,
+  "seed": 1,
+  "beads": 32,
+  "atom_counts": [
+    128,
+    4096
+  ],
+  "temporary_parent": "/workspace/scratch/6e18a371c00a",
+  "notes": [
+    "Timings include publication fsyncs, exclude array generation and post-write validation.",
+    "Common writers add an owned array copy, SHA256 envelope and POSIX directory fsync.",
+    "Storage latency and concurrent workload affect timing; no propagation speedup is implied.",
+    "Two full regression suites were running concurrently in this environment; timings are illustrative storage-cost measurements, not isolated throughput claims."
+  ],
+  "records": [
+    {
+      "atoms": 128,
+      "beads": 32,
+      "method": "old_native_npz",
+      "median_ms": 2.104046998283593,
+      "min_ms": 1.272434998099925,
+      "max_ms": 5.087929999717744,
+      "measurements_ms": [
+        2.1016240025346633,
+        2.3048600014590193,
+        2.103126000292832,
+        5.037984999944456,
+        2.104046998283593,
+        5.087929999717744,
+        1.272434998099925
+      ],
+      "size_bytes": 303294,
+      "payload_identity_verified": true
+    },
+    {
+      "atoms": 128,
+      "beads": 32,
+      "method": "common_uncompressed",
+      "median_ms": 6.853427999885753,
+      "min_ms": 4.507606998231495,
+      "max_ms": 9.930270000040764,
+      "measurements_ms": [
+        4.507606998231495,
+        8.621590000984725,
+        6.853427999885753,
+        7.981355996889761,
+        5.130953999469057,
+        9.930270000040764,
+        5.126408002979588
+      ],
+      "size_bytes": 308554,
+      "payload_identity_verified": true
+    },
+    {
+      "atoms": 128,
+      "beads": 32,
+      "method": "common_compressed",
+      "median_ms": 31.781768997461768,
+      "min_ms": 21.969855999486754,
+      "max_ms": 39.69716899882769,
+      "measurements_ms": [
+        39.69716899882769,
+        31.781768997461768,
+        38.436056001955876,
+        25.601704001019243,
+        21.969855999486754,
+        35.86766899752547,
+        24.87188500163029
+      ],
+      "size_bytes": 288825,
+      "payload_identity_verified": true
+    },
+    {
+      "atoms": 4096,
+      "beads": 32,
+      "method": "old_native_npz",
+      "median_ms": 24.07443500123918,
+      "min_ms": 15.959868000209099,
+      "max_ms": 41.128130000288365,
+      "measurements_ms": [
+        25.51419199880911,
+        20.069105001311982,
+        15.959868000209099,
+        31.95041300205048,
+        24.049317002209136,
+        41.128130000288365,
+        24.07443500123918
+      ],
+      "size_bytes": 9445566,
+      "payload_identity_verified": true
+    },
+    {
+      "atoms": 4096,
+      "beads": 32,
+      "method": "common_uncompressed",
+      "median_ms": 51.082908001262695,
+      "min_ms": 43.14765000162879,
+      "max_ms": 66.319156998361,
+      "measurements_ms": [
+        43.14765000162879,
+        55.98499699772219,
+        46.278824000182794,
+        66.319156998361,
+        59.96634099938092,
+        51.082908001262695,
+        45.55738899944117
+      ],
+      "size_bytes": 9450842,
+      "payload_identity_verified": true
+    },
+    {
+      "atoms": 4096,
+      "beads": 32,
+      "method": "common_compressed",
+      "median_ms": 915.1938950017211,
+      "min_ms": 771.0768959987035,
+      "max_ms": 995.9979459999886,
+      "measurements_ms": [
+        935.6302860032883,
+        771.0768959987035,
+        936.6226599995571,
+        915.1938950017211,
+        897.1841750026215,
+        897.5192120014981,
+        995.9979459999886
+      ],
+      "size_bytes": 9071886,
+      "payload_identity_verified": true
+    }
+  ]
+}

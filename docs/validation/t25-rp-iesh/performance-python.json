@@ -1,0 +1,152 @@
+{
+  "benchmark": "rp_iesh_complete_propagation_step",
+  "method_variant": "gardner-2023-centroid",
+  "scope": "complete validated step and caller loop; excludes initialization, observations, checkpoint and I/O",
+  "physical_converged": false,
+  "native_requested": false,
+  "seed": 20261103,
+  "steps_per_repeat": 100,
+  "repeats": 5,
+  "warmup_steps": 10,
+  "model_identity": {
+    "schema": "pyrpmd.newns_anderson_model",
+    "version": 1,
+    "model": "newns-anderson",
+    "parameters": {
+      "nband": 12,
+      "band_min": -0.5,
+      "band_max": 0.5,
+      "chemical_potential": 0.0,
+      "discretization": "gauss-legendre",
+      "level_energy": 0.0,
+      "level_slope": 0.01,
+      "hybridization": 0.02,
+      "hybridization_slope": 0.0,
+      "bare_force_constant": 0.001,
+      "center": 0.0,
+      "coordinate": 0,
+      "natoms": 1
+    }
+  },
+  "dynamics": {
+    "mass_electron_masses": [
+      200.0
+    ],
+    "beta_inverse_hartree": 40.0,
+    "dt_atomic_time": 0.02,
+    "integrator": "cayley-bcb",
+    "electronic_substeps": 4,
+    "gap_tolerance_hartree": 1e-10,
+    "max_hop_probability": 1.0
+  },
+  "initial": {
+    "kind": "harmonic_ring",
+    "frequencies_atomic": [
+      0.02
+    ],
+    "coordinates": [
+      0
+    ],
+    "centers_bohr": [
+      -0.1
+    ],
+    "centroid_momenta_atomic": [
+      4.0
+    ],
+    "occupied": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
+  },
+  "runtime": {
+    "cpu_model": "x86_64",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "logical_cpus_visible": 9,
+    "affinity_cpus": 9,
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": null
+    },
+    "threadpools_during_measurement": [
+      {
+        "user_api": "blas",
+        "internal_api": "openblas",
+        "num_threads": 1,
+        "prefix": "libscipy_openblas",
+        "filepath": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/numpy.libs/libscipy_openblas64_-fdde5778.so",
+        "version": "0.3.30",
+        "threading_layer": "pthreads",
+        "architecture": "SkylakeX"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "beads": 1,
+      "nstates": 13,
+      "nband": 12,
+      "nelectrons": 6,
+      "nuclear_native": false,
+      "nuclear_threads": 1,
+      "median_us_per_step": 11305.825449999998,
+      "min_us_per_step": 10463.409539999999,
+      "max_us_per_step": 12722.552239999999,
+      "repeat_elapsed_seconds": [
+        1.130582545,
+        1.117458557,
+        1.272255224,
+        1.247616919,
+        1.046340954
+      ],
+      "final_hop_energy_change_hartree": 0.0,
+      "final_hop_energy_change_abs_hartree": 0.0
+    },
+    {
+      "beads": 8,
+      "nstates": 13,
+      "nband": 12,
+      "nelectrons": 6,
+      "nuclear_native": false,
+      "nuclear_threads": 1,
+      "median_us_per_step": 14713.66988,
+      "min_us_per_step": 11777.458270000001,
+      "max_us_per_step": 16299.870149999999,
+      "repeat_elapsed_seconds": [
+        1.471366988,
+        1.408819167,
+        1.177745827,
+        1.565970551,
+        1.629987015
+      ],
+      "final_hop_energy_change_hartree": 0.0,
+      "final_hop_energy_change_abs_hartree": 0.0
+    },
+    {
+      "beads": 32,
+      "nstates": 13,
+      "nband": 12,
+      "nelectrons": 6,
+      "nuclear_native": false,
+      "nuclear_threads": 1,
+      "median_us_per_step": 22807.633680000003,
+      "min_us_per_step": 20157.67506,
+      "max_us_per_step": 31993.97743,
+      "repeat_elapsed_seconds": [
+        2.280763368,
+        2.371557775,
+        2.015767506,
+        2.220887873,
+        3.199397743
+      ],
+      "final_hop_energy_change_hartree": 0.0,
+      "final_hop_energy_change_abs_hartree": 0.0
+    }
+  ]
+}
