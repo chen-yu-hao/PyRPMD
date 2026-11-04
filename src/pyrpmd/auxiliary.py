@@ -123,7 +123,7 @@ class AuxiliaryOperator(Protocol):
     compatibility: AuxiliaryCompatibility
 
     @property
-    def state_arrays(self) -> Mapping[str, np.ndarray]: ...
+       def state_arrays(self) -> Mapping[str, np.ndarray]: ...
 
     def propagate(self, dt: float, q: np.ndarray) -> None: ...
 
@@ -259,7 +259,7 @@ class AuxiliaryPropagationCore:
         operator.propagate(0.5 * self.dt, trial.q)
         next_time = float(trial.time) + self.dt
         if not math.isfinite(next_time):
-            raise FloatingPointError("nonfinite auxiliary propagation clock")
+            raise ValueError("nonfinite auxiliary propagation clock")
         trial.step = int(trial.step) + 1
         trial.time = next_time
         self.validate_state(trial)
