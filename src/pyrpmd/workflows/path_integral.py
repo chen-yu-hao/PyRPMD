@@ -12,7 +12,7 @@ from ..dynamics import Dynamics, State
 from ..pimd_methods import (SuzukiChinPotential, BosonicExchangePotential,
     GaussianTrialWavefunction, PIGSPotential)
 from ..potentials import make_potential
-from ..potentials.base import validate_result
+from ..potentials.base import evaluate_checked
 from ..propagation import loop_options
 from ..units import parse_quantity
 from ..validation import checked_integer, finite_real
@@ -352,7 +352,7 @@ def run_path_integral(config, system, output):
                             observed = state.q[::2]
                         else:
                             observed = state.q
-                        physical_result = validate_result(physical.evaluate(observed), observed.shape)
+                        physical_result = evaluate_checked(physical, observed)
                         potential = float(physical_result.energy.mean())
                         if method == "suzuki_chin":
                             estimators = observe_sc(state.q)

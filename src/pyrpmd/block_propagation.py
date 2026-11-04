@@ -288,16 +288,55 @@ def _ring_radii(q, center=None):
     return radii
 
 
-def _fast_python_step_supported(dynamics, bias, constraint, fragment_data, composed):
-    """Whether a plain step may reuse its endpoint PES result in this block.
+# Built-in biases whose energy_force is a pure function of q while a block
+# runs (history/centre changes are explicit events between blocks). Keyed by
+# the defining module and qualname, so checking never imports optional modules.
+_PURE_BIASES = {
+    "pyrpmd.bias": {"UmbrellaBias", "FluxMetricBias", "CompositeBias", "WallBias",
+                    "MetadynamicsBias", "GridMetadynamicsBias"},
+    "pyrpmd.steered": {"SteeredBias"},
+    "pyrpmd._opes_serial": {"OPESBias", "OPESExploreBias"},
+    "pyrpmd.ves": {"VESBias"},
+    "pyrpmd.abf": {"ABFBias"},
+    "pyrpmd.workflows.tempering": {"_ScaledBias"},
+}
 
-    Only the unmodified Dynamics/CayleyIntegrator mathematics without bias,
-    constraint, fragment projection or configured operators qualifies; it
-    then performs exactly the same kicks, free step and projections as
-    Dynamics._propagate. A provider declaring itself stateful keeps the
-    reference evaluation schedule, since repeated calls may differ.
+
+def _pure_bias(bias):
+    """Whether repeated energy_force calls at one q may share one result.
+
+    Only exact, unpatched built-in classes qualify; wrappers qualify when
+    every wrapped bias does. Their CVs are evaluated as the same pure
+    mathematics. User-defined biases keep the reference call schedule.
     """
-    if composed or bias is not None or constraint is not None or fragment_data:
+    kind = type(bias)
+    method = getattr(kind, "energy_force", None)
+    if (kind.__qualname__ not in _PURE_BIASES.get(kind.__module__, ())
+            or "energy_force" in getattr(bias, "__dict__", {})
+            or getattr(method, "__module__", None) not in _PURE_BIASES
+            or getattr(method, "__qualname__", "").rpartition(".")[::2]
+            not in {(name, "energy_force") for name in _PURE_BIASES[method.__module__]}):
+        return False
+    if kind.__qualname__ == "CompositeBias":
+        return all(_pure_bias(part) for part in bias.biases)
+    if kind.__qualname__ == "_ScaledBias":
+        return _pure_bias(bias.bias)
+    return True
+
+
+def _fast_python_step_supported(dynamics, bias, constraint, fragment_data, composed):
+    """Whether a plain step may reuse its endpoint PES/bias result in this block.
+
+    Only the unmodified Dynamics/CayleyIntegrator mathematics without
+    constraint, fragment projection or configured operators qualifies, with
+    no bias or a pure built-in bias; it then performs exactly the same kicks,
+    free step and projections as Dynamics._propagate. A provider declaring
+    itself stateful keeps the reference evaluation schedule, since repeated
+    calls may differ.
+    """
+    if composed or constraint is not None or fragment_data:
+        return False
+    if bias is not None and not _pure_bias(bias):
         return False
     from .dynamics import (Dynamics, CayleyIntegrator, _BLOCK_DYNAMICS_METHODS,
                            _BLOCK_INTEGRATOR_METHODS)
@@ -315,21 +354,33 @@ def _fast_python_step_supported(dynamics, bias, constraint, fragment_data, compo
                    for key in ("stateful", "history_dependent", "time_dependent"))
 
 
-def _endpoint_force(dynamics, q, force):
-    """Write the physical force into a block-owned buffer; return sum(E)."""
+def _endpoint_force(dynamics, q, force, bias=None):
+    """Write the biased physical force into a block-owned buffer.
+
+    Same arithmetic as Dynamics._force. Returns (sum of PES energies, bias
+    energy), the bias energy being None without a bias.
+    """
     from .dynamics import evaluate_checked
     result = evaluate_checked(dynamics.potential, q)
     np.copyto(force, result.forces)
+    bias_energy = None
+    if bias is not None:
+        bias_energy, extra = bias.energy_force(q)
+        if np.shape(extra) != q.shape or not np.isfinite(extra).all():
+            raise ValueError("bias returned invalid forces")
+        force += extra
+        bias_energy = float(bias_energy)
     if dynamics.fixed_atoms:
         force[:, dynamics._fixed_indices, :] = 0.0
-    return float(np.sum(result.energy))
+    return float(np.sum(result.energy)), bias_energy
 
 
-def _fast_python_step(dynamics, state, force, force_valid):
+def _fast_python_step(dynamics, state, force, force_valid, bias=None):
     """Dynamics._propagate on the live arrays; the caller owns the rollback.
 
-    Returns the summed PES energy at the new coordinates. ``force`` holds the
-    endpoint force afterwards, so a following step may start from it.
+    Returns (summed PES energy, bias energy) at the new coordinates.
+    ``force`` holds the endpoint force afterwards, so a following step of the
+    same block may start from it.
     """
     from .dynamics import _state_clock
     step, time = _state_clock(state.step, state.time)
@@ -340,18 +391,18 @@ def _fast_python_step(dynamics, state, force, force_valid):
     integrator = dynamics.integrator
     h = 0.5 * dynamics.dt
     if not force_valid:
-        _endpoint_force(dynamics, q, force)
+        _endpoint_force(dynamics, q, force, bias)
     integrator.kick(p, force, h)
     dynamics._project_fixed(q, p)
     integrator.free_step(q, p)
     dynamics._project_fixed(q, p)
-    potential = _endpoint_force(dynamics, q, force)
+    energies = _endpoint_force(dynamics, q, force, bias)
     integrator.kick(p, force, h)
     dynamics._project_fixed(q, p)
     if not np.isfinite(q).all() or not np.isfinite(p).all():
         raise FloatingPointError("nonfinite integration state")
     state.step, state.time = step + 1, next_time
-    return potential
+    return energies
 
 
 def _python_energy_parts(dynamics, state, bias):
@@ -366,14 +417,14 @@ def _python_energy_parts(dynamics, state, bias):
         dynamics, state, bias, float(np.sum(evaluate_checked(dynamics.potential, q).energy)))
 
 
-def _energy_parts_from_potential(dynamics, state, bias, potential):
+def _energy_parts_from_potential(dynamics, state, bias, potential, bias_energy=None):
     q = state.q
     beads = dynamics.nbeads
     kinetic, spring, centroid, internal = _nuclear_energy_terms(dynamics, state)
     parts = np.array([potential / beads, centroid, internal, spring / beads])
     energy = potential + kinetic + spring
     if bias is not None:
-        energy += float(bias.energy_force(q)[0])
+        energy += float(bias.energy_force(q)[0]) if bias_energy is None else bias_energy
     if not np.isfinite(parts).all() or not np.isfinite(energy):
         raise FloatingPointError("nonfinite nuclear energy diagnostics")
     return parts, energy
@@ -522,8 +573,10 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
     ``record_step_energies`` returns ``BlockResult.step_energies``, the total
     ring energy of every completed step, independent of ``observe``. It lets
     a caller monitor conservation at every step while observing (centroids,
-    diagnostics, CVs) only the frames it saves. Plain unbiased Python steps
-    of a non-stateful PES take that energy from the step's endpoint PES call,
+    diagnostics, CVs) only the frames it saves. Plain Python steps of a
+    non-stateful PES, unbiased or with a pure built-in bias (umbrella, flux,
+    wall, metadynamics, OPES, VES, ABF, steered, composites), take that energy
+    from the step's endpoint PES/bias call,
     like the native loop; with ``reuse_forces`` they also start the next step
     from that endpoint force, approaching one PES call per step.
     Blocks must end at thermostat/Python-classifier/checkpoint boundaries.
@@ -667,9 +720,9 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
                     initial_energy = dynamics.energy(state, bias)
                     if not np.isfinite(initial_energy):
                         raise FloatingPointError("nonfinite total ring energy")
-                potential = None
+                potential = bias_energy = None
                 if fast:
-                    potential = _fast_python_step(dynamics, state, force, force_valid)
+                    potential, bias_energy = _fast_python_step(dynamics, state, force, force_valid, bias)
                     force_valid = reuse
                 elif composed:
                     dynamics._composition.step(state, bias, fragment_data, cache=cache, backend=backend)
@@ -688,7 +741,8 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
                     if potential is None:
                         parts, energy = _python_energy_parts(dynamics, state, bias)
                     else:
-                        parts, energy = _energy_parts_from_potential(dynamics, state, bias, potential)
+                        parts, energy = _energy_parts_from_potential(
+                            dynamics, state, bias, potential, bias_energy)
                     diagnostic_arrays["energy_parts"][written] = parts
                 elif check_energy or step_energies is not None or (record_energy and mask[i]):
                     if potential is None:
@@ -696,6 +750,8 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
                     else:
                         kinetic, spring, _, _ = _nuclear_energy_terms(dynamics, state)
                         energy = potential + kinetic + spring
+                        if bias_energy is not None:
+                            energy += bias_energy
                     if not np.isfinite(energy):
                         raise FloatingPointError("nonfinite total ring energy")
                 if step_energies is not None:

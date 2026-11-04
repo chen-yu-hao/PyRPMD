@@ -15,54 +15,8 @@ import math
 import numbers
 import threading
 import numpy as np
-from .potentials.base import PESResult, validate_result
+from .potentials.base import evaluate_checked, validate_result  # noqa: F401 (re-export)
 from .validation import checked_integer, finite_real
-
-
-_SELF_VALIDATING = None
-
-
-def _self_validating_evaluate(potential):
-    """Whether evaluate() is a built-in adapter that ends with validate_result.
-
-    CABIPotential, PythonPotential and RPMDratePotential validate shapes,
-    statuses and finiteness of every frame before returning a fresh PESResult.
-    Only their exact, unpatched classes qualify; subclasses, instance
-    overrides and every other provider keep the full consumer validation.
-    """
-    global _SELF_VALIDATING
-    if _SELF_VALIDATING is None:
-        from .potentials.cabi import CABIPotential, _CABI_EVALUATE
-        from .potentials.python import (
-            PythonPotential, RPMDratePotential, _PYTHON_EVALUATE, _RPMDRATE_EVALUATE,
-        )
-        _SELF_VALIDATING = {
-            CABIPotential: _CABI_EVALUATE,
-            PythonPotential: _PYTHON_EVALUATE,
-            RPMDratePotential: _RPMDRATE_EVALUATE,
-        }
-    kind = type(potential)
-    original = _SELF_VALIDATING.get(kind)
-    return (original is not None and kind.evaluate is original
-            and "evaluate" not in getattr(potential, "__dict__", {}))
-
-
-def evaluate_checked(potential, q):
-    """Evaluate a PES and require every frame to succeed.
-
-    A trusted built-in adapter has already checked shape and finiteness of
-    the PESResult it just created, so only its success statuses remain to be
-    checked. Any failed frame, and any other provider, takes the complete
-    validate_result path, which also produces the detailed error message.
-    """
-    result = potential.evaluate(q)
-    if (type(result) is PESResult and _self_validating_evaluate(potential)
-            and result.forces.shape == q.shape and not result.status.any()):
-        return result
-    return validate_result(result, q.shape)
-
-
-INTEGRATORS = ("cayley-bcb", "normal-mode-bab", "velocity-verlet")
 
 
 def _state_clock(step, time):

@@ -22,7 +22,7 @@ from ._qcmd_sampling import ConstrainedQuasiCentroidSampler
 from .checkpoint import atomic_savez, load_checkpoint
 from .cmd import _integer, _real, _scalar, ibi_update
 from .io import fingerprint_payload, jsonable, referenced_files
-from .potentials.base import Potential, PESResult, coordinates, validate_result
+from .potentials.base import Potential, PESResult, coordinates, evaluate_checked, validate_result
 
 
 __all__ = [
@@ -311,7 +311,7 @@ class FQCMDPotential(Potential):
         extra = np.zeros_like(q)
         # Triatomics are disjoint: direct scatter has no duplicate-index loss.
         extra[:, np.asarray(model.geometry.molecules)] = local_force
-        base = validate_result(self.base_potential.evaluate(q), q.shape)
+        base = evaluate_checked(self.base_potential, q)
         virial = (None if base.virial is None else
                   base.virial + np.einsum("bni,bnj->bij", q, extra))
         return validate_result(PESResult(base.energy + energy, base.forces + extra,

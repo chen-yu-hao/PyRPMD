@@ -20,7 +20,7 @@ from ..checkpoint import atomic_savez, load_checkpoint
 from ..constants import FS_TO_AU
 from ..dynamics import Dynamics, State
 from ..parallel import make_task_potential, root_call
-from ..potentials.base import validate_result
+from ..potentials.base import evaluate_checked
 from ..potentials.cache import StepEvaluationCache
 from ..propagation import loop_options
 from ..trajectory import TrajectoryStream, _descriptor, _walk_reverse, materialize_stream
@@ -250,7 +250,7 @@ def quantum_observables(state, potential, masses, beta, mobile_mask=None):
     if (getattr(potential, "metadata", {}) or {}).get("action") == "suzuki_chin":
         raise ValueError("primitive quantum_observables do not apply to Suzuki-Chin; use action.estimators")
     q, p = state.q, state.p
-    result = validate_result(potential.evaluate(q), q.shape)
+    result = evaluate_checked(potential, q)
     beads, natoms, _ = q.shape
     mobile = np.ones(natoms, dtype=bool) if mobile_mask is None else np.asarray(mobile_mask)
     if mobile.shape != (natoms,) or mobile.dtype.kind != "b" or not mobile.any():
@@ -281,7 +281,7 @@ def constrained_observables(state, potential, masses, beta):
     terms. They must not be reported for a bead-constrained Hamiltonian.
     """
     q, p = state.q, state.p
-    result = validate_result(potential.evaluate(q), q.shape)
+    result = evaluate_checked(potential, q)
     mass = np.asarray(masses)[None, :, None]
     spring = 0.5 * (len(q) / beta)**2 * np.sum(mass * (q - np.roll(q, -1, axis=0))**2)
     hamiltonian = np.sum(result.energy) + spring + np.sum(p * p / (2 * mass))

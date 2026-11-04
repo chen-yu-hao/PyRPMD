@@ -240,3 +240,74 @@ def test_native_step_energies_match_observed_energies(batch_library):
     np.testing.assert_array_equal(result.step_energies, full.energies)
     np.testing.assert_array_equal(result.energies, full.energies[observe])
     np.testing.assert_array_equal(second.q, first.q)
+
+
+def _biases():
+    from pyrpmd.bias import CompositeBias, MetadynamicsBias, UmbrellaBias, WallBias
+    from pyrpmd.cv import Distance
+    distance = Distance((0, 1))
+    metadynamics = MetadynamicsBias(distance, 0.2, 0.01, 2.0, bias_factor=5.0)
+    metadynamics.deposit([0.4], step=1, time=0.05)
+    metadynamics.deposit([0.6], step=2, time=0.1)
+    return {
+        "umbrella": UmbrellaBias(distance, [0.5], 0.3),
+        "composite": CompositeBias(UmbrellaBias(distance, [0.5], 0.3),
+                                   WallBias(distance, 0.2, upper=0.7), metadynamics),
+    }
+
+
+class CountingBias:
+    def __init__(self, bias):
+        self.bias, self.calls = bias, 0
+
+    def energy_force(self, q):
+        self.calls += 1
+        return self.bias.energy_force(q)
+
+
+@pytest.mark.parametrize("name", ["umbrella", "composite"])
+@pytest.mark.parametrize("reuse", [False, True])
+def test_pure_builtin_bias_uses_endpoint_reuse_bitwise(name, reuse):
+    reference_provider, provider = Counting(), Counting()
+    reference, dynamics = _dynamics(reference_provider), _dynamics(provider)
+    bias = _biases()[name]
+    expected, actual = _state(4), _state(4)
+    energies = []
+    for _ in range(7):
+        reference.step(expected, bias)
+        energies.append(reference.energy(expected, bias))
+    result = propagate_block(dynamics, actual, 7, bias=bias, reuse_forces=reuse,
+                             diagnostics={"energy_parts": True}, record_step_energies=True,
+                             check_energy=True)
+    np.testing.assert_array_equal(actual.q, expected.q)
+    np.testing.assert_array_equal(actual.p, expected.p)
+    np.testing.assert_array_equal(result.energies, energies)
+    np.testing.assert_array_equal(result.step_energies, energies)
+    # One initial energy check, then the fast step schedule.
+    assert provider.calls == 1 + (8 if reuse else 14)
+
+
+def test_user_bias_keeps_the_reference_schedule():
+    provider = Counting()
+    dynamics = _dynamics(provider)
+    bias = CountingBias(_biases()["umbrella"])
+    propagate_block(dynamics, _state(4), 4, bias=bias, reuse_forces=True)
+    assert provider.calls == bias.calls == 12
+
+
+def test_patched_builtin_bias_is_not_treated_as_pure():
+    from pyrpmd.block_propagation import _pure_bias
+    biases = _biases()
+    assert _pure_bias(biases["umbrella"]) and _pure_bias(biases["composite"])
+    patched = biases["umbrella"]
+    patched.energy_force = lambda q: (0.0, np.zeros_like(q))
+    assert not _pure_bias(patched)
+    from pyrpmd.bias import CompositeBias
+    assert not _pure_bias(CompositeBias(biases["composite"], CountingBias(patched)))
+
+    from pyrpmd.bias import UmbrellaBias
+
+    class Sub(UmbrellaBias):
+        pass
+
+    assert not _pure_bias(Sub(patched.cv, [0.5], 0.3))

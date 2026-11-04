@@ -23,7 +23,7 @@ import numpy as np
 from scipy.optimize import root
 
 from .constants import ATOMIC_TIME_S, BOHR_M, KB_AU
-from .potentials.base import coordinates, validate_result
+from .potentials.base import coordinates, evaluate_checked
 from .validation import finite_positive
 
 
@@ -147,8 +147,8 @@ def _physical_hessians(potential, q, mask, step):
         plus[:, atom, component] += step
         minus[:, atom, component] -= step
         # Plugins may reuse their force buffer; preserve it before the next call.
-        fp = validate_result(potential.evaluate(plus), plus.shape).forces[:, mask].copy()
-        fm = validate_result(potential.evaluate(minus), minus.shape).forces[:, mask].copy()
+        fp = evaluate_checked(potential, plus).forces[:, mask].copy()
+        fm = evaluate_checked(potential, minus).forces[:, mask].copy()
         h[:, :, j] = (fm - fp) / (2 * step)
     return 0.5 * (h + h.transpose(0, 2, 1))
 
@@ -167,7 +167,7 @@ def crossover_temperature(potential, transition_state, masses, *, active_mask=No
     mask, mass = _mask_and_masses(q.shape[1:], masses, active_mask)
     step = _positive(hessian_step_bohr, "hessian_step_bohr")
     tolerance = _positive(force_tolerance, "force_tolerance")
-    result = validate_result(potential.evaluate(q), q.shape)
+    result = evaluate_checked(potential, q)
     if np.max(np.abs(result.forces[:, mask])) > tolerance:
         raise InstantonError("transition_state is not stationary in the active coordinates")
     h = _physical_hessians(potential, q, mask, step)[0]
@@ -212,7 +212,7 @@ class RingPolymerAction:
     def evaluate(self, path):
         """Return action, full Cartesian gradient, E=dS/dbeta and its parts."""
         q, mask, mass = self._validate(path)
-        value = validate_result(self.potential.evaluate(q), q.shape)
+        value = evaluate_checked(self.potential, q)
         return self._from_values(q, mask, mass, value.energy, value.forces)
 
     def _from_values(self, q, mask, mass, energies, forces):
@@ -524,7 +524,7 @@ def optimize_instanton(potential, masses, temperature_kelvin, initial_path, *,
     def evaluate_folded(x):
         path = unpack(x)
         unique = path[:half]
-        value = validate_result(counted.evaluate(unique), unique.shape)
+        value = evaluate_checked(counted, unique)
         return action._from_values(path, mask, mass, value.energy[mapping], value.forces[mapping])
 
     def folded_gradient(x):

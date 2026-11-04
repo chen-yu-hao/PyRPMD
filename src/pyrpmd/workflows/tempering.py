@@ -26,7 +26,7 @@ from ..checkpoint import CheckpointError, atomic_savez, load_checkpoint
 from ..constants import KB_AU
 from ..dynamics import Dynamics, State
 from ..parallel import root_call, run_tasks, task_potential
-from ..potentials.base import PESResult, validate_result
+from ..potentials.base import PESResult, evaluate_checked, validate_result
 from ..potentials.contraction import SplitPotential
 from ..replica_exchange import (
     _static,
@@ -744,7 +744,7 @@ class _ScaledPotential:
     def evaluate(self, positions):
         q = np.asarray(positions)
         if self.target == "potential":
-            result = validate_result(self.provider.evaluate(q), q.shape)
+            result = evaluate_checked(self.provider, q)
             return self._scaled(result, self.scale)
         if self.target == "split_slow":
             fast = validate_result(self.provider.evaluate_fast(q), q.shape)
@@ -799,7 +799,7 @@ def _provider_components(provider, q, target):
             float(np.sum(fast.energy)), fast.forces.copy(),
             float(np.sum(slow.energy)), slow.forces.copy(),
         )
-    base = validate_result(provider.evaluate(q), q.shape)
+    base = evaluate_checked(provider, q)
     return float(np.sum(base.energy)), base.forces.copy(), 0.0, np.zeros_like(q)
 
 

@@ -23,7 +23,7 @@ from scipy.optimize import minimize_scalar
 from .constants import ATOMIC_TIME_S, BOHR_M, KB_AU
 from .instanton import (InstantonError, RingPolymerAction, _mask_and_masses,
                        _physical_hessians, _positive)
-from .potentials.base import coordinates, validate_result
+from .potentials.base import coordinates, evaluate_checked
 
 _LOG2 = math.log(2.0)
 
@@ -150,7 +150,7 @@ class HarmonicState:
         """
         q = coordinates(np.asarray(geometry_bohr)[None])
         mask, _ = _mask_and_masses(q.shape[1:], masses, active_mask)
-        value = validate_result(potential.evaluate(q), q.shape)
+        value = evaluate_checked(potential, q)
         energy = float(value.energy[0])
         if np.max(np.abs(value.forces[:, mask])) > _positive(force_tolerance, "force_tolerance"):
             raise InstantonError("harmonic state is not stationary in active coordinates")

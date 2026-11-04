@@ -20,7 +20,7 @@ from ..cv import CVStack, make_cvs
 from ..io import file_sha256, fingerprint, jsonable, write_json
 from ..analysis.fes_result import FESResult
 from ..system import System
-from ..potentials.base import PESResult, validate_result
+from ..potentials.base import PESResult, evaluate_checked
 from .common import _atomic_npz, checked_integer, fes_method
 
 
@@ -149,7 +149,7 @@ class _WallHamiltonian:
         self.potential, self.walls = potential, walls
 
     def evaluate(self, q):
-        physical = validate_result(self.potential.evaluate(q), q.shape)
+        physical = evaluate_checked(self.potential, q)
         energy, force = self.walls.energy_force(q)
         return PESResult(physical.energy + energy / len(q), physical.forces + force)
 

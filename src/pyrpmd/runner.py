@@ -826,7 +826,7 @@ def prepare(job, *, numerical=False):
             if (config["task"] == "spectroscopy"
                     or (getattr(provider, "metadata", {}) or {}).get("ring_polymer_coupled")):
                 x = np.repeat(x, config["beads"], axis=0)
-            from .potentials import validate_result
+            from .potentials import evaluate_checked, validate_result
 
             specialized_check = None
             if config["task"] in ("pimd", "diffusion") and "path_integral" not in config:
@@ -840,7 +840,7 @@ def prepare(job, *, numerical=False):
 
                 action = _action(config, system, provider)
                 q = np.repeat(system.geometry[None], config["beads"], axis=0)
-                checked = validate_result(action.evaluate(q), q.shape)
+                checked = evaluate_checked(action, q)
                 result["pes_check"] = {
                     "energy_hartree": checked.energy.tolist(),
                     "status": checked.status.tolist(),

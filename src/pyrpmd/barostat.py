@@ -18,7 +18,7 @@ from functools import partial
 import numpy as np
 
 from .geometry import validate_cell_pbc
-from .potentials.base import PotentialError, validate_result
+from .potentials.base import PotentialError, evaluate_checked
 from .validation import finite_real
 
 _real = partial(finite_real, message='{name} must be a finite real{bound}')
@@ -129,7 +129,7 @@ class BZPBarostat:
 
     def _pressure_numerator(self, state):
         self._check_state(state)
-        result = validate_result(self.potential.evaluate(state.q), state.q.shape)
+        result = evaluate_checked(self.potential, state.q)
         if result.virial is None:
             raise PotentialError("BZP requires per-bead physical configurational virials from the PES")
         centroid_p = state.p.mean(axis=0)
