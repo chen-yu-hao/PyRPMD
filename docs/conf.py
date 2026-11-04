@@ -44,7 +44,7 @@ include_patterns = [
     "pimd-engine-convergence.md",
     "implementation-review-2026-11-03.md",
     "excited-state-interface.md",
-    "rpc-mts.md", "mixed-sampling.md", "trpmd-spectroscopy.md", "propagation-stack.md", "condensed-phase-nqe.md",
+    "rpc-mts.md", "mixed-sampling.md", "trpmd-spectroscopy.md", "propagation-stack.md", "auxiliary-operators.md", "condensed-phase-nqe.md",
     "nonadiabatic-workflow.md", "nonadiabatic-models.md",
     "nonadiabatic-ensembles.md", "nonadiabatic-comparison.md",
     "nonadiabatic-spin-methods.md", "nonadiabatic-hopping-extensions.md",
