@@ -312,7 +312,7 @@ def _pes(args):
         ):
             raise InputError("step and tolerance must be positive and finite")
         q = system.geometry[None, :, :].copy()
-        from .potentials import check_potential, validate_result
+        from .potentials import check_potential, evaluate_checked
 
         checked = check_potential(provider, q, epsilon=args.step)
         error = checked["max_absolute_force_error"]
@@ -322,7 +322,7 @@ def _pes(args):
             )
         # Re-evaluate the original geometry: the diagnostic's displaced calls
         # may have overwritten provider-owned energy and result buffers.
-        result = validate_result(provider.evaluate(q), q.shape)
+        result = evaluate_checked(provider, q)
         return {
             "passed": True,
             "max_force_error_au": error,
@@ -394,6 +394,19 @@ def main(argv=None):
                 from .input import fes_method
 
                 result["method"] = fes_method(config)
+            if "tempering" in config:
+                from .workflows.tempering import resolve_tempering
+
+                tempering = resolve_tempering(config, system)
+                result["tempering"] = {
+                    "mode": tempering.mode,
+                    "replicas": tempering.nstates,
+                    "temperatures_K": tempering.temperatures.tolist(),
+                    "lambdas": tempering.lambdas.tolist(),
+                    "target": tempering.target,
+                    "exchange_interval_steps": tempering.exchange_interval,
+                    "pairing": tempering.pairing,
+                }
             if config.get("initial_ensemble"):
                 result["temperature_K"] = None
                 result["beta_au"] = config["beta"]
