@@ -38,6 +38,7 @@ def test_action_hvp_exact_against_dense_and_gradient_differences():
     v = rng.normal(size=q.shape)
     full = action.hessian(q)
     hv = action.hessian_vector_product(q, v)
+    assert hv.shape == q.shape
     np.testing.assert_allclose(hv.ravel(), full @ v.ravel(), rtol=1e-11, atol=1e-9)
     epsilon = 1e-5
     finite_difference = (
@@ -61,8 +62,11 @@ def test_action_hvp_active_mask_shape_and_strict_missing_provider():
     v = np.zeros_like(q)
     v[:, mask] = rng.normal(size=(8, mask.sum()))
     expected = action.hessian(q) @ v[:, mask].ravel()
-    np.testing.assert_allclose(action.hessian_vector_product(q, v).ravel(), expected,
+    product = action.hessian_vector_product(q, v)
+    assert product.shape == q.shape
+    np.testing.assert_allclose(product[:, mask].ravel(), expected,
                                rtol=1e-11, atol=1e-9)
+    np.testing.assert_array_equal(product[:, ~mask], 0.0)
     with pytest.raises(ValueError, match="inactive"):
         action.hessian_vector_product(q, np.ones_like(q))
     with pytest.raises(ValueError, match="float64"):
