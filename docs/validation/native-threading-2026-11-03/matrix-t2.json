@@ -1,0 +1,181 @@
+{
+  "threads": 2,
+  "rows": [
+    {
+      "scheme": "cayley-bcb",
+      "natoms": 64,
+      "beads": 8,
+      "threads": 2,
+      "steps": 100,
+      "microseconds_per_step": [
+        30.86148,
+        36.98753,
+        54.213609999999996
+      ],
+      "median_microseconds_per_step": 36.98753,
+      "minimum_microseconds_per_step": 30.86148,
+      "state_sha256": "df118948c8c75ec7db08bfa5bde3ba30f6dc4c070bc097ed8c36e3fed04a4566",
+      "repeat_states_bitwise_identical": true
+    },
+    {
+      "scheme": "cayley-bcb",
+      "natoms": 64,
+      "beads": 32,
+      "threads": 2,
+      "steps": 100,
+      "microseconds_per_step": [
+        93.09761,
+        121.1503,
+        117.82457000000001
+      ],
+      "median_microseconds_per_step": 117.82457000000001,
+      "minimum_microseconds_per_step": 93.09761,
+      "state_sha256": "7c9a41054b47a6c9061aea0b6caef358346c45407745fe723b5895c646e91068",
+      "repeat_states_bitwise_identical": true
+    },
+    {
+      "scheme": "cayley-bcb",
+      "natoms": 64,
+      "beads": 128,
+      "threads": 2,
+      "steps": 61,
+      "microseconds_per_step": [
+        477.39370491803277,
+        530.8688688524591,
+        491.96868852459016
+      ],
+      "median_microseconds_per_step": 491.96868852459016,
+      "minimum_microseconds_per_step": 477.39370491803277,
+      "state_sha256": "d42720e52de44ef2c9a9b8179cbf942bebc13f8a1f65b1c99719ff044004ee20",
+      "repeat_states_bitwise_identical": true
+    },
+    {
+      "scheme": "cayley-bcb",
+      "natoms": 1000,
+      "beads": 8,
+      "threads": 2,
+      "steps": 62,
+      "microseconds_per_step": [
+        339.06580645161296,
+        382.16445161290324,
+        387.341435483871
+      ],
+      "median_microseconds_per_step": 382.16445161290324,
+      "minimum_microseconds_per_step": 339.06580645161296,
+      "state_sha256": "16e04e60d3dff9f1f2f44ac027c8d63410ed988edf5a9eefbbe9865ebe9db9d0",
+      "repeat_states_bitwise_identical": true
+    },
+    {
+      "scheme": "cayley-bcb",
+      "natoms": 1000,
+      "beads": 32,
+      "threads": 2,
+      "steps": 15,
+      "microseconds_per_step": [
+        1125.5159333333334,
+        1082.4467333333332,
+        1216.5527333333334
+      ],
+      "median_microseconds_per_step": 1125.5159333333334,
+      "minimum_microseconds_per_step": 1082.4467333333332,
+      "state_sha256": "cc437d5650fe17fde7371c099b799bcd6cb86a7ebac04043ff379bfcc695edf4",
+      "repeat_states_bitwise_identical": true
+    },
+    {
+      "scheme": "cayley-bcb",
+      "natoms": 1000,
+      "beads": 128,
+      "threads": 2,
+      "steps": 3,
+      "microseconds_per_step": [
+        7015.703666666667,
+        6327.993333333333,
+        5586.787
+      ],
+      "median_microseconds_per_step": 6327.993333333333,
+      "minimum_microseconds_per_step": 5586.787,
+      "state_sha256": "327fd2cc5a01adbb62b5f948e350108a0d1233baaec6a6fe73db41e641887938",
+      "repeat_states_bitwise_identical": true
+    },
+    {
+      "scheme": "cayley-bcb",
+      "natoms": 8000,
+      "beads": 8,
+      "threads": 2,
+      "steps": 7,
+      "microseconds_per_step": [
+        1975.062,
+        2102.665142857143,
+        2094.833142857143
+      ],
+      "median_microseconds_per_step": 2094.833142857143,
+      "minimum_microseconds_per_step": 1975.062,
+      "state_sha256": "0baefafd2bf8fc9ab528b4397fef1c3f23734adf7d0f7c1c831dc7d8e02abd28",
+      "repeat_states_bitwise_identical": true
+    },
+    {
+      "scheme": "cayley-bcb",
+      "natoms": 8000,
+      "beads": 32,
+      "threads": 2,
+      "steps": 1,
+      "microseconds_per_step": [
+        14585.739,
+        9537.075,
+        12921.212
+      ],
+      "median_microseconds_per_step": 12921.212,
+      "minimum_microseconds_per_step": 9537.075,
+      "state_sha256": "5d71a7d93771ffbe89985c9941cf7692fdeeb9f3d2686cc50b63ccde786e47b6",
+      "repeat_states_bitwise_identical": true
+    },
+    {
+      "scheme": "cayley-bcb",
+      "natoms": 8000,
+      "beads": 128,
+      "threads": 2,
+      "steps": 1,
+      "microseconds_per_step": [
+        120580.601,
+        76464.697,
+        58174.641
+      ],
+      "median_microseconds_per_step": 76464.697,
+      "minimum_microseconds_per_step": 58174.641,
+      "state_sha256": "c39875d6df0aaa6e73acef9907a376a924860bd61c864f339d112fc192275db9",
+      "repeat_states_bitwise_identical": true
+    },
+    {
+      "scheme": "normal-mode-bab",
+      "natoms": 64,
+      "beads": 32,
+      "threads": 2,
+      "steps": 100,
+      "microseconds_per_step": [
+        268.03547,
+        215.41639999999998,
+        166.80241
+      ],
+      "median_microseconds_per_step": 215.41639999999998,
+      "minimum_microseconds_per_step": 166.80241,
+      "state_sha256": "f5602df9376cfeae2cb8cc29a432ed08af8949a83f1041a5d2ff1968d685a8a4",
+      "repeat_states_bitwise_identical": true
+    },
+    {
+      "scheme": "normal-mode-bab",
+      "natoms": 64,
+      "beads": 128,
+      "threads": 2,
+      "steps": 61,
+      "microseconds_per_step": [
+        740.9401475409836,
+        582.3836065573771,
+        814.1452622950819
+      ],
+      "median_microseconds_per_step": 740.9401475409836,
+      "minimum_microseconds_per_step": 582.3836065573771,
+      "state_sha256": "ab06feea861c1fc901098fcb06b2062b135a610f1ec352c5ab8b49df46fe3d17",
+      "repeat_states_bitwise_identical": true
+    }
+  ]
+}
