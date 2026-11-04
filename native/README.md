@@ -87,6 +87,10 @@ The `BLOCK_ENERGY_CHECK_API` marker similarly protects `check_energy=True`,
 which checks the initial and every accepted-step total energy independently of
 the observation mask. FES uses it to keep energy validation while collecting
 multiple sampling events in one native call.
+`BLOCK_STEP_ENERGIES_API` marks the optional `step_energies` output: the total
+ring energy of every accepted step, taken from that step's endpoint PES call and
+independent of the observation mask. dRPMD uses it to monitor energy drift at
+every step while observing centroids and diagnostics only for saved frames.
 It commits each accepted step and returns a valid prefix on numerical failure;
 `run_block` retains its whole-block transaction contract. Both implementations
 share the existing immutable Cayley context and the provider's lifetime lock.

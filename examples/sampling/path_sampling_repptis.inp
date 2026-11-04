@@ -1,0 +1,54 @@
+# Both centers are uphill of A; the exact directional-return probability is 1.
+# The external effective flux is at the FIRST CENTER -0.8, not at basin A.
+# python -m pyrpmd run examples/sampling/path_sampling_repptis.inp
+task = "path_sampling"
+temperature = "315775.02480398706 K"
+beads = 1
+seed = 325
+native = false
+
+[system]
+symbols = ["H"]
+masses = [1.0]
+geometry = [[0.0, 0.0, 0.0]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "python"
+factory = "path_sampling_quartic.py:make_potential"
+
+[dynamics]
+timestep = 0.04
+integrator = "cayley-bcb"
+
+[[cvs]]
+name = "x"
+kind = "cartesian"
+atom = 0
+axis = "x"
+
+[path_sampling]
+method = "repptis"
+cv = "x"
+basin_a = -1.0
+basin_b = 1.0
+interfaces = [-0.8, -0.4]
+samples = 1800
+burn_in = 200
+block_size = 100
+max_path_steps = 600
+seeds = [
+  {q = [[-0.8, 0.0, 0.0]], p = [[1.5, 0.0, 0.0]]},
+  {q = [[-0.4, 0.0, 0.0]], p = [[1.5, 0.0, 0.0]]},
+]
+
+[path_sampling.external_flux]
+flux_au = 0.3551135805246073
+basin_a = -1.0
+basin_b = 1.0
+first_interface = -0.8
+dt_au = 0.04
+
+[output]
+directory = "runs/path-repptis"
+checkpoint_steps = 100

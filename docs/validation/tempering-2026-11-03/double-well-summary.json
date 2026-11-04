@@ -1,0 +1,41 @@
+{
+  "format": "PyRPMD.tempering-validation.v1",
+  "date": "2026-11-03",
+  "model": {
+    "potential": "builtin double_well",
+    "height_hartree": 0.01,
+    "width_bohr": 1.0,
+    "mass_electron": 1.0,
+    "beads": 8,
+    "initial_x_bohr": -1.0
+  },
+  "parallel_tempering": {
+    "temperatures_K": [300.0, 450.0, 700.0, 1400.0],
+    "production_steps": 4000,
+    "sample_interval_steps": 10,
+    "low_temperature_samples": 400,
+    "low_temperature_positive_fraction": 0.55,
+    "low_temperature_mean_x_bohr": -0.029983615267150546,
+    "exchange_attempts": [105, 105, 105],
+    "exchange_accepts": [38, 33, 17],
+    "exchange_rates": [0.3619047619047619, 0.3142857142857143, 0.1619047619047619],
+    "completed_round_trips": 5,
+    "checkpoint_sha256": "5b7bf2c40084aeac7eb9d0d7414fe02bd1d7a48c418ace7254750eabbb764469",
+    "wall_seconds_serial": 16.72
+  },
+  "single_temperature": {
+    "temperature_K": 300.0,
+    "production_steps": 4000,
+    "sample_interval_steps": 10,
+    "samples_excluding_initial": 400,
+    "positive_fraction": 0.05,
+    "mean_x_bohr": -0.44468131113281906,
+    "checkpoint_sha256": "5608a009dae2506ef82d20181b7a602eede44b9322574a3f76c4217690b90caa",
+    "wall_seconds_serial": 2.67
+  },
+  "exact_symmetry_reference": {
+    "positive_fraction": 0.5,
+    "positive_to_negative_occupancy_ratio": 1.0
+  },
+  "convergence_claim": false
+}

@@ -1,0 +1,188 @@
+{
+  "method": "infinite_retis",
+  "run_identity": "6b991e7f189af279c52041c878eafddd77a8b0fc13b2cbf1cf903f3fdef70869",
+  "samples": 4000,
+  "events": 4400,
+  "burn_in": 400,
+  "workers": 2,
+  "pending_tickets": [
+    4400,
+    4401
+  ],
+  "ensemble_order": [
+    -1,
+    0,
+    1
+  ],
+  "ensemble_samples": [
+    2445,
+    2409,
+    2369
+  ],
+  "conditional_probabilities": [
+    0.5388127853881278,
+    0.6314900802026171
+  ],
+  "overall_crossing_probability": 0.34025492905894433,
+  "crossing_probability_product": 0.34025492905894433,
+  "requires_independent_flux": false,
+  "flux_au": 0.4058377817767368,
+  "flux_s_inv": 1.677789124994939e+16,
+  "rate_estimate_au": 0.1380883056478829,
+  "rate_estimate_s_inv": 5708760197010212.0,
+  "crossing_probability_standard_error_block": 0.028648404106021538,
+  "flux_standard_error_block_au": 0.0029873780374813784,
+  "rate_standard_error_block_au": 0.01211217896175492,
+  "move_attempts": [
+    1715,
+    1742,
+    1792
+  ],
+  "move_accepts": [
+    1630,
+    1439,
+    612
+  ],
+  "length_rejections": [
+    0,
+    0,
+    0
+  ],
+  "zero_swap_attempts": 849,
+  "zero_swap_accepts": 849,
+  "block_diagnostics": {
+    "block_size": 200,
+    "blocks": 20,
+    "blocks_missing_ensembles": 0,
+    "samples_excluded_from_block_error": 0,
+    "block_estimates": [
+      [
+        0.27217318200924756,
+        0.39029686090695004,
+        0.10622833856126529
+      ],
+      [
+        0.4395844723892837,
+        0.4136876910249731,
+        0.18185068539315383
+      ],
+      [
+        0.5634003708458137,
+        0.42700123656207056,
+        0.24057265503069158
+      ],
+      [
+        0.5691056910569106,
+        0.4121568405905948,
+        0.23456080358814338
+      ],
+      [
+        0.2683426311701151,
+        0.41033508531736385,
+        0.11011039645547507
+      ],
+      [
+        0.20174516400336417,
+        0.38976466711756264,
+        0.07863313669034931
+      ],
+      [
+        0.24725822532402794,
+        0.39816439465514936,
+        0.0984494216096481
+      ],
+      [
+        0.4013728570452838,
+        0.4175057996501232,
+        0.1675754956385458
+      ],
+      [
+        0.22090756302521009,
+        0.402885465705382,
+        0.08900044640725278
+      ],
+      [
+        0.4808291559409294,
+        0.412742498300377,
+        0.19845862707872078
+      ],
+      [
+        0.34322250639386187,
+        0.3829738775671873,
+        0.13144525414198602
+      ],
+      [
+        0.40701754385964917,
+        0.4214293107782395,
+        0.1715291229834238
+      ],
+      [
+        0.23720196353436185,
+        0.39884797928302684,
+        0.09460752383764644
+      ],
+      [
+        0.37083333333333335,
+        0.3858679714149007,
+        0.14309270606635902
+      ],
+      [
+        0.4411071428571429,
+        0.3917469976012645,
+        0.17280239883475781
+      ],
+      [
+        0.3171875,
+        0.41275674868943896,
+        0.13092128122493144
+      ],
+      [
+        0.18477822580645162,
+        0.41823504809703077,
+        0.0772807301574453
+      ],
+      [
+        0.43767665347654044,
+        0.42363524987178736,
+        0.1854152584585819
+      ],
+      [
+        0.11890243902439024,
+        0.415687112023942,
+        0.049426211490651635
+      ],
+      [
+        0.47001851588092863,
+        0.3990435173427933,
+        0.18755784179336532
+      ]
+    ],
+    "standard_errors": [
+      0.028648404106021538,
+      0.0029873780374813784,
+      0.01211217896175492
+    ],
+    "qualification": "Joint event blocks of fractional numerators and free-ensemble counts; check block-size and independent-chain convergence."
+  },
+  "converged": false,
+  "physical_converged": false,
+  "qualification": "Canonical shooting with exact infinite swaps; deterministic ticket commits can wait for an earlier slow move. No high-acceptance subtrajectory moves.",
+  "task": "path_sampling",
+  "path_sampling_method": "retis",
+  "exchange": "infinite",
+  "status": "complete",
+  "completed": true,
+  "burn_in_completed": 400,
+  "operations_completed": 4400,
+  "temperature_K": 315775.02480398706,
+  "beta_au": 1.0000000000000002,
+  "beads": 1,
+  "dt_au": 0.04,
+  "physics_fingerprint": "a06c944487d77efae949202e63f395c60a9cddf2669d824905676487804fa775",
+  "coordinate": "x",
+  "coordinate_unit": "bohr",
+  "checkpoint": "checkpoints/path_sampling.npz",
+  "observations": "samples/path_sampling.npz",
+  "rate_s_inv": null,
+  "convergence_note": "Completed budget is not physical convergence; establish stationarity, interface support, timestep/bead/path-length convergence and independent-chain uncertainty."
+}

@@ -41,6 +41,20 @@ def _array_description(array):
 
 def atomic_savez(path, *, kind="arrays", **arrays):
     """Commit a complete payload and its integrity envelope with one replace."""
+    _atomic_savez(path, kind, arrays, compress=True)
+
+
+def atomic_savez_uncompressed(path, *, kind="arrays", **arrays):
+    """Commit the same verified container without compressing its array data.
+
+    Large, high-entropy native states avoid compression's CPU cost and retain
+    uncompressed array storage. Both writers use exactly the same integrity
+    envelope, atomic publication and no-pickle contract.
+    """
+    _atomic_savez(path, kind, arrays, compress=False)
+
+
+def _atomic_savez(path, kind, arrays, *, compress):
     if ENVELOPE in arrays:
         raise CheckpointError(f"{ENVELOPE} is reserved for the container schema")
     if not isinstance(kind, str) or not kind:
@@ -62,7 +76,8 @@ def atomic_savez(path, *, kind="arrays", **arrays):
     )
     try:
         with os.fdopen(descriptor, "wb") as stream:
-            np.savez_compressed(stream, **payload)
+            writer = np.savez_compressed if compress else np.savez
+            writer(stream, **payload)
             stream.flush()
             os.fsync(stream.fileno())
         os.replace(temporary, path)

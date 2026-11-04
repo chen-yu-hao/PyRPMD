@@ -1,0 +1,2 @@
+{"dimension": 1, "target": "uniform", "elapsed_sampling_seconds": 389.07136140900184, "ves_quadrature_rmse_hartree": 0.09810368115055541, "ves_quadrature_max_sem": 2.4147577102206577, "ves_mbar_max_combined_sem": 1.6074204959548617}
+{"dimension": 2, "target": "well_tempered", "elapsed_sampling_seconds": 301.371666275998, "ves_quadrature_rmse_hartree": 0.12716500741043127, "ves_quadrature_max_sem": 2.286213855092895, "ves_mbar_max_combined_sem": 2.173161558950426}

@@ -1,0 +1,160 @@
+{
+  "benchmark": "rp_iesh_complete_propagation_step",
+  "method_variant": "gardner-2023-centroid",
+  "scope": "complete validated step and caller loop; excludes initialization, observations, checkpoint and I/O",
+  "physical_converged": false,
+  "native_requested": "required",
+  "seed": 20261103,
+  "steps_per_repeat": 100,
+  "repeats": 5,
+  "warmup_steps": 10,
+  "model_identity": {
+    "schema": "pyrpmd.newns_anderson_model",
+    "version": 1,
+    "model": "newns-anderson",
+    "parameters": {
+      "nband": 12,
+      "band_min": -0.5,
+      "band_max": 0.5,
+      "chemical_potential": 0.0,
+      "discretization": "gauss-legendre",
+      "level_energy": 0.0,
+      "level_slope": 0.01,
+      "hybridization": 0.02,
+      "hybridization_slope": 0.0,
+      "bare_force_constant": 0.001,
+      "center": 0.0,
+      "coordinate": 0,
+      "natoms": 1
+    }
+  },
+  "dynamics": {
+    "mass_electron_masses": [
+      200.0
+    ],
+    "beta_inverse_hartree": 40.0,
+    "dt_atomic_time": 0.02,
+    "integrator": "cayley-bcb",
+    "electronic_substeps": 4,
+    "gap_tolerance_hartree": 1e-10,
+    "max_hop_probability": 1.0
+  },
+  "initial": {
+    "kind": "harmonic_ring",
+    "frequencies_atomic": [
+      0.02
+    ],
+    "coordinates": [
+      0
+    ],
+    "centers_bohr": [
+      -0.1
+    ],
+    "centroid_momenta_atomic": [
+      4.0
+    ],
+    "occupied": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
+  },
+  "runtime": {
+    "cpu_model": "x86_64",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "logical_cpus_visible": 9,
+    "affinity_cpus": 9,
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": null
+    },
+    "threadpools_during_measurement": [
+      {
+        "user_api": "blas",
+        "internal_api": "openblas",
+        "num_threads": 1,
+        "prefix": "libscipy_openblas",
+        "filepath": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/numpy.libs/libscipy_openblas64_-fdde5778.so",
+        "version": "0.3.30",
+        "threading_layer": "pthreads",
+        "architecture": "SkylakeX"
+      },
+      {
+        "user_api": "openmp",
+        "internal_api": "openmp",
+        "num_threads": 1,
+        "prefix": "libgomp",
+        "filepath": "/lib/x86_64-linux-gnu/libgomp.so.1.0.0",
+        "version": null
+      }
+    ]
+  },
+  "cases": [
+    {
+      "beads": 1,
+      "nstates": 13,
+      "nband": 12,
+      "nelectrons": 6,
+      "nuclear_native": true,
+      "nuclear_threads": 1,
+      "median_us_per_step": 10039.98985,
+      "min_us_per_step": 9102.611710000001,
+      "max_us_per_step": 12412.75706,
+      "repeat_elapsed_seconds": [
+        1.049065667,
+        1.241275706,
+        0.910261171,
+        0.992121908,
+        1.003998985
+      ],
+      "final_hop_energy_change_hartree": 0.0,
+      "final_hop_energy_change_abs_hartree": 0.0
+    },
+    {
+      "beads": 8,
+      "nstates": 13,
+      "nband": 12,
+      "nelectrons": 6,
+      "nuclear_native": true,
+      "nuclear_threads": 1,
+      "median_us_per_step": 11575.775319999999,
+      "min_us_per_step": 11491.869040000001,
+      "max_us_per_step": 15763.583910000001,
+      "repeat_elapsed_seconds": [
+        1.157577532,
+        1.149186904,
+        1.26863764,
+        1.15394387,
+        1.576358391
+      ],
+      "final_hop_energy_change_hartree": 0.0,
+      "final_hop_energy_change_abs_hartree": 0.0
+    },
+    {
+      "beads": 32,
+      "nstates": 13,
+      "nband": 12,
+      "nelectrons": 6,
+      "nuclear_native": true,
+      "nuclear_threads": 1,
+      "median_us_per_step": 27990.17789,
+      "min_us_per_step": 13605.738430000001,
+      "max_us_per_step": 43565.69957,
+      "repeat_elapsed_seconds": [
+        2.545995277,
+        4.356569957,
+        4.190718426,
+        2.799017789,
+        1.360573843
+      ],
+      "final_hop_energy_change_hartree": 0.0,
+      "final_hop_energy_change_abs_hartree": 0.0
+    }
+  ]
+}

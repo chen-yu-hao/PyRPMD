@@ -17,7 +17,7 @@ from .constants import WAVENUMBER_TO_AU
 from .instanton import (InstantonError, _CountingPotential, _mask_and_masses,
                        _physical_hessians, _positive)
 from .low_temperature import HarmonicState, _integer
-from .potentials.base import coordinates, validate_result
+from .potentials.base import coordinates, evaluate_checked
 
 
 def _phase_projected_spectrum(operator, tangent):
@@ -109,7 +109,7 @@ def tunnelling_splitting(potential, masses, initial_path, imaginary_time_au, *,
 
     def evaluate(x):
         path = unpack(x)
-        value = validate_result(potential.evaluate(path), path.shape)
+        value = evaluate_checked(potential, path)
         delta = np.diff(path[:, mask], axis=0)
         spring = float(np.sum(mass*delta**2)/(2*dtau))
         v = value.energy-reference

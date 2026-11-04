@@ -1,0 +1,47 @@
+# Classical quartic reference: atomic-unit mass 1, beta 1, basins at the minima.
+# python -m pyrpmd run examples/sampling/path_sampling_retis.inp
+# python -m pyrpmd resume examples/sampling/runs/path-retis
+# Increase chain length, burn-in and path support for convergence studies.
+task = "path_sampling"
+temperature = "315775.02480398706 K"
+beads = 1
+seed = 981
+native = false
+
+[system]
+symbols = ["H"]
+masses = [1.0]
+geometry = [[0.0, 0.0, 0.0]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "python"
+factory = "path_sampling_quartic.py:make_potential"
+
+[dynamics]
+timestep = 0.04
+integrator = "cayley-bcb"
+
+[[cvs]]
+name = "x"
+kind = "cartesian"
+atom = 0
+axis = "x"
+
+[path_sampling]
+method = "retis"
+cv = "x"
+basin_a = -1.0
+basin_b = 1.0
+interfaces = [-1.0, -0.5]
+minus = true
+samples = 2400
+burn_in = 300
+block_size = 120
+max_path_steps = 600
+seeds = [{q = [[-0.3, 0.0, 0.0]], p = [[1.4, 0.0, 0.0]]}]
+minus_seed = {q = [[-1.1, 0.0, 0.0]], p = [[-0.7, 0.0, 0.0]]}
+
+[output]
+directory = "runs/path-retis"
+checkpoint_steps = 100

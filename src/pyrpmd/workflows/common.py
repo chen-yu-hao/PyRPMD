@@ -34,7 +34,7 @@ def _dimension(unit):
         "dimensionless": DIMS["dimensionless"],
     }[unit]
 FES_DIMENSIONS = {"umbrella": (1, 2, 3), "metadynamics": (1, 2, 3), "opes": (1, 2),
-                  "abf": (1, 2), "eabf": (1, 2), "steered": (1, 2)}
+                  "abf": (1, 2), "eabf": (1, 2), "steered": (1, 2), "ves": (1, 2)}
 
 
 def fes_method(config):

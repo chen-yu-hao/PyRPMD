@@ -55,7 +55,7 @@ Here `A = {s <= basin_a}`, `B = {s >= basin_b}`, and an interface crossing is
 `basin_a <= lambda_0 < ... < lambda_last < basin_b`. Periodic scalar CVs must
 first be replaced by a continuous, consistently ordered basin coordinate.
 Distances and time use the same atomic units as the numerical `Dynamics` API.
-No new `.inp` task is introduced in this version.
+The same samplers are available through `task="path_sampling"`, described below.
 
 A seed must begin with exactly one frame in A, end with exactly one frame in
 A or B, have all intermediate frames outside both basins, and cross its
@@ -64,6 +64,132 @@ integrator to reject interpolated, biased, stale or otherwise incompatible
 trajectories. `generate_path` is an initialization helper; its successful
 outputs alone are **not** equilibrium path samples. Discard burn-in and check
 independent chains, including chains initialized in different mechanisms.
+
+## Input-file workflows
+
+`task="path_sampling"` runs RETIS, REPPTIS or FFS through the ordinary
+`pyrpmd run`, `pyrpmd resume` and report commands. The method is explicit in
+`[path_sampling]`; all interfaces, seeds, physical dynamics and sampling
+budgets enter the scientific identity. Existing inputs and sampler checkpoint
+formats retain their identities.
+
+```toml
+task = "path_sampling"
+temperature = "315775.02480398706 K" # beta = 1 hartree^-1 for this model
+beads = 1
+seed = 981
+native = false
+
+[system]
+symbols = ["H"]
+masses = [1.0]                     # electron masses, not amu
+geometry = [[0.0, 0.0, 0.0]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "double_well"
+params = {height = 1.0, width = 1.0, confinement = 1.0}
+
+[dynamics]
+timestep = 0.04                    # atomic time units
+
+[[cvs]]
+name = "x"
+kind = "cartesian"
+atom = 0
+axis = "x"
+
+[path_sampling]
+method = "retis"
+cv = "x"
+basin_a = -1.0
+basin_b = 1.0
+interfaces = [-1.0, -0.5]
+minus = true
+samples = 2400
+burn_in = 300
+max_path_steps = 600
+block_size = 120
+seeds = [{q = [[-0.3, 0.0, 0.0]], p = [[1.4, 0.0, 0.0]]}]
+minus_seed = {q = [[-1.1, 0.0, 0.0]], p = [[-0.7, 0.0, 0.0]]}
+
+[output]
+directory = "runs/path-retis"
+checkpoint_steps = 100
+```
+
+Exactly one named continuous scalar CV is selected by `path_sampling.cv`.
+Numeric basin and interface values follow its declared input unit; unit-bearing
+quantities are converted through the ordinary unit parser. Seed `q` and `p`
+arrays explicitly use atomic units. They can be `[N,3]`, broadcasting to all
+beads, or full `[P,N,3]` arrays. These are **shooting phase points**, from which
+the workflow integrates and checks genuine seed trajectories. A single RETIS
+phase point may initialize all positive interfaces if it generates a valid
+path in each. REPPTIS requires one phase point per local window. The ordinary
+`system.geometry` remains the system reference, including fixed positions.
+
+| Method | Required setup and budget | Rate normalization |
+| --- | --- | --- |
+| `method="retis"` | `seeds`, `samples`, `burn_in`, `max_path_steps`; `minus=true` also requires `minus_seed` | Internal minus/zero-plus residence times, with first interface equal to A; positive-only RETIS needs matching `external_flux` |
+| `method="repptis"` | One seed per strictly interior center, `samples`, `burn_in`, `max_path_steps` | `external_flux` at the first **center**, with the same basins and timestep |
+| `method="ffs"` | `initial_state`, `flux_steps`, `trials_per_interface`, `max_trial_steps`, explicit `dynamics` | Effective crossings and A-history time from the workflow's own flux phase |
+
+An external flux table contains `flux_au`, `basin_a`, `basin_b`,
+`first_interface` and `dt_au`; these metadata must match the path calculation.
+`flux_au` and `dt_au` use atomic units; coordinate metadata follows the same
+input units as the declared basins and interfaces. It must also describe the same physical
+model and stationary ensemble, which matching coordinate metadata alone cannot
+prove. REPPTIS reports its memory-loss approximation, and errors conditional
+on an external flux exclude that flux's uncertainty.
+
+FFS selects `dynamics="hamiltonian"` or `dynamics="basin-andersen"` explicitly.
+The second choice requires `collision_rate`, a positive frequency, and applies
+a full Maxwell momentum refresh with probability `1-exp(-collision_rate*dt)`
+after an NVE step only when the resulting coordinate lies in A or B. It leaves
+the outside-basin dynamics unchanged; it does not refresh momenta upon an FFS
+interface crossing. `equilibration_steps` advances this same physical process
+before flux collection. Initialization and relaxation still require a
+stationarity check. A Hamiltonian flux trajectory conserves its energy and
+need not explore a canonical distribution; choosing it explicitly does not
+solve this sampling issue. Arbitrary Markov callbacks remain available through
+the Python FFS API.
+
+There is no `[sampling]` table for this task. Budgets and stochastic-dynamics
+choices belong in `[path_sampling]`; unsupported thermostats, biases, barostats,
+constraints and execution combinations fail explicitly. The deterministic
+RETIS and REPPTIS restrictions in the shooting section still apply.
+
+The four complete examples are:
+
+```bash
+pyrpmd run examples/sampling/path_sampling_retis.inp
+pyrpmd run examples/sampling/path_sampling_repptis.inp
+pyrpmd run examples/sampling/path_sampling_ffs.inp
+pyrpmd run examples/sampling/path_sampling_infinite_retis.inp
+pyrpmd resume examples/sampling/runs/path-retis
+pyrpmd report examples/sampling/runs/path-retis
+```
+
+Paths in input files are resolved relative to the input file. Each run uses
+the common manifest and saved resolved input, writes the detailed summary to
+`results/path_sampling.json`, the standard summary to `results/summary.json`,
+and raw production observations to `samples/path_sampling.npz`. The atomic
+checkpoint is `checkpoints/path_sampling.npz`. Raw observations include
+rejections and the complete cross-interface measurement history; FFS retains
+its flux trace and stage outcomes/ancestry. The report remains a first-order
+rate **estimate**: `converged` and `physical_converged` stay false.
+
+`output.checkpoint_steps` counts completed workflow operations: a ladder sweep
+for RETIS/REPPTIS, a flux step or completed branch trial for FFS, and a committed
+event for infinite RETIS. A restart restores the last atomic checkpoint and
+replays any uncommitted work. Burn-in is tracked and excluded from production.
+FFS commits its first checkpoint after equilibration; interruption before that
+point replays the same equilibration from the original state and RNG seed.
+Resume keeps the
+original total budget; it does not append a second full run. The persisted RNG,
+paths, ancestry, counters and scheduler state support bitwise continuation with
+the same implementation and numerical backend. This is not a cross-platform
+or cross-version floating-point guarantee.
 
 ## Shooting, canonical weights and path length
 
@@ -467,41 +593,88 @@ numerical backend; they do not certify interchangeability across platforms or
 arbitrary future algorithm versions. Continued RETIS/PPTIS results contain
 cumulative observations and must not be concatenated with their earlier prefix.
 
-## Infinite-exchange scheduling: design only
+## Infinite RETIS with asynchronous workers
 
-There is **no executable infinity-RETIS scheduler in this implementation**.
-The following is a design for a future extension informed by
-[Roet, Zhang and van Erp (2022)](https://doi.org/10.1021/acs.jpca.2c06004) and
-[Zhang et al. (2024)](https://doi.org/10.1073/pnas.2318731121).
+For RETIS, `exchange="infinite"` selects exact infinite exchanges among the
+currently free positive ensembles. The central coordinator uses the
+asynchronous process executor under `pyrpmd.parallel`; independent proposals
+run concurrently and each ensemble is locked while its proposal is outstanding.
+The minus ensemble forms a separate one-element block. A minus/zero-plus
+endpoint-continuation move locks both affected ensembles.
 
-A worker would lock its assigned ensemble and immutable input-path version
-while generating a proposal. A central scheduler would exchange only free
-ensembles, atomically commit each completed proposal once, update statistical
-weights, and assign the next task. Minus/positive endpoint continuation needs
-both affected ensembles locked. Fast workers must not contribute observations
-merely in proportion to wall-clock completion speed.
+```toml
+[path_sampling]
+method = "retis"
+exchange = "infinite"
+workers = 2
+# ... basins, interfaces, seeds and the other RETIS options above ...
 
-For free paths `X_j` and ensembles `E_i`, form assignment weights
-`W_ij = rho_i(X_j)`, including membership and any introduced path bias. A
-permutation has probability proportional to the product of its selected
-entries, normalized by `perm(W)`. Its marginal assignment weight is
-`W_ij * perm(W without row i and column j) / perm(W)`. Any optimized permanent
-algorithm must preserve these weights, handle zero support explicitly, and
-be checked against exact enumeration on small ladders. A uniform random
-assignment is valid only when the complete admissible assignment weights are
-equal. The existing unbiased path measure should remain the initial target;
-future high-acceptance path biases would require explicit reweighting.
+[parallel]
+backend = "process"
+mode = "serial"
+scheduling = "dynamic"
+trajectory_workers = 2
+threads_per_rank = 1
+```
 
-The scheduler checkpoint would include monotonic task and commit counters,
-path versions, ensemble locks, worker and scheduler RNG states, assignment
-weights, pending-task inputs, and weighted observation accumulators. The first
-implementation should checkpoint at a quiescent barrier. A later in-flight
-format must retain full integration state and pre-task RNG or replay each
-uncommitted task from its immutable input, with duplicate completions rejected
-by task ID. Exact reproducibility additionally requires a recorded commit
-order or a deterministic commit policy; wall-clock arrival order alone is not
-a reproducible scientific schedule. Fault-injection, detailed-balance and
-weighted-estimator tests are prerequisites for claiming this design implemented.
+The scientific algorithm follows
+[Roet, Zhang and van Erp (2022)](https://doi.org/10.1021/acs.jpca.2c06004).
+The later [Zhang et al. (2024) PNAS paper](https://doi.org/10.1073/pnas.2318731121)
+combines asynchronous infinite exchanges with high-acceptance subtrajectory
+moves. This implementation retains the existing full-Maxwell, two-way shooting
+and its canonical acceptance correction. It does not implement those later
+subtrajectory moves or claim their acceptance rate or speedup.
+
+For free paths `X_i` and free positive ensembles `E_j`, the membership weight
+is `W_ij = 1[X_i belongs to E_j]`. All ensembles share the same unmodified
+canonical path density, so that common row factor cancels between assignments.
+The exact marginal assignment probability is
+
+\[
+ P_{ij}=\frac{W_{ij}\,\operatorname{perm}(W_{-i,-j})}
+                   {\operatorname{perm}(W)}.
+\]
+
+Because the interfaces are nested, each path's admissible columns form a
+prefix. Sorting paths by the number of compatible free ensembles gives an
+exact quadratic-cost recurrence for these marginals, without an exponential
+general-purpose permanent calculation or a finite number of approximate swaps.
+Tests compare the marginals and compatible assignments against independent
+permutation enumeration for small ladders. Arbitrary path biases would change
+these weights and are unsupported.
+
+Each committed production event records **only free ensembles**. A free
+ensemble's crossing observation is the fractional sum over its possible path
+assignments, weighted by `P_ij`; its observation count increases by one.
+Locked ensembles contribute neither an observation nor a count. The crossing
+probability is the sum of its fractional observations divided by its own
+count. The minus and zero-plus residence times use the same free-ensemble
+bookkeeping. Their separate mean durations give the effective flux, and its
+product with the interface conditionals gives the rate estimate. Joint
+contiguous event blocks recompute these ratios using the per-ensemble counts;
+a block lacking an ensemble cannot supply an error estimate. Counting locked
+paths as repeated samples or taking an unweighted average across events would
+change the estimator.
+
+Proposal execution is asynchronous, while **commits follow deterministic
+submission tickets**. This avoids a global batch barrier and makes the
+scientific schedule independent of operating-system completion order. A fast
+worker's result can wait behind an earlier slow ticket; this is a deliberate
+throughput tradeoff for exact restart, and is not the first-finished policy
+used in performance claims for other implementations. The logical worker
+count affects which ensembles are locked and is part of the scientific
+identity. It must match `parallel.trajectory_workers`; it cannot be changed
+when resuming the same chain. MPI and bead/GPU worker pools are not currently
+supported by this scheduler.
+
+Checkpoints retain the coordinator RNG, logical ticket counters, ensemble
+locks, immutable pending-task paths and seeds, retained paths, and weighted
+observation histories. Restart resubmits pending proposals from those recorded
+inputs and commits each ticket once. No checkpoint depends on serializing a
+live process or accepting stale results from a prior worker. The numerical
+backend, worker count and scientific settings must still match. For this mode,
+`samples` and `burn_in` count committed events, rather than full-ladder sweeps;
+compare effective observations and uncertainty when choosing budgets.
 
 ## Validation and scope
 
@@ -543,13 +716,24 @@ whole-run errors, fixed statistical tolerances and execution timing, and does
 not label this short reference check physically converged. A runnable minus
 example with checkpoint/resume is `examples/sampling/retis_minus.py`.
 
+`examples/sampling/path_sampling_quartic.py` runs all four input workflows and
+reports the quadrature reference, complete-run error bars and execution timing.
+The exact classical unit-mass, beta-one reference is
+`k_AB = 0.1487158864662166 au^-1`. Its RETIS flux at A is
+`0.4042516917842950 au^-1`; REPPTIS uses the first-center flux instead. With the
+two REPPTIS centers on the uphill side of A, every right-origin local path
+returns left, and this special separable model has an exact directional
+recurrence. That check does not establish the general memory-loss assumption.
+The workflow reference tests recompute errors from raw observations, rather
+than treating branch descendants or exchanged replicas as independent runs.
+
 All current interfaces are ordered coordinate-based boundaries. Phase-space
-basin predicates, stochastic one-way TIS shooting, MPI/asynchronous execution,
-and executable infinity-RETIS are outside this implementation. No TOML,
-`.inp`, workflow registration or top-level `pyrpmd` export is added; import the
-dedicated modules shown above. Model initialization, stationarity, mechanism
-mixing, interface spacing, timestep, bead count, path-length support and
-independent-run convergence remain scientific checks for each application.
+basin predicates, stochastic one-way TIS shooting, MPI infinite exchanges and
+the 2024 high-acceptance subtrajectory moves remain outside this implementation.
+Use the dedicated Python modules for the low-level APIs; no top-level
+`pyrpmd` export is added. Model initialization, stationarity, mechanism mixing,
+interface spacing, timestep, bead count, path-length support and independent-run
+convergence remain scientific checks for each application.
 
 ## References
 

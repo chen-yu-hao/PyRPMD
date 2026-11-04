@@ -39,6 +39,12 @@ env:
   MPLBACKEND: Agg
   PYTHONUNBUFFERED: '1'
 
+concurrency:
+  # main runs get a unique group: GitHub keeps only one pending run per group,
+  # so a shared group would cancel a queued main commit's validation.
+  group: ${{ github.workflow }}-${{ github.ref == 'refs/heads/main' && github.run_id || github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   pes-and-numerics:
     name: BKMP2 oracle, forces and NVE

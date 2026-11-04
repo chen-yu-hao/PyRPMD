@@ -1,0 +1,104 @@
+{
+  "task": "path_sampling",
+  "temperature": 315775.0248039871,
+  "beads": 1,
+  "seed": 2999,
+  "native": false,
+  "system": {
+    "symbols": [
+      "H"
+    ],
+    "masses": [
+      1.0
+    ],
+    "geometry": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "geometry_unit": "bohr"
+  },
+  "potential": {
+    "provider": "python",
+    "factory": "/workspace/scratch/bea6400faf93/PyRPMD/examples/sampling/path_sampling_quartic.py:make_potential"
+  },
+  "dynamics": {
+    "timestep": 0.04,
+    "integrator": "cayley-bcb"
+  },
+  "cvs": [
+    {
+      "name": "x",
+      "kind": "cartesian",
+      "atom": 0,
+      "axis": "x"
+    }
+  ],
+  "path_sampling": {
+    "method": "ffs",
+    "cv": "x",
+    "basin_a": -1.0,
+    "basin_b": 1.0,
+    "interfaces": [
+      -1.0,
+      -0.5
+    ],
+    "block_size": 100,
+    "dynamics": "basin-andersen",
+    "collision_rate": 1.0,
+    "flux_steps": 6000,
+    "trials_per_interface": [
+      160,
+      160
+    ],
+    "max_trial_steps": 2000,
+    "equilibration_steps": 500,
+    "initial_state": {
+      "q": [
+        [
+          [
+            0.7335434246573926,
+            1.399126607584121,
+            0.1498911946811719
+          ]
+        ]
+      ],
+      "p": [
+        [
+          [
+            1.2647695999467603,
+            -0.16456152477930636,
+            -0.3327278331071456
+          ]
+        ]
+      ]
+    },
+    "interface_unit": "bohr"
+  },
+  "output": {
+    "checkpoint_steps": 100,
+    "directory": "/workspace/scratch/bea6400faf93/PyRPMD/pytest-of-root/pytest-6/test_ffs_quartic_rate_matches_0/ffs-2999"
+  },
+  "schema_version": 1,
+  "preset": "pilot",
+  "temperature_K": 315775.0248039871,
+  "beta": 1.0,
+  "dt_au": 0.04,
+  "parallel": {
+    "bead_workers": 1,
+    "mode": "serial",
+    "trajectory_workers": 1,
+    "backend": "serial",
+    "threads_per_rank": 1,
+    "pes_ranks": 1,
+    "scheduling": "static",
+    "coordinator_ranks": 0
+  },
+  "_input_path": null,
+  "_base_directory": "/workspace/scratch/bea6400faf93/PyRPMD",
+  "_warnings": [],
+  "hamiltonian_convention": "sum_beads_beta_over_P",
+  "resume": false
+}
