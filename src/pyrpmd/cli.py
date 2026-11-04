@@ -310,7 +310,7 @@ def _pes(args):
         ):
             raise InputError("step and tolerance must be positive and finite")
         q = system.geometry[None, :, :].copy()
-        from .potentials import check_potential, validate_result
+        from .potentials import check_potential, evaluate_checked
 
         checked = check_potential(provider, q, epsilon=args.step)
         error = checked["max_absolute_force_error"]
@@ -320,7 +320,7 @@ def _pes(args):
             )
         # Re-evaluate the original geometry: the diagnostic's displaced calls
         # may have overwritten provider-owned energy and result buffers.
-        result = validate_result(provider.evaluate(q), q.shape)
+        result = evaluate_checked(provider, q)
         return {
             "passed": True,
             "max_force_error_au": error,

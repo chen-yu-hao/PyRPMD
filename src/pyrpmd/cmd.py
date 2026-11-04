@@ -16,7 +16,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from .dynamics import State, _state_clock
-from .potentials.base import Potential, PESResult, coordinates, validate_result
+from .potentials.base import Potential, PESResult, coordinates, evaluate_checked
 
 
 def _real(value, name):
@@ -141,7 +141,7 @@ class PACMDDynamics:
         pk[:] = cosine * pk - self.mode_masses * force * drift * old_q
 
     def _force(self, q, bias):
-        force = validate_result(self.potential.evaluate(q), q.shape).forces.copy()
+        force = evaluate_checked(self.potential, q).forces.copy()
         if bias is not None:
             energy, extra = bias.energy_force(q)
             extra = _real(extra, "bias force")
@@ -204,7 +204,7 @@ class PACMDDynamics:
         """Sum-bead fictitious Hamiltonian (not a quantum energy estimator)."""
         self._check(state)
         qk, pk = self._modes(state.q), self._modes(state.p)
-        energy = float(np.sum(validate_result(self.potential.evaluate(state.q), state.q.shape).energy))
+        energy = float(np.sum(evaluate_checked(self.potential, state.q).energy))
         energy += float(np.sum(pk * pk / (2 * self.mode_masses)))
         energy += float(0.5 * np.sum(self.masses[None, :, None]
                                      * self.ring_frequencies[:, None, None] ** 2 * qk ** 2))

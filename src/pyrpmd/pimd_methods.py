@@ -18,7 +18,7 @@ import numpy as np
 from scipy.special import logsumexp
 
 from .path_integral import _integer, _masses, _positive
-from .potentials.base import Potential, PotentialError, PESResult, coordinates, validate_result
+from .potentials.base import Potential, PotentialError, PESResult, coordinates, evaluate_checked, validate_result
 from .potentials.contraction import _component
 
 
@@ -112,7 +112,7 @@ class SuzukiChinPotential(_SamplingPotential):
             raise ValueError("Suzuki--Chin evaluation requires complete rings")
         weights = np.tile(self.weights, count)
         coefficients = np.tile(self.coefficients, count)
-        result = validate_result(self.potential.evaluate(q), q.shape)
+        result = evaluate_checked(self.potential, q)
         physical_energy, physical_force = result.energy.copy(), result.forces.copy()
         physical_virial = None if result.virial is None else result.virial.copy()
         acceleration = physical_force / self.masses[None, :, None]
@@ -127,10 +127,10 @@ class SuzukiChinPotential(_SamplingPotential):
             h = self.fd_step / rms[active]
             plus = q[active] + h[:, None, None] * direction
             minus = q[active] - h[:, None, None] * direction
-            rp = validate_result(self.potential.evaluate(plus), plus.shape)
+            rp = evaluate_checked(self.potential, plus)
             fp = rp.forces.copy()
             wp = None if rp.virial is None else rp.virial.copy()
-            rm = validate_result(self.potential.evaluate(minus), minus.shape)
+            rm = evaluate_checked(self.potential, minus)
             fm = rm.forces
             # dF/dq @ (F/m) = - Hess(V) @ (F/m).
             projected = (fp - fm) / (2 * h[:, None, None])
@@ -526,7 +526,7 @@ class BosonicExchangePotential(_SamplingPotential):
         and affine virial for a Cartesian all-bead periodic propagator.
         """
         q = self._q(positions)
-        result = validate_result(self.potential.evaluate(q), q.shape)
+        result = evaluate_checked(self.potential, q)
         energy, force = result.energy.copy(), result.forces.copy()
         virial = None if result.virial is None else result.virial.copy()
         for ids in self._sampling_groups:
@@ -546,7 +546,7 @@ class BosonicExchangePotential(_SamplingPotential):
 
     def evaluate(self, positions):
         q = self._q(positions)
-        result = validate_result(self.potential.evaluate(q), q.shape)
+        result = evaluate_checked(self.potential, q)
         energy, force = result.energy.copy(), result.forces.copy()
         virial = None if result.virial is None else result.virial.copy()
         for ids in self._sampling_groups:
@@ -662,7 +662,7 @@ class PIGSPotential(_SamplingPotential):
 
     def evaluate(self, positions):
         q = self._q(positions)
-        physical = validate_result(self.potential.evaluate(q), q.shape)
+        physical = evaluate_checked(self.potential, q)
         energy = self.weights * physical.energy
         force = self.weights[:, None, None] * physical.forces
         log_psi, gradient = self.trial.evaluate(q[[0, -1]])

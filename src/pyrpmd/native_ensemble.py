@@ -286,12 +286,12 @@ class _PythonPotentialBinding:
                 raise
 
     def evaluate(self, coordinates, cell):
-        from .potentials.base import PotentialError, validate_result
+        from .potentials.base import PotentialError, evaluate_checked
         q = np.frombuffer(coordinates, dtype=np.float64).reshape(self.beads, self.natoms, 3).copy()
         if self.cell is not None:
             self.set_cell(np.frombuffer(cell, dtype=np.float64).reshape(3, 3))
         self.calls += 1
-        result = validate_result(self.potential.evaluate(q), q.shape)
+        result = evaluate_checked(self.potential, q)
         virial = result.virial
         if virial is None:
             if self.cell is not None:

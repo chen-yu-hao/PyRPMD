@@ -20,7 +20,7 @@ import numbers
 import numpy as np
 
 from .dynamics import CayleyIntegrator, Dynamics, State
-from .potentials.base import PotentialError, validate_result
+from .potentials.base import PotentialError, evaluate_checked
 from .validation import integer_count as _integer
 
 
@@ -348,7 +348,7 @@ class BatchedDynamics:
         flat = np.ascontiguousarray(q).reshape(count * beads, atoms, 3)
         self.pes_calls += 1
         self.pes_frames += len(flat)
-        result = validate_result(self.potential.evaluate(flat), flat.shape, require_success=False)
+        result = evaluate_checked(self.potential, flat, require_success=False)
         # Some PESs reuse a writable output buffer. Never retain its view.
         force = result.forces.copy().reshape(q.shape)
         energy = result.energy.copy().reshape(count, beads).sum(axis=1)
@@ -385,7 +385,7 @@ class BatchedDynamics:
             try:
                 positions = task["q"]
                 provider = make_trajectory_potential(task)
-                result = validate_result(provider.evaluate(positions), positions.shape)
+                result = evaluate_checked(provider, positions)
                 energy, forces = float(result.energy.sum()), result.forces.copy()
                 bias = biases[task["index"]]
                 if bias is not None:

@@ -234,12 +234,14 @@ class RPMDratePotential(Potential):
             raise PotentialError(f"legacy PES failed with info={status}")
         if np.shape(g) != q.shape:
             raise PotentialError("legacy gradient shape mismatch")
-        return validate_result(
-            PESResult(
-                np.asarray(e) * self.energy_factor,
-                -np.asarray(g).transpose(2, 1, 0)
-                * self.energy_factor
-                / self.length_factor,
-            ),
-            x.shape,
-        )
+        gradient = np.asarray(g).transpose(2, 1, 0)
+        if self.energy_factor == self.length_factor == 1:
+            # Atomic units: x*1.0/1.0 is exact, so skip the two temporaries.
+            energy, forces = np.asarray(e), -gradient
+        else:
+            energy = np.asarray(e) * self.energy_factor
+            forces = -gradient * self.energy_factor / self.length_factor
+        return validate_result(PESResult(energy, forces), x.shape)
+
+
+_RPMDRATE_EVALUATE = RPMDratePotential.evaluate

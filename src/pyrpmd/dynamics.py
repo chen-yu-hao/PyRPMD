@@ -15,7 +15,7 @@ import math
 import numbers
 import threading
 import numpy as np
-from .potentials.base import validate_result
+from .potentials.base import evaluate_checked, validate_result  # noqa: F401 (re-export)
 from .validation import checked_integer, finite_real
 
 
@@ -575,7 +575,7 @@ class Dynamics:
 
     def _force(self, q, bias=None):
         """Return an independent, writable force for Python extension hooks."""
-        result = validate_result(self.potential.evaluate(q), q.shape)
+        result = evaluate_checked(self.potential, q)
         force = result.forces.copy()
         if bias is not None:
             _, extra = bias.energy_force(q)
@@ -598,7 +598,7 @@ class Dynamics:
         ):
             # Both built-in kick implementations read force synchronously and
             # never retain or mutate it. No other PES call precedes consumption.
-            force = validate_result(self.potential.evaluate(q), q.shape).forces
+            force = evaluate_checked(self.potential, q).forces
         else:
             force = self._force(q, bias)
         self.integrator.kick(p, force, 0.5 * self.dt)
@@ -676,7 +676,7 @@ class Dynamics:
         self._check_fixed(q, p)
         if self.bond_constraints:
             self.constraints.check(q, p)
-        e = float(np.sum(validate_result(self.potential.evaluate(q), q.shape).energy))
+        e = float(np.sum(evaluate_checked(self.potential, q).energy))
         e += float(np.sum(p * p / (2 * self.masses[None, :, None])))
         dq = q - np.roll(q, -1, axis=0)
         e += float(
