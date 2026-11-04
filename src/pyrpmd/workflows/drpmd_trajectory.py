@@ -380,6 +380,10 @@ def _trajectory(
     descriptor_factory = getattr(classifier, "native_outcome_descriptor", None)
     modern_native = getattr(dynamics.integrator._native, "DRPMD_OUTCOMES_API", 0) >= 1
     previous_available = modern_native or dynamics.loop_backend == "python" or not dynamics.native
+    # Monitor the conservation of every step, but observe (centroids,
+    # diagnostics) only the frames that are saved, plus the final block step.
+    energy_monitor = (getattr(dynamics.integrator._native, "BLOCK_STEP_ENERGIES_API", 0) >= 1
+                      or dynamics.loop_backend == "python" or not dynamics.native)
     checkpoint_current = False
 
     while done < max_steps and status == "unresolved":
@@ -397,12 +401,20 @@ def _trajectory(
         start_done = done
         stats_before_block = copy.deepcopy(dynamics.propagation_stats)
         options = {"record_states": record_states, "raise_on_error": False}
+        sparse = energy_monitor and not record_states
+        if sparse:
+            numbers = done + np.arange(1, count + 1)
+            observe = (numbers % stride == 0) | (numbers == max_steps)
+            observe[-1] = True
+            options["observe"] = observe
+            options["record_step_energies"] = True
         if diagnostic_spec:
             options["diagnostics"] = diagnostic_spec
         if record_previous:
             options["record_previous"] = True
-        if native_events:
-            options["reuse_forces"] = True
+        # Block-local endpoint-force reuse: the next step starts from the
+        # force at the identical coordinates. A failure invalidates it.
+        options["reuse_forces"] = True
         if descriptor is not None:
             options["outcome"] = {
                 "descriptor": descriptor,
@@ -417,7 +429,12 @@ def _trajectory(
         valid = block.completed
         failure = block.error
         previous_candidate, previous_since = candidate, candidate_since
-        energy = block.energies / config["beads"]
+        if sparse:
+            energy = block.step_energies / config["beads"]
+            rows = np.flatnonzero(observe[:block.completed])
+        else:
+            energy = block.energies / config["beads"]
+            rows = np.arange(block.completed)
         pending_check = False
         if descriptor is not None:
             event = block.outcome
@@ -434,7 +451,10 @@ def _trajectory(
         if not failure and (python_classifier or pending_check) and (done + valid) % check == 0:
             try:
                 label = _normalize_label(classifier(state))
-                block.centroids[valid - 1] = state.q.mean(axis=0)
+                # An unobserved final step (an early native pending check)
+                # takes its saved centroid from this same live state later.
+                if len(rows) and rows[-1] == block.completed - 1:
+                    block.centroids[len(rows) - 1] = state.q.mean(axis=0)
                 number = done + valid
                 if label != candidate:
                     candidate, candidate_since = label, number if label else None
@@ -473,10 +493,27 @@ def _trajectory(
                 keep[-1] = True
             selected = np.flatnonzero(keep)
             trace_steps.extend(numbers[selected].tolist())
-            trace_q.extend(block.centroids[selected].copy())
             trace_energy.extend(energy[selected].tolist())
-            for key in diagnostic_spec:
-                diagnostic_traces[key].extend(block.diagnostics[key][selected].copy())
+            index = np.searchsorted(rows, selected)
+            observed = np.zeros(len(selected), dtype=bool)
+            if len(rows):
+                observed = (index < len(rows)) & (rows[np.minimum(index, len(rows) - 1)] == selected)
+            for position, row, present in zip(selected, index, observed):
+                if present:
+                    trace_q.append(block.centroids[row].copy())
+                    for key in diagnostic_spec:
+                        diagnostic_traces[key].append(block.diagnostics[key][row].copy())
+                else:
+                    # Only the final accepted step can be unobserved (an early
+                    # outcome, failure or rejected classifier step); the live
+                    # state is exactly that step. Its energy is already known.
+                    if position != valid - 1:
+                        raise RuntimeError("saved trajectory frame was not observed")
+                    trace_q.append(state.q.mean(axis=0))
+                    for key, value in state_diagnostics(
+                            dynamics, state, diagnostic_spec,
+                            energy_per_bead=float(energy[position])).items():
+                        diagnostic_traces[key].append(value)
             done += valid
         if failure:
             status, channel, reason = "failed", None, failure

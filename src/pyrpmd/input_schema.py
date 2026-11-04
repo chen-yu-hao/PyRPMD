@@ -28,7 +28,7 @@ def _unknown_fields(unknown, allowed, section):
 
 
 _ROOT = set(
-    "schema_version task preset temperature beads seed system potential dynamics sampling reaction preparation collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics opes abf eabf steered adaptive_umbrella pcet diffusion site_rate surface nonadiabatic replica_exchange barostat electronic_friction initial_ensemble fes path_integral active_learning".split()
+    "schema_version task preset temperature beads seed system potential dynamics sampling reaction preparation collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics opes abf eabf steered ves adaptive_umbrella pcet diffusion site_rate surface nonadiabatic replica_exchange tempering barostat electronic_friction initial_ensemble fes path_integral active_learning".split()
 )
 _SECTIONS = {
     "path_integral": set("method alpha fd_step beta_fd_step groups projection_time trial periodic_mode block_size minimum_average_sign sign_sigma winding_tolerance winding_max_terms".split()),
@@ -73,15 +73,19 @@ _SECTIONS = {
     ),
     "surface": set("reactant_basin dividing_surface product_side max_relative_standard_error normalization free_energy".split()),
     "metadynamics": set(
-        "cvs mode sigma sigma_au height height_au pace bias_factor walls walls_during_equilibration grid multiple_walkers block_steps shared_walkers freeze_after_steps freeze_equilibration_steps".split()
+        "cvs mode sigma sigma_au height height_au pace bias_factor walls walls_during_equilibration grid multiple_walkers block_steps shared_walkers freeze_after_steps freeze_equilibration_steps walkers_mode".split()
     ),
     "opes": set(
-        "cvs sigma sigma_au barrier barrier_au bias_factor pace freeze_after_steps freeze_equilibration_steps mode adaptive_sigma sigma_min sigma_min_au".split()
+        "cvs sigma sigma_au barrier barrier_au bias_factor pace freeze_after_steps freeze_equilibration_steps mode adaptive_sigma sigma_min sigma_min_au walkers_mode".split()
     ),
     "abf": set("cvs ranges ranges_au bins full_samples pace wall_stiffness wall_stiffness_au derivative fd_step".split()),
     "eabf": set("cvs ranges ranges_au bins full_samples pace wall_stiffness wall_stiffness_au coupling coupling_au extended_mass extended_mass_au friction friction_au".split()),
     "steered": set("cvs centers centers_au start start_au end end_au stiffness stiffness_au direction thermostat gamma gamma_au initial_equilibrium".split()),
+    "ves": set("cvs ranges ranges_au orders target bias_factor learning_rate learning_rate_au pace target_update_interval quadrature_order wall_stiffness wall_stiffness_au freeze_after_steps freeze_equilibration_steps".split()),
     "replica_exchange": set("enabled interval_steps pairs".split()),
+    "tempering": set(
+        "mode temperatures temperature_min temperature_max replicas spacing lambdas target exchange_interval_steps exchange_interval pairing seed".split()
+    ),
     "barostat": set("method pressure time_constant friction mode tau gamma compressibility cell_mask reference_cell reference_cell_unit stress".split()),
     "adaptive_umbrella": set(
         "enabled pilot_steps pilot_equilibration_steps max_rounds max_windows max_pilot_steps target_overlap min_effective_samples min_spacing coverage_bins coverage_ranges min_bin_effective_samples target_coverage".split()

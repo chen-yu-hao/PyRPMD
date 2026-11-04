@@ -1,0 +1,6 @@
+PATH_WORKFLOW_QUARTIC_REFERENCE {"block_size": 120, "dt_au": 0.04, "exact_rate_au": 0.14871588646621658, "independent_block_se_au": 0.008176994590308321, "method": "retis", "rate_estimate_au": 0.13897200561499662, "samples": 2400, "wall_seconds": 360.7902611720019}
+.PATH_WORKFLOW_QUARTIC_REFERENCE {"block_size": 100, "dt_au": 0.04, "exact_rate_au": 0.14871588646621658, "independent_block_se_au": 0.009074218335513057, "method": "repptis", "rate_estimate_au": 0.1512514003538419, "samples": 1800, "wall_seconds": 120.46247175700046}
+.PATH_WORKFLOW_QUARTIC_REFERENCE {"block_size": 200, "dt_au": 0.04, "events": 4000, "exact_rate_au": 0.14871588646621658, "free_counts": [2445, 2409, 2369], "independent_block_se_au": 0.012112178961754922, "method": "infinite-retis", "rate_estimate_au": 0.13808830564788385, "wall_seconds": 141.25009738399967, "workers": 2}
+.PATH_WORKFLOW_QUARTIC_REFERENCE {"dt_au": 0.04, "exact_rate_au": 0.14871588646621658, "flux_steps_per_run": 6000, "independent_whole_run_se_au": 0.034347319344752096, "method": "ffs-basin-andersen", "rate_estimate_au": 0.21190638401068906, "replicate_rates_au": [0.15394837838791645, 0.15310170429991354, 0.25411712002159303, 0.2864583333333333], "trials_per_interface": 160, "wall_seconds": 74.17172722399846}
+.
+4 passed in 716.03s (0:11:56)

@@ -19,7 +19,7 @@ from .checkpoint import atomic_savez, load_checkpoint
 from .cmd import _integer, _scalar
 from .dynamics import State, _state_clock
 from .io import jsonable
-from .potentials.base import validate_result
+from .potentials.base import evaluate_checked
 from ._qcmd_geometry import QuasiCentroidConstraint, TriatomicQuasiCentroid
 
 
@@ -151,7 +151,7 @@ class ConstrainedQuasiCentroidSampler:
             raise
 
     def _energy_force(self, q):
-        result = validate_result(self.potential.evaluate(q), q.shape)
+        result = evaluate_checked(self.potential, q)
         difference = q - np.roll(q, 1, axis=0)
         mass = self.geometry.masses[None, :, None]
         energy = float(result.energy.sum() + .5 * self.omega2 * np.sum(mass * difference * difference))

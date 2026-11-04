@@ -1,4 +1,4 @@
-"""Restartable P=1 IESH and Runeson--Manolopoulos MASH ensembles.
+"""Restartable IESH, centroid RP-IESH and Runeson--Manolopoulos MASH ensembles.
 
 The IESH one-particle density has trace equal to the number of electrons.
 Multistate MASH uses its signed observable weights, with unit trace. Neither
@@ -27,15 +27,22 @@ from .nonadiabatic import _streams
 
 _KIND = "PyRPMD.multistate_nonadiabatic_trajectory.v1"
 _RESULT_KIND = "PyRPMD.multistate_nonadiabatic_ensemble.v1"
-_METHODS = frozenset(("iesh", "multistate-mash"))
+_IESH_METHODS = frozenset(("iesh", "rp-iesh"))
+_METHODS = _IESH_METHODS | {"multistate-mash"}
 _ROLES = ("nuclear", "electronic", "dynamics")
 _HISTORY = ("steps", "density", "population", "adiabatic_population", "active",
             "energy", "norm", "centroid_q", "centroid_p")
+_RP_DIAGNOSTICS = ("hop_energy_change", "hop_energy_change_abs")
+
+
+def _history_names(method):
+    return _HISTORY + _RP_DIAGNOSTICS if method == "rp-iesh" else _HISTORY
 
 
 def _driver(config, system, rng):
-    if config["method"] not in _METHODS or config["beads"] != 1:
-        raise ValueError("this workflow requires P=1 IESH or multistate-mash")
+    if (config["method"] not in _METHODS
+            or config["method"] != "rp-iesh" and config["beads"] != 1):
+        raise ValueError("this workflow requires P=1 IESH/multistate-mash or centroid RP-IESH")
     driver = make_dynamics(config, system, rng)
     if driver.rng is not rng:
         driver.potential.close()
@@ -44,17 +51,19 @@ def _driver(config, system, rng):
 
 
 def _state_names(method):
-    return ("coefficients", "occupied") if method == "iesh" else (
+    if method == "rp-iesh":
+        return ("coefficients", "occupied") + _RP_DIAGNOSTICS
+    return ("coefficients", "occupied") if method in _IESH_METHODS else (
         "coefficients", "active_surface", "sampling")
 
 
 def _electron_count(config):
-    return config["dynamics"]["nelectrons"] if config["method"] == "iesh" else 1
+    return config["dynamics"]["nelectrons"] if config["method"] in _IESH_METHODS else 1
 
 
 def _estimator_metadata(config):
-    iesh = config["method"] == "iesh"
-    return {
+    iesh = config["method"] in _IESH_METHODS
+    result = {
         "population_basis": "fixed_diabatic", "density_basis": "fixed_diabatic",
         "population_estimator": "slater_one_particle_density" if iesh else "runeson_manolopoulos_2023",
         "population_normalization": _electron_count(config),
@@ -65,12 +74,22 @@ def _estimator_metadata(config):
         "electronic_initial_sampling": "specified_occupied_determinant" if iesh else "largest_population_uniform_complex_sphere",
         "electronic_backend": "numpy", "electronic_device": "cpu",
     }
+    if config["method"] == "rp-iesh":
+        result.update(
+            method_variant="gardner-2023-centroid", method_status="research",
+            electronic_geometry="centroid", adiabatic_population_geometry="centroid",
+            energy_estimator="ring_polymer_hamiltonian_sum",
+            energy_conservation="centroid_hop_balance_only",
+            hop_rescaling="centroid_gap_uniform_bead_momentum_shift",
+            frustrated_hops="keep",
+        )
+    return result
 
 
 def _observe(dynamics, state, method):
     dynamics._check(state)
     density = np.asarray(dynamics.density_matrix(state, basis="diabatic"), dtype=np.complex128)
-    if method == "iesh":
+    if method in _IESH_METHODS:
         active = np.asarray(state.occupied, dtype=np.int64)
         adiabatic = dynamics.populations(state)
         norm = np.sum(abs(state.coefficients)**2, axis=0)
@@ -85,6 +104,9 @@ def _observe(dynamics, state, method):
         "norm": np.asarray(norm, dtype=np.float64),
         "centroid_q": state.q.mean(axis=0), "centroid_p": state.p.mean(axis=0),
     }
+    if method == "rp-iesh":
+        record.update({key: np.asarray(getattr(state, key), dtype=np.float64)
+                       for key in _RP_DIAGNOSTICS})
     if not all(np.isfinite(value).all() for value in record.values()):
         raise FloatingPointError("nonfinite multistate nonadiabatic observation")
     return record
@@ -110,7 +132,8 @@ def _save(path, config, identity, index, state, streams, history):
         **{"history_"+key: np.asarray(value) for key, value in history.items()},
     }
     for key in _state_names(config["method"]):
-        dtype = np.int64 if key in ("occupied", "active_surface") else None
+        dtype = (np.int64 if key in ("occupied", "active_surface")
+                 else np.float64 if key in _RP_DIAGNOSTICS else None)
         arrays[key] = np.asarray(getattr(state, key), dtype=dtype)
     atomic_savez(path, kind=_KIND, **arrays)
 
@@ -129,7 +152,7 @@ def _validate_density_history(data, method, states, electrons):
     adiabatic = data["history_adiabatic_population"]
     if not np.allclose(adiabatic.sum(axis=-1), electrons, rtol=0., atol=1e-8):
         raise CheckpointError("checkpoint adiabatic population has incorrect normalization")
-    if method == "iesh":
+    if method in _IESH_METHODS:
         if (not np.allclose(rho@rho, rho, rtol=0., atol=1e-8)
                 or np.any(adiabatic < -1e-8) or np.any(adiabatic > 1.+1e-8)):
             raise CheckpointError("checkpoint IESH density must be a Slater projector")
@@ -147,7 +170,7 @@ def _load(path, config, identity, index, dynamics, streams):
     with load_checkpoint(path, expected_kind=_KIND, require_integrity=True) as saved:
         data = {key: saved[key] for key in saved.files}
     inventory = ({"metadata", "q", "p", "step", "time"} | set(_state_names(method))
-                 | {"history_"+key for key in _HISTORY})
+                 | {"history_"+key for key in _history_names(method)})
     if set(data) != inventory:
         raise CheckpointError("multistate nonadiabatic checkpoint payload inventory mismatch")
     raw = data["metadata"]
@@ -157,7 +180,8 @@ def _load(path, config, identity, index, dynamics, streams):
         metadata = json.loads(str(raw.item()))
     except (TypeError, ValueError) as error:
         raise CheckpointError("invalid checkpoint metadata JSON") from error
-    class_name = "IESHState" if method == "iesh" else "MultistateMASHState"
+    class_name = {"iesh": "IESHState", "rp-iesh": "RPIESHState",
+                  "multistate-mash": "MultistateMASHState"}[method]
     if (not isinstance(metadata, dict)
             or set(metadata) != {"format", "physics_fingerprint", "trajectory", "method", "state_class", "rngs"}
             or metadata["format"] != _KIND or metadata["physics_fingerprint"] != identity
@@ -172,10 +196,10 @@ def _load(path, config, identity, index, dynamics, streams):
         raise CheckpointError("invalid checkpoint clock")
     atoms, states, electrons = len(dynamics.masses), dynamics.nstates, _electron_count(config)
     for key in ("q", "p"):
-        _typed(data[key], (1, atoms, 3), "float64", key)
-    _typed(data["coefficients"], (states, electrons) if method == "iesh" else (states,),
+        _typed(data[key], (config["beads"], atoms, 3), "float64", key)
+    _typed(data["coefficients"], (states, electrons) if method in _IESH_METHODS else (states,),
            "complex128", "coefficients")
-    if method == "iesh":
+    if method in _IESH_METHODS:
         _typed(data["occupied"], (electrons,), "int64", "occupied")
     else:
         _typed(data["active_surface"], (), "int64", "active_surface")
@@ -184,7 +208,13 @@ def _load(path, config, identity, index, dynamics, streams):
             raise CheckpointError("checkpoint multistate MASH sampling must be population")
     try:
         common = (data["q"], data["p"], step, time, data["coefficients"])
-        if method == "iesh":
+        if method == "rp-iesh":
+            from ..rp_iesh import RPIESHState
+            for key in _RP_DIAGNOSTICS:
+                _typed(data[key], (), "float64", key)
+            state = RPIESHState(*common, data["occupied"],
+                                **{key: float(data[key]) for key in _RP_DIAGNOSTICS})
+        elif method == "iesh":
             from ..iesh import IESHState
             state = IESHState(*common, data["occupied"])
         else:
@@ -200,10 +230,12 @@ def _load(path, config, identity, index, dynamics, streams):
     shapes = {
         "steps": (frames,), "density": (frames, states, states), "population": (frames, states),
         "adiabatic_population": (frames, states),
-        "active": (frames, electrons) if method == "iesh" else (frames,),
+        "active": (frames, electrons) if method in _IESH_METHODS else (frames,),
         "energy": (frames,), "norm": (frames, electrons),
         "centroid_q": (frames, atoms, 3), "centroid_p": (frames, atoms, 3),
     }
+    if method == "rp-iesh":
+        shapes.update({key: (frames,) for key in _RP_DIAGNOSTICS})
     history = {}
     for key, shape in shapes.items():
         value = data["history_"+key]
@@ -218,8 +250,17 @@ def _load(path, config, identity, index, dynamics, streams):
     active = data["history_active"]
     if np.any(active < 0) or np.any(active >= states):
         raise CheckpointError("checkpoint active electronic state is out of range")
-    if method == "iesh" and any(len(np.unique(row)) != electrons for row in active):
+    if method in _IESH_METHODS and any(len(np.unique(row)) != electrons for row in active):
         raise CheckpointError("checkpoint IESH active occupations violate Pauli exclusion")
+    if method == "rp-iesh":
+        # Include the unsampled terminal state in the cumulative-history check.
+        signed = np.append(data["history_hop_energy_change"], state.hop_energy_change)
+        absolute = np.append(data["history_hop_energy_change_abs"], state.hop_energy_change_abs)
+        tolerance = 32*np.finfo(float).eps*np.maximum(1., absolute)
+        if (np.any(absolute < 0.) or np.any(np.diff(absolute) < 0.)
+                or np.any(np.abs(signed) > absolute+tolerance)
+                or np.any(np.abs(np.diff(signed)) > np.diff(absolute)+tolerance[1:])):
+            raise CheckpointError("checkpoint cumulative RP-IESH hop energy history is inconsistent")
     if method == "multistate-mash":
         adiabatic = data["history_adiabatic_population"]
         selected = np.take_along_axis(adiabatic, active[:, None], axis=1)[:, 0]
@@ -237,7 +278,8 @@ def _load(path, config, identity, index, dynamics, streams):
         raise CheckpointError("checkpoint initial preparation cannot be re-evaluated") from error
     for key, value in initial_record.items():
         previous = data["history_"+key][0]
-        equal = np.array_equal(value, previous) if key == "active" else np.allclose(value, previous, rtol=2e-11, atol=1e-8)
+        equal = (np.array_equal(value, previous) if key == "active" or key in _RP_DIAGNOSTICS
+                 else np.allclose(value, previous, rtol=2e-11, atol=1e-8))
         if not equal:
             raise CheckpointError(f"checkpoint initial preparation mismatch for {key}")
     if int(expected_steps[-1]) == state.step:
@@ -247,7 +289,8 @@ def _load(path, config, identity, index, dynamics, streams):
             raise CheckpointError("checkpoint final observation cannot be re-evaluated") from error
         for key, value in observed.items():
             previous = data["history_"+key][-1]
-            equal = np.array_equal(value, previous) if key == "active" else np.allclose(value, previous, rtol=2e-11, atol=1e-8)
+            equal = (np.array_equal(value, previous) if key == "active" or key in _RP_DIAGNOSTICS
+                     else np.allclose(value, previous, rtol=2e-11, atol=1e-8))
             if not equal:
                 raise CheckpointError(f"checkpoint state/final observation mismatch for {key}")
     # Restore only after validating the entire checkpoint, including every RNG.
@@ -288,7 +331,7 @@ def _trajectory(task):
             state, history = _load(path, config, identity, index, dynamics, streams)
         else:
             state = initialize_state(config, system, dynamics, *streams[:2])
-            history = {key: [] for key in _HISTORY}
+            history = {key: [] for key in _history_names(config["method"])}
             _append(history, dynamics, state, config["method"])
             _save(path, config, identity, index, state, streams, history)
         target = config["ensemble"]["steps"]
@@ -322,7 +365,7 @@ def _write_results(directory, config, identity, histories):
     density, population, energy, norm = stack("density"), stack("population"), stack("energy"), stack("norm")
     active = stack("active")
     indicators = np.eye(population.shape[-1])[active]
-    if config["method"] == "iesh":
+    if config["method"] in _IESH_METHODS:
         indicators = indicators.sum(axis=-2)
     reason = "fewer_than_two_trajectories" if len(histories) < 2 else None
     metadata = {
@@ -344,6 +387,10 @@ def _write_results(directory, config, identity, histories):
         "electronic_norm": norm, "norm_drift": norm-norm[:, :1],
         "centroid_q": stack("centroid_q"), "centroid_p": stack("centroid_p"),
     }
+    if config["method"] == "rp-iesh":
+        arrays.update({key: stack(key) for key in _RP_DIAGNOSTICS})
+        cumulative = arrays["hop_energy_change"]
+        arrays["energy_drift_minus_hop_changes"] = arrays["energy_drift"]-(cumulative-cumulative[:, :1])
     if len(histories) > 1:
         arrays.update(population_sem=_sem(population), density_sem_real=_sem(density.real),
                       density_sem_imag=_sem(density.imag), active_population_sem=_sem(indicators),
@@ -415,7 +462,7 @@ def analyze_multistate_nonadiabatic(config, system, directory):
         finally:
             dynamics.potential.close()
     arrays, metadata = _write_results(directory, config, identity, histories)
-    return {
+    result = {
         "task": "nonadiabatic", "method": config["method"], "model": config["model"]["model"],
         "trajectories": len(histories), "steps": config["ensemble"]["steps"], "frames": len(arrays["steps"]),
         **_estimator_metadata(config), "estimator": metadata["population_estimator"],
@@ -431,3 +478,11 @@ def analyze_multistate_nonadiabatic(config, system, directory):
         "physics_fingerprint": identity, "arrays": str(directory/"results"/"nonadiabatic.npz"),
         "time_series": str(directory/"results"/"populations.csv"),
     }
+    if config["method"] == "rp-iesh":
+        result.update(
+            max_abs_cumulative_hop_energy_change_at_saved_frames_hartree=float(np.max(np.abs(arrays["hop_energy_change"]))),
+            max_cumulative_abs_hop_energy_change_at_saved_frames_hartree=float(np.max(arrays["hop_energy_change_abs"])),
+            max_abs_energy_drift_minus_hop_changes_at_saved_frames_hartree=float(
+                np.max(np.abs(arrays["energy_drift_minus_hop_changes"]))),
+        )
+    return result

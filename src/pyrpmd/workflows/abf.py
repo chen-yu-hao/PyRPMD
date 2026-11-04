@@ -13,7 +13,7 @@ from ..analysis.fes_result import FESResult, write_fes_result
 from ..checkpoint import atomic_savez, load_checkpoint
 from ..dynamics import Dynamics, State
 from ..parallel import make_task_potential, root_call
-from ..potentials.base import validate_result
+from ..potentials.base import evaluate_checked
 from ..propagation import loop_options
 from ..units import DIMS, parse_quantity
 from ..validation import checked_integer, finite_positive
@@ -306,7 +306,7 @@ def _sample(task):
                         touched = [_grid_snapshot(bias.bias.grid, bias.position), _grid_snapshot(bias.physical_grid, value)]
                         bias.observe(state.q)
                     else:
-                        physical = validate_result(provider.evaluate(state.q), state.q.shape)
+                        physical = evaluate_checked(provider, state.q)
                         value, gradient = estimator.evaluate(state.q, physical.forces)
                         touched = [_grid_snapshot(bias.grid, value)]
                         bias.observe(value, gradient)

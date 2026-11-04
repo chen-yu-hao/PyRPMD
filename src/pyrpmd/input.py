@@ -130,6 +130,12 @@ class JobSpec:
         return JobSpec(d, self.base_directory, self.input_path)
 
     def resolve(self):
+        if self.data.get("task") == "path_sampling":
+            from .path_sampling_input import resolve_path_sampling_job
+
+            return resolve_path_sampling_job(
+                self.data, base_directory=self.base_directory, input_path=self.input_path
+            )
         if self.data.get("task") == "nonadiabatic":
             from .nonadiabatic_input import resolve_nonadiabatic_job
 

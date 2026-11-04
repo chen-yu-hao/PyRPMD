@@ -17,7 +17,7 @@ import copy
 import numpy as np
 
 from .batched import validate_batch_potential
-from .potentials.base import PESResult, coordinates, validate_result
+from .potentials.base import PESResult, coordinates, evaluate_checked
 
 
 _PROVIDER_KEY = "_trajectory_batch_potential"
@@ -132,7 +132,7 @@ class _Rendezvous:
             q = np.concatenate([q for q, _ in requests], axis=0)
             self.pes_calls += 1
             self.pes_frames += len(q)
-            result = validate_result(self.providers[channel].evaluate(q), q.shape, require_success=False)
+            result = evaluate_checked(self.providers[channel], q, require_success=False)
             start = 0
             answers = []
             for shape in shapes:

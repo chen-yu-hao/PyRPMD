@@ -274,10 +274,10 @@ def prepare_spectroscopy(config, system, *, potential=None):
         # Constructor checks also enforce the fitted-PMF temperature for f-CMD.
         _, production = _engines(config, system, potential, options, np.random.default_rng(0))
         if options["method"] == "f-qcmd":
-            from ..potentials.base import validate_result
+            from ..potentials.base import evaluate_checked
 
             q = system.geometry[None]
-            validate_result(production.potential.evaluate(q), q.shape)
+            evaluate_checked(production.potential, q)
             result["fqcmd_model_sha256"] = file_sha256(options["fqcmd_model_file"])
         properties = _make_properties(config["properties"], system)
         try:

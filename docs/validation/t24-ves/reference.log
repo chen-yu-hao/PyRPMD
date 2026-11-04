@@ -1,0 +1,4 @@
+{"dimension": 1, "target": "uniform", "elapsed_seconds": 39.74397574499744, "ves_quadrature_rmse_hartree": 0.009920571960003191, "ves_quadrature_max_sem": 3.2390860102852748, "ves_mbar_max_combined_sem": 1.2698012719166296}
+{"dimension": 1, "target": "well_tempered", "elapsed_seconds": 41.948600202002126, "ves_quadrature_rmse_hartree": 0.008851482255684835, "ves_quadrature_max_sem": 3.032067933685562, "ves_mbar_max_combined_sem": 1.412825114675832}
+{"dimension": 2, "target": "uniform", "elapsed_seconds": 65.90383223400204, "ves_quadrature_rmse_hartree": 0.005856661508029509, "ves_quadrature_max_sem": 4.297644636963334, "ves_mbar_max_combined_sem": 2.1145068730925702}
+{"dimension": 2, "target": "well_tempered", "elapsed_seconds": 55.97904261900112, "ves_quadrature_rmse_hartree": 0.006028644431232377, "ves_quadrature_max_sem": 1.167550487226938, "ves_mbar_max_combined_sem": 2.1250367026855215}

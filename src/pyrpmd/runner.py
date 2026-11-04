@@ -219,14 +219,11 @@ def run_resolved(config, system, *, output=None, resume=False):
 
     validate_bond_constraint_workflow(system, config.get("task"))
     validate_andersen_schedule(config, config.get("task"))
-    if config.get("sampling", {}).get("engine") == "torch":
-        # Direct resolved calls must reject unsupported tensor combinations
-        # before creating or migrating an output directory.
-        from .workflows.torch_materials import resolve_torch_materials
-        resolve_torch_materials(config, system)
-    if getattr(system, "bond_constraints", ()):
-        # Direct resolved callers must fail before output creation, provider
-        # construction or dispatch when the materials engine is incompatible.
+    if ((config.get("task") in ("pimd", "diffusion") and "path_integral" not in config)
+            or config.get("sampling", {}).get("engine") == "torch"
+            or getattr(system, "bond_constraints", ())):
+        # All materials backends share preflight, including direct resolved
+        # calls, before creating or migrating an output directory.
         from .workflows.materials import resolve_materials
         resolve_materials(config, system)
     if (config.get("task") == "plumed" and resume
@@ -252,12 +249,28 @@ def run_resolved(config, system, *, output=None, resume=False):
     if (resume and config["task"] == "rate"
             and (Path(target) / "results" / "extensions.json").is_file()):
         raise InputError("This rate run has an authorized extension budget; use resume_run or pyrpmd resume")
+    if "tempering" in config:
+        from .workflows.tempering import validate_tempering
+
+        root_call(validate_tempering, config, system)
     if config["task"] == "fes":
         from .workflows.fes_dispatch import validate_fes
 
         root_call(validate_fes, config, system)
+    if config["task"] == "path_sampling":
+        from .workflows.path_sampling import resolve_path_sampling
+
+        root_call(resolve_path_sampling, config, system)
     root_call(_initialize_output, config, system, target, resume)
-    if config["task"] == "spectroscopy":
+    if config["task"] == "path_sampling":
+        from .workflows.path_sampling import run_path_sampling
+
+        result = run_path_sampling(config, system, Path(target))
+    elif "tempering" in config:
+        from .workflows.tempering import run_tempering
+
+        result = run_tempering(config, system, Path(target))
+    elif config["task"] == "spectroscopy":
         from .workflows.spectroscopy import run_spectroscopy
 
         result = run_spectroscopy(config, system, Path(target))
@@ -490,6 +503,24 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
                 return FESResult.read(path, summary=result).summary()
         return result
     config = json.loads((path / "input" / "resolved.json").read_text())
+    if "tempering" in config:
+        if bins is not None or bootstrap is not None or diffusion is not None:
+            raise InputError("Tempering reanalysis does not accept FES/diffusion overrides")
+        from .workflows.tempering import reanalyze_tempering
+        from .parallel import root_call
+
+        system = _read_identity(config, path)
+        _initialize_output(config, system, path, resume=True)
+        result = reanalyze_tempering(config, system, path)
+        if result is None:
+            return None
+        result = {
+            **result, "software": "PyRPMD", "version": __version__,
+            "output": str(path), "preset": config.get("preset", "pilot"),
+            "input_warnings": config.get("_warnings", []),
+        }
+        root_call(write_json, path / "results" / "summary.json", result)
+        return result
     if config["task"] == "nonadiabatic":
         if bins is not None or bootstrap is not None or diffusion is not None:
             raise InputError("Nonadiabatic time-series analysis does not accept FES/diffusion overrides")
@@ -713,7 +744,7 @@ def prepare(job, *, numerical=False):
 
         validate_opes(config, system)
         result["opes_preparation"] = config["opes"]
-    elif config["task"] == "fes" and fes_method(config) in ("abf", "eabf", "steered"):
+    elif config["task"] == "fes" and fes_method(config) in ("abf", "eabf", "steered", "ves"):
         from .workflows.fes_dispatch import validate_fes
 
         validate_fes(config, system)
@@ -790,46 +821,26 @@ def prepare(job, *, numerical=False):
 
         # The provider itself validates array shape, status and finite results.
         provider = make_potential(config["potential"], system)
-        native_engine = None
         try:
             x = system.geometry[None, :, :]
             if (config["task"] == "spectroscopy"
                     or (getattr(provider, "metadata", {}) or {}).get("ring_polymer_coupled")):
                 x = np.repeat(x, config["beads"], axis=0)
-            from .potentials import validate_result
+            from .potentials import evaluate_checked, validate_result
 
-            if config.get("sampling", {}).get("engine") == "torch":
-                from .workflows.torch_materials import check_torch_materials
-                result["pes_check"] = check_torch_materials(config, system, provider)
-            elif config["task"] == "pimd" and config.get("sampling", {}).get("engine", "legacy") == "native":
-                from .potentials.base import PESResult
-                from .workflows.native_pimd import _engine
+            specialized_check = None
+            if config["task"] in ("pimd", "diffusion") and "path_integral" not in config:
+                from .workflows.pimd import select_engine
 
-                # Use the actual native thermostat/barostat and compiled PES
-                # contract. Construction evaluates the initial full ring;
-                # no trajectory, checkpoint, or production step is created.
-                native_engine = _engine(config, system, 0, provider)
-                initial = native_engine.state()
-                checked = validate_result(PESResult(
-                    initial["energy"], initial["force"], virial=initial["virial"],
-                ), (config["beads"], system.natoms, 3))
-                if any(not np.isfinite(initial[key]).all()
-                       for key in ("q", "p", "aux", "cell", "cell_p")):
-                    raise FloatingPointError("nonfinite native PIMD initial state")
-                result["pes_check"] = {
-                    "engine": "native", "backend": "native-cxx17",
-                    "energy_hartree": checked.energy.tolist(),
-                    "status": checked.status.tolist(),
-                    "initial_virial_hartree": checked.virial.tolist(),
-                    "step": initial["step"],
-                    "force_evaluations": initial["force_evaluations"],
-                }
+                specialized_check = select_engine(config).check(config, system, provider)
+            if specialized_check is not None:
+                result["pes_check"] = specialized_check
             elif config["task"] == "pimd" and "path_integral" in config:
                 from .workflows.path_integral import _action
 
                 action = _action(config, system, provider)
                 q = np.repeat(system.geometry[None], config["beads"], axis=0)
-                checked = validate_result(action.evaluate(q), q.shape)
+                checked = evaluate_checked(action, q)
                 result["pes_check"] = {
                     "energy_hartree": checked.energy.tolist(),
                     "status": checked.status.tolist(),
@@ -892,8 +903,6 @@ def prepare(job, *, numerical=False):
                     q = np.repeat(x, config["beads"], axis=0)
                     result["pes_check"]["initial_configurational_pressure_au"] = piston.pressure(State(q, np.zeros_like(q)))
         finally:
-            # Destroy the temporary native engine before releasing its PES.
-            native_engine = None
             close = getattr(provider, "close", None)
             if callable(close):
                 close()

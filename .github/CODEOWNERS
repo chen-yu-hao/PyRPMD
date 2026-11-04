@@ -1,0 +1,4 @@
+# CI definitions and repository automation require maintainer review.
+# Enforced when branch protection enables "Require review from Code Owners".
+/.github/ @chen-yu-hao
+/tools/check_workflow_policy.py @chen-yu-hao

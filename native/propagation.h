@@ -382,10 +382,16 @@ static PyObject* advance(PyObject*,PyObject* args) {
         auto* previous_obj=PyDict_GetItemString(options,"previous");
         if(previous_obj && previous_obj!=Py_None)
             previous=std::make_unique<Buffer>(previous_obj,product(product(2,S),sizeof(double)),"d",true);
+        // Optional per-step total ring energy monitor. It reuses the endpoint
+        // PES energies of each step and is independent of the observation mask.
+        std::unique_ptr<Buffer> step_energies;
+        auto* step_energies_obj=PyDict_GetItemString(options,"step_energies");
+        if(step_energies_obj && step_energies_obj!=Py_None)
+            step_energies=std::make_unique<Buffer>(step_energies_obj,product(steps,sizeof(double)),"d",true);
         NuclearDiagnostics diagnostics(PyDict_GetItemString(options,"diagnostics"),rows,nd/3);
         const Buffer* buffers[]={&q,&p,&mask,&records,states.get(),previous.get(),
-                                 diagnostics.energy_parts.get(),diagnostics.ring_radii.get()};
-        for(int i=0;i<8;++i)for(int j=i+1;j<8;++j)if(buffers[i]&&buffers[j]&&overlap(*buffers[i],*buffers[j]))throw std::invalid_argument("native buffers must not overlap");
+                                 diagnostics.energy_parts.get(),diagnostics.ring_radii.get(),step_energies.get()};
+        for(int i=0;i<9;++i)for(int j=i+1;j<9;++j)if(buffers[i]&&buffers[j]&&overlap(*buffers[i],*buffers[j]))throw std::invalid_argument("native buffers must not overlap");
         std::unique_ptr<Outcome> outcome;
         auto* outcome_obj=PyDict_GetItemString(options,"outcome");
         if(outcome_obj && outcome_obj!=Py_None)outcome=std::make_unique<Outcome>(outcome_obj,nd/3,steps);
@@ -465,9 +471,10 @@ static PyObject* advance(PyObject*,PyObject* args) {
                     // Fragment projection can change last-bit coordinates after the
                     // final force. Re-evaluate only when a physical energy is requested.
                     double energy=std::numeric_limits<double>::quiet_NaN();
-                    if(check_energy || ((record_energy || diagnostics.energy_parts) && observed[step])){
+                    if(check_energy || step_energies || ((record_energy || diagnostics.energy_parts) && observed[step])){
                         if(!fragments.empty())eb=evaluate(trial_q);
                         energy=total_energy(trial_q,trial_p,eb);
+                        if(step_energies)step_energies->doubles()[step]=energy;
                     }
                     if(observed[step]) {
                         centroid(trial_q,center,P,nd);centroid(trial_p,pc,P,nd);

@@ -5,6 +5,7 @@ from __future__ import annotations
 import ast
 from functools import lru_cache
 from pathlib import Path
+import subprocess
 import sys
 
 import pytest
@@ -175,3 +176,40 @@ def pytest_terminal_summary(terminalreporter, config):
         terminalreporter.write_line(
             f"campaign: omitted {len(omitted)} modules before import (-m 'not campaign')"
         )
+
+
+_OVERSUBSCRIPTION_FLAGS = (["--map-by", ":OVERSUBSCRIBE"], ["--oversubscribe"])
+
+
+def mpi_launch_prefix(launcher, ranks, *, env=None, accepts=None):
+    """Return ``[launcher, <oversubscription flags>, "-n", ranks]`` for any MPI.
+
+    CI runners may expose fewer cores than the ranks a test requests, and Open
+    MPI then refuses to start unless oversubscription is explicit. Version text
+    is not a reliable guide (a distribution's Open MPI 5 ``mpiexec`` may report
+    itself as PRRTE), so each flag set is probed with a one-rank launch:
+    ``--map-by :OVERSUBSCRIBE`` (Open MPI 5/PRRTE, as in ``tests.yml``; MPICH
+    also accepts it), then ``--oversubscribe`` (Open MPI 4), then no flag.
+    Rank placement never changes a test's numerical result.
+    """
+    if accepts is None:
+        def accepts(flags):
+            try:
+                completed = subprocess.run(
+                    [str(launcher), *flags, "-n", "1", sys.executable, "-c", "pass"],
+                    env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                    timeout=60, check=False,
+                )
+            except (OSError, subprocess.TimeoutExpired):
+                return False
+            return completed.returncode == 0
+    for flags in _OVERSUBSCRIPTION_FLAGS:
+        if accepts(flags):
+            return [str(launcher), *flags, "-n", str(int(ranks))]
+    return [str(launcher), "-n", str(int(ranks))]
+
+
+@pytest.fixture
+def mpi_launch():
+    """Fixture form of :func:`mpi_launch_prefix` for tests that spawn ``mpiexec``."""
+    return mpi_launch_prefix

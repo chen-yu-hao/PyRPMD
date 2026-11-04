@@ -27,10 +27,9 @@ from ..native_ensemble import (
 from ..parallel import make_task_potential, root_call, run_tasks
 from ..propagation import loop_options
 from .common import _fingerprint, checked_integer
+from .pimd import OBSERVABLE_NAMES as _NAMES
 
 _SCHEMA = "pyrpmd.native-pimd-journal.v1"
-_NAMES = ("potential_energy", "kinetic_primitive", "kinetic_centroid_virial",
-          "internal_energy_centroid_virial", "ring_polymer_hamiltonian")
 
 
 def sampling_splitting(integrator, thermostat, barostat="none", *, middle=None):
@@ -361,3 +360,30 @@ def run_native_pimd(config, system, output, executor=None, return_data=False):
     tasks = [dict(config=copy.deepcopy(config), system=system, output=str(output), replica=r) for r in range(options["replicas"])]
     streams = executor.map(_sample, tasks) if executor is not None else run_tasks(_sample, tasks, config.get("parallel", {}))
     return root_call(_summary, list(streams) if streams is not None else streams, config, system, str(output), return_data)
+
+
+def _check_native_pimd(config, system, provider):
+    """Check the actual native map/PES without propagating or creating output."""
+    from ..potentials.base import PESResult, validate_result
+
+    engine = None
+    try:
+        engine = _engine(config, system, 0, provider)
+        initial = engine.state()
+        checked = validate_result(PESResult(
+            initial["energy"], initial["force"], virial=initial["virial"],
+        ), (config["beads"], system.natoms, 3))
+        if any(not np.isfinite(initial[key]).all()
+               for key in ("q", "p", "aux", "cell", "cell_p")):
+            raise FloatingPointError("nonfinite native PIMD initial state")
+        return {
+            "engine": "native", "backend": "native-cxx17",
+            "energy_hartree": checked.energy.tolist(),
+            "status": checked.status.tolist(),
+            "initial_virial_hartree": checked.virial.tolist(),
+            "step": initial["step"],
+            "force_evaluations": initial["force_evaluations"],
+        }
+    finally:
+        # Release the native handle before the caller closes its provider.
+        engine = None
