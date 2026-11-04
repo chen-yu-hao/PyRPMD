@@ -1,12 +1,14 @@
 """Experimental molecular quasi-centroids and fast QCMD by distribution matching.
 
-The first implementation is for nonperiodic, fixed-topology bent triatomics.
+The implementation is for nonperiodic, fixed-topology bent triatomics.
 Fletcher et al., JCP 155, 231101 (2021), DOI 10.1063/5.0076704, use ordinary
 *unconstrained* PIMD distributions of bead-averaged internal coordinates, IBI
 corrections to the original potential, and classical production dynamics. The
 conditional PIMD sampler exported below is a separate research tool, not a
 real-time adiabatic QCMD integrator. All quantities are in atomic units, with
-angles in radians. No existing CMD implementation is changed by this module.
+angles in radians. Molecular h-CMD partitions reuse the same IBI tables and
+force implementation, matching Cartesian-centroid distributions for selected
+molecules. The existing quadratic force-matched f-CMD API remains separate.
 """
 
 from __future__ import annotations
@@ -29,10 +31,13 @@ __all__ = [
     "TriatomicQuasiCentroid", "QuasiCentroidConstraint",
     "ConstrainedQuasiCentroidSampler", "FQCMDModel", "FQCMDPotential",
     "coordinate_histograms", "update_fqcmd_model", "fqcmd_base_identity",
+    "HCMDModel", "HCMDPotential", "hcmd_coordinate_histograms", "update_hcmd_model",
 ]
 
 _MODEL_KIND = "PyRPMD.fqcmd-model.v1"
 _INTERPOLATION = "not-a-knot-cubic;bounded-by-bin-edges"
+_HCMD_MODEL_KIND = "PyRPMD.hcmd-model.v1"
+_HCMD_MAPPING = "molecular-centroid-or-bead-mean-internal-v1"
 
 
 def fqcmd_base_identity(potential_spec, system):
@@ -270,7 +275,8 @@ class FQCMDPotential(Potential):
         if not isinstance(model, FQCMDModel) or not callable(getattr(base_potential, "evaluate", None)):
             raise ValueError("FQCMDPotential requires a physical PES and an FQCMDModel")
         base_metadata = getattr(base_potential, "metadata", {}) or {}
-        if any(key in base_metadata for key in ("centroid_pmf_beta_au", "quasicentroid_pmf_beta_au")):
+        if any(key in base_metadata for key in ("centroid_pmf_beta_au", "quasicentroid_pmf_beta_au",
+                                                "hybrid_centroid_pmf_beta_au")):
             raise ValueError("f-QCMD corrections require the original physical PES, not an already fitted PMF")
         if base_metadata.get("execution_device", "cpu") != "cpu":
             raise ValueError("the f-QCMD reference correction wrapper requires an explicit CPU PES")
@@ -411,3 +417,285 @@ def update_fqcmd_model(model, target_counts, sampled_counts, *, damping=1.,
                      "updated_model_sha256": updated.fingerprint,
                      "comparison": "pre-update classical vs target marginals", "groups": diagnostics,
                      "converged": False, "physical_converged": False}
+
+
+def _hcmd_partitions(partitions, geometry, groups):
+    """Canonical explicit molecular partition; never infer a method from atoms."""
+    methods = ("f-qcmd", "f-cmd")
+    if not isinstance(partitions, Mapping) or set(partitions) != set(methods):
+        raise ValueError("h-CMD partitions must contain exactly 'f-qcmd' and 'f-cmd'")
+    checked = []
+    for method in methods:
+        raw = np.asarray(partitions[method], dtype=object)
+        if raw.ndim != 1 or not len(raw):
+            raise ValueError(f"h-CMD partition {method!r} must be a nonempty list of molecule indices")
+        if any(isinstance(i, (bool, np.bool_)) or not isinstance(i, (int, np.integer)) for i in raw):
+            raise ValueError("h-CMD partition molecule indices must be integers, not booleans")
+        indices = tuple(sorted(int(i) for i in raw))
+        if len(set(indices)) != len(indices) or any(i < 0 or i >= geometry.nmolecules for i in indices):
+            raise ValueError("h-CMD partition molecule indices must be distinct and in range")
+        checked.append(indices)
+    if sorted(checked[0] + checked[1]) != list(range(geometry.nmolecules)):
+        raise ValueError("h-CMD partitions must be disjoint and cover every molecule exactly once")
+    if set(groups[list(checked[0])].ravel()) & set(groups[list(checked[1])].ravel()):
+        raise ValueError("h-CMD coordinate groups cannot be shared between f-QCMD and f-CMD partitions")
+    return tuple(checked)
+
+
+def _fqcmd_from_definition(definition):
+    """Decode the existing complete f-QCMD definition without another file."""
+    fields = {"format", "interpolation", "measure", "molecules", "masses",
+              "singularity_tolerance", "groups", "edges", "corrections", "beta_au",
+              "base_identity", "provenance"}
+    if (not isinstance(definition, dict) or set(definition) != fields
+            or definition["format"] != _MODEL_KIND
+            or definition["interpolation"] != _INTERPOLATION
+            or definition["measure"] != "raw-internal-coordinate-density"):
+        raise ValueError("unsupported h-CMD correction model schema or interpolation")
+    geometry = TriatomicQuasiCentroid(definition["molecules"], definition["masses"],
+                                      singularity_tolerance=definition["singularity_tolerance"])
+    return FQCMDModel(geometry, definition["groups"], definition["edges"], definition["corrections"],
+                      beta=definition["beta_au"], base_identity=definition["base_identity"],
+                      provenance=definition["provenance"])
+
+
+class HCMDModel:
+    """Molecular f-QCMD/f-CMD partition with one jointly fitted IBI correction.
+
+    ``correction_model`` supplies the existing :class:`FQCMDModel` table and
+    force representation for the *whole* original system. ``partitions`` is
+    ``{'f-qcmd': [molecule indices], 'f-cmd': [molecule indices]}``; indices
+    refer to rows of its ordered molecular triples, not atom indices. Both
+    lists must be nonempty, disjoint and exhaustive. A coordinate group may
+    pool molecules only within one method, because the two target measures
+    differ. Order within each partition has no scientific significance.
+
+    The h-CMD construction uses mean bead internal coordinates for f-QCMD
+    molecules and internal coordinates of the Cartesian centroid for f-CMD
+    molecules (DOI 10.1063/5.0248115). Targets come from a common unconstrained
+    PIMD ensemble; each classical IBI iteration samples the *combined* model.
+    This is the intramolecular, nonperiodic bent-triatomic subset. It has no
+    intermolecular pair corrections or general polyatomic topology. PyRPMD's
+    independent quadratic force-matched f-CMD PMF is not an additive correction
+    and cannot be inserted here.
+
+    The immutable scientific identity contains the full correction definition,
+    partition and reference-coordinate mapping. The portable NPZ embeds every
+    table; it does not depend on external child model paths.
+    """
+
+    def __init__(self, correction_model, partitions):
+        if not isinstance(correction_model, FQCMDModel):
+            raise ValueError("HCMDModel requires an FQCMDModel correction representation")
+        if fingerprint_payload(correction_model.to_dict()) != correction_model.fingerprint:
+            raise ValueError("h-CMD correction parameters changed; create a new model")
+        self._partitions = _hcmd_partitions(partitions, correction_model.geometry, correction_model.groups)
+        # Own a separate definition so another user of the source fit cannot
+        # mutate its arrays and retarget this model through NumPy write flags.
+        self._correction_model = _fqcmd_from_definition(correction_model.to_dict())
+        target_geometry = []
+        for method, molecules in zip(("f-qcmd", "f-cmd"), self._partitions):
+            atoms = self.geometry.molecules[list(molecules)].ravel().copy()
+            atoms.flags.writeable = False
+            local = TriatomicQuasiCentroid(np.arange(len(atoms)).reshape(-1, 3),
+                                           self.geometry.masses[atoms],
+                                           singularity_tolerance=self.geometry.singularity_tolerance)
+            target_geometry.append((method, molecules, atoms, local))
+        self._target_geometry = tuple(target_geometry)
+        self._identity = fingerprint_payload(self.to_dict())
+        self._sealed = True
+
+    def __setattr__(self, name, value):
+        if getattr(self, "_sealed", False):
+            raise AttributeError("HCMDModel parameters are immutable; create a new model")
+        object.__setattr__(self, name, value)
+
+    @property
+    def correction_model(self):
+        return self._correction_model
+
+    @property
+    def partitions(self):
+        """Owned copy of the canonical zero-based molecular index lists."""
+        return {method: list(indices) for method, indices in zip(("f-qcmd", "f-cmd"), self._partitions)}
+
+    @property
+    def geometry(self):
+        return self.correction_model.geometry
+
+    @property
+    def groups(self):
+        return self.correction_model.groups
+
+    @property
+    def edges(self):
+        return self.correction_model.edges
+
+    @property
+    def centers(self):
+        return self.correction_model.centers
+
+    @property
+    def corrections(self):
+        return self.correction_model.corrections
+
+    @property
+    def kinds(self):
+        return self.correction_model.kinds
+
+    @property
+    def beta(self):
+        return self.correction_model.beta
+
+    @property
+    def base_identity(self):
+        return self.correction_model.base_identity
+
+    @property
+    def provenance(self):
+        return self.correction_model.provenance
+
+    @property
+    def fingerprint(self):
+        return self._identity
+
+    def to_dict(self):
+        return {"format": _HCMD_MODEL_KIND, "mapping": _HCMD_MAPPING,
+                "partitions": self.partitions, "correction_model": self.correction_model.to_dict()}
+
+    def validate_system(self, system, beta, *, base_identity):
+        """Require the same original physical system, temperature and masses."""
+        try:
+            self.correction_model.validate_system(system, beta, base_identity=base_identity)
+        except ValueError as error:
+            raise ValueError(str(error).replace("f-QCMD", "h-CMD")) from error
+
+    def save(self, path):
+        """Atomically save embedded correction tables and the complete identity."""
+        definition = self.to_dict()
+        if fingerprint_payload(definition) != self.fingerprint:
+            raise ValueError("h-CMD model parameters changed; create a new model")
+        atomic_savez(path, kind=_HCMD_MODEL_KIND,
+                     metadata=json.dumps(definition, sort_keys=True, allow_nan=False),
+                     fingerprint=self.fingerprint)
+
+    @classmethod
+    def load(cls, path):
+        with load_checkpoint(path, expected_kind=_HCMD_MODEL_KIND, require_integrity=True) as saved:
+            if (set(saved.files) != {"metadata", "fingerprint"}
+                    or any(saved[name].shape != () or saved[name].dtype.kind not in "US"
+                           for name in saved.files)):
+                raise ValueError("invalid saved h-CMD model inventory")
+            definition = json.loads(str(saved["metadata"]))
+            if (not isinstance(definition, dict)
+                    or set(definition) != {"format", "mapping", "partitions", "correction_model"}
+                    or definition["format"] != _HCMD_MODEL_KIND
+                    or definition["mapping"] != _HCMD_MAPPING):
+                raise ValueError("unsupported h-CMD model schema or reference-coordinate mapping")
+            model = cls(_fqcmd_from_definition(definition["correction_model"]), definition["partitions"])
+            if model.fingerprint != str(saved["fingerprint"]):
+                raise ValueError("h-CMD model scientific fingerprint changed")
+        return model
+
+
+def hcmd_coordinate_histograms(positions, model, *, bead_average):
+    """Accumulate the explicitly partitioned h-CMD target or classical counts.
+
+    ``bead_average=True`` accepts ``[frame,bead,atom,3]`` unconstrained PIMD
+    configurations. For f-QCMD molecules it measures the bead mean of internal
+    coordinates; for f-CMD molecules it measures internal coordinates of the
+    Cartesian centroid. No molecule uses both definitions. With ``False``,
+    ``[frame,atom,3]`` classical configurations use ordinary internal coordinates
+    on every molecule. Counts use the same grids and raw measure as
+    :func:`coordinate_histograms`; out-of-domain data fail explicitly.
+    """
+    if not isinstance(model, HCMDModel):
+        raise ValueError("model must be HCMDModel")
+    if not isinstance(bead_average, (bool, np.bool_)):
+        raise ValueError("bead_average must be boolean")
+    if not bead_average:
+        return coordinate_histograms(positions, model.geometry, model.groups, model.edges, bead_average=False)
+    q = _real(positions, "positions")
+    if q.ndim != 4 or min(q.shape, default=0) < 1 or q.shape[-2:] != (model.geometry.natoms, 3):
+        raise ValueError("h-CMD PIMD positions must be nonempty [frame,bead,atom,3]")
+    values = np.empty((len(q), model.geometry.nmolecules, 3))
+    for method, molecules, atoms, geometry in model._target_geometry:
+        local = q[:, :, atoms, :]
+        mapped = (geometry.internal_coordinates(local).mean(axis=1) if method == "f-qcmd"
+                  else geometry.internal_coordinates(local.mean(axis=1)))
+        values[:, list(molecules), :] = mapped
+    counts = []
+    for i, edge in enumerate(model.edges):
+        selected = values[:, model.groups == i].ravel()
+        if np.any(selected < edge[0]) or np.any(selected > edge[-1]):
+            raise ValueError(f"h-CMD coordinate group {i} leaves the histogram domain; extend the explicit grid")
+        counts.append(np.histogram(selected, bins=edge)[0])
+    return tuple(counts)
+
+
+class HCMDPotential(Potential):
+    """Original physical PES plus the single combined molecular IBI correction.
+
+    The original potential is evaluated once per batch, preserving all its
+    cross-molecule interactions. Its owner remains responsible for closing it.
+    Physical-mass, one-bead production at the training temperature is required.
+    Partitioning changes target training distributions, not production forces:
+    both branches reuse the conservative energy-spline implementation.
+    """
+
+    def __init__(self, base_potential, model):
+        if not isinstance(model, HCMDModel):
+            raise ValueError("HCMDPotential requires a physical PES and an HCMDModel")
+        if fingerprint_payload(model.to_dict()) != model.fingerprint:
+            raise ValueError("h-CMD model parameters changed; create a new model")
+        try:
+            self._correction = FQCMDPotential(base_potential, model.correction_model)
+        except ValueError as error:
+            raise ValueError(str(error).replace("f-QCMD", "h-CMD")) from error
+        self.base_potential, self._model = base_potential, model
+        self.metadata = {"provider": "hcmd_intramolecular_correction",
+                         "requires_atomic_units": True, "execution_device": "cpu",
+                         "thread_safety": self._correction.metadata["thread_safety"],
+                         "hybrid_centroid_pmf_beta_au": model.beta,
+                         "hcmd_model_sha256": model.fingerprint,
+                         "hcmd_partitions": model.partitions,
+                         "approximation": "molecular-partitioned-separable-intramolecular-IBI",
+                         "physical_converged": False}
+
+    @property
+    def model(self):
+        return self._model
+
+    def evaluate(self, x):
+        return self._correction.evaluate(x)
+
+
+def update_hcmd_model(model, target_counts, sampled_counts, *, damping=1.,
+                     regularization=0., polynomial_degree=None):
+    """Joint h-CMD IBI update with partition and full parent identity recorded.
+
+    Classical samples must come from the current combined h-CMD potential in
+    the whole original system. The correction form and finite-basis/density
+    floor controls are identical to :func:`update_fqcmd_model`; independently
+    fitted component PMFs are not added or substituted for the physical PES.
+    Diagnostics describe the supplied pre-update data and never certify
+    physical convergence.
+    """
+    if not isinstance(model, HCMDModel):
+        raise ValueError("model must be HCMDModel")
+    if fingerprint_payload(model.to_dict()) != model.fingerprint:
+        raise ValueError("h-CMD model parameters changed; create a new model")
+    updated, diagnostics = update_fqcmd_model(model.correction_model, target_counts, sampled_counts,
+                                              damping=damping, regularization=regularization,
+                                              polynomial_degree=polynomial_degree)
+    provenance = updated.provenance
+    provenance["ibi_history"][-1].update({"hcmd_parent_model_sha256": model.fingerprint,
+                                         "hcmd_partitions": model.partitions,
+                                         "hcmd_reference_mapping": _HCMD_MAPPING})
+    corrected = FQCMDModel(updated.geometry, updated.groups, updated.edges, updated.corrections,
+                           beta=updated.beta, base_identity=updated.base_identity, provenance=provenance)
+    result = HCMDModel(corrected, model.partitions)
+    diagnostics.update({"method": "h-cmd", "partitions": model.partitions,
+                        "sampled_model_sha256": model.fingerprint,
+                        "updated_model_sha256": result.fingerprint})
+    return result, diagnostics

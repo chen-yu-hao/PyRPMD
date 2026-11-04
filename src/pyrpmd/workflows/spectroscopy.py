@@ -1,8 +1,8 @@
 """Serial spectroscopy trajectories with property-model and phase provenance.
 
 Saved ring-polymer traces are bead averages of property evaluations. The
-single-bead f-QCMD route evaluates the property at its quasi-centroid geometry,
-an explicitly recorded observable approximation. Independent replicas retain
+single-bead f-QCMD and h-CMD routes evaluate the property at their effective
+molecular geometry, an explicitly recorded observable approximation. Independent replicas retain
 separate time axes. Atomic
 checkpoints contain the physical state, RNG, phase clock, and the exact trace
 prefix, allowing restart without duplicate frames or re-equilibration.
@@ -33,7 +33,7 @@ from .fes import _fingerprint, write_json
 SPECTROSCOPY_FIELDS = {
     "method", "integrator", "target_frequency", "friction_scale", "spectra", "sfg_component",
     "max_lag", "window", "sfg_window", "normalize", "laser_wavenumber_cm1",
-    "fqcmd_model_file",
+    "fqcmd_model_file", "hcmd_model_file",
 }
 PROPERTY_FIELDS = {
     "provider", "factory", "params", "model", "device", "dtype",
@@ -41,6 +41,7 @@ PROPERTY_FIELDS = {
 }
 KIND = "PyRPMD.spectroscopy.v1"
 TRACE_KIND = "PyRPMD.spectroscopy-traces.v2"
+_CORRECTION_MODELS = {"f-qcmd": ("fqcmd", "f-QCMD"), "h-cmd": ("hcmd", "h-CMD")}
 
 
 def resolve_spectroscopy(config, system):
@@ -79,21 +80,22 @@ def resolve_spectroscopy(config, system):
     else:
         raise ValueError("properties.provider must be python or torchscript")
     method = table.get("method", "pa-cmd")
-    if method not in ("pa-cmd", "rpmd", "trpmd", "f-cmd", "f-qcmd"):
-        raise ValueError("spectroscopy.method must be pa-cmd, rpmd, trpmd, f-cmd or f-qcmd; "
-                         "real-time QCMD/h-CMD are not implemented")
+    if method not in ("pa-cmd", "rpmd", "trpmd", "f-cmd", "f-qcmd", "h-cmd"):
+        raise ValueError("spectroscopy.method must be pa-cmd, rpmd, trpmd, f-cmd, f-qcmd or h-cmd; "
+                         "real-time QCMD is not implemented")
     if method == "f-cmd" and config["beads"] != 1:
         raise ValueError("f-CMD requires beads=1 on a fitted centroid PMF; do not quantize it again")
-    if method == "f-qcmd":
-        if config["beads"] != 1:
-            raise ValueError("f-QCMD production requires beads=1; do not quantize its fitted potential again")
-        if any(system.pbc) or system.cell is not None:
-            raise ValueError("f-QCMD currently supports only nonperiodic gas-phase triatomic molecules")
-        if (not isinstance(table.get("fqcmd_model_file"), str)
-                or not table["fqcmd_model_file"].strip()):
-            raise ValueError("f-QCMD requires spectroscopy.fqcmd_model_file")
-    elif "fqcmd_model_file" in table:
-        raise ValueError("fqcmd_model_file applies only to f-QCMD")
+    for choice, (prefix, label) in _CORRECTION_MODELS.items():
+        key = f"{prefix}_model_file"
+        if method == choice:
+            if config["beads"] != 1:
+                raise ValueError(f"{label} production requires beads=1; do not quantize its fitted potential again")
+            if any(system.pbc) or system.cell is not None:
+                raise ValueError(f"{label} currently supports only nonperiodic gas-phase triatomic molecules")
+            if not isinstance(table.get(key), str) or not table[key].strip():
+                raise ValueError(f"{label} requires spectroscopy.{key}")
+        elif key in table:
+            raise ValueError(f"{key} applies only to {label}")
     if method != "pa-cmd" and "target_frequency" in table:
         raise ValueError("target_frequency applies only to PA-CMD")
     if method not in ("pa-cmd", "trpmd") and "friction_scale" in table:
@@ -142,8 +144,9 @@ def resolve_spectroscopy(config, system):
     }
     # Add new identity fields only for the new explicit choices. Default trace
     # fingerprints and old trajectory/RNG histories remain unchanged.
-    if method == "f-qcmd":
-        options["fqcmd_model_file"] = str(Path(table["fqcmd_model_file"]).resolve())
+    if method in _CORRECTION_MODELS:
+        key = f"{_CORRECTION_MODELS[method][0]}_model_file"
+        options[key] = str(Path(table[key]).resolve())
     if sampling_method != "baoab":
         options["sampling_integrator"] = sampling_method
     if production_method is not None:
@@ -218,6 +221,22 @@ def _model_identity(spec):
     return None if path is None else hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def _load_correction_model(options):
+    """Read an atomic model while binding it to the expected content digest."""
+    from ..qcmd import FQCMDModel, HCMDModel
+
+    prefix, label = _CORRECTION_MODELS[options["method"]]
+    path = options[f"{prefix}_model_file"]
+    before = file_sha256(path)
+    expected = options.get(f"{prefix}_model_sha256", before)
+    if before != expected:
+        raise ValueError(f"{label} model content changed while preparing spectroscopy")
+    model = (HCMDModel if options["method"] == "h-cmd" else FQCMDModel).load(path)
+    if file_sha256(path) != before:
+        raise ValueError(f"{label} model content changed while preparing spectroscopy")
+    return model
+
+
 def _engines(config, system, potential, options, rng):
     shared = dict(potential=potential, masses=system.masses, beta=config["beta"],
                   nbeads=config["beads"], seed=rng)
@@ -230,16 +249,14 @@ def _engines(config, system, potential, options, rng):
         tag = metadata.get("centroid_pmf_beta_au")
         if tag is None or not np.isclose(_scalar(tag, "centroid_pmf_beta_au"), config["beta"], rtol=1e-10, atol=0):
             raise ValueError("f-CMD requires a provider declaring matching metadata['centroid_pmf_beta_au']")
-    if options["method"] == "f-qcmd":
-        from ..qcmd import FQCMDModel, FQCMDPotential, fqcmd_base_identity
+    if options["method"] in _CORRECTION_MODELS:
+        from ..qcmd import FQCMDPotential, HCMDPotential, fqcmd_base_identity
 
-        model = FQCMDModel.load(options["fqcmd_model_file"])
-        expected = options.get("fqcmd_model_sha256")
-        if expected is not None and file_sha256(options["fqcmd_model_file"]) != expected:
-            raise ValueError("f-QCMD model content changed while preparing spectroscopy")
+        model = _load_correction_model(options)
         model.validate_system(system, config["beta"],
                               base_identity=fqcmd_base_identity(config["potential"], system))
-        shared["potential"] = FQCMDPotential(potential, model)
+        wrapper = HCMDPotential if options["method"] == "h-cmd" else FQCMDPotential
+        shared["potential"] = wrapper(potential, model)
     shared.update(native=False, integrator="normal-mode-bab", loop_backend="python")
     return Dynamics(dt=options["sampling_dt"], **shared), Dynamics(dt=options["dt"], **shared)
 
@@ -270,15 +287,26 @@ def prepare_spectroscopy(config, system, *, potential=None):
         result["property_estimator"] = "property_surface_at_quasicentroid_geometry"
         result["fqcmd_model_file"] = options["fqcmd_model_file"]
         result["observable_approximation"] = True
+    if options["method"] == "h-cmd":
+        result["property_estimator"] = "property_surface_at_hybrid_centroid_geometry"
+        result["hcmd_model_file"] = options["hcmd_model_file"]
+        result["observable_approximation"] = True
+        result["correction_scope"] = "separable-intramolecular-IBI"
     if potential is not None:
+        if options["method"] in _CORRECTION_MODELS:
+            prefix, label = _CORRECTION_MODELS[options["method"]]
+            options[f"{prefix}_model_sha256"] = file_sha256(options[f"{prefix}_model_file"])
         # Constructor checks also enforce the fitted-PMF temperature for f-CMD.
         _, production = _engines(config, system, potential, options, np.random.default_rng(0))
-        if options["method"] == "f-qcmd":
+        if options["method"] in _CORRECTION_MODELS:
             from ..potentials.base import validate_result
 
             q = system.geometry[None]
             validate_result(production.potential.evaluate(q), q.shape)
-            result["fqcmd_model_sha256"] = file_sha256(options["fqcmd_model_file"])
+            prefix = _CORRECTION_MODELS[options["method"]][0]
+            result[f"{prefix}_model_sha256"] = options[f"{prefix}_model_sha256"]
+            if options["method"] == "h-cmd":
+                result["hcmd_partitions"] = production.potential.model.partitions
         properties = _make_properties(config["properties"], system)
         try:
             q = np.repeat(system.geometry[None], config["beads"], axis=0)
@@ -295,6 +323,9 @@ def prepare_spectroscopy(config, system, *, potential=None):
             }
         finally:
             properties.close()
+        if (options["method"] in _CORRECTION_MODELS
+                and file_sha256(options[f"{prefix}_model_file"]) != options[f"{prefix}_model_sha256"]):
+            raise ValueError(f"{label} model content changed during numerical spectroscopy validation")
     return result
 
 
@@ -340,10 +371,11 @@ def _sample_replica(config, system, output, replica, options):
     identity_fields = {"spectroscopy_replica": replica,
                        "property_model_sha256": _model_identity(config["properties"]),
                        "source_files": referenced_files(config)}
-    if options["method"] == "f-qcmd":
+    if options["method"] in _CORRECTION_MODELS:
         # Also cover direct Python callers whose model path was not normalized
         # by JobSpec: referenced_files intentionally hashes absolute inputs.
-        identity_fields["fqcmd_model_sha256"] = options["fqcmd_model_sha256"]
+        key = f"{_CORRECTION_MODELS[options['method']][0]}_model_sha256"
+        identity_fields[key] = options[key]
     identity = _fingerprint(config, system, identity_fields)
     path = _checkpoint(output, replica)
     rng = np.random.default_rng(np.random.SeedSequence([int(config.get("seed", 0)), 2503, replica]))
@@ -432,9 +464,13 @@ def _trace_physics(config, options):
         settings["friction_scale"] = options["friction_scale"]
     if options["method"] == "pa-cmd":
         settings["target_frequency"] = options["target_frequency"]
-    if options["method"] == "f-qcmd":
-        settings["fqcmd_model_file"] = options["fqcmd_model_file"]
-        settings["fqcmd_model_sha256"] = options["fqcmd_model_sha256"]
+    if options["method"] in _CORRECTION_MODELS:
+        prefix = _CORRECTION_MODELS[options["method"]][0]
+        for suffix in ("model_file", "model_sha256"):
+            key = f"{prefix}_{suffix}"
+            settings[key] = options[key]
+        if options["method"] == "h-cmd":
+            settings["hcmd_partitions"] = options["hcmd_partitions"]
     return {"spectroscopy_trajectory": settings, "beta": config["beta"],
             "beads": config["beads"], "seed": int(config.get("seed", 0))}
 
@@ -458,10 +494,14 @@ def _analyze(config, system, output, options, streams, *, trace_metadata=None):
                 "source_files": referenced_files(config),
             },
         }
-        if options["method"] == "f-qcmd":
-            trace_metadata["estimator"] = "property surface at quasi-centroid geometry"
-            trace_metadata["trajectory_provenance"]["source_files"][options["fqcmd_model_file"]] = (
-                options["fqcmd_model_sha256"]
+        if options["method"] in _CORRECTION_MODELS:
+            prefix = _CORRECTION_MODELS[options["method"]][0]
+            trace_metadata["estimator"] = (
+                "property surface at hybrid centroid/quasi-centroid geometry"
+                if options["method"] == "h-cmd" else "property surface at quasi-centroid geometry"
+            )
+            trace_metadata["trajectory_provenance"]["source_files"][options[f"{prefix}_model_file"]] = (
+                options[f"{prefix}_model_sha256"]
             )
         atomic_savez(data_path, kind=TRACE_KIND, **traces,
                      sample_interval_au=dt, metadata=json.dumps(trace_metadata))
@@ -526,6 +566,21 @@ def _analyze(config, system, output, options, streams, *, trace_metadata=None):
             "f-QCMD evaluates the supplied property surface at the quasi-centroid geometry; "
             "this is an additional observable approximation unless a conditional property model is supplied.",
         ])
+    if options["method"] == "h-cmd":
+        summary["property_estimator"] = "property surface at hybrid centroid/quasi-centroid geometry in laboratory axes"
+        summary["hcmd_model_file"] = options["hcmd_model_file"]
+        summary["hcmd_model_sha256"] = options["hcmd_model_sha256"]
+        summary["hcmd_partitions"] = options["hcmd_partitions"]
+        summary["correction_scope"] = "separable-intramolecular-IBI"
+        summary["warnings"].extend([
+            "h-CMD uses explicit molecular partitions with quasi-centroid and Cartesian-centroid "
+            "IBI targets; the existing quadratic force-matched f-CMD model is a separate approximation.",
+            "Only intramolecular corrections for nonperiodic bent triatomics are implemented; "
+            "intermolecular quantum corrections and condensed-phase spectral accuracy are not established.",
+            "Properties evaluated at the hybrid effective geometry introduce an observable approximation "
+            "unless a validated conditional property model is supplied. Matching marginal distributions "
+            "does not establish joint-distribution or spectral convergence.",
+        ])
     if options["equilibration_steps"] == 0:
         summary["warnings"].append("No equilibration requested; the collapsed initial ring is not an equilibrium sample.")
     write_json(results / "summary.json", summary)
@@ -535,13 +590,18 @@ def _analyze(config, system, output, options, streams, *, trace_metadata=None):
 def run_spectroscopy(config, system, output):
     """Run/resume serial independent spectroscopy replicas and save spectra."""
     options = resolve_spectroscopy(config, system)
-    if options["method"] == "f-qcmd":
-        options["fqcmd_model_sha256"] = file_sha256(options["fqcmd_model_file"])
+    if options["method"] in _CORRECTION_MODELS:
+        prefix, label = _CORRECTION_MODELS[options["method"]]
+        options[f"{prefix}_model_sha256"] = file_sha256(options[f"{prefix}_model_file"])
+        if options["method"] == "h-cmd":
+            # Bind the explicit partition to traces even when all replica
+            # checkpoints are complete and no potential needs constructing.
+            options["hcmd_partitions"] = _load_correction_model(options).partitions
     streams = [_sample_replica(config, system, output, replica, options)
                for replica in range(options["replicas"])]
-    if (options["method"] == "f-qcmd"
-            and file_sha256(options["fqcmd_model_file"]) != options["fqcmd_model_sha256"]):
-        raise ValueError("f-QCMD model content changed during spectroscopy")
+    if (options["method"] in _CORRECTION_MODELS
+            and file_sha256(options[f"{prefix}_model_file"]) != options[f"{prefix}_model_sha256"]):
+        raise ValueError(f"{label} model content changed during spectroscopy")
     return _analyze(config, system, output, options, streams)
 
 
@@ -556,22 +616,28 @@ def reanalyze_spectroscopy(config, system, output):
         if data.envelope.get("kind") != TRACE_KIND:
             raise ValueError("unsupported saved spectroscopy trace kind")
         metadata = json.loads(str(data["metadata"]))
-        if options["method"] == "f-qcmd":
+        if options["method"] in _CORRECTION_MODELS:
             # Reanalysis consumes authenticated saved observables, not a new
             # model evaluation. Preserve the sampled model's hash even when
             # its file has been removed or replaced; the path is still part
             # of the identity checked below. Run/resume always rehash it.
+            prefix, label = _CORRECTION_MODELS[options["method"]]
             provenance = metadata.get("trajectory_provenance", {})
             if not isinstance(provenance, dict) or not isinstance(provenance.get("settings"), dict):
-                raise ValueError("saved f-QCMD traces lack valid trajectory provenance")
+                raise ValueError(f"saved {label} traces lack valid trajectory provenance")
             settings = provenance["settings"].get("spectroscopy_trajectory", {})
             if not isinstance(settings, dict):
-                raise ValueError("saved f-QCMD traces lack valid trajectory settings")
-            digest = settings.get("fqcmd_model_sha256")
+                raise ValueError(f"saved {label} traces lack valid trajectory settings")
+            digest = settings.get(f"{prefix}_model_sha256")
             if (not isinstance(digest, str) or len(digest) != 64
                     or any(c not in "0123456789abcdef" for c in digest)):
-                raise ValueError("saved f-QCMD traces lack a valid model content identity")
-            options["fqcmd_model_sha256"] = digest
+                raise ValueError(f"saved {label} traces lack a valid model content identity")
+            options[f"{prefix}_model_sha256"] = digest
+            if options["method"] == "h-cmd":
+                partitions = settings.get("hcmd_partitions")
+                if not isinstance(partitions, dict) or set(partitions) != {"f-qcmd", "f-cmd"}:
+                    raise ValueError("saved h-CMD traces lack explicit molecular partitions")
+                options["hcmd_partitions"] = partitions
         if (metadata.get("physics_fingerprint") != fingerprint(_trace_physics(config, options), system)
                 or not isinstance(metadata.get("trajectory_provenance"), dict)):
             raise ValueError("saved spectroscopy trajectory physics or system identity changed")
