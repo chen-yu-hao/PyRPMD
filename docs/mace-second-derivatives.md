@@ -46,9 +46,10 @@ shape/symmetry/precision checks. Therefore these callers can consume
 MACE second derivatives without numerical force differencing.
 
 `RingPolymerAction.hessian_vector_product(path,direction)` exposes
-a matrix-free action-Hessian product suitable for iterative solvers,
-returning the bead-major active component array [P,D_active].
-For dtau=beta/P and each bead j it implements
+a matrix-free action-Hessian product suitable for iterative solvers.
+It returns float64[P,N,3], matching the path and direction shapes; when
+an active-coordinate mask is present, inactive components are exactly zero.
+For dtau=beta/P and each active component at bead j it implements
 
 ```text
 (H_action v)[j] = dtau * (H_physical(q[j]) @ v[j])
