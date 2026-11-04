@@ -422,6 +422,8 @@ and [native timing record](validation/t25-rp-iesh/performance-native.json).
 
 ### Primary references for the RP-IESH extension
 
+Catalog entries: [na-iesh](manual/references.md#na-iesh) and [na-ms-mash](manual/references.md#na-ms-mash).
+
 - J. J. Gardner, *Simulation of nonadiabatic molecular dynamics at metal
   surfaces*, PhD thesis, University of Warwick (2023), Sections II.5.2 and
   VI.1.1, [archived thesis](https://wrap.warwick.ac.uk/id/eprint/185255/).

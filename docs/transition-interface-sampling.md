@@ -737,6 +737,10 @@ convergence remain scientific checks for each application.
 
 ## References
 
+Catalog entries: [samp-tis](manual/references.md#samp-tis), [samp-retis](manual/references.md#samp-retis),
+[samp-infretis](manual/references.md#samp-infretis), [samp-pptis](manual/references.md#samp-pptis) and [samp-ffs](manual/references.md#samp-ffs);
+their BibTeX keys are in [references.bib](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/references.bib).
+
 - T. S. van Erp, D. Moroni and P. G. Bolhuis, *A novel path sampling method for
   the calculation of rate constants*, Journal of Chemical Physics **118**,
   7762–7774 (2003),

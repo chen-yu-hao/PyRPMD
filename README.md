@@ -2,7 +2,7 @@
 
 **[User manual](docs/index.md)** · [Installation](docs/manual/installation.md) ·
 [Quickstart](docs/manual/quickstart.md) · [Examples](docs/manual/examples.md) ·
-[Python API](docs/manual/api.md) · [中文](README.zh-CN.md)
+[Python API](docs/manual/api.md) · [How to cite](#citing-pyrpmd) · [中文](README.zh-CN.md)
 
 **Ring-polymer molecular dynamics from a single input file — from a transition state to a
 recrossing-corrected rate, with fingerprinted checkpoint restart.**
@@ -64,9 +64,9 @@ These model examples test the numerical implementation; physical and sampling co
 
 ## Method papers and reproduction
 
-The [original-paper / implementation catalog](docs/manual/references.md) covers **111 feature entries and 170 bibliographic records**,
+The [original-paper / implementation catalog](docs/manual/references.md) covers **125 feature entries and 199 bibliographic records**,
 with code paths and implementation limits. The [reproduction checklist](docs/manual/reproduction.md) gives each source paper's
-system, observables, existing entry, missing ingredients and priority. The audit targets `cb60679` (2026-11-02).
+system, observables, existing entry, missing ingredients and priority. The audit targets `28cde09` (2026-11-03).
 Start with **H + H2/BKMP2, the 2013 NRPMD two-state model, and q-TIP4P/F water**.
 
 | Feature family | Original method / model sources |
@@ -75,15 +75,18 @@ Start with **H + H2/BKMP2, the 2013 NRPMD two-state model, and q-TIP4P/F water**
 | Bennett–Chandler and bimolecular RPMD rates | [Bennett 1977](docs/manual/references.md#bennett1977) · [Chandler 1978](docs/manual/references.md#chandler1978) · [Craig–Manolopoulos 2005](docs/manual/references.md#rate05) · [Collepardo-Guevara et al. 2009](docs/manual/references.md#bimol09) |
 | dRPMD and state-selected scattering | [Suleimanov et al. 2018](docs/manual/references.md#drpmd18) · [Marjollet et al. 2020](docs/manual/references.md#state20) · [2022 extension](docs/manual/references.md#state22) |
 | Cayley / BCOCB and PILE / PIGLET | [Cayley 2019](docs/manual/references.md#cayley19) · [BCOCB 2020](docs/manual/references.md#bcocb20) · [PILE 2010](docs/manual/references.md#pile10) · [PIGLET 2012](docs/manual/references.md#piglet12) |
-| PA-CMD / f-CMD / TRPMD and SFG | [PA-CMD 2006](docs/manual/references.md#pacmd06) · [f-CMD 2005](docs/manual/references.md#fcmd05) · [TRPMD 2014](docs/manual/references.md#trpmd14) · [Morita–Hynes 2002](docs/manual/references.md#sfg02) |
+| PA-CMD / f-CMD / f-QCMD / TRPMD and SFG | [PA-CMD 2006](docs/manual/references.md#pacmd06) · [f-CMD 2005](docs/manual/references.md#fcmd05) · [QCMD 2019](docs/manual/references.md#qcmd2019) · [f-QCMD 2021](docs/manual/references.md#fqcmd2021) · [TRPMD 2014](docs/manual/references.md#trpmd14) · [Morita–Hynes 2002](docs/manual/references.md#sfg02) |
 | TI / Suzuki–Chin, bosons and PIGS | [TI 1984](docs/manual/references.md#ti84) · [SC 2016](docs/manual/references.md#sc16) · [Bosons 2019](docs/manual/references.md#bose19) · [Quadratic scaling 2023](docs/manual/references.md#bose23) · [PIGS 2000](docs/manual/references.md#pigs00) |
 | Isotope estimators and instantons | [Isotopes 2013](docs/manual/references.md#iso13) · [Fractionation 2014](docs/manual/references.md#iso14) · [RPI 2009](docs/manual/references.md#rpi09) · [Splittings 2011](docs/manual/references.md#split11) |
 | Umbrella sampling / MBAR / UI | [Torrie–Valleau 1977](docs/manual/references.md#samp-us1977) · [Shirts–Chodera 2008](docs/manual/references.md#samp-mbar2008) · [Kästner–Thiel 2005](docs/manual/references.md#samp-ui2005) |
-| MetaD / WT-MetaD / OPES | [Laio–Parrinello 2002](docs/manual/references.md#samp-meta2002) · [Barducci et al. 2008](docs/manual/references.md#samp-wt2008) · [OPES 2020](docs/manual/references.md#samp-opes2020) · [Explore 2022](docs/manual/references.md#samp-explore2022) |
-| REUS, TIS / RETIS and committor analysis | [REUS 2000](docs/manual/references.md#samp-reus2000) · [TIS 2003](docs/manual/references.md#samp-tis2003) · [RETIS 2007](docs/manual/references.md#samp-retis2007) · [Committor 2000](docs/manual/references.md#samp-comm2000) |
-| P-RFO / CI-NEB, path CV and string | [P-RFO 1985](docs/manual/references.md#samp-prfo1985) · [CI-NEB 2000](docs/manual/references.md#samp-cineb2000) · [Path CV 2007](docs/manual/references.md#samp-path2007) · [CV string 2006](docs/manual/references.md#samp-stringcv2006) |
+| MetaD / WT-MetaD / OPES | [Laio–Parrinello 2002](docs/manual/references.md#samp-meta2002) · [Barducci et al. 2008](docs/manual/references.md#samp-wt2008) · [OPES 2020](docs/manual/references.md#samp-opes2020) · [Explore 2022](docs/manual/references.md#samp-explore2022) · [Multiple walkers 2006](docs/manual/references.md#samp-walkers2006) |
+| VES, ABF / eABF and steered MD | [VES 2014](docs/manual/references.md#samp-ves2014) · [WT-VES 2015](docs/manual/references.md#samp-wtves2015) · [ABF 2001](docs/manual/references.md#samp-abf2001) · [eABF/CZAR 2017](docs/manual/references.md#samp-eabf2017) · [Jarzynski 1997](docs/manual/references.md#samp-jarzynski1997) · [Crooks 1999](docs/manual/references.md#samp-crooks1999) |
+| REUS, parallel tempering and committor analysis | [REUS 2000](docs/manual/references.md#samp-reus2000) · [Exchange MC 1996](docs/manual/references.md#samp-pt1996) · [REMD 1999](docs/manual/references.md#samp-remd1999) · [Committor 2000](docs/manual/references.md#samp-comm2000) |
+| TIS / RETIS / ∞RETIS, PPTIS / REPPTIS and FFS | [TIS 2003](docs/manual/references.md#samp-tis2003) · [RETIS 2007](docs/manual/references.md#samp-retis2007) · [∞RETIS 2022](docs/manual/references.md#samp-infretis2022) · [PPTIS 2004](docs/manual/references.md#samp-pptis2004) · [REPPTIS 2023](docs/manual/references.md#samp-repptis2023) · [FFS 2005](docs/manual/references.md#samp-ffs2005) |
+| P-RFO / CI-NEB, path CV, strings and learned CVs | [P-RFO 1985](docs/manual/references.md#samp-prfo1985) · [CI-NEB 2000](docs/manual/references.md#samp-cineb2000) · [Path CV 2007](docs/manual/references.md#samp-path2007) · [FTS 2005](docs/manual/references.md#samp-fts2005) · [CV string 2006](docs/manual/references.md#samp-stringcv2006) · [mlcolvar 2023](docs/manual/references.md#samp-mlcolvar2023) |
 | Thermal / focused / spin-mapping NRPMD | [Richardson–Thoss 2013](docs/manual/references.md#na-nrpmd2013) · [Chowdhury–Huo 2019](docs/manual/references.md#na-focused2019) · [Bossion et al. 2021](docs/manual/references.md#na-sm2021) |
-| MASH / CA-RP-MASH and surface hopping | [MASH 2023](docs/manual/references.md#na-mash2023) · [CA-RP-MASH v1 2025](docs/manual/references.md#na-carp2025) · [Tully 1990](docs/manual/references.md#na-tully1990) · [RPSH 2017](docs/manual/references.md#na-rpsh2017) · [BA/DM 2023](docs/manual/references.md#na-rpshdm2023) · [DBOC 2025](docs/manual/references.md#na-dboc2025) |
+| MASH / CA- and BA-RP-MASH and surface hopping | [MASH 2023](docs/manual/references.md#na-mash2023) · [Multistate MASH 2023](docs/manual/references.md#na-msmash2023) · [CA/BA-RP-MASH v1 2025](docs/manual/references.md#na-carp2025) · [Tully 1990](docs/manual/references.md#na-tully1990) · [RPSH 2017](docs/manual/references.md#na-rpsh2017) · [BA/DM 2023](docs/manual/references.md#na-rpshdm2023) · [DBOC 2025](docs/manual/references.md#na-dboc2025) |
+| IESH and on-the-fly excited states | [IESH 2009](docs/manual/references.md#na-iesh2009) · [IESH implementation 2023](docs/manual/references.md#na-iesh2023) · [HST 1994](docs/manual/references.md#na-hst1994) · [NPI 2014](docs/manual/references.md#na-npi2014) · [PySCF 2018](docs/manual/references.md#pyscf2018) |
 | MV-RPMD / KC-RPMD / isomorphic / QD | [MV 2013](docs/manual/references.md#na-mv2013) · [KC 2014](docs/manual/references.md#na-kc2014) · [Isomorphic 2018](docs/manual/references.md#na-iso2018) · [QD 2018](docs/manual/references.md#na-qd2018) |
 | Pressure, material diffusion and surface rates | [BZP 2009](docs/manual/references.md#bzp2009) · [MTK 1994](docs/manual/references.md#mtk1994) · [SCR 2020](docs/manual/references.md#scr2020) · [H/Ni(100) 2012](docs/manual/references.md#ni2012) · [Surface rates 2025](docs/manual/references.md#sds2025) |
 | PCET, constant-potential models and electronic friction | [PCET 2008](docs/manual/references.md#pcet2008) · [Au/TEAH+ 2019](docs/manual/references.md#gold2019) · [GC approach 2025](docs/manual/references.md#gc2025) · [EF-RPMD 2024](docs/manual/references.md#efrpmd2024) |
@@ -94,8 +97,38 @@ Cite the actual PES, parameters and upstream software as well as the method and 
 Software papers, reviews, adapter support and short regressions do not establish a full algorithm
 implementation or converged reproduction. Composed workflows cite their separate ingredients; engineering
 utilities have no invented single originating paper. The catalog records the focused SM-NRPMD subset,
-positive-interface RETIS, the isomorphic dynamics consumer and other material limitations.
-[BibTeX](docs/references.bib) and the [structured catalog](docs/method-references.json) are also available.
+the scope of the RETIS variants, the isomorphic dynamics consumer and other material limitations.
+[BibTeX](docs/references.bib) and the [structured catalog](docs/method-references.json) are also available;
+both catalog pages and the BibTeX file are generated from the JSON by `python tools/reference_catalog.py --write`.
+
+## Citing PyRPMD
+
+If PyRPMD contributes to published work, cite it as software and give the exact version
+(`pyrpmd --version`) or, for an unreleased checkout, the commit (`git rev-parse HEAD`). The
+[CITATION.cff](CITATION.cff) metadata drive GitHub's **Cite this repository** button. PyRPMD does not
+have a journal article yet. A BibTeX entry:
+
+```bibtex
+@software{pyrpmd,
+  author  = {{PyRPMD contributors}},
+  title   = {{PyRPMD}: ring-polymer dynamics, reaction networks and adaptive free-energy sampling},
+  version = {0.2.0},
+  year    = {2026},
+  url     = {https://github.com/chen-yu-hao/PyRPMD},
+  note    = {Record the commit hash for unreleased versions}
+}
+```
+
+The software citation does not replace the method papers. Also cite:
+
+1. the **original methods** you used, collected from the [catalog](docs/manual/references.md) — its
+   [workflow checklist](docs/manual/references.md#workflow-checklist) lists the entries for each task;
+2. the **potential-energy surface or electronic-structure model**, with its parameter files or checkpoint;
+3. the **upstream software** you called, such as PLUMED, OpenMM, LAMMPS, ASE, PySCF or an ML-potential package;
+4. [RPMDrate](docs/manual/references.md#rpmrate13) and [Caracal](docs/manual/references.md#caracal2023) when
+   you rely on the rate-workflow algorithms adapted from them ([provenance](#tests-and-provenance)).
+
+All of these keys are in [docs/references.bib](docs/references.bib), so a manuscript can `\cite{...}` them directly.
 
 ## Installation
 
@@ -169,6 +202,11 @@ All examples use analytic model potentials and run on one core. Times are wall t
 | Adaptive umbrella windows | `fes` | `examples/fes/adaptive_harmonic.inp` | ~4 s |
 | Standard or well-tempered metadynamics | `fes`, method `metadynamics` | `examples/metadynamics/well_tempered_2d.inp` | ~2 s |
 | OPES probability-based enhanced sampling | `fes`, method `opes` | `examples/opes/harmonic_2d.inp` | — |
+| Variationally enhanced sampling (VES) | `fes`, method `ves` | `examples/ves_double_well.inp` | — |
+| ABF / eABF mean-force free energies | `fes`, method `abf` or `eabf` | `examples/abf_double_well.inp`, `examples/eabf_double_well.inp` | — |
+| Steered MD with Jarzynski / Crooks estimates | `fes`, method `steered` | `examples/steered_harmonic.inp` | — |
+| Parallel tempering and Hamiltonian replica exchange | `pimd` or `fes` + `[tempering]` | `examples/tempering/hremd_umbrella.inp`; the temperature ladder `double_well.inp` uses 4 MPI ranks | — |
+| RETIS / ∞RETIS, REPPTIS and FFS path sampling | `path_sampling` | `examples/sampling/path_sampling_retis.inp` | — |
 | PA-CMD and relative IR/Raman/SFG | `spectroscopy` | `examples/spectroscopy/pacmd.inp` | — |
 | Force-based Suzuki–Chin, bosons or PIGS | `pimd` + `[path_integral]` | `examples/path_integral/suzuki_chin.inp` | — |
 | Fixed-cell PIMD and energy estimators | `pimd` | `examples/materials/pimd.inp` | ~2 s |
@@ -177,7 +215,8 @@ All examples use analytic model potentials and run on one core. Times are wall t
 | Directed escape on a fixed substrate | `surface_rate` | `examples/surface/diffusion.inp` | ~1.5 min |
 | Electrochemical PCET, H/D, potential and temperature scans | `pcet` | `examples/pcet/harmonic_scan.inp` | ~2 s |
 | State-selected nonadiabatic scattering (NRPMD, experimental) | `drpmd` | `examples/nonadiabatic/exchange.inp` | ~15 s |
-| Model population/coherence ensembles (NRPMD, SM-NRPMD, CA-RP-MASH, BA/DM/SOC RPSH) | `nonadiabatic` | `examples/nonadiabatic/extensions/` | — |
+| Model population/coherence ensembles (NRPMD, SM-NRPMD, CA-/BA-RP-MASH, BA/DM/SOC RPSH) | `nonadiabatic` | `examples/nonadiabatic/extensions/` | — |
+| Metal-surface IESH / RP-IESH and multistate MASH | `nonadiabatic`, method `iesh`, `rp-iesh` or `multistate-mash` | `examples/nonadiabatic/iesh.inp` | — |
 | Published molecular NaH2 two-state PES | `nonadiabatic` | `examples/nonadiabatic/extensions/nah2_sm_nrpmd.inp` | — |
 
 Run any of them with `pyrpmd run INPUT --output runs/NAME`. FES selects its method in `[fes]`;
@@ -477,7 +516,9 @@ Reference specifications (some in Chinese):
 - [BZP constant-pressure PIMD](docs/materials-npt.md), [grid metadynamics](docs/grid-metadynamics.md), [streaming trajectories](docs/streaming-trajectories.md)
 - [Constant-potential electrode models and HER postprocessing](docs/electrochemistry.md)
 - [Adaptive restrained paths, constant-potential matrices and signed thermal NRPMD](docs/manual/adaptive-nrpmd.md)
-- [Unified FES, adaptive umbrellas and shared-bias metadynamics](docs/enhanced-sampling.md)
+- [Unified FES, adaptive umbrellas and shared-bias metadynamics](docs/enhanced-sampling.md), including VES, ABF/eABF, steered MD and distributed walkers
+- [Path sampling: TIS, RETIS/∞RETIS, PPTIS/REPPTIS and FFS](docs/transition-interface-sampling.md), [parallel tempering and HREMD](docs/tempering.md)
+- [IESH, RP-IESH and multistate MASH](docs/nonadiabatic-iesh-multistate.md), [online excited-state providers](docs/excited-state-interface.md), [experimental f-QCMD](docs/qcmd.md)
 - [Rate PMF selection and independent sampling settings](docs/rate-pmf-selection.md)
 - [Electrochemical PCET model](docs/pcet.md), [runnable PCET example](examples/pcet/README.md)
 - [Fixed cells, PIMD, materials diffusion and site rates](docs/materials.md)

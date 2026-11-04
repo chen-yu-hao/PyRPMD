@@ -980,6 +980,9 @@ mlcolvar
 
 ### Additional method sources
 
+Catalog entries: [samp-abf](manual/references.md#samp-abf), [samp-steered](manual/references.md#samp-steered),
+[samp-ft-string](manual/references.md#samp-ft-string) and [samp-mlcolvar](manual/references.md#samp-mlcolvar).
+
 - E. Darve, D. Rodríguez-Gómez and A. Pohorille, *Adaptive biasing force method
   for scalar and vector free energy calculations*, JCP **128**, 144120 (2008),
   [doi:10.1063/1.2829861](https://doi.org/10.1063/1.2829861).
@@ -1194,6 +1197,9 @@ and a [comparison figure](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/v
 record the sampling budget, independent-history errors and model limitations.
 
 ### VES primary references
+
+Catalog entry: [samp-ves](manual/references.md#samp-ves); BibTeX keys `samp-ves2014` and `samp-wtves2015` are in
+[references.bib](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/references.bib).
 
 - O. Valsson and M. Parrinello, *Variational Approach to Enhanced Sampling and
   Free Energy Calculations*, PRL **113**, 090601 (2014),

@@ -111,6 +111,8 @@ Passing these deployment checks does not imply physical convergence.
 
 ## References
 
+Catalog entry: [samp-mlcolvar](manual/references.md#samp-mlcolvar).
+
 - Bonati, Trizio, Rizzi and Parrinello, *A unified framework for machine learning
   collective variables for enhanced sampling simulations: mlcolvar*, J. Chem.
   Phys. **159**, 014801 (2023), [doi:10.1063/5.0156343](https://doi.org/10.1063/5.0156343).

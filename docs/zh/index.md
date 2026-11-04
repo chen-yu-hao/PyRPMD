@@ -20,10 +20,12 @@ PyRPMD 用一个 Python 或 TOML 输入运行环聚合物分子动力学。它�
 | 把已保存 FES 边缘化到更少的 CV | `project` 命令 | [输出与分析](manual/results.md) |
 | 自动分析、出版级图与 HTML 报告 | `report` 命令，或 `run`/`analyze --report` | [自动分析与出图](manual/analysis-reports.md) |
 | 多入口、多过渡态的速率矩阵 | `network` | [气相与自由能](manual/workflows.md) |
-| Standard / WT metadynamics、共享 walkers | `fes` + `method="metadynamics"` | [统一增强采样](enhanced-sampling.md) |
+| Standard / WT metadynamics、共享或分布式 walkers | `fes` + `method="metadynamics"`；`walkers_mode` | [统一增强采样](enhanced-sampling.md)、[分布式行者（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/enhanced-sampling.md#distributed-multiple-walker-metad-and-opes) |
+| 变分增强采样（VES）、ABF/eABF 与拉伸动力学 | `fes` + `method="ves"`、`"abf"`、`"eabf"` 或 `"steered"` | [VES 英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/enhanced-sampling.md#variationally-enhanced-sampling-ves)、[ABF 英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/enhanced-sampling.md#centroid-abf-and-extended-system-abf)、[拉伸动力学英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/enhanced-sampling.md#steered-md-and-nonequilibrium-work) |
 | 同温副本交换伞形采样 | `fes` + `[replica_exchange]` | [副本交换](replica-exchange.md) |
+| 并行回火与哈密顿量副本交换 | `pimd` 或 `fes` + `[tempering]` | [回火英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/tempering.md) |
 | OPES 概率增强采样 | `fes` + `method="opes"` | [统一增强采样](enhanced-sampling.md)、[OPES 英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/opes.md) |
-| PLUMED 质心偏置、过渡界面路径采样 | `plumed` / Python API | [PLUMED](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/plumed.md) · [TIS](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/transition-interface-sampling.md) |
+| PLUMED 质心偏置；TIS、RETIS/∞RETIS、PPTIS/REPPTIS 与 FFS 路径采样 | `plumed`；`path_sampling` / Python API | [PLUMED](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/plumed.md) · [TIS](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/transition-interface-sampling.md) |
 | 平衡核量子统计与能量估计量 | `pimd` | [材料与表面](manual/periodic.md) |
 | C++ PIMD 驱动：SVR、GLE、PIGLET、FFL 恒温器；BZP/MTTK/RGB/SCR 恒压 | `pimd` + `sampling.engine="native"`；`pyrpmd-native` | [材料与表面](manual/periodic.md) |
 | RPMD 自扩散、MSD、VACF | `diffusion` | [材料与表面](manual/periodic.md) |
@@ -39,12 +41,17 @@ PyRPMD 用一个 Python 或 TOML 输入运行环聚合物分子动力学。它�
 | PA-CMD、Raman/SFG、主引擎 SC/玻色交换/PIGS、非绝热及 ML 扩展 | 输入工作流 / Python API | [Tier 2 覆盖范围与限制](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/tier2-methods.md) |
 | 多维瞬子速率、劈裂及 TST/Wigner/Eckart 对照 | Python API / 缓存 Hessian CLI | [低温对照（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/low-temperature.md) |
 | 热 NRPMD、表面跳跃、SOC、KC-/MV-RPMD、电子摩擦 | Python API；`diffusion` + `[electronic_friction]` | [非绝热动力学](manual/nonadiabatic.md) |
+| 金属表面 IESH/RP-IESH 与多态 MASH | `nonadiabatic` + `method="iesh"`、`"rp-iesh"` 或 `"multistate-mash"` | [IESH 与多态 MASH 英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/nonadiabatic-iesh-multistate.md) |
+| 在线激发态能量、梯度与耦合（PySCF TDDFT、文件后端） | Python API | [激发态接口英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/excited-state-interface.md) |
+| 弯曲三原子分子的实验性 f-QCMD 光谱 | `spectroscopy` + `method="f-qcmd"` | [f-QCMD 英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/qcmd.md) |
 | 从头算参考数据、PES 拟合、JaxPIP 与原生 ONNX 导出 | `python -m pyrpmd.pesgen`、Python API | [势能生成](manual/pes-generation.md)、[JaxPIP](manual/jaxpip-generation.md) |
 
 示例使用解析模型势，几秒内即可完成。进行正式研究前，请按[科学约定与收敛](manual/science.md)完成收敛流程。
 
 方法出处与计算计划：阅读[原始论文与实现对照](manual/references.md)及[逐项复现清单](manual/reproduction.md)，
 确定论文体系、物理量、原模型数据及实现缺口后再开展正式计算。
+引用 PyRPMD 本身及计算所用方法的做法见[如何引用](manual/references.md#如何引用)；软件元数据位于仓库的
+[CITATION.cff](https://github.com/chen-yu-hao/PyRPMD/blob/main/CITATION.cff)。
 
 ## 基本循环
 
@@ -73,7 +80,7 @@ pyrpmd report runs/job                  # 可选：由保存数据生成图、in
 | 计算任务 | [气相与自由能](manual/workflows.md) · [材料与表面](manual/periodic.md) · [PCET](manual/pcet.md) · [电极模型](manual/electrochemistry.md) · [非绝热 NRPMD](manual/nonadiabatic.md) · [示例](manual/examples.md) |
 | 模型与运行 | [势能与插件](manual/potentials.md) · [势能生成](manual/pes-generation.md) · [JaxPIP 拟合](manual/jaxpip-generation.md) · [执行、并行与续跑](manual/execution.md) · [输出与分析](manual/results.md) · [自动分析与出图](manual/analysis-reports.md) |
 | 动力学扩展（英文指南） | [统一传播栈](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/propagation-stack.md) · [昂贵势能](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/performance-dynamics.md) · [批量轨迹](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/batched-dynamics.md) · [RPC/MTS](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rpc-mts.md) · [TRPMD 与谱](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/trpmd-spectroscopy.md) |
-| 参考 | [原始论文](manual/references.md) · [复现清单](manual/reproduction.md) · [Python API](manual/api.md) · [常见问题](manual/troubleshooting.md) · [开发者指南](manual/development.md) |
+| 参考 | [原始论文与引用方式](manual/references.md) · [复现清单](manual/reproduction.md) · [Python API](manual/api.md) · [常见问题](manual/troubleshooting.md) · [开发者指南](manual/development.md) |
 
 ```{toctree}
 :maxdepth: 2

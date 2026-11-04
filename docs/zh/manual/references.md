@@ -1,9 +1,11 @@
 # 原始论文与实现功能对照
 
 本页按**已实现的方法/模型/接口**归并功能，而不是为每个辅助函数硬配论文。核查对象是
-[`cb60679`](https://github.com/chen-yu-hao/PyRPMD/commit/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d)，核查日期为 **2026-11-02**。
-下列 **111 个条目、170 条文献记录**将源码、原始方法及实现范围联系起来；
+[`28cde09`](https://github.com/chen-yu-hao/PyRPMD/commit/28cde092b66707878d99bc45eadf6bdf5950b317)，核查日期为 **2026-11-03**。
+下列 **125 个条目、199 条文献记录**将源码、原始方法及实现范围联系起来；
 [复现清单](reproduction.md)另列原文体系、应算物理量、现有入口、缺失条件和优先级。
+上次核查（`cb60679`，2026-11-02）之后合入的功能，以及范围因这些功能而改变的条目，均按本提交新写或修订；
+其余条目的范围说明沿用上次核查结论，仅更新源码链接。
 
 ## 如何引用
 
@@ -11,14 +13,37 @@
 例如 H + H₂/BKMP2 的速率研究需同时引用 Bennett–Chandler、RPMD 速率、双分子归一化、BKMP2 势及实际使用的软件。
 仅引用 RPMDrate、Caracal 或一篇综述不能代替原始算法出处。
 
+PyRPMD 本身按软件引用，元数据见
+[CITATION.cff](https://github.com/chen-yu-hao/PyRPMD/blob/main/CITATION.cff)（GitHub 的 **Cite this repository**
+按钮可据此生成 APA 与 BibTeX）。同时写明 `pyrpmd --version` 给出的版本（每次运行的 `manifest.json`
+也会记录）；未发布的检出还需注明 `git rev-parse HEAD` 给出的提交哈希。
+PyRPMD 目前没有期刊论文，不要用 RPMDrate、Caracal 或方法论文代替软件引用。
+
 本目录有意保留不同出处的身份：原始方法、后续修正、模型/数据、上游软件、公式或背景文献。
 **引用不等于完整实现或已完成复现**。组合流程分别引用各组成方法；外部接口只表明能调用该软件；
 通用解析控制模型、输入/检查点/并行/报告等工程功能没有唯一科学原始论文时，直接说明这一点。
 原始论文的具体版本、勘误及实现差别以各条目的范围说明为准。
 
+### 按工作流选择条目
+
+从下列条目收集一次计算需要引用的文献。常见起点：
+
+| 计算 | 应引用的条目 |
+| --- | --- |
+| 双分子 RPMD 速率（`rate`） | [rpm-rate](#rpm-rate)、[integrators](#integrators)、[samp-umbrella](#samp-umbrella)、[samp-ui](#samp-ui) 或 [samp-mbar](#samp-mbar)，以及势能面 |
+| 直接碰撞（`drpmd`） | [direct-rpmd](#direct-rpmd)、[integrators](#integrators)；选态初始条件另加 [state-rpmd](#state-rpmd) 或 [qct](#qct) |
+| 自由能面（`fes`） | 所用方法：[samp-umbrella](#samp-umbrella)、[samp-standard-meta](#samp-standard-meta)、[samp-wt-meta](#samp-wt-meta)、[samp-opes](#samp-opes)、[samp-ves](#samp-ves)、[samp-abf](#samp-abf) 或 [samp-steered](#samp-steered) |
+| 平衡 PIMD（`pimd`） | [pimd](#pimd)、所用热浴（[pile](#pile)、[gle](#gle)、[piglet](#piglet)、[nhc](#nhc)）；NPT 另加压浴（[bzp](#bzp)、[mtk](#mtk)、[scr](#scr)） |
+| 副本交换与回火 | [samp-reus](#samp-reus) 或 [samp-tempering](#samp-tempering) |
+| 路径采样（`path_sampling`） | [samp-tis](#samp-tis)、[samp-retis](#samp-retis)、[samp-infretis](#samp-infretis)、[samp-pptis](#samp-pptis) 或 [samp-ffs](#samp-ffs) |
+| 非绝热布居（`nonadiabatic`） | 所选方法条目，如 [na-nrpmd-focused](#na-nrpmd-focused)、[na-carp-mash](#na-carp-mash)、[na-ba-rp-mash](#na-ba-rp-mash)、[na-ms-mash](#na-ms-mash)、[na-iesh](#na-iesh) 或 [na-rpsh-ca](#na-rpsh-ca)，以及所用模型 |
+| 电化学 PCET（`pcet`） | [pcet](#pcet)，以及电极与环境模型 |
+| 外部力引擎与机器学习势 | 接口条目（[ase](#ase)、[openmm](#openmm)、[lammps](#lammps)、[ipi-socket](#ipi-socket)、[ml-adapters](#ml-adapters)）以及模型论文和所用 checkpoint |
+
 完整结构化目录和 BibTeX 位于仓库的
 [method-references.json](../../method-references.json) 与
-[references.bib](../../references.bib)。
+[references.bib](../../references.bib)。两种语言的本页及 BibTeX 均由
+`python tools/reference_catalog.py --write` 从 JSON 生成。
 
 ## 平衡统计、动力学、反应速率与光谱
 
@@ -30,7 +55,7 @@
 
 闭合环聚合物平衡采样；采样时间不是精确量子实时间。
 
-源码：[src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/dynamics.py), [src/pyrpmd/engine.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/engine.py), [src/pyrpmd/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/path_integral.py), [src/pyrpmd/workflows/native_pimd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/native_pimd.py)
+源码：[src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/dynamics.py), [src/pyrpmd/engine.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/engine.py), [src/pyrpmd/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/path_integral.py), [src/pyrpmd/workflows/native_pimd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/native_pimd.py)
 
 [该项复现任务](reproduction.md#task-pimd).
 
@@ -42,7 +67,7 @@
 
 用物理质量环聚合物动力学近似 Kubo 关联；检验 P=1 与谐振子线性可观测量极限。
 
-源码：[src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/dynamics.py), [src/pyrpmd/propagation.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/propagation.py), [src/pyrpmd/analysis/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/spectroscopy.py)
+源码：[src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/dynamics.py), [src/pyrpmd/propagation.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/propagation.py), [src/pyrpmd/analysis/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/spectroscopy.py)
 
 [该项复现任务](reproduction.md#task-rpmd).
 
@@ -54,7 +79,7 @@
 
 质心自由能/QTST 因子乘以动力学回穿系数，并处理入口通道归一化。
 
-源码：[src/pyrpmd/workflows/rate.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/rate.py), [src/pyrpmd/workflows/rate_pmf.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/rate_pmf.py), [src/pyrpmd/workflows/rate_recrossing.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/rate_recrossing.py), [src/pyrpmd/analysis/rate_pmf.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/rate_pmf.py)
+源码：[src/pyrpmd/workflows/rate.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/rate.py), [src/pyrpmd/workflows/rate_pmf.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/rate_pmf.py), [src/pyrpmd/workflows/rate_recrossing.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/rate_recrossing.py), [src/pyrpmd/analysis/rate_pmf.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/rate_pmf.py)
 
 [该项复现任务](reproduction.md#task-rpm-rate).
 
@@ -66,7 +91,7 @@
 
 热采样入射环聚合物，直接推进碰撞轨迹并统计截面、速率和反应通道。
 
-源码：[src/pyrpmd/workflows/drpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/drpmd.py), [src/pyrpmd/workflows/drpmd_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/drpmd_sampling.py), [src/pyrpmd/workflows/drpmd_classification.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/drpmd_classification.py), [src/pyrpmd/analysis/scattering.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/scattering.py)
+源码：[src/pyrpmd/workflows/drpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/drpmd.py), [src/pyrpmd/workflows/drpmd_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/drpmd_sampling.py), [src/pyrpmd/workflows/drpmd_classification.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/drpmd_classification.py), [src/pyrpmd/analysis/scattering.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/scattering.py)
 
 [该项复现任务](reproduction.md#task-direct-rpmd).
 
@@ -78,7 +103,7 @@
 
 冷谐振环加质心振动激发，可做 j=0 投影；辅助 β 与碰撞能、热温度不同。
 
-源码：[src/pyrpmd/initial_states.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/initial_states.py), [src/pyrpmd/workflows/state_selected.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/state_selected.py)
+源码：[src/pyrpmd/initial_states.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/initial_states.py), [src/pyrpmd/workflows/state_selected.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/state_selected.py)
 
 [该项复现任务](reproduction.md#task-state-rpmd).
 
@@ -90,7 +115,7 @@
 
 主工作流是 P=1 谐振初态；H₃ 基准另有 J(E)=v+1/2 和按运动时间均匀抽相位的全势能面双原子初始化。
 
-源码：[src/pyrpmd/initial_states.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/initial_states.py), [src/pyrpmd/workflows/state_selected.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/state_selected.py), [benchmarks/h3/diatomic_action.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/diatomic_action.py), [benchmarks/h3/state_preparation_study.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/state_preparation_study.py)
+源码：[src/pyrpmd/initial_states.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/initial_states.py), [src/pyrpmd/workflows/state_selected.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/state_selected.py), [benchmarks/h3/diatomic_action.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/diatomic_action.py), [benchmarks/h3/state_preparation_study.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/state_preparation_study.py)
 
 [该项复现任务](reproduction.md#task-qct).
 
@@ -102,7 +127,7 @@
 
 仓库自定义的制备哈密顿量到真实 PES 的平滑切换；NE-RPMD 文献仅作背景。
 
-源码：[benchmarks/h3/diatomic_switch.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/diatomic_switch.py), [benchmarks/h3/state_preparation_study.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/state_preparation_study.py)
+源码：[benchmarks/h3/diatomic_switch.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/diatomic_switch.py), [benchmarks/h3/state_preparation_study.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/state_preparation_study.py)
 
 [该项复现任务](reproduction.md#task-state-switch).
 
@@ -114,7 +139,7 @@
 
 物理质量的确定性环聚合物推进；分别使用直接 Verlet、解析自由环和 Cayley 自由环。
 
-源码：[src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/dynamics.py), [src/pyrpmd/propagation.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/propagation.py), [src/pyrpmd/torch_backend.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/torch_backend.py)
+源码：[src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/dynamics.py), [src/pyrpmd/propagation.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/propagation.py), [src/pyrpmd/torch_backend.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/torch_backend.py)
 
 [该项复现任务](reproduction.md#task-integrators).
 
@@ -126,7 +151,7 @@
 
 对称 Langevin 劈分；BCOCB 的 C 半步是整步 Cayley 映射的平方根。
 
-源码：[src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/dynamics.py), [src/pyrpmd/torch_backend.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/torch_backend.py), [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+源码：[src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/dynamics.py), [src/pyrpmd/torch_backend.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/torch_backend.py), [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 [该项复现任务](reproduction.md#task-stochastic-integrators).
 
@@ -138,7 +163,7 @@
 
 分别实现全局 Maxwell 重抽样、精确 OU 热浴及包含符号和零动能分支的正则速度缩放。
 
-源码：[src/pyrpmd/thermostats.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/thermostats.py), [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py), [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/dynamics.py)
+源码：[src/pyrpmd/thermostats.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/thermostats.py), [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py), [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/dynamics.py)
 
 [该项复现任务](reproduction.md#task-classical-baths).
 
@@ -150,7 +175,7 @@
 
 PILE-L 按环频率设局域摩擦；PILE-G 对内模用 PILE、质心用全局随机速度缩放。 内模摩擦按环频率设定，质心耦合单独设置，不能从零频模推断质心无热浴。
 
-源码：[src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/dynamics.py), [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+源码：[src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/dynamics.py), [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 [该项复现任务](reproduction.md#task-pile).
 
@@ -162,7 +187,7 @@ PILE-L 按环频率设局域摩擦；PILE-G 对内模用 PILE、质心用全局�
 
 全局链加三阶段 Suzuki–Yoshida 组合；Python/native 共用质量和自由度约定。
 
-源码：[src/pyrpmd/thermostats.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/thermostats.py), [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+源码：[src/pyrpmd/thermostats.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/thermostats.py), [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 [该项复现任务](reproduction.md#task-nhc).
 
@@ -174,7 +199,7 @@ PILE-L 按环频率设局域摩擦；PILE-G 对内模用 PILE、质心用全局�
 
 使用显式稳定漂移矩阵和协方差矩阵的扩展变量 OU 更新，可组合质心 SVR。
 
-源码：[src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+源码：[src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 [该项复现任务](reproduction.md#task-gle).
 
@@ -186,7 +211,7 @@ PILE-L 按环频率设局域摩擦；PILE-G 对内模用 PILE、质心用全局�
 
 NVT 正常模 GLE，要求矩阵分别匹配逆温度 β 和珠数 P 并记录来源；没有内置标定表。
 
-源码：[src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+源码：[src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 [该项复现任务](reproduction.md#task-piglet).
 
@@ -198,7 +223,7 @@ NVT 正常模 GLE，要求矩阵分别匹配逆温度 β 和珠数 P 并记录�
 
 native 路线保留动量方向并更新其模长。
 
-源码：[src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+源码：[src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 [该项复现任务](reproduction.md#task-ffl).
 
@@ -210,7 +235,7 @@ native 路线保留动量方向并更新其模长。
 
 Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间投影。
 
-源码：[src/pyrpmd/bond_constraints.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/bond_constraints.py), [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/dynamics.py)
+源码：[src/pyrpmd/bond_constraints.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/bond_constraints.py), [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/dynamics.py)
 
 [该项复现任务](reproduction.md#task-constraints).
 
@@ -222,7 +247,7 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 低频珠模式收缩慢力，配合两层 r-RESPA；采用参考势校正方案时，慢势为目标势减参考势。
 
-源码：[src/pyrpmd/potentials/contraction.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/contraction.py), [src/pyrpmd/multitime.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/multitime.py), [src/pyrpmd/propagation.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/propagation.py)
+源码：[src/pyrpmd/potentials/contraction.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/contraction.py), [src/pyrpmd/multitime.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/multitime.py), [src/pyrpmd/propagation.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/propagation.py)
 
 [该项复现任务](reproduction.md#task-rpc-mts).
 
@@ -234,7 +259,7 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 独立 PACMDDynamics 用内模虚质量、物理质心质量和自由环精确 BAOAB 推进。
 
-源码：[src/pyrpmd/cmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/cmd.py), [src/pyrpmd/workflows/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/spectroscopy.py)
+源码：[src/pyrpmd/cmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/cmd.py), [src/pyrpmd/workflows/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/spectroscopy.py)
 
 [该项复现任务](reproduction.md#task-pacmd).
 
@@ -246,9 +271,21 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 导出质心/珠平均物理力，拟合局域二次保守质心势，并记录训练温度；IBI 只是更新模块。
 
-源码：[src/pyrpmd/cmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/cmd.py)
+源码：[src/pyrpmd/cmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/cmd.py)
 
 [该项复现任务](reproduction.md#task-fcmd).
+
+### qcmd
+
+**弯曲三原子分子的实验性 f-QCMD**
+
+出处：[qcmd2019](#qcmd2019), [fqcmd2021](#fqcmd2021), [cmd94](#cmd94)
+
+对非周期、固定拓扑的弯曲三原子分子，用珠平均键长/键角定义准质心；以迭代 Boltzmann 反演拟合可分离修正势；光谱工作流以 method="f-qcmd"、beads=1 运行经典动力学。约束 PIMD API 在固定平均内坐标下做平衡采样。实时间绝热 QCMD 与 h-CMD 未实现，会明确报错。
+
+源码：[src/pyrpmd/qcmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/qcmd.py), [src/pyrpmd/_qcmd_geometry.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/_qcmd_geometry.py), [src/pyrpmd/_qcmd_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/_qcmd_sampling.py), [src/pyrpmd/workflows/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/spectroscopy.py)
+
+[该项复现任务](reproduction.md#task-qcmd).
 
 ### trpmd
 
@@ -258,7 +295,7 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 内模摩擦、质心不温控；按 βω² 的 Kubo 偶极关联算相对 IR，不再叠加谐振量子修正。
 
-源码：[src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/dynamics.py), [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py), [src/pyrpmd/analysis/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/spectroscopy.py), [src/pyrpmd/workflows/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/spectroscopy.py)
+源码：[src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/dynamics.py), [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py), [src/pyrpmd/analysis/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/spectroscopy.py), [src/pyrpmd/workflows/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/spectroscopy.py)
 
 [该项复现任务](reproduction.md#task-trpmd).
 
@@ -270,7 +307,7 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 可用内模温控轨迹检查速率对摩擦的敏感性。
 
-源码：[src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/dynamics.py), [src/pyrpmd/workflows/rate_recrossing.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/rate_recrossing.py)
+源码：[src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/dynamics.py), [src/pyrpmd/workflows/rate_recrossing.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/rate_recrossing.py)
 
 [该项复现任务](reproduction.md#task-trpmd-rates).
 
@@ -282,7 +319,7 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 极化率张量关联分解为标量与无迹张量，明确 VV/VH 权重、Kubo→Stokes 及激光频率因子。
 
-源码：[src/pyrpmd/analysis/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/spectroscopy.py), [src/pyrpmd/properties.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/properties.py)
+源码：[src/pyrpmd/analysis/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/spectroscopy.py), [src/pyrpmd/properties.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/properties.py)
 
 [该项复现任务](reproduction.md#task-raman).
 
@@ -294,7 +331,7 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 由偶极—极化率关联构造因果 R(t)=−βdC/dt，保留带符号 Imχ 和复振幅相干平均。
 
-源码：[src/pyrpmd/analysis/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/spectroscopy.py), [src/pyrpmd/properties.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/properties.py)
+源码：[src/pyrpmd/analysis/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/spectroscopy.py), [src/pyrpmd/properties.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/properties.py)
 
 [该项复现任务](reproduction.md#task-sfg).
 
@@ -306,7 +343,7 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 原始/TI 闭合路径迹作用量，以内模 pCN 和质心 Metropolis 采样；MC 步不是实时间。
 
-源码：[src/pyrpmd/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/path_integral.py)
+源码：[src/pyrpmd/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/path_integral.py)
 
 [该项复现任务](reproduction.md#task-ti-pcn).
 
@@ -318,7 +355,7 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 对指定迹作用量取 β 导数，并可使用缩放坐标有限差分 virial 估计及分块误差。
 
-源码：[src/pyrpmd/quantum_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/quantum_statistics.py)
+源码：[src/pyrpmd/quantum_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/quantum_statistics.py)
 
 [该项复现任务](reproduction.md#task-thermo-estimators).
 
@@ -330,7 +367,7 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 热力学/缩放坐标 FEP、两环境分馏比及沿质量的动能热力学积分，并检查权重重叠。
 
-源码：[src/pyrpmd/quantum_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/quantum_statistics.py)
+源码：[src/pyrpmd/quantum_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/quantum_statistics.py)
 
 [该项复现任务](reproduction.md#task-isotopes).
 
@@ -342,7 +379,7 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 直接采样开链端点位移并 Fourier 得到一个 Cartesian 分量的 n(p)，带 KDE/分块 jackknife 诊断。
 
-源码：[src/pyrpmd/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/path_integral.py), [src/pyrpmd/quantum_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/quantum_statistics.py)
+源码：[src/pyrpmd/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/path_integral.py), [src/pyrpmd/quantum_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/quantum_statistics.py)
 
 [该项复现任务](reproduction.md#task-momentum).
 
@@ -354,7 +391,7 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 偶数珠交替权重与沿 F/m 的对称有限差分力梯度；Python 可选 α，CLI 当前限 α=0。
 
-源码：[src/pyrpmd/pimd_methods.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pimd_methods.py), [src/pyrpmd/workflows/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/path_integral.py)
+源码：[src/pyrpmd/pimd_methods.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pimd_methods.py), [src/pyrpmd/workflows/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/path_integral.py), [src/pyrpmd/suzuki_chin.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/suzuki_chin.py)
 
 [该项复现任务](reproduction.md#task-suzuki-chin).
 
@@ -366,7 +403,7 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 同质量交换组的 Feldman–Hirshberg O(N²+PN) 递推，使用代表循环并测量对称量。
 
-源码：[src/pyrpmd/pimd_methods.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pimd_methods.py), [src/pyrpmd/workflows/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/path_integral.py)
+源码：[src/pyrpmd/pimd_methods.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pimd_methods.py), [src/pyrpmd/workflows/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/path_integral.py)
 
 [该项复现任务](reproduction.md#task-bosons).
 
@@ -378,7 +415,7 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 奇数珠开链、端点半势权重和正 Gaussian/自定义正试探波函数；中点测量投影基态。
 
-源码：[src/pyrpmd/pimd_methods.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pimd_methods.py), [src/pyrpmd/workflows/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/path_integral.py)
+源码：[src/pyrpmd/pimd_methods.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pimd_methods.py), [src/pyrpmd/workflows/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/path_integral.py)
 
 [该项复现任务](reproduction.md#task-pigs).
 
@@ -390,7 +427,7 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 优化驻定虚时间路径，计算半经典涨落行列式/前因子、谐振反应物归一化及负/零模；气相速率可声明外部刚体模。
 
-源码：[src/pyrpmd/instanton.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/instanton.py), [src/pyrpmd/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/low_temperature.py)
+源码：[src/pyrpmd/instanton.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/instanton.py), [src/pyrpmd/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/low_temperature.py)
 
 [该项复现任务](reproduction.md#task-rpi).
 
@@ -402,7 +439,7 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 单 kink、孤立对称束缚或明确约束双态的半经典劈裂。
 
-源码：[src/pyrpmd/tunnelling.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/tunnelling.py), [src/pyrpmd/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/low_temperature.py)
+源码：[src/pyrpmd/tunnelling.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/tunnelling.py), [src/pyrpmd/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/low_temperature.py)
 
 [该项复现任务](reproduction.md#task-splitting).
 
@@ -414,7 +451,7 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 经典/量子谐振 TST、Wigner 低阶修正和非对称 Eckart 透射热积分，并明确零点能/势垒约定。
 
-源码：[src/pyrpmd/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/low_temperature.py)
+源码：[src/pyrpmd/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/low_temperature.py)
 
 [该项复现任务](reproduction.md#task-low-t-checks).
 
@@ -428,7 +465,7 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 实现静态谐和伞势、CV Jacobian 与环聚合物能量缩放。Torrie–Valleau 原论文提供重要性采样原理，不是本包动力学引擎的逐项实现。
 
-源码：[src/pyrpmd/bias.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/bias.py), [src/pyrpmd/workflows/fes.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/fes.py)
+源码：[src/pyrpmd/bias.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/bias.py), [src/pyrpmd/workflows/fes.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/fes.py)
 
 [该项复现任务](reproduction.md#task-samp-umbrella).
 
@@ -440,7 +477,7 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 直接以 SciPy 求解 MBAR，再用目标权重生成直方图 FES；不是另一个 WHAM 求解器。当前误差路径是 bootstrap，不能由此声称实现原文全部渐近协方差公式。
 
-源码：[src/pyrpmd/analysis/mbar.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/mbar.py), [src/pyrpmd/analysis/fes.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/fes.py), [src/pyrpmd/analysis/umbrella.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/umbrella.py)
+源码：[src/pyrpmd/analysis/mbar.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/mbar.py), [src/pyrpmd/analysis/fes.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/fes.py), [src/pyrpmd/analysis/umbrella.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/umbrella.py)
 
 [该项复现任务](reproduction.md#task-samp-mbar).
 
@@ -452,7 +489,7 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 实现一维高斯窗口近似，并按 RPMDrate 数学形式移植；不包括后续高阶或多维伞形积分。
 
-源码：[src/pyrpmd/analysis/umbrella.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/umbrella.py), [src/pyrpmd/analysis/rate_pmf.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/rate_pmf.py)
+源码：[src/pyrpmd/analysis/umbrella.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/umbrella.py), [src/pyrpmd/analysis/rate_pmf.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/rate_pmf.py)
 
 [该项复现任务](reproduction.md#task-samp-ui).
 
@@ -464,7 +501,7 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 本包以归一化 MBAR 重叠图、窗口中点和覆盖缺口补点，保持刚度；pilot 后重新生成 production。OGRe 仅提供对照模型，其刚度细化和 confinement/consistency 判据未完整实现。
 
-源码：[src/pyrpmd/workflows/adaptive_umbrella.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/adaptive_umbrella.py), [src/pyrpmd/analysis/fes_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/fes_statistics.py)
+源码：[src/pyrpmd/workflows/adaptive_umbrella.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/adaptive_umbrella.py), [src/pyrpmd/analysis/fes_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/fes_statistics.py)
 
 [该项复现任务](reproduction.md#task-samp-adaptive).
 
@@ -476,7 +513,7 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 高斯历史偏置与有限时间 −V 自由能估计。Laio–Parrinello 提供方法起源，本包直接在 MD 工作流沉积偏置。
 
-源码：[src/pyrpmd/bias.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/bias.py), [src/pyrpmd/workflows/metadynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/metadynamics.py), [src/pyrpmd/analysis/metadynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/metadynamics.py)
+源码：[src/pyrpmd/bias.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/bias.py), [src/pyrpmd/workflows/metadynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/metadynamics.py), [src/pyrpmd/analysis/metadynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/metadynamics.py)
 
 [该项复现任务](reproduction.md#task-samp-standard-meta).
 
@@ -488,7 +525,7 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 按偏置指数衰减 hill 高度，以 −γV/(γ−1) 估计自由能；bias_fes 不实现带 c(t) 的时间依赖轨迹重加权。
 
-源码：[src/pyrpmd/bias.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/bias.py), [src/pyrpmd/workflows/metadynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/metadynamics.py), [src/pyrpmd/analysis/metadynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/metadynamics.py)
+源码：[src/pyrpmd/bias.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/bias.py), [src/pyrpmd/workflows/metadynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/metadynamics.py), [src/pyrpmd/analysis/metadynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/metadynamics.py)
 
 [该项复现任务](reproduction.md#task-samp-wt-meta).
 
@@ -498,9 +535,9 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 出处：[samp-walkers2006](#samp-walkers2006), [samp-wt2008](#samp-wt2008)
 
-两种同步调度共享高斯历史；共享同一偏置的行者在统计上相关。同步、重启协议是项目工程，原文 WHAM superposition 后处理未一并实现。
+以 walkers_mode=serial、mpi-sync（每个 MPI rank 一个行者、按 rank 顺序同步批次、单一原子性系综 checkpoint）或 async-files（每个行者追加日志、最终合并）共享高斯（MetaD）或核（OPES）历史。共享同一偏置的行者在统计上相关；同步与重启协议是项目工程，原文 WHAM superposition 后处理未一并实现。
 
-源码：[src/pyrpmd/shared_metadynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/shared_metadynamics.py), [src/pyrpmd/workflows/shared_metadynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/shared_metadynamics.py)
+源码：[src/pyrpmd/shared_metadynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/shared_metadynamics.py), [src/pyrpmd/workflows/shared_metadynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/shared_metadynamics.py), [src/pyrpmd/walker_exchange.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/walker_exchange.py), [src/pyrpmd/workflows/_distributed_meta_mpi.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/_distributed_meta_mpi.py), [src/pyrpmd/workflows/_distributed_meta_async.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/_distributed_meta_async.py), [src/pyrpmd/workflows/_distributed_opes_mpi.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/_distributed_opes_mpi.py), [src/pyrpmd/workflows/_distributed_opes_async.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/_distributed_opes_async.py)
 
 [该项复现任务](reproduction.md#task-samp-walkers).
 
@@ -512,7 +549,7 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 网格插值、导数和带 bin 体积的 Boltzmann 边际化，是既有偏置与 FES 的数值表示，没有单独原创方法论文；缺失支持的掩膜投影不是 hill filtering。
 
-源码：[src/pyrpmd/bias.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/bias.py), [src/pyrpmd/analysis/projection.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/projection.py)
+源码：[src/pyrpmd/bias.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/bias.py), [src/pyrpmd/analysis/projection.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/projection.py)
 
 [该项复现任务](reproduction.md#task-samp-grid-meta).
 
@@ -524,7 +561,7 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 默认固定宽度，用未压缩且归一化的周期包裹高斯 KDE 与中心采样 Z 估计；冻结偏置后的直方图用 exp(βV)，不扣时间依赖 c(t)。
 
-源码：[src/pyrpmd/opes.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/opes.py), [src/pyrpmd/workflows/opes.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/opes.py)
+源码：[src/pyrpmd/opes.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/opes.py), [src/pyrpmd/workflows/opes.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/opes.py)
 
 [该项复现任务](reproduction.md#task-samp-opes).
 
@@ -536,9 +573,45 @@ Verlet 旧梯度 SHAKE 位移与动量脉冲，随后做 RATTLE 速度切空间�
 
 explore 使用等权目标分布 KDE 与 (γ−1)/β 系数。可选 Welford/Scott-ESS 宽度更新是本包明确规则，区别于 PLUMED diffusion-window 规则。
 
-源码：[src/pyrpmd/opes.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/opes.py), [src/pyrpmd/workflows/opes.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/opes.py)
+源码：[src/pyrpmd/opes.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/opes.py), [src/pyrpmd/workflows/opes.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/opes.py)
 
 [该项复现任务](reproduction.md#task-samp-opes-explore).
+
+### samp-ves
+
+**质心 CV 上的变分增强采样（VES）**
+
+出处：[samp-ves2014](#samp-ves2014), [samp-wtves2015](#samp-wtves2015)
+
+fes.method="ves" 在一或两个非周期质心 CV 上优化张量积 Legendre 线性偏置，采用带完整协方差 Hessian 的平均随机梯度下降；均匀或 well-tempered 目标用 Gauss–Legendre 积分；冻结偏置生产与重加权输出通用 FESResult。不是 PLUMED VES 接口，不与其他基组、周期 CV、压浴或副本交换组合。
+
+源码：[src/pyrpmd/ves.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/ves.py), [src/pyrpmd/workflows/ves.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/ves.py)
+
+[该项复现任务](reproduction.md#task-samp-ves).
+
+### samp-abf
+
+**质心 ABF 与扩展系统 ABF（CZAR）**
+
+出处：[samp-abf2001](#samp-abf2001), [samp-abf2008](#samp-abf2008), [samp-abfproj2015](#samp-abfproj2015), [samp-eabf2017](#samp-eabf2017)
+
+fes.method="abf"/"eabf" 适用于一或两个非周期、Jacobian 行满秩的质心 CV。局部平均力由全环 Jacobian 与带线性 ramp 的质量加权对偶场给出；一维沿边积分、二维最小二乘 Helmholtz 投影得到 FES。eABF 对谐振耦合的虚拟变量施加偏置，并用 CZAR 重构 FES。要求全部原子可动并使用正则热浴；拒绝固定原子、周期胞/CV、压浴、副本交换和速率通量测度。
+
+源码：[src/pyrpmd/abf.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/abf.py), [src/pyrpmd/workflows/abf.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/abf.py)
+
+[该项复现任务](reproduction.md#task-samp-abf).
+
+### samp-steered
+
+**质心拉伸动力学（steered MD）与非平衡功估计**
+
+出处：[samp-jarzynski1997](#samp-jarzynski1997), [samp-crooks1999](#samp-crooks1999), [samp-bar1976](#samp-bar1976), [samp-shadow2013](#samp-shadow2013)
+
+fes.method="steered" 沿正向和/或反向移动质心谐振约束，用 Jarzynski 或 Crooks/Bennett 接受比方程估计受约束端点间的自由能差。功按 H_P/P 计，总功 = 协议功 + 有限步长 shadow work，不含热浴热量。不生成 FESResult 网格，未实现 Hummer–Szabo 无偏 PMF 重构。
+
+源码：[src/pyrpmd/steered.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/steered.py), [src/pyrpmd/workflows/steered.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/steered.py)
+
+[该项复现任务](reproduction.md#task-samp-steered).
 
 ### samp-reus
 
@@ -548,7 +621,7 @@ explore 使用等权目标分布 KDE 与 (γ−1)/β 系数。可选 Welford/Sco
 
 固定一维/二维伞窗间交换完整环构型，使用 β/P 测度和 P 倍伞势；该工作流不进行温度交换。
 
-源码：[src/pyrpmd/workflows/replica_exchange.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/replica_exchange.py)
+源码：[src/pyrpmd/workflows/replica_exchange.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/replica_exchange.py)
 
 [该项复现任务](reproduction.md#task-samp-reus).
 
@@ -558,11 +631,23 @@ explore 使用等权目标分布 KDE 与 (γ−1)/β 系数。可选 Welford/Sco
 
 出处：[samp-remd1999](#samp-remd1999), [samp-reus2000](#samp-reus2000)
 
-串行 Python 引擎，对目标温度重新计算环弹簧作用并缩放动量；没有独立 CLI 任务、持久 checkpoint 或 MPI 调度。
+串行 Python 引擎，对目标温度重新计算环弹簧作用并缩放动量；带 checkpoint 与 MPI 的可续跑 [tempering] 输入工作流见单独条目 samp-tempering。
 
-源码：[src/pyrpmd/replica_exchange.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/replica_exchange.py)
+源码：[src/pyrpmd/replica_exchange.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/replica_exchange.py)
 
 [该项复现任务](reproduction.md#task-samp-remd).
+
+### samp-tempering
+
+**可续跑的并行回火与哈密顿量副本交换工作流**
+
+出处：[samp-pt1996](#samp-pt1996), [samp-remd1999](#samp-remd1999), [samp-reus2000](#samp-reus2000), [samp-mbar2008](#samp-mbar2008)
+
+[tempering] 用于 task="pimd" 与部分 task="fes" 输入：显式或几何温度梯以及哈密顿量梯。交换计算所有状态的约化势（含各目标温度的环弹簧作用），动量按 sqrt(beta_i/beta_j) 缩放。按状态保存轨迹，报告接受率、往返、状态空间扩散与 MBAR 重叠；PIMD 估计量对每个目标状态重新计算。串行、进程与 MPI 执行顺序一致；与同温 [replica_exchange] REUS 相互独立。
+
+源码：[src/pyrpmd/workflows/tempering.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/tempering.py), [src/pyrpmd/replica_exchange.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/replica_exchange.py)
+
+[该项复现任务](reproduction.md#task-samp-tempering).
 
 ### samp-biased-clock
 
@@ -572,7 +657,7 @@ explore 使用等权目标分布 KDE 与 (γ−1)/β 系数。可选 Welford/Sco
 
 后处理 API 按积分区间计算 exp[β(V−V_TS)] 时钟，支持删失曝光的指数 MLE 和重新拟合的 KS bootstrap；不是原生 infrequent-MetaD/OPES-flooding 生产工作流。
 
-源码：[src/pyrpmd/biased_kinetics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/biased_kinetics.py)
+源码：[src/pyrpmd/biased_kinetics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/biased_kinetics.py)
 
 [该项复现任务](reproduction.md#task-samp-biased-clock).
 
@@ -584,21 +669,57 @@ explore 使用等权目标分布 KDE 与 (γ−1)/β 系数。可选 Welford/Sco
 
 Python API 使用确定性实质量环动力学，均匀选择 shooting frame 并重抽全部正则动量；路径有有限长度上限，绝对速率还需独立匹配的有效通量。
 
-源码：[src/pyrpmd/transition_interface.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/transition_interface.py)
+源码：[src/pyrpmd/transition_interface.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/transition_interface.py)
 
 [该项复现任务](reproduction.md#task-samp-tis).
 
 ### samp-retis
 
-**正界面系综的交换式 TIS**
+**可选 minus 系综的交换式 TIS**
 
 出处：[samp-retis2007](#samp-retis2007), [samp-tis2003](#samp-tis2003)
 
-交换相同动力学下的正界面路径系综并保留拒绝/重复路径；不含 minus 界面通量系综、异步或无限交换。
+交换相同动力学下的界面路径系综并保留拒绝/重复路径。minus=true 增加 [0-] 及 [0-]<->[0+] 交换，并由停留时间在内部估计有效通量；否则需要匹配的外部通量。提供持久 checkpoint 与 task="path_sampling"；异步无限交换见单独条目 samp-infretis。
 
-源码：[src/pyrpmd/retis.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/retis.py)
+源码：[src/pyrpmd/retis.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/retis.py), [src/pyrpmd/workflows/path_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/path_sampling.py)
 
 [该项复现任务](reproduction.md#task-samp-retis).
+
+### samp-pptis
+
+**部分路径 TIS（PPTIS）与 REPPTIS**
+
+出处：[samp-pptis2004](#samp-pptis2004), [samp-repptis2023](#samp-repptis2023), [samp-tis2003](#samp-tis2003)
+
+以三界面局部路径系综和记忆约化递推计算跨越概率；REPPTIS 在相邻路径系综间增加副本交换。提供 Python API 与 task="path_sampling"，带持久 checkpoint。记忆丢失假设须用界面间距与完整 TIS 对照检验。
+
+源码：[src/pyrpmd/pptis.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pptis.py), [src/pyrpmd/workflows/path_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/path_sampling.py)
+
+[该项复现任务](reproduction.md#task-samp-pptis).
+
+### samp-ffs
+
+**直接前向通量采样（FFS）**
+
+出处：[samp-ffs2005](#samp-ffs2005), [samp-ffs2009](#samp-ffs2009)
+
+对显式提供的平稳、时间齐次 Markov 步进回调 step(state, rng) 逐界面分裂：由 A 区历史得到通量、由试验得到条件概率，带持久 checkpoint，也可经 task="path_sampling" 运行。不需要逆向动力学；采样器不替用户选择热浴或物理过程。
+
+源码：[src/pyrpmd/ffs.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/ffs.py), [src/pyrpmd/workflows/path_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/path_sampling.py)
+
+[该项复现任务](reproduction.md#task-samp-ffs).
+
+### samp-infretis
+
+**异步无限交换 RETIS（∞RETIS）**
+
+出处：[samp-infretis2022](#samp-infretis2022), [samp-infretis2024](#samp-infretis2024), [samp-retis2007](#samp-retis2007)
+
+exchange="infinite" 以精确的积和式比值边缘概率把空闲路径分配给空闲正界面系综，嵌套界面下用二次复杂度递推计算。异步进程执行器配合系综锁与按票据顺序提交，保证精确续跑；minus 系综单独成块。保留完整 Maxwell 双向 shooting；未实现 2024 年子轨迹移动、MPI 与 bead/GPU 工作池。
+
+源码：[src/pyrpmd/infinite_retis.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/infinite_retis.py), [src/pyrpmd/parallel/path_executor.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/parallel/path_executor.py), [src/pyrpmd/workflows/path_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/path_sampling.py)
+
+[该项复现任务](reproduction.md#task-samp-infretis).
 
 ### samp-committor
 
@@ -608,7 +729,7 @@ Python API 使用确定性实质量环动力学，均匀选择 shooting frame �
 
 固定所有 bead 坐标，独立重抽正则动量并传播无偏确定性 first-hit 轨迹。P=1 是经典构型 committor；P>1 是近似 RPMD committor，未决轨迹用精确二项区间构造保守包络。
 
-源码：[src/pyrpmd/committor.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/committor.py)
+源码：[src/pyrpmd/committor.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/committor.py)
 
 [该项复现任务](reproduction.md#task-samp-committor).
 
@@ -620,9 +741,21 @@ Python API 使用确定性实质量环动力学，均匀选择 shooting frame �
 
 加权 proper Kabsch 对齐、显式尺度的平滑 s/z 路径变量。二面角、配位数和周期仿射 CV 是数学构件；TorchScript 仅提供用户模型值/导数，不包含学习 CV 的训练方法。
 
-源码：[src/pyrpmd/advanced_cv.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/advanced_cv.py)
+源码：[src/pyrpmd/advanced_cv.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/advanced_cv.py)
 
 [该项复现任务](reproduction.md#task-samp-pathcv).
+
+### samp-mlcolvar
+
+**mlcolvar 学习的质心 CV（Deep-LDA / Deep-TICA，TorchScript 部署）**
+
+出处：[samp-mlcolvar2023](#samp-mlcolvar2023), [samp-deeplda2020](#samp-deeplda2020), [samp-deeptica2021](#samp-deeptica2021)
+
+训练在外部 mlcolvar 库中完成；PyRPMD 用 TorchScriptCV 求值导出的 CPU float64 TorchScript 图（预处理、网络与投影），包括笛卡尔导数和环珠缩放。依赖可选；部署检查不能证明 CV 质量。
+
+源码：[src/pyrpmd/advanced_cv.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/advanced_cv.py)
+
+[该项复现任务](reproduction.md#task-samp-mlcolvar).
 
 ### samp-string
 
@@ -632,9 +765,21 @@ Python API 使用确定性实质量环动力学，均匀选择 shooting frame �
 
 固定端点的梯度松弛、重参数化和插点；需要调用者提供一致的自由能梯度。约束扩展仍用缩放欧氏几何，没有完整一般非线性 CV 的 MFEP 度量和条件项。
 
-源码：[src/pyrpmd/adaptive_string.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/adaptive_string.py), [src/pyrpmd/adaptive_nrpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/adaptive_nrpmd.py)
+源码：[src/pyrpmd/adaptive_string.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/adaptive_string.py), [src/pyrpmd/adaptive_nrpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/adaptive_nrpmd.py)
 
 [该项复现任务](reproduction.md#task-samp-string).
+
+### samp-ft-string
+
+**质心 CV 空间中的有限温度弦方法**
+
+出处：[samp-fts2005](#samp-fts2005), [samp-stringcv2006](#samp-stringcv2006)
+
+在质心 CV 上做约束采样，使用平均 CV 质量度规、块诊断、固定端点的路径更新与精确的迭代边界重放，并复用已有弧长重参数化。像数和端点固定；限非周期、导数满秩的质心 CV。有限约束刚度下得到的是平滑化自由能路径。
+
+源码：[src/pyrpmd/finite_temperature_string.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/finite_temperature_string.py), [src/pyrpmd/adaptive_string.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/adaptive_string.py)
+
+[该项复现任务](reproduction.md#task-samp-ft-string).
 
 ### samp-prfo
 
@@ -644,7 +789,7 @@ Python API 使用确定性实质量环动力学，均匀选择 shooting frame �
 
 每次生成有限差分 Hessian，分别求上坡/下坡增广本征问题并限制步长；两侧下降仅作连通性诊断，不是经过认证的量子化学 IRC。
 
-源码：[src/pyrpmd/workflows/saddle.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/saddle.py), [src/pyrpmd/workflows/prepare.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/prepare.py)
+源码：[src/pyrpmd/workflows/saddle.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/saddle.py), [src/pyrpmd/workflows/prepare.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/prepare.py)
 
 [该项复现任务](reproduction.md#task-samp-prfo).
 
@@ -656,7 +801,7 @@ Python API 使用确定性实质量环动力学，均匀选择 shooting frame �
 
 实现能量加权切向、攀爬像和 FIRE；当前端到端 rate preparation 面向非周期分子笛卡尔体系，不能直接承担原论文表面 slab 计算。
 
-源码：[src/pyrpmd/workflows/neb.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/neb.py)
+源码：[src/pyrpmd/workflows/neb.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/neb.py)
 
 [该项复现任务](reproduction.md#task-samp-cineb).
 
@@ -668,7 +813,7 @@ Python API 使用确定性实质量环动力学，均匀选择 shooting frame �
 
 采用 Cordero 的 H–Cm 半径表，加本包 bond_scale=1.25 阈值和用户覆盖；这是近似图分类，不是电子键级模型。
 
-源码：[src/pyrpmd/covalent.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/covalent.py), [src/pyrpmd/workflows/prepare.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/prepare.py)
+源码：[src/pyrpmd/covalent.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/covalent.py), [src/pyrpmd/workflows/prepare.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/prepare.py)
 
 [该项复现任务](reproduction.md#task-samp-connectivity).
 
@@ -680,7 +825,7 @@ Python API 使用确定性实质量环动力学，均匀选择 shooting frame �
 
 将受约束父样本转换为条件系综权重，并检验坐标重参数化不变性；属于 RPMD 速率理论组合，不等于实现全部 blue-moon 热力学积分变体。
 
-源码：[src/pyrpmd/workflows/rate_constraints.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/rate_constraints.py), [src/pyrpmd/cv.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/cv.py), [src/pyrpmd/cv_periodic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/cv_periodic.py)
+源码：[src/pyrpmd/workflows/rate_constraints.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/rate_constraints.py), [src/pyrpmd/cv.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/cv.py), [src/pyrpmd/cv_periodic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/cv_periodic.py)
 
 [该项复现任务](reproduction.md#task-samp-metric).
 
@@ -692,7 +837,7 @@ Python API 使用确定性实质量环动力学，均匀选择 shooting frame �
 
 基于 flux-over-population / Bennett–Chandler RPMD 的项目扩展；需要同时引用核心速率论文。FES 概率密度测度与速率通量测度具有不同因子，没有独立离线管线原创论文。
 
-源码：[src/pyrpmd/analysis/rate_postprocess.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/rate_postprocess.py), [src/pyrpmd/analysis/rate_io.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/rate_io.py), [src/pyrpmd/analysis/bond_flux.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/bond_flux.py), [src/pyrpmd/analysis/bond_rate.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/bond_rate.py), [src/pyrpmd/analysis/entrance.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/entrance.py)
+源码：[src/pyrpmd/analysis/rate_postprocess.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/rate_postprocess.py), [src/pyrpmd/analysis/rate_io.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/rate_io.py), [src/pyrpmd/analysis/bond_flux.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/bond_flux.py), [src/pyrpmd/analysis/bond_rate.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/bond_rate.py), [src/pyrpmd/analysis/entrance.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/entrance.py)
 
 [该项复现任务](reproduction.md#task-samp-rate-postprocess).
 
@@ -704,7 +849,7 @@ Python API 使用确定性实质量环动力学，均匀选择 shooting frame �
 
 循环块重采样依照 Politis–Romano；正相邻对截断仅是相关诊断。CV/平方/周期谐波探针、ceil(5g) 和 N/2 上限是项目规则，交换窗口与出口通道保持共同重采样时钟。
 
-源码：[src/pyrpmd/analysis/fes_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/fes_statistics.py), [src/pyrpmd/analysis/recrossing.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/recrossing.py)
+源码：[src/pyrpmd/analysis/fes_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/fes_statistics.py), [src/pyrpmd/analysis/recrossing.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/recrossing.py)
 
 [该项复现任务](reproduction.md#task-samp-statistics).
 
@@ -716,7 +861,7 @@ Python API 使用确定性实质量环动力学，均匀选择 shooting frame �
 
 连接外部 PLUMED kernel，不能视为内部实现全部 PLUMED action；实际使用时同时引用软件及 plumed.dat 选择的每个 CV/偏置算法。
 
-源码：[src/pyrpmd/plumed.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/plumed.py), [src/pyrpmd/workflows/biased_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/biased_sampling.py)
+源码：[src/pyrpmd/plumed.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/plumed.py), [src/pyrpmd/workflows/biased_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/biased_sampling.py)
 
 [该项复现任务](reproduction.md#task-samp-plumed).
 
@@ -730,7 +875,7 @@ Python API 使用确定性实质量环动力学，均匀选择 shooting frame �
 
 每个核 bead 配一组 MMST 变量，支持多电子态实/复 Hermitian 矩阵。采用 focused 初始电子态和有符号、未裁剪的布居估计量；不包括 PLDM、SQC，也不等同于 SEO 热平衡采样。
 
-源码：[src/pyrpmd/nonadiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/nonadiabatic.py), [src/pyrpmd/nonadiabatic_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/nonadiabatic_ensemble.py), [src/pyrpmd/workflows/nonadiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/nonadiabatic.py)
+源码：[src/pyrpmd/nonadiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/nonadiabatic.py), [src/pyrpmd/nonadiabatic_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/nonadiabatic_ensemble.py), [src/pyrpmd/workflows/nonadiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/nonadiabatic.py)
 
 [该项复现任务](reproduction.md#task-na-nrpmd-focused).
 
@@ -742,7 +887,7 @@ Python API 使用确定性实质量环动力学，均匀选择 shooting frame �
 
 固定核位置时精确传播电子映射旋转及其核动量冲量，再与自由环聚合子步对称组合。引用的是 Church 等人论文中的积分组成部分，包未实现该文完整 MQC-IVR。
 
-源码：[src/pyrpmd/nonadiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/nonadiabatic.py), [src/pyrpmd/spin_mapping.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/spin_mapping.py)
+源码：[src/pyrpmd/nonadiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/nonadiabatic.py), [src/pyrpmd/spin_mapping.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/spin_mapping.py)
 
 [该项复现任务](reproduction.md#task-na-mint).
 
@@ -754,7 +899,7 @@ Python API 使用确定性实质量环动力学，均匀选择 shooting frame �
 
 仅实对称矩阵：对 SEO 初始权重的绝对值采样，相关函数保留初始 sign。默认 scalar/traceless 分裂不同于 2013 论文的最低绝热面分裂；专用 published benchmark 明确实现后者。热分布不是普通 exp(-βH/P)。
 
-源码：[src/pyrpmd/thermal_nrpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/thermal_nrpmd.py), [src/pyrpmd/workflows/nonadiabatic_rate.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/nonadiabatic_rate.py)
+源码：[src/pyrpmd/thermal_nrpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/thermal_nrpmd.py), [src/pyrpmd/workflows/nonadiabatic_rate.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/nonadiabatic_rate.py)
 
 [该项复现任务](reproduction.md#task-na-thermal-nrpmd).
 
@@ -766,7 +911,7 @@ Python API 使用确定性实质量环动力学，均匀选择 shooting frame �
 
 组合 SEO 热采样、约束路径适应、自由能重加权及冻结路径后的独立生产采样。未核实存在一篇同时提出 PyRPMD 完整组合的原始论文；应分别引用 NRPMD、有限温度 string 和 MBAR。
 
-源码：[src/pyrpmd/adaptive_nrpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/adaptive_nrpmd.py), [src/pyrpmd/adaptive_string.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/adaptive_string.py), [src/pyrpmd/thermal_nrpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/thermal_nrpmd.py)
+源码：[src/pyrpmd/adaptive_nrpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/adaptive_nrpmd.py), [src/pyrpmd/adaptive_string.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/adaptive_string.py), [src/pyrpmd/thermal_nrpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/thermal_nrpmd.py)
 
 [该项复现任务](reproduction.md#task-na-adaptive-thermal).
 
@@ -778,7 +923,7 @@ Python API 使用确定性实质量环动力学，均匀选择 shooting frame �
 
 每个 bead 一个 W-spin，半径 √3/2，focused u_z=±1/√3；支持两态实/复 Hermitian 矩阵。当前未实现通用 SU(N)，也未实现原文 Γ_W 平衡 trace/phase 采样。
 
-源码：[src/pyrpmd/spin_mapping.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/spin_mapping.py), [src/pyrpmd/nonadiabatic_registry.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/nonadiabatic_registry.py)
+源码：[src/pyrpmd/spin_mapping.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/spin_mapping.py), [src/pyrpmd/nonadiabatic_registry.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/nonadiabatic_registry.py)
 
 [该项复现任务](reproduction.md#task-na-sm-nrpmd).
 
@@ -790,7 +935,7 @@ Python API 使用确定性实质量环动力学，均匀选择 shooting frame �
 
 MASHDynamics 通过自旋半球确定活动态。P=1 对应原始两态 MASH；P>1 是实验性质心扩展，与独立的 CA-RP-MASH 类不同。跳跃定位在步末，因此需要时间步收敛。
 
-源码：[src/pyrpmd/mash.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/mash.py), [src/pyrpmd/adiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/adiabatic.py)
+源码：[src/pyrpmd/mash.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/mash.py), [src/pyrpmd/adiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/adiabatic.py)
 
 [该项复现任务](reproduction.md#task-na-mash).
 
@@ -800,11 +945,35 @@ MASHDynamics 通过自旋半球确定活动态。P=1 对应原始两态 MASH；P
 
 出处：[na-carp2025](#na-carp2025), [na-mash2023](#na-mash2023), [na-mashrates2024](#na-mashrates2024)
 
-整条环共用一个自旋和活动面，核力在各 bead 求值、电子动力学在质心求值；限两态实对称、非零能隙。DOP853 事件求根定位过赤道跳跃并按全环能量重标动量；不含 BA-RP-MASH、多态或复 SOC。
+整条环共用一个自旋和活动面，核力在各 bead 求值、电子动力学在质心求值；限两态实对称、非零能隙。DOP853 事件求根定位过赤道跳跃并按全环能量重标动量；BA-RP-MASH 与多态 MASH 见单独条目（na-ba-rp-mash、na-ms-mash），不含复 SOC。
 
-源码：[src/pyrpmd/rp_mash.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/rp_mash.py), [src/pyrpmd/nonadiabatic_registry.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/nonadiabatic_registry.py)
+源码：[src/pyrpmd/rp_mash.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/rp_mash.py), [src/pyrpmd/nonadiabatic_registry.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/nonadiabatic_registry.py)
 
 [该项复现任务](reproduction.md#task-na-carp-mash).
+
+### na-ba-rp-mash
+
+**BA-RP-MASH（命令行 rp-mash-ba）**
+
+出处：[na-carp2025](#na-carp2025), [na-mash2023](#na-mash2023)
+
+两态珠近似：整条环共用一个自旋并采用共同绝热表象，各珠分别计算矩阵、梯度、能隙与导数耦合，电子演化取珠平均。状态、工作流名称和科学身份均与 CA-RP-MASH（rp-mash）分开；不是多态或复 SOC MASH。
+
+源码：[src/pyrpmd/rp_mash_ba.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/rp_mash_ba.py), [src/pyrpmd/nonadiabatic_registry.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/nonadiabatic_registry.py)
+
+[该项复现任务](reproduction.md#task-na-ba-rp-mash).
+
+### na-ms-mash
+
+**原始多态 MASH（命令行 multistate-mash）**
+
+出处：[na-msmash2023](#na-msmash2023), [na-mash2023](#na-mash2023)
+
+一个归一化复映射矢量，活动绝热面取映射布居最大的态，使用 Runeson–Manolopoulos 带符号观测量估计；限实哈密顿量、非简并能级、单珠。实现的是 2023 年原始表述，不是 unSMASH 或后续初始化变体；即使两态也不同于两态 MASH 估计量。
+
+源码：[src/pyrpmd/mash.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/mash.py), [src/pyrpmd/workflows/nonadiabatic_multistate.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/nonadiabatic_multistate.py)
+
+[该项复现任务](reproduction.md#task-na-ms-mash).
 
 ### na-rpsh-ca
 
@@ -814,7 +983,7 @@ MASHDynamics 通过自旋半球确定活动态。P=1 对应原始两态 MASH；P
 
 实固定 diabatic 的 RPSHDynamics、扩展 CA 类和直接 adiabatic 接口均共用一个环活动面；P=1 是经典核 FSSH 极限。动量重标、受阻跃迁及初态约定应与目标论文一致。
 
-源码：[src/pyrpmd/surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/surface_hopping.py), [src/pyrpmd/advanced_surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/advanced_surface_hopping.py), [src/pyrpmd/adiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/adiabatic.py)
+源码：[src/pyrpmd/surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/surface_hopping.py), [src/pyrpmd/advanced_surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/advanced_surface_hopping.py), [src/pyrpmd/adiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/adiabatic.py)
 
 [该项复现任务](reproduction.md#task-na-rpsh-ca).
 
@@ -826,7 +995,7 @@ MASHDynamics 通过自旋半球确定活动态。P=1 对应原始两态 MASH；P
 
 只有一组电子振幅，由各 bead 的能量和速度耦合项平均驱动；整条环共用活动态，并非每个 bead 单独选电子面。
 
-源码：[src/pyrpmd/advanced_surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/advanced_surface_hopping.py)
+源码：[src/pyrpmd/advanced_surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/advanced_surface_hopping.py)
 
 [该项复现任务](reproduction.md#task-na-rpsh-ba).
 
@@ -838,7 +1007,7 @@ MASHDynamics 通过自旋半球确定活动态。P=1 对应原始两态 MASH；P
 
 各 bead 独立传播电子振幅，密度变换至共同质心基底后平均，因此可出现纯度降低；环仍共用活动面。此变体不叠加 EDC。
 
-源码：[src/pyrpmd/advanced_surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/advanced_surface_hopping.py)
+源码：[src/pyrpmd/advanced_surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/advanced_surface_hopping.py)
 
 [该项复现任务](reproduction.md#task-na-rpsh-dm).
 
@@ -850,7 +1019,7 @@ MASHDynamics 通过自旋半球确定活动态。P=1 对应原始两态 MASH；P
 
 按能隙和所选动能定义阻尼非活动态振幅，并保留活动振幅相位地重新归一化；RPSH 的质心/全环能量是显式适配约定。支持 CA/BA，不作为 DM 的额外修正。
 
-源码：[src/pyrpmd/surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/surface_hopping.py), [src/pyrpmd/advanced_surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/advanced_surface_hopping.py)
+源码：[src/pyrpmd/surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/surface_hopping.py), [src/pyrpmd/advanced_surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/advanced_surface_hopping.py)
 
 [该项复现任务](reproduction.md#task-na-edc).
 
@@ -862,7 +1031,7 @@ MASHDynamics 通过自旋半球确定活动态。P=1 对应原始两态 MASH；P
 
 按 Miao 等人 method 2 从复 NAC 选择实动量重标方向，并可用 Cayley 旋转加入反对称 Berry 力。限局域非简并修正，不等同完整几何相位干涉或简并态非 Abelian 算法。
 
-源码：[src/pyrpmd/advanced_surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/advanced_surface_hopping.py), [src/pyrpmd/adiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/adiabatic.py)
+源码：[src/pyrpmd/advanced_surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/advanced_surface_hopping.py), [src/pyrpmd/adiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/adiabatic.py)
 
 [该项复现任务](reproduction.md#task-na-soc-rpsh).
 
@@ -874,9 +1043,21 @@ MASHDynamics 通过自旋半球确定活动态。P=1 对应原始两态 MASH；P
 
 计算所含电子态的 Σ|d_ij|²/(2m) 并差分其梯度，同时修正核力和跃迁能隙。截断态、近简并和差分步长限制应注明；效果随动力学区间变化。
 
-源码：[src/pyrpmd/advanced_surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/advanced_surface_hopping.py)
+源码：[src/pyrpmd/advanced_surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/advanced_surface_hopping.py)
 
 [该项复现任务](reproduction.md#task-na-dboc-rpsh).
+
+### na-iesh
+
+**经典 IESH 与质心 RP-IESH（命令行 iesh、rp-iesh）**
+
+出处：[na-iesh2009](#na-iesh2009), [na-iesh2023](#na-iesh2023), [na-rpsh2012](#na-rpsh2012), [na-rpsh2017](#na-rpsh2017)
+
+离散金属能带中独立电子的单个无自旋 Slater 行列式；核在裸能量加占据轨道能之和上运动，按最少跳跃做单激发跳跃。RP-IESH 整条环共用一个行列式并在质心传播电子。限实哈密顿量、非简并能级；输出单粒子密度布居；不是 GPU 或原生全轨迹求解器。
+
+源码：[src/pyrpmd/iesh.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/iesh.py), [src/pyrpmd/rp_iesh.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/rp_iesh.py), [src/pyrpmd/workflows/nonadiabatic_multistate.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/nonadiabatic_multistate.py)
+
+[该项复现任务](reproduction.md#task-na-iesh).
 
 ### na-qd-interface
 
@@ -886,9 +1067,21 @@ MASHDynamics 通过自旋半球确定活动态。P=1 对应原始两态 MASH；P
 
 provider 提供能量、梯度、NAC 和态重叠；用局域基底重叠传输映射变量及重建非对角梯度。QDNRPMD 是 QD 策略与 NRPMD 的组合，并未实现原文的 PLDM/SQC。缺少真实重叠时的 endpoint-NAC 传输属于额外近似。
 
-源码：[src/pyrpmd/adiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/adiabatic.py)
+源码：[src/pyrpmd/adiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/adiabatic.py)
 
 [该项复现任务](reproduction.md#task-na-qd-interface).
+
+### na-excited-state
+
+**在线激发态计算接口与基于重叠的耦合**
+
+出处：[na-hst1994](#na-hst1994), [na-npi2014](#na-npi2014), [na-npi2016](#na-npi2016), [pyscf2018](#pyscf2018)
+
+ExcitedStateProvider 向已有绝热动力学（如 AdiabaticRPSHDynamics）提供各态总能量、正梯度、导数耦合、相邻帧重叠、态追踪和可续跑的电子上下文。由重叠得到耦合时采用 Hammes-Schiffer–Tully 有限差分，或在 Löwdin 正交化后采用多态广义 NPI。PySCF TDA/TDDFT 已测试；ORCA、Q-Chem、OpenMolcas 文件适配器仅经解析与模拟子进程测试。该接口不选择动力学方法。
+
+源码：[src/pyrpmd/potentials/excited_state](https://github.com/chen-yu-hao/PyRPMD/tree/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/excited_state)
+
+[该项复现任务](reproduction.md#task-na-excited-state).
 
 ### na-mv-rpmd
 
@@ -898,7 +1091,7 @@ provider 提供能量、梯度、NAC 和态重叠；用局域基底重叠传输�
 
 实固定 diabatic 多态 signed projected-Wigner trace 采样，保留符号。包使用精确有限 bead 电子矩阵指数，原文使用 primitive 短时近似；非可分电子流用 implicit midpoint，遇 trace 节点/符号跨越报错。
 
-源码：[src/pyrpmd/mv_rpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/mv_rpmd.py), [src/pyrpmd/_matrix_path.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/_matrix_path.py)
+源码：[src/pyrpmd/mv_rpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/mv_rpmd.py), [src/pyrpmd/_matrix_path.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/_matrix_path.py)
 
 [该项复现任务](reproduction.md#task-na-mv-rpmd).
 
@@ -910,7 +1103,7 @@ provider 提供能量、梯度、NAC 和态重叠；用局域基底重叠传输�
 
 实现原始 primitive 两态正耦合构造，用户给定 a/b、交叉校准 η 与辅助质量。限 0<a≤1、b>0、P≥2、βK/P<1；不自动包含后续 KC 变体。
 
-源码：[src/pyrpmd/kc_rpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/kc_rpmd.py), [src/pyrpmd/_matrix_path.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/_matrix_path.py)
+源码：[src/pyrpmd/kc_rpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/kc_rpmd.py), [src/pyrpmd/_matrix_path.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/_matrix_path.py)
 
 [该项复现任务](reproduction.md#task-na-kc-rpmd).
 
@@ -922,7 +1115,7 @@ provider 提供能量、梯度、NAC 和态重叠；用局域基底重叠传输�
 
 实现实两态、整环 trace 匹配的 isomorphic Hamiltonian，再用单一归一化电子波函数做 Ehrenfest。不是原文 QCLE 或 iso-surface-hopping，也不含通用多态构造或隐含热采样。
 
-源码：[src/pyrpmd/isomorphic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/isomorphic.py), [src/pyrpmd/_matrix_path.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/_matrix_path.py)
+源码：[src/pyrpmd/isomorphic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/isomorphic.py), [src/pyrpmd/_matrix_path.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/_matrix_path.py)
 
 [该项复现任务](reproduction.md#task-na-isomorphic).
 
@@ -934,7 +1127,7 @@ provider 提供能量、梯度、NAC 和态重叠；用局域基底重叠传输�
 
 实现单避免交叉、双避免交叉和扩展耦合反射三种势及解析导数。核质量属于 system/采样配置，不会由势类自动指定。
 
-源码：[src/pyrpmd/potentials/nonadiabatic_models.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/nonadiabatic_models.py)
+源码：[src/pyrpmd/potentials/nonadiabatic_models.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/nonadiabatic_models.py)
 
 [该项复现任务](reproduction.md#task-na-tully-models).
 
@@ -946,7 +1139,7 @@ provider 提供能量、梯度、NAC 和态重叠；用局域基底重叠传输�
 
 LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来源。harmonic ring 采样是显式声明的有限 P 非耦合谐振初态，不自动给出耦合系统热平衡密度，也未内置特定 pyrazine/FMO 参数或通用浴离散规则。
 
-源码：[src/pyrpmd/potentials/nonadiabatic_models.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/nonadiabatic_models.py), [src/pyrpmd/nonadiabatic_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/nonadiabatic_sampling.py)
+源码：[src/pyrpmd/potentials/nonadiabatic_models.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/nonadiabatic_models.py), [src/pyrpmd/nonadiabatic_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/nonadiabatic_sampling.py)
 
 [该项复现任务](reproduction.md#task-na-generic-matrix-models).
 
@@ -958,7 +1151,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 历史中性 NaH₂ 的两个最低双重态 ²A′ 耦合势及矩阵导数；应同时引用物理 PES 原文与勘误，软件适配器引用单列。
 
-源码：[src/pyrpmd/potentials/nah2_leps.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/nah2_leps.py)
+源码：[src/pyrpmd/potentials/nah2_leps.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/nah2_leps.py)
 
 [该项复现任务](reproduction.md#task-na-nah2-pes).
 
@@ -970,7 +1163,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 一维周期 Fourier 网格加逐点 Hermitian 矩阵指数和二阶对称分裂，支持纯态及谐振热混合态。没有吸收边界和通用多维传播；需分别收敛空间区域、网格、时间步与热截断。
 
-源码：[src/pyrpmd/analysis/quantum_reference.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/quantum_reference.py)
+源码：[src/pyrpmd/analysis/quantum_reference.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/quantum_reference.py)
 
 [该项复现任务](reproduction.md#task-na-quantum-reference).
 
@@ -984,7 +1177,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 只缩放质心，使用物理位力及 PIMD 系综测度修正；要求三维周期且全部原子可动。
 
-源码：[src/pyrpmd/barostat.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/barostat.py), [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+源码：[src/pyrpmd/barostat.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/barostat.py), [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 [该项复现任务](reproduction.md#task-bzp).
 
@@ -996,7 +1189,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 上三角应变率、下三角行晶格矢量；静水压及可选晶胞分量掩码。
 
-源码：[src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+源码：[src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 [该项复现任务](reproduction.md#task-mtk).
 
@@ -1008,7 +1201,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 显式对称外应力及参考晶胞应变能模型。
 
-源码：[src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+源码：[src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 [该项复现任务](reproduction.md#task-rgb).
 
@@ -1020,7 +1213,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 仅各向同性 P=1；平方根体积随机提议，无 Metropolis 校正。
 
-源码：[src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+源码：[src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 [该项复现任务](reproduction.md#task-scr).
 
@@ -1032,7 +1225,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 展开质心的 Einstein/Green–Kubo 估计及副本/分块误差；材料应用论文与基础 RPMD 文献同时引用。
 
-源码：[src/pyrpmd/analysis/diffusion.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/diffusion.py), [src/pyrpmd/workflows/materials.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/materials.py)
+源码：[src/pyrpmd/analysis/diffusion.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/diffusion.py), [src/pyrpmd/workflows/materials.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/materials.py)
 
 [该项复现任务](reproduction.md#task-diffusion).
 
@@ -1044,7 +1237,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 单分界面与反应物盆地归一化；全可动位点非线性坐标和固定基底表面坐标的支持范围不同。
 
-源码：[src/pyrpmd/workflows/site_rate.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/site_rate.py), [src/pyrpmd/workflows/surface.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/surface.py), [src/pyrpmd/workflows/surface_source.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/surface_source.py)
+源码：[src/pyrpmd/workflows/site_rate.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/site_rate.py), [src/pyrpmd/workflows/surface.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/surface.py), [src/pyrpmd/workflows/surface_source.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/surface_source.py)
 
 [该项复现任务](reproduction.md#task-site-surface).
 
@@ -1056,7 +1249,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 使用外部固定版本势表进行集成试算。
 
-源码：[benchmarks/materials/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/materials/README.md)
+源码：[benchmarks/materials/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/materials/README.md)
 
 [该项复现任务](reproduction.md#task-nialh-model).
 
@@ -1068,7 +1261,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 单质子网格本征态、固定供受体构型、常电子耦合、宽带金属及经典 Gaussian 环境。
 
-源码：[src/pyrpmd/pcet.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pcet.py), [src/pyrpmd/workflows/pcet.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/pcet.py)
+源码：[src/pyrpmd/pcet.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pcet.py), [src/pyrpmd/workflows/pcet.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/pcet.py)
 
 [该项复现任务](reproduction.md#task-pcet).
 
@@ -1080,7 +1273,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 项目组合：核坐标 HMC 与有界连续共享电子数 Metropolis 更新；MC 步数不代表物理时间。
 
-源码：[src/pyrpmd/electrochemistry/sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/electrochemistry/sampling.py)
+源码：[src/pyrpmd/electrochemistry/sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/electrochemistry/sampling.py)
 
 [该项复现任务](reproduction.md#task-gc).
 
@@ -1092,7 +1285,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 项目近似：逐构型最小化 E(R,N)-mu*N；矩阵版本给所有透热态加入相同标量充电能。
 
-源码：[src/pyrpmd/electrochemistry/potentials.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/electrochemistry/potentials.py), [src/pyrpmd/electrochemistry/nonadiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/electrochemistry/nonadiabatic.py), [src/pyrpmd/electrochemistry/diabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/electrochemistry/diabatic.py)
+源码：[src/pyrpmd/electrochemistry/potentials.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/electrochemistry/potentials.py), [src/pyrpmd/electrochemistry/nonadiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/electrochemistry/nonadiabatic.py), [src/pyrpmd/electrochemistry/diabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/electrochemistry/diabatic.py)
 
 [该项复现任务](reproduction.md#task-adiabatic-electrode).
 
@@ -1104,7 +1297,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 使用外部给定正逆基元系数及理想独立位点的项目质量作用定律平衡。
 
-源码：[src/pyrpmd/electrochemistry/kinetics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/electrochemistry/kinetics.py)
+源码：[src/pyrpmd/electrochemistry/kinetics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/electrochemistry/kinetics.py)
 
 [该项复现任务](reproduction.md#task-her).
 
@@ -1116,7 +1309,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 珠平均半正定摩擦作用于质心；各珠共享随机冲量，内部模不受该浴直接热化。
 
-源码：[src/pyrpmd/electronic_friction.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/electronic_friction.py)
+源码：[src/pyrpmd/electronic_friction.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/electronic_friction.py)
 
 [该项复现任务](reproduction.md#task-efrpmd).
 
@@ -1128,7 +1321,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 将 RHF/UHF/RKS/UKS 能量、梯度及所支持 Hessian 委托给外部 PySCF。
 
-源码：[src/pyrpmd/pesgen/reference.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pesgen/reference.py), [src/pyrpmd/potentials/adapters.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/adapters.py)
+源码：[src/pyrpmd/pesgen/reference.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pesgen/reference.py), [src/pyrpmd/potentials/adapters.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/adapters.py)
 
 [该项复现任务](reproduction.md#task-pyscf).
 
@@ -1140,7 +1333,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 中性球对称 HF 原子参考的 stockholder 分区；非限制 Mayer 包含自旋密度。
 
-源码：[src/pyrpmd/pesgen/reference.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pesgen/reference.py)
+源码：[src/pyrpmd/pesgen/reference.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pesgen/reference.py)
 
 [该项复现任务](reproduction.md#task-populations).
 
@@ -1152,7 +1345,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 以平衡构型 QM 数据调用固定源码版本 Caracal QMDFF 生成器。
 
-源码：[src/pyrpmd/pesgen/workflow.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pesgen/workflow.py), [src/pyrpmd/pesgen/formats.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pesgen/formats.py)
+源码：[src/pyrpmd/pesgen/workflow.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pesgen/workflow.py), [src/pyrpmd/pesgen/formats.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pesgen/formats.py)
 
 [该项复现任务](reproduction.md#task-qmdff).
 
@@ -1164,7 +1357,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 以给定路径能量及上游 sp/1g 耦合拟合连接端点 QMDFF。
 
-源码：[src/pyrpmd/pesgen/workflow.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pesgen/workflow.py)
+源码：[src/pyrpmd/pesgen/workflow.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pesgen/workflow.py)
 
 [该项复现任务](reproduction.md#task-deevb).
 
@@ -1176,7 +1369,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 使用上游反应路径/二阶展开构造；公开桥接明确使用四阶差分力。
 
-源码：[src/pyrpmd/pesgen/workflow.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pesgen/workflow.py), [src/pyrpmd/pesgen/build.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pesgen/build.py)
+源码：[src/pyrpmd/pesgen/workflow.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pesgen/workflow.py), [src/pyrpmd/pesgen/build.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pesgen/build.py)
 
 [该项复现任务](reproduction.md#task-treq).
 
@@ -1188,7 +1381,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 显式训练/验证/测试集、能量/力损失、JaxPIP 描述符及原生 ONNX 导出；模型导出与势能面验证是不同步骤。
 
-源码：[src/pyrpmd/pesgen/jaxpip_fit.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pesgen/jaxpip_fit.py), [src/pyrpmd/pesgen/jaxpip_export.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pesgen/jaxpip_export.py), [src/pyrpmd/pesgen/jaxpip_data.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pesgen/jaxpip_data.py)
+源码：[src/pyrpmd/pesgen/jaxpip_fit.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pesgen/jaxpip_fit.py), [src/pyrpmd/pesgen/jaxpip_export.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pesgen/jaxpip_export.py), [src/pyrpmd/pesgen/jaxpip_data.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pesgen/jaxpip_data.py)
 
 [该项复现任务](reproduction.md#task-jaxpip).
 
@@ -1198,9 +1391,9 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 出处：[committee2020](#committee2020)
 
-固定提供器均值、总体标准差分歧及离线采集；无分歧偏置和自动标注/重训练循环。
+固定提供器均值、总体标准差分歧、离线采集，以及 ActiveLearningLoop：用固定委员会采样、在标注预算内选择超阈值候选、标注、重训练并安装下一代委员会。分歧不是经过校准的误差界；采样时不施加分歧偏置。
 
-源码：[src/pyrpmd/potentials/lifecycle.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/lifecycle.py)
+源码：[src/pyrpmd/potentials/lifecycle.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/lifecycle.py), [src/pyrpmd/active_learning.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/active_learning.py)
 
 [该项复现任务](reproduction.md#task-committee).
 
@@ -1212,7 +1405,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 将给定校正模型加到固定参考势，并提供快/慢力分解；RPC/MTS 另有方法来源。
 
-源码：[src/pyrpmd/potentials/lifecycle.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/lifecycle.py), [src/pyrpmd/potentials/contraction.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/contraction.py)
+源码：[src/pyrpmd/potentials/lifecycle.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/lifecycle.py), [src/pyrpmd/potentials/contraction.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/contraction.py)
 
 [该项复现任务](reproduction.md#task-delta).
 
@@ -1224,7 +1417,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 能量、力、周期晶胞和应力转换；使用与力一致的电子自由能。
 
-源码：[src/pyrpmd/potentials/optional.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/optional.py)
+源码：[src/pyrpmd/potentials/optional.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/optional.py)
 
 [该项复现任务](reproduction.md#task-ase).
 
@@ -1236,7 +1429,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 外部受力计算、虚拟位点与周期位力；核动力学由 PyRPMD 执行。
 
-源码：[src/pyrpmd/potentials/openmm.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/openmm.py)
+源码：[src/pyrpmd/potentials/openmm.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/openmm.py)
 
 [该项复现任务](reproduction.md#task-openmm).
 
@@ -1248,7 +1441,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 每个上下文调用外部库受力/晶胞；不是重写 LAMMPS 算法。
 
-源码：[src/pyrpmd/potentials/lammps.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/lammps.py)
+源码：[src/pyrpmd/potentials/lammps.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/lammps.py)
 
 [该项复现任务](reproduction.md#task-lammps).
 
@@ -1260,7 +1453,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 具有显式晶胞和单位约定的 socket 受力协议。
 
-源码：[src/pyrpmd/potentials/socket.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/socket.py)
+源码：[src/pyrpmd/potentials/socket.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/socket.py)
 
 [该项复现任务](reproduction.md#task-ipi-socket).
 
@@ -1272,7 +1465,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 自动微分能量/力及已有物理积分器的张量版本。
 
-源码：[src/pyrpmd/potentials/optional.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/optional.py), [src/pyrpmd/torch_backend.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/torch_backend.py)
+源码：[src/pyrpmd/potentials/optional.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/optional.py), [src/pyrpmd/torch_backend.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/torch_backend.py)
 
 [该项复现任务](reproduction.md#task-torch).
 
@@ -1284,7 +1477,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 调用外部推理引擎；模型论文及准确权重需另引，不能称为仓库重实现。
 
-源码：[src/pyrpmd/potentials/adapters.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/adapters.py)
+源码：[src/pyrpmd/potentials/adapters.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/adapters.py)
 
 [该项复现任务](reproduction.md#task-ml-adapters).
 
@@ -1296,7 +1489,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 将指定电子哈密顿量委托给 tblite；明确电荷、多重度及电子温度。
 
-源码：[src/pyrpmd/potentials/adapters.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/adapters.py)
+源码：[src/pyrpmd/potentials/adapters.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/adapters.py)
 
 [该项复现任务](reproduction.md#task-tblite).
 
@@ -1308,7 +1501,7 @@ LVC 和离散 spin-boson 是参数化容器，须为每个应用另引参数来�
 
 H5MD 格式来源与 ASE 互操作格式；不是新动力学方法。
 
-源码：[src/pyrpmd/trajectory_export.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/trajectory_export.py)
+源码：[src/pyrpmd/trajectory_export.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/trajectory_export.py)
 
 [该项复现任务](reproduction.md#task-h5md-export).
 
@@ -1320,7 +1513,7 @@ H5MD 格式来源与 ASE 互操作格式；不是新动力学方法。
 
 项目工程：TOML/Python 规范、哈希、续跑、C ABI/f2py、原子性传播块、process/MPI/OpenMP/GPU 调度、报告及速率矩阵装配。
 
-源码：[src/pyrpmd/input.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/input.py), [src/pyrpmd/checkpoint.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/checkpoint.py), [src/pyrpmd/parallel](https://github.com/chen-yu-hao/PyRPMD/tree/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/parallel), [src/pyrpmd/trajectory.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/trajectory.py), [src/pyrpmd/analysis/reporting.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/reporting.py), [src/pyrpmd/reactions.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/reactions.py), [src/pyrpmd/workflows/network.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/network.py), [src/pyrpmd/cli.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/cli.py), [src/pyrpmd/runner.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/runner.py), [src/pyrpmd/input_schema.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/input_schema.py), [src/pyrpmd/batched.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/batched.py), [src/pyrpmd/batched_nonadiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/batched_nonadiabatic.py), [src/pyrpmd/trajectory_batch.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/trajectory_batch.py), [src/pyrpmd/electronic_backends.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/electronic_backends.py), [src/pyrpmd/geometry.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/geometry.py)
+源码：[src/pyrpmd/input.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/input.py), [src/pyrpmd/checkpoint.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/checkpoint.py), [src/pyrpmd/parallel](https://github.com/chen-yu-hao/PyRPMD/tree/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/parallel), [src/pyrpmd/trajectory.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/trajectory.py), [src/pyrpmd/analysis/reporting.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/reporting.py), [src/pyrpmd/reactions.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/reactions.py), [src/pyrpmd/workflows/network.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/network.py), [src/pyrpmd/cli.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/cli.py), [src/pyrpmd/runner.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/runner.py), [src/pyrpmd/input_schema.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/input_schema.py), [src/pyrpmd/batched.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/batched.py), [src/pyrpmd/batched_nonadiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/batched_nonadiabatic.py), [src/pyrpmd/trajectory_batch.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/trajectory_batch.py), [src/pyrpmd/electronic_backends.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/electronic_backends.py), [src/pyrpmd/geometry.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/geometry.py)
 
 [该项复现任务](reproduction.md#task-engineering).
 
@@ -1332,7 +1525,7 @@ H5MD 格式来源与 ASE 互操作格式；不是新动力学方法。
 
 MorsePairPotential 使用 Morse 函数形式；自由粒子、谐振子、可分离四次双阱和周期余弦是明确给定的解析控制模型，不是拟合的分子或金属势。
 
-源码：[src/pyrpmd/potentials/builtin.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/builtin.py)
+源码：[src/pyrpmd/potentials/builtin.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/builtin.py)
 
 [该项复现任务](reproduction.md#task-analytic-models).
 
@@ -1344,7 +1537,7 @@ MorsePairPotential 使用 Morse 函数形式；自由粒子、谐振子、可分
 
 对已有速率与同位素方法进行研究组织和回归拟合；这个包内扫描/报告组合不硬配一篇独立原始论文。
 
-源码：[src/pyrpmd/studies.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/studies.py)
+源码：[src/pyrpmd/studies.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/studies.py)
 
 [该项复现任务](reproduction.md#task-rate-studies).
 
@@ -1356,7 +1549,7 @@ MorsePairPotential 使用 Morse 函数形式；自由粒子、谐振子、可分
 
 基准使用外部 BKMP2 H₃ 势，不是 PyRPMD 新拟合的势；除速率理论和软件接口外还要引用势能面原论文。
 
-源码：[src/pyrpmd/potentials/native.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/native.py), [src/pyrpmd/potentials/cabi.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/cabi.py)
+源码：[src/pyrpmd/potentials/native.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/native.py), [src/pyrpmd/potentials/cabi.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/cabi.py)
 
 [该项复现任务](reproduction.md#task-bkmp2-model).
 
@@ -1573,6 +1766,18 @@ T. D. Hone; P. J. Rossky; G. A. Voth. **A comparative study of imaginary time pa
 T. D. Hone; S. Izvekov; G. A. Voth. **Fast centroid molecular dynamics: A force-matching approach for the predetermination of the effective centroid forces**. *J. Chem. Phys. 122, 054105* (2005). DOI: [10.1063/1.1836731](https://doi.org/10.1063/1.1836731).
 
 用途 / Role: Original method.
+
+### qcmd2019
+
+G. Trenins; M. J. Willatt; S. C. Althorpe. **Path-integral dynamics of water using curvilinear centroids**. *J. Chem. Phys. 151, 054109* (2019). DOI: [10.1063/1.5100587](https://doi.org/10.1063/1.5100587).
+
+用途 / Role: Original quasi-centroid molecular dynamics (QCMD).
+
+### fqcmd2021
+
+T. Fletcher; A. Zhu; J. E. Lawrence; D. E. Manolopoulos. **Fast quasi-centroid molecular dynamics**. *J. Chem. Phys. 155, 231101* (2021). DOI: [10.1063/5.0076704](https://doi.org/10.1063/5.0076704).
+
+用途 / Role: Original fast QCMD with a separable correction potential.
 
 ### trpmd14
 
@@ -1796,6 +2001,66 @@ M. Invernizzi; M. Parrinello. **Exploration vs Convergence Speed in Adaptive-Bia
 
 用途 / Role: Original method.
 
+### samp-ves2014
+
+O. Valsson; M. Parrinello. **Variational Approach to Enhanced Sampling and Free Energy Calculations**. *Phys. Rev. Lett. 113, 090601* (2014). DOI: [10.1103/PhysRevLett.113.090601](https://doi.org/10.1103/PhysRevLett.113.090601).
+
+用途 / Role: Original variationally enhanced sampling functional.
+
+### samp-wtves2015
+
+O. Valsson; M. Parrinello. **Well-Tempered Variational Approach to Enhanced Sampling**. *J. Chem. Theory Comput. 11, 1996–2002* (2015). DOI: [10.1021/acs.jctc.5b00076](https://doi.org/10.1021/acs.jctc.5b00076).
+
+用途 / Role: Well-tempered target distribution for VES.
+
+### samp-abf2001
+
+E. Darve; A. Pohorille. **Calculating free energies using average force**. *J. Chem. Phys. 115, 9169–9183* (2001). DOI: [10.1063/1.1410978](https://doi.org/10.1063/1.1410978).
+
+用途 / Role: Original adaptive biasing force (average force) method.
+
+### samp-abf2008
+
+E. Darve; D. Rodríguez-Gómez; A. Pohorille. **Adaptive biasing force method for scalar and vector free energy calculations**. *J. Chem. Phys. 128, 144120* (2008). DOI: [10.1063/1.2829861](https://doi.org/10.1063/1.2829861).
+
+用途 / Role: Multidimensional ABF mean-force formula with first derivatives.
+
+### samp-abfproj2015
+
+H. Alrachid; T. Lelièvre. **Long-time convergence of an adaptive biasing force method: Variance reduction by Helmholtz projection**. *SMAI J. Comput. Math. 1, 55–82* (2015). DOI: [10.5802/smai-jcm.4](https://doi.org/10.5802/smai-jcm.4).
+
+用途 / Role: Helmholtz projection of the estimated mean force used for 2D integration.
+
+### samp-eabf2017
+
+A. Lesage; T. Lelièvre; G. Stoltz; J. Hénin. **Smoothed Biasing Forces Yield Unbiased Free Energies with the Extended-System Adaptive Biasing Force Method**. *J. Phys. Chem. B 121, 3676–3685* (2017). DOI: [10.1021/acs.jpcb.6b10055](https://doi.org/10.1021/acs.jpcb.6b10055).
+
+用途 / Role: eABF and the CZAR free-energy estimator.
+
+### samp-jarzynski1997
+
+C. Jarzynski. **Nonequilibrium Equality for Free Energy Differences**. *Phys. Rev. Lett. 78, 2690–2693* (1997). DOI: [10.1103/PhysRevLett.78.2690](https://doi.org/10.1103/PhysRevLett.78.2690).
+
+用途 / Role: Original nonequilibrium work equality.
+
+### samp-crooks1999
+
+G. E. Crooks. **Entropy production fluctuation theorem and the nonequilibrium work relation for free energy differences**. *Phys. Rev. E 60, 2721* (1999). DOI: [10.1103/PhysRevE.60.2721](https://doi.org/10.1103/PhysRevE.60.2721).
+
+用途 / Role: Original work fluctuation theorem behind the bidirectional estimator.
+
+### samp-bar1976
+
+C. H. Bennett. **Efficient estimation of free energy differences from Monte Carlo data**. *J. Comput. Phys. 22, 245–268* (1976). DOI: [10.1016/0021-9991(76)90078-4](https://doi.org/10.1016/0021-9991(76)90078-4).
+
+用途 / Role: Original acceptance-ratio (BAR) estimator used for bidirectional work.
+
+### samp-shadow2013
+
+D. A. Sivak; J. D. Chodera; G. E. Crooks. **Using Nonequilibrium Fluctuation Theorems to Understand and Correct Errors in Equilibrium and Nonequilibrium Simulations of Discrete Langevin Dynamics**. *Phys. Rev. X 3, 011007* (2013). DOI: [10.1103/PhysRevX.3.011007](https://doi.org/10.1103/PhysRevX.3.011007).
+
+用途 / Role: Shadow-work interpretation of finite-timestep Langevin error.
+
 ### samp-remd1999
 
 Y. Sugita; Y. Okamoto. **Replica-exchange molecular dynamics method for protein folding**. *Chemical Physics Letters 314, 141–151* (1999). DOI: [10.1016/S0009-2614(99)01123-9](https://doi.org/10.1016/S0009-2614(99)01123-9).
@@ -1807,6 +2072,12 @@ Y. Sugita; Y. Okamoto. **Replica-exchange molecular dynamics method for protein 
 Y. Sugita; A. Kitao; Y. Okamoto. **Multidimensional replica-exchange method for free-energy calculations**. *Journal of Chemical Physics 113, 6042–6051* (2000). DOI: [10.1063/1.1308516](https://doi.org/10.1063/1.1308516).
 
 用途 / Role: Original method.
+
+### samp-pt1996
+
+K. Hukushima; K. Nemoto. **Exchange Monte Carlo Method and Application to Spin Glass Simulations**. *J. Phys. Soc. Jpn. 65, 1604–1608* (1996). DOI: [10.1143/JPSJ.65.1604](https://doi.org/10.1143/JPSJ.65.1604).
+
+用途 / Role: Original exchange Monte Carlo (parallel tempering) method.
 
 ### samp-imeta2013
 
@@ -1838,6 +2109,42 @@ T. S. van Erp. **Reaction rate calculation by parallel path swapping**. *Physica
 
 用途 / Role: Original method.
 
+### samp-pptis2004
+
+D. Moroni; P. G. Bolhuis; T. S. van Erp. **Rate constants for diffusive processes by partial path sampling**. *J. Chem. Phys. 120, 4055–4065* (2004). DOI: [10.1063/1.1644537](https://doi.org/10.1063/1.1644537).
+
+用途 / Role: Original partial-path TIS memory-reduction method.
+
+### samp-repptis2023
+
+W. Vervust; D. T. Zhang; T. S. van Erp; A. Ghysels. **Path sampling with memory reduction and replica exchange to reach long permeation timescales**. *Biophysical Journal 122, 2960–2972* (2023). DOI: [10.1016/j.bpj.2023.02.021](https://doi.org/10.1016/j.bpj.2023.02.021).
+
+用途 / Role: Original REPPTIS formulation.
+
+### samp-ffs2005
+
+R. J. Allen; P. B. Warren; P. R. ten Wolde. **Sampling Rare Switching Events in Biochemical Networks**. *Phys. Rev. Lett. 94, 018104* (2005). DOI: [10.1103/PhysRevLett.94.018104](https://doi.org/10.1103/PhysRevLett.94.018104).
+
+用途 / Role: Original forward flux sampling method.
+
+### samp-ffs2009
+
+R. J. Allen; C. Valeriani; P. R. ten Wolde. **Forward flux sampling for rare event simulations**. *J. Phys.: Condens. Matter 21, 463102* (2009). DOI: [10.1088/0953-8984/21/46/463102](https://doi.org/10.1088/0953-8984/21/46/463102).
+
+用途 / Role: FFS review; stochastic-splitting construction followed by the implementation.
+
+### samp-infretis2022
+
+S. Roet; D. T. Zhang; T. S. van Erp. **Exchanging Replicas with Unequal Cost, Infinitely and Permanently**. *J. Phys. Chem. A 126, 8878–8886* (2022). DOI: [10.1021/acs.jpca.2c06004](https://doi.org/10.1021/acs.jpca.2c06004).
+
+用途 / Role: Original asynchronous infinite-swap replica exchange (∞RETIS) algorithm.
+
+### samp-infretis2024
+
+D. T. Zhang; L. Baldauf; S. Roet; A. Lervik; T. S. van Erp. **Highly parallelizable path sampling with minimal rejections using asynchronous replica exchange and infinite swaps**. *Proc. Natl. Acad. Sci. USA 121, e2318731121* (2024). DOI: [10.1073/pnas.2318731121](https://doi.org/10.1073/pnas.2318731121).
+
+用途 / Role: Later ∞RETIS developments; its subtrajectory moves are not implemented.
+
 ### samp-tps1998
 
 P. G. Bolhuis; C. Dellago; D. Chandler. **Sampling ensembles of deterministic transition pathways**. *Faraday Discussions 110, 421–436* (1998). DOI: [10.1039/A801266K](https://doi.org/10.1039/A801266K).
@@ -1868,6 +2175,24 @@ D. Branduardi; F. L. Gervasio; M. Parrinello. **From A to B in free energy space
 
 用途 / Role: Original method.
 
+### samp-mlcolvar2023
+
+L. Bonati; E. Trizio; A. Rizzi; M. Parrinello. **A unified framework for machine learning collective variables for enhanced sampling simulations: mlcolvar**. *J. Chem. Phys. 159, 014801* (2023). DOI: [10.1063/5.0156343](https://doi.org/10.1063/5.0156343).
+
+用途 / Role: software; external training library for learned CVs.
+
+### samp-deeplda2020
+
+L. Bonati; V. Rizzi; M. Parrinello. **Data-Driven Collective Variables for Enhanced Sampling**. *J. Phys. Chem. Lett. 11, 2998–3004* (2020). DOI: [10.1021/acs.jpclett.0c00535](https://doi.org/10.1021/acs.jpclett.0c00535).
+
+用途 / Role: Original Deep-LDA collective variables.
+
+### samp-deeptica2021
+
+L. Bonati; G. Piccini; M. Parrinello. **Deep learning the slow modes for rare events sampling**. *Proc. Natl. Acad. Sci. USA 118, e2113533118* (2021). DOI: [10.1073/pnas.2113533118](https://doi.org/10.1073/pnas.2113533118).
+
+用途 / Role: Original Deep-TICA collective variables.
+
 ### samp-kabsch1976
 
 W. Kabsch. **A solution for the best rotation to relate two sets of vectors**. *Acta Crystallographica A 32, 922–923* (1976). DOI: [10.1107/S0567739476001873](https://doi.org/10.1107/S0567739476001873).
@@ -1885,6 +2210,12 @@ W. E; W. Ren; E. Vanden-Eijnden. **String method for the study of rare events**.
 L. Maragliano; A. Fischer; E. Vanden-Eijnden; G. Ciccotti. **String method in collective variables: Minimum free energy paths and isocommittor surfaces**. *Journal of Chemical Physics 125, 024106* (2006). DOI: [10.1063/1.2212942](https://doi.org/10.1063/1.2212942).
 
 用途 / Role: CV-string theoretical background; general nonlinear-CV metric terms not fully implemented.
+
+### samp-fts2005
+
+W. E; W. Ren; E. Vanden-Eijnden. **Finite Temperature String Method for the Study of Rare Events**. *J. Phys. Chem. B 109, 6688–6693* (2005). DOI: [10.1021/jp0455430](https://doi.org/10.1021/jp0455430).
+
+用途 / Role: Original finite-temperature string method.
 
 ### samp-prfo1985
 
@@ -1962,151 +2293,187 @@ S. Kumar; J. M. Rosenberg; D. Bouzida; R. H. Swendsen; P. A. Kollman. **The weig
 
 H.-D. Meyer and W. H. Miller. **A classical analog for electronic degrees of freedom in nonadiabatic collision processes**. *The Journal of Chemical Physics 70, 3214–3223* (1979). DOI: [10.1063/1.437910](https://doi.org/10.1063/1.437910).
 
-用途 / Role: Original classical electronic mapping antecedent; the complete classical S-matrix calculation is not implemented merely by using MMST variables..
+用途 / Role: Original classical electronic mapping antecedent; the complete classical S-matrix calculation is not implemented merely by using MMST variables.
 
 ### na-stock1997
 
 G. Stock and M. Thoss. **Semiclassical Description of Nonadiabatic Quantum Dynamics**. *Physical Review Letters 78, 578–581* (1997). DOI: [10.1103/PhysRevLett.78.578](https://doi.org/10.1103/PhysRevLett.78.578). [Source / author version](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.78.578).
 
-用途 / Role: Quantum mapping / SEO antecedent, not evidence that the package implements the full semiclassical IVR method..
+用途 / Role: Quantum mapping / SEO antecedent, not evidence that the package implements the full semiclassical IVR method.
 
 ### na-nrpmd2013
 
 J. O. Richardson and M. Thoss. **Communication: Nonadiabatic ring-polymer molecular dynamics**. *The Journal of Chemical Physics 139, 031102* (2013). DOI: [10.1063/1.4816124](https://doi.org/10.1063/1.4816124).
 
-用途 / Role: Original NRPMD and its SEO-projected thermal construction; direct origin for the published Fig. 1(c) benchmark..
+用途 / Role: Original NRPMD and its SEO-projected thermal construction; direct origin for the published Fig. 1(c) benchmark.
 
 ### na-nrpmd2017
 
 J. O. Richardson, P. Meyer, M.-O. Pleinert, and M. Thoss. **An analysis of nonadiabatic ring-polymer molecular dynamics and its application to vibronic spectra**. *Chemical Physics 482, 124–134* (2017). DOI: [10.1016/j.chemphys.2016.09.036](https://doi.org/10.1016/j.chemphys.2016.09.036). [Source / author version](https://www.sciencedirect.com/science/article/abs/pii/S0301010416305717).
 
-用途 / Role: Theoretical analysis and generalized independent mapping/nuclear bead construction; background only for features beyond one mapping vector per nuclear bead..
+用途 / Role: Theoretical analysis and generalized independent mapping/nuclear bead construction; background only for features beyond one mapping vector per nuclear bead.
 
 ### na-focused2019
 
 S. N. Chowdhury and P. Huo. **State dependent ring polymer molecular dynamics for investigating excited nonadiabatic dynamics**. *The Journal of Chemical Physics 150, 244102* (2019). DOI: [10.1063/1.5096276](https://doi.org/10.1063/1.5096276). [Source / author version](https://huogroup.github.io/pdf/jcp8.pdf).
 
-用途 / Role: Focused nonequilibrium electronic preparation and population estimator used by the public NRPMD path, especially Eqs. 20–23..
+用途 / Role: Focused nonequilibrium electronic preparation and population estimator used by the public NRPMD path, especially Eqs. 20–23.
 
 ### na-mint2018
 
 M. S. Church, T. J. H. Hele, G. S. Ezra, and N. Ananth. **Nonadiabatic semiclassical dynamics in the mixed quantum-classical initial value representation**. *The Journal of Chemical Physics 148, 102326* (2018). DOI: [10.1063/1.5005557](https://doi.org/10.1063/1.5005557). [Source / author version](https://arxiv.org/abs/1709.07474).
 
-用途 / Role: MInt exact mapping/nuclear-momentum subflow component; the paper's full MQC-IVR algorithm is not implemented by this substep..
+用途 / Role: MInt exact mapping/nuclear-momentum subflow component; the paper's full MQC-IVR algorithm is not implemented by this substep.
 
 ### na-sm2021
 
 D. Bossion, S. N. Chowdhury, and P. Huo. **Non-adiabatic ring polymer molecular dynamics with spin mapping variables**. *The Journal of Chemical Physics 154, 184106* (2021). DOI: [10.1063/5.0051456](https://doi.org/10.1063/5.0051456). [Source / author version](https://huogroup.github.io/pdf/jcp11.pdf).
 
-用途 / Role: Original SM-NRPMD; the implemented focused two-state equations do not include the paper's full Gamma_W equilibrium initialization..
+用途 / Role: Original SM-NRPMD; the implemented focused two-state equations do not include the paper's full Gamma_W equilibrium initialization.
 
 ### na-mash2023
 
 J. R. Mannouch and J. O. Richardson. **A mapping approach to surface hopping**. *The Journal of Chemical Physics 158, 104111* (2023). DOI: [10.1063/5.0139734](https://doi.org/10.1063/5.0139734). [Source / author version](https://arxiv.org/abs/2212.11773).
 
-用途 / Role: Original two-state MASH with deterministic spin-hemisphere surface selection..
+用途 / Role: Original two-state MASH with deterministic spin-hemisphere surface selection.
 
 ### na-mashrates2024
 
 J. E. Lawrence, J. R. Mannouch, and J. O. Richardson. **Recovering Marcus Theory Rates and Beyond without the Need for Decoherence Corrections: The Mapping Approach to Surface Hopping**. *The Journal of Physical Chemistry Letters 15, 707–716* (2024). DOI: [10.1021/acs.jpclett.3c03197](https://doi.org/10.1021/acs.jpclett.3c03197). [Source / author version](https://pmc.ncbi.nlm.nih.gov/articles/PMC10823533/).
 
-用途 / Role: Population sampling/ET-rate follow-up used in interpreting MASH and CA-RP-MASH observables..
+用途 / Role: Population sampling/ET-rate follow-up used in interpreting MASH and CA-RP-MASH observables.
 
 ### na-carp2025
 
 Z. Cao, V. A. Suarez, and J. S. Kretchmer. **A ring polymer molecular dynamics extension of the mapping approach to surface hopping: Incorporation of nuclear quantum effects**. *ChemRxiv, version 1 (7 December 2025), preprint* (2025). DOI: [10.26434/chemrxiv-2025-xps2g](https://doi.org/10.26434/chemrxiv-2025-xps2g). [Source / author version](https://client.prod.orp.cambridge.org/engage/chemrxiv/article-details/692ba382a10c9f5ca169b8de).
 
-用途 / Role: Implemented CA-RP-MASH algorithm and operator-pair weights; record the implemented preprint version explicitly..
+用途 / Role: Implemented CA-RP-MASH algorithm and operator-pair weights; record the implemented preprint version explicitly.
+
+### na-msmash2023
+
+J. E. Runeson; D. E. Manolopoulos. **A multi-state mapping approach to surface hopping**. *J. Chem. Phys. 159, 094115* (2023). DOI: [10.1063/5.0158147](https://doi.org/10.1063/5.0158147).
+
+用途 / Role: Original multistate MASH and its signed observable estimator.
 
 ### na-tully1990
 
 J. C. Tully. **Molecular dynamics with electronic transitions**. *The Journal of Chemical Physics 93, 1061–1071* (1990). DOI: [10.1063/1.459170](https://doi.org/10.1063/1.459170).
 
-用途 / Role: Original fewest-switches algorithm and Tully's three two-state scattering models..
+用途 / Role: Original fewest-switches algorithm and Tully's three two-state scattering models.
 
 ### na-rpsh2012
 
 P. Shushkov, R. Li, and J. C. Tully. **Ring polymer molecular dynamics with surface hopping**. *The Journal of Chemical Physics 137, 22A549* (2012). DOI: [10.1063/1.4766449](https://doi.org/10.1063/1.4766449).
 
-用途 / Role: Original RPSH proposal, with thermal scattering-rate tests..
+用途 / Role: Original RPSH proposal, with thermal scattering-rate tests.
 
 ### na-rpsh2017
 
 F. A. Shakib and P. Huo. **Ring Polymer Surface Hopping: Incorporating Nuclear Quantum Effects into Nonadiabatic Molecular Dynamics Simulations**. *The Journal of Physical Chemistry Letters 8, 3073–3080* (2017). DOI: [10.1021/acs.jpclett.7b01343](https://doi.org/10.1021/acs.jpclett.7b01343). [Source / author version](https://pubs.acs.org/doi/10.1021/acs.jpclett.7b01343).
 
-用途 / Role: Nonequilibrium RPSH benchmark and centroid/full-ring rescaling convention discussion; Tully models and low-momentum scattering..
+用途 / Role: Nonequilibrium RPSH benchmark and centroid/full-ring rescaling convention discussion; Tully models and low-momentum scattering.
+
+### na-iesh2009
+
+N. Shenvi; S. Roy; J. C. Tully. **Nonadiabatic dynamics at metal surfaces: Independent-electron surface hopping**. *J. Chem. Phys. 130, 174107* (2009). DOI: [10.1063/1.3125436](https://doi.org/10.1063/1.3125436).
+
+用途 / Role: Original independent-electron surface hopping.
+
+### na-iesh2023
+
+J. Gardner; D. Corken; S. M. Janke; S. Habershon; R. J. Maurer. **Efficient implementation and performance analysis of the independent electron surface hopping method for dynamics at metal surfaces**. *J. Chem. Phys. 158, 064101* (2023). DOI: [10.1063/5.0137137](https://doi.org/10.1063/5.0137137).
+
+用途 / Role: IESH implementation analysis and discretized metal model followed by the implementation.
 
 ### na-rpshdm2023
 
 Y. Shakya, R. Welsch, L. Inhester, and R. Santra. **Capturing electronic decoherence in quantum-classical dynamics using the ring-polymer-surface-hopping–density-matrix approach**. *Physical Review A 107, 062810* (2023). DOI: [10.1103/PhysRevA.107.062810](https://doi.org/10.1103/PhysRevA.107.062810). [Source / author version](https://journals.aps.org/pra/abstract/10.1103/PhysRevA.107.062810).
 
-用途 / Role: Explicit CA, bead-average (BA), and bead-electronic density-matrix (DM) formulations; first author is Yashoj Shakya, initial Y., not P..
+用途 / Role: Explicit CA, bead-average (BA), and bead-electronic density-matrix (DM) formulations; first author is Yashoj Shakya, initial Y., not P.
 
 ### na-dboc2025
 
 D. K. Limbu, S. Bhusal, D. M. Castañeda-Bagatella, and F. A. Shakib. **Diagonal Born–Oppenheimer corrections in condensed-phase ring polymer surface hopping**. *The Journal of Chemical Physics 163, 234102* (2025). DOI: [10.1063/5.0301249](https://doi.org/10.1063/5.0301249).
 
-用途 / Role: DBOC-RPSH extension and condensed-phase spin-boson benchmark; not a guarantee of accuracy improvement in every regime..
+用途 / Role: DBOC-RPSH extension and condensed-phase spin-boson benchmark; not a guarantee of accuracy improvement in every regime.
 
 ### na-soc2019
 
 G. Miao, N. Bellonzi, and J. E. Subotnik. **An extension of the fewest switches surface hopping algorithm to complex Hamiltonians and photophysics in magnetic fields: Berry curvature and ‘magnetic’ forces**. *The Journal of Chemical Physics 150, 124101* (2019). DOI: [10.1063/1.5088770](https://doi.org/10.1063/1.5088770). [Source / author version](https://arxiv.org/pdf/1902.05115).
 
-用途 / Role: Complex derivative-coupling rescaling direction (method 2) and local geometric force; ring-polymer use is an adaptation..
+用途 / Role: Complex derivative-coupling rescaling direction (method 2) and local geometric force; ring-polymer use is an adaptation.
 
 ### na-edc2007
 
 G. Granucci and M. Persico. **Critical appraisal of the fewest switches algorithm for surface hopping**. *The Journal of Chemical Physics 126, 134114* (2007). DOI: [10.1063/1.2715585](https://doi.org/10.1063/1.2715585).
 
-用途 / Role: Energy-based decoherence correction, especially the amplitude damping prescription in Eq. 17; centroid/ring energies are implementation conventions..
+用途 / Role: Energy-based decoherence correction, especially the amplitude damping prescription in Eq. 17; centroid/ring energies are implementation conventions.
 
 ### na-qd2018
 
 A. Mandal, S. S. R. K. C. Yamijala, and P. Huo. **Quasi-Diabatic Representation for Nonadiabatic Dynamics Propagation**. *Journal of Chemical Theory and Computation 14, 1828–1840* (2018). DOI: [10.1021/acs.jctc.7b01178](https://doi.org/10.1021/acs.jctc.7b01178). [Source / author version](https://pubs.acs.org/doi/10.1021/acs.jctc.7b01178).
 
-用途 / Role: QD local-basis/overlap strategy; its PLDM calculation is not implemented merely by reusing QD transport..
+用途 / Role: QD local-basis/overlap strategy; its PLDM calculation is not implemented merely by reusing QD transport.
 
 ### na-qd2019
 
 W. Zhou, A. Mandal, and P. Huo. **Quasi-Diabatic Scheme for Nonadiabatic On-the-Fly Simulations**. *The Journal of Physical Chemistry Letters 10, 7062–7070* (2019). DOI: [10.1021/acs.jpclett.9b02747](https://doi.org/10.1021/acs.jpclett.9b02747). [Source / author version](https://pubs.acs.org/doi/10.1021/acs.jpclett.9b02747).
 
-用途 / Role: On-the-fly QD demonstration with ethylene; package QD-NRPMD is a composition with a different dynamical approximation..
+用途 / Role: On-the-fly QD demonstration with ethylene; package QD-NRPMD is a composition with a different dynamical approximation.
+
+### na-hst1994
+
+S. Hammes-Schiffer; J. C. Tully. **Proton transfer in solution: Molecular dynamics with quantum transitions**. *J. Chem. Phys. 101, 4657–4667* (1994). DOI: [10.1063/1.467455](https://doi.org/10.1063/1.467455).
+
+用途 / Role: Finite-difference time-derivative coupling from adjacent-frame overlaps.
+
+### na-npi2014
+
+G. A. Meek; B. G. Levine. **Evaluation of the Time-Derivative Coupling for Accurate Electronic State Transition Probabilities from Numerical Simulations**. *J. Phys. Chem. Lett. 5, 2351–2356* (2014). DOI: [10.1021/jz5009449](https://doi.org/10.1021/jz5009449).
+
+用途 / Role: Original norm-preserving interpolation of overlap-based couplings.
+
+### na-npi2016
+
+A. Jain; E. Alguire; J. E. Subotnik. **An Efficient, Augmented Surface Hopping Algorithm That Includes Decoherence for Use in Large-Scale Simulations**. *J. Chem. Theory Comput. 12, 5256–5268* (2016). DOI: [10.1021/acs.jctc.6b00673](https://doi.org/10.1021/acs.jctc.6b00673).
+
+用途 / Role: Multistate generalized NPI time-derivative matrix used by the overlap-coupling path; its A-FSSH decoherence is not implemented here.
 
 ### na-mv2013
 
 N. Ananth. **Mapping variable ring polymer molecular dynamics: A path-integral based method for nonadiabatic processes**. *The Journal of Chemical Physics 139, 124102* (2013). DOI: [10.1063/1.4821590](https://doi.org/10.1063/1.4821590). [Source / author version](https://arxiv.org/abs/1309.4476).
 
-用途 / Role: Original MV-RPMD signed mapping partition function and model dynamics..
+用途 / Role: Original MV-RPMD signed mapping partition function and model dynamics.
 
 ### na-kc2014
 
 A. R. Menzeleev, F. Bell, and T. F. Miller III. **Kinetically constrained ring-polymer molecular dynamics for non-adiabatic chemical reactions**. *The Journal of Chemical Physics 140, 064103* (2014). DOI: [10.1063/1.4863919](https://doi.org/10.1063/1.4863919). [Source / author version](https://arxiv.org/abs/1401.3033).
 
-用途 / Role: Original primitive two-state KC-RPMD, crossing calibration and auxiliary-coordinate dynamics..
+用途 / Role: Original primitive two-state KC-RPMD, crossing calibration and auxiliary-coordinate dynamics.
 
 ### na-iso2018
 
 X. Tao, P. Shushkov, and T. F. Miller III. **Path-integral isomorphic Hamiltonian for including nuclear quantum effects in non-adiabatic dynamics**. *The Journal of Chemical Physics 148, 102327* (2018). DOI: [10.1063/1.5005544](https://doi.org/10.1063/1.5005544). [Source / author version](https://arxiv.org/abs/1709.06722).
 
-用途 / Role: Trace-matched isomorphic Hamiltonian; the package implements an explicit two-state Ehrenfest consumer, not all QCLE/SH dynamics in the paper..
+用途 / Role: Trace-matched isomorphic Hamiltonian; the package implements an explicit two-state Ehrenfest consumer, not all QCLE/SH dynamics in the paper.
 
 ### na-nah21992
 
 P. Halvick and D. G. Truhlar. **A new diabatic representation of the coupled potential energy surfaces for Na(3p 2P)+H2 → Na(3s 2S)+H2 or NaH+H**. *The Journal of Chemical Physics 96, 2895–2909* (1992). DOI: [10.1063/1.461986](https://doi.org/10.1063/1.461986).
 
-用途 / Role: Original coupled NaH2 diabatic potential; physical origin is independent of the selected propagation method..
+用途 / Role: Original coupled NaH2 diabatic potential; physical origin is independent of the selected propagation method.
 
 ### na-nah2err1994
 
 P. Halvick and D. G. Truhlar. **Erratum: A new diabatic representation of the coupled potential energy surfaces for Na(3p 2P)+H2 → Na(3s 2S)+H2 or NaH+H**. *The Journal of Chemical Physics 100, 4718* (1994). DOI: [10.1063/1.467282](https://doi.org/10.1063/1.467282).
 
-用途 / Role: Required correction accompanying the original NaH2 potential citation..
+用途 / Role: Required correction accompanying the original NaH2 potential citation.
 
 ### na-feit1982
 
 M. D. Feit, J. A. Fleck Jr., and A. Steiger. **Solution of the Schrödinger equation by a spectral method**. *Journal of Computational Physics 47, 412–433* (1982). DOI: [10.1016/0021-9991(82)90091-2](https://doi.org/10.1016/0021-9991(82)90091-2). [Source / author version](https://www.sciencedirect.com/science/article/pii/0021999182900912).
 
-用途 / Role: Fourier spectral/split-operator quantum propagation antecedent; the exactness claim requires finite-box/grid/time convergence..
+用途 / Role: Fourier spectral/split-operator quantum propagation antecedent; the exactness claim requires finite-box/grid/time convergence.
 
 ### bzp2009
 

@@ -1,7 +1,3 @@
----
-orphan: true
----
-
 # Online excited-state electronic-structure interface
 
 PyRPMD's excited-state provider layer connects on-the-fly electronic-structure
@@ -297,6 +293,9 @@ Detailed commands, raw summaries, hardware, and known validation gaps are in
 `docs/validation/excited-state-interface-2026-11-03/README.md`.
 
 ## References
+
+Catalog entry: [na-excited-state](manual/references.md#na-excited-state). Also cite the electronic-structure
+method, functional and basis set used by the backend.
 
 - S. Hammes-Schiffer and J. C. Tully, "Proton transfer in solution: Molecular
   dynamics with quantum transitions," *J. Chem. Phys.* **101**, 4657 (1994),

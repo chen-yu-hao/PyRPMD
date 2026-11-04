@@ -227,6 +227,7 @@ Cao, Suarez and Kretchmer, Eqs. (34)–(43). Its workflow name is
 `method="rp-mash-ba"`. The existing `method="rp-mash"` continues to mean
 CA-RP-MASH, with its existing state representation and scientific identity.
 This addition does not extend classical multistate MASH to a ring polymer.
+Catalog entry: [na-ba-rp-mash](manual/references.md#na-ba-rp-mash).
 
 ### Electronic motion and bead forces
 

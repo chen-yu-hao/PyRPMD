@@ -2,10 +2,13 @@
 
 This inventory groups implemented **scientific methods, models and interfaces**, rather than inventing
 a paper for every helper function. It audits commit
-[`cb60679`](https://github.com/chen-yu-hao/PyRPMD/commit/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d) on **2026-11-02**.
-The **111 entries and 170 bibliographic records** connect implementation paths to primary sources
+[`28cde09`](https://github.com/chen-yu-hao/PyRPMD/commit/28cde092b66707878d99bc45eadf6bdf5950b317) on **2026-11-03**.
+The **125 entries and 199 bibliographic records** connect implementation paths to primary sources
 and explicit scope boundaries. The [reproduction checklist](reproduction.md) adds the original systems,
 observables, existing entry points, missing ingredients and priorities.
+Entries for features merged after the previous audit (`cb60679`, 2026-11-02), and entries whose scope those
+features changed, were written or revised against this commit; the remaining scope notes carry the earlier
+review forward with updated code links.
 
 ## How to cite a calculation
 
@@ -14,15 +17,39 @@ as well as the exact PyRPMD version/commit. An H + H2/BKMP2 rate calculation nee
 foundation, RPMD rate theory and bimolecular normalization, the BKMP2 surface and the software actually used.
 A software paper or a review does not replace the originating algorithm paper.
 
+Cite PyRPMD itself as software, using the metadata in
+[CITATION.cff](https://github.com/chen-yu-hao/PyRPMD/blob/main/CITATION.cff) (GitHub's **Cite this repository** button
+produces APA and BibTeX from it). Add the version reported by `pyrpmd --version`, which each run also
+stores in `manifest.json`, and, for an unreleased checkout, the commit hash from `git rev-parse HEAD`.
+PyRPMD has no journal article yet, so do not substitute RPMDrate, Caracal or a method paper for the
+software citation.
+
 Sources are deliberately distinguished as original methods, later corrections, models/data, software,
 formula references or background. **A citation is not a claim of full implementation or successful
 reproduction.** Package-specific compositions cite their components; an adapter does not implement all
 of the upstream method; generic controls and engineering utilities have no invented scientific origin.
 Respect the source version, erratum and implementation boundary recorded below.
 
+### Workflow checklist
+
+Collect the citation keys for a run from the entries below. Common starting sets:
+
+| Calculation | Catalog entries to cite |
+| --- | --- |
+| Bimolecular RPMD rate (`rate`) | [rpm-rate](#rpm-rate), [integrators](#integrators), [samp-umbrella](#samp-umbrella), [samp-ui](#samp-ui) or [samp-mbar](#samp-mbar), plus the PES |
+| Direct collisions (`drpmd`) | [direct-rpmd](#direct-rpmd), [integrators](#integrators), plus [state-rpmd](#state-rpmd) or [qct](#qct) for selected initial states |
+| Free-energy surfaces (`fes`) | The chosen method: [samp-umbrella](#samp-umbrella), [samp-standard-meta](#samp-standard-meta), [samp-wt-meta](#samp-wt-meta), [samp-opes](#samp-opes), [samp-ves](#samp-ves), [samp-abf](#samp-abf) or [samp-steered](#samp-steered) |
+| Equilibrium PIMD (`pimd`) | [pimd](#pimd), the thermostat ([pile](#pile), [gle](#gle), [piglet](#piglet), [nhc](#nhc)) and, for NPT, the barostat ([bzp](#bzp), [mtk](#mtk), [scr](#scr)) |
+| Replica exchange and tempering | [samp-reus](#samp-reus) or [samp-tempering](#samp-tempering) |
+| Path sampling (`path_sampling`) | [samp-tis](#samp-tis), [samp-retis](#samp-retis), [samp-infretis](#samp-infretis), [samp-pptis](#samp-pptis) or [samp-ffs](#samp-ffs) |
+| Nonadiabatic populations (`nonadiabatic`) | The selected method entry, such as [na-nrpmd-focused](#na-nrpmd-focused), [na-carp-mash](#na-carp-mash), [na-ba-rp-mash](#na-ba-rp-mash), [na-ms-mash](#na-ms-mash), [na-iesh](#na-iesh) or [na-rpsh-ca](#na-rpsh-ca), plus the model |
+| Electrochemical PCET (`pcet`) | [pcet](#pcet), plus the electrode and environment model |
+| External force engines and ML potentials | The adapter entry ([ase](#ase), [openmm](#openmm), [lammps](#lammps), [ipi-socket](#ipi-socket), [ml-adapters](#ml-adapters)) and the model paper and checkpoint |
+
 Machine-readable records and BibTeX are available as repository files
 [method-references.json](../method-references.json) and
-[references.bib](../references.bib).
+[references.bib](../references.bib). Both pages and the BibTeX file are generated from the JSON by
+`python tools/reference_catalog.py --write`.
 
 ## Equilibrium, dynamics, rates and spectroscopy
 
@@ -34,7 +61,7 @@ Sources: [cw81](#cw81), [pr84](#pr84), [pile10](#pile10)
 
 Closed distinguishable-particle ring-polymer equilibrium sampling. Imaginary-time beads are a statistical representation; fictitious sampling time is not exact quantum dynamics.
 
-Code: [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/dynamics.py), [src/pyrpmd/engine.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/engine.py), [src/pyrpmd/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/path_integral.py), [src/pyrpmd/workflows/native_pimd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/native_pimd.py)
+Code: [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/dynamics.py), [src/pyrpmd/engine.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/engine.py), [src/pyrpmd/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/path_integral.py), [src/pyrpmd/workflows/native_pimd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/native_pimd.py)
 
 [Reproduction task](reproduction.md#task-pimd).
 
@@ -46,7 +73,7 @@ Sources: [rpm04](#rpm04), [kubo57](#kubo57)
 
 Physical-mass ring-polymer propagation approximates Kubo-transformed equilibrium correlation functions; the classical P=1 and harmonic linear-observable limits provide checks.
 
-Code: [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/dynamics.py), [src/pyrpmd/propagation.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/propagation.py), [src/pyrpmd/analysis/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/spectroscopy.py)
+Code: [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/dynamics.py), [src/pyrpmd/propagation.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/propagation.py), [src/pyrpmd/analysis/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/spectroscopy.py)
 
 [Reproduction task](reproduction.md#task-rpmd).
 
@@ -58,7 +85,7 @@ Sources: [bennett1977](#bennett1977), [chandler1978](#chandler1978), [rate05](#r
 
 Bennett–Chandler style separation of a centroid free-energy/QTST factor and a dynamical recrossing transmission coefficient, with bimolecular entrance-channel normalization.
 
-Code: [src/pyrpmd/workflows/rate.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/rate.py), [src/pyrpmd/workflows/rate_pmf.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/rate_pmf.py), [src/pyrpmd/workflows/rate_recrossing.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/rate_recrossing.py), [src/pyrpmd/analysis/rate_pmf.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/rate_pmf.py)
+Code: [src/pyrpmd/workflows/rate.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/rate.py), [src/pyrpmd/workflows/rate_pmf.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/rate_pmf.py), [src/pyrpmd/workflows/rate_recrossing.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/rate_recrossing.py), [src/pyrpmd/analysis/rate_pmf.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/rate_pmf.py)
 
 [Reproduction task](reproduction.md#task-rpm-rate).
 
@@ -70,7 +97,7 @@ Sources: [drpmd18](#drpmd18)
 
 Thermally sampled incoming ring polymers followed by direct collision trajectories, cross-section/rate estimation and channel classification.
 
-Code: [src/pyrpmd/workflows/drpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/drpmd.py), [src/pyrpmd/workflows/drpmd_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/drpmd_sampling.py), [src/pyrpmd/workflows/drpmd_classification.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/drpmd_classification.py), [src/pyrpmd/analysis/scattering.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/scattering.py)
+Code: [src/pyrpmd/workflows/drpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/drpmd.py), [src/pyrpmd/workflows/drpmd_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/drpmd_sampling.py), [src/pyrpmd/workflows/drpmd_classification.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/drpmd_classification.py), [src/pyrpmd/analysis/scattering.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/scattering.py)
 
 [Reproduction task](reproduction.md#task-direct-rpmd).
 
@@ -82,7 +109,7 @@ Sources: [nerp16](#nerp16), [state20](#state20), [state21](#state21), [state22](
 
 Cold harmonic ring preparation plus centroid vibrational excitation and optional j=0 angular-momentum projection. Auxiliary β controls state preparation and is distinct from collision energy or a measured thermal temperature.
 
-Code: [src/pyrpmd/initial_states.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/initial_states.py), [src/pyrpmd/workflows/state_selected.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/state_selected.py)
+Code: [src/pyrpmd/initial_states.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/initial_states.py), [src/pyrpmd/workflows/state_selected.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/state_selected.py)
 
 [Reproduction task](reproduction.md#task-state-rpmd).
 
@@ -94,7 +121,7 @@ Sources: [qct65](#qct65), [state20](#state20), [state22](#state22)
 
 Production QCT uses P=1 harmonic state preparation. The H₃ benchmark additionally solves a one-dimensional full-PES classical action condition J(E)=v+1/2 and samples a time-uniform orbit phase.
 
-Code: [src/pyrpmd/initial_states.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/initial_states.py), [src/pyrpmd/workflows/state_selected.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/state_selected.py), [benchmarks/h3/diatomic_action.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/diatomic_action.py), [benchmarks/h3/state_preparation_study.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/state_preparation_study.py)
+Code: [src/pyrpmd/initial_states.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/initial_states.py), [src/pyrpmd/workflows/state_selected.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/state_selected.py), [benchmarks/h3/diatomic_action.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/diatomic_action.py), [benchmarks/h3/state_preparation_study.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/state_preparation_study.py)
 
 [Reproduction task](reproduction.md#task-qct).
 
@@ -106,7 +133,7 @@ Sources: [state20](#state20), [state22](#state22)
 
 Repository-specific diagnostic that changes the preparation Hamiltonian smoothly before scattering; the cited papers supply the surrounding harmonic NE-RPMD context only.
 
-Code: [benchmarks/h3/diatomic_switch.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/diatomic_switch.py), [benchmarks/h3/state_preparation_study.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/state_preparation_study.py)
+Code: [benchmarks/h3/diatomic_switch.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/diatomic_switch.py), [benchmarks/h3/state_preparation_study.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/state_preparation_study.py)
 
 [Reproduction task](reproduction.md#task-state-switch).
 
@@ -118,7 +145,7 @@ Sources: [vv82](#vv82), [pile10](#pile10), [cayley19](#cayley19)
 
 Deterministic physical-mass ring-polymer integrators: direct Verlet, analytic free-ring normal-mode BAB, and strongly stable Cayley BCB.
 
-Code: [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/dynamics.py), [src/pyrpmd/propagation.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/propagation.py), [src/pyrpmd/torch_backend.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/torch_backend.py)
+Code: [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/dynamics.py), [src/pyrpmd/propagation.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/propagation.py), [src/pyrpmd/torch_backend.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/torch_backend.py)
 
 [Reproduction task](reproduction.md#task-integrators).
 
@@ -130,7 +157,7 @@ Sources: [baoab13](#baoab13), [bcocb20](#bcocb20), [cayley19](#cayley19)
 
 Symmetric Langevin splittings. In BCOCB each C half-step is the square root of the full-step Cayley map, not Cayley evaluated at dt/2.
 
-Code: [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/dynamics.py), [src/pyrpmd/torch_backend.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/torch_backend.py), [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+Code: [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/dynamics.py), [src/pyrpmd/torch_backend.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/torch_backend.py), [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 [Reproduction task](reproduction.md#task-stochastic-integrators).
 
@@ -142,7 +169,7 @@ Sources: [and80](#and80), [langevin07](#langevin07), [svr07](#svr07)
 
 Andersen global Maxwell redraw with an explicit discrete collision clock; exact OU Cartesian Langevin bath; global canonical stochastic velocity rescaling including sign and zero-energy branches.
 
-Code: [src/pyrpmd/thermostats.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/thermostats.py), [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py), [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/dynamics.py)
+Code: [src/pyrpmd/thermostats.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/thermostats.py), [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py), [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/dynamics.py)
 
 [Reproduction task](reproduction.md#task-classical-baths).
 
@@ -154,7 +181,7 @@ Sources: [pile10](#pile10), [svr07](#svr07)
 
 PILE-L uses local mode friction proportional to ring frequency; PILE-G combines internal-mode PILE with global centroid stochastic velocity rescaling. Internal-mode friction follows the ring frequencies; centroid coupling is set separately, rather than inferred from its zero normal-mode frequency.
 
-Code: [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/dynamics.py), [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+Code: [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/dynamics.py), [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 [Reproduction task](reproduction.md#task-pile).
 
@@ -166,7 +193,7 @@ Sources: [nhc92](#nhc92), [yoshida1990](#yoshida1990)
 
 Global Nosé–Hoover chain with a three-stage Suzuki–Yoshida composition; Python and native routes share mass/DOF conventions.
 
-Code: [src/pyrpmd/thermostats.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/thermostats.py), [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+Code: [src/pyrpmd/thermostats.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/thermostats.py), [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 [Reproduction task](reproduction.md#task-nhc).
 
@@ -178,7 +205,7 @@ Sources: [gle09](#gle09), [pile10](#pile10)
 
 Extended-variable exact OU update with supplied stable drift and covariance matrices; Cartesian GLE, normal-mode GLE and normal-mode GLE plus global centroid SVR are available.
 
-Code: [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+Code: [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 [Reproduction task](reproduction.md#task-gle).
 
@@ -190,7 +217,7 @@ Sources: [piglet12](#piglet12)
 
 NVT normal-mode GLE using externally supplied P-dependent calibrated matrices, matched β and parameter provenance; no built-in calibration table is invented.
 
-Code: [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+Code: [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 [Reproduction task](reproduction.md#task-piglet).
 
@@ -202,7 +229,7 @@ Sources: [ffl18](#ffl18)
 
 Native rescale variant updates momentum magnitude while retaining its direction; it is one variant of the fast-forward Langevin family.
 
-Code: [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+Code: [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 [Reproduction task](reproduction.md#task-ffl).
 
@@ -214,7 +241,7 @@ Sources: [shake77](#shake77), [rattle83](#rattle83)
 
 Position and tangent-momentum constraints on every bead, using the Verlet old-gradient SHAKE displacement and matching momentum impulse followed by RATTLE projection.
 
-Code: [src/pyrpmd/bond_constraints.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/bond_constraints.py), [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/dynamics.py)
+Code: [src/pyrpmd/bond_constraints.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/bond_constraints.py), [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/dynamics.py)
 
 [Reproduction task](reproduction.md#task-constraints).
 
@@ -226,7 +253,7 @@ Sources: [rpc08](#rpc08), [respa92](#respa92), [mts16](#mts16), [refrpc16](#refr
 
 Low-mode bead contraction for a slow correction and two-level r-RESPA fast/slow force propagation. Reference correction means Vslow=Vtarget−Vreference, not a second full target potential.
 
-Code: [src/pyrpmd/potentials/contraction.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/contraction.py), [src/pyrpmd/multitime.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/multitime.py), [src/pyrpmd/propagation.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/propagation.py)
+Code: [src/pyrpmd/potentials/contraction.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/contraction.py), [src/pyrpmd/multitime.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/multitime.py), [src/pyrpmd/propagation.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/propagation.py)
 
 [Reproduction task](reproduction.md#task-rpc-mts).
 
@@ -238,7 +265,7 @@ Sources: [cmd93](#cmd93), [cmd94](#cmd94), [pacmd06](#pacmd06)
 
 Dedicated PACMDDynamics uses fictitious internal-mode masses and an exact-free BAOAB propagator, retaining physical centroid mass. It is distinct from adding friction to an ordinary physical-mass RPMD trajectory.
 
-Code: [src/pyrpmd/cmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/cmd.py), [src/pyrpmd/workflows/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/spectroscopy.py)
+Code: [src/pyrpmd/cmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/cmd.py), [src/pyrpmd/workflows/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/spectroscopy.py)
 
 [Reproduction task](reproduction.md#task-pacmd).
 
@@ -250,9 +277,21 @@ Sources: [cmd94](#cmd94), [fcmd05](#fcmd05)
 
 Exports PIMD centroid/mean physical bead forces and fits a conservative local quadratic centroid force model; temperature is part of model provenance. IBI is a separate update building block.
 
-Code: [src/pyrpmd/cmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/cmd.py)
+Code: [src/pyrpmd/cmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/cmd.py)
 
 [Reproduction task](reproduction.md#task-fcmd).
+
+### qcmd
+
+**Experimental f-QCMD for bent triatomic molecules**
+
+Sources: [qcmd2019](#qcmd2019), [fqcmd2021](#fqcmd2021), [cmd94](#cmd94)
+
+Bead-averaged bond/angle quasi-centroids for nonperiodic, fixed-topology bent triatomics; iterative Boltzmann inversion of separable correction potentials; classical spectroscopy dynamics with method="f-qcmd" and beads=1. A constrained-PIMD API samples fixed mean internal coordinates for equilibrium research. Real-time adiabatic QCMD and h-CMD are not implemented and fail explicitly.
+
+Code: [src/pyrpmd/qcmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/qcmd.py), [src/pyrpmd/_qcmd_geometry.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/_qcmd_geometry.py), [src/pyrpmd/_qcmd_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/_qcmd_sampling.py), [src/pyrpmd/workflows/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/spectroscopy.py)
+
+[Reproduction task](reproduction.md#task-qcmd).
 
 ### trpmd
 
@@ -262,7 +301,7 @@ Sources: [trpmd14](#trpmd14), [rpm04](#rpm04), [kubo57](#kubo57), [water09](#wat
 
 Internal-mode friction with an unthermostatted centroid; relative IR is derived from dipole Kubo correlations with the βω² convention and no extra harmonic quantum correction.
 
-Code: [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/dynamics.py), [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py), [src/pyrpmd/analysis/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/spectroscopy.py), [src/pyrpmd/workflows/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/spectroscopy.py)
+Code: [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/dynamics.py), [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py), [src/pyrpmd/analysis/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/spectroscopy.py), [src/pyrpmd/workflows/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/spectroscopy.py)
 
 [Reproduction task](reproduction.md#task-trpmd).
 
@@ -274,7 +313,7 @@ Sources: [trpmd14](#trpmd14), [trprate15](#trprate15)
 
 Optional internally thermostatted rate trajectories supply a friction-sensitivity comparison; rate dynamics must state the selected friction protocol.
 
-Code: [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/dynamics.py), [src/pyrpmd/workflows/rate_recrossing.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/rate_recrossing.py)
+Code: [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/dynamics.py), [src/pyrpmd/workflows/rate_recrossing.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/rate_recrossing.py)
 
 [Reproduction task](reproduction.md#task-trpmd-rates).
 
@@ -286,7 +325,7 @@ Sources: [kubo57](#kubo57), [raman21](#raman21)
 
 Polarizability-tensor correlations decomposed into isotropic and traceless anisotropic invariants; VV=45iso+4aniso, VH=3aniso, total=45iso+7aniso. Optional Kubo-to-Stokes and laser-frequency factors are explicit.
 
-Code: [src/pyrpmd/analysis/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/spectroscopy.py), [src/pyrpmd/properties.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/properties.py)
+Code: [src/pyrpmd/analysis/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/spectroscopy.py), [src/pyrpmd/properties.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/properties.py)
 
 [Reproduction task](reproduction.md#task-raman).
 
@@ -298,7 +337,7 @@ Sources: [sfg02](#sfg02), [kubo57](#kubo57)
 
 Causal dipole–polarizability response R(t)=−βdCμα(t)/dt and complex susceptibility using the documented positive-frequency transform; signed Imχ and coherent replica averaging are retained.
 
-Code: [src/pyrpmd/analysis/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/spectroscopy.py), [src/pyrpmd/properties.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/properties.py)
+Code: [src/pyrpmd/analysis/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/spectroscopy.py), [src/pyrpmd/properties.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/properties.py)
 
 [Reproduction task](reproduction.md#task-sfg).
 
@@ -310,7 +349,7 @@ Sources: [ti84](#ti84), [pcn13](#pcn13), [cw81](#cw81)
 
 Primitive or TI closed-path trace action sampled by Gaussian-preserving pCN internal-mode proposals plus centroid Metropolis moves. MC steps are not dynamical time.
 
-Code: [src/pyrpmd/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/path_integral.py)
+Code: [src/pyrpmd/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/path_integral.py)
 
 [Reproduction task](reproduction.md#task-ti-pcn).
 
@@ -322,7 +361,7 @@ Sources: [yam05](#yam05), [ti84](#ti84), [cw81](#cw81)
 
 Thermodynamic β derivatives of the chosen trace action, kinetic estimators and optional scaled-coordinate finite-difference virial estimation; correlated-sample uncertainty is handled by blocks.
 
-Code: [src/pyrpmd/quantum_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/quantum_statistics.py)
+Code: [src/pyrpmd/quantum_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/quantum_statistics.py)
 
 [Reproduction task](reproduction.md#task-thermo-estimators).
 
@@ -334,7 +373,7 @@ Sources: [iso13](#iso13), [iso14](#iso14)
 
 Thermodynamic and scaled-coordinate FEP mass substitutions, two-environment fractionation ratios and kinetic-energy thermodynamic integration over mass, with overlap diagnostics.
 
-Code: [src/pyrpmd/quantum_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/quantum_statistics.py)
+Code: [src/pyrpmd/quantum_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/quantum_statistics.py)
 
 [Reproduction task](reproduction.md#task-isotopes).
 
@@ -346,7 +385,7 @@ Sources: [cw81](#cw81), [ceperley95](#ceperley95), [mom10](#mom10)
 
 Direct primitive open-chain endpoint-separation sampling and Fourier estimation of one Cartesian component of n(p), with KDE/block-jackknife diagnostics.
 
-Code: [src/pyrpmd/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/path_integral.py), [src/pyrpmd/quantum_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/quantum_statistics.py)
+Code: [src/pyrpmd/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/path_integral.py), [src/pyrpmd/quantum_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/quantum_statistics.py)
 
 [Reproduction task](reproduction.md#task-momentum).
 
@@ -358,7 +397,7 @@ Sources: [suz95](#suz95), [chin97](#chin97), [sc16](#sc16)
 
 Even-bead alternating Suzuki–Chin weights with force-gradient terms evaluated through symmetric finite differences along F/m. Python supports α in [0,1]; CLI currently restricts α=0.
 
-Code: [src/pyrpmd/pimd_methods.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pimd_methods.py), [src/pyrpmd/workflows/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/path_integral.py)
+Code: [src/pyrpmd/pimd_methods.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pimd_methods.py), [src/pyrpmd/workflows/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/path_integral.py), [src/pyrpmd/suzuki_chin.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/suzuki_chin.py)
 
 [Reproduction task](reproduction.md#task-suzuki-chin).
 
@@ -370,7 +409,7 @@ Sources: [bose19](#bose19), [bose23](#bose23)
 
 Feldman–Hirshberg O(N²+PN) recurrence for equal-mass exchange groups, using representative cycles and symmetric observables.
 
-Code: [src/pyrpmd/pimd_methods.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pimd_methods.py), [src/pyrpmd/workflows/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/path_integral.py)
+Code: [src/pyrpmd/pimd_methods.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pimd_methods.py), [src/pyrpmd/workflows/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/path_integral.py)
 
 [Reproduction task](reproduction.md#task-bosons).
 
@@ -382,7 +421,7 @@ Sources: [pigs00](#pigs00)
 
 Odd-bead open chain with endpoint half-potential weights and a positive Gaussian or supplied positive trial wavefunction; midpoint observables estimate the projected ground state.
 
-Code: [src/pyrpmd/pimd_methods.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pimd_methods.py), [src/pyrpmd/workflows/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/path_integral.py)
+Code: [src/pyrpmd/pimd_methods.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pimd_methods.py), [src/pyrpmd/workflows/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/path_integral.py)
 
 [Reproduction task](reproduction.md#task-pigs).
 
@@ -394,7 +433,7 @@ Sources: [rpi09](#rpi09), [rpi16](#rpi16)
 
 Stationary imaginary-time ring optimization, semiclassical fluctuation determinant/prefactor, harmonic-reactant normalization and negative/zero-mode checks; multidimensional gas-rate handling includes declared rigid-body external modes.
 
-Code: [src/pyrpmd/instanton.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/instanton.py), [src/pyrpmd/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/low_temperature.py)
+Code: [src/pyrpmd/instanton.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/instanton.py), [src/pyrpmd/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/low_temperature.py)
 
 [Reproduction task](reproduction.md#task-rpi).
 
@@ -406,7 +445,7 @@ Sources: [split11](#split11)
 
 Single-kink semiclassical splitting for an isolated symmetric bound or explicitly constrained doublet.
 
-Code: [src/pyrpmd/tunnelling.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/tunnelling.py), [src/pyrpmd/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/low_temperature.py)
+Code: [src/pyrpmd/tunnelling.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/tunnelling.py), [src/pyrpmd/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/low_temperature.py)
 
 [Reproduction task](reproduction.md#task-splitting).
 
@@ -418,7 +457,7 @@ Sources: [eyr35](#eyr35), [wig32](#wig32), [eck30](#eck30)
 
 Classical and quantum harmonic-TST baselines, leading Wigner tunnelling correction and thermally integrated asymmetric Eckart transmission, with explicitly named ZPE/barrier conventions.
 
-Code: [src/pyrpmd/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/low_temperature.py)
+Code: [src/pyrpmd/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/low_temperature.py)
 
 [Reproduction task](reproduction.md#task-low-t-checks).
 
@@ -432,7 +471,7 @@ Sources: [samp-us1974](#samp-us1974), [samp-us1977](#samp-us1977)
 
 Static harmonic umbrella biases with full CV Jacobians and explicit ring scaling; US origins are classical Monte Carlo and supply the importance-sampling principle, not an identical PyRPMD dynamics engine.
 
-Code: [src/pyrpmd/bias.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/bias.py), [src/pyrpmd/workflows/fes.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/fes.py)
+Code: [src/pyrpmd/bias.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/bias.py), [src/pyrpmd/workflows/fes.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/fes.py)
 
 [Reproduction task](reproduction.md#task-samp-umbrella).
 
@@ -444,7 +483,7 @@ Sources: [samp-mbar2008](#samp-mbar2008)
 
 Direct SciPy implementation of MBAR; bins are used only after MBAR to form CV-density FES. Do not rename this as a separately implemented WHAM solver. Bootstrap is the package uncertainty route; original asymptotic covariance is not thereby claimed.
 
-Code: [src/pyrpmd/analysis/mbar.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/mbar.py), [src/pyrpmd/analysis/fes.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/fes.py), [src/pyrpmd/analysis/umbrella.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/umbrella.py)
+Code: [src/pyrpmd/analysis/mbar.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/mbar.py), [src/pyrpmd/analysis/fes.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/fes.py), [src/pyrpmd/analysis/umbrella.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/umbrella.py)
 
 [Reproduction task](reproduction.md#task-samp-mbar).
 
@@ -456,7 +495,7 @@ Sources: [samp-ui2005](#samp-ui2005), [samp-uierr2006](#samp-uierr2006)
 
 One-dimensional Gaussian window approximation ported mathematically from RPMDrate; it is not the later multidimensional or higher-order UI algorithms.
 
-Code: [src/pyrpmd/analysis/umbrella.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/umbrella.py), [src/pyrpmd/analysis/rate_pmf.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/rate_pmf.py)
+Code: [src/pyrpmd/analysis/umbrella.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/umbrella.py), [src/pyrpmd/analysis/rate_pmf.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/rate_pmf.py)
 
 [Reproduction task](reproduction.md#task-samp-ui).
 
@@ -468,7 +507,7 @@ Sources: [samp-mbar2008](#samp-mbar2008), [samp-us1977](#samp-us1977), [samp-ogr
 
 PyRPMD-specific normalized MBAR-overlap graph, midpoint/coverage insertion, fixed stiffness, independent pilot then fresh production. OGRe is a benchmark/model comparison, not the implemented planner; OGRe also uses confinement/consistency and stiffness refinement.
 
-Code: [src/pyrpmd/workflows/adaptive_umbrella.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/adaptive_umbrella.py), [src/pyrpmd/analysis/fes_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/fes_statistics.py)
+Code: [src/pyrpmd/workflows/adaptive_umbrella.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/adaptive_umbrella.py), [src/pyrpmd/analysis/fes_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/fes_statistics.py)
 
 [Reproduction task](reproduction.md#task-samp-adaptive).
 
@@ -480,7 +519,7 @@ Sources: [samp-meta2002](#samp-meta2002)
 
 History-dependent Gaussian bias and finite-time -V free-energy estimate; original 2002 coarse-grained algorithm is the method origin, while deposition occurs directly in the package MD workflow.
 
-Code: [src/pyrpmd/bias.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/bias.py), [src/pyrpmd/workflows/metadynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/metadynamics.py), [src/pyrpmd/analysis/metadynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/metadynamics.py)
+Code: [src/pyrpmd/bias.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/bias.py), [src/pyrpmd/workflows/metadynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/metadynamics.py), [src/pyrpmd/analysis/metadynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/metadynamics.py)
 
 [Reproduction task](reproduction.md#task-samp-standard-meta).
 
@@ -492,7 +531,7 @@ Sources: [samp-wt2008](#samp-wt2008)
 
 Exponentially tempered Gaussian hills; F approaches -gamma/(gamma-1) V. No time-dependent c(t) trajectory reweighting is implemented in bias_fes.
 
-Code: [src/pyrpmd/bias.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/bias.py), [src/pyrpmd/workflows/metadynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/metadynamics.py), [src/pyrpmd/analysis/metadynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/metadynamics.py)
+Code: [src/pyrpmd/bias.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/bias.py), [src/pyrpmd/workflows/metadynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/metadynamics.py), [src/pyrpmd/analysis/metadynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/metadynamics.py)
 
 [Reproduction task](reproduction.md#task-samp-wt-meta).
 
@@ -502,9 +541,9 @@ Code: [src/pyrpmd/bias.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad
 
 Sources: [samp-walkers2006](#samp-walkers2006), [samp-wt2008](#samp-wt2008)
 
-Two project scheduling protocols (synchronized deposition and block synchronization) share Gaussian histories. Walkers sharing one bias are statistically dependent; synchronization/restart specifics are project engineering.
+Shared Gaussian (MetaD) or kernel (OPES) histories with walkers_mode=serial, mpi-sync (one walker per MPI rank, rank-ordered synchronous batches, one atomic ensemble checkpoint) or async-files (append-only per-walker logs, eventually merged). Walkers sharing one bias are statistically dependent; synchronization and restart specifics are project engineering.
 
-Code: [src/pyrpmd/shared_metadynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/shared_metadynamics.py), [src/pyrpmd/workflows/shared_metadynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/shared_metadynamics.py)
+Code: [src/pyrpmd/shared_metadynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/shared_metadynamics.py), [src/pyrpmd/workflows/shared_metadynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/shared_metadynamics.py), [src/pyrpmd/walker_exchange.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/walker_exchange.py), [src/pyrpmd/workflows/_distributed_meta_mpi.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/_distributed_meta_mpi.py), [src/pyrpmd/workflows/_distributed_meta_async.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/_distributed_meta_async.py), [src/pyrpmd/workflows/_distributed_opes_mpi.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/_distributed_opes_mpi.py), [src/pyrpmd/workflows/_distributed_opes_async.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/_distributed_opes_async.py)
 
 [Reproduction task](reproduction.md#task-samp-walkers).
 
@@ -516,7 +555,7 @@ Sources: [samp-meta2002](#samp-meta2002), [samp-wt2008](#samp-wt2008)
 
 Grid interpolation, derivatives, and Boltzmann marginalization implement numerical representations of the existing bias/FES; no separate invented original paper. Domain-masked marginalization is not a literature hill-filtering procedure.
 
-Code: [src/pyrpmd/bias.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/bias.py), [src/pyrpmd/analysis/projection.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/projection.py)
+Code: [src/pyrpmd/bias.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/bias.py), [src/pyrpmd/analysis/projection.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/projection.py)
 
 [Reproduction task](reproduction.md#task-samp-grid-meta).
 
@@ -528,7 +567,7 @@ Sources: [samp-opes2020](#samp-opes2020)
 
 Uncompressed normalized wrapped-Gaussian KDE and kernel-center Z; fixed bandwidth default. Optional frozen-bias histogram reweighting uses exp(beta V), not a time-dependent c(t) correction.
 
-Code: [src/pyrpmd/opes.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/opes.py), [src/pyrpmd/workflows/opes.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/opes.py)
+Code: [src/pyrpmd/opes.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/opes.py), [src/pyrpmd/workflows/opes.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/opes.py)
 
 [Reproduction task](reproduction.md#task-samp-opes).
 
@@ -540,9 +579,45 @@ Sources: [samp-explore2022](#samp-explore2022), [samp-opes2020](#samp-opes2020)
 
 Explore uses unweighted sampled-target KDE and prefactor (gamma-1)/beta. Optional Welford/Scott-ESS widths are an explicit PyRPMD rule, not PLUMED diffusion-window bandwidth adaptation.
 
-Code: [src/pyrpmd/opes.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/opes.py), [src/pyrpmd/workflows/opes.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/opes.py)
+Code: [src/pyrpmd/opes.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/opes.py), [src/pyrpmd/workflows/opes.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/opes.py)
 
 [Reproduction task](reproduction.md#task-samp-opes-explore).
+
+### samp-ves
+
+**Variationally enhanced sampling (VES) on centroid CVs**
+
+Sources: [samp-ves2014](#samp-ves2014), [samp-wtves2015](#samp-wtves2015)
+
+fes.method="ves" optimizes a tensor-product Legendre linear bias on one or two nonperiodic centroid CVs by averaged stochastic gradient descent with the full covariance Hessian. Uniform or well-tempered targets use Gauss–Legendre quadrature; frozen-bias production and reweighting write the common FESResult. Not a PLUMED VES bridge; other basis sets, periodic CVs, barostats and replica exchange are not combined with it.
+
+Code: [src/pyrpmd/ves.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/ves.py), [src/pyrpmd/workflows/ves.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/ves.py)
+
+[Reproduction task](reproduction.md#task-samp-ves).
+
+### samp-abf
+
+**Centroid ABF and extended-system ABF with CZAR**
+
+Sources: [samp-abf2001](#samp-abf2001), [samp-abf2008](#samp-abf2008), [samp-abfproj2015](#samp-abfproj2015), [samp-eabf2017](#samp-eabf2017)
+
+fes.method="abf"/"eabf" on one or two nonperiodic centroid CVs with full-row-rank Jacobians. The local mean force uses the full-ring Jacobian and a mass-weighted dual field with a linear ramp; 1D edge integration or 2D least-squares Helmholtz projection gives the FES. eABF biases harmonically coupled fictitious variables and reconstructs the FES with CZAR. Requires all atoms mobile and a canonical thermostat; fixed atoms, periodic cells/CVs, pressure coupling, replica exchange and the rate-flux measure are rejected.
+
+Code: [src/pyrpmd/abf.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/abf.py), [src/pyrpmd/workflows/abf.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/abf.py)
+
+[Reproduction task](reproduction.md#task-samp-abf).
+
+### samp-steered
+
+**Steered centroid MD and nonequilibrium work estimators**
+
+Sources: [samp-jarzynski1997](#samp-jarzynski1997), [samp-crooks1999](#samp-crooks1999), [samp-bar1976](#samp-bar1976), [samp-shadow2013](#samp-shadow2013)
+
+fes.method="steered" moves a harmonic centroid restraint forward and/or backward and estimates the restrained endpoint free-energy difference with Jarzynski or the Crooks/Bennett acceptance-ratio equation. Work uses H_P/P; total work is protocol work plus finite-step shadow work, and bath heat is excluded. No FESResult grid is produced; Hummer–Szabo unbiased-PMF reconstruction is not implemented.
+
+Code: [src/pyrpmd/steered.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/steered.py), [src/pyrpmd/workflows/steered.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/steered.py)
+
+[Reproduction task](reproduction.md#task-samp-steered).
 
 ### samp-reus
 
@@ -552,7 +627,7 @@ Sources: [samp-reus2000](#samp-reus2000)
 
 Fixed-window, same-temperature 1D/2D REUS swaps full rings; sampling measure includes P*umbrella energy at beta/P. No automatic temperature exchange in this workflow.
 
-Code: [src/pyrpmd/workflows/replica_exchange.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/replica_exchange.py)
+Code: [src/pyrpmd/workflows/replica_exchange.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/replica_exchange.py)
 
 [Reproduction task](reproduction.md#task-samp-reus).
 
@@ -562,11 +637,23 @@ Code: [src/pyrpmd/workflows/replica_exchange.py](https://github.com/chen-yu-hao/
 
 Sources: [samp-remd1999](#samp-remd1999), [samp-reus2000](#samp-reus2000)
 
-Serial Python engine; ring exchange evaluates the target-temperature spring action and rescales momenta. No standalone CLI task, durable checkpoint or MPI orchestration.
+Serial Python engine; ring exchange evaluates the target-temperature spring action and rescales momenta. The resumable [tempering] input workflow with checkpoints and MPI transport is the separate samp-tempering entry.
 
-Code: [src/pyrpmd/replica_exchange.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/replica_exchange.py)
+Code: [src/pyrpmd/replica_exchange.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/replica_exchange.py)
 
 [Reproduction task](reproduction.md#task-samp-remd).
+
+### samp-tempering
+
+**Resumable parallel tempering and Hamiltonian replica-exchange workflow**
+
+Sources: [samp-pt1996](#samp-pt1996), [samp-remd1999](#samp-remd1999), [samp-reus2000](#samp-reus2000), [samp-mbar2008](#samp-mbar2008)
+
+The [tempering] table for task="pimd" and selected task="fes" inputs: explicit or geometric temperature ladders and Hamiltonian ladders. Exchanges evaluate all-state reduced potentials, including each target-temperature spring action, and rescale momenta by sqrt(beta_i/beta_j). Per-state archives, acceptance, round trips, state-space diffusion and MBAR overlap; PIMD estimators are recomputed for every target state. Serial, process and MPI transports share one ordering; independent of same-temperature [replica_exchange] REUS.
+
+Code: [src/pyrpmd/workflows/tempering.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/tempering.py), [src/pyrpmd/replica_exchange.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/replica_exchange.py)
+
+[Reproduction task](reproduction.md#task-samp-tempering).
 
 ### samp-biased-clock
 
@@ -576,7 +663,7 @@ Sources: [samp-imeta2013](#samp-imeta2013), [samp-flooding2022](#samp-flooding20
 
 Postprocessing API integrates interval-resolved exp(beta*(V-V_TS)); censored exponential exposure and optional refitted KS bootstrap. Not a native infrequent-MetaD or OPES-flooding production workflow.
 
-Code: [src/pyrpmd/biased_kinetics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/biased_kinetics.py)
+Code: [src/pyrpmd/biased_kinetics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/biased_kinetics.py)
 
 [Reproduction task](reproduction.md#task-samp-biased-clock).
 
@@ -588,21 +675,57 @@ Sources: [samp-tis2003](#samp-tis2003), [samp-tis2005](#samp-tis2005), [samp-tps
 
 Python API; deterministic real-mass ring or P=1 dynamics, variable-length paths with finite cap, fresh uniform shooting point and full canonical momentum redraw. Separate matching effective flux required.
 
-Code: [src/pyrpmd/transition_interface.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/transition_interface.py)
+Code: [src/pyrpmd/transition_interface.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/transition_interface.py)
 
 [Reproduction task](reproduction.md#task-samp-tis).
 
 ### samp-retis
 
-**Positive-ensemble replica-exchange TIS**
+**Replica-exchange TIS with optional minus ensemble**
 
 Sources: [samp-retis2007](#samp-retis2007), [samp-tis2003](#samp-tis2003)
 
-Exchanges positive interface ensembles sharing identical dynamics; repeated/rejected paths remain in observations; separate flux estimate. Minus ensemble and asynchronous/infinite swaps absent.
+Exchanges interface ensembles sharing identical dynamics; repeated/rejected paths remain in observations. minus=true adds [0-] and [0-]<->[0+] exchanges and estimates the effective flux internally from residence times; otherwise a matching external flux is required. Persistent checkpoints and task="path_sampling" are available; asynchronous infinite swaps are the separate samp-infretis entry.
 
-Code: [src/pyrpmd/retis.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/retis.py)
+Code: [src/pyrpmd/retis.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/retis.py), [src/pyrpmd/workflows/path_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/path_sampling.py)
 
 [Reproduction task](reproduction.md#task-samp-retis).
+
+### samp-pptis
+
+**Partial-path TIS (PPTIS) and REPPTIS**
+
+Sources: [samp-pptis2004](#samp-pptis2004), [samp-repptis2023](#samp-repptis2023), [samp-tis2003](#samp-tis2003)
+
+Local three-interface path ensembles with the memory-reduction recurrence for crossing probabilities; REPPTIS adds replica exchange between neighbouring path ensembles. Python API and task="path_sampling" with persistent checkpoints. The memory-loss assumption must be tested against interface spacing and full TIS.
+
+Code: [src/pyrpmd/pptis.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pptis.py), [src/pyrpmd/workflows/path_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/path_sampling.py)
+
+[Reproduction task](reproduction.md#task-samp-pptis).
+
+### samp-ffs
+
+**Direct forward-flux sampling (FFS)**
+
+Sources: [samp-ffs2005](#samp-ffs2005), [samp-ffs2009](#samp-ffs2009)
+
+Interface-by-interface splitting for an explicitly supplied stationary, time-homogeneous Markov step(state, rng) callback: flux from basin-A history, trial-based conditional probabilities, persistent checkpoints and task="path_sampling". Needs no reverse dynamics; the sampler does not choose a thermostat or physical process.
+
+Code: [src/pyrpmd/ffs.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/ffs.py), [src/pyrpmd/workflows/path_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/path_sampling.py)
+
+[Reproduction task](reproduction.md#task-samp-ffs).
+
+### samp-infretis
+
+**Asynchronous infinite-swap RETIS (∞RETIS)**
+
+Sources: [samp-infretis2022](#samp-infretis2022), [samp-infretis2024](#samp-infretis2024), [samp-retis2007](#samp-retis2007)
+
+exchange="infinite" assigns free paths to free positive ensembles with exact permanent-ratio marginals, computed by a quadratic-cost recurrence for nested interfaces. An asynchronous process executor with ensemble locks and ticket-ordered commits gives exact restart; the minus ensemble is a separate block. Full-Maxwell two-way shooting is kept; the 2024 subtrajectory moves, MPI and bead/GPU worker pools are not implemented.
+
+Code: [src/pyrpmd/infinite_retis.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/infinite_retis.py), [src/pyrpmd/parallel/path_executor.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/parallel/path_executor.py), [src/pyrpmd/workflows/path_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/path_sampling.py)
+
+[Reproduction task](reproduction.md#task-samp-infretis).
 
 ### samp-committor
 
@@ -612,7 +735,7 @@ Sources: [samp-comm2000](#samp-comm2000), [samp-cp1934](#samp-cp1934)
 
 Independent canonical momentum shots conditioned on every bead position, deterministic unbiased dynamics, A/B first hits plus unresolved shots. Classical committor at P=1; approximate RPMD committor at P>1. Censoring envelope is a project composition of exact binomial limits.
 
-Code: [src/pyrpmd/committor.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/committor.py)
+Code: [src/pyrpmd/committor.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/committor.py)
 
 [Reproduction task](reproduction.md#task-samp-committor).
 
@@ -624,9 +747,21 @@ Sources: [samp-kabsch1976](#samp-kabsch1976), [samp-path2007](#samp-path2007)
 
 Weighted proper Kabsch alignment and smooth s/z reference-path variables with explicit scale. Dihedral, coordination and periodic affine CVs are mathematical building blocks; TorchScript supplies derivatives but no learned-CV training method.
 
-Code: [src/pyrpmd/advanced_cv.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/advanced_cv.py)
+Code: [src/pyrpmd/advanced_cv.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/advanced_cv.py)
 
 [Reproduction task](reproduction.md#task-samp-pathcv).
+
+### samp-mlcolvar
+
+**Learned centroid CVs from mlcolvar (Deep-LDA / Deep-TICA) via TorchScript**
+
+Sources: [samp-mlcolvar2023](#samp-mlcolvar2023), [samp-deeplda2020](#samp-deeplda2020), [samp-deeptica2021](#samp-deeptica2021)
+
+Training happens in the external mlcolvar library; PyRPMD evaluates the exported CPU float64 TorchScript graph (preprocessing, network and projection) with TorchScriptCV, including Cartesian derivatives and ring-bead scaling. Optional dependencies; deployment checks do not establish CV quality.
+
+Code: [src/pyrpmd/advanced_cv.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/advanced_cv.py)
+
+[Reproduction task](reproduction.md#task-samp-mlcolvar).
 
 ### samp-string
 
@@ -636,9 +771,21 @@ Sources: [samp-string2002](#samp-string2002), [samp-stringcv2006](#samp-stringcv
 
 Fixed-endpoint Euclidean gradient relaxation and insertion; a supplied consistent free-energy gradient is required. Signed restrained extension uses scaled Euclidean geometry; general nonlinear-CV metric/conditional terms of a full MFEP are not all implemented.
 
-Code: [src/pyrpmd/adaptive_string.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/adaptive_string.py), [src/pyrpmd/adaptive_nrpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/adaptive_nrpmd.py)
+Code: [src/pyrpmd/adaptive_string.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/adaptive_string.py), [src/pyrpmd/adaptive_nrpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/adaptive_nrpmd.py)
 
 [Reproduction task](reproduction.md#task-samp-string).
+
+### samp-ft-string
+
+**Finite-temperature string in centroid CV space**
+
+Sources: [samp-fts2005](#samp-fts2005), [samp-stringcv2006](#samp-stringcv2006)
+
+Restrained centroid sampling with the averaged CV mass metric, block diagnostics, fixed-endpoint path updates and exact iteration-boundary replay, reusing the existing arc-length reparameterization. Fixed image count and endpoints; nonperiodic centroid CVs with full-rank derivatives. At finite restraint stiffness it targets a smoothed free-energy path.
+
+Code: [src/pyrpmd/finite_temperature_string.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/finite_temperature_string.py), [src/pyrpmd/adaptive_string.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/adaptive_string.py)
+
+[Reproduction task](reproduction.md#task-samp-ft-string).
 
 ### samp-prfo
 
@@ -648,7 +795,7 @@ Sources: [samp-prfo1985](#samp-prfo1985)
 
 Fresh finite-difference Hessians, separate uphill/downhill augmented eigenproblems and capped trial steps. Local molecular Cartesian saddle search; two-sided descent is a connectivity diagnostic, not a certified quantum-chemistry IRC.
 
-Code: [src/pyrpmd/workflows/saddle.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/saddle.py), [src/pyrpmd/workflows/prepare.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/prepare.py)
+Code: [src/pyrpmd/workflows/saddle.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/saddle.py), [src/pyrpmd/workflows/prepare.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/prepare.py)
 
 [Reproduction task](reproduction.md#task-samp-prfo).
 
@@ -660,7 +807,7 @@ Sources: [samp-nebtangent2000](#samp-nebtangent2000), [samp-cineb2000](#samp-cin
 
 Energy-weighted tangent, climbing image and FIRE optimizer. Current end-to-end rate preparation is molecular Cartesian/nonperiodic, so the original slab calculations are not directly covered by that workflow.
 
-Code: [src/pyrpmd/workflows/neb.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/neb.py)
+Code: [src/pyrpmd/workflows/neb.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/neb.py)
 
 [Reproduction task](reproduction.md#task-samp-cineb).
 
@@ -672,7 +819,7 @@ Sources: [samp-radii2008](#samp-radii2008)
 
 Cordero H–Cm tabulated radii plus package bond_scale=1.25 heuristic and user overrides. This is approximate graph classification, not an electronic bond-order model.
 
-Code: [src/pyrpmd/covalent.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/covalent.py), [src/pyrpmd/workflows/prepare.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/prepare.py)
+Code: [src/pyrpmd/covalent.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/covalent.py), [src/pyrpmd/workflows/prepare.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/prepare.py)
 
 [Reproduction task](reproduction.md#task-samp-connectivity).
 
@@ -684,7 +831,7 @@ Sources: [samp-bluemoon1989](#samp-bluemoon1989), [samp-blue1998](#samp-blue1998
 
 Constrained-to-conditional weighting for nonlinear centroid coordinates; reparametrization invariance tests. The package rate estimator is an RPMD combination, not identical reproduction of every blue-moon thermodynamic-integration variant.
 
-Code: [src/pyrpmd/workflows/rate_constraints.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/rate_constraints.py), [src/pyrpmd/cv.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/cv.py), [src/pyrpmd/cv_periodic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/cv_periodic.py)
+Code: [src/pyrpmd/workflows/rate_constraints.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/rate_constraints.py), [src/pyrpmd/cv.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/cv.py), [src/pyrpmd/cv_periodic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/cv_periodic.py)
 
 [Reproduction task](reproduction.md#task-samp-metric).
 
@@ -696,7 +843,7 @@ Sources: [samp-blue1998](#samp-blue1998), [bennett1977](#bennett1977), [chandler
 
 Project extension of flux-over-population / Bennett–Chandler RPMD rate theory; no standalone original paper for this exact offline data pipeline. CV-density and rate-flux measures require different factors.
 
-Code: [src/pyrpmd/analysis/rate_postprocess.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/rate_postprocess.py), [src/pyrpmd/analysis/rate_io.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/rate_io.py), [src/pyrpmd/analysis/bond_flux.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/bond_flux.py), [src/pyrpmd/analysis/bond_rate.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/bond_rate.py), [src/pyrpmd/analysis/entrance.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/entrance.py)
+Code: [src/pyrpmd/analysis/rate_postprocess.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/rate_postprocess.py), [src/pyrpmd/analysis/rate_io.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/rate_io.py), [src/pyrpmd/analysis/bond_flux.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/bond_flux.py), [src/pyrpmd/analysis/bond_rate.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/bond_rate.py), [src/pyrpmd/analysis/entrance.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/entrance.py)
 
 [Reproduction task](reproduction.md#task-samp-rate-postprocess).
 
@@ -708,7 +855,7 @@ Sources: [samp-cblock1992](#samp-cblock1992), [samp-geyer1992](#samp-geyer1992)
 
 Circular block resampling is Politis–Romano; positive-pair correlation truncation is a related diagnostic. PyRPMD chooses CV/squared-CV/circular-harmonic probes, ceil(5g) blocks with N/2 cap, and joint windows/channels for correlated ensembles. These safeguards are project policies, not universal published constants.
 
-Code: [src/pyrpmd/analysis/fes_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/fes_statistics.py), [src/pyrpmd/analysis/recrossing.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/recrossing.py)
+Code: [src/pyrpmd/analysis/fes_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/fes_statistics.py), [src/pyrpmd/analysis/recrossing.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/recrossing.py)
 
 [Reproduction task](reproduction.md#task-samp-statistics).
 
@@ -720,7 +867,7 @@ Sources: [samp-plumed2009](#samp-plumed2009), [samp-plumed2014](#samp-plumed2014
 
 External kernel/interface, not an internal implementation of every PLUMED method. Cite the PLUMED software and every selected CV/bias algorithm in the actual plumed.dat.
 
-Code: [src/pyrpmd/plumed.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/plumed.py), [src/pyrpmd/workflows/biased_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/biased_sampling.py)
+Code: [src/pyrpmd/plumed.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/plumed.py), [src/pyrpmd/workflows/biased_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/biased_sampling.py)
 
 [Reproduction task](reproduction.md#task-samp-plumed).
 
@@ -734,7 +881,7 @@ Sources: [na-mm1979](#na-mm1979), [na-stock1997](#na-stock1997), [na-nrpmd2013](
 
 One mapping vector per nuclear bead, any finite number of electronic states and real/complex Hermitian fixed-diabatic matrices. Focused radii sqrt(3) for the initially occupied state and 1 otherwise, random angles, signed unclipped MMST populations. This is not a Gamma/SEO thermal initial state, PLDM, SQC, or the independent mapping-bead multiplicity generalized in the 2017 analysis.
 
-Code: [src/pyrpmd/nonadiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/nonadiabatic.py), [src/pyrpmd/nonadiabatic_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/nonadiabatic_ensemble.py), [src/pyrpmd/workflows/nonadiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/nonadiabatic.py)
+Code: [src/pyrpmd/nonadiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/nonadiabatic.py), [src/pyrpmd/nonadiabatic_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/nonadiabatic_ensemble.py), [src/pyrpmd/workflows/nonadiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/nonadiabatic.py)
 
 [Reproduction task](reproduction.md#task-na-nrpmd-focused).
 
@@ -746,7 +893,7 @@ Sources: [na-mint2018](#na-mint2018)
 
 Exact electronic rotation at fixed nuclear geometry with the integrated nuclear momentum impulse, composed with the free-ring subflow. This cites an integrator component, not the complete MQC-IVR calculation in Church et al.
 
-Code: [src/pyrpmd/nonadiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/nonadiabatic.py), [src/pyrpmd/spin_mapping.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/spin_mapping.py)
+Code: [src/pyrpmd/nonadiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/nonadiabatic.py), [src/pyrpmd/spin_mapping.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/spin_mapping.py)
 
 [Reproduction task](reproduction.md#task-na-mint).
 
@@ -758,7 +905,7 @@ Sources: [na-nrpmd2013](#na-nrpmd2013), [na-stock1997](#na-stock1997), [na-mint2
 
 Real symmetric matrices only; sample the absolute SEO-projected initial weight and retain its initial sign in every correlation. Thermal weight is not exp(-beta/P * NRPMD energy). Library default scalar/traceless splitting differs from the 2013 paper's lowest-adiabatic-surface split; the dedicated published benchmark implements that split explicitly. Single-state scalar dynamics reduces to ordinary RPMD. Finite-time rate output is not automatically a converged formal rate.
 
-Code: [src/pyrpmd/thermal_nrpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/thermal_nrpmd.py), [src/pyrpmd/workflows/nonadiabatic_rate.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/nonadiabatic_rate.py)
+Code: [src/pyrpmd/thermal_nrpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/thermal_nrpmd.py), [src/pyrpmd/workflows/nonadiabatic_rate.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/nonadiabatic_rate.py)
 
 [Reproduction task](reproduction.md#task-na-thermal-nrpmd).
 
@@ -770,7 +917,7 @@ Sources: [na-nrpmd2013](#na-nrpmd2013), [samp-stringcv2006](#samp-stringcv2006),
 
 Package composition of signed SEO thermal sampling, restrained-path adaptation, free-energy reweighting, and independent production with the path frozen. There is no verified single original paper presenting the complete PyRPMD adaptive/electrode workflow.
 
-Code: [src/pyrpmd/adaptive_nrpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/adaptive_nrpmd.py), [src/pyrpmd/adaptive_string.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/adaptive_string.py), [src/pyrpmd/thermal_nrpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/thermal_nrpmd.py)
+Code: [src/pyrpmd/adaptive_nrpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/adaptive_nrpmd.py), [src/pyrpmd/adaptive_string.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/adaptive_string.py), [src/pyrpmd/thermal_nrpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/thermal_nrpmd.py)
 
 [Reproduction task](reproduction.md#task-na-adaptive-thermal).
 
@@ -782,7 +929,7 @@ Sources: [na-sm2021](#na-sm2021)
 
 One two-state W-spin of radius sqrt(3)/2 per bead, focused u_z=±1/sqrt(3) with random azimuth, real or complex Hermitian matrices, and exact spin/impulse subflows. No general SU(N) implementation and no Gamma_W equilibrium trace/phase sampler.
 
-Code: [src/pyrpmd/spin_mapping.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/spin_mapping.py), [src/pyrpmd/nonadiabatic_registry.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/nonadiabatic_registry.py)
+Code: [src/pyrpmd/spin_mapping.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/spin_mapping.py), [src/pyrpmd/nonadiabatic_registry.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/nonadiabatic_registry.py)
 
 [Reproduction task](reproduction.md#task-na-sm-nrpmd).
 
@@ -794,7 +941,7 @@ Sources: [na-mash2023](#na-mash2023), [na-mashrates2024](#na-mashrates2024)
 
 MASHDynamics implements real two-state spin-hemisphere deterministic hopping through the adiabatic interface. P=1 is the original classical-nuclei setting. Its P>1 centroid extension is explicitly experimental and distinct from RPMASHDynamics. Hops are located at step endpoints; the documented hop-position error requires time-step convergence.
 
-Code: [src/pyrpmd/mash.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/mash.py), [src/pyrpmd/adiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/adiabatic.py)
+Code: [src/pyrpmd/mash.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/mash.py), [src/pyrpmd/adiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/adiabatic.py)
 
 [Reproduction task](reproduction.md#task-na-mash).
 
@@ -804,11 +951,35 @@ Code: [src/pyrpmd/mash.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad
 
 Sources: [na-carp2025](#na-carp2025), [na-mash2023](#na-mash2023), [na-mashrates2024](#na-mashrates2024)
 
-One spin and one common active adiabatic surface for the whole ring; bead-local adiabatic nuclear forces and centroid electronic dynamics. Real symmetric two-state matrices with nonzero gaps. SciPy DOP853 event-root handling resolves spin equator crossings, with full-ring mass-metric hop energy rescaling. Not BA-RP-MASH, multistate MASH, or complex-SOC MASH. General correlations use operator-pair weights; population output is an active-surface indicator, not a generic spin-density population.
+One spin and one common active adiabatic surface for the whole ring; bead-local adiabatic nuclear forces and centroid electronic dynamics. Real symmetric two-state matrices with nonzero gaps. SciPy DOP853 event-root handling resolves spin equator crossings, with full-ring mass-metric hop energy rescaling. BA-RP-MASH and multistate MASH are separate entries (na-ba-rp-mash, na-ms-mash); complex-SOC MASH is absent. General correlations use operator-pair weights; population output is an active-surface indicator, not a generic spin-density population.
 
-Code: [src/pyrpmd/rp_mash.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/rp_mash.py), [src/pyrpmd/nonadiabatic_registry.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/nonadiabatic_registry.py)
+Code: [src/pyrpmd/rp_mash.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/rp_mash.py), [src/pyrpmd/nonadiabatic_registry.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/nonadiabatic_registry.py)
 
 [Reproduction task](reproduction.md#task-na-carp-mash).
+
+### na-ba-rp-mash
+
+**BA-RP-MASH (CLI method rp-mash-ba)**
+
+Sources: [na-carp2025](#na-carp2025), [na-mash2023](#na-mash2023)
+
+Two-state bead approximation: one spin for the whole ring in a common adiabatic representation, beadwise matrices, gradients, gaps and derivative couplings, and bead-averaged electronic evolution. Separate state, workflow name and scientific identity from CA-RP-MASH (rp-mash); not multistate or complex-SOC MASH.
+
+Code: [src/pyrpmd/rp_mash_ba.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/rp_mash_ba.py), [src/pyrpmd/nonadiabatic_registry.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/nonadiabatic_registry.py)
+
+[Reproduction task](reproduction.md#task-na-ba-rp-mash).
+
+### na-ms-mash
+
+**Original multistate MASH (CLI method multistate-mash)**
+
+Sources: [na-msmash2023](#na-msmash2023), [na-mash2023](#na-mash2023)
+
+One normalized complex mapping vector, active adiabatic surface with the largest mapping population, and the Runeson–Manolopoulos signed observable estimator for real Hamiltonians with nondegenerate levels; one bead only. The original 2023 formulation, not unSMASH or later initialization variants, and distinct from the two-state estimator even for two states.
+
+Code: [src/pyrpmd/mash.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/mash.py), [src/pyrpmd/workflows/nonadiabatic_multistate.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/nonadiabatic_multistate.py)
+
+[Reproduction task](reproduction.md#task-na-ms-mash).
 
 ### na-rpsh-ca
 
@@ -818,7 +989,7 @@ Sources: [na-tully1990](#na-tully1990), [na-rpsh2012](#na-rpsh2012), [na-rpsh201
 
 RPSHDynamics is the real fixed-diabatic centroid route; AdvancedRPSHDynamics(method='ca') exposes extended CA options; direct AdiabaticRPSHDynamics accepts electronic-structure data. Each ring has a common active surface. P=1 is the classical-nuclei FSSH limit. Rescaling, frustrated-hop policy and initial distribution are explicit conventions and must match the target paper.
 
-Code: [src/pyrpmd/surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/surface_hopping.py), [src/pyrpmd/advanced_surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/advanced_surface_hopping.py), [src/pyrpmd/adiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/adiabatic.py)
+Code: [src/pyrpmd/surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/surface_hopping.py), [src/pyrpmd/advanced_surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/advanced_surface_hopping.py), [src/pyrpmd/adiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/adiabatic.py)
 
 [Reproduction task](reproduction.md#task-na-rpsh-ca).
 
@@ -830,7 +1001,7 @@ Sources: [na-rpshdm2023](#na-rpshdm2023), [na-rpsh2012](#na-rpsh2012), [na-tully
 
 A single electronic amplitude vector driven by bead-averaged energies and velocity-coupling terms, with one common active surface. This is not an independent surface label or wavefunction per bead.
 
-Code: [src/pyrpmd/advanced_surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/advanced_surface_hopping.py)
+Code: [src/pyrpmd/advanced_surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/advanced_surface_hopping.py)
 
 [Reproduction task](reproduction.md#task-na-rpsh-ba).
 
@@ -842,7 +1013,7 @@ Sources: [na-rpshdm2023](#na-rpshdm2023)
 
 Each bead has an electronic amplitude vector; bead densities are transported to a common centroid basis and averaged. The ring still has a common active surface. The reduced density can lose purity from bead averaging. No additional EDC is allowed in this DM variant.
 
-Code: [src/pyrpmd/advanced_surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/advanced_surface_hopping.py)
+Code: [src/pyrpmd/advanced_surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/advanced_surface_hopping.py)
 
 [Reproduction task](reproduction.md#task-na-rpsh-dm).
 
@@ -854,7 +1025,7 @@ Sources: [na-edc2007](#na-edc2007)
 
 Inactive electronic amplitudes are damped using energy-gap-dependent times and the active component is renormalized with its phase retained. RPSH uses explicit centroid or ring energy conventions. Supported in CA/BA, not as an extra DM correction.
 
-Code: [src/pyrpmd/surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/surface_hopping.py), [src/pyrpmd/advanced_surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/advanced_surface_hopping.py)
+Code: [src/pyrpmd/surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/surface_hopping.py), [src/pyrpmd/advanced_surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/advanced_surface_hopping.py)
 
 [Reproduction task](reproduction.md#task-na-edc).
 
@@ -866,7 +1037,7 @@ Sources: [na-soc2019](#na-soc2019), [na-tully1990](#na-tully1990), [na-rpsh2012]
 
 Complex Hermitian fixed-diabatic Hamiltonians; complex NAC is reduced to a real rescaling direction using Miao et al. method 2. Optional antisymmetric Berry-force update uses a Cayley rotation. This is a local nondegenerate correction, not a full geometric-phase interference treatment or a degenerate/non-Abelian SOC algorithm.
 
-Code: [src/pyrpmd/advanced_surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/advanced_surface_hopping.py), [src/pyrpmd/adiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/adiabatic.py)
+Code: [src/pyrpmd/advanced_surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/advanced_surface_hopping.py), [src/pyrpmd/adiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/adiabatic.py)
 
 [Reproduction task](reproduction.md#task-na-soc-rpsh).
 
@@ -878,9 +1049,21 @@ Sources: [na-dboc2025](#na-dboc2025)
 
 Included-state projected DBOC sum |d_ij|²/(2m) with finite-difference gradients of the scalar correction; it modifies both nuclear forces and hopping gaps. Truncated-state and near-degeneracy limits must be explicit. Accuracy improvement is regime dependent.
 
-Code: [src/pyrpmd/advanced_surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/advanced_surface_hopping.py)
+Code: [src/pyrpmd/advanced_surface_hopping.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/advanced_surface_hopping.py)
 
 [Reproduction task](reproduction.md#task-na-dboc-rpsh).
+
+### na-iesh
+
+**Classical IESH and centroid RP-IESH (CLI methods iesh, rp-iesh)**
+
+Sources: [na-iesh2009](#na-iesh2009), [na-iesh2023](#na-iesh2023), [na-rpsh2012](#na-rpsh2012), [na-rpsh2017](#na-rpsh2017)
+
+One spinless Slater determinant of independent electrons in a discretized metal band; nuclei move on the bare energy plus occupied orbital energies with fewest-switches single-excitation hops. RP-IESH shares one determinant across the ring and propagates electrons at the centroid. Real Hamiltonians with nondegenerate levels; one-particle density populations; not a GPU or native full-trajectory solver.
+
+Code: [src/pyrpmd/iesh.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/iesh.py), [src/pyrpmd/rp_iesh.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/rp_iesh.py), [src/pyrpmd/workflows/nonadiabatic_multistate.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/nonadiabatic_multistate.py)
+
+[Reproduction task](reproduction.md#task-na-iesh).
 
 ### na-qd-interface
 
@@ -890,9 +1073,21 @@ Sources: [na-qd2018](#na-qd2018), [na-qd2019](#na-qd2019), [na-nrpmd2013](#na-nr
 
 AdiabaticResult/AdiabaticPythonPotential carry energies, gradients, NACs and overlaps. QDNRPMDDynamics transports mapping coordinates through local bases, with closest-unitary overlap transport and offdiagonal gradient reconstruction. This combines the QD representation strategy with NRPMD; it does not implement the original papers' PLDM/SQC algorithms. Declared continuous-gauge endpoint-NAC transport is an approximation when true overlaps are absent.
 
-Code: [src/pyrpmd/adiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/adiabatic.py)
+Code: [src/pyrpmd/adiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/adiabatic.py)
 
 [Reproduction task](reproduction.md#task-na-qd-interface).
+
+### na-excited-state
+
+**Online excited-state providers and overlap-derived couplings**
+
+Sources: [na-hst1994](#na-hst1994), [na-npi2014](#na-npi2014), [na-npi2016](#na-npi2016), [pyscf2018](#pyscf2018)
+
+ExcitedStateProvider supplies total state energies, positive gradients, derivative couplings, adjacent-frame overlaps, state tracking and a restartable electronic context to existing adiabatic consumers (for example AdiabaticRPSHDynamics). Couplings from overlaps use the Hammes-Schiffer–Tully finite difference or the multistate generalized NPI after Löwdin orthogonalization. PySCF TDA/TDDFT is tested; ORCA, Q-Chem and OpenMolcas file adapters are parser- and mock-tested only. It does not select a dynamics method.
+
+Code: [src/pyrpmd/potentials/excited_state](https://github.com/chen-yu-hao/PyRPMD/tree/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/excited_state)
+
+[Reproduction task](reproduction.md#task-na-excited-state).
 
 ### na-mv-rpmd
 
@@ -902,7 +1097,7 @@ Sources: [na-mv2013](#na-mv2013)
 
 Real fixed-diabatic multistate signed projected-Wigner trace product; sample absolute weight and retain signs. The package uses exact finite-bead electronic matrix exponentials, unlike the original primitive short-time approximation. Nonseparable electronic flow uses implicit midpoint; trace nodes/sign crossings are rejected. CPU model API.
 
-Code: [src/pyrpmd/mv_rpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/mv_rpmd.py), [src/pyrpmd/_matrix_path.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/_matrix_path.py)
+Code: [src/pyrpmd/mv_rpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/mv_rpmd.py), [src/pyrpmd/_matrix_path.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/_matrix_path.py)
 
 [Reproduction task](reproduction.md#task-na-mv-rpmd).
 
@@ -914,7 +1109,7 @@ Sources: [na-kc2014](#na-kc2014)
 
 Original primitive two-state construction, positive electronic coupling, explicit a/b parameters and crossing calibration eta/auxiliary mass. Current limits include 0<a<=1, b>0, P>=2 and beta*K/P<1. No later KC variants are implicitly implemented.
 
-Code: [src/pyrpmd/kc_rpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/kc_rpmd.py), [src/pyrpmd/_matrix_path.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/_matrix_path.py)
+Code: [src/pyrpmd/kc_rpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/kc_rpmd.py), [src/pyrpmd/_matrix_path.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/_matrix_path.py)
 
 [Reproduction task](reproduction.md#task-na-kc-rpmd).
 
@@ -926,7 +1121,7 @@ Sources: [na-iso2018](#na-iso2018)
 
 Real two-state trace-matched whole-ring isomorphic Hamiltonian and an explicit Ehrenfest consumer with a single normalized electronic wavefunction. The sum-bead convention carries the factor P explicitly. This is neither the paper's QCLE dynamics nor iso-surface-hopping, and is not a general multistate implementation.
 
-Code: [src/pyrpmd/isomorphic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/isomorphic.py), [src/pyrpmd/_matrix_path.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/_matrix_path.py)
+Code: [src/pyrpmd/isomorphic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/isomorphic.py), [src/pyrpmd/_matrix_path.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/_matrix_path.py)
 
 [Reproduction task](reproduction.md#task-na-isomorphic).
 
@@ -938,7 +1133,7 @@ Sources: [na-tully1990](#na-tully1990)
 
 Analytic value/gradient implementations TullyModelOne, TullyModelTwo and TullyModelThree, corresponding to the original models. Nuclear mass is a system/sampling choice, not encoded by choosing a potential class.
 
-Code: [src/pyrpmd/potentials/nonadiabatic_models.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/nonadiabatic_models.py)
+Code: [src/pyrpmd/potentials/nonadiabatic_models.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/nonadiabatic_models.py)
 
 [Reproduction task](reproduction.md#task-na-tully-models).
 
@@ -950,7 +1145,7 @@ Sources: [na-focused2019](#na-focused2019), [na-sm2021](#na-sm2021)
 
 LinearVibronicCoupling and DiscreteSpinBoson are generic parameter containers with analytic gradients, not a uniquely published model. Harmonic preparation samples an explicitly declared finite-P uncoupled harmonic initial density; it does not infer the coupled system's thermal density. Cite the parameter source for the selected application.
 
-Code: [src/pyrpmd/potentials/nonadiabatic_models.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/nonadiabatic_models.py), [src/pyrpmd/nonadiabatic_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/nonadiabatic_sampling.py)
+Code: [src/pyrpmd/potentials/nonadiabatic_models.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/nonadiabatic_models.py), [src/pyrpmd/nonadiabatic_sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/nonadiabatic_sampling.py)
 
 [Reproduction task](reproduction.md#task-na-generic-matrix-models).
 
@@ -962,7 +1157,7 @@ Sources: [na-nah21992](#na-nah21992), [na-nah2err1994](#na-nah2err1994)
 
 Historical neutral NaH2 two-state doublet potential for the two lowest 2A' surfaces, with analytic matrix derivatives. Cite the physical PES and erratum separately from any ChemPotPy software/adaptor credit.
 
-Code: [src/pyrpmd/potentials/nah2_leps.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/nah2_leps.py)
+Code: [src/pyrpmd/potentials/nah2_leps.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/nah2_leps.py)
 
 [Reproduction task](reproduction.md#task-na-nah2-pes).
 
@@ -974,7 +1169,7 @@ Sources: [na-feit1982](#na-feit1982)
 
 SplitOperator1D uses a uniform periodic Fourier grid, exact pointwise Hermitian matrix exponentials and symmetric second-order splitting. Supports pure states and canonical harmonic mixtures. It has no absorbing boundary or general multidimensional propagator. A converged numerical reference must control box, grid, time step and thermal truncation independently.
 
-Code: [src/pyrpmd/analysis/quantum_reference.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/quantum_reference.py)
+Code: [src/pyrpmd/analysis/quantum_reference.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/quantum_reference.py)
 
 [Reproduction task](reproduction.md#task-na-quantum-reference).
 
@@ -988,7 +1183,7 @@ Sources: [bzp2009](#bzp2009), [ipi2014](#ipi2014)
 
 Centroid-only dilation with physical virial and PIMD measure correction; all-mobile 3D periodic cells.
 
-Code: [src/pyrpmd/barostat.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/barostat.py), [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+Code: [src/pyrpmd/barostat.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/barostat.py), [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 [Reproduction task](reproduction.md#task-bzp).
 
@@ -1000,7 +1195,7 @@ Sources: [mtk1994](#mtk1994), [nptpimd1999](#nptpimd1999)
 
 Upper-triangular strain-rate matrix and lower-triangular row-vector cell; hydrostatic pressure, optional cell mask.
 
-Code: [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+Code: [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 [Reproduction task](reproduction.md#task-mtk).
 
@@ -1012,7 +1207,7 @@ Sources: [rgb2011](#rgb2011)
 
 Reference-cell strain-energy model with explicit symmetric external stress.
 
-Code: [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+Code: [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 [Reproduction task](reproduction.md#task-rgb).
 
@@ -1024,7 +1219,7 @@ Sources: [scr2020](#scr2020)
 
 Isotropic P=1 only; square-root-volume stochastic proposal without Metropolis correction.
 
-Code: [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+Code: [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 [Reproduction task](reproduction.md#task-scr).
 
@@ -1036,7 +1231,7 @@ Sources: [pd2024](#pd2024), [ni2012](#ni2012)
 
 Unwrapped centroids, Einstein and Green–Kubo estimates, replica/block uncertainty; material applications supplement the foundational RPMD citation.
 
-Code: [src/pyrpmd/analysis/diffusion.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/diffusion.py), [src/pyrpmd/workflows/materials.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/materials.py)
+Code: [src/pyrpmd/analysis/diffusion.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/diffusion.py), [src/pyrpmd/workflows/materials.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/materials.py)
 
 [Reproduction task](reproduction.md#task-diffusion).
 
@@ -1048,7 +1243,7 @@ Sources: [sds2025](#sds2025), [pd2024](#pd2024), [bazro2008](#bazro2008)
 
 Single-surface reactant-basin normalization; nonlinear all-mobile site coordinates and restricted fixed-substrate surface coordinates have different support.
 
-Code: [src/pyrpmd/workflows/site_rate.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/site_rate.py), [src/pyrpmd/workflows/surface.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/surface.py), [src/pyrpmd/workflows/surface_source.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/surface_source.py)
+Code: [src/pyrpmd/workflows/site_rate.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/site_rate.py), [src/pyrpmd/workflows/surface.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/surface.py), [src/pyrpmd/workflows/surface_source.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/surface_source.py)
 
 [Reproduction task](reproduction.md#task-site-surface).
 
@@ -1060,7 +1255,7 @@ Sources: [nialh1995](#nialh1995)
 
 External pinned potential table used for an integration pilot.
 
-Code: [benchmarks/materials/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/materials/README.md)
+Code: [benchmarks/materials/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/materials/README.md)
 
 [Reproduction task](reproduction.md#task-nialh-model).
 
@@ -1072,7 +1267,7 @@ Sources: [pcet2008](#pcet2008), [pypcet2025](#pypcet2025), [gold2019](#gold2019)
 
 One grid-resolved proton, fixed donor geometry, constant electronic coupling, wide-band metal and classical Gaussian environment.
 
-Code: [src/pyrpmd/pcet.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pcet.py), [src/pyrpmd/workflows/pcet.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/pcet.py)
+Code: [src/pyrpmd/pcet.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pcet.py), [src/pyrpmd/workflows/pcet.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/pcet.py)
 
 [Reproduction task](reproduction.md#task-pcet).
 
@@ -1084,7 +1279,7 @@ Sources: [hmc1987](#hmc1987), [hastings1970](#hastings1970), [gc2025](#gc2025)
 
 Project composition: nuclear HMC plus bounded continuous shared-N Metropolis moves; MC sweep count has no physical-time meaning.
 
-Code: [src/pyrpmd/electrochemistry/sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/electrochemistry/sampling.py)
+Code: [src/pyrpmd/electrochemistry/sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/electrochemistry/sampling.py)
 
 [Reproduction task](reproduction.md#task-gc).
 
@@ -1096,7 +1291,7 @@ Sources: [gc2025](#gc2025)
 
 Project approximation: minimize E(R,N)-mu*N independently per geometry; matrix version adds the same scalar charging energy to every diabatic state.
 
-Code: [src/pyrpmd/electrochemistry/potentials.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/electrochemistry/potentials.py), [src/pyrpmd/electrochemistry/nonadiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/electrochemistry/nonadiabatic.py), [src/pyrpmd/electrochemistry/diabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/electrochemistry/diabatic.py)
+Code: [src/pyrpmd/electrochemistry/potentials.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/electrochemistry/potentials.py), [src/pyrpmd/electrochemistry/nonadiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/electrochemistry/nonadiabatic.py), [src/pyrpmd/electrochemistry/diabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/electrochemistry/diabatic.py)
 
 [Reproduction task](reproduction.md#task-adiabatic-electrode).
 
@@ -1108,7 +1303,7 @@ Sources: [gc2025](#gc2025)
 
 Project mass-action balance using externally supplied forward/reverse elementary coefficients and ideal independent sites.
 
-Code: [src/pyrpmd/electrochemistry/kinetics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/electrochemistry/kinetics.py)
+Code: [src/pyrpmd/electrochemistry/kinetics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/electrochemistry/kinetics.py)
 
 [Reproduction task](reproduction.md#task-her).
 
@@ -1120,7 +1315,7 @@ Sources: [efrpmd2024](#efrpmd2024)
 
 Bead-averaged positive-semidefinite friction acts on centroid; shared random impulse leaves internal modes unthermostatted.
 
-Code: [src/pyrpmd/electronic_friction.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/electronic_friction.py)
+Code: [src/pyrpmd/electronic_friction.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/electronic_friction.py)
 
 [Reproduction task](reproduction.md#task-efrpmd).
 
@@ -1132,7 +1327,7 @@ Sources: [pyscf2018](#pyscf2018)
 
 Delegates RHF/UHF/RKS/UKS energies, gradients and selected Hessians to external PySCF.
 
-Code: [src/pyrpmd/pesgen/reference.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pesgen/reference.py), [src/pyrpmd/potentials/adapters.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/adapters.py)
+Code: [src/pyrpmd/pesgen/reference.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pesgen/reference.py), [src/pyrpmd/potentials/adapters.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/adapters.py)
 
 [Reproduction task](reproduction.md#task-pyscf).
 
@@ -1144,7 +1339,7 @@ Sources: [hirshfeld1977](#hirshfeld1977), [mayer1983](#mayer1983)
 
 Neutral spherical HF stockholder references; unrestricted Mayer includes spin density.
 
-Code: [src/pyrpmd/pesgen/reference.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pesgen/reference.py)
+Code: [src/pyrpmd/pesgen/reference.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pesgen/reference.py)
 
 [Reproduction task](reproduction.md#task-populations).
 
@@ -1156,7 +1351,7 @@ Sources: [qmdff2014](#qmdff2014), [caracal2023](#caracal2023)
 
 Calls source-pinned upstream Caracal QMDFF generator using equilibrium QM data.
 
-Code: [src/pyrpmd/pesgen/workflow.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pesgen/workflow.py), [src/pyrpmd/pesgen/formats.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pesgen/formats.py)
+Code: [src/pyrpmd/pesgen/workflow.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pesgen/workflow.py), [src/pyrpmd/pesgen/formats.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pesgen/formats.py)
 
 [Reproduction task](reproduction.md#task-qmdff).
 
@@ -1168,7 +1363,7 @@ Sources: [deevb2015](#deevb2015), [caracal2023](#caracal2023)
 
 Connects endpoint QMDFFs with upstream fitted sp/1g coupling and supplied path energies.
 
-Code: [src/pyrpmd/pesgen/workflow.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pesgen/workflow.py)
+Code: [src/pyrpmd/pesgen/workflow.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pesgen/workflow.py)
 
 [Reproduction task](reproduction.md#task-deevb).
 
@@ -1180,7 +1375,7 @@ Sources: [treq2019](#treq2019), [caracal2023](#caracal2023)
 
 Upstream reaction-path/quadratic expansion construction; public PyRPMD bridge explicitly uses fourth-order finite-difference forces.
 
-Code: [src/pyrpmd/pesgen/workflow.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pesgen/workflow.py), [src/pyrpmd/pesgen/build.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pesgen/build.py)
+Code: [src/pyrpmd/pesgen/workflow.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pesgen/workflow.py), [src/pyrpmd/pesgen/build.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pesgen/build.py)
 
 [Reproduction task](reproduction.md#task-treq).
 
@@ -1192,7 +1387,7 @@ Sources: [pip2010](#pip2010), [pipnn2013](#pipnn2013), [jaxpip2026](#jaxpip2026)
 
 Explicit train/validation/test data, energy/force loss, upstream JaxPIP descriptors and native ONNX export; exporting a model is separate from validating its PES.
 
-Code: [src/pyrpmd/pesgen/jaxpip_fit.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pesgen/jaxpip_fit.py), [src/pyrpmd/pesgen/jaxpip_export.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pesgen/jaxpip_export.py), [src/pyrpmd/pesgen/jaxpip_data.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/pesgen/jaxpip_data.py)
+Code: [src/pyrpmd/pesgen/jaxpip_fit.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pesgen/jaxpip_fit.py), [src/pyrpmd/pesgen/jaxpip_export.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pesgen/jaxpip_export.py), [src/pyrpmd/pesgen/jaxpip_data.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/pesgen/jaxpip_data.py)
 
 [Reproduction task](reproduction.md#task-jaxpip).
 
@@ -1202,9 +1397,9 @@ Code: [src/pyrpmd/pesgen/jaxpip_fit.py](https://github.com/chen-yu-hao/PyRPMD/bl
 
 Sources: [committee2020](#committee2020)
 
-Mean of fixed providers, population-standard-deviation disagreement and offline acquisition; no disagreement bias or automatic labelling/retraining loop.
+Mean of fixed providers, population-standard-deviation disagreement, offline acquisition, and ActiveLearningLoop: sample with a fixed committee, select threshold-crossing candidates within label budgets, label, retrain and install the next committee. Disagreement is not a calibrated error bound; no disagreement bias is applied during sampling.
 
-Code: [src/pyrpmd/potentials/lifecycle.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/lifecycle.py)
+Code: [src/pyrpmd/potentials/lifecycle.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/lifecycle.py), [src/pyrpmd/active_learning.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/active_learning.py)
 
 [Reproduction task](reproduction.md#task-committee).
 
@@ -1216,7 +1411,7 @@ Sources: [delta2015](#delta2015)
 
 Adds a supplied correction model to a fixed reference and exposes a fast/slow force split; RPC/MTS have separate method citations.
 
-Code: [src/pyrpmd/potentials/lifecycle.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/lifecycle.py), [src/pyrpmd/potentials/contraction.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/contraction.py)
+Code: [src/pyrpmd/potentials/lifecycle.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/lifecycle.py), [src/pyrpmd/potentials/contraction.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/contraction.py)
 
 [Reproduction task](reproduction.md#task-delta).
 
@@ -1228,7 +1423,7 @@ Sources: [ase2017](#ase2017)
 
 Energy, force, periodic cell and stress conversion; force-consistent electronic free energy.
 
-Code: [src/pyrpmd/potentials/optional.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/optional.py)
+Code: [src/pyrpmd/potentials/optional.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/optional.py)
 
 [Reproduction task](reproduction.md#task-ase).
 
@@ -1240,7 +1435,7 @@ Sources: [openmm2017](#openmm2017)
 
 External force evaluation, virtual sites and periodic virials; PyRPMD owns nuclear dynamics.
 
-Code: [src/pyrpmd/potentials/openmm.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/openmm.py)
+Code: [src/pyrpmd/potentials/openmm.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/openmm.py)
 
 [Reproduction task](reproduction.md#task-openmm).
 
@@ -1252,7 +1447,7 @@ Sources: [lammps1995](#lammps1995)
 
 Per-context external library force and cell evaluation; not a port of LAMMPS algorithms.
 
-Code: [src/pyrpmd/potentials/lammps.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/lammps.py)
+Code: [src/pyrpmd/potentials/lammps.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/lammps.py)
 
 [Reproduction task](reproduction.md#task-lammps).
 
@@ -1264,7 +1459,7 @@ Sources: [ipi2014](#ipi2014)
 
 Socket force protocol with explicit cell and units.
 
-Code: [src/pyrpmd/potentials/socket.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/socket.py)
+Code: [src/pyrpmd/potentials/socket.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/socket.py)
 
 [Reproduction task](reproduction.md#task-ipi-socket).
 
@@ -1276,7 +1471,7 @@ Sources: [torch2019](#torch2019)
 
 Autodifferentiated energies/forces and tensor versions of the cited physical integrators.
 
-Code: [src/pyrpmd/potentials/optional.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/optional.py), [src/pyrpmd/torch_backend.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/torch_backend.py)
+Code: [src/pyrpmd/potentials/optional.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/optional.py), [src/pyrpmd/torch_backend.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/torch_backend.py)
 
 [Reproduction task](reproduction.md#task-torch).
 
@@ -1288,7 +1483,7 @@ Sources: [mace2022](#mace2022), [nequip2022](#nequip2022), [deepmd2018](#deepmd2
 
 Calls external inference engines; model paper and exact checkpoint are additional citations, not an in-repo reimplementation.
 
-Code: [src/pyrpmd/potentials/adapters.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/adapters.py)
+Code: [src/pyrpmd/potentials/adapters.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/adapters.py)
 
 [Reproduction task](reproduction.md#task-ml-adapters).
 
@@ -1300,7 +1495,7 @@ Sources: [gfn12017](#gfn12017), [gfn22019](#gfn22019), [ipea2017](#ipea2017)
 
 Delegates the named electronic Hamiltonian to tblite; charge, multiplicity and electronic temperature are explicit.
 
-Code: [src/pyrpmd/potentials/adapters.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/adapters.py)
+Code: [src/pyrpmd/potentials/adapters.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/adapters.py)
 
 [Reproduction task](reproduction.md#task-tblite).
 
@@ -1312,7 +1507,7 @@ Sources: [h5md2014](#h5md2014), [ase2017](#ase2017)
 
 H5MD format provenance plus ASE interoperable formats; no new dynamics method.
 
-Code: [src/pyrpmd/trajectory_export.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/trajectory_export.py)
+Code: [src/pyrpmd/trajectory_export.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/trajectory_export.py)
 
 [Reproduction task](reproduction.md#task-h5md-export).
 
@@ -1324,7 +1519,7 @@ Sources: —
 
 Project engineering: TOML/Python schemas, hashes, restart, C ABI/f2py, atomic block propagation, process/MPI/OpenMP/GPU scheduling, reports and rate-matrix assembly.
 
-Code: [src/pyrpmd/input.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/input.py), [src/pyrpmd/checkpoint.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/checkpoint.py), [src/pyrpmd/parallel](https://github.com/chen-yu-hao/PyRPMD/tree/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/parallel), [src/pyrpmd/trajectory.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/trajectory.py), [src/pyrpmd/analysis/reporting.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/reporting.py), [src/pyrpmd/reactions.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/reactions.py), [src/pyrpmd/workflows/network.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/workflows/network.py), [src/pyrpmd/cli.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/cli.py), [src/pyrpmd/runner.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/runner.py), [src/pyrpmd/input_schema.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/input_schema.py), [src/pyrpmd/batched.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/batched.py), [src/pyrpmd/batched_nonadiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/batched_nonadiabatic.py), [src/pyrpmd/trajectory_batch.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/trajectory_batch.py), [src/pyrpmd/electronic_backends.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/electronic_backends.py), [src/pyrpmd/geometry.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/geometry.py)
+Code: [src/pyrpmd/input.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/input.py), [src/pyrpmd/checkpoint.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/checkpoint.py), [src/pyrpmd/parallel](https://github.com/chen-yu-hao/PyRPMD/tree/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/parallel), [src/pyrpmd/trajectory.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/trajectory.py), [src/pyrpmd/analysis/reporting.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/reporting.py), [src/pyrpmd/reactions.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/reactions.py), [src/pyrpmd/workflows/network.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/workflows/network.py), [src/pyrpmd/cli.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/cli.py), [src/pyrpmd/runner.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/runner.py), [src/pyrpmd/input_schema.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/input_schema.py), [src/pyrpmd/batched.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/batched.py), [src/pyrpmd/batched_nonadiabatic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/batched_nonadiabatic.py), [src/pyrpmd/trajectory_batch.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/trajectory_batch.py), [src/pyrpmd/electronic_backends.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/electronic_backends.py), [src/pyrpmd/geometry.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/geometry.py)
 
 [Reproduction task](reproduction.md#task-engineering).
 
@@ -1336,7 +1531,7 @@ Sources: [morse1929](#morse1929)
 
 MorsePairPotential uses the Morse functional form. Free, harmonic, separable quartic and periodic-cosine providers are explicitly specified analytic controls; they are not fitted molecular or metal potentials.
 
-Code: [src/pyrpmd/potentials/builtin.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/builtin.py)
+Code: [src/pyrpmd/potentials/builtin.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/builtin.py)
 
 [Reproduction task](reproduction.md#task-analytic-models).
 
@@ -1348,7 +1543,7 @@ Sources: [bimol09](#bimol09), [iso13](#iso13)
 
 Study orchestration and regression around already cited rate and isotope methods. No separate original paper is claimed for this package-specific scan/report workflow.
 
-Code: [src/pyrpmd/studies.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/studies.py)
+Code: [src/pyrpmd/studies.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/studies.py)
 
 [Reproduction task](reproduction.md#task-rate-studies).
 
@@ -1360,7 +1555,7 @@ Sources: [bkmp21996](#bkmp21996), [bimol09](#bimol09), [rpmrate13](#rpmrate13)
 
 BKMP2 is an externally sourced H3 PES used by the benchmark, not a new potential fitted by PyRPMD. Cite its original paper in addition to the rate method and adapter/software source.
 
-Code: [src/pyrpmd/potentials/native.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/native.py), [src/pyrpmd/potentials/cabi.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/cabi.py)
+Code: [src/pyrpmd/potentials/native.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/native.py), [src/pyrpmd/potentials/cabi.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/cabi.py)
 
 [Reproduction task](reproduction.md#task-bkmp2-model).
 
@@ -1577,6 +1772,18 @@ Role: Original method.
 T. D. Hone; S. Izvekov; G. A. Voth. **Fast centroid molecular dynamics: A force-matching approach for the predetermination of the effective centroid forces**. *J. Chem. Phys. 122, 054105* (2005). DOI: [10.1063/1.1836731](https://doi.org/10.1063/1.1836731).
 
 Role: Original method.
+
+### qcmd2019
+
+G. Trenins; M. J. Willatt; S. C. Althorpe. **Path-integral dynamics of water using curvilinear centroids**. *J. Chem. Phys. 151, 054109* (2019). DOI: [10.1063/1.5100587](https://doi.org/10.1063/1.5100587).
+
+Role: Original quasi-centroid molecular dynamics (QCMD).
+
+### fqcmd2021
+
+T. Fletcher; A. Zhu; J. E. Lawrence; D. E. Manolopoulos. **Fast quasi-centroid molecular dynamics**. *J. Chem. Phys. 155, 231101* (2021). DOI: [10.1063/5.0076704](https://doi.org/10.1063/5.0076704).
+
+Role: Original fast QCMD with a separable correction potential.
 
 ### trpmd14
 
@@ -1800,6 +2007,66 @@ M. Invernizzi; M. Parrinello. **Exploration vs Convergence Speed in Adaptive-Bia
 
 Role: Original method.
 
+### samp-ves2014
+
+O. Valsson; M. Parrinello. **Variational Approach to Enhanced Sampling and Free Energy Calculations**. *Phys. Rev. Lett. 113, 090601* (2014). DOI: [10.1103/PhysRevLett.113.090601](https://doi.org/10.1103/PhysRevLett.113.090601).
+
+Role: Original variationally enhanced sampling functional.
+
+### samp-wtves2015
+
+O. Valsson; M. Parrinello. **Well-Tempered Variational Approach to Enhanced Sampling**. *J. Chem. Theory Comput. 11, 1996–2002* (2015). DOI: [10.1021/acs.jctc.5b00076](https://doi.org/10.1021/acs.jctc.5b00076).
+
+Role: Well-tempered target distribution for VES.
+
+### samp-abf2001
+
+E. Darve; A. Pohorille. **Calculating free energies using average force**. *J. Chem. Phys. 115, 9169–9183* (2001). DOI: [10.1063/1.1410978](https://doi.org/10.1063/1.1410978).
+
+Role: Original adaptive biasing force (average force) method.
+
+### samp-abf2008
+
+E. Darve; D. Rodríguez-Gómez; A. Pohorille. **Adaptive biasing force method for scalar and vector free energy calculations**. *J. Chem. Phys. 128, 144120* (2008). DOI: [10.1063/1.2829861](https://doi.org/10.1063/1.2829861).
+
+Role: Multidimensional ABF mean-force formula with first derivatives.
+
+### samp-abfproj2015
+
+H. Alrachid; T. Lelièvre. **Long-time convergence of an adaptive biasing force method: Variance reduction by Helmholtz projection**. *SMAI J. Comput. Math. 1, 55–82* (2015). DOI: [10.5802/smai-jcm.4](https://doi.org/10.5802/smai-jcm.4).
+
+Role: Helmholtz projection of the estimated mean force used for 2D integration.
+
+### samp-eabf2017
+
+A. Lesage; T. Lelièvre; G. Stoltz; J. Hénin. **Smoothed Biasing Forces Yield Unbiased Free Energies with the Extended-System Adaptive Biasing Force Method**. *J. Phys. Chem. B 121, 3676–3685* (2017). DOI: [10.1021/acs.jpcb.6b10055](https://doi.org/10.1021/acs.jpcb.6b10055).
+
+Role: eABF and the CZAR free-energy estimator.
+
+### samp-jarzynski1997
+
+C. Jarzynski. **Nonequilibrium Equality for Free Energy Differences**. *Phys. Rev. Lett. 78, 2690–2693* (1997). DOI: [10.1103/PhysRevLett.78.2690](https://doi.org/10.1103/PhysRevLett.78.2690).
+
+Role: Original nonequilibrium work equality.
+
+### samp-crooks1999
+
+G. E. Crooks. **Entropy production fluctuation theorem and the nonequilibrium work relation for free energy differences**. *Phys. Rev. E 60, 2721* (1999). DOI: [10.1103/PhysRevE.60.2721](https://doi.org/10.1103/PhysRevE.60.2721).
+
+Role: Original work fluctuation theorem behind the bidirectional estimator.
+
+### samp-bar1976
+
+C. H. Bennett. **Efficient estimation of free energy differences from Monte Carlo data**. *J. Comput. Phys. 22, 245–268* (1976). DOI: [10.1016/0021-9991(76)90078-4](https://doi.org/10.1016/0021-9991(76)90078-4).
+
+Role: Original acceptance-ratio (BAR) estimator used for bidirectional work.
+
+### samp-shadow2013
+
+D. A. Sivak; J. D. Chodera; G. E. Crooks. **Using Nonequilibrium Fluctuation Theorems to Understand and Correct Errors in Equilibrium and Nonequilibrium Simulations of Discrete Langevin Dynamics**. *Phys. Rev. X 3, 011007* (2013). DOI: [10.1103/PhysRevX.3.011007](https://doi.org/10.1103/PhysRevX.3.011007).
+
+Role: Shadow-work interpretation of finite-timestep Langevin error.
+
 ### samp-remd1999
 
 Y. Sugita; Y. Okamoto. **Replica-exchange molecular dynamics method for protein folding**. *Chemical Physics Letters 314, 141–151* (1999). DOI: [10.1016/S0009-2614(99)01123-9](https://doi.org/10.1016/S0009-2614(99)01123-9).
@@ -1811,6 +2078,12 @@ Role: Original method.
 Y. Sugita; A. Kitao; Y. Okamoto. **Multidimensional replica-exchange method for free-energy calculations**. *Journal of Chemical Physics 113, 6042–6051* (2000). DOI: [10.1063/1.1308516](https://doi.org/10.1063/1.1308516).
 
 Role: Original method.
+
+### samp-pt1996
+
+K. Hukushima; K. Nemoto. **Exchange Monte Carlo Method and Application to Spin Glass Simulations**. *J. Phys. Soc. Jpn. 65, 1604–1608* (1996). DOI: [10.1143/JPSJ.65.1604](https://doi.org/10.1143/JPSJ.65.1604).
+
+Role: Original exchange Monte Carlo (parallel tempering) method.
 
 ### samp-imeta2013
 
@@ -1842,6 +2115,42 @@ T. S. van Erp. **Reaction rate calculation by parallel path swapping**. *Physica
 
 Role: Original method.
 
+### samp-pptis2004
+
+D. Moroni; P. G. Bolhuis; T. S. van Erp. **Rate constants for diffusive processes by partial path sampling**. *J. Chem. Phys. 120, 4055–4065* (2004). DOI: [10.1063/1.1644537](https://doi.org/10.1063/1.1644537).
+
+Role: Original partial-path TIS memory-reduction method.
+
+### samp-repptis2023
+
+W. Vervust; D. T. Zhang; T. S. van Erp; A. Ghysels. **Path sampling with memory reduction and replica exchange to reach long permeation timescales**. *Biophysical Journal 122, 2960–2972* (2023). DOI: [10.1016/j.bpj.2023.02.021](https://doi.org/10.1016/j.bpj.2023.02.021).
+
+Role: Original REPPTIS formulation.
+
+### samp-ffs2005
+
+R. J. Allen; P. B. Warren; P. R. ten Wolde. **Sampling Rare Switching Events in Biochemical Networks**. *Phys. Rev. Lett. 94, 018104* (2005). DOI: [10.1103/PhysRevLett.94.018104](https://doi.org/10.1103/PhysRevLett.94.018104).
+
+Role: Original forward flux sampling method.
+
+### samp-ffs2009
+
+R. J. Allen; C. Valeriani; P. R. ten Wolde. **Forward flux sampling for rare event simulations**. *J. Phys.: Condens. Matter 21, 463102* (2009). DOI: [10.1088/0953-8984/21/46/463102](https://doi.org/10.1088/0953-8984/21/46/463102).
+
+Role: FFS review; stochastic-splitting construction followed by the implementation.
+
+### samp-infretis2022
+
+S. Roet; D. T. Zhang; T. S. van Erp. **Exchanging Replicas with Unequal Cost, Infinitely and Permanently**. *J. Phys. Chem. A 126, 8878–8886* (2022). DOI: [10.1021/acs.jpca.2c06004](https://doi.org/10.1021/acs.jpca.2c06004).
+
+Role: Original asynchronous infinite-swap replica exchange (∞RETIS) algorithm.
+
+### samp-infretis2024
+
+D. T. Zhang; L. Baldauf; S. Roet; A. Lervik; T. S. van Erp. **Highly parallelizable path sampling with minimal rejections using asynchronous replica exchange and infinite swaps**. *Proc. Natl. Acad. Sci. USA 121, e2318731121* (2024). DOI: [10.1073/pnas.2318731121](https://doi.org/10.1073/pnas.2318731121).
+
+Role: Later ∞RETIS developments; its subtrajectory moves are not implemented.
+
 ### samp-tps1998
 
 P. G. Bolhuis; C. Dellago; D. Chandler. **Sampling ensembles of deterministic transition pathways**. *Faraday Discussions 110, 421–436* (1998). DOI: [10.1039/A801266K](https://doi.org/10.1039/A801266K).
@@ -1872,6 +2181,24 @@ D. Branduardi; F. L. Gervasio; M. Parrinello. **From A to B in free energy space
 
 Role: Original method.
 
+### samp-mlcolvar2023
+
+L. Bonati; E. Trizio; A. Rizzi; M. Parrinello. **A unified framework for machine learning collective variables for enhanced sampling simulations: mlcolvar**. *J. Chem. Phys. 159, 014801* (2023). DOI: [10.1063/5.0156343](https://doi.org/10.1063/5.0156343).
+
+Role: software; external training library for learned CVs.
+
+### samp-deeplda2020
+
+L. Bonati; V. Rizzi; M. Parrinello. **Data-Driven Collective Variables for Enhanced Sampling**. *J. Phys. Chem. Lett. 11, 2998–3004* (2020). DOI: [10.1021/acs.jpclett.0c00535](https://doi.org/10.1021/acs.jpclett.0c00535).
+
+Role: Original Deep-LDA collective variables.
+
+### samp-deeptica2021
+
+L. Bonati; G. Piccini; M. Parrinello. **Deep learning the slow modes for rare events sampling**. *Proc. Natl. Acad. Sci. USA 118, e2113533118* (2021). DOI: [10.1073/pnas.2113533118](https://doi.org/10.1073/pnas.2113533118).
+
+Role: Original Deep-TICA collective variables.
+
 ### samp-kabsch1976
 
 W. Kabsch. **A solution for the best rotation to relate two sets of vectors**. *Acta Crystallographica A 32, 922–923* (1976). DOI: [10.1107/S0567739476001873](https://doi.org/10.1107/S0567739476001873).
@@ -1889,6 +2216,12 @@ Role: Original method.
 L. Maragliano; A. Fischer; E. Vanden-Eijnden; G. Ciccotti. **String method in collective variables: Minimum free energy paths and isocommittor surfaces**. *Journal of Chemical Physics 125, 024106* (2006). DOI: [10.1063/1.2212942](https://doi.org/10.1063/1.2212942).
 
 Role: CV-string theoretical background; general nonlinear-CV metric terms not fully implemented.
+
+### samp-fts2005
+
+W. E; W. Ren; E. Vanden-Eijnden. **Finite Temperature String Method for the Study of Rare Events**. *J. Phys. Chem. B 109, 6688–6693* (2005). DOI: [10.1021/jp0455430](https://doi.org/10.1021/jp0455430).
+
+Role: Original finite-temperature string method.
 
 ### samp-prfo1985
 
@@ -1966,151 +2299,187 @@ Role: Historical/comparison background, not an independent WHAM solver in this c
 
 H.-D. Meyer and W. H. Miller. **A classical analog for electronic degrees of freedom in nonadiabatic collision processes**. *The Journal of Chemical Physics 70, 3214–3223* (1979). DOI: [10.1063/1.437910](https://doi.org/10.1063/1.437910).
 
-Role: Original classical electronic mapping antecedent; the complete classical S-matrix calculation is not implemented merely by using MMST variables..
+Role: Original classical electronic mapping antecedent; the complete classical S-matrix calculation is not implemented merely by using MMST variables.
 
 ### na-stock1997
 
 G. Stock and M. Thoss. **Semiclassical Description of Nonadiabatic Quantum Dynamics**. *Physical Review Letters 78, 578–581* (1997). DOI: [10.1103/PhysRevLett.78.578](https://doi.org/10.1103/PhysRevLett.78.578). [Source / author version](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.78.578).
 
-Role: Quantum mapping / SEO antecedent, not evidence that the package implements the full semiclassical IVR method..
+Role: Quantum mapping / SEO antecedent, not evidence that the package implements the full semiclassical IVR method.
 
 ### na-nrpmd2013
 
 J. O. Richardson and M. Thoss. **Communication: Nonadiabatic ring-polymer molecular dynamics**. *The Journal of Chemical Physics 139, 031102* (2013). DOI: [10.1063/1.4816124](https://doi.org/10.1063/1.4816124).
 
-Role: Original NRPMD and its SEO-projected thermal construction; direct origin for the published Fig. 1(c) benchmark..
+Role: Original NRPMD and its SEO-projected thermal construction; direct origin for the published Fig. 1(c) benchmark.
 
 ### na-nrpmd2017
 
 J. O. Richardson, P. Meyer, M.-O. Pleinert, and M. Thoss. **An analysis of nonadiabatic ring-polymer molecular dynamics and its application to vibronic spectra**. *Chemical Physics 482, 124–134* (2017). DOI: [10.1016/j.chemphys.2016.09.036](https://doi.org/10.1016/j.chemphys.2016.09.036). [Source / author version](https://www.sciencedirect.com/science/article/abs/pii/S0301010416305717).
 
-Role: Theoretical analysis and generalized independent mapping/nuclear bead construction; background only for features beyond one mapping vector per nuclear bead..
+Role: Theoretical analysis and generalized independent mapping/nuclear bead construction; background only for features beyond one mapping vector per nuclear bead.
 
 ### na-focused2019
 
 S. N. Chowdhury and P. Huo. **State dependent ring polymer molecular dynamics for investigating excited nonadiabatic dynamics**. *The Journal of Chemical Physics 150, 244102* (2019). DOI: [10.1063/1.5096276](https://doi.org/10.1063/1.5096276). [Source / author version](https://huogroup.github.io/pdf/jcp8.pdf).
 
-Role: Focused nonequilibrium electronic preparation and population estimator used by the public NRPMD path, especially Eqs. 20–23..
+Role: Focused nonequilibrium electronic preparation and population estimator used by the public NRPMD path, especially Eqs. 20–23.
 
 ### na-mint2018
 
 M. S. Church, T. J. H. Hele, G. S. Ezra, and N. Ananth. **Nonadiabatic semiclassical dynamics in the mixed quantum-classical initial value representation**. *The Journal of Chemical Physics 148, 102326* (2018). DOI: [10.1063/1.5005557](https://doi.org/10.1063/1.5005557). [Source / author version](https://arxiv.org/abs/1709.07474).
 
-Role: MInt exact mapping/nuclear-momentum subflow component; the paper's full MQC-IVR algorithm is not implemented by this substep..
+Role: MInt exact mapping/nuclear-momentum subflow component; the paper's full MQC-IVR algorithm is not implemented by this substep.
 
 ### na-sm2021
 
 D. Bossion, S. N. Chowdhury, and P. Huo. **Non-adiabatic ring polymer molecular dynamics with spin mapping variables**. *The Journal of Chemical Physics 154, 184106* (2021). DOI: [10.1063/5.0051456](https://doi.org/10.1063/5.0051456). [Source / author version](https://huogroup.github.io/pdf/jcp11.pdf).
 
-Role: Original SM-NRPMD; the implemented focused two-state equations do not include the paper's full Gamma_W equilibrium initialization..
+Role: Original SM-NRPMD; the implemented focused two-state equations do not include the paper's full Gamma_W equilibrium initialization.
 
 ### na-mash2023
 
 J. R. Mannouch and J. O. Richardson. **A mapping approach to surface hopping**. *The Journal of Chemical Physics 158, 104111* (2023). DOI: [10.1063/5.0139734](https://doi.org/10.1063/5.0139734). [Source / author version](https://arxiv.org/abs/2212.11773).
 
-Role: Original two-state MASH with deterministic spin-hemisphere surface selection..
+Role: Original two-state MASH with deterministic spin-hemisphere surface selection.
 
 ### na-mashrates2024
 
 J. E. Lawrence, J. R. Mannouch, and J. O. Richardson. **Recovering Marcus Theory Rates and Beyond without the Need for Decoherence Corrections: The Mapping Approach to Surface Hopping**. *The Journal of Physical Chemistry Letters 15, 707–716* (2024). DOI: [10.1021/acs.jpclett.3c03197](https://doi.org/10.1021/acs.jpclett.3c03197). [Source / author version](https://pmc.ncbi.nlm.nih.gov/articles/PMC10823533/).
 
-Role: Population sampling/ET-rate follow-up used in interpreting MASH and CA-RP-MASH observables..
+Role: Population sampling/ET-rate follow-up used in interpreting MASH and CA-RP-MASH observables.
 
 ### na-carp2025
 
 Z. Cao, V. A. Suarez, and J. S. Kretchmer. **A ring polymer molecular dynamics extension of the mapping approach to surface hopping: Incorporation of nuclear quantum effects**. *ChemRxiv, version 1 (7 December 2025), preprint* (2025). DOI: [10.26434/chemrxiv-2025-xps2g](https://doi.org/10.26434/chemrxiv-2025-xps2g). [Source / author version](https://client.prod.orp.cambridge.org/engage/chemrxiv/article-details/692ba382a10c9f5ca169b8de).
 
-Role: Implemented CA-RP-MASH algorithm and operator-pair weights; record the implemented preprint version explicitly..
+Role: Implemented CA-RP-MASH algorithm and operator-pair weights; record the implemented preprint version explicitly.
+
+### na-msmash2023
+
+J. E. Runeson; D. E. Manolopoulos. **A multi-state mapping approach to surface hopping**. *J. Chem. Phys. 159, 094115* (2023). DOI: [10.1063/5.0158147](https://doi.org/10.1063/5.0158147).
+
+Role: Original multistate MASH and its signed observable estimator.
 
 ### na-tully1990
 
 J. C. Tully. **Molecular dynamics with electronic transitions**. *The Journal of Chemical Physics 93, 1061–1071* (1990). DOI: [10.1063/1.459170](https://doi.org/10.1063/1.459170).
 
-Role: Original fewest-switches algorithm and Tully's three two-state scattering models..
+Role: Original fewest-switches algorithm and Tully's three two-state scattering models.
 
 ### na-rpsh2012
 
 P. Shushkov, R. Li, and J. C. Tully. **Ring polymer molecular dynamics with surface hopping**. *The Journal of Chemical Physics 137, 22A549* (2012). DOI: [10.1063/1.4766449](https://doi.org/10.1063/1.4766449).
 
-Role: Original RPSH proposal, with thermal scattering-rate tests..
+Role: Original RPSH proposal, with thermal scattering-rate tests.
 
 ### na-rpsh2017
 
 F. A. Shakib and P. Huo. **Ring Polymer Surface Hopping: Incorporating Nuclear Quantum Effects into Nonadiabatic Molecular Dynamics Simulations**. *The Journal of Physical Chemistry Letters 8, 3073–3080* (2017). DOI: [10.1021/acs.jpclett.7b01343](https://doi.org/10.1021/acs.jpclett.7b01343). [Source / author version](https://pubs.acs.org/doi/10.1021/acs.jpclett.7b01343).
 
-Role: Nonequilibrium RPSH benchmark and centroid/full-ring rescaling convention discussion; Tully models and low-momentum scattering..
+Role: Nonequilibrium RPSH benchmark and centroid/full-ring rescaling convention discussion; Tully models and low-momentum scattering.
+
+### na-iesh2009
+
+N. Shenvi; S. Roy; J. C. Tully. **Nonadiabatic dynamics at metal surfaces: Independent-electron surface hopping**. *J. Chem. Phys. 130, 174107* (2009). DOI: [10.1063/1.3125436](https://doi.org/10.1063/1.3125436).
+
+Role: Original independent-electron surface hopping.
+
+### na-iesh2023
+
+J. Gardner; D. Corken; S. M. Janke; S. Habershon; R. J. Maurer. **Efficient implementation and performance analysis of the independent electron surface hopping method for dynamics at metal surfaces**. *J. Chem. Phys. 158, 064101* (2023). DOI: [10.1063/5.0137137](https://doi.org/10.1063/5.0137137).
+
+Role: IESH implementation analysis and discretized metal model followed by the implementation.
 
 ### na-rpshdm2023
 
 Y. Shakya, R. Welsch, L. Inhester, and R. Santra. **Capturing electronic decoherence in quantum-classical dynamics using the ring-polymer-surface-hopping–density-matrix approach**. *Physical Review A 107, 062810* (2023). DOI: [10.1103/PhysRevA.107.062810](https://doi.org/10.1103/PhysRevA.107.062810). [Source / author version](https://journals.aps.org/pra/abstract/10.1103/PhysRevA.107.062810).
 
-Role: Explicit CA, bead-average (BA), and bead-electronic density-matrix (DM) formulations; first author is Yashoj Shakya, initial Y., not P..
+Role: Explicit CA, bead-average (BA), and bead-electronic density-matrix (DM) formulations; first author is Yashoj Shakya, initial Y., not P.
 
 ### na-dboc2025
 
 D. K. Limbu, S. Bhusal, D. M. Castañeda-Bagatella, and F. A. Shakib. **Diagonal Born–Oppenheimer corrections in condensed-phase ring polymer surface hopping**. *The Journal of Chemical Physics 163, 234102* (2025). DOI: [10.1063/5.0301249](https://doi.org/10.1063/5.0301249).
 
-Role: DBOC-RPSH extension and condensed-phase spin-boson benchmark; not a guarantee of accuracy improvement in every regime..
+Role: DBOC-RPSH extension and condensed-phase spin-boson benchmark; not a guarantee of accuracy improvement in every regime.
 
 ### na-soc2019
 
 G. Miao, N. Bellonzi, and J. E. Subotnik. **An extension of the fewest switches surface hopping algorithm to complex Hamiltonians and photophysics in magnetic fields: Berry curvature and ‘magnetic’ forces**. *The Journal of Chemical Physics 150, 124101* (2019). DOI: [10.1063/1.5088770](https://doi.org/10.1063/1.5088770). [Source / author version](https://arxiv.org/pdf/1902.05115).
 
-Role: Complex derivative-coupling rescaling direction (method 2) and local geometric force; ring-polymer use is an adaptation..
+Role: Complex derivative-coupling rescaling direction (method 2) and local geometric force; ring-polymer use is an adaptation.
 
 ### na-edc2007
 
 G. Granucci and M. Persico. **Critical appraisal of the fewest switches algorithm for surface hopping**. *The Journal of Chemical Physics 126, 134114* (2007). DOI: [10.1063/1.2715585](https://doi.org/10.1063/1.2715585).
 
-Role: Energy-based decoherence correction, especially the amplitude damping prescription in Eq. 17; centroid/ring energies are implementation conventions..
+Role: Energy-based decoherence correction, especially the amplitude damping prescription in Eq. 17; centroid/ring energies are implementation conventions.
 
 ### na-qd2018
 
 A. Mandal, S. S. R. K. C. Yamijala, and P. Huo. **Quasi-Diabatic Representation for Nonadiabatic Dynamics Propagation**. *Journal of Chemical Theory and Computation 14, 1828–1840* (2018). DOI: [10.1021/acs.jctc.7b01178](https://doi.org/10.1021/acs.jctc.7b01178). [Source / author version](https://pubs.acs.org/doi/10.1021/acs.jctc.7b01178).
 
-Role: QD local-basis/overlap strategy; its PLDM calculation is not implemented merely by reusing QD transport..
+Role: QD local-basis/overlap strategy; its PLDM calculation is not implemented merely by reusing QD transport.
 
 ### na-qd2019
 
 W. Zhou, A. Mandal, and P. Huo. **Quasi-Diabatic Scheme for Nonadiabatic On-the-Fly Simulations**. *The Journal of Physical Chemistry Letters 10, 7062–7070* (2019). DOI: [10.1021/acs.jpclett.9b02747](https://doi.org/10.1021/acs.jpclett.9b02747). [Source / author version](https://pubs.acs.org/doi/10.1021/acs.jpclett.9b02747).
 
-Role: On-the-fly QD demonstration with ethylene; package QD-NRPMD is a composition with a different dynamical approximation..
+Role: On-the-fly QD demonstration with ethylene; package QD-NRPMD is a composition with a different dynamical approximation.
+
+### na-hst1994
+
+S. Hammes-Schiffer; J. C. Tully. **Proton transfer in solution: Molecular dynamics with quantum transitions**. *J. Chem. Phys. 101, 4657–4667* (1994). DOI: [10.1063/1.467455](https://doi.org/10.1063/1.467455).
+
+Role: Finite-difference time-derivative coupling from adjacent-frame overlaps.
+
+### na-npi2014
+
+G. A. Meek; B. G. Levine. **Evaluation of the Time-Derivative Coupling for Accurate Electronic State Transition Probabilities from Numerical Simulations**. *J. Phys. Chem. Lett. 5, 2351–2356* (2014). DOI: [10.1021/jz5009449](https://doi.org/10.1021/jz5009449).
+
+Role: Original norm-preserving interpolation of overlap-based couplings.
+
+### na-npi2016
+
+A. Jain; E. Alguire; J. E. Subotnik. **An Efficient, Augmented Surface Hopping Algorithm That Includes Decoherence for Use in Large-Scale Simulations**. *J. Chem. Theory Comput. 12, 5256–5268* (2016). DOI: [10.1021/acs.jctc.6b00673](https://doi.org/10.1021/acs.jctc.6b00673).
+
+Role: Multistate generalized NPI time-derivative matrix used by the overlap-coupling path; its A-FSSH decoherence is not implemented here.
 
 ### na-mv2013
 
 N. Ananth. **Mapping variable ring polymer molecular dynamics: A path-integral based method for nonadiabatic processes**. *The Journal of Chemical Physics 139, 124102* (2013). DOI: [10.1063/1.4821590](https://doi.org/10.1063/1.4821590). [Source / author version](https://arxiv.org/abs/1309.4476).
 
-Role: Original MV-RPMD signed mapping partition function and model dynamics..
+Role: Original MV-RPMD signed mapping partition function and model dynamics.
 
 ### na-kc2014
 
 A. R. Menzeleev, F. Bell, and T. F. Miller III. **Kinetically constrained ring-polymer molecular dynamics for non-adiabatic chemical reactions**. *The Journal of Chemical Physics 140, 064103* (2014). DOI: [10.1063/1.4863919](https://doi.org/10.1063/1.4863919). [Source / author version](https://arxiv.org/abs/1401.3033).
 
-Role: Original primitive two-state KC-RPMD, crossing calibration and auxiliary-coordinate dynamics..
+Role: Original primitive two-state KC-RPMD, crossing calibration and auxiliary-coordinate dynamics.
 
 ### na-iso2018
 
 X. Tao, P. Shushkov, and T. F. Miller III. **Path-integral isomorphic Hamiltonian for including nuclear quantum effects in non-adiabatic dynamics**. *The Journal of Chemical Physics 148, 102327* (2018). DOI: [10.1063/1.5005544](https://doi.org/10.1063/1.5005544). [Source / author version](https://arxiv.org/abs/1709.06722).
 
-Role: Trace-matched isomorphic Hamiltonian; the package implements an explicit two-state Ehrenfest consumer, not all QCLE/SH dynamics in the paper..
+Role: Trace-matched isomorphic Hamiltonian; the package implements an explicit two-state Ehrenfest consumer, not all QCLE/SH dynamics in the paper.
 
 ### na-nah21992
 
 P. Halvick and D. G. Truhlar. **A new diabatic representation of the coupled potential energy surfaces for Na(3p 2P)+H2 → Na(3s 2S)+H2 or NaH+H**. *The Journal of Chemical Physics 96, 2895–2909* (1992). DOI: [10.1063/1.461986](https://doi.org/10.1063/1.461986).
 
-Role: Original coupled NaH2 diabatic potential; physical origin is independent of the selected propagation method..
+Role: Original coupled NaH2 diabatic potential; physical origin is independent of the selected propagation method.
 
 ### na-nah2err1994
 
 P. Halvick and D. G. Truhlar. **Erratum: A new diabatic representation of the coupled potential energy surfaces for Na(3p 2P)+H2 → Na(3s 2S)+H2 or NaH+H**. *The Journal of Chemical Physics 100, 4718* (1994). DOI: [10.1063/1.467282](https://doi.org/10.1063/1.467282).
 
-Role: Required correction accompanying the original NaH2 potential citation..
+Role: Required correction accompanying the original NaH2 potential citation.
 
 ### na-feit1982
 
 M. D. Feit, J. A. Fleck Jr., and A. Steiger. **Solution of the Schrödinger equation by a spectral method**. *Journal of Computational Physics 47, 412–433* (1982). DOI: [10.1016/0021-9991(82)90091-2](https://doi.org/10.1016/0021-9991(82)90091-2). [Source / author version](https://www.sciencedirect.com/science/article/pii/0021999182900912).
 
-Role: Fourier spectral/split-operator quantum propagation antecedent; the exactness claim requires finite-box/grid/time convergence..
+Role: Fourier spectral/split-operator quantum propagation antecedent; the exactness claim requires finite-box/grid/time convergence.
 
 ### bzp2009
 

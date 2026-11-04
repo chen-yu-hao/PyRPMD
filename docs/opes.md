@@ -44,8 +44,11 @@ Kernels integrate to one. Periodic CV dimensions use a wrapped Gaussian,
 including smooth derivatives across the periodic boundary. This differs from
 PLUMED's truncated-kernel implementation. Optional adaptive widths use a
 Welford/Scott-ESS rule, which differs from PLUMED's diffusion-window rule.
-Kernel compression and shared OPES walkers are not implemented; numerical
-identity with PLUMED is not claimed. Force evaluation, each update and stored
+Kernel compression is not implemented, and numerical identity with PLUMED is
+not claimed. Walkers that share one OPES kernel history are available through
+`walkers_mode`; see
+[distributed multiple-walker MetaD and OPES](enhanced-sampling.md#distributed-multiple-walker-metad-and-opes).
+Force evaluation, each update and stored
 history grow linearly with the number of kernels. Freezing the bias also
 stops that growth. The incremental `Z` update avoids a complete pairwise
 recalculation at every deposition; restart validation checks the saved

@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "repository": "chen-yu-hao/PyRPMD",
-  "audited_commit": "cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d",
-  "audit_date": "2026-11-02",
+  "audited_commit": "28cde092b66707878d99bc45eadf6bdf5950b317",
+  "audit_date": "2026-11-03",
   "scope": "Feature-level method/model/interface provenance; citations are not claims of full implementation or completed reproduction.",
   "references": [
     {
@@ -354,6 +354,26 @@
       "doi": "10.1063/1.1836731",
       "url": "https://doi.org/10.1063/1.1836731",
       "role": "Original method"
+    },
+    {
+      "id": "qcmd2019",
+      "authors": "G. Trenins; M. J. Willatt; S. C. Althorpe",
+      "title": "Path-integral dynamics of water using curvilinear centroids",
+      "year": 2019,
+      "venue": "J. Chem. Phys. 151, 054109",
+      "doi": "10.1063/1.5100587",
+      "url": "https://doi.org/10.1063/1.5100587",
+      "role": "Original quasi-centroid molecular dynamics (QCMD)"
+    },
+    {
+      "id": "fqcmd2021",
+      "authors": "T. Fletcher; A. Zhu; J. E. Lawrence; D. E. Manolopoulos",
+      "title": "Fast quasi-centroid molecular dynamics",
+      "year": 2021,
+      "venue": "J. Chem. Phys. 155, 231101",
+      "doi": "10.1063/5.0076704",
+      "url": "https://doi.org/10.1063/5.0076704",
+      "role": "Original fast QCMD with a separable correction potential"
     },
     {
       "id": "trpmd14",
@@ -726,6 +746,106 @@
       "role": "Original method"
     },
     {
+      "id": "samp-ves2014",
+      "authors": "O. Valsson; M. Parrinello",
+      "title": "Variational Approach to Enhanced Sampling and Free Energy Calculations",
+      "year": 2014,
+      "venue": "Phys. Rev. Lett. 113, 090601",
+      "doi": "10.1103/PhysRevLett.113.090601",
+      "url": "https://doi.org/10.1103/PhysRevLett.113.090601",
+      "role": "Original variationally enhanced sampling functional"
+    },
+    {
+      "id": "samp-wtves2015",
+      "authors": "O. Valsson; M. Parrinello",
+      "title": "Well-Tempered Variational Approach to Enhanced Sampling",
+      "year": 2015,
+      "venue": "J. Chem. Theory Comput. 11, 1996–2002",
+      "doi": "10.1021/acs.jctc.5b00076",
+      "url": "https://doi.org/10.1021/acs.jctc.5b00076",
+      "role": "Well-tempered target distribution for VES"
+    },
+    {
+      "id": "samp-abf2001",
+      "authors": "E. Darve; A. Pohorille",
+      "title": "Calculating free energies using average force",
+      "year": 2001,
+      "venue": "J. Chem. Phys. 115, 9169–9183",
+      "doi": "10.1063/1.1410978",
+      "url": "https://doi.org/10.1063/1.1410978",
+      "role": "Original adaptive biasing force (average force) method"
+    },
+    {
+      "id": "samp-abf2008",
+      "authors": "E. Darve; D. Rodríguez-Gómez; A. Pohorille",
+      "title": "Adaptive biasing force method for scalar and vector free energy calculations",
+      "year": 2008,
+      "venue": "J. Chem. Phys. 128, 144120",
+      "doi": "10.1063/1.2829861",
+      "url": "https://doi.org/10.1063/1.2829861",
+      "role": "Multidimensional ABF mean-force formula with first derivatives"
+    },
+    {
+      "id": "samp-abfproj2015",
+      "authors": "H. Alrachid; T. Lelièvre",
+      "title": "Long-time convergence of an adaptive biasing force method: Variance reduction by Helmholtz projection",
+      "year": 2015,
+      "venue": "SMAI J. Comput. Math. 1, 55–82",
+      "doi": "10.5802/smai-jcm.4",
+      "url": "https://doi.org/10.5802/smai-jcm.4",
+      "role": "Helmholtz projection of the estimated mean force used for 2D integration"
+    },
+    {
+      "id": "samp-eabf2017",
+      "authors": "A. Lesage; T. Lelièvre; G. Stoltz; J. Hénin",
+      "title": "Smoothed Biasing Forces Yield Unbiased Free Energies with the Extended-System Adaptive Biasing Force Method",
+      "year": 2017,
+      "venue": "J. Phys. Chem. B 121, 3676–3685",
+      "doi": "10.1021/acs.jpcb.6b10055",
+      "url": "https://doi.org/10.1021/acs.jpcb.6b10055",
+      "role": "eABF and the CZAR free-energy estimator"
+    },
+    {
+      "id": "samp-jarzynski1997",
+      "authors": "C. Jarzynski",
+      "title": "Nonequilibrium Equality for Free Energy Differences",
+      "year": 1997,
+      "venue": "Phys. Rev. Lett. 78, 2690–2693",
+      "doi": "10.1103/PhysRevLett.78.2690",
+      "url": "https://doi.org/10.1103/PhysRevLett.78.2690",
+      "role": "Original nonequilibrium work equality"
+    },
+    {
+      "id": "samp-crooks1999",
+      "authors": "G. E. Crooks",
+      "title": "Entropy production fluctuation theorem and the nonequilibrium work relation for free energy differences",
+      "year": 1999,
+      "venue": "Phys. Rev. E 60, 2721",
+      "doi": "10.1103/PhysRevE.60.2721",
+      "url": "https://doi.org/10.1103/PhysRevE.60.2721",
+      "role": "Original work fluctuation theorem behind the bidirectional estimator"
+    },
+    {
+      "id": "samp-bar1976",
+      "authors": "C. H. Bennett",
+      "title": "Efficient estimation of free energy differences from Monte Carlo data",
+      "year": 1976,
+      "venue": "J. Comput. Phys. 22, 245–268",
+      "doi": "10.1016/0021-9991(76)90078-4",
+      "url": "https://doi.org/10.1016/0021-9991(76)90078-4",
+      "role": "Original acceptance-ratio (BAR) estimator used for bidirectional work"
+    },
+    {
+      "id": "samp-shadow2013",
+      "authors": "D. A. Sivak; J. D. Chodera; G. E. Crooks",
+      "title": "Using Nonequilibrium Fluctuation Theorems to Understand and Correct Errors in Equilibrium and Nonequilibrium Simulations of Discrete Langevin Dynamics",
+      "year": 2013,
+      "venue": "Phys. Rev. X 3, 011007",
+      "doi": "10.1103/PhysRevX.3.011007",
+      "url": "https://doi.org/10.1103/PhysRevX.3.011007",
+      "role": "Shadow-work interpretation of finite-timestep Langevin error"
+    },
+    {
       "id": "samp-remd1999",
       "authors": "Y. Sugita; Y. Okamoto",
       "title": "Replica-exchange molecular dynamics method for protein folding",
@@ -744,6 +864,16 @@
       "doi": "10.1063/1.1308516",
       "url": "https://doi.org/10.1063/1.1308516",
       "role": "Original method"
+    },
+    {
+      "id": "samp-pt1996",
+      "authors": "K. Hukushima; K. Nemoto",
+      "title": "Exchange Monte Carlo Method and Application to Spin Glass Simulations",
+      "year": 1996,
+      "venue": "J. Phys. Soc. Jpn. 65, 1604–1608",
+      "doi": "10.1143/JPSJ.65.1604",
+      "url": "https://doi.org/10.1143/JPSJ.65.1604",
+      "role": "Original exchange Monte Carlo (parallel tempering) method"
     },
     {
       "id": "samp-imeta2013",
@@ -796,6 +926,66 @@
       "role": "Original method"
     },
     {
+      "id": "samp-pptis2004",
+      "authors": "D. Moroni; P. G. Bolhuis; T. S. van Erp",
+      "title": "Rate constants for diffusive processes by partial path sampling",
+      "year": 2004,
+      "venue": "J. Chem. Phys. 120, 4055–4065",
+      "doi": "10.1063/1.1644537",
+      "url": "https://doi.org/10.1063/1.1644537",
+      "role": "Original partial-path TIS memory-reduction method"
+    },
+    {
+      "id": "samp-repptis2023",
+      "authors": "W. Vervust; D. T. Zhang; T. S. van Erp; A. Ghysels",
+      "title": "Path sampling with memory reduction and replica exchange to reach long permeation timescales",
+      "year": 2023,
+      "venue": "Biophysical Journal 122, 2960–2972",
+      "doi": "10.1016/j.bpj.2023.02.021",
+      "url": "https://doi.org/10.1016/j.bpj.2023.02.021",
+      "role": "Original REPPTIS formulation"
+    },
+    {
+      "id": "samp-ffs2005",
+      "authors": "R. J. Allen; P. B. Warren; P. R. ten Wolde",
+      "title": "Sampling Rare Switching Events in Biochemical Networks",
+      "year": 2005,
+      "venue": "Phys. Rev. Lett. 94, 018104",
+      "doi": "10.1103/PhysRevLett.94.018104",
+      "url": "https://doi.org/10.1103/PhysRevLett.94.018104",
+      "role": "Original forward flux sampling method"
+    },
+    {
+      "id": "samp-ffs2009",
+      "authors": "R. J. Allen; C. Valeriani; P. R. ten Wolde",
+      "title": "Forward flux sampling for rare event simulations",
+      "year": 2009,
+      "venue": "J. Phys.: Condens. Matter 21, 463102",
+      "doi": "10.1088/0953-8984/21/46/463102",
+      "url": "https://doi.org/10.1088/0953-8984/21/46/463102",
+      "role": "FFS review; stochastic-splitting construction followed by the implementation"
+    },
+    {
+      "id": "samp-infretis2022",
+      "authors": "S. Roet; D. T. Zhang; T. S. van Erp",
+      "title": "Exchanging Replicas with Unequal Cost, Infinitely and Permanently",
+      "year": 2022,
+      "venue": "J. Phys. Chem. A 126, 8878–8886",
+      "doi": "10.1021/acs.jpca.2c06004",
+      "url": "https://doi.org/10.1021/acs.jpca.2c06004",
+      "role": "Original asynchronous infinite-swap replica exchange (∞RETIS) algorithm"
+    },
+    {
+      "id": "samp-infretis2024",
+      "authors": "D. T. Zhang; L. Baldauf; S. Roet; A. Lervik; T. S. van Erp",
+      "title": "Highly parallelizable path sampling with minimal rejections using asynchronous replica exchange and infinite swaps",
+      "year": 2024,
+      "venue": "Proc. Natl. Acad. Sci. USA 121, e2318731121",
+      "doi": "10.1073/pnas.2318731121",
+      "url": "https://doi.org/10.1073/pnas.2318731121",
+      "role": "Later ∞RETIS developments; its subtrajectory moves are not implemented"
+    },
+    {
       "id": "samp-tps1998",
       "authors": "P. G. Bolhuis; C. Dellago; D. Chandler",
       "title": "Sampling ensembles of deterministic transition pathways",
@@ -846,6 +1036,36 @@
       "role": "Original method"
     },
     {
+      "id": "samp-mlcolvar2023",
+      "authors": "L. Bonati; E. Trizio; A. Rizzi; M. Parrinello",
+      "title": "A unified framework for machine learning collective variables for enhanced sampling simulations: mlcolvar",
+      "year": 2023,
+      "venue": "J. Chem. Phys. 159, 014801",
+      "doi": "10.1063/5.0156343",
+      "url": "https://doi.org/10.1063/5.0156343",
+      "role": "software; external training library for learned CVs"
+    },
+    {
+      "id": "samp-deeplda2020",
+      "authors": "L. Bonati; V. Rizzi; M. Parrinello",
+      "title": "Data-Driven Collective Variables for Enhanced Sampling",
+      "year": 2020,
+      "venue": "J. Phys. Chem. Lett. 11, 2998–3004",
+      "doi": "10.1021/acs.jpclett.0c00535",
+      "url": "https://doi.org/10.1021/acs.jpclett.0c00535",
+      "role": "Original Deep-LDA collective variables"
+    },
+    {
+      "id": "samp-deeptica2021",
+      "authors": "L. Bonati; G. Piccini; M. Parrinello",
+      "title": "Deep learning the slow modes for rare events sampling",
+      "year": 2021,
+      "venue": "Proc. Natl. Acad. Sci. USA 118, e2113533118",
+      "doi": "10.1073/pnas.2113533118",
+      "url": "https://doi.org/10.1073/pnas.2113533118",
+      "role": "Original Deep-TICA collective variables"
+    },
+    {
       "id": "samp-kabsch1976",
       "authors": "W. Kabsch",
       "title": "A solution for the best rotation to relate two sets of vectors",
@@ -874,6 +1094,16 @@
       "doi": "10.1063/1.2212942",
       "url": "https://doi.org/10.1063/1.2212942",
       "role": "CV-string theoretical background; general nonlinear-CV metric terms not fully implemented"
+    },
+    {
+      "id": "samp-fts2005",
+      "authors": "W. E; W. Ren; E. Vanden-Eijnden",
+      "title": "Finite Temperature String Method for the Study of Rare Events",
+      "year": 2005,
+      "venue": "J. Phys. Chem. B 109, 6688–6693",
+      "doi": "10.1021/jp0455430",
+      "url": "https://doi.org/10.1021/jp0455430",
+      "role": "Original finite-temperature string method"
     },
     {
       "id": "samp-prfo1985",
@@ -1096,6 +1326,16 @@
       "role": "Implemented CA-RP-MASH algorithm and operator-pair weights; record the implemented preprint version explicitly."
     },
     {
+      "id": "na-msmash2023",
+      "authors": "J. E. Runeson; D. E. Manolopoulos",
+      "title": "A multi-state mapping approach to surface hopping",
+      "year": 2023,
+      "venue": "J. Chem. Phys. 159, 094115",
+      "doi": "10.1063/5.0158147",
+      "url": "https://doi.org/10.1063/5.0158147",
+      "role": "Original multistate MASH and its signed observable estimator"
+    },
+    {
       "id": "na-tully1990",
       "authors": "J. C. Tully",
       "title": "Molecular dynamics with electronic transitions",
@@ -1124,6 +1364,26 @@
       "doi": "10.1021/acs.jpclett.7b01343",
       "url": "https://pubs.acs.org/doi/10.1021/acs.jpclett.7b01343",
       "role": "Nonequilibrium RPSH benchmark and centroid/full-ring rescaling convention discussion; Tully models and low-momentum scattering."
+    },
+    {
+      "id": "na-iesh2009",
+      "authors": "N. Shenvi; S. Roy; J. C. Tully",
+      "title": "Nonadiabatic dynamics at metal surfaces: Independent-electron surface hopping",
+      "year": 2009,
+      "venue": "J. Chem. Phys. 130, 174107",
+      "doi": "10.1063/1.3125436",
+      "url": "https://doi.org/10.1063/1.3125436",
+      "role": "Original independent-electron surface hopping"
+    },
+    {
+      "id": "na-iesh2023",
+      "authors": "J. Gardner; D. Corken; S. M. Janke; S. Habershon; R. J. Maurer",
+      "title": "Efficient implementation and performance analysis of the independent electron surface hopping method for dynamics at metal surfaces",
+      "year": 2023,
+      "venue": "J. Chem. Phys. 158, 064101",
+      "doi": "10.1063/5.0137137",
+      "url": "https://doi.org/10.1063/5.0137137",
+      "role": "IESH implementation analysis and discretized metal model followed by the implementation"
     },
     {
       "id": "na-rpshdm2023",
@@ -1184,6 +1444,36 @@
       "doi": "10.1021/acs.jpclett.9b02747",
       "url": "https://pubs.acs.org/doi/10.1021/acs.jpclett.9b02747",
       "role": "On-the-fly QD demonstration with ethylene; package QD-NRPMD is a composition with a different dynamical approximation."
+    },
+    {
+      "id": "na-hst1994",
+      "authors": "S. Hammes-Schiffer; J. C. Tully",
+      "title": "Proton transfer in solution: Molecular dynamics with quantum transitions",
+      "year": 1994,
+      "venue": "J. Chem. Phys. 101, 4657–4667",
+      "doi": "10.1063/1.467455",
+      "url": "https://doi.org/10.1063/1.467455",
+      "role": "Finite-difference time-derivative coupling from adjacent-frame overlaps"
+    },
+    {
+      "id": "na-npi2014",
+      "authors": "G. A. Meek; B. G. Levine",
+      "title": "Evaluation of the Time-Derivative Coupling for Accurate Electronic State Transition Probabilities from Numerical Simulations",
+      "year": 2014,
+      "venue": "J. Phys. Chem. Lett. 5, 2351–2356",
+      "doi": "10.1021/jz5009449",
+      "url": "https://doi.org/10.1021/jz5009449",
+      "role": "Original norm-preserving interpolation of overlap-based couplings"
+    },
+    {
+      "id": "na-npi2016",
+      "authors": "A. Jain; E. Alguire; J. E. Subotnik",
+      "title": "An Efficient, Augmented Surface Hopping Algorithm That Includes Decoherence for Use in Large-Scale Simulations",
+      "year": 2016,
+      "venue": "J. Chem. Theory Comput. 12, 5256–5268",
+      "doi": "10.1021/acs.jctc.6b00673",
+      "url": "https://doi.org/10.1021/acs.jctc.6b00673",
+      "role": "Multistate generalized NPI time-derivative matrix used by the overlap-coupling path; its A-FSSH decoherence is not implemented here"
     },
     {
       "id": "na-mv2013",
@@ -2185,6 +2475,37 @@
       "group": "core"
     },
     {
+      "id": "qcmd",
+      "name": "Experimental f-QCMD for bent triatomic molecules",
+      "code": [
+        "src/pyrpmd/qcmd.py",
+        "src/pyrpmd/_qcmd_geometry.py",
+        "src/pyrpmd/_qcmd_sampling.py",
+        "src/pyrpmd/workflows/spectroscopy.py"
+      ],
+      "references": [
+        "qcmd2019",
+        "fqcmd2021",
+        "cmd94"
+      ],
+      "scope": "Bead-averaged bond/angle quasi-centroids for nonperiodic, fixed-topology bent triatomics; iterative Boltzmann inversion of separable correction potentials; classical spectroscopy dynamics with method=\"f-qcmd\" and beads=1. A constrained-PIMD API samples fixed mean internal coordinates for equilibrium research. Real-time adiabatic QCMD and h-CMD are not implemented and fail explicitly.",
+      "original_system": "Trenins–Willatt–Althorpe 2019: infrared spectra of gas-phase water, liquid water and ice from 150 to 600 K. Fletcher et al. 2021: gas-phase vibrational spectra of water and ammonia against QCMD, and methane against quantum results.",
+      "reproduce_observables": "Gas-phase water quasi-centroid distributions and IR band positions versus exact quantum or QCMD references; IBI convergence of the correction potentials, bead number, temperature transferability and independent-trajectory uncertainty.",
+      "existing_entry": [
+        "examples/spectroscopy/fqcmd_water.py",
+        "docs/qcmd.md"
+      ],
+      "gaps": "Only bent triatomics are supported, so ammonia, methane and condensed-phase water from the papers are outside the current geometry. Converged liquid-water IR spectra are not established; the correction model is temperature specific.",
+      "priority": "P2",
+      "name_zh": "弯曲三原子分子的实验性 f-QCMD",
+      "scope_zh": "对非周期、固定拓扑的弯曲三原子分子，用珠平均键长/键角定义准质心；以迭代 Boltzmann 反演拟合可分离修正势；光谱工作流以 method=\"f-qcmd\"、beads=1 运行经典动力学。约束 PIMD API 在固定平均内坐标下做平衡采样。实时间绝热 QCMD 与 h-CMD 未实现，会明确报错。",
+      "original_system_zh": "Trenins–Willatt–Althorpe 2019：150–600 K 下气相水、液态水和冰的红外光谱；Fletcher 等 2021：气相水和氨与 QCMD 参考比较、甲烷与量子结果比较的振动光谱。",
+      "reproduce_observables_zh": "气相水的准质心分布与红外谱带位置，对照精确量子或 QCMD 参考；修正势 IBI 收敛、珠数、温度可迁移性与独立轨迹误差。",
+      "gaps_zh": "只支持弯曲三原子分子，论文中的氨、甲烷和凝聚相水超出当前几何范围；尚未得到收敛的液态水红外光谱；修正模型只适用于拟合温度。",
+      "group": "core",
+      "kind": "method"
+    },
+    {
       "id": "trpmd",
       "name": "TRPMD dynamics and relative IR spectra",
       "code": [
@@ -2385,7 +2706,8 @@
       "name": "Finite-difference Suzuki–Chin path integrals",
       "code": [
         "src/pyrpmd/pimd_methods.py",
-        "src/pyrpmd/workflows/path_integral.py"
+        "src/pyrpmd/workflows/path_integral.py",
+        "src/pyrpmd/suzuki_chin.py"
       ],
       "references": [
         "suz95",
@@ -2395,14 +2717,14 @@
       "scope": "Even-bead alternating Suzuki–Chin weights with force-gradient terms evaluated through symmetric finite differences along F/m. Python supports α in [0,1]; CLI currently restricts α=0.",
       "original_system": "Kapil–Behler–Ceriotti: liquid water and ice with a neural-network potential trained to dispersion-corrected hybrid density-functional data.",
       "reproduce_observables": "First compare harmonic even-bead position moments/physical potential against exact finite-P and continuum values; verify finite-difference force convergence. Original target: RDF and thermodynamic observables versus P and force-call cost under the identical NN potential.",
-      "existing_entry": "examples/path_integral/suzuki_chin.inp; benchmarks/tier2_literature/path_integral.py",
-      "gaps": "Current route is confined/nonperiodic and serial, with physical even-bead potential reporting but no complete SC total-energy/Cv/pressure estimator. Thus original water/ice reproduction requires additional coverage and the original potential.",
+      "existing_entry": "examples/path_integral/suzuki_chin.inp; benchmarks/tier2_literature/path_integral.py; docs/condensed-phase-nqe.md",
+      "gaps": "SC energy, heat-capacity and pressure estimators and isotropic SC-NPT (src/pyrpmd/suzuki_chin.py) are validated only on a coupled harmonic crystal and an FCC Lennard-Jones model solid. The CLI [path_integral] route still restricts alpha=0, and the original water/ice reproduction requires the original potential.",
       "priority": "P0/P2",
       "name_zh": "有限差分 Suzuki–Chin 路径积分",
       "scope_zh": "偶数珠交替权重与沿 F/m 的对称有限差分力梯度；Python 可选 α，CLI 当前限 α=0。",
       "original_system_zh": "原文为色散修正混合 DFT 训练神经网络势的液态水与冰。",
       "reproduce_observables_zh": "先核验谐振子偶珠位置矩、物理势能和有限差分收敛；原体系再算 RDF、热力学量及成本随 P 的变化。",
-      "gaps_zh": "现路线非周期、串行，缺完整 SC 总能/Cv/压力估计器；水冰原文复现还需扩展和原 NN 势。",
+      "gaps_zh": "SC 能量、热容、压力估计器与各向同性 SC-NPT（src/pyrpmd/suzuki_chin.py）只在耦合谐振晶体与 FCC Lennard-Jones 模型固体上验证；CLI [path_integral] 路线仍限 α=0，原文水/冰复现还需原 NN 势。",
       "group": "core"
     },
     {
@@ -2673,20 +2995,29 @@
       "name": "Shared-bias multiple-walker metadynamics",
       "code": [
         "src/pyrpmd/shared_metadynamics.py",
-        "src/pyrpmd/workflows/shared_metadynamics.py"
+        "src/pyrpmd/workflows/shared_metadynamics.py",
+        "src/pyrpmd/walker_exchange.py",
+        "src/pyrpmd/workflows/_distributed_meta_mpi.py",
+        "src/pyrpmd/workflows/_distributed_meta_async.py",
+        "src/pyrpmd/workflows/_distributed_opes_mpi.py",
+        "src/pyrpmd/workflows/_distributed_opes_async.py"
       ],
       "references": [
         "samp-walkers2006",
         "samp-wt2008"
       ],
-      "scope": "Two project scheduling protocols (synchronized deposition and block synchronization) share Gaussian histories. Walkers sharing one bias are statistically dependent; synchronization/restart specifics are project engineering.",
+      "scope": "Shared Gaussian (MetaD) or kernel (OPES) histories with walkers_mode=serial, mpi-sync (one walker per MPI rank, rank-ordered synchronous batches, one atomic ensemble checkpoint) or async-files (append-only per-walker logs, eventually merged). Walkers sharing one bias are statistically dependent; synchronization and restart specifics are project engineering.",
       "original_system": "The original paper studied threading/unthreading of tetracationic cyclobis(paraquat-p-phenylene) and 1,5-dihydroxynaphthalene in acetonitrile, plus Langevin models in 1D/2D/3D spherical wells.",
       "reproduce_observables": "Calculate the 2D FES in center separation and solvent coordination, unthreading/rethreading barriers, FES error and wall time/total simulated time versus walker count. First perform an equal-budget OGRe double-well regression; estimate uncertainty across independent complete shared histories.",
-      "existing_entry": "docs/enhanced-sampling.md#shared-multiple-walkers; docs/enhanced-sampling.md#shared-bias-multiple-walkers",
+      "existing_entry": [
+        "docs/enhanced-sampling.md#shared-multiple-walkers",
+        "docs/enhanced-sampling.md#distributed-multiple-walker-metad-and-opes",
+        "docs/validation/multi-walkers-2026-11-03/README.md"
+      ],
       "gaps": "Section 3 and Fig.3 use 300 K and 1–32 walkers; molecular simulation details are delegated to the original paper's ref.35 and must be recovered. Its WHAM-superposition postprocessing is not implemented merely by sharing a bias. Shared walkers are not independent replicates.",
       "priority": "P1",
       "name_zh": "共享偏置的多行者元动力学",
-      "scope_zh": "两种同步调度共享高斯历史；共享同一偏置的行者在统计上相关。同步、重启协议是项目工程，原文 WHAM superposition 后处理未一并实现。",
+      "scope_zh": "以 walkers_mode=serial、mpi-sync（每个 MPI rank 一个行者、按 rank 顺序同步批次、单一原子性系综 checkpoint）或 async-files（每个行者追加日志、最终合并）共享高斯（MetaD）或核（OPES）历史。共享同一偏置的行者在统计上相关；同步与重启协议是项目工程，原文 WHAM superposition 后处理未一并实现。",
       "original_system_zh": "原论文：乙腈中四价 cyclobis(paraquat-p-phenylene) 环芳烷与 1,5-dihydroxynaphthalene 的穿脱套过程；另有 1D/2D/3D 球形势阱 Langevin 模型。",
       "reproduce_observables_zh": "算两中心距离和溶剂配位数的二维 FES、脱套/回穿势垒、FES 误差及 wall time/总动力学时间随 walker 数变化；先用 OGRe 双阱做同预算回归，误差来自独立完整共享历史。",
       "gaps_zh": "原文 Section 3 和 Fig.3 为 300 K、1–32 walkers，分子势详情指向其 ref.35，需补齐；原文 WHAM superposition 后处理未随共享偏置功能一并实现。多个 shared walkers 不等于多个独立重复。",
@@ -2730,13 +3061,13 @@
       "original_system": "The original paper and SI include a double-well model, alanine dipeptide and alanine tetrapeptide.",
       "reproduce_observables": "Begin with double-well comparisons of KDE, bias, forces and normalization Z. Calculate frozen-bias FESs, ESS, coverage and basin free energies before moving to alanine.",
       "existing_entry": "examples/opes/harmonic_2d.inp; benchmarks/tier2_literature/sampling.py",
-      "gaps": "Kernel compression and shared OPES walkers are absent. Wrapped Gaussian kernels differ from PLUMED's truncated kernels. Cross-code comparisons must match initialization constants, physical kernel widths, normalization and bias gauge.",
+      "gaps": "Kernel compression is absent; shared OPES walkers (walkers_mode mpi-sync or async-files) are the samp-walkers entry. Wrapped Gaussian kernels differ from PLUMED's truncated kernels. Cross-code comparisons must match initialization constants, physical kernel widths, normalization and bias gauge.",
       "priority": "P0",
       "name_zh": "OPES_METAD 与冻结偏置重加权",
       "scope_zh": "默认固定宽度，用未压缩且归一化的周期包裹高斯 KDE 与中心采样 Z 估计；冻结偏置后的直方图用 exp(βV)，不扣时间依赖 c(t)。",
       "original_system_zh": "原论文及 SI：double-well 模型、alanine dipeptide、alanine tetrapeptide。",
       "reproduce_observables_zh": "从 double well 做 KDE、bias、force 与归一化 Z 对照；算冻结偏置后的 FES、ESS、覆盖率和盆地自由能，再移至 alanine。",
-      "gaps_zh": "无 kernel compression/shared walkers；wrapped Gaussian 与 PLUMED 截断 kernel 不完全相同。跨码比较须统一初始化常数、实际 kernel 宽度、归一化和偏置 gauge。",
+      "gaps_zh": "无 kernel compression；共享 OPES 行者（walkers_mode 为 mpi-sync 或 async-files）见 samp-walkers 条目；wrapped Gaussian 与 PLUMED 截断 kernel 不完全相同。跨码比较须统一初始化常数、实际 kernel 宽度、归一化和偏置 gauge。",
       "group": "sampling"
     },
     {
@@ -2762,6 +3093,96 @@
       "reproduce_observables_zh": "算跨盆地次数、FES 误差、覆盖率随时间；分别比较 metad/explore 和 fixed/adaptive widths。探索更快不能当成 FES 已收敛。",
       "gaps_zh": "tier2_literature/sampling.py 已包含论文 Müller 模型及 x/y CV 对照，但默认预算不等于原文 200M steps；自适应规则只能做本实现的对照，不能声称完整复现 PLUMED OPES。",
       "group": "sampling"
+    },
+    {
+      "id": "samp-ves",
+      "name": "Variationally enhanced sampling (VES) on centroid CVs",
+      "code": [
+        "src/pyrpmd/ves.py",
+        "src/pyrpmd/workflows/ves.py"
+      ],
+      "references": [
+        "samp-ves2014",
+        "samp-wtves2015"
+      ],
+      "scope": "fes.method=\"ves\" optimizes a tensor-product Legendre linear bias on one or two nonperiodic centroid CVs by averaged stochastic gradient descent with the full covariance Hessian. Uniform or well-tempered targets use Gauss–Legendre quadrature; frozen-bias production and reweighting write the common FESResult. Not a PLUMED VES bridge; other basis sets, periodic CVs, barostats and replica exchange are not combined with it.",
+      "original_system": "Valsson–Parrinello 2014 introduce the variational functional and demonstrate it on numerical examples, including a three-dimensional free-energy surface; the 2015 paper adds the well-tempered target. Their molecular systems and protocols were not re-extracted for this entry.",
+      "reproduce_observables": "First compare converged biases and FES for the analytic double well and the 2D well-tempered example with quadrature and MBAR references. Then report FES error against basis order, quadrature order, pace and learning rate, coefficient trajectories and frozen-bias effective sample size over independent seeds.",
+      "existing_entry": [
+        "examples/ves_double_well.inp",
+        "examples/ves_well_tempered_2d.inp",
+        "examples/ves_validation.py",
+        "docs/validation/t24-ves"
+      ],
+      "gaps": "Recover the original molecular systems before claiming a reproduction. The bundled inputs are toy models in electron-mass units at artificial temperatures; basis and quadrature resolution must be re-established for each system, and the finite CV box truncates the target.",
+      "priority": "P1",
+      "name_zh": "质心 CV 上的变分增强采样（VES）",
+      "scope_zh": "fes.method=\"ves\" 在一或两个非周期质心 CV 上优化张量积 Legendre 线性偏置，采用带完整协方差 Hessian 的平均随机梯度下降；均匀或 well-tempered 目标用 Gauss–Legendre 积分；冻结偏置生产与重加权输出通用 FESResult。不是 PLUMED VES 接口，不与其他基组、周期 CV、压浴或副本交换组合。",
+      "original_system_zh": "Valsson–Parrinello 2014 提出变分泛函，并用包括三维自由能面在内的数值例子演示；2015 年论文加入 well-tempered 目标分布。本条目未重新提取原文分子体系与协议。",
+      "reproduce_observables_zh": "先在解析双阱和二维 well-tempered 例子中，将收敛偏置与 FES 同积分及 MBAR 参考比较；再报告 FES 误差随基组阶数、积分阶数、pace 和学习率的变化、系数轨迹以及冻结偏置的有效样本数（独立种子）。",
+      "gaps_zh": "宣称复现前需先恢复原文分子体系。仓库输入是电子质量单位、人工温度的玩具模型；每个体系都要重新确定基组与积分分辨率，有限 CV 盒子会截断目标分布。",
+      "group": "sampling",
+      "kind": "method"
+    },
+    {
+      "id": "samp-abf",
+      "name": "Centroid ABF and extended-system ABF with CZAR",
+      "code": [
+        "src/pyrpmd/abf.py",
+        "src/pyrpmd/workflows/abf.py"
+      ],
+      "references": [
+        "samp-abf2001",
+        "samp-abf2008",
+        "samp-abfproj2015",
+        "samp-eabf2017"
+      ],
+      "scope": "fes.method=\"abf\"/\"eabf\" on one or two nonperiodic centroid CVs with full-row-rank Jacobians. The local mean force uses the full-ring Jacobian and a mass-weighted dual field with a linear ramp; 1D edge integration or 2D least-squares Helmholtz projection gives the FES. eABF biases harmonically coupled fictitious variables and reconstructs the FES with CZAR. Requires all atoms mobile and a canonical thermostat; fixed atoms, periodic cells/CVs, pressure coupling, replica exchange and the rate-flux measure are rejected.",
+      "original_system": "Darve–Pohorille 2001 introduce the average-force method; Darve et al. 2008 use the Phi/Psi backbone dihedrals of N-acetylalanyl-N'-methylamide as the numerical example. Alrachid–Lelièvre 2015 is a convergence analysis; the eABF/CZAR application systems of Lesage et al. 2017 were not re-extracted for this entry.",
+      "reproduce_observables": "Compare 1D/2D FES from ABF and eABF/CZAR with quadrature, umbrella/MBAR and independent replica spread on the bundled double well; report grid resolution, ramp, update interval and coupling-constant sensitivity, and the 2D projection residual.",
+      "existing_entry": [
+        "examples/abf_double_well.inp",
+        "examples/eabf_double_well.inp"
+      ],
+      "gaps": "The alanine-dipeptide force field and protocols of the original papers are not bundled. A single history has no uncertainty; replica spread is descriptive. Rank-deficient points are rejected rather than handled by a singular-coordinate estimator.",
+      "priority": "P1",
+      "name_zh": "质心 ABF 与扩展系统 ABF（CZAR）",
+      "scope_zh": "fes.method=\"abf\"/\"eabf\" 适用于一或两个非周期、Jacobian 行满秩的质心 CV。局部平均力由全环 Jacobian 与带线性 ramp 的质量加权对偶场给出；一维沿边积分、二维最小二乘 Helmholtz 投影得到 FES。eABF 对谐振耦合的虚拟变量施加偏置，并用 CZAR 重构 FES。要求全部原子可动并使用正则热浴；拒绝固定原子、周期胞/CV、压浴、副本交换和速率通量测度。",
+      "original_system_zh": "Darve–Pohorille 2001 提出平均力方法；Darve 等 2008 以 N-acetylalanyl-N'-methylamide 的 Phi/Psi 主链二面角为数值例子；Alrachid–Lelièvre 2015 为收敛性分析；本条目未重新提取 Lesage 等 2017 的 eABF/CZAR 应用体系。",
+      "reproduce_observables_zh": "在仓库双阱上将 ABF 和 eABF/CZAR 的一维/二维 FES 与积分、伞形/MBAR 以及独立副本离散度比较；报告网格分辨率、ramp、更新间隔、耦合常数的敏感性及二维投影残差。",
+      "gaps_zh": "未提供原文丙氨酸二肽的力场与协议；单条历史没有误差估计，副本离散度只是描述性的；秩亏点被拒绝，未实现奇异坐标估计。",
+      "group": "sampling",
+      "kind": "method"
+    },
+    {
+      "id": "samp-steered",
+      "name": "Steered centroid MD and nonequilibrium work estimators",
+      "code": [
+        "src/pyrpmd/steered.py",
+        "src/pyrpmd/workflows/steered.py"
+      ],
+      "references": [
+        "samp-jarzynski1997",
+        "samp-crooks1999",
+        "samp-bar1976",
+        "samp-shadow2013"
+      ],
+      "scope": "fes.method=\"steered\" moves a harmonic centroid restraint forward and/or backward and estimates the restrained endpoint free-energy difference with Jarzynski or the Crooks/Bennett acceptance-ratio equation. Work uses H_P/P; total work is protocol work plus finite-step shadow work, and bath heat is excluded. No FESResult grid is produced; Hummer–Szabo unbiased-PMF reconstruction is not implemented.",
+      "original_system": "Jarzynski 1997 and Crooks 1999 are general nonequilibrium-work identities; Bennett 1976 is the two-ensemble acceptance-ratio estimator; Sivak–Chodera–Crooks 2013 interpret finite-timestep Langevin error as shadow work. No single original simulation system is attached.",
+      "reproduce_observables": "Compare forward Jarzynski and bidirectional Crooks/BAR estimates of the restrained endpoint free-energy difference with exact quadrature for harmonic and double-well models; report bias against pulling speed, work-distribution overlap, bootstrap intervals and the shadow-work correction against timestep.",
+      "existing_entry": [
+        "examples/steered_harmonic.inp",
+        "examples/steered_double_well.py"
+      ],
+      "gaps": "The estimate is a restrained endpoint free-energy difference, not an unbiased PMF. Fast pulling makes exponential work averages converge poorly; check work-distribution overlap and repeat with independent seeds.",
+      "priority": "P0",
+      "name_zh": "质心拉伸动力学（steered MD）与非平衡功估计",
+      "scope_zh": "fes.method=\"steered\" 沿正向和/或反向移动质心谐振约束，用 Jarzynski 或 Crooks/Bennett 接受比方程估计受约束端点间的自由能差。功按 H_P/P 计，总功 = 协议功 + 有限步长 shadow work，不含热浴热量。不生成 FESResult 网格，未实现 Hummer–Szabo 无偏 PMF 重构。",
+      "original_system_zh": "Jarzynski 1997 与 Crooks 1999 是通用非平衡功恒等式；Bennett 1976 给出双系综接受比估计；Sivak–Chodera–Crooks 2013 把有限步长 Langevin 误差解释为 shadow work。没有唯一的原始模拟体系。",
+      "reproduce_observables_zh": "在谐振子与双阱模型上，把单向 Jarzynski 和双向 Crooks/BAR 的受约束端点自由能差与精确积分比较；报告偏差随拉伸速度的变化、功分布重叠、bootstrap 区间及 shadow-work 修正随步长的变化。",
+      "gaps_zh": "结果是受约束端点自由能差，不是无偏 PMF；快速拉伸时指数功平均收敛很差，需检查功分布重叠并用独立种子重复。",
+      "group": "sampling",
+      "kind": "method"
     },
     {
       "id": "samp-reus",
@@ -2795,18 +3216,49 @@
         "samp-remd1999",
         "samp-reus2000"
       ],
-      "scope": "Serial Python engine; ring exchange evaluates the target-temperature spring action and rescales momenta. No standalone CLI task, durable checkpoint or MPI orchestration.",
+      "scope": "Serial Python engine; ring exchange evaluates the target-temperature spring action and rescales momenta. The resumable [tempering] input workflow with checkpoints and MPI transport is the separate samp-tempering entry.",
       "original_system": "The 1999 REMD paper uses the Met-enkephalin pentapeptide; the 2000 multidimensional extension uses capped alanine trimer.",
       "reproduce_observables": "Calculate energy distributions and conformational populations in temperature/Hamiltonian slots, exchange detailed balance and round trips. For P>1, additionally verify spring-action exchange factors and exact harmonic distributions.",
       "existing_entry": "pyrpmd.replica_exchange.ReplicaExchange (Python API); docs/tier2-sampling.md",
       "gaps": "Ring-polymer exchange at P>1 applies the classical exchange principle to this package's measure. Original molecular potentials, temperature ladders and initial states require separate preparation.",
       "priority": "P1",
       "name_zh": "温度与哈密顿量副本交换 API",
-      "scope_zh": "串行 Python 引擎，对目标温度重新计算环弹簧作用并缩放动量；没有独立 CLI 任务、持久 checkpoint 或 MPI 调度。",
+      "scope_zh": "串行 Python 引擎，对目标温度重新计算环弹簧作用并缩放动量；带 checkpoint 与 MPI 的可续跑 [tempering] 输入工作流见单独条目 samp-tempering。",
       "original_system_zh": "1999 REMD 原论文：Met-enkephalin 五肽；2000 多维扩展：blocked alanine trimer。",
       "reproduce_observables_zh": "算温度/哈密顿量槽位的能量分布、构象概率、交换 detailed balance、round trips；P>1 额外验证 spring-action 交换因子与精确 harmonic 分布。",
       "gaps_zh": "P>1 的 ring 交换属于把经典交换原理用于本包测度；需另配论文分子势、温度梯和初态。",
       "group": "sampling"
+    },
+    {
+      "id": "samp-tempering",
+      "name": "Resumable parallel tempering and Hamiltonian replica-exchange workflow",
+      "code": [
+        "src/pyrpmd/workflows/tempering.py",
+        "src/pyrpmd/replica_exchange.py"
+      ],
+      "references": [
+        "samp-pt1996",
+        "samp-remd1999",
+        "samp-reus2000",
+        "samp-mbar2008"
+      ],
+      "scope": "The [tempering] table for task=\"pimd\" and selected task=\"fes\" inputs: explicit or geometric temperature ladders and Hamiltonian ladders. Exchanges evaluate all-state reduced potentials, including each target-temperature spring action, and rescale momenta by sqrt(beta_i/beta_j). Per-state archives, acceptance, round trips, state-space diffusion and MBAR overlap; PIMD estimators are recomputed for every target state. Serial, process and MPI transports share one ordering; independent of same-temperature [replica_exchange] REUS.",
+      "original_system": "Hukushima–Nemoto 1996: three-dimensional ±J Ising spin glass. Sugita–Okamoto 1999: Met-enkephalin. Sugita–Kitao–Okamoto 2000: capped alanine trimer.",
+      "reproduce_observables": "On the bundled double well, compare per-temperature distributions and estimators with exact references; report adjacent acceptance, round trips, state-space mean-square displacement and MBAR overlap, and verify bitwise restart and MPI equality.",
+      "existing_entry": [
+        "examples/tempering/double_well.inp",
+        "examples/tempering/hremd_umbrella.inp",
+        "docs/validation/tempering-2026-11-03/README.md"
+      ],
+      "gaps": "Exchange improves state mixing but does not turn PIMD sampling time into dynamics; results keep converged=false. The original spin-glass and peptide models, ladders and force fields require separate preparation.",
+      "priority": "P1",
+      "name_zh": "可续跑的并行回火与哈密顿量副本交换工作流",
+      "scope_zh": "[tempering] 用于 task=\"pimd\" 与部分 task=\"fes\" 输入：显式或几何温度梯以及哈密顿量梯。交换计算所有状态的约化势（含各目标温度的环弹簧作用），动量按 sqrt(beta_i/beta_j) 缩放。按状态保存轨迹，报告接受率、往返、状态空间扩散与 MBAR 重叠；PIMD 估计量对每个目标状态重新计算。串行、进程与 MPI 执行顺序一致；与同温 [replica_exchange] REUS 相互独立。",
+      "original_system_zh": "Hukushima–Nemoto 1996：三维 ±J Ising 自旋玻璃；Sugita–Okamoto 1999：Met-enkephalin；Sugita–Kitao–Okamoto 2000：封端丙氨酸三肽。",
+      "reproduce_observables_zh": "在仓库双阱上，把各温度分布与估计量同精确参考比较；报告相邻接受率、往返次数、状态空间均方位移和 MBAR 重叠，并验证续跑与 MPI 结果逐位一致。",
+      "gaps_zh": "交换只改善状态混合，不会把 PIMD 采样时间变成动力学，结果保持 converged=false；原文自旋玻璃与多肽模型、温度梯和力场需另行准备。",
+      "group": "sampling",
+      "kind": "method"
     },
     {
       "id": "samp-biased-clock",
@@ -2858,26 +3310,120 @@
     },
     {
       "id": "samp-retis",
-      "name": "Positive-ensemble replica-exchange TIS",
+      "name": "Replica-exchange TIS with optional minus ensemble",
       "code": [
-        "src/pyrpmd/retis.py"
+        "src/pyrpmd/retis.py",
+        "src/pyrpmd/workflows/path_sampling.py"
       ],
       "references": [
         "samp-retis2007",
         "samp-tis2003"
       ],
-      "scope": "Exchanges positive interface ensembles sharing identical dynamics; repeated/rejected paths remain in observations; separate flux estimate. Minus ensemble and asynchronous/infinite swaps absent.",
+      "scope": "Exchanges interface ensembles sharing identical dynamics; repeated/rejected paths remain in observations. minus=true adds [0-] and [0-]<->[0+] exchanges and estimates the effective flux internally from residence times; otherwise a matching external flux is required. Persistent checkpoints and task=\"path_sampling\" are available; asynchronous infinite swaps are the separate samp-infretis entry.",
       "original_system": "The original 2007 RETIS paper studies DNA denaturation using the Peyrard–Bishop–Dauxois model.",
       "reproduce_observables": "First compare TIS/RETIS conditional probabilities, autocorrelation, walker labels and total cost in the same double well. The original-paper route requires a PBD potential and DNA-denaturation rates and sampling-efficiency comparisons.",
-      "existing_entry": "pyrpmd.retis.ReplicaExchangeTIS (Python API)",
-      "gaps": "Do not claim complete equivalence to original RETIS: the minus-interface flux ensemble, persistent checkpointing and MPI orchestration are absent.",
+      "existing_entry": [
+        "examples/sampling/retis_minus.py",
+        "examples/sampling/path_sampling_retis.inp",
+        "docs/validation/t23-path-sampling"
+      ],
+      "gaps": "Do not claim complete equivalence to original RETIS for molecular systems: the PBD DNA model is not bundled, and the double-well comparisons with quadrature and full TIS do not certify molecular-rate convergence. MPI orchestration is absent.",
       "priority": "P1",
-      "name_zh": "正界面系综的交换式 TIS",
-      "scope_zh": "交换相同动力学下的正界面路径系综并保留拒绝/重复路径；不含 minus 界面通量系综、异步或无限交换。",
+      "name_zh": "可选 minus 系综的交换式 TIS",
+      "scope_zh": "交换相同动力学下的界面路径系综并保留拒绝/重复路径。minus=true 增加 [0-] 及 [0-]<->[0+] 交换，并由停留时间在内部估计有效通量；否则需要匹配的外部通量。提供持久 checkpoint 与 task=\"path_sampling\"；异步无限交换见单独条目 samp-infretis。",
       "original_system_zh": "RETIS 2007 原论文：Peyrard–Bishop–Dauxois 模型的 DNA 变性。",
       "reproduce_observables_zh": "先在相同双阱比较 TIS/RETIS 的条件概率、自相关、walker labels 和总成本；论文路线需要实现 PBD 势，算 DNA 变性速率与采样效率。",
-      "gaps_zh": "不能宣称完整 RETIS 原算法等价：minus-interface flux ensemble、持久 checkpoint 与 MPI 均缺失。",
+      "gaps_zh": "不能宣称分子体系上与原始 RETIS 完全等价：未提供 PBD DNA 模型，双阱与积分及完整 TIS 的比较不能证明分子速率收敛；没有 MPI 调度。",
       "group": "sampling"
+    },
+    {
+      "id": "samp-pptis",
+      "name": "Partial-path TIS (PPTIS) and REPPTIS",
+      "code": [
+        "src/pyrpmd/pptis.py",
+        "src/pyrpmd/workflows/path_sampling.py"
+      ],
+      "references": [
+        "samp-pptis2004",
+        "samp-repptis2023",
+        "samp-tis2003"
+      ],
+      "scope": "Local three-interface path ensembles with the memory-reduction recurrence for crossing probabilities; REPPTIS adds replica exchange between neighbouring path ensembles. Python API and task=\"path_sampling\" with persistent checkpoints. The memory-loss assumption must be tested against interface spacing and full TIS.",
+      "original_system": "PPTIS 2004: a simple diatomic system with a diffusive barrier. REPPTIS 2023: ibuprofen permeation through a DPPC membrane.",
+      "reproduce_observables": "Compare REPPTIS rates with full TIS/RETIS and an independent quadrature reference on the same double well; vary interface spacing to test memory loss; report local crossing probabilities, recurrence stability and block errors.",
+      "existing_entry": [
+        "examples/sampling/pptis.py",
+        "examples/sampling/path_sampling_repptis.inp",
+        "docs/validation/t23-path-sampling"
+      ],
+      "gaps": "The membrane-permeation system and its force field are not bundled. A well-sampled local chain alone does not establish memory loss; missing origin populations or a singular recurrence leave the rate unsupported.",
+      "priority": "P1",
+      "name_zh": "部分路径 TIS（PPTIS）与 REPPTIS",
+      "scope_zh": "以三界面局部路径系综和记忆约化递推计算跨越概率；REPPTIS 在相邻路径系综间增加副本交换。提供 Python API 与 task=\"path_sampling\"，带持久 checkpoint。记忆丢失假设须用界面间距与完整 TIS 对照检验。",
+      "original_system_zh": "PPTIS 2004：带扩散势垒的简单双原子体系；REPPTIS 2023：布洛芬穿过 DPPC 膜的渗透。",
+      "reproduce_observables_zh": "在同一双阱上把 REPPTIS 速率与完整 TIS/RETIS 及独立积分参考比较；改变界面间距检验记忆丢失；报告局部跨越概率、递推稳定性与分块误差。",
+      "gaps_zh": "未提供膜渗透体系及其力场。局部链采样充分本身不能证明记忆丢失；缺少起点布居或递推奇异时不给出速率。",
+      "group": "sampling",
+      "kind": "method"
+    },
+    {
+      "id": "samp-ffs",
+      "name": "Direct forward-flux sampling (FFS)",
+      "code": [
+        "src/pyrpmd/ffs.py",
+        "src/pyrpmd/workflows/path_sampling.py"
+      ],
+      "references": [
+        "samp-ffs2005",
+        "samp-ffs2009"
+      ],
+      "scope": "Interface-by-interface splitting for an explicitly supplied stationary, time-homogeneous Markov step(state, rng) callback: flux from basin-A history, trial-based conditional probabilities, persistent checkpoints and task=\"path_sampling\". Needs no reverse dynamics; the sampler does not choose a thermostat or physical process.",
+      "original_system": "Allen–Warren–ten Wolde 2005: a symmetric genetic toggle switch of two mutually repressing genes. The 2009 review surveys FFS variants and applications.",
+      "reproduce_observables": "Compare rates and committors with transition-matrix solutions of one- and two-dimensional finite-state Metropolis double wells; report flux, per-interface conditional probabilities, trial counts and zero-success handling over independent seeds.",
+      "existing_entry": [
+        "examples/sampling/ffs.py",
+        "examples/sampling/ffs_quartic_reference.py",
+        "examples/sampling/path_sampling_ffs.inp"
+      ],
+      "gaps": "The genetic-switch model of the original paper is not bundled. Hidden solver memory, global RNG use and time-dependent protocols violate the callback contract; results apply only to the supplied stochastic process, not to RPMD real-time dynamics.",
+      "priority": "P1",
+      "name_zh": "直接前向通量采样（FFS）",
+      "scope_zh": "对显式提供的平稳、时间齐次 Markov 步进回调 step(state, rng) 逐界面分裂：由 A 区历史得到通量、由试验得到条件概率，带持久 checkpoint，也可经 task=\"path_sampling\" 运行。不需要逆向动力学；采样器不替用户选择热浴或物理过程。",
+      "original_system_zh": "Allen–Warren–ten Wolde 2005：两个相互抑制基因构成的对称遗传开关；2009 年综述总结 FFS 变体与应用。",
+      "reproduce_observables_zh": "与一维、二维有限态 Metropolis 双阱的转移矩阵解比较速率和 committor；报告通量、各界面条件概率、试验数及零成功处理（独立种子）。",
+      "gaps_zh": "原文遗传开关模型未提供。隐藏的求解器记忆、全局随机数和含时协议均违反回调约定；结果只适用于所提供的随机过程，不能代替 RPMD 实时间动力学。",
+      "group": "sampling",
+      "kind": "method"
+    },
+    {
+      "id": "samp-infretis",
+      "name": "Asynchronous infinite-swap RETIS (∞RETIS)",
+      "code": [
+        "src/pyrpmd/infinite_retis.py",
+        "src/pyrpmd/parallel/path_executor.py",
+        "src/pyrpmd/workflows/path_sampling.py"
+      ],
+      "references": [
+        "samp-infretis2022",
+        "samp-infretis2024",
+        "samp-retis2007"
+      ],
+      "scope": "exchange=\"infinite\" assigns free paths to free positive ensembles with exact permanent-ratio marginals, computed by a quadratic-cost recurrence for nested interfaces. An asynchronous process executor with ensemble locks and ticket-ordered commits gives exact restart; the minus ensemble is a separate block. Full-Maxwell two-way shooting is kept; the 2024 subtrajectory moves, MPI and bead/GPU worker pools are not implemented.",
+      "original_system": "Roet–Zhang–van Erp 2022 test ∞RETIS on three model systems. Zhang et al. 2024: the liquid–vapor transition of superheated water, chignolin unfolding and ab initio water dissociation.",
+      "reproduce_observables": "Check assignment marginals against permutation enumeration on small ladders; compare rates and crossing probabilities with serial RETIS and quadrature on the same double well; report committed events, effective observations, worker-count identity and exact restart.",
+      "existing_entry": [
+        "examples/sampling/path_sampling_infinite_retis.inp",
+        "docs/validation/t23-path-sampling"
+      ],
+      "gaps": "Throughput and acceptance claims of the 2024 paper are not reproduced: its subtrajectory moves are absent and commits are ticket-ordered rather than first-finished. The logical worker count is part of the scientific identity and cannot change on resume.",
+      "priority": "P1",
+      "name_zh": "异步无限交换 RETIS（∞RETIS）",
+      "scope_zh": "exchange=\"infinite\" 以精确的积和式比值边缘概率把空闲路径分配给空闲正界面系综，嵌套界面下用二次复杂度递推计算。异步进程执行器配合系综锁与按票据顺序提交，保证精确续跑；minus 系综单独成块。保留完整 Maxwell 双向 shooting；未实现 2024 年子轨迹移动、MPI 与 bead/GPU 工作池。",
+      "original_system_zh": "Roet–Zhang–van Erp 2022 在三个模型体系上测试 ∞RETIS；Zhang 等 2024：过热水的液–气相变、chignolin 去折叠和从头算水解离。",
+      "reproduce_observables_zh": "在小界面梯上用穷举排列核对分配边缘概率；在同一双阱上把速率与跨越概率同串行 RETIS 和积分参考比较；报告已提交事件数、有效观测数、worker 数身份与精确续跑。",
+      "gaps_zh": "未复现 2024 年论文的吞吐与接受率：缺少其子轨迹移动，且按票据顺序而非先完成先提交。逻辑 worker 数属于科学身份，续跑时不能更改。",
+      "group": "sampling",
+      "kind": "method"
     },
     {
       "id": "samp-committor",
@@ -2926,6 +3472,34 @@
       "group": "sampling"
     },
     {
+      "id": "samp-mlcolvar",
+      "name": "Learned centroid CVs from mlcolvar (Deep-LDA / Deep-TICA) via TorchScript",
+      "code": [
+        "src/pyrpmd/advanced_cv.py"
+      ],
+      "references": [
+        "samp-mlcolvar2023",
+        "samp-deeplda2020",
+        "samp-deeptica2021"
+      ],
+      "scope": "Training happens in the external mlcolvar library; PyRPMD evaluates the exported CPU float64 TorchScript graph (preprocessing, network and projection) with TorchScriptCV, including Cartesian derivatives and ring-bead scaling. Optional dependencies; deployment checks do not establish CV quality.",
+      "original_system": "Deep-LDA 2020: alanine dipeptide and an intermolecular aldol reaction. Deep-TICA 2021: a small-molecule conformational transition, miniprotein folding and materials crystallization. The 2023 mlcolvar paper describes the library framework.",
+      "reproduce_observables": "First verify TorchScript values and Cartesian gradients against finite differences and the training-time model; then compare biased FES, transition counts and CV separability on a model with a known slow coordinate, with independent training seeds and data splits.",
+      "existing_entry": [
+        "examples/mlcolvar_cv.py",
+        "docs/mlcolvar.md"
+      ],
+      "gaps": "The original molecular systems require their descriptors, training data and enhanced-sampling protocols. A learned CV is only as good as its training data; check transferability and that the exported graph matches the trained model version.",
+      "priority": "P2",
+      "name_zh": "mlcolvar 学习的质心 CV（Deep-LDA / Deep-TICA，TorchScript 部署）",
+      "scope_zh": "训练在外部 mlcolvar 库中完成；PyRPMD 用 TorchScriptCV 求值导出的 CPU float64 TorchScript 图（预处理、网络与投影），包括笛卡尔导数和环珠缩放。依赖可选；部署检查不能证明 CV 质量。",
+      "original_system_zh": "Deep-LDA 2020：丙氨酸二肽与分子间羟醛反应；Deep-TICA 2021：小分子构象转变、微型蛋白折叠与材料结晶；mlcolvar 2023 论文介绍库框架。",
+      "reproduce_observables_zh": "先用有限差分和训练时模型核对 TorchScript 值与笛卡尔梯度；再在已知慢坐标的模型上比较偏置 FES、跃迁次数与 CV 区分度，使用独立训练种子与数据划分。",
+      "gaps_zh": "原文分子体系需要其描述符、训练数据与增强采样协议；学到的 CV 受训练数据限制，需检查可迁移性并确认导出图与训练模型版本一致。",
+      "group": "sampling",
+      "kind": "external interface"
+    },
+    {
       "id": "samp-string",
       "name": "Euclidean mean-force / restrained adaptive strings",
       "code": [
@@ -2948,6 +3522,34 @@
       "reproduce_observables_zh": "先在解析弯曲谷检验法向力残差、节点数与重参数化；论文 2006 路线算 MFEP、自由能势垒及 committor 宽度随 CV 选择变化。",
       "gaps_zh": "用 PES 梯度只得到 MEP；本包不应直接声称实现任意 nonlinear CV 的完整 MFEP/等 committor 面。原论文 4-angle route 需补齐 metric 项。",
       "group": "sampling"
+    },
+    {
+      "id": "samp-ft-string",
+      "name": "Finite-temperature string in centroid CV space",
+      "code": [
+        "src/pyrpmd/finite_temperature_string.py",
+        "src/pyrpmd/adaptive_string.py"
+      ],
+      "references": [
+        "samp-fts2005",
+        "samp-stringcv2006"
+      ],
+      "scope": "Restrained centroid sampling with the averaged CV mass metric, block diagnostics, fixed-endpoint path updates and exact iteration-boundary replay, reusing the existing arc-length reparameterization. Fixed image count and endpoints; nonperiodic centroid CVs with full-rank derivatives. At finite restraint stiffness it targets a smoothed free-energy path.",
+      "original_system": "E–Ren–Vanden-Eijnden 2005 validate the finite-temperature string on a two-dimensional example and a model solid–solid transformation. Maragliano et al. 2006 formulate the string in collective variables with the CV metric tensor.",
+      "reproduce_observables": "On an analytic 2D surface, compare the converged string with the minimum free-energy path from quadrature; report image spacing, metric-tensor estimates, restraint-stiffness and sampling-length dependence, and path stability over independent seeds.",
+      "existing_entry": [
+        "examples/finite_temperature_string.py",
+        "docs/finite-temperature-string.md"
+      ],
+      "gaps": "Endpoints and image count are fixed; periodic CVs and rank-deficient CV derivatives are rejected. A smoothed path at finite stiffness is not yet a converged minimum free-energy path, and the solid–solid model of the 2005 paper is not bundled.",
+      "priority": "P1",
+      "name_zh": "质心 CV 空间中的有限温度弦方法",
+      "scope_zh": "在质心 CV 上做约束采样，使用平均 CV 质量度规、块诊断、固定端点的路径更新与精确的迭代边界重放，并复用已有弧长重参数化。像数和端点固定；限非周期、导数满秩的质心 CV。有限约束刚度下得到的是平滑化自由能路径。",
+      "original_system_zh": "E–Ren–Vanden-Eijnden 2005 在二维例子和固–固相变模型上验证有限温度弦方法；Maragliano 等 2006 用 CV 度规张量在集体变量空间中表述弦方法。",
+      "reproduce_observables_zh": "在解析二维势面上，把收敛弦与积分得到的最小自由能路径比较；报告像间距、度规张量估计、约束刚度与采样长度依赖性，以及独立种子下的路径稳定性。",
+      "gaps_zh": "端点和像数固定；不支持周期 CV 和秩亏 CV 导数。有限刚度下的平滑路径还不是收敛的最小自由能路径；未提供 2005 年论文的固–固相变模型。",
+      "group": "sampling",
+      "kind": "method"
     },
     {
       "id": "samp-prfo",
@@ -3342,7 +3944,7 @@
         "na-mash2023",
         "na-mashrates2024"
       ],
-      "scope": "One spin and one common active adiabatic surface for the whole ring; bead-local adiabatic nuclear forces and centroid electronic dynamics. Real symmetric two-state matrices with nonzero gaps. SciPy DOP853 event-root handling resolves spin equator crossings, with full-ring mass-metric hop energy rescaling. Not BA-RP-MASH, multistate MASH, or complex-SOC MASH. General correlations use operator-pair weights; population output is an active-surface indicator, not a generic spin-density population.",
+      "scope": "One spin and one common active adiabatic surface for the whole ring; bead-local adiabatic nuclear forces and centroid electronic dynamics. Real symmetric two-state matrices with nonzero gaps. SciPy DOP853 event-root handling resolves spin equator crossings, with full-ring mass-metric hop energy rescaling. BA-RP-MASH and multistate MASH are separate entries (na-ba-rp-mash, na-ms-mash); complex-SOC MASH is absent. General correlations use operator-pair weights; population output is an active-surface indicator, not a generic spin-density population.",
       "original_system": "Cao–Suarez–Kretchmer 2025 v1: Tully models, a three-mode pyrazine model, and spin-boson electron transfer. The published source being followed is explicitly the preprint version cited above.",
       "reproduce_observables": [
         "State-resolved Tully transmission/reflection and population time series, starting with the P=1 limit",
@@ -3354,7 +3956,7 @@
       "priority": "P2",
       "availability": "CLI and Python API",
       "name_zh": "CA-RP-MASH（命令行 rp-mash）",
-      "scope_zh": "整条环共用一个自旋和活动面，核力在各 bead 求值、电子动力学在质心求值；限两态实对称、非零能隙。DOP853 事件求根定位过赤道跳跃并按全环能量重标动量；不含 BA-RP-MASH、多态或复 SOC。",
+      "scope_zh": "整条环共用一个自旋和活动面，核力在各 bead 求值、电子动力学在质心求值；限两态实对称、非零能隙。DOP853 事件求根定位过赤道跳跃并按全环能量重标动量；BA-RP-MASH 与多态 MASH 见单独条目（na-ba-rp-mash、na-ms-mash），不含复 SOC。",
       "original_system_zh": "Cao–Suarez–Kretchmer 2025 v1 预印本：Tully 模型、三模 pyrazine、spin-boson 电子转移。引用实际实现所依据的 v1；截至本次检索未核实期刊后继版本。",
       "reproduce_observables_zh": [
         "Tully 分态透射/反射以及布居时间序列，先比较 P=1 极限",
@@ -3363,6 +3965,63 @@
       ],
       "gaps_zh": "现成输入是教学模型。需要原文参数化 pyrazine/bath、独立平衡或散射预备与速率分析；严禁把任意 harmonic-ring 初态布居曲线视作原文热速率复现。native=False 路径为当前实现。",
       "group": "nonadiabatic"
+    },
+    {
+      "id": "na-ba-rp-mash",
+      "name": "BA-RP-MASH (CLI method rp-mash-ba)",
+      "code": [
+        "src/pyrpmd/rp_mash_ba.py",
+        "src/pyrpmd/nonadiabatic_registry.py"
+      ],
+      "references": [
+        "na-carp2025",
+        "na-mash2023"
+      ],
+      "scope": "Two-state bead approximation: one spin for the whole ring in a common adiabatic representation, beadwise matrices, gradients, gaps and derivative couplings, and bead-averaged electronic evolution. Separate state, workflow name and scientific identity from CA-RP-MASH (rp-mash); not multistate or complex-SOC MASH.",
+      "original_system": "Cao–Suarez–Kretchmer 2025 v1 preprint: Tully models, a three-mode pyrazine model and spin-boson electron transfer; the bead approximation is defined in the same preprint.",
+      "reproduce_observables": "Compare populations with an independent Fourier-grid reference in the constant-gap, constant-coupling limit; then reproduce the preprint's Tully and spin-boson observables with its preparation; converge timestep, event tolerance and bead count.",
+      "existing_entry": [
+        "examples/nonadiabatic/extensions/rp_mash_ba.inp",
+        "examples/nonadiabatic/rp_mash_ba_reference.py",
+        "docs/validation/t25b-ba-rp-mash-2026-11-03"
+      ],
+      "gaps": "The Fourier comparison makes internal ring modes spectators and uses scalar nuclear Wigner sampling; it does not establish general nuclear quantum accuracy. Record the implemented preprint version explicitly.",
+      "priority": "P2",
+      "name_zh": "BA-RP-MASH（命令行 rp-mash-ba）",
+      "scope_zh": "两态珠近似：整条环共用一个自旋并采用共同绝热表象，各珠分别计算矩阵、梯度、能隙与导数耦合，电子演化取珠平均。状态、工作流名称和科学身份均与 CA-RP-MASH（rp-mash）分开；不是多态或复 SOC MASH。",
+      "original_system_zh": "Cao–Suarez–Kretchmer 2025 v1 预印本：Tully 模型、三模 pyrazine 模型与 spin-boson 电子转移；珠近似在同一预印本中定义。",
+      "reproduce_observables_zh": "先在常能隙、常耦合极限下与独立 Fourier 网格参考比较布居；再按预印本的初态准备复现 Tully 与 spin-boson 观测量；收敛时间步、事件容差和珠数。",
+      "gaps_zh": "Fourier 对照中环内模只是旁观者，并使用标量核 Wigner 采样，不能证明一般的核量子精度；须明确记录所实现的预印本版本。",
+      "group": "nonadiabatic",
+      "kind": "method"
+    },
+    {
+      "id": "na-ms-mash",
+      "name": "Original multistate MASH (CLI method multistate-mash)",
+      "code": [
+        "src/pyrpmd/mash.py",
+        "src/pyrpmd/workflows/nonadiabatic_multistate.py"
+      ],
+      "references": [
+        "na-msmash2023",
+        "na-mash2023"
+      ],
+      "scope": "One normalized complex mapping vector, active adiabatic surface with the largest mapping population, and the Runeson–Manolopoulos signed observable estimator for real Hamiltonians with nondegenerate levels; one bead only. The original 2023 formulation, not unSMASH or later initialization variants, and distinct from the two-state estimator even for two states.",
+      "original_system": "Runeson–Manolopoulos 2023: three- and seven-state models of the Fenna–Matthews–Olson complex.",
+      "reproduce_observables": "Populations and coherences of the FMO models against exact benchmarks with the paper's bath discretization and initial conditions; long-time equilibrium populations; timestep and trajectory-count convergence.",
+      "existing_entry": [
+        "examples/nonadiabatic/multistate_mash.inp",
+        "examples/nonadiabatic/multistate_mash_reference.py"
+      ],
+      "gaps": "The FMO Hamiltonians and spectral densities of the paper are not bundled; ring-polymer multistate MASH is not implemented.",
+      "priority": "P2",
+      "name_zh": "原始多态 MASH（命令行 multistate-mash）",
+      "scope_zh": "一个归一化复映射矢量，活动绝热面取映射布居最大的态，使用 Runeson–Manolopoulos 带符号观测量估计；限实哈密顿量、非简并能级、单珠。实现的是 2023 年原始表述，不是 unSMASH 或后续初始化变体；即使两态也不同于两态 MASH 估计量。",
+      "original_system_zh": "Runeson–Manolopoulos 2023：Fenna–Matthews–Olson 复合物的三态与七态模型。",
+      "reproduce_observables_zh": "按原文浴离散化与初始条件计算 FMO 模型的布居与相干，并与精确基准比较；长时间平衡布居；时间步与轨迹数收敛。",
+      "gaps_zh": "未提供原文 FMO 哈密顿量与谱密度；未实现环聚合物多态 MASH。",
+      "group": "nonadiabatic",
+      "kind": "method"
     },
     {
       "id": "na-rpsh-ca",
@@ -3556,6 +4215,39 @@
       "group": "nonadiabatic"
     },
     {
+      "id": "na-iesh",
+      "name": "Classical IESH and centroid RP-IESH (CLI methods iesh, rp-iesh)",
+      "code": [
+        "src/pyrpmd/iesh.py",
+        "src/pyrpmd/rp_iesh.py",
+        "src/pyrpmd/workflows/nonadiabatic_multistate.py"
+      ],
+      "references": [
+        "na-iesh2009",
+        "na-iesh2023",
+        "na-rpsh2012",
+        "na-rpsh2017"
+      ],
+      "scope": "One spinless Slater determinant of independent electrons in a discretized metal band; nuclei move on the bare energy plus occupied orbital energies with fewest-switches single-excitation hops. RP-IESH shares one determinant across the ring and propagates electrons at the centroid. Real Hamiltonians with nondegenerate levels; one-particle density populations; not a GPU or native full-trajectory solver.",
+      "original_system": "Shenvi–Roy–Tully 2009: vibrational relaxation of NO on Au(111) with a DFT-fitted multistate PES. Gardner et al. 2023 analyse IESH on model Hamiltonians and full-dimensional atomistic systems, including scattering and desorption probabilities.",
+      "reproduce_observables": "Compare zero-temperature populations with a Fock-space/Fourier reference for the Newns–Anderson-type model; report band discretization, hop statistics, energy conservation and timestep convergence; then compare scattering or desorption probabilities with Gardner et al. for the same model parameters.",
+      "existing_entry": [
+        "examples/nonadiabatic/iesh.inp",
+        "examples/nonadiabatic/rp_iesh.inp",
+        "examples/nonadiabatic/rp_iesh_reference.py",
+        "docs/validation/t25-rp-iesh"
+      ],
+      "gaps": "The NO/Au(111) PES is not bundled. RP-IESH follows the centroid extension described in Gardner's thesis; finite-band limits, thermostatting of the metal and the ring-polymer extension need system-specific convergence.",
+      "priority": "P2",
+      "name_zh": "经典 IESH 与质心 RP-IESH（命令行 iesh、rp-iesh）",
+      "scope_zh": "离散金属能带中独立电子的单个无自旋 Slater 行列式；核在裸能量加占据轨道能之和上运动，按最少跳跃做单激发跳跃。RP-IESH 整条环共用一个行列式并在质心传播电子。限实哈密顿量、非简并能级；输出单粒子密度布居；不是 GPU 或原生全轨迹求解器。",
+      "original_system_zh": "Shenvi–Roy–Tully 2009：基于 DFT 拟合多态势能面的 NO 在 Au(111) 上的振动弛豫；Gardner 等 2023 在模型哈密顿量和全维原子体系上分析 IESH，包括散射与脱附概率。",
+      "reproduce_observables_zh": "对 Newns–Anderson 型模型将零温布居与 Fock 空间/Fourier 参考比较；报告能带离散、跳跃统计、能量守恒与时间步收敛；再用相同模型参数与 Gardner 等的散射或脱附概率比较。",
+      "gaps_zh": "未提供 NO/Au(111) 势能面。RP-IESH 依据 Gardner 博士论文描述的质心扩展；有限能带极限、金属热浴与环聚合物扩展都需要针对具体体系收敛。",
+      "group": "nonadiabatic",
+      "kind": "method"
+    },
+    {
       "id": "na-qd-interface",
       "name": "Quasi-diabatic NRPMD and adiabatic on-the-fly provider",
       "code": [
@@ -3587,6 +4279,36 @@
       ],
       "gaps_zh": "当前是解析两态接口演示。真实 ethylene 原文复现需要相同 CASSCF 数据、态重叠/NAC、初始态和 PLDM/SQC 实现；当前 NRPMD 结果只能称为在同一体系上的方法比较。通用 Python provider 不自动提供可移植的电子结构重启。",
       "group": "nonadiabatic"
+    },
+    {
+      "id": "na-excited-state",
+      "name": "Online excited-state providers and overlap-derived couplings",
+      "code": [
+        "src/pyrpmd/potentials/excited_state"
+      ],
+      "references": [
+        "na-hst1994",
+        "na-npi2014",
+        "na-npi2016",
+        "pyscf2018"
+      ],
+      "scope": "ExcitedStateProvider supplies total state energies, positive gradients, derivative couplings, adjacent-frame overlaps, state tracking and a restartable electronic context to existing adiabatic consumers (for example AdiabaticRPSHDynamics). Couplings from overlaps use the Hammes-Schiffer–Tully finite difference or the multistate generalized NPI after Löwdin orthogonalization. PySCF TDA/TDDFT is tested; ORCA, Q-Chem and OpenMolcas file adapters are parser- and mock-tested only. It does not select a dynamics method.",
+      "original_system": "Hammes-Schiffer–Tully 1994: proton transfer in a model of liquid methyl chloride. Meek–Levine 2014: the Landau–Zener model. Jain–Alguire–Subotnik 2016 is an algorithm paper for large-scale surface hopping. PySCF is software.",
+      "reproduce_observables": "Compare overlap-derived time-derivative couplings with analytic couplings on the Landau–Zener and toy models; report transition probabilities against exact results, phase/state-tracking diagnostics, and timestep and retained-state convergence for a PySCF molecule.",
+      "existing_entry": [
+        "examples/excited_state/toy_rpsh.py",
+        "examples/nonadiabatic/pyscf_lih_rpsh.py",
+        "docs/validation/excited-state-interface-2026-11-03/README.md"
+      ],
+      "gaps": "The external ORCA/Q-Chem/OpenMolcas executables are untested. Two-frame couplings determine only the component along the displacement, which is not a full NAC vector for arbitrary momentum rescaling. Cite the electronic-structure method, functional and basis separately.",
+      "priority": "P1",
+      "name_zh": "在线激发态计算接口与基于重叠的耦合",
+      "scope_zh": "ExcitedStateProvider 向已有绝热动力学（如 AdiabaticRPSHDynamics）提供各态总能量、正梯度、导数耦合、相邻帧重叠、态追踪和可续跑的电子上下文。由重叠得到耦合时采用 Hammes-Schiffer–Tully 有限差分，或在 Löwdin 正交化后采用多态广义 NPI。PySCF TDA/TDDFT 已测试；ORCA、Q-Chem、OpenMolcas 文件适配器仅经解析与模拟子进程测试。该接口不选择动力学方法。",
+      "original_system_zh": "Hammes-Schiffer–Tully 1994：液态氯甲烷模型中的质子转移；Meek–Levine 2014：Landau–Zener 模型；Jain–Alguire–Subotnik 2016 是大规模面跳跃算法论文；PySCF 为软件。",
+      "reproduce_observables_zh": "在 Landau–Zener 和玩具模型上把基于重叠的时间导数耦合与解析耦合比较；报告与精确结果对照的跃迁概率、相位/态追踪诊断，以及 PySCF 分子的时间步和保留态数收敛。",
+      "gaps_zh": "ORCA/Q-Chem/OpenMolcas 外部程序尚未实测。两帧耦合只确定沿位移方向的分量，不能代替任意动量重标所需的完整 NAC 矢量。电子结构方法、泛函和基组需另行引用。",
+      "group": "nonadiabatic",
+      "kind": "external interface"
     },
     {
       "id": "na-mv-rpmd",
@@ -4303,13 +5025,14 @@
       "name": "Committee uncertainty and acquisition",
       "name_zh": "委员会不确定度与样本采集",
       "code": [
-        "src/pyrpmd/potentials/lifecycle.py"
+        "src/pyrpmd/potentials/lifecycle.py",
+        "src/pyrpmd/active_learning.py"
       ],
       "references": [
         "committee2020"
       ],
-      "scope": "Mean of fixed providers, population-standard-deviation disagreement and offline acquisition; no disagreement bias or automatic labelling/retraining loop.",
-      "scope_zh": "固定提供器均值、总体标准差分歧及离线采集；无分歧偏置和自动标注/重训练循环。",
+      "scope": "Mean of fixed providers, population-standard-deviation disagreement, offline acquisition, and ActiveLearningLoop: sample with a fixed committee, select threshold-crossing candidates within label budgets, label, retrain and install the next committee. Disagreement is not a calibrated error bound; no disagreement bias is applied during sampling.",
+      "scope_zh": "固定提供器均值、总体标准差分歧、离线采集，以及 ActiveLearningLoop：用固定委员会采样、在标注预算内选择超阈值候选、标注、重训练并安装下一代委员会。分歧不是经过校准的误差界；采样时不施加分歧偏置。",
       "original_system": "Condensed water across liquid state points, ice phases and an air/water interface.",
       "original_system_zh": "跨液体状态点、冰相及气水界面的凝聚相水。",
       "reproduce_observables": "Disagreement versus true held-out energy/force error, acquisition enrichment and learning curves with frozen model versions.",

@@ -1,7 +1,3 @@
----
-orphan: true
----
-
 # Molecular quasi-centroids and experimental f-QCMD
 
 PyRPMD provides an experimental **f-QCMD** production route for nonperiodic,
@@ -519,6 +515,8 @@ Original real-time QCMD requires additional adiabatic dynamics and mean-force
 machinery beyond this fixed-window equilibrium sampler. h-CMD requires explicit
 molecular partitions and consistent combinations of f-QCMD and f-CMD reference
 distributions and corrections. Neither method is selected implicitly here.
+
+Catalog entry: [qcmd](manual/references.md#qcmd); BibTeX keys `qcmd2019` and `fqcmd2021`.
 
 - [Trenins, Willatt and Althorpe, QCMD, JCP 151, 054109 (2019)](https://doi.org/10.1063/1.5100587).
 - [Fletcher et al., f-QCMD, JCP 155, 231101 (2021)](https://doi.org/10.1063/5.0076704).

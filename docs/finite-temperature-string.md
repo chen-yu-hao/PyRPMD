@@ -130,3 +130,15 @@ be passed to it directly. Choose representative restrained configurations near
 each converged CV image, check their ordering/alignment, and use their centroid
 geometries as the Cartesian reference path. Subsequent umbrella/MBAR sampling
 along that `PathCV` estimates its own explicitly chosen probability measure.
+
+## References
+
+- W. E, W. Ren and E. Vanden-Eijnden, *Finite Temperature String Method for the
+  Study of Rare Events*, J. Phys. Chem. B **109**, 6688–6693 (2005),
+  [doi:10.1021/jp0455430](https://doi.org/10.1021/jp0455430).
+- L. Maragliano, A. Fischer, E. Vanden-Eijnden and G. Ciccotti, *String method in
+  collective variables: Minimum free energy paths and isocommittor surfaces*,
+  J. Chem. Phys. **125**, 024106 (2006),
+  [doi:10.1063/1.2212942](https://doi.org/10.1063/1.2212942).
+
+Catalog entry: [samp-ft-string](manual/references.md#samp-ft-string).

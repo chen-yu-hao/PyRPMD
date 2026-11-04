@@ -23,11 +23,13 @@ go straight to your task:
 | Marginalize a saved FES onto fewer CVs | `project` command | [Output and analysis](manual/results.md) |
 | Automatic analysis, publication figures and HTML reports | `report` command, or `run`/`analyze --report` | [Automatic analysis and figures](manual/analysis-reports.md) |
 | Rate matrix for several entrances and transition states | `network` | [Gas phase and free energy](manual/workflows.md) |
-| Standard or well-tempered metadynamics, shared walkers | `fes` + `method="metadynamics"` | [Unified enhanced sampling](enhanced-sampling.md) |
+| Standard or well-tempered metadynamics, shared or distributed walkers | `fes` + `method="metadynamics"`; `walkers_mode` | [Unified enhanced sampling](enhanced-sampling.md) |
+| Variationally enhanced sampling, ABF/eABF and steered MD | `fes` + `method="ves"`, `"abf"`, `"eabf"` or `"steered"` | [Unified enhanced sampling](enhanced-sampling.md) |
 | OPES probability-based sampling | `fes` + `method="opes"` | [Unified enhanced sampling](enhanced-sampling.md), [OPES](opes.md) |
 | Replica-exchange umbrellas | `fes` + `[replica_exchange]` | [Replica exchange](replica-exchange.md) |
+| Parallel tempering and Hamiltonian replica exchange | `pimd` or `fes` + `[tempering]` | [Tempering](tempering.md) |
 | Optional PLUMED centroid biases | `plumed` / Python API | [PLUMED bridge](plumed.md) |
-| Transition-interface path ensembles | Python API | [Transition-interface sampling](transition-interface-sampling.md) |
+| TIS, RETIS/∞RETIS, PPTIS/REPPTIS and FFS path ensembles | `path_sampling`; Python API | [Transition-interface sampling](transition-interface-sampling.md) |
 | Equilibrium nuclear quantum statistics and energy estimators | `pimd` | [Materials and surfaces](manual/periodic.md) |
 | C++ PIMD driver: SVR, GLE, PIGLET, FFL thermostats; BZP/MTTK/RGB/SCR NPT | `pimd` + `sampling.engine="native"`; `pyrpmd-native` | [Materials and surfaces](manual/periodic.md#native-pimd-engine) |
 | RPMD self-diffusion, MSD, VACF | `diffusion` | [Materials and surfaces](manual/periodic.md) |
@@ -41,9 +43,12 @@ go straight to your task:
 | Instanton paths and one-dimensional low-temperature rates | Python API | [Instantons](instanton.md) |
 | Multidimensional instanton rates, splittings and TST/Wigner/Eckart | Python API / cached-Hessian CLI | [Low-temperature cross-checks](low-temperature.md) |
 | Thermal NRPMD, surface hopping, SOC, KC-/MV-RPMD, electronic friction | Python API; `diffusion` + `[electronic_friction]` | [Nonadiabatic dynamics](manual/nonadiabatic.md) |
+| Metal-surface IESH/RP-IESH and multistate MASH | `nonadiabatic` + `method="iesh"`, `"rp-iesh"` or `"multistate-mash"` | [IESH and multistate MASH](nonadiabatic-iesh-multistate.md) |
+| On-the-fly excited-state energies, gradients and couplings (PySCF TDDFT, file backends) | Python API | [Excited-state interface](excited-state-interface.md) |
 | Ab initio reference data, fitted PES, JaxPIP and native ONNX export | `python -m pyrpmd.pesgen`, Python API | [PES generation](manual/pes-generation.md), [JaxPIP](manual/jaxpip-generation.md) |
 | Higher-order equilibrium sampling and quantum estimators | Python API | [Quantum statistics](quantum-statistics.md) |
 | PA-CMD and relative IR/Raman/SFG spectra | `spectroscopy` | [Spectroscopy](tier2-spectroscopy.md) |
+| Experimental f-QCMD spectra of bent triatomic molecules | `spectroscopy` + `method="f-qcmd"` | [f-QCMD](qcmd.md) |
 | Suzuki–Chin, bosonic exchange and PIGS | `pimd` + `[path_integral]` | [Path-integral actions](tier2-path-integral.md) |
 | Condensed-phase SC energy/Cv/Cp/pressure, SC-NPT, PIGLET-NPT and RPC virial | SC workflow, native PIGLET or Python RPC | [Condensed-phase NQE validation](condensed-phase-nqe.md) |
 | Thermal nonadiabatic population-flux calculation | `nonadiabatic-rate` command | [Direct data and rates](tier2-nonadiabatic.md) |
@@ -54,6 +59,9 @@ work through [Scientific conventions and convergence](manual/science.md).
 
 For method attribution and research planning, use the [original-paper catalog](manual/references.md)
 and [reproduction checklist](manual/reproduction.md), including source systems, target observables and implementation gaps.
+To cite PyRPMD itself and the methods behind a calculation, see
+[How to cite a calculation](manual/references.md#how-to-cite-a-calculation); the repository's
+[CITATION.cff](https://github.com/chen-yu-hao/PyRPMD/blob/main/CITATION.cff) provides the software metadata.
 
 ## The basic cycle
 
@@ -84,7 +92,7 @@ Python equivalents are `prepare`, `run`, `analyze_run` and `resume_run`; see the
 | Tasks | [Gas phase and free energy](manual/workflows.md) · [Materials and surfaces](manual/periodic.md) · [PCET](manual/pcet.md) · [Electrode models](manual/electrochemistry.md) · [Nonadiabatic NRPMD](manual/nonadiabatic.md) · [Examples](manual/examples.md) |
 | Models and runs | [Potentials and plugins](manual/potentials.md) · [PES generation](manual/pes-generation.md) · [JaxPIP fitting](manual/jaxpip-generation.md) · [Execution, parallelism and restart](manual/execution.md) · [Output and analysis](manual/results.md) · [Automatic analysis and figures](manual/analysis-reports.md) |
 | Dynamics extensions | [Common propagation stack](propagation-stack.md) · [Expensive potentials](performance-dynamics.md) · [Trajectory batching](batched-dynamics.md) · [RPC/MTS](rpc-mts.md) · [Mixed sampling](mixed-sampling.md) · [TRPMD and spectra](trpmd-spectroscopy.md) |
-| Reference | [Original papers](manual/references.md) · [Reproduction checklist](manual/reproduction.md) · [Python API](manual/api.md) · [Troubleshooting](manual/troubleshooting.md) · [Developer guide](manual/development.md) |
+| Reference | [Original papers and how to cite](manual/references.md) · [Reproduction checklist](manual/reproduction.md) · [Python API](manual/api.md) · [Troubleshooting](manual/troubleshooting.md) · [Developer guide](manual/development.md) |
 
 ```{toctree}
 :maxdepth: 2
@@ -144,6 +152,8 @@ Tier 2 coverage <tier2-methods>
 PA-CMD and property spectra <tier2-spectroscopy>
 Main-engine path-integral actions <tier2-path-integral>
 Direct nonadiabatic data and rates <tier2-nonadiabatic>
+Online excited-state interface <excited-state-interface>
+Molecular quasi-centroids and f-QCMD <qcmd>
 ML model lifecycle <tier2-ml-lifecycle>
 ```
 
@@ -155,6 +165,7 @@ ML model lifecycle <tier2-ml-lifecycle>
 Andersen collision timing <andersen-sampling>
 Unified FES and enhanced sampling <enhanced-sampling>
 Replica exchange <replica-exchange>
+Parallel tempering and HREMD <tempering>
 OPES <opes>
 PLUMED bridge <plumed>
 Transition-interface sampling <transition-interface-sampling>

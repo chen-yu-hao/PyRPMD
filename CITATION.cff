@@ -1,0 +1,60 @@
+cff-version: 1.2.0
+message: >-
+  If you use PyRPMD, please cite the software as below and record the exact
+  version or commit. Also cite the original method, potential-energy-surface
+  and upstream-software papers for the features you used; they are listed in
+  docs/manual/references.md and docs/references.bib.
+type: software
+title: "PyRPMD: ring-polymer dynamics, reaction networks and adaptive free-energy sampling"
+abstract: >-
+  PyRPMD runs ring-polymer molecular dynamics from a single Python or TOML
+  input: bimolecular RPMD rates from a transition state, direct collisions,
+  free-energy surfaces and enhanced sampling, path-integral molecular dynamics,
+  periodic materials and surfaces, nonadiabatic ring-polymer methods and
+  electrochemical proton-coupled electron transfer, with restartable
+  checkpoints and C++/OpenMP kernels alongside a NumPy reference.
+authors:
+  - name: PyRPMD contributors
+version: 0.2.0
+license:
+  - MIT
+  - Apache-2.0
+repository-code: "https://github.com/chen-yu-hao/PyRPMD"
+url: "https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/index.md"
+keywords:
+  - ring-polymer molecular dynamics
+  - path-integral molecular dynamics
+  - nuclear quantum effects
+  - reaction rates
+  - free-energy calculations
+  - enhanced sampling
+  - nonadiabatic dynamics
+references:
+  - type: article
+    authors:
+      - family-names: Suleimanov
+        given-names: Y. V.
+      - family-names: Allen
+        given-names: J. W.
+      - family-names: Green
+        given-names: W. H.
+    title: "RPMDrate: Bimolecular chemical reaction rates from ring polymer molecular dynamics"
+    journal: Computer Physics Communications
+    volume: 184
+    start: 833
+    end: 840
+    year: 2013
+    doi: 10.1016/j.cpc.2012.10.017
+    notes: Source of the adapted Cayley integrator, reaction coordinate and rate algorithms.
+  - type: article
+    authors:
+      - family-names: Steffen
+        given-names: J.
+    title: "Caracal: A Versatile Ring Polymer Molecular Dynamics Simulation Package"
+    journal: Journal of Chemical Theory and Computation
+    volume: 19
+    start: 5334
+    end: 5355
+    year: 2023
+    doi: 10.1021/acs.jctc.3c00568
+    notes: Umbrella-sampling and recrossing workflow organization followed by the rate workflow.

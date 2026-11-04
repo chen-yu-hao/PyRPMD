@@ -1,7 +1,3 @@
----
-orphan: true
----
-
 # Parallel temperature and Hamiltonian replica exchange
 
 PyRPMD can run resumable parallel tempering (PT) and Hamiltonian replica
@@ -167,6 +163,9 @@ reproduction commands are recorded in
 `docs/validation/tempering-2026-11-03/README.md`.
 
 ## References
+
+Catalog entry: [samp-tempering](manual/references.md#samp-tempering), which also cites the original
+exchange Monte Carlo (parallel tempering) paper of Hukushima and Nemoto (1996).
 
 - Y. Sugita and Y. Okamoto, “Replica-exchange molecular dynamics method for
   protein folding,” *Chemical Physics Letters* **314**, 141–151 (1999),

@@ -2,7 +2,7 @@
 
 **First finish the H + H2/BKMP2 convergence record and, in parallel, the Richardson–Thoss 2013 two-state
 model; then study q-TIP4P/F water equilibrium, diffusion and spectra.** These campaigns test rates,
-nonadiabatic dynamics and condensed-phase nuclear quantum effects. All 111 inventory entries
+nonadiabatic dynamics and condensed-phase nuclear quantum effects. All 125 inventory entries
 have a task below; their primary papers and code paths are in the [source catalog](references.md).
 
 ## Task types and priorities
@@ -13,8 +13,8 @@ parameters, initial distribution, dynamics, estimator and processing; a **substi
 implementation; a **new application** needs a separately justified model/reference. Label these separately.
 This is a documentation/source audit and calculation plan, not a new production-simulation result.
 Existing evidence is recorded in the frozen
-[literature-validation inventory](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/literature-validation.md) and
-[campaign registry](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/literature/campaign.json).
+[literature-validation inventory](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/literature-validation.md) and
+[campaign registry](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/literature/campaign.json).
 
 | Priority | Meaning | Deliverable |
 | --- | --- | --- |
@@ -103,7 +103,7 @@ Papers: [cw81](references.md#cw81), [pr84](references.md#pr84), [pile10](referen
 
 **Compute.** First obtain harmonic position variance, kinetic/potential/total energy and P convergence against analytic quantum values. Then compare water RDF and energy under a specified water model. Report effective sample sizes and independent-seed uncertainty.
 
-**Existing entry.** [examples/quantum_statistics/harmonic_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/quantum_statistics/harmonic_validation.py); [benchmarks/tier2_literature/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/tier2_literature/path_integral.py); [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/native-ensembles.md)
+**Existing entry.** [examples/quantum_statistics/harmonic_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/quantum_statistics/harmonic_validation.py); [benchmarks/tier2_literature/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/tier2_literature/path_integral.py); [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/native-ensembles.md)
 
 **Gaps and boundaries.** Do not call a harmonic regression a reproduction of the molten-KCl paper. Exact original Hamiltonians and parameter files must be matched for a molecular reproduction.
 
@@ -119,7 +119,7 @@ Papers: [rpm04](references.md#rpm04), [kubo57](references.md#kubo57).
 
 **Compute.** Compute C_qq^K(t), its frequency spectrum, short-time error and P/dt convergence against independent quantum diagonalization; include P=1 and exactly solvable harmonic limits.
 
-**Existing entry.** [benchmarks/trpmd/harmonic_spectrum.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/trpmd/harmonic_spectrum.py); [benchmarks/tier2_literature/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/tier2_literature/spectroscopy.py)
+**Existing entry.** [benchmarks/trpmd/harmonic_spectrum.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/trpmd/harmonic_spectrum.py); [benchmarks/tier2_literature/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/tier2_literature/spectroscopy.py)
 
 **Gaps and boundaries.** Nonlinear observables and long-time quantum coherence are not generally exact. The existing quartic script uses the Cao–Voth model and an independently calculated Kubo reference, not digitized Craig–Manolopoulos data.
 
@@ -135,7 +135,7 @@ Papers: [bennett1977](references.md#bennett1977), [chandler1978](references.md#c
 
 **Compute.** Compute W(ξ), barrier position/height, k_QTST, κ(t) plateau, final k(T), isotope ratios where applicable, P/dt/R∞/umbrella-width/window-overlap/parent-child-time convergence and independent replica intervals.
 
-**Existing entry.** [benchmarks/h3/rpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/rpmd.py); [benchmarks/h3/convergence.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/convergence.py); [docs/literature-validation.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/literature-validation.md); [docs/science.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/science.md)
+**Existing entry.** [benchmarks/h3/rpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/rpmd.py); [benchmarks/h3/convergence.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/convergence.py); [docs/literature-validation.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/literature-validation.md); [docs/science.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/science.md)
 
 **Gaps and boundaries.** Use the current validation inventory: H+H₂ has a successful fixed-P128 comparison, while P256 and umbrella-domain checks remain separate gates. Do not promote fixed-P agreement to full convergence. Corrected F+H₂ reference/PES/electronic conventions must be resolved separately.
 
@@ -151,7 +151,7 @@ Papers: [drpmd18](references.md#drpmd18).
 
 **Compute.** Compute reaction probability versus impact parameter/energy, integral cross sections, thermal k(T), direct/complex channel fractions and collision-lifetime distributions. Demonstrate b_max, launch-separation, propagation-time and censoring convergence.
 
-**Existing entry.** [benchmarks/h3/drpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/drpmd.py); [docs/science.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/science.md); [docs/validation/drpmd-optimization-2026-10-30/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/validation/drpmd-optimization-2026-10-30/README.md)
+**Existing entry.** [benchmarks/h3/drpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/drpmd.py); [docs/science.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/science.md); [docs/validation/drpmd-optimization-2026-10-30/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/validation/drpmd-optimization-2026-10-30/README.md)
 
 **Gaps and boundaries.** The bundled H+H₂ case is a practical surrogate. Reproducing the original mechanism transition requires the H₅⁺ PES, isotope/channel labelling and original classifier/conditions; those must be supplied and verified.
 
@@ -167,7 +167,7 @@ Papers: [nerp16](references.md#nerp16), [state20](references.md#state20), [state
 
 **Compute.** Compute state-specific σ_vj(Ecoll), thresholds, b-dependent probabilities, initial total/vibrational/rotational energy distributions and isolated-reactant stability; converge β, P, dt, b_max and trajectory counts; compare QCT under the same energy definition.
 
-**Existing entry.** [benchmarks/h3/state_selected_reproduction.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/state_selected_reproduction.py); [benchmarks/h3/audit_state_selected_initial.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/audit_state_selected_initial.py); [benchmarks/h3/STATE_SELECTED_REPRODUCTION.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/STATE_SELECTED_REPRODUCTION.md); [examples/state_selected/ne_rpmd.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/state_selected/ne_rpmd.inp)
+**Existing entry.** [benchmarks/h3/state_selected_reproduction.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/state_selected_reproduction.py); [benchmarks/h3/audit_state_selected_initial.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/audit_state_selected_initial.py); [benchmarks/h3/STATE_SELECTED_REPRODUCTION.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/STATE_SELECTED_REPRODUCTION.md); [examples/state_selected/ne_rpmd.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/state_selected/ne_rpmd.inp)
 
 **Gaps and boundaries.** Initialization implements a harmonic approximation, not an exact arbitrary anharmonic eigenstate. Exact original PES, state definition and temperature-like β must match. Existing reduced trajectory budgets cannot be labelled full paper statistics.
 
@@ -183,7 +183,7 @@ Papers: [qct65](references.md#qct65), [state20](references.md#state20), [state22
 
 **Compute.** Compute σ_vj(Ecoll), vibrational action and isolated-energy drift; compare harmonic and action-matched initial energy distributions and scattering under separately labelled fixed-collision-energy and fixed-total-energy protocols.
 
-**Existing entry.** [examples/state_selected/qct.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/state_selected/qct.inp); [benchmarks/h3/state_preparation_study.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/state_preparation_study.py); [benchmarks/h3/STATE_PREPARATION_STUDY.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/STATE_PREPARATION_STUDY.md)
+**Existing entry.** [examples/state_selected/qct.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/state_selected/qct.inp); [benchmarks/h3/state_preparation_study.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/state_preparation_study.py); [benchmarks/h3/STATE_PREPARATION_STUDY.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/STATE_PREPARATION_STUDY.md)
 
 **Gaps and boundaries.** Action quantization is semiclassical, not exact quantum eigenstate preparation. Full-PES action initialization is an H₃ diatomic benchmark extension, not a general polyatomic production method. A 1965-paper reproduction requires its historical PES, rather than substituting BKMP2 silently.
 
@@ -199,7 +199,7 @@ Papers: [state20](references.md#state20), [state22](references.md#state22).
 
 **Compute.** Measure work injected by switching, final reactant energy/action distributions, isolated-reactant stability and σ(E) sensitivity to switching schedule/time. Preserve separate energy labels and compare with harmonic and full-PES-action controls.
 
-**Existing entry.** [benchmarks/h3/state_preparation_study.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/state_preparation_study.py); [benchmarks/h3/STATE_PREPARATION_STUDY.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/STATE_PREPARATION_STUDY.md)
+**Existing entry.** [benchmarks/h3/state_preparation_study.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/state_preparation_study.py); [benchmarks/h3/STATE_PREPARATION_STUDY.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/STATE_PREPARATION_STUDY.md)
 
 **Gaps and boundaries.** Do not attribute this variant to Marjollet et al. or present it as an established correction that prepares pure quantum states. It is a diagnostic research extension.
 
@@ -215,7 +215,7 @@ Papers: [vv82](references.md#vv82), [pile10](references.md#pile10), [cayley19](r
 
 **Compute.** Plot stable-trajectory fraction, energy error/drift and reversibility error versus dt and P on the paper's one-dimensional models; verify P=1 and free-ring limits. Report force-evaluation cost separately from accuracy.
 
-**Existing entry.** [docs/integrators.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/integrators.md); [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/dynamics.py); [benchmarks/tier2_literature/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/tier2_literature/path_integral.py)
+**Existing entry.** [docs/integrators.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/integrators.md); [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/dynamics.py); [benchmarks/tier2_literature/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/tier2_literature/path_integral.py)
 
 **Gaps and boundaries.** Cayley stability does not imply zero time-step bias or exact anharmonic sampling. Match each paper's potential and β before reproducing a figure; routine harmonic regressions are distinct.
 
@@ -231,7 +231,7 @@ Papers: [baoab13](references.md#baoab13), [bcocb20](references.md#bcocb20), [cay
 
 **Compute.** Compare finite-dt configurational covariance, kinetic-energy estimates, autocorrelation time and stable fraction across P/dt. For original water target compare kinetic-energy bead convergence and IR time-step sensitivity with the identical force field.
 
-**Existing entry.** [docs/integrators.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/integrators.md); [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/native-ensembles.md); [benchmarks/trpmd/harmonic_spectrum.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/trpmd/harmonic_spectrum.py)
+**Existing entry.** [docs/integrators.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/integrators.md); [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/native-ensembles.md); [benchmarks/trpmd/harmonic_spectrum.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/trpmd/harmonic_spectrum.py)
 
 **Gaps and boundaries.** Current Torch BCOCB rejects MTS inner_steps>1. Thermostat choice and timestep error must be stated; different splitting sequences should not be conflated.
 
@@ -247,7 +247,7 @@ Papers: [and80](references.md#and80), [langevin07](references.md#langevin07), [s
 
 **Compute.** Verify kinetic-energy chi-square statistics and mean/variance, harmonic configurational covariance, autocorrelation/equilibration versus coupling time, and invariant distributions across dt. Include zero-energy and momentum-DOF conventions.
 
-**Existing entry.** [docs/andersen-sampling.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/andersen-sampling.md); [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/native-ensembles.md); [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+**Existing entry.** [docs/andersen-sampling.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/andersen-sampling.md); [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/native-ensembles.md); [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 **Gaps and boundaries.** Sampling thermostats alter time correlations: use the production-dynamics protocol appropriate to the observable. PyRPMD's global discrete Andersen schedule is a documented implementation variant, not identical to every collision scheme in the original paper.
 
@@ -263,7 +263,7 @@ Papers: [pile10](references.md#pile10), [svr07](references.md#svr07).
 
 **Compute.** Compute bead/mode covariance, quantum kinetic/potential energy, integrated autocorrelation time and effective independent samples per force call as P and friction vary. Compare PILE-L/G with the original thermostat baselines.
 
-**Existing entry.** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/native-ensembles.md); [docs/integrators.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/integrators.md)
+**Existing entry.** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/native-ensembles.md); [docs/integrators.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/integrators.md)
 
 **Gaps and boundaries.** An equilibrium distribution check does not establish the molecular acceleration reported in the paper. Original water/Pd PES and sampling settings must be matched; PILE production is not automatically RPMD real-time dynamics.
 
@@ -279,7 +279,7 @@ Papers: [nhc92](references.md#nhc92), [yoshida1990](references.md#yoshida1990).
 
 **Compute.** Compute joint coordinate–momentum distribution, kinetic-energy distribution, extended-energy drift and equilibration versus chain length/coupling/substeps; compare analytic oscillator statistics.
 
-**Existing entry.** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/native-ensembles.md); [src/pyrpmd/thermostats.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/thermostats.py)
+**Existing entry.** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/native-ensembles.md); [src/pyrpmd/thermostats.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/thermostats.py)
 
 **Gaps and boundaries.** Global-chain settings must be converged; deterministic thermostatting alone is not an ergodicity guarantee. Bond-constraint support is not provided for this route.
 
@@ -295,7 +295,7 @@ Papers: [gle09](references.md#gle09), [pile10](references.md#pile10).
 
 **Compute.** Compare sampled joint momentum/auxiliary covariance with the Lyapunov target; measure position/energy autocorrelation versus oscillator frequency and matrix parameters; check canonical physical variance.
 
-**Existing entry.** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/native-ensembles.md); [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+**Existing entry.** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/native-ensembles.md); [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 **Gaps and boundaries.** Generic GLE matrices are not automatically quantum-correct or optimally tuned. The parameterization and physical/auxiliary covariance conventions must accompany any reproduction.
 
@@ -311,7 +311,7 @@ Papers: [piglet12](references.md#piglet12).
 
 **Compute.** With the original calibrated bath, compare kinetic energy and static observables against fully converged PIMD versus P and computational cost; independently verify mode covariance and centroid classical temperature.
 
-**Existing entry.** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/native-ensembles.md); [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+**Existing entry.** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/native-ensembles.md); [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 **Gaps and boundaries.** External temperature/bead-specific matrices and the original electronic-structure setup are required. PIGLET NPT is rejected. The paper's transient anisotropic Gaussian momentum estimator is not implemented by selecting this bath.
 
@@ -327,7 +327,7 @@ Papers: [ffl18](references.md#ffl18).
 
 **Compute.** Compare canonical distributions and integrated potential-energy autocorrelation versus damping; reproduce strong-damping sampling efficiency against ordinary Langevin, reporting force-call-normalized cost.
 
-**Existing entry.** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/native-ensembles.md); [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+**Existing entry.** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/native-ensembles.md); [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 **Gaps and boundaries.** State which FFL variant is used. These are equilibrium-sampling comparisons, not evidence for unperturbed physical transport coefficients.
 
@@ -343,7 +343,7 @@ Papers: [shake77](references.md#shake77), [rattle83](references.md#rattle83).
 
 **Compute.** Measure maximum bond and velocity-constraint residual, reversibility, constrained energy drift and dt/tolerance convergence. For physical replication, use the original molecular force field and thermodynamic state.
 
-**Existing entry.** [examples/materials/rigid_water.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/materials/rigid_water.inp); [docs/bond-constraints.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/bond-constraints.md)
+**Existing entry.** [examples/materials/rigid_water.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/materials/rigid_water.inp); [docs/bond-constraints.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/bond-constraints.md)
 
 **Gaps and boundaries.** Supported route is fixed-cell velocity Verlet with NVE/Andersen and Python fallback; native/Cayley/PILE/barostat combinations are rejected. The supplied zero-potential rigid-water example tests kinematics only, not realistic water or a quantum rigid-rotor/Fixman treatment.
 
@@ -359,7 +359,7 @@ Papers: [rpc08](references.md#rpc08), [respa92](references.md#respa92), [mts16](
 
 **Compute.** Compute force/energy agreement at Pc=P, observable bias versus contracted beads Pc, energy drift versus inner/outer dt, and wall time/expensive force-call savings. Molecular targets require matched force decomposition and electronic methods.
 
-**Existing entry.** [docs/rpc-mts.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/rpc-mts.md); [src/pyrpmd/potentials/contraction.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/contraction.py); [src/pyrpmd/multitime.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/multitime.py)
+**Existing entry.** [docs/rpc-mts.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/rpc-mts.md); [src/pyrpmd/potentials/contraction.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/contraction.py); [src/pyrpmd/multitime.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/multitime.py)
 
 **Gaps and boundaries.** Python opt-in APIs, not blanket acceleration of every workflow. Resonance and contraction errors require independent convergence. A cheap harmonic split tests algebra but does not reproduce water/MP2 accuracy.
 
@@ -375,7 +375,7 @@ Papers: [cmd93](references.md#cmd93), [cmd94](references.md#cmd94), [pacmd06](re
 
 **Compute.** For the quartic pilot compute centroid Kubo Cqq(t), peak positions/widths and static moments against independent diagonalization/finite-P transfer matrices; converge P, adiabatic frequency Ω, dt, sampling and trajectory length. Original molecular target adds velocity correlations and diffusion.
 
-**Existing entry.** [benchmarks/tier2_literature/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/tier2_literature/spectroscopy.py); [benchmarks/tier2_literature/spectroscopy_static.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/tier2_literature/spectroscopy_static.py); [examples/spectroscopy/pacmd.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/spectroscopy/pacmd.inp)
+**Existing entry.** [benchmarks/tier2_literature/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/tier2_literature/spectroscopy.py); [benchmarks/tier2_literature/spectroscopy_static.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/tier2_literature/spectroscopy_static.py); [examples/spectroscopy/pacmd.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/spectroscopy/pacmd.inp)
 
 **Gaps and boundaries.** The quartic paper's plotted real quantum correlation is not the independently calculated Kubo reference used here. Full molecular PA-CMD needs the original liquid interaction and state points. Curvature/nonlinear-observable limitations remain.
 
@@ -391,11 +391,27 @@ Papers: [cmd94](references.md#cmd94), [fcmd05](references.md#fcmd05).
 
 **Compute.** Report held-out centroid-force error, force conservativity, static centroid distribution, Cqq(t)/velocity correlation, spectral or diffusion error, and speedup against direct PA-CMD under the same temperature and training distribution.
 
-**Existing entry.** [benchmarks/tier2_literature/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/tier2_literature/spectroscopy.py); [src/pyrpmd/cmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/cmd.py); [docs/tier2-spectroscopy.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/tier2-spectroscopy.md)
+**Existing entry.** [benchmarks/tier2_literature/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/tier2_literature/spectroscopy.py); [src/pyrpmd/cmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/cmd.py); [docs/tier2-spectroscopy.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/tier2-spectroscopy.md)
 
 **Gaps and boundaries.** The supplied local quadratic basis is not a general molecular force field. New nonlinear observables need conditional property models. QCMD, hybrid CMD and fast QCMD are not implemented by these exports/IBI helpers.
 
 [Implementation and scope](references.md#fcmd).
+
+#### task-qcmd
+
+**Experimental f-QCMD for bent triatomic molecules — P2**
+
+Papers: [qcmd2019](references.md#qcmd2019), [fqcmd2021](references.md#fqcmd2021), [cmd94](references.md#cmd94).
+
+**Original system.** Trenins–Willatt–Althorpe 2019: infrared spectra of gas-phase water, liquid water and ice from 150 to 600 K. Fletcher et al. 2021: gas-phase vibrational spectra of water and ammonia against QCMD, and methane against quantum results.
+
+**Compute.** Gas-phase water quasi-centroid distributions and IR band positions versus exact quantum or QCMD references; IBI convergence of the correction potentials, bead number, temperature transferability and independent-trajectory uncertainty.
+
+**Existing entry.** [examples/spectroscopy/fqcmd_water.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/spectroscopy/fqcmd_water.py); [docs/qcmd.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/qcmd.md)
+
+**Gaps and boundaries.** Only bent triatomics are supported, so ammonia, methane and condensed-phase water from the papers are outside the current geometry. Converged liquid-water IR spectra are not established; the correction model is temperature specific.
+
+[Implementation and scope](references.md#qcmd).
 
 #### task-trpmd
 
@@ -407,7 +423,7 @@ Papers: [trpmd14](references.md#trpmd14), [rpm04](references.md#rpm04), [kubo57]
 
 **Compute.** Compute dipole Cμμ(t), IR peak position/width/intensity ratios and friction dependence; show removal of ring-polymer resonances versus RPMD while quantifying broadening; converge P/dt/time/window/replicas. Harmonic regression precedes Morse OH, then water.
 
-**Existing entry.** [benchmarks/trpmd/harmonic_spectrum.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/trpmd/harmonic_spectrum.py); [benchmarks/water/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/water/README.md); [docs/trpmd-spectroscopy.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/trpmd-spectroscopy.md)
+**Existing entry.** [benchmarks/trpmd/harmonic_spectrum.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/trpmd/harmonic_spectrum.py); [benchmarks/water/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/water/README.md); [docs/trpmd-spectroscopy.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/trpmd-spectroscopy.md)
 
 **Gaps and boundaries.** TRPMD is approximate and can broaden peaks. Output is relative, without absolute electromagnetic/volume/refractive-index factors. Water09 PA-CMD and TRPMD14 spectra are different targets; selecting TRPMD does not reproduce PA-CMD.
 
@@ -423,7 +439,7 @@ Papers: [trpmd14](references.md#trpmd14), [trprate15](references.md#trprate15).
 
 **Compute.** Compare κ(t) and final k(T) versus internal friction at temperatures on both sides of Tc, with matched PMF and independent uncertainty. Separate friction bias from recrossing statistics.
 
-**Existing entry.** [docs/trpmd-spectroscopy.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/trpmd-spectroscopy.md); [docs/science.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/science.md); existing RPMD rate workflow with explicitly selected TRPMD configuration
+**Existing entry.** [docs/trpmd-spectroscopy.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/trpmd-spectroscopy.md); [docs/science.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/science.md); existing RPMD rate workflow with explicitly selected TRPMD configuration
 
 **Gaps and boundaries.** TRPMD friction is not a controlled error estimate for exact quantum rates, especially below crossover. Do not use thermostat-insensitive equilibrium tests as rate validation.
 
@@ -439,7 +455,7 @@ Papers: [kubo57](references.md#kubo57), [raman21](references.md#raman21).
 
 **Compute.** First test a synthetic harmonic polarizability model with analytic peaks, tensor rotations, depolarization ratio and temperature/laser factors. A molecular reproduction then needs the original PES, polarizability model and environment treatment.
 
-**Existing entry.** [examples/spectroscopy/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/spectroscopy/README.md); [examples/spectroscopy/harmonic_properties.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/spectroscopy/harmonic_properties.py); [docs/tier2-spectroscopy.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/tier2-spectroscopy.md)
+**Existing entry.** [examples/spectroscopy/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/spectroscopy/README.md); [examples/spectroscopy/harmonic_properties.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/spectroscopy/harmonic_properties.py); [docs/tier2-spectroscopy.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/tier2-spectroscopy.md)
 
 **Gaps and boundaries.** This is a relative correlation-spectrum implementation, not Dundas et al.'s polarizable-embedding electronic-structure method. A unique original-paper molecular reproduction cannot be claimed from a formula citation alone; absolute experimental cross sections require further prefactors.
 
@@ -455,7 +471,7 @@ Papers: [sfg02](references.md#sfg02), [kubo57](references.md#kubo57).
 
 **Compute.** Compute tensor χijk(ω), signed Imχ and coherent |χ|²; verify causal transform/sign with analytic signals. Molecular target: matched water interface, dipole/polarizability surfaces, orientational convention and polarization components.
 
-**Existing entry.** [examples/spectroscopy/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/spectroscopy/README.md); [docs/tier2-spectroscopy.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/tier2-spectroscopy.md); [src/pyrpmd/analysis/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/spectroscopy.py)
+**Existing entry.** [examples/spectroscopy/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/spectroscopy/README.md); [docs/tier2-spectroscopy.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/tier2-spectroscopy.md); [src/pyrpmd/analysis/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/spectroscopy.py)
 
 **Gaps and boundaries.** The package supplies a relative response kernel; interface/lab-frame axes, Fresnel/local-field factors, beam geometry, normalization and electronic background are caller responsibilities. Do not claim the entire Morita–Hynes water model is implemented.
 
@@ -471,7 +487,7 @@ Papers: [ti84](references.md#ti84), [pcn13](references.md#pcn13), [cw81](referen
 
 **Compute.** For a confined harmonic oscillator compute partition-function differences and E/Cv versus P, comparing primitive O(P−2) and TI O(P−4) trace behavior; measure acceptance, autocorrelation and independent samples per cost.
 
-**Existing entry.** [examples/quantum_statistics/harmonic_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/quantum_statistics/harmonic_validation.py); [docs/quantum-statistics.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/quantum-statistics.md)
+**Existing entry.** [examples/quantum_statistics/harmonic_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/quantum_statistics/harmonic_validation.py); [docs/quantum-statistics.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/quantum-statistics.md)
 
 **Gaps and boundaries.** TI fourth-order accuracy applies to the trace and corresponding thermodynamic derivatives, not automatically off-diagonal density matrices or arbitrary structural observables. It is not a modified physical potential for RPMD. Current API excludes PBC, exchange, frozen atoms and mass-dependent PES.
 
@@ -487,7 +503,7 @@ Papers: [yam05](references.md#yam05), [ti84](references.md#ti84), [cw81](referen
 
 **Compute.** Compute E(T), Cv(T), kinetic and potential contributions with analytic oscillator oracles; compare derivative step sizes, P extrapolation, estimator variance and autocorrelation. Original cluster target needs the precise pair potentials and cluster ensemble.
 
-**Existing entry.** [examples/quantum_statistics/harmonic_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/quantum_statistics/harmonic_validation.py); [docs/quantum-statistics.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/quantum-statistics.md)
+**Existing entry.** [examples/quantum_statistics/harmonic_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/quantum_statistics/harmonic_validation.py); [docs/quantum-statistics.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/quantum-statistics.md)
 
 **Gaps and boundaries.** Report the action and estimator together; physical kinetic energy is not fictitious ring-polymer momentum temperature. Cluster heat capacities and phase behavior cannot be validated by a single harmonic run.
 
@@ -503,7 +519,7 @@ Papers: [iso13](references.md#iso13), [iso14](references.md#iso14).
 
 **Compute.** Compute ΔF(m→m′), ln α between environments and kinetic-energy mass integrals. Compare direct/FEP and intermediate-mass integration, effective sample size, log-weight variance and confidence intervals; use harmonic mass dependence as the first oracle.
 
-**Existing entry.** [examples/quantum_statistics/harmonic_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/quantum_statistics/harmonic_validation.py); [docs/quantum-statistics.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/quantum-statistics.md)
+**Existing entry.** [examples/quantum_statistics/harmonic_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/quantum_statistics/harmonic_validation.py); [docs/quantum-statistics.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/quantum-statistics.md)
 
 **Gaps and boundaries.** Poor-overlap reweighting is not rescued by a small formal standard error. Current trace-action restrictions limit direct reuse for a periodic liquid-water reproduction; original PES/phase conventions and mass-dependent corrections must be supplied.
 
@@ -519,7 +535,7 @@ Papers: [cw81](references.md#cw81), [ceperley95](references.md#ceperley95), [mom
 
 **Compute.** Compare open-end separation distribution, Fourier n(p), normalization, symmetry and second moment with analytic harmonic momentum variance; converge P, endpoint sampling, histogram/KDE width and Fourier range, preserving negative/noisy diagnostic values.
 
-**Existing entry.** [examples/quantum_statistics/harmonic_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/quantum_statistics/harmonic_validation.py); [docs/quantum-statistics.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/quantum-statistics.md)
+**Existing entry.** [examples/quantum_statistics/harmonic_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/quantum_statistics/harmonic_validation.py); [docs/quantum-statistics.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/quantum-statistics.md)
 
 **Gaps and boundaries.** Do not call this Lin et al.'s displaced-path free-energy estimator. It is primitive and one-component, not a full molecular three-dimensional distribution or the PIGLET TAG estimator; no clipping/renormalization should hide undersampling.
 
@@ -535,9 +551,9 @@ Papers: [suz95](references.md#suz95), [chin97](references.md#chin97), [sc16](ref
 
 **Compute.** First compare harmonic even-bead position moments/physical potential against exact finite-P and continuum values; verify finite-difference force convergence. Original target: RDF and thermodynamic observables versus P and force-call cost under the identical NN potential.
 
-**Existing entry.** [examples/path_integral/suzuki_chin.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/path_integral/suzuki_chin.inp); [benchmarks/tier2_literature/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/tier2_literature/path_integral.py)
+**Existing entry.** [examples/path_integral/suzuki_chin.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/path_integral/suzuki_chin.inp); [benchmarks/tier2_literature/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/tier2_literature/path_integral.py); [docs/condensed-phase-nqe.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/condensed-phase-nqe.md)
 
-**Gaps and boundaries.** Current route is confined/nonperiodic and serial, with physical even-bead potential reporting but no complete SC total-energy/Cv/pressure estimator. Thus original water/ice reproduction requires additional coverage and the original potential.
+**Gaps and boundaries.** SC energy, heat-capacity and pressure estimators and isotropic SC-NPT (src/pyrpmd/suzuki_chin.py) are validated only on a coupled harmonic crystal and an FCC Lennard-Jones model solid. The CLI [path_integral] route still restricts alpha=0, and the original water/ice reproduction requires the original potential.
 
 [Implementation and scope](references.md#suzuki-chin).
 
@@ -551,7 +567,7 @@ Papers: [bose19](references.md#bose19), [bose23](references.md#bose23).
 
 **Compute.** Compute symmetric density and potential/virial-derived total energy versus N, β and P; compare exact canonical ideal-boson recurrence and small-N explicit checks. Measure wall-time scaling and errors per independent replica.
 
-**Existing entry.** [examples/path_integral/bosonic.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/path_integral/bosonic.inp); [benchmarks/tier2_literature/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/tier2_literature/path_integral.py); [benchmarks/tier2_literature/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/tier2_literature/README.md)
+**Existing entry.** [examples/path_integral/bosonic.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/path_integral/bosonic.inp); [benchmarks/tier2_literature/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/tier2_literature/path_integral.py); [benchmarks/tier2_literature/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/tier2_literature/README.md)
 
 **Gaps and boundaries.** The representative-cycle potential need not equal a full factorial sum pointwise; compare symmetric ensemble observables. No periodic winding/superfluid estimator. Existing P=36 model agreement uses different thermostat and shorter trajectories than the paper and is not a complete original statistical campaign.
 
@@ -567,7 +583,7 @@ Papers: [pigs00](references.md#pigs00).
 
 **Compute.** Compute midpoint position moments and physical potential energy versus projection length, imaginary-time spacing and trial width; compare analytic harmonic ground-state moments. Original helium target adds energy/structure with the original pair potentials and trial ansatz.
 
-**Existing entry.** [examples/path_integral/pigs.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/path_integral/pigs.inp); [benchmarks/tier2_literature/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/tier2_literature/path_integral.py)
+**Existing entry.** [examples/path_integral/pigs.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/path_integral/pigs.inp); [benchmarks/tier2_literature/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/tier2_literature/path_integral.py)
 
 **Gaps and boundaries.** The auxiliary β=Pτ parameterizes projection and is not a physical temperature. Current workflow has no combined bosonic-exchange/PBC production route and no complete original helium energy estimator; do not claim helium reproduction from harmonic examples.
 
@@ -583,7 +599,7 @@ Papers: [rpi09](references.md#rpi09), [rpi16](references.md#rpi16).
 
 **Compute.** Compute Tc, optimized path/action, gradient residual, Hessian signature, fluctuation prefactor and k(T); converge beads, optimization tolerance and finite-difference Hessian; compare one-dimensional Eckart against numerical quantum transmission integration away from crossover.
 
-**Existing entry.** [examples/instanton/eckart.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/instanton/eckart.py); [examples/instanton/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/instanton/low_temperature.py); [examples/instanton/cross_checks.json](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/instanton/cross_checks.json); [docs/instanton.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/instanton.md)
+**Existing entry.** [examples/instanton/eckart.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/instanton/eckart.py); [examples/instanton/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/instanton/low_temperature.py); [examples/instanton/cross_checks.json](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/instanton/cross_checks.json); [docs/instanton.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/instanton.md)
 
 **Gaps and boundaries.** Optimization success is not physical convergence; reports retain physical_converged=False. Dense Hessian size is bounded. A molecular claim also needs the matching PES, reactant partition functions, symmetry/rotation factors and bead-converged temperatures.
 
@@ -599,7 +615,7 @@ Papers: [split11](references.md#split11).
 
 **Compute.** First use a one-dimensional symmetric double well: compare instanton action, fluctuation prefactor and ground-doublet Δ against independent Hamiltonian diagonalization; converge projection time, beads and optimization.
 
-**Existing entry.** [examples/instanton/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/instanton/low_temperature.py); [docs/instanton.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/instanton.md); [docs/low-temperature.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/low-temperature.md)
+**Existing entry.** [examples/instanton/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/instanton/low_temperature.py); [docs/instanton.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/instanton.md); [docs/low-temperature.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/low-temperature.md)
 
 **Gaps and boundaries.** Current splitting code rejects free translational/rotational modes and is not a gas-phase rovibrational splitting or multiwell multiplet implementation. HO₂/malonaldehyde paper replication is therefore an extension target, not a presently turnkey reproduction.
 
@@ -615,7 +631,7 @@ Papers: [eyr35](references.md#eyr35), [wig32](references.md#wig32), [eck30](refe
 
 **Compute.** Compute classical/quantum harmonic k_TST, κ_Wigner, κ_Eckart and corrected k(T) against direct quadrature; verify high-temperature limit, detailed energy convention, forward/reverse barrier inputs and sensitivity near Tc.
 
-**Existing entry.** [examples/instanton/cross_checks.json](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/instanton/cross_checks.json); [examples/instanton/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/instanton/low_temperature.py); [docs/low-temperature.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/low-temperature.md)
+**Existing entry.** [examples/instanton/cross_checks.json](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/instanton/cross_checks.json); [examples/instanton/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/instanton/low_temperature.py); [docs/low-temperature.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/low-temperature.md)
 
 **Gaps and boundaries.** Wigner is a weak-tunnelling expansion, not a deep-tunnelling method; neither Wigner nor a fitted one-dimensional Eckart barrier establishes multidimensional accuracy or provides a uniform crossover correction.
 
@@ -633,7 +649,7 @@ Papers: [samp-us1974](references.md#samp-us1974), [samp-us1977](references.md#sa
 
 **Compute.** For the original systems, calculate free-energy differences over temperature and density. First validate this package on analytic 1D/2D/3D harmonic FESs and sampled-support coverage, then the classical OGRe double well.
 
-**Existing entry.** [examples/fes/harmonic2d.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/fes/harmonic2d.inp); [benchmarks/fes_methods/benchmark.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/fes_methods/benchmark.py)
+**Existing entry.** [examples/fes/harmonic2d.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/fes/harmonic2d.inp); [benchmarks/fes_methods/benchmark.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/fes_methods/benchmark.py)
 
 **Gaps and boundaries.** Recover the complete LJ parameters, reference path and reference free energy from the original papers. The supplied harmonic examples are implementation regressions, not reproductions of the original LJ calculations.
 
@@ -649,7 +665,7 @@ Papers: [samp-mbar2008](references.md#samp-mbar2008).
 
 **Compute.** Calculate state free-energy offsets, target weights, the PMF and overlap matrix. Compare against PyMBAR using exactly the same umbrella samples, then check sampling-length and bin-size convergence.
 
-**Existing entry.** [benchmarks/fes_methods/solver_check.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/fes_methods/solver_check.py); [benchmarks/h3/solver_check.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/solver_check.py)
+**Existing entry.** [benchmarks/fes_methods/solver_check.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/fes_methods/solver_check.py); [benchmarks/h3/solver_check.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/solver_check.py)
 
 **Gaps and boundaries.** The original DNA measurement data are not supplied with the package. Recover the dataset, applied forces and unit conventions separately.
 
@@ -665,7 +681,7 @@ Papers: [samp-ui2005](references.md#samp-ui2005), [samp-uierr2006](references.md
 
 **Compute.** Calculate the mean force, PMF and barrier. On identical samples, compare UI/MBAR barriers, Gaussian window fits and support for any tail extrapolation.
 
-**Existing entry.** [benchmarks/h3/convergence.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/convergence.py); [benchmarks/h3/solver_check.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/solver_check.py); [benchmarks/fes_methods/benchmark.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/fes_methods/benchmark.py)
+**Existing entry.** [benchmarks/h3/convergence.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/convergence.py); [benchmarks/h3/solver_check.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/solver_check.py); [benchmarks/fes_methods/benchmark.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/fes_methods/benchmark.py)
 
 **Gaps and boundaries.** Obtain the 2005 full text to recover the analytic potential parameters and biological model. H+H2/BKMP2 is an existing application benchmark, not the original UI-paper system.
 
@@ -697,7 +713,7 @@ Papers: [samp-meta2002](references.md#samp-meta2002).
 
 **Compute.** For NaCl, calculate an FES using ion separation and solvent-coordination information. For alanine, calculate F(phi,psi), basin free-energy differences, barriers and convergence histories. First check bias forces and finite-time FESs on the OGRe double well.
 
-**Existing entry.** [examples/metadynamics/standard.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/metadynamics/standard.inp); [benchmarks/fes_methods/ogre_benchmark.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/fes_methods/ogre_benchmark.py)
+**Existing entry.** [examples/metadynamics/standard.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/metadynamics/standard.inp); [benchmarks/fes_methods/ogre_benchmark.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/fes_methods/ogre_benchmark.py)
 
 **Gaps and boundaries.** Prepare the same force field, water model and CVs as the original application. Ordinary biased simulation time does not directly provide a physical rate.
 
@@ -713,7 +729,7 @@ Papers: [samp-wt2008](references.md#samp-wt2008).
 
 **Compute.** Calculate F(phi,psi), basin differences and barrier errors versus simulation time, bias factor and deposition parameters. Use independent seeds; hill count alone is not convergence evidence.
 
-**Existing entry.** [examples/metadynamics/well_tempered_2d.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/metadynamics/well_tempered_2d.inp); [benchmarks/fes_methods/metadynamics_compare.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/fes_methods/metadynamics_compare.py)
+**Existing entry.** [examples/metadynamics/well_tempered_2d.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/metadynamics/well_tempered_2d.inp); [benchmarks/fes_methods/metadynamics_compare.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/fes_methods/metadynamics_compare.py)
 
 **Gaps and boundaries.** Match the molecular force field, temperature and solvent treatment to the full paper/SI. The supplied harmonic2D example is an implementation regression.
 
@@ -729,7 +745,7 @@ Papers: [samp-walkers2006](references.md#samp-walkers2006), [samp-wt2008](refere
 
 **Compute.** Calculate the 2D FES in center separation and solvent coordination, unthreading/rethreading barriers, FES error and wall time/total simulated time versus walker count. First perform an equal-budget OGRe double-well regression; estimate uncertainty across independent complete shared histories.
 
-**Existing entry.** [docs/enhanced-sampling.md#shared-multiple-walkers](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/enhanced-sampling.md#shared-multiple-walkers); [docs/enhanced-sampling.md#shared-bias-multiple-walkers](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/enhanced-sampling.md#shared-bias-multiple-walkers)
+**Existing entry.** [docs/enhanced-sampling.md#shared-multiple-walkers](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/enhanced-sampling.md#shared-multiple-walkers); [docs/enhanced-sampling.md#distributed-multiple-walker-metad-and-opes](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/enhanced-sampling.md#distributed-multiple-walker-metad-and-opes); [docs/validation/multi-walkers-2026-11-03/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/validation/multi-walkers-2026-11-03/README.md)
 
 **Gaps and boundaries.** Section 3 and Fig.3 use 300 K and 1–32 walkers; molecular simulation details are delegated to the original paper's ref.35 and must be recovered. Its WHAM-superposition postprocessing is not implemented merely by sharing a bias. Shared walkers are not independent replicates.
 
@@ -745,7 +761,7 @@ Papers: [samp-meta2002](references.md#samp-meta2002), [samp-wt2008](references.m
 
 **Compute.** Compare direct and grid bias energies, forces and FESs under the same trajectory parameters while refining grid spacing. Check nonuniform-bin volume factors and missing-support masks in marginal free energies.
 
-**Existing entry.** [docs/grid-metadynamics.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/grid-metadynamics.md); `pyrpmd project RUN --axes 2 --output NEW_DIRECTORY`
+**Existing entry.** [docs/grid-metadynamics.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/grid-metadynamics.md); `pyrpmd project RUN --axes 2 --output NEW_DIRECTORY`
 
 **Gaps and boundaries.** Grid acceleration and projection consistency do not independently establish physical accuracy. Projected basin weights are not dynamical branching fractions.
 
@@ -761,9 +777,9 @@ Papers: [samp-opes2020](references.md#samp-opes2020).
 
 **Compute.** Begin with double-well comparisons of KDE, bias, forces and normalization Z. Calculate frozen-bias FESs, ESS, coverage and basin free energies before moving to alanine.
 
-**Existing entry.** [examples/opes/harmonic_2d.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/opes/harmonic_2d.inp); [benchmarks/tier2_literature/sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/tier2_literature/sampling.py)
+**Existing entry.** [examples/opes/harmonic_2d.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/opes/harmonic_2d.inp); [benchmarks/tier2_literature/sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/tier2_literature/sampling.py)
 
-**Gaps and boundaries.** Kernel compression and shared OPES walkers are absent. Wrapped Gaussian kernels differ from PLUMED's truncated kernels. Cross-code comparisons must match initialization constants, physical kernel widths, normalization and bias gauge.
+**Gaps and boundaries.** Kernel compression is absent; shared OPES walkers (walkers_mode mpi-sync or async-files) are the samp-walkers entry. Wrapped Gaussian kernels differ from PLUMED's truncated kernels. Cross-code comparisons must match initialization constants, physical kernel widths, normalization and bias gauge.
 
 [Implementation and scope](references.md#samp-opes).
 
@@ -782,6 +798,54 @@ Papers: [samp-explore2022](references.md#samp-explore2022), [samp-opes2020](refe
 **Gaps and boundaries.** tier2_literature/sampling.py already includes the published Müller model and x/y CV comparisons, but its default budget is not the original 200-million-step budget. Its adaptive-width rule is a package-specific comparison, not a full reproduction of PLUMED OPES.
 
 [Implementation and scope](references.md#samp-opes-explore).
+
+#### task-samp-ves
+
+**Variationally enhanced sampling (VES) on centroid CVs — P1**
+
+Papers: [samp-ves2014](references.md#samp-ves2014), [samp-wtves2015](references.md#samp-wtves2015).
+
+**Original system.** Valsson–Parrinello 2014 introduce the variational functional and demonstrate it on numerical examples, including a three-dimensional free-energy surface; the 2015 paper adds the well-tempered target. Their molecular systems and protocols were not re-extracted for this entry.
+
+**Compute.** First compare converged biases and FES for the analytic double well and the 2D well-tempered example with quadrature and MBAR references. Then report FES error against basis order, quadrature order, pace and learning rate, coefficient trajectories and frozen-bias effective sample size over independent seeds.
+
+**Existing entry.** [examples/ves_double_well.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/ves_double_well.inp); [examples/ves_well_tempered_2d.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/ves_well_tempered_2d.inp); [examples/ves_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/ves_validation.py); [docs/validation/t24-ves](https://github.com/chen-yu-hao/PyRPMD/tree/28cde092b66707878d99bc45eadf6bdf5950b317/docs/validation/t24-ves)
+
+**Gaps and boundaries.** Recover the original molecular systems before claiming a reproduction. The bundled inputs are toy models in electron-mass units at artificial temperatures; basis and quadrature resolution must be re-established for each system, and the finite CV box truncates the target.
+
+[Implementation and scope](references.md#samp-ves).
+
+#### task-samp-abf
+
+**Centroid ABF and extended-system ABF with CZAR — P1**
+
+Papers: [samp-abf2001](references.md#samp-abf2001), [samp-abf2008](references.md#samp-abf2008), [samp-abfproj2015](references.md#samp-abfproj2015), [samp-eabf2017](references.md#samp-eabf2017).
+
+**Original system.** Darve–Pohorille 2001 introduce the average-force method; Darve et al. 2008 use the Phi/Psi backbone dihedrals of N-acetylalanyl-N'-methylamide as the numerical example. Alrachid–Lelièvre 2015 is a convergence analysis; the eABF/CZAR application systems of Lesage et al. 2017 were not re-extracted for this entry.
+
+**Compute.** Compare 1D/2D FES from ABF and eABF/CZAR with quadrature, umbrella/MBAR and independent replica spread on the bundled double well; report grid resolution, ramp, update interval and coupling-constant sensitivity, and the 2D projection residual.
+
+**Existing entry.** [examples/abf_double_well.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/abf_double_well.inp); [examples/eabf_double_well.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/eabf_double_well.inp)
+
+**Gaps and boundaries.** The alanine-dipeptide force field and protocols of the original papers are not bundled. A single history has no uncertainty; replica spread is descriptive. Rank-deficient points are rejected rather than handled by a singular-coordinate estimator.
+
+[Implementation and scope](references.md#samp-abf).
+
+#### task-samp-steered
+
+**Steered centroid MD and nonequilibrium work estimators — P0**
+
+Papers: [samp-jarzynski1997](references.md#samp-jarzynski1997), [samp-crooks1999](references.md#samp-crooks1999), [samp-bar1976](references.md#samp-bar1976), [samp-shadow2013](references.md#samp-shadow2013).
+
+**Original system.** Jarzynski 1997 and Crooks 1999 are general nonequilibrium-work identities; Bennett 1976 is the two-ensemble acceptance-ratio estimator; Sivak–Chodera–Crooks 2013 interpret finite-timestep Langevin error as shadow work. No single original simulation system is attached.
+
+**Compute.** Compare forward Jarzynski and bidirectional Crooks/BAR estimates of the restrained endpoint free-energy difference with exact quadrature for harmonic and double-well models; report bias against pulling speed, work-distribution overlap, bootstrap intervals and the shadow-work correction against timestep.
+
+**Existing entry.** [examples/steered_harmonic.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/steered_harmonic.inp); [examples/steered_double_well.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/steered_double_well.py)
+
+**Gaps and boundaries.** The estimate is a restrained endpoint free-energy difference, not an unbiased PMF. Fast pulling makes exponential work averages converge poorly; check work-distribution overlap and repeat with independent seeds.
+
+[Implementation and scope](references.md#samp-steered).
 
 #### task-samp-reus
 
@@ -809,11 +873,27 @@ Papers: [samp-remd1999](references.md#samp-remd1999), [samp-reus2000](references
 
 **Compute.** Calculate energy distributions and conformational populations in temperature/Hamiltonian slots, exchange detailed balance and round trips. For P>1, additionally verify spring-action exchange factors and exact harmonic distributions.
 
-**Existing entry.** pyrpmd.replica_exchange.ReplicaExchange (Python API); [docs/tier2-sampling.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/tier2-sampling.md)
+**Existing entry.** pyrpmd.replica_exchange.ReplicaExchange (Python API); [docs/tier2-sampling.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/tier2-sampling.md)
 
 **Gaps and boundaries.** Ring-polymer exchange at P>1 applies the classical exchange principle to this package's measure. Original molecular potentials, temperature ladders and initial states require separate preparation.
 
 [Implementation and scope](references.md#samp-remd).
+
+#### task-samp-tempering
+
+**Resumable parallel tempering and Hamiltonian replica-exchange workflow — P1**
+
+Papers: [samp-pt1996](references.md#samp-pt1996), [samp-remd1999](references.md#samp-remd1999), [samp-reus2000](references.md#samp-reus2000), [samp-mbar2008](references.md#samp-mbar2008).
+
+**Original system.** Hukushima–Nemoto 1996: three-dimensional ±J Ising spin glass. Sugita–Okamoto 1999: Met-enkephalin. Sugita–Kitao–Okamoto 2000: capped alanine trimer.
+
+**Compute.** On the bundled double well, compare per-temperature distributions and estimators with exact references; report adjacent acceptance, round trips, state-space mean-square displacement and MBAR overlap, and verify bitwise restart and MPI equality.
+
+**Existing entry.** [examples/tempering/double_well.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/tempering/double_well.inp); [examples/tempering/hremd_umbrella.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/tempering/hremd_umbrella.inp); [docs/validation/tempering-2026-11-03/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/validation/tempering-2026-11-03/README.md)
+
+**Gaps and boundaries.** Exchange improves state mixing but does not turn PIMD sampling time into dynamics; results keep converged=false. The original spin-glass and peptide models, ladders and force fields require separate preparation.
+
+[Implementation and scope](references.md#samp-tempering).
 
 #### task-samp-biased-clock
 
@@ -849,7 +929,7 @@ Papers: [samp-tis2003](references.md#samp-tis2003), [samp-tis2005](references.md
 
 #### task-samp-retis
 
-**Positive-ensemble replica-exchange TIS — P1**
+**Replica-exchange TIS with optional minus ensemble — P1**
 
 Papers: [samp-retis2007](references.md#samp-retis2007), [samp-tis2003](references.md#samp-tis2003).
 
@@ -857,11 +937,59 @@ Papers: [samp-retis2007](references.md#samp-retis2007), [samp-tis2003](reference
 
 **Compute.** First compare TIS/RETIS conditional probabilities, autocorrelation, walker labels and total cost in the same double well. The original-paper route requires a PBD potential and DNA-denaturation rates and sampling-efficiency comparisons.
 
-**Existing entry.** pyrpmd.retis.ReplicaExchangeTIS (Python API)
+**Existing entry.** [examples/sampling/retis_minus.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/sampling/retis_minus.py); [examples/sampling/path_sampling_retis.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/sampling/path_sampling_retis.inp); [docs/validation/t23-path-sampling](https://github.com/chen-yu-hao/PyRPMD/tree/28cde092b66707878d99bc45eadf6bdf5950b317/docs/validation/t23-path-sampling)
 
-**Gaps and boundaries.** Do not claim complete equivalence to original RETIS: the minus-interface flux ensemble, persistent checkpointing and MPI orchestration are absent.
+**Gaps and boundaries.** Do not claim complete equivalence to original RETIS for molecular systems: the PBD DNA model is not bundled, and the double-well comparisons with quadrature and full TIS do not certify molecular-rate convergence. MPI orchestration is absent.
 
 [Implementation and scope](references.md#samp-retis).
+
+#### task-samp-pptis
+
+**Partial-path TIS (PPTIS) and REPPTIS — P1**
+
+Papers: [samp-pptis2004](references.md#samp-pptis2004), [samp-repptis2023](references.md#samp-repptis2023), [samp-tis2003](references.md#samp-tis2003).
+
+**Original system.** PPTIS 2004: a simple diatomic system with a diffusive barrier. REPPTIS 2023: ibuprofen permeation through a DPPC membrane.
+
+**Compute.** Compare REPPTIS rates with full TIS/RETIS and an independent quadrature reference on the same double well; vary interface spacing to test memory loss; report local crossing probabilities, recurrence stability and block errors.
+
+**Existing entry.** [examples/sampling/pptis.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/sampling/pptis.py); [examples/sampling/path_sampling_repptis.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/sampling/path_sampling_repptis.inp); [docs/validation/t23-path-sampling](https://github.com/chen-yu-hao/PyRPMD/tree/28cde092b66707878d99bc45eadf6bdf5950b317/docs/validation/t23-path-sampling)
+
+**Gaps and boundaries.** The membrane-permeation system and its force field are not bundled. A well-sampled local chain alone does not establish memory loss; missing origin populations or a singular recurrence leave the rate unsupported.
+
+[Implementation and scope](references.md#samp-pptis).
+
+#### task-samp-ffs
+
+**Direct forward-flux sampling (FFS) — P1**
+
+Papers: [samp-ffs2005](references.md#samp-ffs2005), [samp-ffs2009](references.md#samp-ffs2009).
+
+**Original system.** Allen–Warren–ten Wolde 2005: a symmetric genetic toggle switch of two mutually repressing genes. The 2009 review surveys FFS variants and applications.
+
+**Compute.** Compare rates and committors with transition-matrix solutions of one- and two-dimensional finite-state Metropolis double wells; report flux, per-interface conditional probabilities, trial counts and zero-success handling over independent seeds.
+
+**Existing entry.** [examples/sampling/ffs.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/sampling/ffs.py); [examples/sampling/ffs_quartic_reference.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/sampling/ffs_quartic_reference.py); [examples/sampling/path_sampling_ffs.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/sampling/path_sampling_ffs.inp)
+
+**Gaps and boundaries.** The genetic-switch model of the original paper is not bundled. Hidden solver memory, global RNG use and time-dependent protocols violate the callback contract; results apply only to the supplied stochastic process, not to RPMD real-time dynamics.
+
+[Implementation and scope](references.md#samp-ffs).
+
+#### task-samp-infretis
+
+**Asynchronous infinite-swap RETIS (∞RETIS) — P1**
+
+Papers: [samp-infretis2022](references.md#samp-infretis2022), [samp-infretis2024](references.md#samp-infretis2024), [samp-retis2007](references.md#samp-retis2007).
+
+**Original system.** Roet–Zhang–van Erp 2022 test ∞RETIS on three model systems. Zhang et al. 2024: the liquid–vapor transition of superheated water, chignolin unfolding and ab initio water dissociation.
+
+**Compute.** Check assignment marginals against permutation enumeration on small ladders; compare rates and crossing probabilities with serial RETIS and quadrature on the same double well; report committed events, effective observations, worker-count identity and exact restart.
+
+**Existing entry.** [examples/sampling/path_sampling_infinite_retis.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/sampling/path_sampling_infinite_retis.inp); [docs/validation/t23-path-sampling](https://github.com/chen-yu-hao/PyRPMD/tree/28cde092b66707878d99bc45eadf6bdf5950b317/docs/validation/t23-path-sampling)
+
+**Gaps and boundaries.** Throughput and acceptance claims of the 2024 paper are not reproduced: its subtrajectory moves are absent and commits are ticket-ordered rather than first-finished. The logical worker count is part of the scientific identity and cannot change on resume.
+
+[Implementation and scope](references.md#samp-infretis).
 
 #### task-samp-committor
 
@@ -889,11 +1017,27 @@ Papers: [samp-kabsch1976](references.md#samp-kabsch1976), [samp-path2007](refere
 
 **Compute.** Calculate s/z and full-ring Jacobians, verify rotation/translation invariance, and reconstruct F(s,z) and the path PMF. Test robustness to path-node count and lambda.
 
-**Existing entry.** pyrpmd.advanced_cv.RMSD / PathCV; [docs/tier2-sampling.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/tier2-sampling.md)
+**Existing entry.** pyrpmd.advanced_cv.RMSD / PathCV; [docs/tier2-sampling.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/tier2-sampling.md)
 
 **Gaps and boundaries.** Prepare the original reference path and molecular potential separately. Implementing CVs for a supplied path is not the complete global path-optimization protocol of the original paper.
 
 [Implementation and scope](references.md#samp-pathcv).
+
+#### task-samp-mlcolvar
+
+**Learned centroid CVs from mlcolvar (Deep-LDA / Deep-TICA) via TorchScript — P2**
+
+Papers: [samp-mlcolvar2023](references.md#samp-mlcolvar2023), [samp-deeplda2020](references.md#samp-deeplda2020), [samp-deeptica2021](references.md#samp-deeptica2021).
+
+**Original system.** Deep-LDA 2020: alanine dipeptide and an intermolecular aldol reaction. Deep-TICA 2021: a small-molecule conformational transition, miniprotein folding and materials crystallization. The 2023 mlcolvar paper describes the library framework.
+
+**Compute.** First verify TorchScript values and Cartesian gradients against finite differences and the training-time model; then compare biased FES, transition counts and CV separability on a model with a known slow coordinate, with independent training seeds and data splits.
+
+**Existing entry.** [examples/mlcolvar_cv.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/mlcolvar_cv.py); [docs/mlcolvar.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/mlcolvar.md)
+
+**Gaps and boundaries.** The original molecular systems require their descriptors, training data and enhanced-sampling protocols. A learned CV is only as good as its training data; check transferability and that the exported graph matches the trained model version.
+
+[Implementation and scope](references.md#samp-mlcolvar).
 
 #### task-samp-string
 
@@ -905,11 +1049,27 @@ Papers: [samp-string2002](references.md#samp-string2002), [samp-stringcv2006](re
 
 **Compute.** First verify normal-force residuals, node count and reparameterization on an analytic curved valley. For the 2006 route, calculate the MFEP, free-energy barrier and committor width as CV choice changes.
 
-**Existing entry.** pyrpmd.adaptive_string.adaptive_mean_force_string; [docs/manual/adaptive-nrpmd.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/manual/adaptive-nrpmd.md)
+**Existing entry.** pyrpmd.adaptive_string.adaptive_mean_force_string; [docs/manual/adaptive-nrpmd.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/manual/adaptive-nrpmd.md)
 
 **Gaps and boundaries.** A PES gradient yields an MEP only. The package should not be described as a complete arbitrary-nonlinear-CV MFEP or isocommittor construction. The original four-angle route requires the missing metric terms.
 
 [Implementation and scope](references.md#samp-string).
+
+#### task-samp-ft-string
+
+**Finite-temperature string in centroid CV space — P1**
+
+Papers: [samp-fts2005](references.md#samp-fts2005), [samp-stringcv2006](references.md#samp-stringcv2006).
+
+**Original system.** E–Ren–Vanden-Eijnden 2005 validate the finite-temperature string on a two-dimensional example and a model solid–solid transformation. Maragliano et al. 2006 formulate the string in collective variables with the CV metric tensor.
+
+**Compute.** On an analytic 2D surface, compare the converged string with the minimum free-energy path from quadrature; report image spacing, metric-tensor estimates, restraint-stiffness and sampling-length dependence, and path stability over independent seeds.
+
+**Existing entry.** [examples/finite_temperature_string.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/finite_temperature_string.py); [docs/finite-temperature-string.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/finite-temperature-string.md)
+
+**Gaps and boundaries.** Endpoints and image count are fixed; periodic CVs and rank-deficient CV derivatives are rejected. A smoothed path at finite stiffness is not yet a converged minimum free-energy path, and the solid–solid model of the 2005 paper is not bundled.
+
+[Implementation and scope](references.md#samp-ft-string).
 
 #### task-samp-prfo
 
@@ -921,7 +1081,7 @@ Papers: [samp-prfo1985](references.md#samp-prfo1985).
 
 **Compute.** Calculate saddle positions/energies, Hessian negative-mode counts, gradient residuals and sensitivity to initial guesses. Vary Hessian finite-difference spacing, then calculate the electronic barrier and imaginary frequency for H+H2/BKMP2.
 
-**Existing entry.** `python benchmarks/transition_state_search/analytic.py --output runs/ts/analytic.json`; [benchmarks/transition_state_search/h3.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/transition_state_search/h3.py)
+**Existing entry.** `python benchmarks/transition_state_search/analytic.py --output runs/ts/analytic.json`; [benchmarks/transition_state_search/h3.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/transition_state_search/h3.py)
 
 **Gaps and boundaries.** Match the original analytic model definitions and energy scaling. Optimization iteration counts depend on this implementation's control rules and need not reproduce the original counts.
 
@@ -937,7 +1097,7 @@ Papers: [samp-nebtangent2000](references.md#samp-nebtangent2000), [samp-cineb200
 
 **Compute.** First verify the Müller–Brown MEP, barrier, highest-image true force, NEB force and convergence with image count/initial path; then use BKMP2. Reproducing the original slabs requires a separate DFT/ASE route.
 
-**Existing entry.** `python -m pyrpmd prepare examples/rate/from_endpoints.inp --pilot --output preparation.json`; [benchmarks/transition_state_search/analytic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/transition_state_search/analytic.py)
+**Existing entry.** `python -m pyrpmd prepare examples/rate/from_endpoints.inp --pilot --output preparation.json`; [benchmarks/transition_state_search/analytic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/transition_state_search/analytic.py)
 
 **Gaps and boundaries.** The original slab Hamiltonians/DFT and periodic fixed-layer setup are outside the current gas-phase prepare workflow. Original-system reproduction needs additional implementation; H3 is not a substitute for those original systems.
 
@@ -953,7 +1113,7 @@ Papers: [samp-radii2008](references.md#samp-radii2008).
 
 **Compute.** Check radii, units and isotope handling against the original table. Validate inferred connectivity and threshold sensitivity on known reactant/product geometries.
 
-**Existing entry.** `pyrpmd prepare`; [src/pyrpmd/covalent.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/covalent.py)
+**Existing entry.** `pyrpmd prepare`; [src/pyrpmd/covalent.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/covalent.py)
 
 **Gaps and boundaries.** The threshold, two-sided descents and equivalent-channel combination are package choices. The Cordero data paper does not establish correct reaction identification for arbitrary structures.
 
@@ -969,7 +1129,7 @@ Papers: [samp-bluemoon1989](references.md#samp-bluemoon1989), [samp-blue1998](re
 
 **Compute.** First test rate invariance under s, a*s and nonlinear monotonic f(s) on the same analytic potential; check mass metrics and constrained-parent weights. Then test a general bond-difference coordinate.
 
-**Existing entry.** [examples/rate/general_coordinate.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/rate/general_coordinate.inp); [tests/test_general_coordinate_rates.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/tests/test_general_coordinate_rates.py); [docs/general-coordinate-rates.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/general-coordinate-rates.md)
+**Existing entry.** [examples/rate/general_coordinate.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/rate/general_coordinate.inp); [tests/test_general_coordinate_rates.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/tests/test_general_coordinate_rates.py); [docs/general-coordinate-rates.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/general-coordinate-rates.md)
 
 **Gaps and boundaries.** The nonlinear-CV mass metric cannot be omitted. Agreement of projected PMFs does not guarantee agreement of unbiased dynamical rates.
 
@@ -1001,7 +1161,7 @@ Papers: [samp-cblock1992](references.md#samp-cblock1992), [samp-geyer1992](refer
 
 **Compute.** Compare standard-error coverage, block-length sensitivity and independent-seed variance. Preserve a common resampling clock across REUS windows and a common parent chain across product channels.
 
-**Existing entry.** [src/pyrpmd/analysis/fes_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/fes_statistics.py); [docs/replica-exchange.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/replica-exchange.md)
+**Existing entry.** [src/pyrpmd/analysis/fes_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/fes_statistics.py); [docs/replica-exchange.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/replica-exchange.md)
 
 **Gaps and boundaries.** Reporting g/ESS does not establish mixing. Do not present 5g, 20 blocks or a fixed overlap threshold as universal guarantees from the cited papers.
 
@@ -1083,7 +1243,7 @@ Papers: [na-nrpmd2013](references.md#na-nrpmd2013), [samp-stringcv2006](referenc
 
 **Compute.** First reproduce the 2013 NRPMD thermal correlation, then verify restrained free energies for a known reaction coordinate; After freezing the path, use independent production samples for free-energy differences/flux correlations; report signs, window overlap and statistical uncertainty; Check that fixed-path and adaptive-path results agree within their uncertainties
 
-**Existing entry.** [docs/manual/adaptive-nrpmd.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/manual/adaptive-nrpmd.md); [docs/adaptive-electrochemical-string-pilot.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/adaptive-electrochemical-string-pilot.md)
+**Existing entry.** [docs/manual/adaptive-nrpmd.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/manual/adaptive-nrpmd.md); [docs/adaptive-electrochemical-string-pilot.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/adaptive-electrochemical-string-pilot.md)
 
 **Gaps and boundaries.** Cite each component separately; do not invent a single origin paper for the composite workflow or claim a validated electrochemical rate from a short adaptation trajectory.
 
@@ -1136,6 +1296,38 @@ Papers: [na-carp2025](references.md#na-carp2025), [na-mash2023](references.md#na
 **Gaps and boundaries.** The existing input is a teaching model. Add the published pyrazine/bath parameters, independent equilibrium or scattering preparation, and rate analysis. Arbitrary harmonic-ring population curves are not a reproduction of the paper's thermal rates. The current implementation uses native=False.
 
 [Implementation and scope](references.md#na-carp-mash).
+
+#### task-na-ba-rp-mash
+
+**BA-RP-MASH (CLI method rp-mash-ba) — P2**
+
+Papers: [na-carp2025](references.md#na-carp2025), [na-mash2023](references.md#na-mash2023).
+
+**Original system.** Cao–Suarez–Kretchmer 2025 v1 preprint: Tully models, a three-mode pyrazine model and spin-boson electron transfer; the bead approximation is defined in the same preprint.
+
+**Compute.** Compare populations with an independent Fourier-grid reference in the constant-gap, constant-coupling limit; then reproduce the preprint's Tully and spin-boson observables with its preparation; converge timestep, event tolerance and bead count.
+
+**Existing entry.** [examples/nonadiabatic/extensions/rp_mash_ba.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/nonadiabatic/extensions/rp_mash_ba.inp); [examples/nonadiabatic/rp_mash_ba_reference.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/nonadiabatic/rp_mash_ba_reference.py); [docs/validation/t25b-ba-rp-mash-2026-11-03](https://github.com/chen-yu-hao/PyRPMD/tree/28cde092b66707878d99bc45eadf6bdf5950b317/docs/validation/t25b-ba-rp-mash-2026-11-03)
+
+**Gaps and boundaries.** The Fourier comparison makes internal ring modes spectators and uses scalar nuclear Wigner sampling; it does not establish general nuclear quantum accuracy. Record the implemented preprint version explicitly.
+
+[Implementation and scope](references.md#na-ba-rp-mash).
+
+#### task-na-ms-mash
+
+**Original multistate MASH (CLI method multistate-mash) — P2**
+
+Papers: [na-msmash2023](references.md#na-msmash2023), [na-mash2023](references.md#na-mash2023).
+
+**Original system.** Runeson–Manolopoulos 2023: three- and seven-state models of the Fenna–Matthews–Olson complex.
+
+**Compute.** Populations and coherences of the FMO models against exact benchmarks with the paper's bath discretization and initial conditions; long-time equilibrium populations; timestep and trajectory-count convergence.
+
+**Existing entry.** [examples/nonadiabatic/multistate_mash.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/nonadiabatic/multistate_mash.inp); [examples/nonadiabatic/multistate_mash_reference.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/nonadiabatic/multistate_mash_reference.py)
+
+**Gaps and boundaries.** The FMO Hamiltonians and spectral densities of the paper are not bundled; ring-polymer multistate MASH is not implemented.
+
+[Implementation and scope](references.md#na-ms-mash).
 
 #### task-na-rpsh-ca
 
@@ -1233,6 +1425,22 @@ Papers: [na-dboc2025](references.md#na-dboc2025).
 
 [Implementation and scope](references.md#na-dboc-rpsh).
 
+#### task-na-iesh
+
+**Classical IESH and centroid RP-IESH (CLI methods iesh, rp-iesh) — P2**
+
+Papers: [na-iesh2009](references.md#na-iesh2009), [na-iesh2023](references.md#na-iesh2023), [na-rpsh2012](references.md#na-rpsh2012), [na-rpsh2017](references.md#na-rpsh2017).
+
+**Original system.** Shenvi–Roy–Tully 2009: vibrational relaxation of NO on Au(111) with a DFT-fitted multistate PES. Gardner et al. 2023 analyse IESH on model Hamiltonians and full-dimensional atomistic systems, including scattering and desorption probabilities.
+
+**Compute.** Compare zero-temperature populations with a Fock-space/Fourier reference for the Newns–Anderson-type model; report band discretization, hop statistics, energy conservation and timestep convergence; then compare scattering or desorption probabilities with Gardner et al. for the same model parameters.
+
+**Existing entry.** [examples/nonadiabatic/iesh.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/nonadiabatic/iesh.inp); [examples/nonadiabatic/rp_iesh.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/nonadiabatic/rp_iesh.inp); [examples/nonadiabatic/rp_iesh_reference.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/nonadiabatic/rp_iesh_reference.py); [docs/validation/t25-rp-iesh](https://github.com/chen-yu-hao/PyRPMD/tree/28cde092b66707878d99bc45eadf6bdf5950b317/docs/validation/t25-rp-iesh)
+
+**Gaps and boundaries.** The NO/Au(111) PES is not bundled. RP-IESH follows the centroid extension described in Gardner's thesis; finite-band limits, thermostatting of the metal and the ring-polymer extension need system-specific convergence.
+
+[Implementation and scope](references.md#na-iesh).
+
 #### task-na-qd-interface
 
 **Quasi-diabatic NRPMD and adiabatic on-the-fly provider — P2**
@@ -1248,6 +1456,22 @@ Papers: [na-qd2018](references.md#na-qd2018), [na-qd2019](references.md#na-qd201
 **Gaps and boundaries.** The current example is an analytic two-state interface demonstration. Reproducing the original ethylene study requires matching CASSCF data, overlaps/NACs, preparation and PLDM/SQC propagation. Current NRPMD curves are a different-method comparison on that system. A generic Python provider does not automatically supply a portable electronic-structure restart.
 
 [Implementation and scope](references.md#na-qd-interface).
+
+#### task-na-excited-state
+
+**Online excited-state providers and overlap-derived couplings — P1**
+
+Papers: [na-hst1994](references.md#na-hst1994), [na-npi2014](references.md#na-npi2014), [na-npi2016](references.md#na-npi2016), [pyscf2018](references.md#pyscf2018).
+
+**Original system.** Hammes-Schiffer–Tully 1994: proton transfer in a model of liquid methyl chloride. Meek–Levine 2014: the Landau–Zener model. Jain–Alguire–Subotnik 2016 is an algorithm paper for large-scale surface hopping. PySCF is software.
+
+**Compute.** Compare overlap-derived time-derivative couplings with analytic couplings on the Landau–Zener and toy models; report transition probabilities against exact results, phase/state-tracking diagnostics, and timestep and retained-state convergence for a PySCF molecule.
+
+**Existing entry.** [examples/excited_state/toy_rpsh.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/excited_state/toy_rpsh.py); [examples/nonadiabatic/pyscf_lih_rpsh.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/nonadiabatic/pyscf_lih_rpsh.py); [docs/validation/excited-state-interface-2026-11-03/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/validation/excited-state-interface-2026-11-03/README.md)
+
+**Gaps and boundaries.** The external ORCA/Q-Chem/OpenMolcas executables are untested. Two-frame couplings determine only the component along the displacement, which is not a full NAC vector for arbitrary momentum rescaling. Cite the electronic-structure method, functional and basis separately.
+
+[Implementation and scope](references.md#na-excited-state).
 
 #### task-na-mv-rpmd
 
@@ -1323,7 +1547,7 @@ Papers: [na-focused2019](references.md#na-focused2019), [na-sm2021](references.m
 
 **Compute.** Compare initial harmonic-ring covariance with analytic finite-P values, declaring active coordinates and treatment of zero-frequency spectators; After selecting a paper's complete matrix parameters, compute its corresponding populations or equilibrium correlations; Confirm that tunnelling is the offdiagonal matrix element, with no hidden factor of one half
 
-**Existing entry.** [examples/nonadiabatic/population.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/nonadiabatic/population.inp); [benchmarks/nonadiabatic/population_dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/nonadiabatic/population_dynamics.py); sample_harmonic_ring API
+**Existing entry.** [examples/nonadiabatic/population.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/nonadiabatic/population.inp); [benchmarks/nonadiabatic/population_dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/nonadiabatic/population_dynamics.py); sample_harmonic_ring API
 
 **Gaps and boundaries.** No single original-model citation applies to all arbitrary LVC parameters. An uncoupled harmonic initial density represents vertical switching/excitation, not coupled equilibrium; free spectators also lack a normalizable canonical position distribution.
 
@@ -1373,7 +1597,7 @@ Papers: [bzp2009](references.md#bzp2009), [ipi2014](references.md#ipi2014).
 
 **Compute.** Mean and variance of volume, pressure, volume autocorrelation, timestep and piston-relaxation dependence; compare P=1 before PIMD.
 
-**Existing entry.** [examples/ensembles/native_npt.toml](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/ensembles/native_npt.toml); [docs/materials-npt.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/materials-npt.md)
+**Existing entry.** [examples/ensembles/native_npt.toml](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/ensembles/native_npt.toml); [docs/materials-npt.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/materials-npt.md)
 
 **Gaps and boundaries.** Existing ideal-gas controls are substitutes. Obtain the paper potential and full thermodynamic protocol; NPT trajectories are not diffusion production.
 
@@ -1389,7 +1613,7 @@ Papers: [mtk1994](references.md#mtk1994), [nptpimd1999](references.md#nptpimd199
 
 **Compute.** Cell/volume distribution, pressure tensor and equilibrium energies; compare identical cells and reference-engine equations.
 
-**Existing entry.** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/native-ensembles.md); [examples/ensembles/native_npt.toml](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/ensembles/native_npt.toml)
+**Existing entry.** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/native-ensembles.md); [examples/ensembles/native_npt.toml](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/ensembles/native_npt.toml)
 
 **Gaps and boundaries.** Paper force fields and full inputs must be supplied; masked cell motion does not establish a slab NPT ensemble.
 
@@ -1405,7 +1629,7 @@ Papers: [rgb2011](references.md#rgb2011).
 
 **Compute.** First cell/strain statistics under imposed stress; only then proton residence times and diffusion with the original EVB model.
 
-**Existing entry.** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/native-ensembles.md)
+**Existing entry.** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/native-ensembles.md)
 
 **Gaps and boundaries.** The paper's EVB material model is not bundled; external-stress coupling alone does not reproduce its diffusion result.
 
@@ -1421,7 +1645,7 @@ Papers: [scr2020](references.md#scr2020).
 
 **Compute.** Volume mean/variance and relaxation versus timestep and coupling time; use isotropic liquid for the supported method.
 
-**Existing entry.** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/native-ensembles.md)
+**Existing entry.** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/native-ensembles.md)
 
 **Gaps and boundaries.** Do not use P>1 or call this the paper's anisotropic membrane algorithm; finite-step bias must be measured.
 
@@ -1437,7 +1661,7 @@ Papers: [pd2024](references.md#pd2024), [ni2012](references.md#ni2012).
 
 **Compute.** D(T), MSD, VACF, site-hop rates and multi-hop correlation; compare fixed/mobile substrate and surface/subsurface channels.
 
-**Existing entry.** [examples/materials/diffusion.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/materials/diffusion.inp); [benchmarks/materials_reference/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/materials_reference/README.md); [benchmarks/water/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/water/README.md)
+**Existing entry.** [examples/materials/diffusion.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/materials/diffusion.inp); [benchmarks/materials_reference/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/materials_reference/README.md); [benchmarks/water/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/water/README.md)
 
 **Gaps and boundaries.** Ni EAM4 is presently a static reference adapter; Pd neural weights/protocol must be obtained. The NiAlH pilot uses a different model.
 
@@ -1453,7 +1677,7 @@ Papers: [sds2025](references.md#sds2025), [pd2024](references.md#pd2024), [bazro
 
 **Compute.** Basin partition, PMF barrier, flux factor, k_QTST, kappa(t), final directed rate; compare coordinate/normalization choices.
 
-**Existing entry.** [examples/materials/site_rate.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/materials/site_rate.inp); [examples/surface/diffusion.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/surface/diffusion.inp); [docs/surface-catalysis.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/surface-catalysis.md)
+**Existing entry.** [examples/materials/site_rate.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/materials/site_rate.inp); [examples/surface/diffusion.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/surface/diffusion.inp); [docs/surface-catalysis.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/surface-catalysis.md)
 
 **Gaps and boundaries.** Surface molecular PES and exact reactant-state convention must match; no automatic multi-site kinetic Monte Carlo network.
 
@@ -1469,7 +1693,7 @@ Papers: [nialh1995](references.md#nialh1995).
 
 **Compute.** Verify forces/units and defect binding energies before a transport campaign.
 
-**Existing entry.** [benchmarks/materials/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/materials/README.md)
+**Existing entry.** [benchmarks/materials/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/materials/README.md)
 
 **Gaps and boundaries.** The small Ni(100) pilot is not the original defect calculation or the 2012 EAM4 diffusion model.
 
@@ -1485,7 +1709,7 @@ Papers: [pcet2008](references.md#pcet2008), [pypcet2025](references.md#pypcet202
 
 **Compute.** Forward/reverse k(U,T), H/D KIE, vibronic-channel contributions; converge proton grid, states and electrode quadrature.
 
-**Existing entry.** [examples/pcet/harmonic_scan.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/pcet/harmonic_scan.inp); [docs/validation/pcet-model-2026-10-30/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/validation/pcet-model-2026-10-30/README.md)
+**Existing entry.** [examples/pcet/harmonic_scan.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/pcet/harmonic_scan.inp); [docs/validation/pcet-model-2026-10-30/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/validation/pcet-model-2026-10-30/README.md)
 
 **Gaps and boundaries.** pyPCET agreement is an external implementation check. The local model omits the original application's distance averaging, double layer and broader coupling regimes.
 
@@ -1501,7 +1725,7 @@ Papers: [hmc1987](references.md#hmc1987), [hastings1970](references.md#hastings1
 
 **Compute.** Start with analytic charge model: joint q,N distribution, mean/variance of N, acceptance and grand-potential free energy; then classical/quantum interface barriers.
 
-**Existing entry.** [examples/electrochemistry](https://github.com/chen-yu-hao/PyRPMD/tree/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/electrochemistry); [docs/electrochemistry.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/electrochemistry.md)
+**Existing entry.** [examples/electrochemistry](https://github.com/chen-yu-hao/PyRPMD/tree/28cde092b66707878d99bc45eadf6bdf5950b317/examples/electrochemistry); [docs/electrochemistry.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/electrochemistry.md)
 
 **Gaps and boundaries.** The complete Sun2025 constrained algorithm, DP-Ne model, charge-plate convention and mixed quantization are not supplied by this sampler.
 
@@ -1517,7 +1741,7 @@ Papers: [gc2025](references.md#gc2025).
 
 **Compute.** Compare analytic optimum N*(R), solver residuals, envelope-theorem forces and isotope/voltage free energies.
 
-**Existing entry.** [examples/electrochemistry/adaptive_constant_potential.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/electrochemistry/adaptive_constant_potential.py); [docs/manual/adaptive-nrpmd.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/manual/adaptive-nrpmd.md)
+**Existing entry.** [examples/electrochemistry/adaptive_constant_potential.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/electrochemistry/adaptive_constant_potential.py); [docs/manual/adaptive-nrpmd.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/manual/adaptive-nrpmd.md)
 
 **Gaps and boundaries.** Independent-bead minima differ from shared-N grand-canonical fluctuations; common charging lacks state-dependent response and is not TP-RPMD.
 
@@ -1533,7 +1757,7 @@ Papers: [gc2025](references.md#gc2025).
 
 **Compute.** Coverage theta(U), separate elementary fluxes, H2 TOF, signed current; check steady-state electron/H2 stoichiometry and detailed balance.
 
-**Existing entry.** [docs/electrochemistry.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/electrochemistry.md)
+**Existing entry.** [docs/electrochemistry.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/electrochemistry.md)
 
 **Gaps and boundaries.** Does not derive rates from PMFs or local PCET, nor add transport, lateral interactions or double-layer physics.
 
@@ -1549,7 +1773,7 @@ Papers: [efrpmd2024](references.md#efrpmd2024).
 
 **Compute.** Nuclear distributions (Fig. 2), population relaxation (Fig. 3), rate versus temperature (Fig. 4), and the asymmetric low-temperature discrepancy (Fig. 5). Match the mean-force model and friction before comparing.
 
-**Existing entry.** [examples/nonadiabatic/friction_surface.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/nonadiabatic/friction_surface.inp); [docs/electronic-friction.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/electronic-friction.md)
+**Existing entry.** [examples/nonadiabatic/friction_surface.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/nonadiabatic/friction_surface.inp); [docs/electronic-friction.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/electronic-friction.md)
 
 **Gaps and boundaries.** Existing corrugated-surface example is a substitute. Build the matching mean-force PES/friction tensor; memory effects and imaginary-time bath renormalization are absent.
 
@@ -1565,7 +1789,7 @@ Papers: [pyscf2018](references.md#pyscf2018).
 
 **Compute.** Same-geometry energy/gradient/Hessian versus direct PySCF; finite differences, spin/state continuity and convergence.
 
-**Existing entry.** [examples/pesgen/water.toml](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/pesgen/water.toml); [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/potential-adapters.md)
+**Existing entry.** [examples/pesgen/water.toml](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/pesgen/water.toml); [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/potential-adapters.md)
 
 **Gaps and boundaries.** RHF/STO-3G water is an integration control, not a validated reaction PES.
 
@@ -1581,7 +1805,7 @@ Papers: [hirshfeld1977](references.md#hirshfeld1977), [mayer1983](references.md#
 
 **Compute.** Charge conservation and grid convergence; compare restricted and open-shell examples against an independent same-convention calculation.
 
-**Existing entry.** [examples/pesgen/water.toml](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/pesgen/water.toml); [docs/manual/pes-generation.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/manual/pes-generation.md)
+**Existing entry.** [examples/pesgen/water.toml](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/pesgen/water.toml); [docs/manual/pes-generation.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/manual/pes-generation.md)
 
 **Gaps and boundaries.** Different promolecular atom tables yield different charges; do not compare ORCA defaults as identical definitions.
 
@@ -1597,7 +1821,7 @@ Papers: [qmdff2014](references.md#qmdff2014), [caracal2023](references.md#caraca
 
 **Compute.** Compare equilibrium geometry, Hessian frequencies, distorted-geometry energies/forces and dissociation behavior before dynamics.
 
-**Existing entry.** [examples/pesgen/water.toml](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/pesgen/water.toml); [docs/manual/pes-generation.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/manual/pes-generation.md)
+**Existing entry.** [examples/pesgen/water.toml](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/pesgen/water.toml); [docs/manual/pes-generation.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/manual/pes-generation.md)
 
 **Gaps and boundaries.** Requires upstream build and suitable reference theory; recover the chosen original benchmark's SI geometry before claiming reproduction.
 
@@ -1613,7 +1837,7 @@ Papers: [deevb2015](references.md#deevb2015), [caracal2023](references.md#caraca
 
 **Compute.** Endpoint limits, coupling, path and off-path energy/force errors, barrier and final RPMD rate relative to the reference PES.
 
-**Existing entry.** [examples/pesgen/nh3_inversion.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/pesgen/nh3_inversion.py); [docs/manual/pes-generation.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/manual/pes-generation.md)
+**Existing entry.** [examples/pesgen/nh3_inversion.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/pesgen/nh3_inversion.py); [docs/manual/pes-generation.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/manual/pes-generation.md)
 
 **Gaps and boundaries.** The current neutral-only fitting workflow cannot run the charged SN2 case; use a recovered neutral Diels–Alder protocol for a faithful paper-system study. NH3 is a separate package control.
 
@@ -1629,7 +1853,7 @@ Papers: [treq2019](references.md#treq2019), [caracal2023](references.md#caracal2
 
 **Compute.** Path/off-path energies and gradients, finite-difference step convergence, energy drift, then k(T) against the analytical PES.
 
-**Existing entry.** [examples/pesgen/nh3_inversion.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/pesgen/nh3_inversion.py); [docs/manual/pes-generation.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/manual/pes-generation.md)
+**Existing entry.** [examples/pesgen/nh3_inversion.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/pesgen/nh3_inversion.py); [docs/manual/pes-generation.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/manual/pes-generation.md)
 
 **Gaps and boundaries.** Experimental bridge; the analytic-force inconsistency documented for the pinned source prevents treating its default as the paper's force implementation.
 
@@ -1645,7 +1869,7 @@ Papers: [pip2010](references.md#pip2010), [pipnn2013](references.md#pipnn2013), 
 
 **Compute.** Holdout energy/force errors, permutation invariance, Python/native equality and batch scaling; then scattering cross sections with the same trained surface.
 
-**Existing entry.** [docs/manual/jaxpip-generation.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/manual/jaxpip-generation.md); [examples/pesgen](https://github.com/chen-yu-hao/PyRPMD/tree/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/pesgen)
+**Existing entry.** [docs/manual/jaxpip-generation.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/manual/jaxpip-generation.md); [examples/pesgen](https://github.com/chen-yu-hao/PyRPMD/tree/28cde092b66707878d99bc45eadf6bdf5950b317/examples/pesgen)
 
 **Gaps and boundaries.** Small H2 examples do not reproduce OH+CH3OH; obtain exact basis/model weights, train split and QCT initial-state convention.
 
@@ -1661,7 +1885,7 @@ Papers: [committee2020](references.md#committee2020).
 
 **Compute.** Disagreement versus true held-out energy/force error, acquisition enrichment and learning curves with frozen model versions.
 
-**Existing entry.** [examples/ml_lifecycle/committee.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/ml_lifecycle/committee.inp); [docs/tier2-ml-lifecycle.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/tier2-ml-lifecycle.md)
+**Existing entry.** [examples/ml_lifecycle/committee.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/ml_lifecycle/committee.inp); [docs/tier2-ml-lifecycle.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/tier2-ml-lifecycle.md)
 
 **Gaps and boundaries.** Analytic committee examples test control flow only; external labelled data and training are required.
 
@@ -1677,7 +1901,7 @@ Papers: [delta2015](references.md#delta2015).
 
 **Compute.** Holdout corrected energies and force consistency; for the PyRPMD extension compare full versus contracted corrections in the same observable.
 
-**Existing entry.** [examples/ml_lifecycle/delta_rpc.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/ml_lifecycle/delta_rpc.inp); [examples/ml_lifecycle/delta_rpc_mts.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/ml_lifecycle/delta_rpc_mts.py)
+**Existing entry.** [examples/ml_lifecycle/delta_rpc.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/ml_lifecycle/delta_rpc.inp); [examples/ml_lifecycle/delta_rpc_mts.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/ml_lifecycle/delta_rpc_mts.py)
 
 **Gaps and boundaries.** Original molecular-property benchmark and dynamics extension are distinct; no trained correction is supplied.
 
@@ -1693,7 +1917,7 @@ Papers: [ase2017](references.md#ase2017).
 
 **Compute.** Compare identical configurations directly against the upstream engine: energy, force, virial, units, batching and periodic images; then use a separately validated physical model.
 
-**Existing entry.** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/potential-adapters.md)
+**Existing entry.** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/potential-adapters.md)
 
 **Gaps and boundaries.** Optional engine and compatible model bytes must be supplied; this adapter does not recreate upstream training or every published application.
 
@@ -1709,7 +1933,7 @@ Papers: [openmm2017](references.md#openmm2017).
 
 **Compute.** Compare identical configurations directly against the upstream engine: energy, force, virial, units, batching and periodic images; then use a separately validated physical model.
 
-**Existing entry.** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/potential-adapters.md)
+**Existing entry.** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/potential-adapters.md)
 
 **Gaps and boundaries.** Optional engine and compatible model bytes must be supplied; this adapter does not recreate upstream training or every published application.
 
@@ -1725,7 +1949,7 @@ Papers: [lammps1995](references.md#lammps1995).
 
 **Compute.** Compare identical configurations directly against the upstream engine: energy, force, virial, units, batching and periodic images; then use a separately validated physical model.
 
-**Existing entry.** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/potential-adapters.md)
+**Existing entry.** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/potential-adapters.md)
 
 **Gaps and boundaries.** Optional engine and compatible model bytes must be supplied; this adapter does not recreate upstream training or every published application.
 
@@ -1741,7 +1965,7 @@ Papers: [ipi2014](references.md#ipi2014).
 
 **Compute.** Compare identical configurations directly against the upstream engine: energy, force, virial, units, batching and periodic images; then use a separately validated physical model.
 
-**Existing entry.** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/potential-adapters.md)
+**Existing entry.** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/potential-adapters.md)
 
 **Gaps and boundaries.** Optional engine and compatible model bytes must be supplied; this adapter does not recreate upstream training or every published application.
 
@@ -1757,7 +1981,7 @@ Papers: [torch2019](references.md#torch2019).
 
 **Compute.** Compare identical configurations directly against the upstream engine: energy, force, virial, units, batching and periodic images; then use a separately validated physical model.
 
-**Existing entry.** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/potential-adapters.md)
+**Existing entry.** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/potential-adapters.md)
 
 **Gaps and boundaries.** Optional engine and compatible model bytes must be supplied; this adapter does not recreate upstream training or every published application.
 
@@ -1773,7 +1997,7 @@ Papers: [mace2022](references.md#mace2022), [nequip2022](references.md#nequip202
 
 **Compute.** Compare identical configurations directly against the upstream engine: energy, force, virial, units, batching and periodic images; then use a separately validated physical model.
 
-**Existing entry.** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/potential-adapters.md)
+**Existing entry.** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/potential-adapters.md)
 
 **Gaps and boundaries.** Optional engine and compatible model bytes must be supplied; this adapter does not recreate upstream training or every published application.
 
@@ -1789,7 +2013,7 @@ Papers: [gfn12017](references.md#gfn12017), [gfn22019](references.md#gfn22019), 
 
 **Compute.** Compare identical configurations directly against the upstream engine: energy, force, virial, units, batching and periodic images; then use a separately validated physical model.
 
-**Existing entry.** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/potential-adapters.md)
+**Existing entry.** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/potential-adapters.md)
 
 **Gaps and boundaries.** Optional engine and compatible model bytes must be supplied; this adapter does not recreate upstream training or every published application.
 
@@ -1805,7 +2029,7 @@ Papers: [h5md2014](references.md#h5md2014), [ase2017](references.md#ase2017).
 
 **Compute.** Round-trip coordinates/cells/isotope masses/time/units and compare reanalysed observables to source trajectories.
 
-**Existing entry.** [docs/trajectory-export.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/trajectory-export.md)
+**Existing entry.** [docs/trajectory-export.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/trajectory-export.md)
 
 **Gaps and boundaries.** Reader support and semantic round-trip must be checked for the selected format.
 
@@ -1821,7 +2045,7 @@ Papers: —.
 
 **Compute.** Backend numerical equivalence, restart identity, units/normalization, uncertainty and archive replay; reuse the same physical benchmark across execution modes.
 
-**Existing entry.** [docs/manual/execution.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/manual/execution.md); [docs/checkpoints.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/checkpoints.md); [docs/manual/analysis-reports.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/manual/analysis-reports.md); [docs/reaction-networks.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/reaction-networks.md)
+**Existing entry.** [docs/manual/execution.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/manual/execution.md); [docs/checkpoints.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/checkpoints.md); [docs/manual/analysis-reports.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/manual/analysis-reports.md); [docs/reaction-networks.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/reaction-networks.md)
 
 **Gaps and boundaries.** A successful software test is not a new physical reproduction; do not attach an unrelated paper merely to fill a citation cell.
 
@@ -1837,7 +2061,7 @@ Papers: [morse1929](references.md#morse1929).
 
 **Compute.** Energy/force finite differences, analytic harmonic equilibrium moments, Morse bound levels, exact quadrature FES and coordinate-periodicity checks. Match the energy zero and model parameters.
 
-**Existing entry.** [examples/quantum_statistics/harmonic_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/quantum_statistics/harmonic_validation.py); [examples/fes/harmonic2d.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/fes/harmonic2d.inp)
+**Existing entry.** [examples/quantum_statistics/harmonic_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/quantum_statistics/harmonic_validation.py); [examples/fes/harmonic2d.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/fes/harmonic2d.inp)
 
 **Gaps and boundaries.** A separable cosine model is not evidence for diffusion in a real material. Arbitrary Morse parameters do not reproduce a particular molecule from the 1929 paper.
 
@@ -1853,7 +2077,7 @@ Papers: [bimol09](references.md#bimol09), [iso13](references.md#iso13).
 
 **Compute.** k(T), k_H/k_D, fitted activation parameters with residuals, and paired refinement differences for beads, timestep, separation and maximum impact parameter. Predeclare equivalence margins.
 
-**Existing entry.** [docs/rate-studies.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/rate-studies.md)
+**Existing entry.** [docs/rate-studies.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/rate-studies.md)
 
 **Gaps and boundaries.** A good Arrhenius fit does not validate the rates or exclude tunnelling curvature; a statistically insignificant difference is not a convergence/equivalence result.
 
@@ -1869,7 +2093,7 @@ Papers: [bkmp21996](references.md#bkmp21996), [bimol09](references.md#bimol09), 
 
 **Compute.** First verify the surface, saddle, gradients and isotope masses; then reproduce PMF, k_QTST, kappa(t) and k(T). Reproduce the 1996 state-to-state cross sections only with its own initial states and scattering protocol.
 
-**Existing entry.** [benchmarks/literature/campaign.json](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/literature/campaign.json); [docs/literature-validation.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/literature-validation.md)
+**Existing entry.** [benchmarks/literature/campaign.json](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/literature/campaign.json); [docs/literature-validation.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/literature-validation.md)
 
 **Gaps and boundaries.** Pin source bytes/checksum and channel/symmetry conventions. Existing fixed-P agreement leaves the separate parent-time, umbrella-precision and dynamic-bead convergence checks to complete.
 

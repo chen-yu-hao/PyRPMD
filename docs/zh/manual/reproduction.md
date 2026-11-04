@@ -1,7 +1,7 @@
 # 论文体系与复现计算清单
 
 **建议先完成 H + H₂/BKMP2 的收敛链，并行做 NRPMD 2013 的两态谐振模型；再开展 q-TIP4P/F 水的平衡、扩散和光谱。**
-这三条主线能分别验证速率、电子非绝热动力学和凝聚相核量子效应。下方列出全部 111 个条目的任务。
+这三条主线能分别验证速率、电子非绝热动力学和凝聚相核量子效应。下方列出全部 125 个条目的任务。
 来源及源码映射见[原始论文目录](references.md)。
 
 ## 任务性质与优先级
@@ -10,8 +10,8 @@
 **原论文复现**必须匹配势文件、参数、初态、动力学、估计量和后处理。
 **替代模型回归**用于检查实现；**新体系应用**需要独立建立模型和参考。三者在记录中分别标识。
 这里是计算计划和源码审计，未执行新的物理生产模拟。已有结果以固定提交下的
-[literature-validation](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/literature-validation.md)
-和 [campaign.json](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/literature/campaign.json) 为准。
+[literature-validation](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/literature-validation.md)
+和 [campaign.json](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/literature/campaign.json) 为准。
 
 | 优先级 | 含义 | 建议交付物 |
 | --- | --- | --- |
@@ -99,7 +99,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 先算谐振子位置方差、动能、势能、总能和珠数收敛；再用指定水模型算 RDF 与能量。
 
-**现有入口。** [examples/quantum_statistics/harmonic_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/quantum_statistics/harmonic_validation.py); [benchmarks/tier2_literature/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/tier2_literature/path_integral.py); [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/native-ensembles.md)
+**现有入口。** [examples/quantum_statistics/harmonic_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/quantum_statistics/harmonic_validation.py); [benchmarks/tier2_literature/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/tier2_literature/path_integral.py); [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/native-ensembles.md)
 
 **缺口与边界。** 谐振子回归不能称为 KCl 论文复现；需要原哈密顿量、参数和独立统计误差。
 
@@ -115,7 +115,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算 Cqq 的 Kubo 关联、频谱、短时误差以及 P 和时间步收敛，并与独立量子对角化比较。
 
-**现有入口。** [benchmarks/trpmd/harmonic_spectrum.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/trpmd/harmonic_spectrum.py); [benchmarks/tier2_literature/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/tier2_literature/spectroscopy.py)
+**现有入口。** [benchmarks/trpmd/harmonic_spectrum.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/trpmd/harmonic_spectrum.py); [benchmarks/tier2_literature/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/tier2_literature/spectroscopy.py)
 
 **缺口与边界。** 现有四次势脚本是另一个文献模型，不能当成原图复现；非线性量与长时相干不保证精确。
 
@@ -131,7 +131,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算 W(ξ)、势垒位置与高度、kQTST、κ(t) 平台和 k(T)；检查 P、dt、入口距离、窗口重叠、亲子轨迹时间和重复采样误差。
 
-**现有入口。** [benchmarks/h3/rpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/rpmd.py); [benchmarks/h3/convergence.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/convergence.py); [docs/literature-validation.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/literature-validation.md); [docs/science.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/science.md)
+**现有入口。** [benchmarks/h3/rpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/rpmd.py); [benchmarks/h3/convergence.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/convergence.py); [docs/literature-validation.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/literature-validation.md); [docs/science.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/science.md)
 
 **缺口与边界。** 当前 H+H₂ 的 P128 定珠数比较已通过，但 P256 与伞形采样域仍是独立关卡；F+H₂ 必须匹配修正后的势能面及电子约定。
 
@@ -147,7 +147,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算 P反应(b,E)、积分截面、k(T)、机制分支比、碰撞寿命；检查 bmax、起始距离、轨迹终止和截尾误差。
 
-**现有入口。** [benchmarks/h3/drpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/drpmd.py); [docs/science.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/science.md); [docs/validation/drpmd-optimization-2026-10-30/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/validation/drpmd-optimization-2026-10-30/README.md)
+**现有入口。** [benchmarks/h3/drpmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/drpmd.py); [docs/science.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/science.md); [docs/validation/drpmd-optimization-2026-10-30/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/validation/drpmd-optimization-2026-10-30/README.md)
 
 **缺口与边界。** 仓库 H+H₂ 是替代验证；原文机制复现还需 H₅⁺ 势能面、通道标记及原始条件。
 
@@ -163,7 +163,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算态分辨 σvj(E碰撞)、阈值、P(b)、初始能量分布和孤立反应物稳定性；收敛 β、P、dt、bmax 和轨迹数，与同能量定义的 QCT 对照。
 
-**现有入口。** [benchmarks/h3/state_selected_reproduction.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/state_selected_reproduction.py); [benchmarks/h3/audit_state_selected_initial.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/audit_state_selected_initial.py); [benchmarks/h3/STATE_SELECTED_REPRODUCTION.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/STATE_SELECTED_REPRODUCTION.md); [examples/state_selected/ne_rpmd.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/state_selected/ne_rpmd.inp)
+**现有入口。** [benchmarks/h3/state_selected_reproduction.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/state_selected_reproduction.py); [benchmarks/h3/audit_state_selected_initial.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/audit_state_selected_initial.py); [benchmarks/h3/STATE_SELECTED_REPRODUCTION.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/STATE_SELECTED_REPRODUCTION.md); [examples/state_selected/ne_rpmd.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/state_selected/ne_rpmd.inp)
 
 **缺口与边界。** 不是任意非谐本征态的精确制备；小规模试跑不等于原论文完整轨迹统计。
 
@@ -179,7 +179,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算态分辨截面、作用量、孤立能量漂移；分别按固定碰撞能和固定总能比较初态分布与反应结果。
 
-**现有入口。** [examples/state_selected/qct.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/state_selected/qct.inp); [benchmarks/h3/state_preparation_study.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/state_preparation_study.py); [benchmarks/h3/STATE_PREPARATION_STUDY.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/STATE_PREPARATION_STUDY.md)
+**现有入口。** [examples/state_selected/qct.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/state_selected/qct.inp); [benchmarks/h3/state_preparation_study.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/state_preparation_study.py); [benchmarks/h3/STATE_PREPARATION_STUDY.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/STATE_PREPARATION_STUDY.md)
 
 **缺口与边界。** 作用量量子化是半经典近似；全 PES 版本限 H₃ 双原子基准，不能宣称通用多原子算法或精确本征态。
 
@@ -195,7 +195,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算切换做功、末态能量/作用量分布、孤立稳定性及截面对切换时长和曲线的敏感性。
 
-**现有入口。** [benchmarks/h3/state_preparation_study.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/state_preparation_study.py); [benchmarks/h3/STATE_PREPARATION_STUDY.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/STATE_PREPARATION_STUDY.md)
+**现有入口。** [benchmarks/h3/state_preparation_study.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/state_preparation_study.py); [benchmarks/h3/STATE_PREPARATION_STUDY.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/STATE_PREPARATION_STUDY.md)
 
 **缺口与边界。** 不得归为已有文献方法，也不能声称保证纯量子态或修正 NE-RPMD 的已知误差。
 
@@ -211,7 +211,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 画稳定轨迹比例、能量误差/漂移及可逆性误差随 dt、P 的变化；核验 P=1 和自由环极限。
 
-**现有入口。** [docs/integrators.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/integrators.md); [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/dynamics.py); [benchmarks/tier2_literature/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/tier2_literature/path_integral.py)
+**现有入口。** [docs/integrators.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/integrators.md); [src/pyrpmd/dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/dynamics.py); [benchmarks/tier2_literature/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/tier2_literature/path_integral.py)
 
 **缺口与边界。** 稳定不等于无时间步偏差；论文图复现必须匹配原势能和 β。
 
@@ -227,7 +227,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 比较构型协方差、动能、相关时间、稳定性随 P/dt 的变化；原水体系再比动能珠数收敛和 IR 时间步敏感性。
 
-**现有入口。** [docs/integrators.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/integrators.md); [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/native-ensembles.md); [benchmarks/trpmd/harmonic_spectrum.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/trpmd/harmonic_spectrum.py)
+**现有入口。** [docs/integrators.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/integrators.md); [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/native-ensembles.md); [benchmarks/trpmd/harmonic_spectrum.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/trpmd/harmonic_spectrum.py)
 
 **缺口与边界。** Torch BCOCB 不支持 inner_steps>1 的 MTS；必须报告具体劈分与温控选择。
 
@@ -243,7 +243,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算动能卡方分布、均值方差、谐振构型协方差及相关/平衡时间，检查耦合强度与 dt 敏感性。
 
-**现有入口。** [docs/andersen-sampling.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/andersen-sampling.md); [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/native-ensembles.md); [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+**现有入口。** [docs/andersen-sampling.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/andersen-sampling.md); [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/native-ensembles.md); [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 **缺口与边界。** 温控会改变动力学关联；全局离散 Andersen 碰撞时钟属于具体实现变体。
 
@@ -259,7 +259,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算模协方差、量子动势能、积分相关时间、每次势力调用获得的独立样本数，扫描 P 和摩擦。
 
-**现有入口。** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/native-ensembles.md); [docs/integrators.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/integrators.md)
+**现有入口。** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/native-ensembles.md); [docs/integrators.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/integrators.md)
 
 **缺口与边界。** 分布检验不能代替原文的分子体系加速验证；需匹配水/Pd 势能与参数。
 
@@ -275,7 +275,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算联合相空间分布、动能分布、扩展能漂移，扫描链长、耦合和子步。
 
-**现有入口。** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/native-ensembles.md); [src/pyrpmd/thermostats.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/thermostats.py)
+**现有入口。** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/native-ensembles.md); [src/pyrpmd/thermostats.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/thermostats.py)
 
 **缺口与边界。** 需核验遍历性与参数收敛；此路线不支持键约束。
 
@@ -291,7 +291,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 对照 Lyapunov 目标算联合动量/辅助变量协方差，扫描频率下的位置与能量相关时间。
 
-**现有入口。** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/native-ensembles.md); [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+**现有入口。** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/native-ensembles.md); [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 **缺口与边界。** 任意 GLE 矩阵不自动具备量子修正或最佳采样效率；必须提供参数来源。
 
@@ -307,7 +307,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 用原标定热浴比较动能/静态量的珠数与成本收敛，并检验正常模协方差与质心经典温度。
 
-**现有入口。** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/native-ensembles.md); [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+**现有入口。** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/native-ensembles.md); [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 **缺口与边界。** 需外部矩阵和原电子结构条件；不支持 PIGLET NPT，且未实现论文的瞬态各向异性 Gaussian 动量估计器。
 
@@ -323,7 +323,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 比较正则分布及势能相关时间随阻尼的变化，报告强阻尼下相对普通 Langevin 的采样成本。
 
-**现有入口。** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/native-ensembles.md); [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/native_ensemble.py)
+**现有入口。** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/native-ensembles.md); [src/pyrpmd/native_ensemble.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/native_ensemble.py)
 
 **缺口与边界。** 须注明 rescale 变体；采样加速不能作为真实输运系数的验证。
 
@@ -339,7 +339,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算键长及速度约束残差、可逆性、能量漂移、dt/容差收敛；物理复现需原分子力场。
 
-**现有入口。** [examples/materials/rigid_water.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/materials/rigid_water.inp); [docs/bond-constraints.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/bond-constraints.md)
+**现有入口。** [examples/materials/rigid_water.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/materials/rigid_water.inp); [docs/bond-constraints.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/bond-constraints.md)
 
 **缺口与边界。** 只支持固定胞 VV、NVE/Andersen 的 Python 路线；零势刚性水样例仅验证运动学，不代表真实水或量子刚性转子。
 
@@ -355,7 +355,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 核验 Pc=P 的力能一致性，算观测量对 Pc 的偏差、内外 dt 能漂移及昂贵力调用节约。
 
-**现有入口。** [docs/rpc-mts.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/rpc-mts.md); [src/pyrpmd/potentials/contraction.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/potentials/contraction.py); [src/pyrpmd/multitime.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/multitime.py)
+**现有入口。** [docs/rpc-mts.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/rpc-mts.md); [src/pyrpmd/potentials/contraction.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/potentials/contraction.py); [src/pyrpmd/multitime.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/multitime.py)
 
 **缺口与边界。** 是显式 API；需独立控制共振和收缩误差，谐振分项检查不等于原水/MP2 复现。
 
@@ -371,7 +371,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 先算四次势质心 Kubo 关联、频峰/展宽和静态矩，与独立量子结果比较；扫描 P、Ω、dt、统计量。原分子目标再算速度关联及扩散。
 
-**现有入口。** [benchmarks/tier2_literature/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/tier2_literature/spectroscopy.py); [benchmarks/tier2_literature/spectroscopy_static.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/tier2_literature/spectroscopy_static.py); [examples/spectroscopy/pacmd.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/spectroscopy/pacmd.inp)
+**现有入口。** [benchmarks/tier2_literature/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/tier2_literature/spectroscopy.py); [benchmarks/tier2_literature/spectroscopy_static.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/tier2_literature/spectroscopy_static.py); [examples/spectroscopy/pacmd.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/spectroscopy/pacmd.inp)
 
 **缺口与边界。** 原四次势论文图是实部量子关联，仓库 Kubo 曲线不是原图；完整液体复现还需原相互作用和状态点。
 
@@ -387,11 +387,27 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算留出集力误差、保守性、质心静态分布、关联/频谱或扩散误差，以及相对直接 PA-CMD 的加速。
 
-**现有入口。** [benchmarks/tier2_literature/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/tier2_literature/spectroscopy.py); [src/pyrpmd/cmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/cmd.py); [docs/tier2-spectroscopy.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/tier2-spectroscopy.md)
+**现有入口。** [benchmarks/tier2_literature/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/tier2_literature/spectroscopy.py); [src/pyrpmd/cmd.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/cmd.py); [docs/tier2-spectroscopy.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/tier2-spectroscopy.md)
 
 **缺口与边界。** 局域二次基不足以代表通用分子势；非线性量需条件属性模型；未实现 QCMD、h-CMD 或 f-QCMD。
 
 [实现与范围](references.md#fcmd).
+
+#### task-qcmd
+
+**弯曲三原子分子的实验性 f-QCMD — P2**
+
+论文：[qcmd2019](references.md#qcmd2019), [fqcmd2021](references.md#fqcmd2021), [cmd94](references.md#cmd94).
+
+**原文体系。** Trenins–Willatt–Althorpe 2019：150–600 K 下气相水、液态水和冰的红外光谱；Fletcher 等 2021：气相水和氨与 QCMD 参考比较、甲烷与量子结果比较的振动光谱。
+
+**应该算什么。** 气相水的准质心分布与红外谱带位置，对照精确量子或 QCMD 参考；修正势 IBI 收敛、珠数、温度可迁移性与独立轨迹误差。
+
+**现有入口。** [examples/spectroscopy/fqcmd_water.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/spectroscopy/fqcmd_water.py); [docs/qcmd.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/qcmd.md)
+
+**缺口与边界。** 只支持弯曲三原子分子，论文中的氨、甲烷和凝聚相水超出当前几何范围；尚未得到收敛的液态水红外光谱；修正模型只适用于拟合温度。
+
+[实现与范围](references.md#qcmd).
 
 #### task-trpmd
 
@@ -403,7 +419,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算偶极关联、峰位/峰宽/强度比和摩擦依赖，对比 RPMD 共振与 TRPMD 展宽；收敛 P、dt、时长、窗函数和独立重复。
 
-**现有入口。** [benchmarks/trpmd/harmonic_spectrum.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/trpmd/harmonic_spectrum.py); [benchmarks/water/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/water/README.md); [docs/trpmd-spectroscopy.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/trpmd-spectroscopy.md)
+**现有入口。** [benchmarks/trpmd/harmonic_spectrum.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/trpmd/harmonic_spectrum.py); [benchmarks/water/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/water/README.md); [docs/trpmd-spectroscopy.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/trpmd-spectroscopy.md)
 
 **缺口与边界。** 输出缺绝对光谱归一化；TRPMD 与 2009 水模型论文中的 PA-CMD 不是同一方法目标。
 
@@ -419,7 +435,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 用一致 PMF 比较 κ(t) 与 k(T) 对摩擦的依赖，覆盖 Tc 两侧并分离统计误差。
 
-**现有入口。** [docs/trpmd-spectroscopy.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/trpmd-spectroscopy.md); [docs/science.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/science.md); existing RPMD rate workflow with explicitly selected TRPMD configuration
+**现有入口。** [docs/trpmd-spectroscopy.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/trpmd-spectroscopy.md); [docs/science.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/science.md); existing RPMD rate workflow with explicitly selected TRPMD configuration
 
 **缺口与边界。** 摩擦扫描不是精确量子速率的误差界；平衡采样检验不能验证速率。
 
@@ -435,7 +451,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 先用解析谐振极化率模型检查峰位、旋转不变性、退偏比与温度/激光因子；再配原 PES、极化率模型和环境做分子目标。
 
-**现有入口。** [examples/spectroscopy/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/spectroscopy/README.md); [examples/spectroscopy/harmonic_properties.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/spectroscopy/harmonic_properties.py); [docs/tier2-spectroscopy.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/tier2-spectroscopy.md)
+**现有入口。** [examples/spectroscopy/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/spectroscopy/README.md); [examples/spectroscopy/harmonic_properties.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/spectroscopy/harmonic_properties.py); [docs/tier2-spectroscopy.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/tier2-spectroscopy.md)
 
 **缺口与边界。** 没有实现该公式来源论文的极化嵌入电子结构；相对谱不能直接作为绝对实验截面。
 
@@ -451,7 +467,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 先用解析信号核验 χijk、Imχ、|χ|² 的变换和符号；原体系需水界面、属性面及偏振方向一致。
 
-**现有入口。** [examples/spectroscopy/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/spectroscopy/README.md); [docs/tier2-spectroscopy.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/tier2-spectroscopy.md); [src/pyrpmd/analysis/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/spectroscopy.py)
+**现有入口。** [examples/spectroscopy/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/spectroscopy/README.md); [docs/tier2-spectroscopy.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/tier2-spectroscopy.md); [src/pyrpmd/analysis/spectroscopy.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/spectroscopy.py)
 
 **缺口与边界。** 只实现相对响应核；Fresnel/局域场、光路、归一化与电子背景由用户提供。
 
@@ -467,7 +483,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算谐振子配分函数差、E/Cv 的珠数收敛，比较原始 P⁻² 和 TI P⁻⁴，并报告接受率和相关时间。
 
-**现有入口。** [examples/quantum_statistics/harmonic_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/quantum_statistics/harmonic_validation.py); [docs/quantum-statistics.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/quantum-statistics.md)
+**现有入口。** [examples/quantum_statistics/harmonic_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/quantum_statistics/harmonic_validation.py); [docs/quantum-statistics.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/quantum-statistics.md)
 
 **缺口与边界。** TI 高阶性质限迹及相应热力学导数，不自动覆盖结构量或开路径；此 API 不支持 PBC、交换、冻结原子及质量依赖 PES。
 
@@ -483,7 +499,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算 E(T)、Cv(T)、动势能分解，检查有限差分步长、P 外推、方差与相关时间；团簇需原势能和系综。
 
-**现有入口。** [examples/quantum_statistics/harmonic_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/quantum_statistics/harmonic_validation.py); [docs/quantum-statistics.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/quantum-statistics.md)
+**现有入口。** [examples/quantum_statistics/harmonic_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/quantum_statistics/harmonic_validation.py); [docs/quantum-statistics.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/quantum-statistics.md)
 
 **缺口与边界。** 必须同时注明作用量与估计器；物理量子动能不能用虚拟环动量温度代替。
 
@@ -499,7 +515,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算 ΔF、lnα、质量积分；比较 FEP 与中间质量路线，报告有效样本数、对数权重方差和误差。
 
-**现有入口。** [examples/quantum_statistics/harmonic_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/quantum_statistics/harmonic_validation.py); [docs/quantum-statistics.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/quantum-statistics.md)
+**现有入口。** [examples/quantum_statistics/harmonic_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/quantum_statistics/harmonic_validation.py); [docs/quantum-statistics.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/quantum-statistics.md)
 
 **缺口与边界。** 重叠差不能靠形式上的小误差补救；当前迹作用量限制阻碍直接周期液水复现。
 
@@ -515,7 +531,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 对谐振子比较端点分布、n(p)、归一化、对称性和二阶矩，扫描 P、采样量、核宽和 Fourier 范围。
 
-**现有入口。** [examples/quantum_statistics/harmonic_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/quantum_statistics/harmonic_validation.py); [docs/quantum-statistics.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/quantum-statistics.md)
+**现有入口。** [examples/quantum_statistics/harmonic_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/quantum_statistics/harmonic_validation.py); [docs/quantum-statistics.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/quantum-statistics.md)
 
 **缺口与边界。** 不是 Lin 位移路径法、完整三维动量分布或 PIGLET 的 TAG；不应裁掉负噪声来掩盖采样不足。
 
@@ -531,9 +547,9 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 先核验谐振子偶珠位置矩、物理势能和有限差分收敛；原体系再算 RDF、热力学量及成本随 P 的变化。
 
-**现有入口。** [examples/path_integral/suzuki_chin.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/path_integral/suzuki_chin.inp); [benchmarks/tier2_literature/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/tier2_literature/path_integral.py)
+**现有入口。** [examples/path_integral/suzuki_chin.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/path_integral/suzuki_chin.inp); [benchmarks/tier2_literature/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/tier2_literature/path_integral.py); [docs/condensed-phase-nqe.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/condensed-phase-nqe.md)
 
-**缺口与边界。** 现路线非周期、串行，缺完整 SC 总能/Cv/压力估计器；水冰原文复现还需扩展和原 NN 势。
+**缺口与边界。** SC 能量、热容、压力估计器与各向同性 SC-NPT（src/pyrpmd/suzuki_chin.py）只在耦合谐振晶体与 FCC Lennard-Jones 模型固体上验证；CLI [path_integral] 路线仍限 α=0，原文水/冰复现还需原 NN 势。
 
 [实现与范围](references.md#suzuki-chin).
 
@@ -547,7 +563,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算对称密度、势能及谐振 virial 总能随 N、β、P 的变化，对照精确正则递推并测量时间复杂度。
 
-**现有入口。** [examples/path_integral/bosonic.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/path_integral/bosonic.inp); [benchmarks/tier2_literature/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/tier2_literature/path_integral.py); [benchmarks/tier2_literature/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/tier2_literature/README.md)
+**现有入口。** [examples/path_integral/bosonic.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/path_integral/bosonic.inp); [benchmarks/tier2_literature/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/tier2_literature/path_integral.py); [benchmarks/tier2_literature/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/tier2_literature/README.md)
 
 **缺口与边界。** 逐点势不必等于全排列和；只比较对称系综量。未实现周期绕数/超流估计，仓库温控与采样长度也不同于原文。
 
@@ -563,7 +579,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 扫描投影长度、虚时间间距、试探宽度，算中点位置矩与物理势能并对照谐振基态；氦体系需原势和试探函数。
 
-**现有入口。** [examples/path_integral/pigs.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/path_integral/pigs.inp); [benchmarks/tier2_literature/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/tier2_literature/path_integral.py)
+**现有入口。** [examples/path_integral/pigs.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/path_integral/pigs.inp); [benchmarks/tier2_literature/path_integral.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/tier2_literature/path_integral.py)
 
 **缺口与边界。** 辅助 β 不是物理温度；没有 PBC+玻色交换组合生产流程及完整原氦能量估计器。
 
@@ -579,7 +595,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算 Tc、路径/作用量、梯度残差、Hessian 符号、前因子及 k(T)，检查珠数/优化/Hessian 差分收敛，与一维精确透射积分比较。
 
-**现有入口。** [examples/instanton/eckart.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/instanton/eckart.py); [examples/instanton/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/instanton/low_temperature.py); [examples/instanton/cross_checks.json](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/instanton/cross_checks.json); [docs/instanton.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/instanton.md)
+**现有入口。** [examples/instanton/eckart.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/instanton/eckart.py); [examples/instanton/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/instanton/low_temperature.py); [examples/instanton/cross_checks.json](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/instanton/cross_checks.json); [docs/instanton.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/instanton.md)
 
 **缺口与边界。** 优化收敛不代表物理收敛，报告仍保留 physical_converged=False；分子目标还需势面、配分函数、对称/转动因子。
 
@@ -595,7 +611,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 先用一维对称双阱，对照量子对角化的基态双态差 Δ，核验作用量/前因子、投影时间和珠数收敛。
 
-**现有入口。** [examples/instanton/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/instanton/low_temperature.py); [docs/instanton.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/instanton.md); [docs/low-temperature.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/low-temperature.md)
+**现有入口。** [examples/instanton/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/instanton/low_temperature.py); [docs/instanton.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/instanton.md); [docs/low-temperature.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/low-temperature.md)
 
 **缺口与边界。** 当前拒绝自由平移/转动模，不是气相转振劈裂或多阱多重态；原分子复现需扩展。
 
@@ -611,7 +627,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算 kTST、κWigner、κEckart 与修正 k(T)，核验高温极限、正反势垒、能量零点及 Tc 附近敏感性。
 
-**现有入口。** [examples/instanton/cross_checks.json](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/instanton/cross_checks.json); [examples/instanton/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/instanton/low_temperature.py); [docs/low-temperature.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/low-temperature.md)
+**现有入口。** [examples/instanton/cross_checks.json](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/instanton/cross_checks.json); [examples/instanton/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/instanton/low_temperature.py); [docs/low-temperature.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/low-temperature.md)
 
 **缺口与边界。** Wigner 不适合深隧穿；一维拟合 Eckart 不证明多维准确性，也不是统一交叉区修正。
 
@@ -629,7 +645,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 论文路线算不同温度、密度的自由能差；程序优先算解析谐振子 1D/2D/3D FES 与支持区覆盖率，再算 OGRe 的经典双阱。
 
-**现有入口。** [examples/fes/harmonic2d.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/fes/harmonic2d.inp); [benchmarks/fes_methods/benchmark.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/fes_methods/benchmark.py)
+**现有入口。** [examples/fes/harmonic2d.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/fes/harmonic2d.inp); [benchmarks/fes_methods/benchmark.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/fes_methods/benchmark.py)
 
 **缺口与边界。** LJ 原论文的完整参数、路径与参考自由能尚需从原文恢复；现成谐振子例子是回归，不是 LJ 论文复现。
 
@@ -645,7 +661,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算各状态自由能偏移、目标权重、PMF、重叠矩阵；先在同一批 umbrella 样本与 PyMBAR 做数值一致性，再检查样本和分箱收敛。
 
-**现有入口。** [benchmarks/fes_methods/solver_check.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/fes_methods/solver_check.py); [benchmarks/h3/solver_check.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/solver_check.py)
+**现有入口。** [benchmarks/fes_methods/solver_check.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/fes_methods/solver_check.py); [benchmarks/h3/solver_check.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/solver_check.py)
 
 **缺口与边界。** DNA 原始测量数据并未随包提供；应单独恢复数据、拉力和单位。
 
@@ -661,7 +677,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算平均力、PMF、势垒；在完全相同样本上比较 UI/MBAR 势垒差、Gaussian 窗口拟合和尾部外推支持。
 
-**现有入口。** [benchmarks/h3/convergence.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/convergence.py); [benchmarks/h3/solver_check.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/h3/solver_check.py); [benchmarks/fes_methods/benchmark.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/fes_methods/benchmark.py)
+**现有入口。** [benchmarks/h3/convergence.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/convergence.py); [benchmarks/h3/solver_check.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/h3/solver_check.py); [benchmarks/fes_methods/benchmark.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/fes_methods/benchmark.py)
 
 **缺口与边界。** 需取得 2005 全文恢复原解析势参数和生物模型。H+H2/BKMP2 是现有应用验证，并非 UI 方法论文原体系。
 
@@ -693,7 +709,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** NaCl 算离子距离/溶剂配位相关 FES；alanine 算 F(phi,psi) 与盆地自由能差、势垒及收敛历史。先用 OGRe 双阱验证偏置力和有限时间 FES。
 
-**现有入口。** [examples/metadynamics/standard.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/metadynamics/standard.inp); [benchmarks/fes_methods/ogre_benchmark.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/fes_methods/ogre_benchmark.py)
+**现有入口。** [examples/metadynamics/standard.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/metadynamics/standard.inp); [benchmarks/fes_methods/ogre_benchmark.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/fes_methods/ogre_benchmark.py)
 
 **缺口与边界。** 需另外准备同原文 force field、水模型与 CV；普通有偏时间不能直接得到物理速率。
 
@@ -709,7 +725,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算 F(phi,psi)、盆地差和势垒误差随时间、bias factor 与沉积参数变化；独立种子检查，不把 hill 数量当收敛。
 
-**现有入口。** [examples/metadynamics/well_tempered_2d.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/metadynamics/well_tempered_2d.inp); [benchmarks/fes_methods/metadynamics_compare.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/fes_methods/metadynamics_compare.py)
+**现有入口。** [examples/metadynamics/well_tempered_2d.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/metadynamics/well_tempered_2d.inp); [benchmarks/fes_methods/metadynamics_compare.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/fes_methods/metadynamics_compare.py)
 
 **缺口与边界。** 论文 molecular force field、温度、溶剂细节需按全文/SI 一致准备；仓库 harmonic2D 是方法回归。
 
@@ -725,7 +741,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算两中心距离和溶剂配位数的二维 FES、脱套/回穿势垒、FES 误差及 wall time/总动力学时间随 walker 数变化；先用 OGRe 双阱做同预算回归，误差来自独立完整共享历史。
 
-**现有入口。** [docs/enhanced-sampling.md#shared-multiple-walkers](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/enhanced-sampling.md#shared-multiple-walkers); [docs/enhanced-sampling.md#shared-bias-multiple-walkers](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/enhanced-sampling.md#shared-bias-multiple-walkers)
+**现有入口。** [docs/enhanced-sampling.md#shared-multiple-walkers](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/enhanced-sampling.md#shared-multiple-walkers); [docs/enhanced-sampling.md#distributed-multiple-walker-metad-and-opes](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/enhanced-sampling.md#distributed-multiple-walker-metad-and-opes); [docs/validation/multi-walkers-2026-11-03/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/validation/multi-walkers-2026-11-03/README.md)
 
 **缺口与边界。** 原文 Section 3 和 Fig.3 为 300 K、1–32 walkers，分子势详情指向其 ref.35，需补齐；原文 WHAM superposition 后处理未随共享偏置功能一并实现。多个 shared walkers 不等于多个独立重复。
 
@@ -741,7 +757,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 在同一轨迹参数下比较 direct/grid 偏置能量与力、FES，扫描网格间距；检查边际自由能的非均匀 bin 体积因子和 missing-support mask。
 
-**现有入口。** [docs/grid-metadynamics.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/grid-metadynamics.md); `pyrpmd project RUN --axes 2 --output NEW_DIRECTORY`
+**现有入口。** [docs/grid-metadynamics.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/grid-metadynamics.md); `pyrpmd project RUN --axes 2 --output NEW_DIRECTORY`
 
 **缺口与边界。** 网格速度提升和投影数值一致性不建立独立物理准确性；不可把投影盆地权重用作动力学分支。
 
@@ -757,9 +773,9 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 从 double well 做 KDE、bias、force 与归一化 Z 对照；算冻结偏置后的 FES、ESS、覆盖率和盆地自由能，再移至 alanine。
 
-**现有入口。** [examples/opes/harmonic_2d.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/opes/harmonic_2d.inp); [benchmarks/tier2_literature/sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/tier2_literature/sampling.py)
+**现有入口。** [examples/opes/harmonic_2d.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/opes/harmonic_2d.inp); [benchmarks/tier2_literature/sampling.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/tier2_literature/sampling.py)
 
-**缺口与边界。** 无 kernel compression/shared walkers；wrapped Gaussian 与 PLUMED 截断 kernel 不完全相同。跨码比较须统一初始化常数、实际 kernel 宽度、归一化和偏置 gauge。
+**缺口与边界。** 无 kernel compression；共享 OPES 行者（walkers_mode 为 mpi-sync 或 async-files）见 samp-walkers 条目；wrapped Gaussian 与 PLUMED 截断 kernel 不完全相同。跨码比较须统一初始化常数、实际 kernel 宽度、归一化和偏置 gauge。
 
 [实现与范围](references.md#samp-opes).
 
@@ -778,6 +794,54 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 **缺口与边界。** tier2_literature/sampling.py 已包含论文 Müller 模型及 x/y CV 对照，但默认预算不等于原文 200M steps；自适应规则只能做本实现的对照，不能声称完整复现 PLUMED OPES。
 
 [实现与范围](references.md#samp-opes-explore).
+
+#### task-samp-ves
+
+**质心 CV 上的变分增强采样（VES） — P1**
+
+论文：[samp-ves2014](references.md#samp-ves2014), [samp-wtves2015](references.md#samp-wtves2015).
+
+**原文体系。** Valsson–Parrinello 2014 提出变分泛函，并用包括三维自由能面在内的数值例子演示；2015 年论文加入 well-tempered 目标分布。本条目未重新提取原文分子体系与协议。
+
+**应该算什么。** 先在解析双阱和二维 well-tempered 例子中，将收敛偏置与 FES 同积分及 MBAR 参考比较；再报告 FES 误差随基组阶数、积分阶数、pace 和学习率的变化、系数轨迹以及冻结偏置的有效样本数（独立种子）。
+
+**现有入口。** [examples/ves_double_well.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/ves_double_well.inp); [examples/ves_well_tempered_2d.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/ves_well_tempered_2d.inp); [examples/ves_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/ves_validation.py); [docs/validation/t24-ves](https://github.com/chen-yu-hao/PyRPMD/tree/28cde092b66707878d99bc45eadf6bdf5950b317/docs/validation/t24-ves)
+
+**缺口与边界。** 宣称复现前需先恢复原文分子体系。仓库输入是电子质量单位、人工温度的玩具模型；每个体系都要重新确定基组与积分分辨率，有限 CV 盒子会截断目标分布。
+
+[实现与范围](references.md#samp-ves).
+
+#### task-samp-abf
+
+**质心 ABF 与扩展系统 ABF（CZAR） — P1**
+
+论文：[samp-abf2001](references.md#samp-abf2001), [samp-abf2008](references.md#samp-abf2008), [samp-abfproj2015](references.md#samp-abfproj2015), [samp-eabf2017](references.md#samp-eabf2017).
+
+**原文体系。** Darve–Pohorille 2001 提出平均力方法；Darve 等 2008 以 N-acetylalanyl-N'-methylamide 的 Phi/Psi 主链二面角为数值例子；Alrachid–Lelièvre 2015 为收敛性分析；本条目未重新提取 Lesage 等 2017 的 eABF/CZAR 应用体系。
+
+**应该算什么。** 在仓库双阱上将 ABF 和 eABF/CZAR 的一维/二维 FES 与积分、伞形/MBAR 以及独立副本离散度比较；报告网格分辨率、ramp、更新间隔、耦合常数的敏感性及二维投影残差。
+
+**现有入口。** [examples/abf_double_well.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/abf_double_well.inp); [examples/eabf_double_well.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/eabf_double_well.inp)
+
+**缺口与边界。** 未提供原文丙氨酸二肽的力场与协议；单条历史没有误差估计，副本离散度只是描述性的；秩亏点被拒绝，未实现奇异坐标估计。
+
+[实现与范围](references.md#samp-abf).
+
+#### task-samp-steered
+
+**质心拉伸动力学（steered MD）与非平衡功估计 — P0**
+
+论文：[samp-jarzynski1997](references.md#samp-jarzynski1997), [samp-crooks1999](references.md#samp-crooks1999), [samp-bar1976](references.md#samp-bar1976), [samp-shadow2013](references.md#samp-shadow2013).
+
+**原文体系。** Jarzynski 1997 与 Crooks 1999 是通用非平衡功恒等式；Bennett 1976 给出双系综接受比估计；Sivak–Chodera–Crooks 2013 把有限步长 Langevin 误差解释为 shadow work。没有唯一的原始模拟体系。
+
+**应该算什么。** 在谐振子与双阱模型上，把单向 Jarzynski 和双向 Crooks/BAR 的受约束端点自由能差与精确积分比较；报告偏差随拉伸速度的变化、功分布重叠、bootstrap 区间及 shadow-work 修正随步长的变化。
+
+**现有入口。** [examples/steered_harmonic.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/steered_harmonic.inp); [examples/steered_double_well.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/steered_double_well.py)
+
+**缺口与边界。** 结果是受约束端点自由能差，不是无偏 PMF；快速拉伸时指数功平均收敛很差，需检查功分布重叠并用独立种子重复。
+
+[实现与范围](references.md#samp-steered).
 
 #### task-samp-reus
 
@@ -805,11 +869,27 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算温度/哈密顿量槽位的能量分布、构象概率、交换 detailed balance、round trips；P>1 额外验证 spring-action 交换因子与精确 harmonic 分布。
 
-**现有入口。** pyrpmd.replica_exchange.ReplicaExchange (Python API); [docs/tier2-sampling.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/tier2-sampling.md)
+**现有入口。** pyrpmd.replica_exchange.ReplicaExchange (Python API); [docs/tier2-sampling.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/tier2-sampling.md)
 
 **缺口与边界。** P>1 的 ring 交换属于把经典交换原理用于本包测度；需另配论文分子势、温度梯和初态。
 
 [实现与范围](references.md#samp-remd).
+
+#### task-samp-tempering
+
+**可续跑的并行回火与哈密顿量副本交换工作流 — P1**
+
+论文：[samp-pt1996](references.md#samp-pt1996), [samp-remd1999](references.md#samp-remd1999), [samp-reus2000](references.md#samp-reus2000), [samp-mbar2008](references.md#samp-mbar2008).
+
+**原文体系。** Hukushima–Nemoto 1996：三维 ±J Ising 自旋玻璃；Sugita–Okamoto 1999：Met-enkephalin；Sugita–Kitao–Okamoto 2000：封端丙氨酸三肽。
+
+**应该算什么。** 在仓库双阱上，把各温度分布与估计量同精确参考比较；报告相邻接受率、往返次数、状态空间均方位移和 MBAR 重叠，并验证续跑与 MPI 结果逐位一致。
+
+**现有入口。** [examples/tempering/double_well.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/tempering/double_well.inp); [examples/tempering/hremd_umbrella.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/tempering/hremd_umbrella.inp); [docs/validation/tempering-2026-11-03/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/validation/tempering-2026-11-03/README.md)
+
+**缺口与边界。** 交换只改善状态混合，不会把 PIMD 采样时间变成动力学，结果保持 converged=false；原文自旋玻璃与多肽模型、温度梯和力场需另行准备。
+
+[实现与范围](references.md#samp-tempering).
 
 #### task-samp-biased-clock
 
@@ -845,7 +925,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 #### task-samp-retis
 
-**正界面系综的交换式 TIS — P1**
+**可选 minus 系综的交换式 TIS — P1**
 
 论文：[samp-retis2007](references.md#samp-retis2007), [samp-tis2003](references.md#samp-tis2003).
 
@@ -853,11 +933,59 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 先在相同双阱比较 TIS/RETIS 的条件概率、自相关、walker labels 和总成本；论文路线需要实现 PBD 势，算 DNA 变性速率与采样效率。
 
-**现有入口。** pyrpmd.retis.ReplicaExchangeTIS (Python API)
+**现有入口。** [examples/sampling/retis_minus.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/sampling/retis_minus.py); [examples/sampling/path_sampling_retis.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/sampling/path_sampling_retis.inp); [docs/validation/t23-path-sampling](https://github.com/chen-yu-hao/PyRPMD/tree/28cde092b66707878d99bc45eadf6bdf5950b317/docs/validation/t23-path-sampling)
 
-**缺口与边界。** 不能宣称完整 RETIS 原算法等价：minus-interface flux ensemble、持久 checkpoint 与 MPI 均缺失。
+**缺口与边界。** 不能宣称分子体系上与原始 RETIS 完全等价：未提供 PBD DNA 模型，双阱与积分及完整 TIS 的比较不能证明分子速率收敛；没有 MPI 调度。
 
 [实现与范围](references.md#samp-retis).
+
+#### task-samp-pptis
+
+**部分路径 TIS（PPTIS）与 REPPTIS — P1**
+
+论文：[samp-pptis2004](references.md#samp-pptis2004), [samp-repptis2023](references.md#samp-repptis2023), [samp-tis2003](references.md#samp-tis2003).
+
+**原文体系。** PPTIS 2004：带扩散势垒的简单双原子体系；REPPTIS 2023：布洛芬穿过 DPPC 膜的渗透。
+
+**应该算什么。** 在同一双阱上把 REPPTIS 速率与完整 TIS/RETIS 及独立积分参考比较；改变界面间距检验记忆丢失；报告局部跨越概率、递推稳定性与分块误差。
+
+**现有入口。** [examples/sampling/pptis.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/sampling/pptis.py); [examples/sampling/path_sampling_repptis.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/sampling/path_sampling_repptis.inp); [docs/validation/t23-path-sampling](https://github.com/chen-yu-hao/PyRPMD/tree/28cde092b66707878d99bc45eadf6bdf5950b317/docs/validation/t23-path-sampling)
+
+**缺口与边界。** 未提供膜渗透体系及其力场。局部链采样充分本身不能证明记忆丢失；缺少起点布居或递推奇异时不给出速率。
+
+[实现与范围](references.md#samp-pptis).
+
+#### task-samp-ffs
+
+**直接前向通量采样（FFS） — P1**
+
+论文：[samp-ffs2005](references.md#samp-ffs2005), [samp-ffs2009](references.md#samp-ffs2009).
+
+**原文体系。** Allen–Warren–ten Wolde 2005：两个相互抑制基因构成的对称遗传开关；2009 年综述总结 FFS 变体与应用。
+
+**应该算什么。** 与一维、二维有限态 Metropolis 双阱的转移矩阵解比较速率和 committor；报告通量、各界面条件概率、试验数及零成功处理（独立种子）。
+
+**现有入口。** [examples/sampling/ffs.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/sampling/ffs.py); [examples/sampling/ffs_quartic_reference.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/sampling/ffs_quartic_reference.py); [examples/sampling/path_sampling_ffs.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/sampling/path_sampling_ffs.inp)
+
+**缺口与边界。** 原文遗传开关模型未提供。隐藏的求解器记忆、全局随机数和含时协议均违反回调约定；结果只适用于所提供的随机过程，不能代替 RPMD 实时间动力学。
+
+[实现与范围](references.md#samp-ffs).
+
+#### task-samp-infretis
+
+**异步无限交换 RETIS（∞RETIS） — P1**
+
+论文：[samp-infretis2022](references.md#samp-infretis2022), [samp-infretis2024](references.md#samp-infretis2024), [samp-retis2007](references.md#samp-retis2007).
+
+**原文体系。** Roet–Zhang–van Erp 2022 在三个模型体系上测试 ∞RETIS；Zhang 等 2024：过热水的液–气相变、chignolin 去折叠和从头算水解离。
+
+**应该算什么。** 在小界面梯上用穷举排列核对分配边缘概率；在同一双阱上把速率与跨越概率同串行 RETIS 和积分参考比较；报告已提交事件数、有效观测数、worker 数身份与精确续跑。
+
+**现有入口。** [examples/sampling/path_sampling_infinite_retis.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/sampling/path_sampling_infinite_retis.inp); [docs/validation/t23-path-sampling](https://github.com/chen-yu-hao/PyRPMD/tree/28cde092b66707878d99bc45eadf6bdf5950b317/docs/validation/t23-path-sampling)
+
+**缺口与边界。** 未复现 2024 年论文的吞吐与接受率：缺少其子轨迹移动，且按票据顺序而非先完成先提交。逻辑 worker 数属于科学身份，续跑时不能更改。
+
+[实现与范围](references.md#samp-infretis).
 
 #### task-samp-committor
 
@@ -885,11 +1013,27 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算 s/z 及全 ring Jacobian、旋转平移不变性、F(s,z) 和沿路径 PMF；检查路径节点数和 lambda 稳健性。
 
-**现有入口。** pyrpmd.advanced_cv.RMSD / PathCV; [docs/tier2-sampling.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/tier2-sampling.md)
+**现有入口。** pyrpmd.advanced_cv.RMSD / PathCV; [docs/tier2-sampling.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/tier2-sampling.md)
 
 **缺口与边界。** 需另配原文参考路径与分子势；只实现给定 path 的 CV 不等于完成原论文全局路径优化协议。
 
 [实现与范围](references.md#samp-pathcv).
+
+#### task-samp-mlcolvar
+
+**mlcolvar 学习的质心 CV（Deep-LDA / Deep-TICA，TorchScript 部署） — P2**
+
+论文：[samp-mlcolvar2023](references.md#samp-mlcolvar2023), [samp-deeplda2020](references.md#samp-deeplda2020), [samp-deeptica2021](references.md#samp-deeptica2021).
+
+**原文体系。** Deep-LDA 2020：丙氨酸二肽与分子间羟醛反应；Deep-TICA 2021：小分子构象转变、微型蛋白折叠与材料结晶；mlcolvar 2023 论文介绍库框架。
+
+**应该算什么。** 先用有限差分和训练时模型核对 TorchScript 值与笛卡尔梯度；再在已知慢坐标的模型上比较偏置 FES、跃迁次数与 CV 区分度，使用独立训练种子与数据划分。
+
+**现有入口。** [examples/mlcolvar_cv.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/mlcolvar_cv.py); [docs/mlcolvar.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/mlcolvar.md)
+
+**缺口与边界。** 原文分子体系需要其描述符、训练数据与增强采样协议；学到的 CV 受训练数据限制，需检查可迁移性并确认导出图与训练模型版本一致。
+
+[实现与范围](references.md#samp-mlcolvar).
 
 #### task-samp-string
 
@@ -901,11 +1045,27 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 先在解析弯曲谷检验法向力残差、节点数与重参数化；论文 2006 路线算 MFEP、自由能势垒及 committor 宽度随 CV 选择变化。
 
-**现有入口。** pyrpmd.adaptive_string.adaptive_mean_force_string; [docs/manual/adaptive-nrpmd.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/manual/adaptive-nrpmd.md)
+**现有入口。** pyrpmd.adaptive_string.adaptive_mean_force_string; [docs/manual/adaptive-nrpmd.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/manual/adaptive-nrpmd.md)
 
 **缺口与边界。** 用 PES 梯度只得到 MEP；本包不应直接声称实现任意 nonlinear CV 的完整 MFEP/等 committor 面。原论文 4-angle route 需补齐 metric 项。
 
 [实现与范围](references.md#samp-string).
+
+#### task-samp-ft-string
+
+**质心 CV 空间中的有限温度弦方法 — P1**
+
+论文：[samp-fts2005](references.md#samp-fts2005), [samp-stringcv2006](references.md#samp-stringcv2006).
+
+**原文体系。** E–Ren–Vanden-Eijnden 2005 在二维例子和固–固相变模型上验证有限温度弦方法；Maragliano 等 2006 用 CV 度规张量在集体变量空间中表述弦方法。
+
+**应该算什么。** 在解析二维势面上，把收敛弦与积分得到的最小自由能路径比较；报告像间距、度规张量估计、约束刚度与采样长度依赖性，以及独立种子下的路径稳定性。
+
+**现有入口。** [examples/finite_temperature_string.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/finite_temperature_string.py); [docs/finite-temperature-string.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/finite-temperature-string.md)
+
+**缺口与边界。** 端点和像数固定；不支持周期 CV 和秩亏 CV 导数。有限刚度下的平滑路径还不是收敛的最小自由能路径；未提供 2005 年论文的固–固相变模型。
+
+[实现与范围](references.md#samp-ft-string).
 
 #### task-samp-prfo
 
@@ -917,7 +1077,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算 saddle 坐标/能量、Hessian 负模数、梯度残差和初猜敏感性；扫描 Hessian 差分步长，再在 H+H2/BKMP2 算电子势垒和虚频。
 
-**现有入口。** `python benchmarks/transition_state_search/analytic.py --output runs/ts/analytic.json`; [benchmarks/transition_state_search/h3.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/transition_state_search/h3.py)
+**现有入口。** `python benchmarks/transition_state_search/analytic.py --output runs/ts/analytic.json`; [benchmarks/transition_state_search/h3.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/transition_state_search/h3.py)
 
 **缺口与边界。** 需保持论文解析模型定义与本包能量缩放一致；优化迭代数受本实现控制策略影响，不可假设与原文完全相同。
 
@@ -933,7 +1093,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 方法回归先算 Müller–Brown MEP、barrier、最高 image 真力、NEB force 与 image 数/初始路径收敛，再做 BKMP2；原 slab 体系需外部独立 DFT/ASE 路线。
 
-**现有入口。** `python -m pyrpmd prepare examples/rate/from_endpoints.inp --pilot --output preparation.json`; [benchmarks/transition_state_search/analytic.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/transition_state_search/analytic.py)
+**现有入口。** `python -m pyrpmd prepare examples/rate/from_endpoints.inp --pilot --output preparation.json`; [benchmarks/transition_state_search/analytic.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/transition_state_search/analytic.py)
 
 **缺口与边界。** 论文 slab force field/DFT 与周期固定层限制不在当前 gas-phase prepare 支持范围；应明确原体系复现需要额外实现，不用 H3 冒充。
 
@@ -949,7 +1109,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 核对所有 radii/units/isotopes 与原表；在已知 reactant/product 几何上验证图连通性和阈值敏感性。
 
-**现有入口。** `pyrpmd prepare`; [src/pyrpmd/covalent.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/covalent.py)
+**现有入口。** `pyrpmd prepare`; [src/pyrpmd/covalent.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/covalent.py)
 
 **缺口与边界。** 分类阈值与两侧下降/等价通道组合属于包实现，不能由 Cordero 参数论文证明任意反应识别正确。
 
@@ -965,7 +1125,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 优先对同一解析势使用 s、a*s、非线性单调 f(s) 比较速率不变性，检查 mass metric 与 constrained-parent weights；再测一般键差坐标。
 
-**现有入口。** [examples/rate/general_coordinate.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/rate/general_coordinate.inp); [tests/test_general_coordinate_rates.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/tests/test_general_coordinate_rates.py); [docs/general-coordinate-rates.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/general-coordinate-rates.md)
+**现有入口。** [examples/rate/general_coordinate.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/rate/general_coordinate.inp); [tests/test_general_coordinate_rates.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/tests/test_general_coordinate_rates.py); [docs/general-coordinate-rates.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/general-coordinate-rates.md)
 
 **缺口与边界。** 非线性 CV 的质量度量不能省略；相同投影 PMF 不保证相同无偏动力学速率。
 
@@ -997,7 +1157,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 比较标准误覆盖率、block 长度敏感性、独立种子方差；REUS 保持跨窗口同一个 resampling clock，channels 保持共同父链。
 
-**现有入口。** [src/pyrpmd/analysis/fes_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/src/pyrpmd/analysis/fes_statistics.py); [docs/replica-exchange.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/replica-exchange.md)
+**现有入口。** [src/pyrpmd/analysis/fes_statistics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/src/pyrpmd/analysis/fes_statistics.py); [docs/replica-exchange.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/replica-exchange.md)
 
 **缺口与边界。** 报告 g/ESS 不是已证实混合；不能把 5g、20 blocks 或固定 overlap threshold 写成论文保证。
 
@@ -1079,7 +1239,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 先复现 NRPMD2013 热平衡相关函数，再验证已知反应坐标下的约束自由能; 冻结路径后用独立生产样本计算自由能差/通量相关函数；报告 sign、窗口重叠与统计误差; 比较固定路径和自适应路径是否在不确定度内给出一致结果
 
-**现有入口。** [docs/manual/adaptive-nrpmd.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/manual/adaptive-nrpmd.md); [docs/adaptive-electrochemical-string-pilot.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/adaptive-electrochemical-string-pilot.md)
+**现有入口。** [docs/manual/adaptive-nrpmd.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/manual/adaptive-nrpmd.md); [docs/adaptive-electrochemical-string-pilot.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/adaptive-electrochemical-string-pilot.md)
 
 **缺口与边界。** 需要对每个组成部分分别引用；不能给组合工作流编造一篇原始论文，也不能用一条短适应轨迹宣称新的电化学速率已验证。
 
@@ -1132,6 +1292,38 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 **缺口与边界。** 现成输入是教学模型。需要原文参数化 pyrazine/bath、独立平衡或散射预备与速率分析；严禁把任意 harmonic-ring 初态布居曲线视作原文热速率复现。native=False 路径为当前实现。
 
 [实现与范围](references.md#na-carp-mash).
+
+#### task-na-ba-rp-mash
+
+**BA-RP-MASH（命令行 rp-mash-ba） — P2**
+
+论文：[na-carp2025](references.md#na-carp2025), [na-mash2023](references.md#na-mash2023).
+
+**原文体系。** Cao–Suarez–Kretchmer 2025 v1 预印本：Tully 模型、三模 pyrazine 模型与 spin-boson 电子转移；珠近似在同一预印本中定义。
+
+**应该算什么。** 先在常能隙、常耦合极限下与独立 Fourier 网格参考比较布居；再按预印本的初态准备复现 Tully 与 spin-boson 观测量；收敛时间步、事件容差和珠数。
+
+**现有入口。** [examples/nonadiabatic/extensions/rp_mash_ba.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/nonadiabatic/extensions/rp_mash_ba.inp); [examples/nonadiabatic/rp_mash_ba_reference.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/nonadiabatic/rp_mash_ba_reference.py); [docs/validation/t25b-ba-rp-mash-2026-11-03](https://github.com/chen-yu-hao/PyRPMD/tree/28cde092b66707878d99bc45eadf6bdf5950b317/docs/validation/t25b-ba-rp-mash-2026-11-03)
+
+**缺口与边界。** Fourier 对照中环内模只是旁观者，并使用标量核 Wigner 采样，不能证明一般的核量子精度；须明确记录所实现的预印本版本。
+
+[实现与范围](references.md#na-ba-rp-mash).
+
+#### task-na-ms-mash
+
+**原始多态 MASH（命令行 multistate-mash） — P2**
+
+论文：[na-msmash2023](references.md#na-msmash2023), [na-mash2023](references.md#na-mash2023).
+
+**原文体系。** Runeson–Manolopoulos 2023：Fenna–Matthews–Olson 复合物的三态与七态模型。
+
+**应该算什么。** 按原文浴离散化与初始条件计算 FMO 模型的布居与相干，并与精确基准比较；长时间平衡布居；时间步与轨迹数收敛。
+
+**现有入口。** [examples/nonadiabatic/multistate_mash.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/nonadiabatic/multistate_mash.inp); [examples/nonadiabatic/multistate_mash_reference.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/nonadiabatic/multistate_mash_reference.py)
+
+**缺口与边界。** 未提供原文 FMO 哈密顿量与谱密度；未实现环聚合物多态 MASH。
+
+[实现与范围](references.md#na-ms-mash).
 
 #### task-na-rpsh-ca
 
@@ -1229,6 +1421,22 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 [实现与范围](references.md#na-dboc-rpsh).
 
+#### task-na-iesh
+
+**经典 IESH 与质心 RP-IESH（命令行 iesh、rp-iesh） — P2**
+
+论文：[na-iesh2009](references.md#na-iesh2009), [na-iesh2023](references.md#na-iesh2023), [na-rpsh2012](references.md#na-rpsh2012), [na-rpsh2017](references.md#na-rpsh2017).
+
+**原文体系。** Shenvi–Roy–Tully 2009：基于 DFT 拟合多态势能面的 NO 在 Au(111) 上的振动弛豫；Gardner 等 2023 在模型哈密顿量和全维原子体系上分析 IESH，包括散射与脱附概率。
+
+**应该算什么。** 对 Newns–Anderson 型模型将零温布居与 Fock 空间/Fourier 参考比较；报告能带离散、跳跃统计、能量守恒与时间步收敛；再用相同模型参数与 Gardner 等的散射或脱附概率比较。
+
+**现有入口。** [examples/nonadiabatic/iesh.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/nonadiabatic/iesh.inp); [examples/nonadiabatic/rp_iesh.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/nonadiabatic/rp_iesh.inp); [examples/nonadiabatic/rp_iesh_reference.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/nonadiabatic/rp_iesh_reference.py); [docs/validation/t25-rp-iesh](https://github.com/chen-yu-hao/PyRPMD/tree/28cde092b66707878d99bc45eadf6bdf5950b317/docs/validation/t25-rp-iesh)
+
+**缺口与边界。** 未提供 NO/Au(111) 势能面。RP-IESH 依据 Gardner 博士论文描述的质心扩展；有限能带极限、金属热浴与环聚合物扩展都需要针对具体体系收敛。
+
+[实现与范围](references.md#na-iesh).
+
 #### task-na-qd-interface
 
 **准 diabatic NRPMD 与即时绝热电子结构接口 — P2**
@@ -1244,6 +1452,22 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 **缺口与边界。** 当前是解析两态接口演示。真实 ethylene 原文复现需要相同 CASSCF 数据、态重叠/NAC、初始态和 PLDM/SQC 实现；当前 NRPMD 结果只能称为在同一体系上的方法比较。通用 Python provider 不自动提供可移植的电子结构重启。
 
 [实现与范围](references.md#na-qd-interface).
+
+#### task-na-excited-state
+
+**在线激发态计算接口与基于重叠的耦合 — P1**
+
+论文：[na-hst1994](references.md#na-hst1994), [na-npi2014](references.md#na-npi2014), [na-npi2016](references.md#na-npi2016), [pyscf2018](references.md#pyscf2018).
+
+**原文体系。** Hammes-Schiffer–Tully 1994：液态氯甲烷模型中的质子转移；Meek–Levine 2014：Landau–Zener 模型；Jain–Alguire–Subotnik 2016 是大规模面跳跃算法论文；PySCF 为软件。
+
+**应该算什么。** 在 Landau–Zener 和玩具模型上把基于重叠的时间导数耦合与解析耦合比较；报告与精确结果对照的跃迁概率、相位/态追踪诊断，以及 PySCF 分子的时间步和保留态数收敛。
+
+**现有入口。** [examples/excited_state/toy_rpsh.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/excited_state/toy_rpsh.py); [examples/nonadiabatic/pyscf_lih_rpsh.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/nonadiabatic/pyscf_lih_rpsh.py); [docs/validation/excited-state-interface-2026-11-03/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/validation/excited-state-interface-2026-11-03/README.md)
+
+**缺口与边界。** ORCA/Q-Chem/OpenMolcas 外部程序尚未实测。两帧耦合只确定沿位移方向的分量，不能代替任意动量重标所需的完整 NAC 矢量。电子结构方法、泛函和基组需另行引用。
+
+[实现与范围](references.md#na-excited-state).
 
 #### task-na-mv-rpmd
 
@@ -1319,7 +1543,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 初始 harmonic ring 协方差对解析 finite-P 值；明确 active 坐标和零频 spectator 的处理; 选择某篇论文的完整矩阵参数后，再计算对应布居或热相关函数; 核查 tunnelling 参数就是矩阵 offdiagonal 元素，不带隐含 1/2 因子
 
-**现有入口。** [examples/nonadiabatic/population.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/nonadiabatic/population.inp); [benchmarks/nonadiabatic/population_dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/nonadiabatic/population_dynamics.py); sample_harmonic_ring API
+**现有入口。** [examples/nonadiabatic/population.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/nonadiabatic/population.inp); [benchmarks/nonadiabatic/population_dynamics.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/nonadiabatic/population_dynamics.py); sample_harmonic_ring API
 
 **缺口与边界。** 不能为所有任意 LVC 参数统一挂一篇原始模型论文。uncoupled harmonic initial density 是垂直开关/激发预备，不是 coupled equilibrium；自由 spectator 也没有归一化 canonical 位置分布。
 
@@ -1369,7 +1593,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 先做 P=1，比较体积均值/方差、压力与体积自相关，再做 PIMD；扫描步长及活塞时间常数。
 
-**现有入口。** [examples/ensembles/native_npt.toml](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/ensembles/native_npt.toml); [docs/materials-npt.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/materials-npt.md)
+**现有入口。** [examples/ensembles/native_npt.toml](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/ensembles/native_npt.toml); [docs/materials-npt.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/materials-npt.md)
 
 **缺口与边界。** 已有理想气体控制算例是替代测试。须取得原文势函数及系综参数；恒压采样时间不能直接当扩散动力学时间。
 
@@ -1385,7 +1609,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 比较晶胞/体积分布、压力张量和平衡能量；对齐晶胞约定与参考实现。
 
-**现有入口。** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/native-ensembles.md); [examples/ensembles/native_npt.toml](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/ensembles/native_npt.toml)
+**现有入口。** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/native-ensembles.md); [examples/ensembles/native_npt.toml](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/ensembles/native_npt.toml)
 
 **缺口与边界。** 须补原文力场与输入；限制某些晶胞自由度不等于已验证的薄层恒压系综。
 
@@ -1401,7 +1625,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 先检查应力下晶胞/应变统计，再用原文 EVB 力场计算质子驻留时间和扩散。
 
-**现有入口。** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/native-ensembles.md)
+**现有入口。** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/native-ensembles.md)
 
 **缺口与边界。** 仓库未附该材料 EVB 势；只有外应力算法不能复现原文扩散结果。
 
@@ -1417,7 +1641,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 在支持的各向同性液体上扫描步长/耦合时间，比较体积均值、方差及弛豫。
 
-**现有入口。** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/native-ensembles.md)
+**现有入口。** [docs/native-ensembles.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/native-ensembles.md)
 
 **缺口与边界。** 不能用于 P>1，也不能称为原文的各向异性膜算法；须测量有限步长偏差。
 
@@ -1433,7 +1657,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 计算 D(T)、MSD、VACF、位点跃迁和多次跳跃相关性；比较冻结/可动基底及表面/亚表面通道。
 
-**现有入口。** [examples/materials/diffusion.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/materials/diffusion.inp); [benchmarks/materials_reference/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/materials_reference/README.md); [benchmarks/water/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/water/README.md)
+**现有入口。** [examples/materials/diffusion.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/materials/diffusion.inp); [benchmarks/materials_reference/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/materials_reference/README.md); [benchmarks/water/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/water/README.md)
 
 **缺口与边界。** Ni EAM4 目前是静态参考适配器；Pd 神经网络权重和参数仍须取得。NiAlH 试算使用另一势模型。
 
@@ -1449,7 +1673,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 计算盆地配分量、PMF 势垒、通量因子、k_QTST、kappa(t) 和有向速率；比较坐标与归一化选择。
 
-**现有入口。** [examples/materials/site_rate.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/materials/site_rate.inp); [examples/surface/diffusion.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/surface/diffusion.inp); [docs/surface-catalysis.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/surface-catalysis.md)
+**现有入口。** [examples/materials/site_rate.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/materials/site_rate.inp); [examples/surface/diffusion.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/surface/diffusion.inp); [docs/surface-catalysis.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/surface-catalysis.md)
 
 **缺口与边界。** 须匹配表面势能面和反应物态约定；当前不自动生成多位点动力学 Monte Carlo 网络。
 
@@ -1465,7 +1689,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 先检查力/单位及缺陷结合能，再开展输运计算。
 
-**现有入口。** [benchmarks/materials/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/materials/README.md)
+**现有入口。** [benchmarks/materials/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/materials/README.md)
 
 **缺口与边界。** 小型 Ni(100) 试算不是原文缺陷体系，也不是 2012 年 EAM4 扩散模型。
 
@@ -1481,7 +1705,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 计算正逆 k(U,T)、H/D KIE、各振电通道贡献；收敛质子网格、能级数及电极能量求积。
 
-**现有入口。** [examples/pcet/harmonic_scan.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/pcet/harmonic_scan.inp); [docs/validation/pcet-model-2026-10-30/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/validation/pcet-model-2026-10-30/README.md)
+**现有入口。** [examples/pcet/harmonic_scan.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/pcet/harmonic_scan.inp); [docs/validation/pcet-model-2026-10-30/README.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/validation/pcet-model-2026-10-30/README.md)
 
 **缺口与边界。** 与 pyPCET 一致是实现交叉验证；局域模型未覆盖真实体系的距离平均、双电层及更广的耦合区间。
 
@@ -1497,7 +1721,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 先算解析充电模型的 q,N 联合分布、N 均值/方差、接受率和巨势自由能，再比较界面经典/量子势垒。
 
-**现有入口。** [examples/electrochemistry](https://github.com/chen-yu-hao/PyRPMD/tree/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/electrochemistry); [docs/electrochemistry.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/electrochemistry.md)
+**现有入口。** [examples/electrochemistry](https://github.com/chen-yu-hao/PyRPMD/tree/28cde092b66707878d99bc45eadf6bdf5950b317/examples/electrochemistry); [docs/electrochemistry.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/electrochemistry.md)
 
 **缺口与边界。** 此采样器不自动提供 Sun2025 的完整受约束算法、DP-Ne 模型、电荷补偿板或混合量子化设置。
 
@@ -1513,7 +1737,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 比较解析 N*(R)、求解残差、包络定理力，以及同位素/电势相关自由能。
 
-**现有入口。** [examples/electrochemistry/adaptive_constant_potential.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/electrochemistry/adaptive_constant_potential.py); [docs/manual/adaptive-nrpmd.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/manual/adaptive-nrpmd.md)
+**现有入口。** [examples/electrochemistry/adaptive_constant_potential.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/electrochemistry/adaptive_constant_potential.py); [docs/manual/adaptive-nrpmd.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/manual/adaptive-nrpmd.md)
 
 **缺口与边界。** 逐珠最优电子数不同于共享电子数涨落；共同充电项没有态依赖响应，也不是 TP-RPMD。
 
@@ -1529,7 +1753,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 计算 theta(U)、各基元净通量、H2 TOF 和有符号电流；检验稳态计量守恒与详细平衡。
 
-**现有入口。** [docs/electrochemistry.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/electrochemistry.md)
+**现有入口。** [docs/electrochemistry.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/electrochemistry.md)
 
 **缺口与边界。** 不从 PMF 或局域 PCET 自动推导基元速率，也不包含传质、侧向相互作用或双电层。
 
@@ -1545,7 +1769,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 计算图 2 核分布、图 3 布居弛豫、图 4 温度相关速率及图 5 非对称低温偏差；先匹配平均力势和摩擦。
 
-**现有入口。** [examples/nonadiabatic/friction_surface.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/nonadiabatic/friction_surface.inp); [docs/electronic-friction.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/electronic-friction.md)
+**现有入口。** [examples/nonadiabatic/friction_surface.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/nonadiabatic/friction_surface.inp); [docs/electronic-friction.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/electronic-friction.md)
 
 **缺口与边界。** 已有起伏表面示例是替代模型；须构造匹配平均力势和摩擦张量；尚无记忆效应或虚时间浴重整化。
 
@@ -1561,7 +1785,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 同一构型与直接 PySCF 比较能量/梯度/Hessian，检查差分、自旋/电子态连续性与收敛。
 
-**现有入口。** [examples/pesgen/water.toml](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/pesgen/water.toml); [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/potential-adapters.md)
+**现有入口。** [examples/pesgen/water.toml](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/pesgen/water.toml); [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/potential-adapters.md)
 
 **缺口与边界。** RHF/STO-3G 水只是集成控制，不是已验证反应势。
 
@@ -1577,7 +1801,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 验证电荷守恒及网格收敛；用闭壳层/开壳层分子对比独立同约定计算。
 
-**现有入口。** [examples/pesgen/water.toml](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/pesgen/water.toml); [docs/manual/pes-generation.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/manual/pes-generation.md)
+**现有入口。** [examples/pesgen/water.toml](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/pesgen/water.toml); [docs/manual/pes-generation.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/manual/pes-generation.md)
 
 **缺口与边界。** 不同自由原子参考表会产生不同电荷，不能把 ORCA 默认值视为同一定义。
 
@@ -1593,7 +1817,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 先比较平衡结构、Hessian 频率、畸变构型能量/力及解离行为，再运行轨迹。
 
-**现有入口。** [examples/pesgen/water.toml](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/pesgen/water.toml); [docs/manual/pes-generation.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/manual/pes-generation.md)
+**现有入口。** [examples/pesgen/water.toml](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/pesgen/water.toml); [docs/manual/pes-generation.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/manual/pes-generation.md)
 
 **缺口与边界。** 需要上游编译及合适参考理论；宣称复现前须取得选定原文基准的补充材料结构。
 
@@ -1609,7 +1833,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 比较端点极限、耦合、路径内外能量/力误差、势垒及相对参考势的 RPMD 速率。
 
-**现有入口。** [examples/pesgen/nh3_inversion.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/pesgen/nh3_inversion.py); [docs/manual/pes-generation.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/manual/pes-generation.md)
+**现有入口。** [examples/pesgen/nh3_inversion.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/pesgen/nh3_inversion.py); [docs/manual/pes-generation.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/manual/pes-generation.md)
 
 **缺口与边界。** 当前拟合工作流仅支持中性体系，不能直接运行带电 SN2；忠实原文体系应先恢复中性 Diels–Alder 协议。NH3 是独立仓库控制。
 
@@ -1625,7 +1849,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 比较路径内外能量/梯度、差分步长收敛、能量漂移，再比较参考解析势上的 k(T)。
 
-**现有入口。** [examples/pesgen/nh3_inversion.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/pesgen/nh3_inversion.py); [docs/manual/pes-generation.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/manual/pes-generation.md)
+**现有入口。** [examples/pesgen/nh3_inversion.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/pesgen/nh3_inversion.py); [docs/manual/pes-generation.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/manual/pes-generation.md)
 
 **缺口与边界。** 桥接处于实验阶段；固定源码的解析力不一致已记录，不能把目前默认力直接等同于原文实现。
 
@@ -1641,7 +1865,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 计算留出集能量/力误差、置换不变性、Python/原生一致性及批量性能；再用相同训练势计算散射截面。
 
-**现有入口。** [docs/manual/jaxpip-generation.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/manual/jaxpip-generation.md); [examples/pesgen](https://github.com/chen-yu-hao/PyRPMD/tree/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/pesgen)
+**现有入口。** [docs/manual/jaxpip-generation.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/manual/jaxpip-generation.md); [examples/pesgen](https://github.com/chen-yu-hao/PyRPMD/tree/28cde092b66707878d99bc45eadf6bdf5950b317/examples/pesgen)
 
 **缺口与边界。** 小 H2 示例不能复现 OH+CH3OH；须取得准确基函数/权重、数据划分及 QCT 初态约定。
 
@@ -1657,7 +1881,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 比较分歧与真实留出误差、采样富集效果及学习曲线，固定各阶段模型版本。
 
-**现有入口。** [examples/ml_lifecycle/committee.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/ml_lifecycle/committee.inp); [docs/tier2-ml-lifecycle.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/tier2-ml-lifecycle.md)
+**现有入口。** [examples/ml_lifecycle/committee.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/ml_lifecycle/committee.inp); [docs/tier2-ml-lifecycle.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/tier2-ml-lifecycle.md)
 
 **缺口与边界。** 解析势委员会示例只验证流程；须补外部标注数据与训练。
 
@@ -1673,7 +1897,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 检验校正后留出能量及力一致性；对 PyRPMD 扩展比较完整与收缩校正的同一观测量。
 
-**现有入口。** [examples/ml_lifecycle/delta_rpc.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/ml_lifecycle/delta_rpc.inp); [examples/ml_lifecycle/delta_rpc_mts.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/ml_lifecycle/delta_rpc_mts.py)
+**现有入口。** [examples/ml_lifecycle/delta_rpc.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/ml_lifecycle/delta_rpc.inp); [examples/ml_lifecycle/delta_rpc_mts.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/ml_lifecycle/delta_rpc_mts.py)
 
 **缺口与边界。** 原文分子性质基准和动力学扩展不同；仓库不提供训练好的校正势。
 
@@ -1689,7 +1913,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 同一构型与上游直接比较能量、力、位力、单位、批处理和周期映像，再接已验证物理体系。
 
-**现有入口。** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/potential-adapters.md)
+**现有入口。** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/potential-adapters.md)
 
 **缺口与边界。** 须提供可选引擎及兼容模型文件；接口不重做上游训练，也不复现其全部应用。
 
@@ -1705,7 +1929,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 同一构型与上游直接比较能量、力、位力、单位、批处理和周期映像，再接已验证物理体系。
 
-**现有入口。** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/potential-adapters.md)
+**现有入口。** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/potential-adapters.md)
 
 **缺口与边界。** 须提供可选引擎及兼容模型文件；接口不重做上游训练，也不复现其全部应用。
 
@@ -1721,7 +1945,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 同一构型与上游直接比较能量、力、位力、单位、批处理和周期映像，再接已验证物理体系。
 
-**现有入口。** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/potential-adapters.md)
+**现有入口。** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/potential-adapters.md)
 
 **缺口与边界。** 须提供可选引擎及兼容模型文件；接口不重做上游训练，也不复现其全部应用。
 
@@ -1737,7 +1961,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 同一构型与上游直接比较能量、力、位力、单位、批处理和周期映像，再接已验证物理体系。
 
-**现有入口。** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/potential-adapters.md)
+**现有入口。** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/potential-adapters.md)
 
 **缺口与边界。** 须提供可选引擎及兼容模型文件；接口不重做上游训练，也不复现其全部应用。
 
@@ -1753,7 +1977,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 同一构型与上游直接比较能量、力、位力、单位、批处理和周期映像，再接已验证物理体系。
 
-**现有入口。** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/potential-adapters.md)
+**现有入口。** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/potential-adapters.md)
 
 **缺口与边界。** 须提供可选引擎及兼容模型文件；接口不重做上游训练，也不复现其全部应用。
 
@@ -1769,7 +1993,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 同一构型与上游直接比较能量、力、位力、单位、批处理和周期映像，再接已验证物理体系。
 
-**现有入口。** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/potential-adapters.md)
+**现有入口。** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/potential-adapters.md)
 
 **缺口与边界。** 须提供可选引擎及兼容模型文件；接口不重做上游训练，也不复现其全部应用。
 
@@ -1785,7 +2009,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 同一构型与上游直接比较能量、力、位力、单位、批处理和周期映像，再接已验证物理体系。
 
-**现有入口。** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/potential-adapters.md)
+**现有入口。** [docs/potential-adapters.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/potential-adapters.md)
 
 **缺口与边界。** 须提供可选引擎及兼容模型文件；接口不重做上游训练，也不复现其全部应用。
 
@@ -1801,7 +2025,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 回读坐标、晶胞、同位素质量、时间和单位，比较重新分析的观测量。
 
-**现有入口。** [docs/trajectory-export.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/trajectory-export.md)
+**现有入口。** [docs/trajectory-export.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/trajectory-export.md)
 
 **缺口与边界。** 须检查所选格式的读取支持及语义一致性。
 
@@ -1817,7 +2041,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 用相同物理算例检查后端数值一致性、续跑一致性、单位/归一化、误差及归档回放。
 
-**现有入口。** [docs/manual/execution.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/manual/execution.md); [docs/checkpoints.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/checkpoints.md); [docs/manual/analysis-reports.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/manual/analysis-reports.md); [docs/reaction-networks.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/reaction-networks.md)
+**现有入口。** [docs/manual/execution.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/manual/execution.md); [docs/checkpoints.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/checkpoints.md); [docs/manual/analysis-reports.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/manual/analysis-reports.md); [docs/reaction-networks.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/reaction-networks.md)
 
 **缺口与边界。** 软件测试通过不等于新的物理复现；不能为填满引用栏而附无关论文。
 
@@ -1833,7 +2057,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算能量/力有限差分、谐振子的解析平衡矩、Morse 束缚能级、积分自由能面和坐标周期性；统一能量零点与参数。
 
-**现有入口。** [examples/quantum_statistics/harmonic_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/quantum_statistics/harmonic_validation.py); [examples/fes/harmonic2d.inp](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/fes/harmonic2d.inp)
+**现有入口。** [examples/quantum_statistics/harmonic_validation.py](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/quantum_statistics/harmonic_validation.py); [examples/fes/harmonic2d.inp](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/examples/fes/harmonic2d.inp)
 
 **缺口与边界。** 可分离余弦模型不能证明真实材料扩散正确；任意 Morse 参数也不等于复现 1929 原文的某个分子。
 
@@ -1849,7 +2073,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 算 k(T)、k_H/k_D、活化参数与拟合残差，以及珠数、时间步、初始距离、最大碰撞参数改变后的差异；事先给定等效性容限。
 
-**现有入口。** [docs/rate-studies.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/rate-studies.md)
+**现有入口。** [docs/rate-studies.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/rate-studies.md)
 
 **缺口与边界。** Arrhenius 拟合好不代表速率正确，也不排除隧穿曲率；差异不显著不能代替收敛或等效性证据。
 
@@ -1865,7 +2089,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **应该算什么。** 先核对势面、鞍点、梯度和同位素质量，再算 PMF、k_QTST、κ(t) 和 k(T)；1996 原文态到态截面必须另用它的初态与散射协议。
 
-**现有入口。** [benchmarks/literature/campaign.json](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/benchmarks/literature/campaign.json); [docs/literature-validation.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/literature-validation.md)
+**现有入口。** [benchmarks/literature/campaign.json](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/benchmarks/literature/campaign.json); [docs/literature-validation.md](https://github.com/chen-yu-hao/PyRPMD/blob/28cde092b66707878d99bc45eadf6bdf5950b317/docs/literature-validation.md)
 
 **缺口与边界。** 固定势文件及校验和、通道与对称性约定；已有固定珠数一致性仍留下父链时间、伞窗精度和动态珠数收敛需要完成。
 
