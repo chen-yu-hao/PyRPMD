@@ -1,0 +1,499 @@
+{
+  "upstream_commit": "710670c6f753b1159c0147c817e82998c2cc8486",
+  "pyrpmd_base": "cb28829ecb1cabe471136b74e585ba3e4b9728fb",
+  "environment": {
+    "hostname": "cluster",
+    "platform": "Linux-5.14.0-611.49.1.el9_7.x86_64-x86_64-with-glibc2.34",
+    "python": "3.11.5",
+    "numpy": "2.4.6",
+    "scipy": "1.17.1",
+    "cpu_count": 112,
+    "affinity_count": 112,
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "physical_converged": false,
+  "PES_evaluations": 0,
+  "external_dynamics": "\u672a\u5b9e\u6d4b (not run)",
+  "cases": {
+    "H+H2": {
+      "source_sha256": "aca21a8ee199233b9a3dc7d40d599b5c0791226b1796f61f6262729b7ebeea96",
+      "strict_exit": 2,
+      "strict_output_files": 0,
+      "allow_unmapped_validate": true,
+      "static_prepare": true,
+      "natoms": 3,
+      "windows": 110,
+      "chains_per_window": 200,
+      "equilibration_steps": 200000,
+      "production_steps": 1000000,
+      "rinf_bohr": 30.00015813923641,
+      "fragments": [
+        [
+          0,
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "forming_bonds": [
+        [
+          1,
+          2
+        ]
+      ],
+      "breaking_bonds": [
+        [
+          0,
+          1
+        ]
+      ],
+      "equivalent_paths": [
+        [
+          1,
+          0,
+          2
+        ]
+      ],
+      "geometry_max_abs_error_bohr": 0.0,
+      "kforce_hartree": 100.0,
+      "stiffness_max_abs_error_hartree": 0.0,
+      "parent_configurations": 1000,
+      "child_pairs": 50000,
+      "child_trajectories": 100000,
+      "unmapped": [
+        {
+          "call_id": 115,
+          "setting": "windows.trajectories",
+          "reason": "RPMDrate reuses each previous trajectory's final geometry; PyRPMD uses independent chains",
+          "replacement": "Preserve trajectory count and per-trajectory budgets as chains_per_window"
+        },
+        {
+          "call_id": 4,
+          "setting": "generateUmbrellaConfigurations",
+          "reason": "No schema-2 stage for RPMDrate's sequential single-bead window seeding",
+          "replacement": "Each PyRPMD window starts from the supplied TS and uses its own declared equilibration"
+        },
+        {
+          "call_id": 3,
+          "setting": "thermostat",
+          "reason": "Rate umbrella and constrained-parent sampling only support Andersen; GLE matrices cannot be used",
+          "replacement": {
+            "umbrella.sampling.thermostat": {
+              "type": "andersen",
+              "scheme": "global_refresh",
+              "schedule": "fixed",
+              "refresh_every": {
+                "steps": 10
+              }
+            },
+            "recrossing.parent.thermostat": {
+              "type": "andersen",
+              "scheme": "global_refresh",
+              "schedule": "fixed",
+              "refresh_every": {
+                "steps": 10
+              }
+            }
+          }
+        },
+        {
+          "call_id": 116,
+          "setting": "xi_min/xi_max",
+          "reason": "PyRPMD UI integrates from xi=0 to the largest window center; histogram ranges do not change this grid",
+          "replacement": {
+            "ui_range": [
+              0.0,
+              1.0400000000000003
+            ],
+            "histogram_range": [
+              -0.02,
+              1.02
+            ]
+          }
+        }
+      ]
+    },
+    "H+CH4": {
+      "source_sha256": "eb1ad4f0ef3b9f190f36abf07ebec75c49e35153f2aae5d0070c5d497a6d2a44",
+      "strict_exit": 2,
+      "strict_output_files": 0,
+      "allow_unmapped_validate": true,
+      "static_prepare": true,
+      "natoms": 6,
+      "windows": 110,
+      "chains_per_window": 200,
+      "equilibration_steps": 200000,
+      "production_steps": 1000000,
+      "rinf_bohr": 30.00015813923641,
+      "fragments": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        [
+          5
+        ]
+      ],
+      "forming_bonds": [
+        [
+          3,
+          5
+        ]
+      ],
+      "breaking_bonds": [
+        [
+          1,
+          3
+        ]
+      ],
+      "equivalent_paths": [
+        [
+          0,
+          1,
+          2,
+          4,
+          3,
+          5
+        ],
+        [
+          0,
+          1,
+          3,
+          2,
+          4,
+          5
+        ],
+        [
+          3,
+          1,
+          2,
+          0,
+          4,
+          5
+        ]
+      ],
+      "geometry_max_abs_error_bohr": 1.7763568394002505e-15,
+      "kforce_hartree": 100.0,
+      "stiffness_max_abs_error_hartree": 0.0,
+      "parent_configurations": 1000,
+      "child_pairs": 50000,
+      "child_trajectories": 100000,
+      "unmapped": [
+        {
+          "call_id": 117,
+          "setting": "windows.trajectories",
+          "reason": "RPMDrate reuses each previous trajectory's final geometry; PyRPMD uses independent chains",
+          "replacement": "Preserve trajectory count and per-trajectory budgets as chains_per_window"
+        },
+        {
+          "call_id": 6,
+          "setting": "generateUmbrellaConfigurations",
+          "reason": "No schema-2 stage for RPMDrate's sequential single-bead window seeding",
+          "replacement": "Each PyRPMD window starts from the supplied TS and uses its own declared equilibration"
+        },
+        {
+          "call_id": 5,
+          "setting": "samplingTime",
+          "reason": "RPMDrate defaults to floor(sqrt(stage steps)) separately in equilibration, production and parent segments",
+          "replacement": {
+            "umbrella.sampling.thermostat": {
+              "type": "andersen",
+              "scheme": "global_refresh",
+              "schedule": "fixed",
+              "refresh_every": {
+                "steps": 10
+              }
+            },
+            "recrossing.parent.thermostat": {
+              "type": "andersen",
+              "scheme": "global_refresh",
+              "schedule": "fixed",
+              "refresh_every": {
+                "steps": 10
+              }
+            }
+          }
+        },
+        {
+          "call_id": 118,
+          "setting": "xi_min/xi_max",
+          "reason": "PyRPMD UI integrates from xi=0 to the largest window center; histogram ranges do not change this grid",
+          "replacement": {
+            "ui_range": [
+              0.0,
+              1.0400000000000003
+            ],
+            "histogram_range": [
+              -0.02,
+              1.02
+            ]
+          }
+        }
+      ]
+    },
+    "H+C2H6": {
+      "source_sha256": "999581915e775981802e02292b6b60fe336bdeb6400bc7f70cecf6ffa4d919a4",
+      "strict_exit": 2,
+      "strict_output_files": 0,
+      "allow_unmapped_validate": true,
+      "static_prepare": true,
+      "natoms": 9,
+      "windows": 106,
+      "chains_per_window": 150,
+      "equilibration_steps": 200000,
+      "production_steps": 1000000,
+      "rinf_bohr": 15.000079069618206,
+      "fragments": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        [
+          8
+        ]
+      ],
+      "forming_bonds": [
+        [
+          7,
+          8
+        ]
+      ],
+      "breaking_bonds": [
+        [
+          4,
+          7
+        ]
+      ],
+      "equivalent_paths": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          7,
+          6,
+          5,
+          8
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          7,
+          6,
+          8
+        ]
+      ],
+      "geometry_max_abs_error_bohr": 4.440892098500626e-16,
+      "kforce_hartree": 100.0,
+      "stiffness_max_abs_error_hartree": 0.0,
+      "parent_configurations": 1000,
+      "child_pairs": 50000,
+      "child_trajectories": 100000,
+      "unmapped": [
+        {
+          "call_id": 112,
+          "setting": "windows.trajectories",
+          "reason": "RPMDrate reuses each previous trajectory's final geometry; PyRPMD uses independent chains",
+          "replacement": "Preserve trajectory count and per-trajectory budgets as chains_per_window"
+        },
+        {
+          "call_id": 5,
+          "setting": "generateUmbrellaConfigurations",
+          "reason": "No schema-2 stage for RPMDrate's sequential single-bead window seeding",
+          "replacement": "Each PyRPMD window starts from the supplied TS and uses its own declared equilibration"
+        },
+        {
+          "call_id": 4,
+          "setting": "samplingTime",
+          "reason": "RPMDrate defaults to floor(sqrt(stage steps)) separately in equilibration, production and parent segments",
+          "replacement": {
+            "umbrella.sampling.thermostat": {
+              "type": "andersen",
+              "scheme": "global_refresh",
+              "schedule": "fixed",
+              "refresh_every": {
+                "steps": 10
+              }
+            },
+            "recrossing.parent.thermostat": {
+              "type": "andersen",
+              "scheme": "global_refresh",
+              "schedule": "fixed",
+              "refresh_every": {
+                "steps": 10
+              }
+            }
+          }
+        },
+        {
+          "call_id": 113,
+          "setting": "xi_min/xi_max",
+          "reason": "PyRPMD UI integrates from xi=0 to the largest window center; histogram ranges do not change this grid",
+          "replacement": {
+            "ui_range": [
+              0.0,
+              1.0000000000000002
+            ],
+            "histogram_range": [
+              -0.02,
+              1.01
+            ]
+          }
+        }
+      ]
+    },
+    "OH+CH4": {
+      "source_sha256": "583670c6875f5a0772844b952fc6847e94b82e3542e1ee243e18e54b04b7862a",
+      "strict_exit": 2,
+      "strict_output_files": 0,
+      "allow_unmapped_validate": true,
+      "static_prepare": true,
+      "natoms": 7,
+      "windows": 110,
+      "chains_per_window": 200,
+      "equilibration_steps": 200000,
+      "production_steps": 1000000,
+      "rinf_bohr": 15.000079069618206,
+      "fragments": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        [
+          5,
+          6
+        ]
+      ],
+      "forming_bonds": [
+        [
+          3,
+          5
+        ]
+      ],
+      "breaking_bonds": [
+        [
+          1,
+          3
+        ]
+      ],
+      "equivalent_paths": [
+        [
+          0,
+          1,
+          2,
+          4,
+          3,
+          5,
+          6
+        ],
+        [
+          0,
+          1,
+          3,
+          2,
+          4,
+          5,
+          6
+        ],
+        [
+          3,
+          1,
+          2,
+          0,
+          4,
+          5,
+          6
+        ]
+      ],
+      "geometry_max_abs_error_bohr": 1.7763568394002505e-15,
+      "kforce_hartree": 100.0,
+      "stiffness_max_abs_error_hartree": 0.0,
+      "parent_configurations": 1000,
+      "child_pairs": 50000,
+      "child_trajectories": 100000,
+      "unmapped": [
+        {
+          "call_id": 117,
+          "setting": "windows.trajectories",
+          "reason": "RPMDrate reuses each previous trajectory's final geometry; PyRPMD uses independent chains",
+          "replacement": "Preserve trajectory count and per-trajectory budgets as chains_per_window"
+        },
+        {
+          "call_id": 6,
+          "setting": "generateUmbrellaConfigurations",
+          "reason": "No schema-2 stage for RPMDrate's sequential single-bead window seeding",
+          "replacement": "Each PyRPMD window starts from the supplied TS and uses its own declared equilibration"
+        },
+        {
+          "call_id": 5,
+          "setting": "samplingTime",
+          "reason": "RPMDrate defaults to floor(sqrt(stage steps)) separately in equilibration, production and parent segments",
+          "replacement": {
+            "umbrella.sampling.thermostat": {
+              "type": "andersen",
+              "scheme": "global_refresh",
+              "schedule": "fixed",
+              "refresh_every": {
+                "steps": 10
+              }
+            },
+            "recrossing.parent.thermostat": {
+              "type": "andersen",
+              "scheme": "global_refresh",
+              "schedule": "fixed",
+              "refresh_every": {
+                "steps": 10
+              }
+            }
+          }
+        },
+        {
+          "call_id": 118,
+          "setting": "xi_min/xi_max",
+          "reason": "PyRPMD UI integrates from xi=0 to the largest window center; histogram ranges do not change this grid",
+          "replacement": {
+            "ui_range": [
+              0.0,
+              1.0400000000000003
+            ],
+            "histogram_range": [
+              -0.02,
+              1.02
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "h3_handwritten_identity": "passed (lengths compared in bohr)",
+  "h3_bkmp2_topology": {
+    "configuration_rate": true,
+    "convergence_base": true,
+    "upstream_to_benchmark_permutation": [
+      2,
+      1,
+      0
+    ],
+    "benchmark_rinf_bohr": 10.0,
+    "geometry_and_rinf_are_not_identity_comparisons": true
+  }
+}

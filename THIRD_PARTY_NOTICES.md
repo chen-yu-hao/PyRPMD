@@ -1,5 +1,18 @@
 # Third party code and scientific references
 
+## RPMDrate input conversion
+
+`src/pyrpmd/rpmdrate_import.py` implements the input-call contract and adapts the
+ordered equivalent-transition-state atom correspondence from
+`chen-yu-hao/RPMDrate`, commit `710670c6f753b1159c0147c817e82998c2cc8486`,
+`rpmdrate/input.py` and `rpmdrate/main.py`. The force-constant convention is
+checked against `rpmdrate/_main.f90` at that commit.
+
+Copyright (c) 2013 Yury V. Suleimanov, Joshua W. Allen, William H. Green.
+Licensed under the MIT license reproduced below. Upstream examples and PES
+implementations are not bundled by this importer; the conversion example and
+handwritten identity reference are newly written PyRPMD inputs.
+
 ## RPMDrate
 
 Reference: https://github.com/GreenGroup/RPMDrate
