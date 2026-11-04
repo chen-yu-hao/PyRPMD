@@ -39,6 +39,14 @@ def validate_input_preflight(d):
                 table["native"] = bool(value)
             elif value is not None and not (isinstance(value, str) and value == "required"):
                 raise InputError(f"{label} must be a boolean, None or 'required'")
+    sampling = d.get("sampling", {})
+    parameters = sampling.get("thermostat_params", {})
+    if "rng" in parameters:
+        rng = parameters["rng"]
+        if not isinstance(rng, str) or rng not in ("mt19937_64", "philox-v1"):
+            raise InputError("sampling.thermostat_params.rng must be mt19937_64 or philox-v1")
+        if sampling.get("engine") != "native":
+            raise InputError("sampling.thermostat_params.rng requires sampling.engine='native'")
 
 
 def validate_task_sections(d):

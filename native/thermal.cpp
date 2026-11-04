@@ -9,7 +9,7 @@
 namespace {
 constexpr const char* capsule_name="pyrpmd.NativeEnsemble.v1";
 using thermal::Vec;using thermal::Mat;using thermal::require;
-struct Handle {std::unique_ptr<thermal::Engine> engine;PyObject* owner=nullptr;PyObject* callback=nullptr;std::mutex mutex;~Handle(){engine.reset();Py_XDECREF(callback);Py_XDECREF(owner);}};
+struct Handle {std::unique_ptr<thermal::Engine> engine;std::shared_ptr<thermal::State> rollback;PyObject* owner=nullptr;PyObject* callback=nullptr;std::mutex mutex;~Handle(){engine.reset();Py_XDECREF(callback);Py_XDECREF(owner);}};
 struct Lock {std::unique_lock<std::mutex> lock;explicit Lock(Handle& h):lock(h.mutex,std::try_to_lock){require(lock.owns_lock(),"native ensemble is busy in another thread");}};
 void destroy(PyObject* cap){auto*p=static_cast<Handle*>(PyCapsule_GetPointer(cap,capsule_name));if(p)delete p;else PyErr_Clear();}
 Handle& handle(PyObject* obj){auto*p=static_cast<Handle*>(PyCapsule_GetPointer(obj,capsule_name));require(p!=nullptr,"invalid native ensemble handle");return *p;}
@@ -82,6 +82,11 @@ thermal::Config config(PyObject* dict){
     c.cayley=boolean(dict,"cayley");c.initialize_momenta=boolean(dict,"initialize_momenta");c.has_cell=boolean(dict,"has_cell");
     c.gamma=num(dict,"gamma");c.gamma0=num(dict,"gamma0");c.pile_scale=num(dict,"pile_scale");c.tau=num(dict,"tau");
     c.interval=integer(dict,"interval");c.seed=integer(dict,"seed");c.gle_size=integer(dict,"gle_size");require(c.gle_size<=64,"GLE dimension exceeds 64");
+    if(PyObject* rng=PyDict_GetItemString(dict,"rng")){
+        require(PyUnicode_Check(rng),"rng must be a string");
+        const char* name=PyUnicode_AsUTF8(rng);require(name!=nullptr,"invalid rng string");
+        require(std::strcmp(name,"philox-v1")==0,"unsupported native rng");c.philox=true;
+    }
     if(c.thermostat==thermal::Thermostat::NHC){c.nhc_length=integer(dict,"nhc_length");c.nhc_substeps=integer(dict,"nhc_substeps");}
     c.gle_T=vector(dict,"gle_T");c.gle_S=vector(dict,"gle_S");c.gle_Croot=vector(dict,"gle_Croot");
     c.pressure=num(dict,"pressure");c.baro_tau=num(dict,"baro_tau");c.baro_gamma=num(dict,"baro_gamma");c.compressibility=num(dict,"compressibility");
@@ -163,6 +168,52 @@ PyObject* state(PyObject*,PyObject*args){
         std::string rng=h.engine->rng_state();set(dict,"rng",PyUnicode_FromStringAndSize(rng.data(),static_cast<Py_ssize_t>(rng.size())));return dict;
     }catch(...){Py_XDECREF(dict);return error();}
 }
+constexpr const char* rollback_name="pyrpmd.NativeEnsembleRollback.v1";
+struct Rollback {
+    std::shared_ptr<const thermal::State> state;PyObject* owner;
+    Rollback(std::shared_ptr<const thermal::State> value,PyObject* cap):state(std::move(value)),owner(cap){Py_INCREF(owner);}
+    ~Rollback(){Py_DECREF(owner);}
+};
+void destroy_rollback(PyObject* cap){
+    auto* token=static_cast<Rollback*>(PyCapsule_GetPointer(cap,rollback_name));
+    if(token)delete token;else PyErr_Clear();
+}
+PyObject* snapshot(PyObject*,PyObject*args){
+    PyObject* cap;if(!PyArg_ParseTuple(args,"O",&cap))return nullptr;
+    try{auto& h=handle(cap);Lock lock(h);
+        // Reuse vector capacity only when no outstanding token owns it.
+        if(!h.rollback||!h.rollback.unique())h.rollback=std::make_shared<thermal::State>();
+        *h.rollback=h.engine->s;
+        auto token=std::make_unique<Rollback>(h.rollback,cap);
+        PyObject* result=PyCapsule_New(token.get(),rollback_name,destroy_rollback);
+        if(!result)return nullptr;token.release();return result;
+    }catch(...){return error();}
+}
+PyObject* restore_snapshot(PyObject*,PyObject*args){
+    PyObject *cap,*saved;if(!PyArg_ParseTuple(args,"OO",&cap,&saved))return nullptr;
+    try{auto& h=handle(cap);Lock lock(h);
+        auto* token=static_cast<Rollback*>(PyCapsule_GetPointer(saved,rollback_name));
+        require(token&&token->owner==cap,"rollback token belongs to another native ensemble");
+        h.engine->restore(*token->state);Py_RETURN_NONE;
+    }catch(...){return error();}
+}
+PyObject* physical_state(PyObject*,PyObject*args){
+    PyObject *cap,*q=Py_None,*p=Py_None;if(!PyArg_ParseTuple(args,"O|OO",&cap,&q,&p))return nullptr;
+    PyObject* dict=nullptr;Py_buffer qview{},pview{};
+    try{auto&h=handle(cap);Lock lock(h);const auto&s=h.engine->s;
+        if(q!=Py_None||p!=Py_None){
+            require(PyObject_GetBuffer(q,&qview,PyBUF_C_CONTIGUOUS|PyBUF_FORMAT|PyBUF_WRITABLE)==0,"expected writable q output");
+            require(PyObject_GetBuffer(p,&pview,PyBUF_C_CONTIGUOUS|PyBUF_FORMAT|PyBUF_WRITABLE)==0,"expected writable p output");
+            for(auto* view:{&qview,&pview})require(view->itemsize==8&&view->format&&std::strcmp(view->format,"d")==0&&view->len==Py_ssize_t(s.q.size()*8),"invalid physical output buffer");
+        }
+        dict=PyDict_New();if(!dict)throw std::bad_alloc();
+        set(dict,"energy",bytes(s.energy));set(dict,"cell",bytes(s.cell.data(),9));
+        set(dict,"step",PyLong_FromUnsignedLongLong(s.step));
+        if(qview.obj){std::memcpy(qview.buf,s.q.data(),s.q.size()*8);std::memcpy(pview.buf,s.p.data(),s.p.size()*8);}
+        if(qview.obj)PyBuffer_Release(&qview);if(pview.obj)PyBuffer_Release(&pview);
+        return dict;
+    }catch(...){if(qview.obj)PyBuffer_Release(&qview);if(pview.obj)PyBuffer_Release(&pview);Py_XDECREF(dict);return error();}
+}
 PyObject* restore(PyObject*,PyObject*args){
     PyObject *cap,*dict;if(!PyArg_ParseTuple(args,"OO",&cap,&dict))return nullptr;
     try{auto&h=handle(cap);Lock lock(h);thermal::State s;
@@ -179,6 +230,9 @@ PyMethodDef methods[]={
     {"copy_thermostat",copy_thermostat,METH_VARARGS,"Copy compatible bath/RNG state between executors without changing physical state."},
     {"set_state",set_state,METH_VARARGS,"Import external q/p/step and transactionally refresh forces, retaining bath state."},
     {"apply_thermostat",apply_thermostat,METH_VARARGS,"Apply only the bath to external q/p, retaining transactional RNG and auxiliary state."},
+    {"snapshot",snapshot,METH_VARARGS,"Capture a private binary rollback token, reusing unowned storage."},
+    {"restore_snapshot",restore_snapshot,METH_VARARGS,"Restore a token owned by this executor."},
+    {"physical_state",physical_state,METH_VARARGS,"Copy physical arrays without serializing a checkpoint."},
     {"state",state,METH_VARARGS,"Copy all state, including cached forces, auxiliary momenta and Gaussian RNG cache."},
     {"restore",restore,METH_VARARGS,"Validate and atomically restore a complete native state."},
     {nullptr,nullptr,0,nullptr}};
@@ -198,6 +252,8 @@ PyMODINIT_FUNC PyInit__thermal(){
     const char* abi="mt19937_64-normal-v1-unknown-standard-library";
 #endif
     if(PyModule_AddStringConstant(m,"rng_abi",abi)<0
+            ||PyModule_AddStringConstant(m,"philox_abi","philox-v1-salmon-sc11")<0
+            ||PyModule_AddIntConstant(m,"THERMAL_KERNEL_API",1)<0
             ||PyModule_AddIntConstant(m,"COMPOSABLE_OPERATORS_API",1)<0
             ||PyModule_AddIntConstant(m,"MIDDLE_BZP_API",1)<0){Py_DECREF(m);return nullptr;}return m;
 }

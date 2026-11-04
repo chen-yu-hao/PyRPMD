@@ -472,7 +472,7 @@ def _composed_native_prefix(dynamics, state, steps, mask, record_energy,
                             check_energy, diagnostics, backend, raise_on_error):
     """Use the persistent native operator executor with per-step transactions."""
     component = dynamics._composition
-    operators = dynamics.operator_state_dict()
+    operators = dynamics._operator_rollback_token()
     initial_step, initial_time = state.step, state.time
     try:
         engine = component._prepare_native(state, backend=backend)
@@ -486,12 +486,12 @@ def _composed_native_prefix(dynamics, state, steps, mask, record_energy,
             allowed, observe=mask[:allowed], record_energy=record_energy,
             check_energy=check_energy,
             energy_parts=bool(diagnostics.get("energy_parts")),
-            ring_radii=bool(diagnostics.get("ring_radii")))
+            ring_radii=bool(diagnostics.get("ring_radii")), _outer_transaction=True)
         completed = native["completed"]
         error = native["error"]
         if completed == allowed and allowed < steps and error is None:
             error = "FloatingPointError: nonfinite integration clock"
-        accepted = engine.state()
+        accepted = engine._physical_state()
         component._native_state = accepted
         columns, samples = native["columns"], native["samples"]
         selected = mask[:completed].astype(bool)
@@ -512,7 +512,7 @@ def _composed_native_prefix(dynamics, state, steps, mask, record_energy,
                              np.empty((int(selected.sum()), 0)), None, None, error,
                              diagnostics=arrays or None)
     except BaseException:
-        dynamics.load_operator_state_dict(operators)
+        dynamics._restore_operator_rollback_token(operators)
         raise
     if completed:
         state.q[:], state.p[:] = accepted["q"], accepted["p"]
@@ -521,7 +521,7 @@ def _composed_native_prefix(dynamics, state, steps, mask, record_energy,
             dynamics.cell = accepted["cell"].copy()
     elif error:
         # An unsuccessful first step cannot select/seed a new bath.
-        dynamics.load_operator_state_dict(operators)
+        dynamics._restore_operator_rollback_token(operators)
     dynamics.last_step_backend = used
     dynamics.propagation_stats[used + "_steps"] += completed
     if reason:
@@ -713,7 +713,7 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
         for i in range(steps):
             np.copyto(backup_q, state.q);np.copyto(backup_p, state.p)
             backup_step, backup_time = state.step, state.time
-            operators = dynamics.operator_state_dict() if composed else None
+            operators = dynamics._operator_rollback_token() if composed else None
             previous_stats = copy.deepcopy(dynamics.propagation_stats) if composed else None
             try:
                 if check_energy and i == 0:
@@ -776,7 +776,7 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
             except Exception as exc:
                 force_valid = False
                 if operators is not None:
-                    dynamics.load_operator_state_dict(operators)
+                    dynamics._restore_operator_rollback_token(operators)
                     dynamics.propagation_stats = previous_stats
                 state.q[:] = backup_q;state.p[:] = backup_p
                 state.step, state.time = backup_step, backup_time

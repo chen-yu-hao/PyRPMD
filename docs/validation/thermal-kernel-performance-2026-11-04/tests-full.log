@@ -1,0 +1,351 @@
+........................................................................ [  0%]
+........................................................................ [  1%]
+.....................ss...............ssssss............................ [  2%]
+........................................................................ [  2%]
+........................................................................ [  3%]
+.............sssss...................................................... [  4%]
+........................................................................ [  5%]
+.....ssssssssssssssssss.s............................................... [  5%]
+.........................s.............................................. [  6%]
+........................................................................ [  7%]
+................ssssssssss.............................................. [  8%]
+........................................................................ [  8%]
+........................................................................ [  9%]
+........................................................................ [ 10%]
+........................................................................ [ 11%]
+........................................................................ [ 11%]
+........................................................................ [ 12%]
+............................................................................................... [ 13%]
+........................................................................ [ 14%]
+........................................................................ [ 15%]
+.................................................................................................... [ 16%]
+.............................................................. [ 16%]
+...s.................................................................... [ 17%]
+............................................................................................................ [ 18%]
+........................................................................ [ 19%]
+........................................................................ [ 20%]
+........................................................................ [ 21%]
+........................................................................ [ 21%]
+..............................................sssss..................... [ 22%]
+...............................ss....................................... [ 23%]
+................................................................... [ 23%]
+........................................................................ [ 24%]
+........................................................................ [ 25%]
+........................................................................ [ 26%]
+.........................sss............................................ [ 26%]
+........................................................................ [ 27%]
+........................................................................ [ 28%]
+........................................................................ [ 29%]
+........................................................................ [ 29%]
+........................................................................ [ 30%]
+........................................................................ [ 31%]
+........................................................................ [ 32%]
+........................................................................ [ 32%]
+........................................................................ [ 33%]
+........................................................................ [ 34%]
+........................................................................ [ 35%]
+..........................................ss............................ [ 35%]
+........................................................................ [ 36%]
+...................................................... [ 37%]
+........................................................................ [ 38%]
+........................................................................ [ 38%]
+........................................................................ [ 39%]
+........................................................................ [ 40%]
+........sssssssss...........................sssssssssssss.........sss.ss [ 41%]
+ssssssssss.sssssssss.................................................... [ 41%]
+........................................................................ [ 42%]
+........................................................................ [ 43%]
+................................................................... [ 43%]
+........................................................................ [ 44%]
+........................................................................ [ 45%]
+........................................................................ [ 46%]
+........................................................................ [ 46%]
+........................................................................ [ 47%]
+........................ss..........sss................................. [ 48%]
+........................................................................ [ 49%]
+........................................................................ [ 49%]
+........................................................................ [ 50%]
+........................................................................ [ 51%]
+........................................................................ [ 52%]
+........................................................................ [ 52%]
+........................................................................ [ 53%]
+........................................................................ [ 54%]
+........................................................................ [ 55%]
+........................................................................ [ 55%]
+........................................................................ [ 56%]
+........................................................................ [ 57%]
+........................................................................ [ 58%]
+........................................................................ [ 58%]
+........................................................................ [ 59%]
+........................................................................ [ 60%]
+........................................................................ [ 61%]
+..................................................sssssssss..sssssssssss [ 61%]
+ssssssssssssss.......................................................... [ 62%]
+.....s.................................................................. [ 63%]
+.........s........................................................s........................s...s [ 64%]
+.................ssssss.ssssssss........................................ [ 65%]
+........................................................................ [ 65%]
+...............s........................................................ [ 66%]
+..............ssssss.................................................... [ 67%]
+.......s................................................................ [ 68%]
+..............sssss..sssssss............................................ [ 68%]
+..........ssssss.......................sss........................... [ 69%]
+........................................................................ [ 70%]
+........................................................................ [ 71%]
+........................................................................ [ 71%]
+........................................................................ [ 72%]
+.................................................................. [ 73%]
+........................................................................ [ 74%]
+........................................................................ [ 74%]
+.............................................................. [ 75%]
+........................................................................ [ 76%]
+................................................................... [ 76%]
+.................................................................. [ 77%]
+........................................................................ [ 78%]
+........................................................................ [ 79%]
+........................................................................ [ 79%]
+.....s.................................................................. [ 80%]
+.............sss........................................................ [ 81%]
+........................................................................ [ 82%]
+........................................................................ [ 82%]
+........................................................................ [ 83%]
+.................................................... [ 84%]
+................................................. [ 84%]
+........................................................................ [ 85%]
+........................................................................ [ 86%]
+.............................................s.s......................................................................................................... [ 87%]
+........................................................................ [ 88%]
+..........................sss.s......................................... [ 89%]
+................s....................................................... [ 90%]
+........................................................................ [ 90%]
+..........................................s............. [ 91%]
+..............................ss........................................ [ 92%]
+........................................................................ [ 92%]
+..................................ssssssss.........................sssss [ 93%]
+s...s....ss............................................................. [ 94%]
+........................................................................ [ 95%]
+..................................................................................................... [ 96%]
+........................................................................ [ 96%]
+........................................................................ [ 97%]
+........................................................................ [ 98%]
+........................................................................ [ 99%]
+........................................................................ [ 99%]
+.........                                                                [100%]
+=============================== warnings summary ===============================
+tests/test_constraint_workflow_guards.py::test_run_resolved_rejects_before_creating_run_manifest[metadynamics]
+tests/test_fes_entry.py::test_old_run_manifest_and_streams_migrate_without_changing_samples[metadynamics]
+  /tmp/pyrpmd-t49/src/pyrpmd/runner.py:216: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    config = normalize_fes_task(copy.deepcopy(config))
+
+tests/test_constraint_workflow_guards.py::test_run_resolved_rejects_before_creating_run_manifest[opes]
+tests/test_fes_entry.py::test_old_run_manifest_and_streams_migrate_without_changing_samples[opes]
+  /tmp/pyrpmd-t49/src/pyrpmd/runner.py:216: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+    config = normalize_fes_task(copy.deepcopy(config))
+
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[nhc-metadynamics]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[svr-metadynamics]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[gle-metadynamics]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[pile-g-metadynamics]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[ffl-metadynamics]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[pile-l-metadynamics]
+  /tmp/pyrpmd-t49/tests/test_enhanced_sampling_composition.py:140: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    resolved, _ = JobSpec.from_mapping(cfg).resolve()
+
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[nhc-opes]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[svr-opes]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[gle-opes]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[pile-g-opes]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[ffl-opes]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[pile-l-opes]
+  /tmp/pyrpmd-t49/tests/test_enhanced_sampling_composition.py:140: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+    resolved, _ = JobSpec.from_mapping(cfg).resolve()
+
+tests/test_fes_entry.py::test_nested_and_legacy_namespaces_have_same_scientific_identity[metadynamics]
+  /tmp/pyrpmd-t49/tests/test_fes_entry.py:51: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    historical, _ = JobSpec.from_mapping(legacy).resolve()
+
+tests/test_fes_entry.py::test_nested_and_legacy_namespaces_have_same_scientific_identity[opes]
+  /tmp/pyrpmd-t49/tests/test_fes_entry.py:51: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+    historical, _ = JobSpec.from_mapping(legacy).resolve()
+
+tests/test_grid_metadynamics.py::test_grid_frontend_explicit_and_declared_units_and_defaults
+  /tmp/pyrpmd-t49/tests/test_grid_metadynamics.py:285: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    cfg, system = JobSpec.from_mapping(job).resolve()
+
+tests/test_grid_metadynamics.py::test_grid_frontend_explicit_and_declared_units_and_defaults
+  /tmp/pyrpmd-t49/tests/test_grid_metadynamics.py:291: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    JobSpec.from_mapping(job).resolve()
+
+tests/test_metadynamics.py::test_metadynamics_default_production_budget
+  /tmp/pyrpmd-t49/tests/test_metadynamics.py:293: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    cfg, _ = spec.resolve()
+
+tests/test_metadynamics.py::test_frontend_resolves_width_units_and_rejects_bad_options
+  /tmp/pyrpmd-t49/tests/test_metadynamics.py:365: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    cfg, sys = JobSpec.from_mapping(job).resolve()
+
+tests/test_metadynamics.py::test_frontend_resolves_width_units_and_rejects_bad_options
+  /tmp/pyrpmd-t49/tests/test_metadynamics.py:372: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    JobSpec.from_mapping(job).resolve()
+
+tests/test_sampling_public_api.py::test_opes_public_default_and_frozen_run_resume_offline
+  /tmp/pyrpmd-t49/src/pyrpmd/runner.py:624: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+    config, system = spec.resolve()
+
+tests/test_sampling_public_api.py::test_opes_public_default_and_frozen_run_resume_offline
+  /tmp/pyrpmd-t49/src/pyrpmd/runner.py:211: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+    config, system = spec.resolve()
+
+tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[reaction]
+tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[rate]
+tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[recrossing]
+tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[collision]
+tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[outcomes]
+  /tmp/pyrpmd-t49/tests/test_sampling_public_api.py:77: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+    JobSpec.from_mapping(job).resolve()
+
+tests/test_shared_metadynamics.py::test_shared_input_and_cli_run_resume_and_offline_analyze
+  /tmp/pyrpmd-t49/tests/test_shared_metadynamics.py:305: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    cfg, _ = JobSpec.from_file(source).resolve()
+
+tests/test_shared_metadynamics.py::test_shared_input_and_cli_run_resume_and_offline_analyze
+  /tmp/pyrpmd-t49/src/pyrpmd/runner.py:211: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    config, system = spec.resolve()
+
+tests/test_surface_source.py: 13 warnings
+  /tmp/pyrpmd-t49/tests/test_surface_source.py:35: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    cfg, system = JobSpec.from_mapping(original).resolve()
+
+tests/test_surface_workflow.py::test_metadynamics_input_accepts_fixed_atoms_and_periodic_cell[fixed]
+tests/test_surface_workflow.py::test_metadynamics_input_accepts_fixed_atoms_and_periodic_cell[periodic]
+  /tmp/pyrpmd-t49/tests/test_surface_workflow.py:56: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    return JobSpec.from_mapping(cluster_job() if job is None else job).resolve()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+campaign: omitted 103 modules before import (-m 'not campaign')
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_batched_ml_deepmd.py:6: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_batched_ml_fairchem.py:9: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_batched_ml_mace.py:8: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_batched_ml_metatomic.py:9: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_batched_ml_nequip.py:14: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_batched_ml_workflow.py:8: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_onnx_native.py:20: optional native ONNX plugin not configured
+SKIPPED [1] tests/test_pyscf_multistate.py:18: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_report_render.py:11: could not import 'matplotlib': No module named 'matplotlib'
+SKIPPED [1] tests/test_report_render_validation.py:13: could not import 'matplotlib': No module named 'matplotlib'
+SKIPPED [1] tests/test_torch_backend.py:7: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_torch_materials.py:8: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_torch_materials_input.py:10: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_torch_materials_io.py:13: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_torch_workflow_potentials.py:7: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_active_learning_labeling.py:306: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_active_learning_labeling.py:306: could not import 'tblite.interface': No module named 'tblite'
+SKIPPED [1] tests/test_active_learning_mace.py:50: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_active_learning_mace.py:65: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_active_learning_mace.py:74: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_active_learning_mace.py:96: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_active_learning_mace.py:115: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_active_learning_mace.py:133: could not import 'torch': No module named 'torch'
+SKIPPED [3] tests/test_advanced_cv.py:150: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_advanced_cv.py:167: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_advanced_cv.py:180: could not import 'torch': No module named 'torch'
+SKIPPED [3] tests/test_ase_force_consistency.py:12: could not import 'ase': No module named 'ase'
+SKIPPED [3] tests/test_ase_force_consistency.py:86: could not import 'ase': No module named 'ase'
+SKIPPED [1] tests/test_ase_force_consistency.py:112: could not import 'ase': No module named 'ase'
+SKIPPED [1] tests/test_ase_trajectory_batch.py:41: could not import 'ase': No module named 'ase'
+SKIPPED [1] tests/test_ase_trajectory_batch.py:63: could not import 'ase': No module named 'ase'
+SKIPPED [6] tests/test_ase_trajectory_batch.py:77: could not import 'ase': No module named 'ase'
+SKIPPED [1] tests/test_ase_trajectory_batch.py:91: could not import 'ase': No module named 'ase'
+SKIPPED [2] tests/test_ase_trajectory_batch.py:110: could not import 'ase': No module named 'ase'
+SKIPPED [1] tests/test_ase_trajectory_batch.py:139: could not import 'ase': No module named 'ase'
+SKIPPED [1] tests/test_barostat.py:414: optional ASE
+SKIPPED [2] tests/test_batched_ml_contract.py:124: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_batched_ml_contract.py:144: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_batched_ml_contract.py:165: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_batched_ml_contract.py:174: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_batched_ml_contract.py:208: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_batched_ml_contract.py:216: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_batched_ml_contract.py:229: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_batched_ml_contract.py:240: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_batched_ml_contract.py:248: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_data_manifest.py:111: Windows junction integration requires cmd /c mklink /J
+SKIPPED [4] tests/test_electronic_backends.py:130: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_electronic_backends.py:145: could not import 'torch': No module named 'torch'
+SKIPPED [2] tests/test_engine_subcommunicators.py:67: could not import 'lammps': No module named 'lammps'
+SKIPPED [1] tests/test_excited_state_pyscf.py:33: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_excited_state_pyscf.py:69: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_excited_state_pyscf.py:118: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [2] tests/test_heom.py:94: could not import 'qutip': No module named 'qutip'
+SKIPPED [4] tests/test_jaxpip_pesgen.py:139: optional real JaxPIP environment
+SKIPPED [2] tests/test_jaxpip_pesgen.py:168: optional real JaxPIP environment
+SKIPPED [1] tests/test_jaxpip_pesgen.py:190: optional real JaxPIP environment
+SKIPPED [1] tests/test_jaxpip_pesgen.py:197: optional real JaxPIP environment
+SKIPPED [1] tests/test_jaxpip_pesgen.py:209: optional real PySCF
+SKIPPED [16] tests/test_lammps_batch_provider.py:16: could not import 'lammps': No module named 'lammps'
+SKIPPED [1] tests/test_lammps_batch_provider.py:265: could not import 'mpi4py.MPI': No module named 'mpi4py'
+SKIPPED [11] tests/test_lammps_performance.py:12: could not import 'lammps': No module named 'lammps'
+SKIPPED [9] tests/test_lammps_provider.py:15: could not import 'lammps': No module named 'lammps'
+SKIPPED [2] tests/test_mlcolvar_cv.py:13: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_mpi_launch_prefix.py:34: could not import 'mpi4py': No module named 'mpi4py'
+SKIPPED [2] tests/test_mpi_shared_walkers.py:47: could not import 'mpi4py': No module named 'mpi4py'
+SKIPPED [9] tests/test_openmm_provider.py:14: could not import 'openmm': No module named 'openmm'
+SKIPPED [10] tests/test_openmm_resident.py:14: could not import 'openmm': No module named 'openmm'
+SKIPPED [3] tests/test_openmm_resident.py:159: could not import 'openmm': No module named 'openmm'
+SKIPPED [6] tests/test_openmm_resident.py:337: could not import 'openmm': No module named 'openmm'
+SKIPPED [4] tests/test_openmm_resident.py:32: could not import 'openmm': No module named 'openmm'
+SKIPPED [1] tests/test_openmm_resident.py:250: could not import 'openmm': No module named 'openmm'
+SKIPPED [1] tests/test_openmm_resident.py:276: could not import 'openmm': No module named 'openmm'
+SKIPPED [1] tests/test_parallel.py:106: optional ASE runtime not installed
+SKIPPED [1] tests/test_path_sampling_reporting.py:58: could not import 'matplotlib': No module named 'matplotlib'
+SKIPPED [1] tests/test_periodic_basis_reduction.py:82: could not import 'ase.geometry': No module named 'ase'
+SKIPPED [1] tests/test_periodic_materials.py:124: ASE runtime required
+SKIPPED [1] tests/test_periodic_materials.py:140: ASE runtime required
+SKIPPED [1] tests/test_pesgen.py:86: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [3] tests/test_pesgen.py:101: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_pesgen.py:111: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_pesgen.py:120: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_pesgen_native.py:50: explicit pinned native Caracal build/source required
+SKIPPED [1] tests/test_pesgen_native.py:67: explicit pinned native Caracal build/source required
+SKIPPED [1] tests/test_pesgen_native.py:97: explicit pinned native Caracal build/source required
+SKIPPED [2] tests/test_pesgen_native.py:112: explicit pinned native Caracal build/source required
+SKIPPED [1] tests/test_pesgen_native.py:151: full MPI installation for original optimizer
+SKIPPED [1] tests/test_pesgen_native.py:160: explicit pinned native Caracal build/source required
+SKIPPED [1] tests/test_pesgen_native.py:177: full MPI installation for original optimizer
+SKIPPED [1] tests/test_plumed.py:379: optional PLUMED Python wrapper unavailable
+SKIPPED [2] tests/test_plumed_live_workflow.py:36: Optional real PLUMED runtime unavailable: No module named 'plumed'
+SKIPPED [4] tests/test_plumed_live_workflow.py:87: Optional real PLUMED runtime unavailable: No module named 'plumed'
+SKIPPED [1] tests/test_pmf_2d_accuracy.py:117: independent optional reference solver
+SKIPPED [3] tests/test_potential_adapters.py:93: could not import 'ase': No module named 'ase'
+SKIPPED [1] tests/test_potential_adapters.py:181: could not import 'ase': No module named 'ase'
+SKIPPED [1] tests/test_potential_adapters.py:208: could not import 'ase': No module named 'ase'
+SKIPPED [1] tests/test_potential_adapters.py:266: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_potential_adapters.py:276: could not import 'tblite.interface': No module named 'tblite'
+SKIPPED [1] tests/test_potential_adapters.py:289: could not import 'tblite.interface': No module named 'tblite'
+SKIPPED [1] tests/test_potential_adapters.py:305: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_potential_adapters.py:325: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [2] tests/test_potential_adapters.py:339: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [2] tests/test_potential_energy_identity.py:179: could not import 'ase': No module named 'ase'
+SKIPPED [2] tests/test_potential_energy_identity.py:191: could not import 'ase': No module named 'ase'
+SKIPPED [2] tests/test_potential_energy_identity.py:208: could not import 'ase': No module named 'ase'
+SKIPPED [2] ../pyrpmd-t49-venv/lib/python3.11/site-packages/_pytest/unittest.py:521: optional PyTorch runtime not installed
+SKIPPED [1] ../pyrpmd-t49-venv/lib/python3.11/site-packages/_pytest/unittest.py:521: optional ASE runtime not installed
+SKIPPED [1] tests/test_report_review.py:485: could not import 'matplotlib': No module named 'matplotlib'
+SKIPPED [1] tests/test_reporting.py:143: could not import 'matplotlib': No module named 'matplotlib'
+SKIPPED [1] tests/test_reporting.py:165: could not import 'matplotlib': No module named 'matplotlib'
+SKIPPED [1] tests/test_reporting.py:180: could not import 'matplotlib': No module named 'matplotlib'
+SKIPPED [2] tests/test_spin_mapping.py:206: could not import 'torch': No module named 'torch'
+SKIPPED [3] tests/test_surface_examples.py:18: could not import 'ase': No module named 'ase'
+SKIPPED [1] tests/test_surface_examples.py:45: could not import 'ase': No module named 'ase'
+SKIPPED [1] tests/test_surface_geometry.py:246: could not import 'ase': No module named 'ase'
+SKIPPED [1] tests/test_tempering_mpi.py:61: could not import 'mpi4py': No module named 'mpi4py'
+SKIPPED [2] tests/test_thermostats.py:12: could not import 'ase': No module named 'ase'
+SKIPPED [1] tests/test_tier2_spectroscopy.py:296: could not import 'torch': No module named 'torch'
+SKIPPED [7] tests/test_torch_periodic.py:13: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_trajectory_export.py:33: could not import 'ase': No module named 'ase'
+SKIPPED [2] tests/test_trajectory_export.py:53: could not import 'ase': No module named 'ase'
+SKIPPED [1] tests/test_trajectory_export.py:74: could not import 'ase': No module named 'ase'
+SKIPPED [2] tests/test_trajectory_export.py:92: could not import 'MDAnalysis': No module named 'MDAnalysis'
+SKIPPED [1] tests/test_trajectory_export.py:134: could not import 'ase': No module named 'ase'
+SKIPPED [2] tests/test_trajectory_export.py:202: could not import 'ase': No module named 'ase'
+9387 passed, 235 skipped, 1 deselected, 47 warnings, 410 subtests passed in 1665.97s (0:27:45)

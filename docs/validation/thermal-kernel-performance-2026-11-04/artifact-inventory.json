@@ -1,0 +1,144 @@
+{
+  "included": [
+    {
+      "path": "README.md",
+      "bytes": 9487
+    },
+    {
+      "path": "baseline-dynamics.json",
+      "bytes": 42952
+    },
+    {
+      "path": "baseline-native-matrix.json",
+      "bytes": 24003
+    },
+    {
+      "path": "build-fma.log",
+      "bytes": 2271
+    },
+    {
+      "path": "build-no-native.log",
+      "bytes": 1280
+    },
+    {
+      "path": "build-no-openmp.log",
+      "bytes": 2147
+    },
+    {
+      "path": "build-openmp.log",
+      "bytes": 2201
+    },
+    {
+      "path": "candidate-mt-dynamics.json",
+      "bytes": 42700
+    },
+    {
+      "path": "candidate-mt-native-matrix.json",
+      "bytes": 24109
+    },
+    {
+      "path": "candidate-philox-dynamics-4.json",
+      "bytes": 2890
+    },
+    {
+      "path": "candidate-philox-dynamics.json",
+      "bytes": 42626
+    },
+    {
+      "path": "candidate-philox-native-1.json",
+      "bytes": 24029
+    },
+    {
+      "path": "candidate-philox-native-2.json",
+      "bytes": 24034
+    },
+    {
+      "path": "candidate-philox-native-4.json",
+      "bytes": 24056
+    },
+    {
+      "path": "docs-build.log",
+      "bytes": 8678
+    },
+    {
+      "path": "environment.json",
+      "bytes": 624
+    },
+    {
+      "path": "kernels-mt-1.json",
+      "bytes": 399
+    },
+    {
+      "path": "kernels-philox-1.json",
+      "bytes": 398
+    },
+    {
+      "path": "kernels-philox-2.json",
+      "bytes": 399
+    },
+    {
+      "path": "kernels-philox-4.json",
+      "bytes": 400
+    },
+    {
+      "path": "legacy-reference-fma.json",
+      "bytes": 21177
+    },
+    {
+      "path": "legacy-reference.json",
+      "bytes": 21177
+    },
+    {
+      "path": "legacy-replay-1.json",
+      "bytes": 21177
+    },
+    {
+      "path": "legacy-replay-4.json",
+      "bytes": 21177
+    },
+    {
+      "path": "legacy-replay-fma.json",
+      "bytes": 21177
+    },
+    {
+      "path": "performance-gates.json",
+      "bytes": 905
+    },
+    {
+      "path": "statistics-philox.json",
+      "bytes": 1680
+    },
+    {
+      "path": "tests-fma.log",
+      "bytes": 903
+    },
+    {
+      "path": "tests-full.log",
+      "bytes": 30271
+    },
+    {
+      "path": "tests-no-native.log",
+      "bytes": 518
+    },
+    {
+      "path": "tests-no-openmp.log",
+      "bytes": 903
+    },
+    {
+      "path": "tests-openmp.log",
+      "bytes": 903
+    },
+    {
+      "path": "throughput.csv",
+      "bytes": 50602
+    }
+  ],
+  "total_bytes_excluding_inventory": 472253,
+  "excluded": [
+    "Checkpoint NPZs in /tmp/t49-legacy and /tmp/t49-legacy-fma",
+    "Compiled shared libraries and standalone profiling binaries",
+    "Interrupted suites and provisional measurements in /tmp/t49-development-results",
+    "Out-of-scope cache proposal /tmp/t49-builtin-cache-proposal.patch"
+  ],
+  "inventory_comparison": "This validation directory did not exist on the task baseline; only final accepted or explicitly failed-gate records are included."
+}

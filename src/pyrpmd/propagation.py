@@ -226,14 +226,14 @@ def propagate(dynamics, state, steps, *, bias=None, observe=None, sample_interva
     composed = getattr(dynamics, "plan", None) is not None and dynamics.plan.active
     if not composed and not getattr(dynamics, "_stochastic_propagation", False):
         return _propagate(dynamics, state, steps, **kwargs)
-    operators = dynamics.operator_state_dict() if composed else None
+    operators = dynamics._operator_rollback_token() if composed else None
     rng_state = copy.deepcopy(dynamics.rng.bit_generator.state)
     stats = copy.deepcopy(dynamics.propagation_stats)
     try:
         return _propagate(dynamics, state, steps, **kwargs)
     except BaseException:
         if operators is not None:
-            dynamics.load_operator_state_dict(operators)
+            dynamics._restore_operator_rollback_token(operators)
         dynamics.rng.bit_generator.state = rng_state
         dynamics.propagation_stats = stats
         raise
@@ -355,8 +355,7 @@ def _propagate_composed(dynamics, state, steps, *, bias, observe,
     values = np.empty((rows, dimension)) if observe is not None else None
     if backend == "native" and observe is not None:
         raise NativeUnavailableError("composed native blocks require Python scheduling for CV observations")
-    trial = state.copy()
-    engine = component._prepare_native(trial, bias, fragment_data, backend)
+    engine = component._prepare_native(state, bias, fragment_data, backend)
     minimum, maximum = np.inf, -np.inf
     if engine is not None and observe is None:
         # Energy extrema inspect every endpoint. The native common observer
@@ -368,11 +367,7 @@ def _propagate_composed(dynamics, state, steps, *, bias, observe,
         native_chunk_limit = _COMPOSED_NATIVE_BUFFER_BYTES // native_row_bytes
         if not native_chunk_limit:
             raise ValueError("one native observation exceeds the block buffer budget")
-        initial_state = engine.state()
-        q, p = initial_state["q"], initial_state["p"]
-        dq = q - np.roll(q, -1, axis=0)
-        initial = float(np.sum(initial_state["energy"]) + np.sum(p*p / (2*dynamics.masses[None, :, None]))
-                        + 0.5 * (dynamics.nbeads/dynamics.beta)**2 * np.sum(dynamics.masses[None, :, None]*dq*dq))
+        initial = engine._initial_energy(state.q, state.p, dynamics.masses, dynamics.beta)
         if not np.isfinite(initial):
             raise FloatingPointError("nonfinite ring-polymer energy")
         completed, row = 0, 0
@@ -380,9 +375,10 @@ def _propagate_composed(dynamics, state, steps, *, bias, observe,
         while completed < steps:
             count = min(steps - completed, dynamics.block_steps, native_chunk_limit)
             # Request the common nuclear observations, not NativeEnsemble's
-            # thermal estimators. Its per-step transaction is enclosed by this
-            # API's whole-block operator/state rollback.
-            result = engine.run_prefix(count, record_energy=True, check_energy=True)
+            # thermal estimators. This API owns whole-block rollback, so the
+            # native call needs one snapshot, not a snapshot before each step.
+            result = engine.run_prefix(count, record_energy=True, check_energy=True,
+                                       _outer_transaction=True, _atomic=True)
             if result["error"] is not None:
                 raise RuntimeError(result["error"])
             column = result["columns"].index("ring_polymer_hamiltonian")
@@ -401,13 +397,14 @@ def _propagate_composed(dynamics, state, steps, *, bias, observe,
             row, completed = last, completed + count
             if result.get("python_step_callbacks", 0):
                 used = "python"
-        final = engine.state()
+        final = engine._physical_state()
         component._native_state = final
-        trial.q[:], trial.p[:] = final["q"], final["p"]
-        trial.step, trial.time = start_step + steps, clock
+        final_q, final_p = final["q"], final["p"]
+        final_step, final_time = start_step + steps, clock
         if dynamics._initial_cell is not None:
             dynamics.cell = final["cell"].copy()
     else:
+        trial = state.copy()
         initial = dynamics.energy(trial, bias)
         if not np.isfinite(initial):
             raise FloatingPointError("nonfinite ring-polymer energy")
@@ -429,8 +426,9 @@ def _propagate_composed(dynamics, state, steps, *, bias, observe,
                     values[row] = value
                 row += 1
         used = "python"
-    state.q[:], state.p[:] = trial.q, trial.p
-    state.step, state.time = trial.step, trial.time
+        final_q, final_p, final_step, final_time = trial.q, trial.p, trial.step, trial.time
+    state.q[:], state.p[:] = final_q, final_p
+    state.step, state.time = final_step, final_time
     dynamics.last_step_backend = used
     dynamics.propagation_stats[used + "_steps"] += steps
     reason = None if used == "native" else "composed Python force/operator scheduling"

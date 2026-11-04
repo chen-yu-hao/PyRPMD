@@ -301,7 +301,9 @@ def test_sampling_selection_is_explicit_and_strict_native_never_falls_back():
     rng = dynamics.rng.bit_generator.state
     # A Python PES without an exported native binding still cannot satisfy a
     # forced native loop. The shared scheduler reports this capability limit.
-    with pytest.raises(NativeUnavailableError, match="requires Python force/operator scheduling"):
+    reason = ("requires Python force/operator scheduling" if dynamics.native else
+              "native loop requested with native=False")
+    with pytest.raises(NativeUnavailableError, match=reason):
         dynamics.sample_step(state)
     np.testing.assert_array_equal(state.q, previous.q)
     np.testing.assert_array_equal(state.p, previous.p)

@@ -1,0 +1,1004 @@
+{
+  "schema": "thermal-throughput-v1",
+  "complete": true,
+  "physical_converged": false,
+  "environment": {
+    "hostname": "cluster",
+    "platform": "Linux-5.14.0-611.49.1.el9_7.x86_64-x86_64-with-glibc2.34",
+    "python": "3.11.5 (main, Sep 11 2023, 13:54:46) [GCC 11.2.0]",
+    "numpy": "1.26.4",
+    "source": "/tmp/pyrpmd-t49",
+    "revision": "cb28829ecb1cabe471136b74e585ba3e4b9728fb",
+    "dirty": true,
+    "source_sha256": {
+      "native/thermal.hpp": "948329d9e076509ef50b2f5d22f69323b06cddb2f9824e915ec57104256dcfe2",
+      "native/thermal.cpp": "2c932d1df9c5a08fd3dbe2875ff17a9423c10d9d07c45aafaf085fa005acf8e0",
+      "native/philox.h": "29150f4acad2006a646c110b915d6d5fefca4010c1ced64e7f84616aa2abd3d4",
+      "src/pyrpmd/native_ensemble.py": "dd07c7a37f728ebb6ed600f25a7abda1e5c57eaea30b0bdcefffac8e4dbf6c22",
+      "src/pyrpmd/propagation.py": "65ba1246956b2d956575bb6c60c4a68bae9c20e376e5bc978749956bd7ba079e",
+      "src/pyrpmd/block_propagation.py": "6cae3f8948f8ec17dbd658a1cef28e8e12b5571dc203044fce1bdf131f1f6e5d",
+      "src/pyrpmd/dynamics.py": "711080fdb159c06330bc8406a1a553d8d96091d31c4d6343383cf15f9f02746a",
+      "src/pyrpmd/engine.py": "9f5a08ee05128c7d45a27e4905e074fbfd45ca414497f71e198f56a02d0fb9bb"
+    },
+    "script_sha256": "2faa8d6cb0dc0b0760df4bd6c901804e1adb3d28d4da0fbaec253708d0eb5811",
+    "compiler": "c++ (GCC) 11.3.1 20221121 (Red Hat 11.3.1-4)\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+    "build_flags": {
+      "CXXFLAGS": "-march=native -ffp-contract=off",
+      "CFLAGS": null,
+      "PYRPMD_NO_OPENMP": null
+    },
+    "cpu": "Intel(R) Xeon(R) Platinum 8176 CPU @ 2.10GHz",
+    "affinity": [
+      24,
+      25,
+      26,
+      27
+    ],
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OMP_PROC_BIND": "true",
+      "OMP_PLACES": "cores",
+      "OPENBLAS_NUM_THREADS": "1"
+    }
+  },
+  "options": {
+    "baseline": false,
+    "atoms": null,
+    "beads": null,
+    "thermostats": null,
+    "rng": "philox-v1",
+    "api": "native",
+    "seconds": 0.15,
+    "repeats": 3,
+    "block_steps": 8,
+    "profile": false,
+    "output": "/tmp/pyrpmd-t49/docs/validation/thermal-kernel-performance-2026-11-04/candidate-philox-native-1.json"
+  },
+  "measurements": [
+    {
+      "atoms": 64,
+      "beads": 8,
+      "thermostat": "none",
+      "rng": null,
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 1712,
+      "seconds": [
+        0.13043507933616638,
+        0.15387694910168648,
+        0.14231477677822113
+      ],
+      "steps_per_second": 12029.671399955374
+    },
+    {
+      "atoms": 64,
+      "beads": 8,
+      "thermostat": "pile-l",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 1352,
+      "seconds": [
+        0.15883777663111687,
+        0.18131888285279274,
+        0.18731348775327206
+      ],
+      "steps_per_second": 7456.476560677067
+    },
+    {
+      "atoms": 64,
+      "beads": 8,
+      "thermostat": "pile-g",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 736,
+      "seconds": [
+        0.15883660688996315,
+        0.15321357548236847,
+        0.1487738136202097
+      ],
+      "steps_per_second": 4803.751871743882
+    },
+    {
+      "atoms": 64,
+      "beads": 8,
+      "thermostat": "gle",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 320,
+      "seconds": [
+        0.1287091076374054,
+        0.12876358442008495,
+        0.1308368518948555
+      ],
+      "steps_per_second": 2485.174682276749
+    },
+    {
+      "atoms": 64,
+      "beads": 8,
+      "thermostat": "piglet",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 376,
+      "seconds": [
+        0.14196567982435226,
+        0.13130955770611763,
+        0.13145687244832516
+      ],
+      "steps_per_second": 2860.2536557972894
+    },
+    {
+      "atoms": 64,
+      "beads": 8,
+      "thermostat": "nhc",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 400,
+      "seconds": [
+        0.14941621758043766,
+        0.14977806992828846,
+        0.16169138811528683
+      ],
+      "steps_per_second": 2670.617936200634
+    },
+    {
+      "atoms": 64,
+      "beads": 8,
+      "thermostat": "bzp",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 368,
+      "seconds": [
+        0.15385870076715946,
+        0.15383151732385159,
+        0.1594238355755806
+      ],
+      "steps_per_second": 2391.8049363806153
+    },
+    {
+      "atoms": 64,
+      "beads": 32,
+      "thermostat": "none",
+      "rng": null,
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 416,
+      "seconds": [
+        0.14737407863140106,
+        0.14630099199712276,
+        0.14900903031229973
+      ],
+      "steps_per_second": 2822.748775518809
+    },
+    {
+      "atoms": 64,
+      "beads": 32,
+      "thermostat": "pile-l",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 328,
+      "seconds": [
+        0.1651167180389166,
+        0.16262376494705677,
+        0.1695425771176815
+      ],
+      "steps_per_second": 1986.473592108906
+    },
+    {
+      "atoms": 64,
+      "beads": 32,
+      "thermostat": "pile-g",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 160,
+      "seconds": [
+        0.14131774380803108,
+        0.13991009816527367,
+        0.12998330406844616
+      ],
+      "steps_per_second": 1143.5915069618095
+    },
+    {
+      "atoms": 64,
+      "beads": 32,
+      "thermostat": "gle",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 88,
+      "seconds": [
+        0.1494990475475788,
+        0.14653856493532658,
+        0.14991791360080242
+      ],
+      "steps_per_second": 588.6325126719859
+    },
+    {
+      "atoms": 64,
+      "beads": 32,
+      "thermostat": "piglet",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 112,
+      "seconds": [
+        0.1753066722303629,
+        0.17131291702389717,
+        0.1784315872937441
+      ],
+      "steps_per_second": 638.8804178133372
+    },
+    {
+      "atoms": 64,
+      "beads": 32,
+      "thermostat": "nhc",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 96,
+      "seconds": [
+        0.14437664672732353,
+        0.13454274460673332,
+        0.14465250447392464
+      ],
+      "steps_per_second": 664.9274808363576
+    },
+    {
+      "atoms": 64,
+      "beads": 32,
+      "thermostat": "bzp",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 88,
+      "seconds": [
+        0.1570928655564785,
+        0.16399322636425495,
+        0.17470448277890682
+      ],
+      "steps_per_second": 536.6075291703698
+    },
+    {
+      "atoms": 64,
+      "beads": 128,
+      "thermostat": "none",
+      "rng": null,
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 88,
+      "seconds": [
+        0.15394311398267746,
+        0.14892959035933018,
+        0.14917374961078167
+      ],
+      "steps_per_second": 589.9161228406886
+    },
+    {
+      "atoms": 64,
+      "beads": 128,
+      "thermostat": "pile-l",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 80,
+      "seconds": [
+        0.16985297948122025,
+        0.16883349604904652,
+        0.1834634318947792
+      ],
+      "steps_per_second": 470.9955647780979
+    },
+    {
+      "atoms": 64,
+      "beads": 128,
+      "thermostat": "pile-g",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 40,
+      "seconds": [
+        0.15319410897791386,
+        0.13300173170864582,
+        0.13843171671032906
+      ],
+      "steps_per_second": 288.95112298362045
+    },
+    {
+      "atoms": 64,
+      "beads": 128,
+      "thermostat": "gle",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 24,
+      "seconds": [
+        0.15908894129097462,
+        0.15872343257069588,
+        0.15914461947977543
+      ],
+      "steps_per_second": 150.85900883647128
+    },
+    {
+      "atoms": 64,
+      "beads": 128,
+      "thermostat": "piglet",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 32,
+      "seconds": [
+        0.1735133994370699,
+        0.17766265757381916,
+        0.1771437507122755
+      ],
+      "steps_per_second": 180.64425005867565
+    },
+    {
+      "atoms": 64,
+      "beads": 128,
+      "thermostat": "nhc",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 32,
+      "seconds": [
+        0.17648672498762608,
+        0.17400255613029003,
+        0.18456273525953293
+      ],
+      "steps_per_second": 181.31675343991793
+    },
+    {
+      "atoms": 64,
+      "beads": 128,
+      "thermostat": "bzp",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 24,
+      "seconds": [
+        0.16836077719926834,
+        0.17853551730513573,
+        0.1800182294100523
+      ],
+      "steps_per_second": 134.42703369202167
+    },
+    {
+      "atoms": 1000,
+      "beads": 8,
+      "thermostat": "none",
+      "rng": null,
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 120,
+      "seconds": [
+        0.14935298450291157,
+        0.15597142651677132,
+        0.15803630836308002
+      ],
+      "steps_per_second": 769.3716899299925
+    },
+    {
+      "atoms": 1000,
+      "beads": 8,
+      "thermostat": "pile-l",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 88,
+      "seconds": [
+        0.16117423959076405,
+        0.16371295228600502,
+        0.1680434998124838
+      ],
+      "steps_per_second": 537.5261930788763
+    },
+    {
+      "atoms": 1000,
+      "beads": 8,
+      "thermostat": "pile-g",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 56,
+      "seconds": [
+        0.16723591089248657,
+        0.1681890320032835,
+        0.16364137083292007
+      ],
+      "steps_per_second": 334.8563098747466
+    },
+    {
+      "atoms": 1000,
+      "beads": 8,
+      "thermostat": "gle",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 32,
+      "seconds": [
+        0.1892786119133234,
+        0.19842415116727352,
+        0.19873378053307533
+      ],
+      "steps_per_second": 161.27069115202454
+    },
+    {
+      "atoms": 1000,
+      "beads": 8,
+      "thermostat": "piglet",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 32,
+      "seconds": [
+        0.17029868252575397,
+        0.16375688090920448,
+        0.16414397209882736
+      ],
+      "steps_per_second": 194.95080806703962
+    },
+    {
+      "atoms": 1000,
+      "beads": 8,
+      "thermostat": "nhc",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 32,
+      "seconds": [
+        0.1594743300229311,
+        0.16135619208216667,
+        0.16789953969419003
+      ],
+      "steps_per_second": 198.31900831983435
+    },
+    {
+      "atoms": 1000,
+      "beads": 8,
+      "thermostat": "bzp",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 24,
+      "seconds": [
+        0.14744780957698822,
+        0.1470979005098343,
+        0.1435231938958168
+      ],
+      "steps_per_second": 163.1566454505275
+    },
+    {
+      "atoms": 1000,
+      "beads": 32,
+      "thermostat": "none",
+      "rng": null,
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 32,
+      "seconds": [
+        0.17893982864916325,
+        0.18421608954668045,
+        0.1898161955177784
+      ],
+      "steps_per_second": 173.70903963245394
+    },
+    {
+      "atoms": 1000,
+      "beads": 32,
+      "thermostat": "pile-l",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 24,
+      "seconds": [
+        0.16916101425886154,
+        0.1674212496727705,
+        0.1716305948793888
+      ],
+      "steps_per_second": 141.8766617423657
+    },
+    {
+      "atoms": 1000,
+      "beads": 32,
+      "thermostat": "pile-g",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 16,
+      "seconds": [
+        0.19980492815375328,
+        0.1969256717711687,
+        0.21169490553438663
+      ],
+      "steps_per_second": 80.07810491885229
+    },
+    {
+      "atoms": 1000,
+      "beads": 32,
+      "thermostat": "gle",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        0.21188480965793133,
+        0.20855027250945568,
+        0.20122450403869152
+      ],
+      "steps_per_second": 38.36005536572617
+    },
+    {
+      "atoms": 1000,
+      "beads": 32,
+      "thermostat": "piglet",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        0.17327454313635826,
+        0.17999002151191235,
+        0.1762602273374796
+      ],
+      "steps_per_second": 45.38743720489289
+    },
+    {
+      "atoms": 1000,
+      "beads": 32,
+      "thermostat": "nhc",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        0.16891016252338886,
+        0.17356699332594872,
+        0.17912756837904453
+      ],
+      "steps_per_second": 46.0917127542589
+    },
+    {
+      "atoms": 1000,
+      "beads": 32,
+      "thermostat": "bzp",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        0.21760068833827972,
+        0.20000161416828632,
+        0.2049201987683773
+      ],
+      "steps_per_second": 39.03958735196453
+    },
+    {
+      "atoms": 1000,
+      "beads": 128,
+      "thermostat": "none",
+      "rng": null,
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        0.2122009489685297,
+        0.21972966380417347,
+        0.22975538484752178
+      ],
+      "steps_per_second": 36.40837500725312
+    },
+    {
+      "atoms": 1000,
+      "beads": 128,
+      "thermostat": "pile-l",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        0.267654400318861,
+        0.26284797862172127,
+        0.2495050560683012
+      ],
+      "steps_per_second": 30.435843722097754
+    },
+    {
+      "atoms": 1000,
+      "beads": 128,
+      "thermostat": "pile-g",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        0.4173450320959091,
+        0.4183619301766157,
+        0.4018255192786455
+      ],
+      "steps_per_second": 19.168791730487253
+    },
+    {
+      "atoms": 1000,
+      "beads": 128,
+      "thermostat": "gle",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        0.8676173184067011,
+        0.8497804626822472,
+        0.8945749662816525
+      ],
+      "steps_per_second": 9.220655040278887
+    },
+    {
+      "atoms": 1000,
+      "beads": 128,
+      "thermostat": "piglet",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        0.7250985205173492,
+        0.7145578600466251,
+        0.737421790137887
+      ],
+      "steps_per_second": 11.032983482426767
+    },
+    {
+      "atoms": 1000,
+      "beads": 128,
+      "thermostat": "nhc",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        0.7151448018848896,
+        0.7144833542406559,
+        0.7120984941720963
+      ],
+      "steps_per_second": 11.196901862748504
+    },
+    {
+      "atoms": 1000,
+      "beads": 128,
+      "thermostat": "bzp",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        0.8430148065090179,
+        0.8347564153373241,
+        0.8425329122692347
+      ],
+      "steps_per_second": 9.495178032218602
+    },
+    {
+      "atoms": 4096,
+      "beads": 8,
+      "thermostat": "none",
+      "rng": null,
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 32,
+      "seconds": [
+        0.1829674318432808,
+        0.18577722273766994,
+        0.173388434574008
+      ],
+      "steps_per_second": 174.89451361709732
+    },
+    {
+      "atoms": 4096,
+      "beads": 8,
+      "thermostat": "pile-l",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 24,
+      "seconds": [
+        0.17544585093855858,
+        0.17326249182224274,
+        0.16808445565402508
+      ],
+      "steps_per_second": 138.5181509718942
+    },
+    {
+      "atoms": 4096,
+      "beads": 8,
+      "thermostat": "pile-g",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 16,
+      "seconds": [
+        0.17560378275811672,
+        0.17248443514108658,
+        0.1723277736455202
+      ],
+      "steps_per_second": 92.76199320195198
+    },
+    {
+      "atoms": 4096,
+      "beads": 8,
+      "thermostat": "gle",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        0.18805313110351562,
+        0.1863093078136444,
+        0.18662540428340435
+      ],
+      "steps_per_second": 42.8666184580713
+    },
+    {
+      "atoms": 4096,
+      "beads": 8,
+      "thermostat": "piglet",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        0.16824077814817429,
+        0.1609699111431837,
+        0.17033687606453896
+      ],
+      "steps_per_second": 47.55089751756961
+    },
+    {
+      "atoms": 4096,
+      "beads": 8,
+      "thermostat": "nhc",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        0.15925446525216103,
+        0.16379757225513458,
+        0.16154135949909687
+      ],
+      "steps_per_second": 49.52292109467313
+    },
+    {
+      "atoms": 4096,
+      "beads": 8,
+      "thermostat": "bzp",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        0.19165463000535965,
+        0.1898273602128029,
+        0.19176636636257172
+      ],
+      "steps_per_second": 41.74175181562939
+    },
+    {
+      "atoms": 4096,
+      "beads": 32,
+      "thermostat": "none",
+      "rng": null,
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        0.2085948958992958,
+        0.20583177357912064,
+        0.19758140295743942
+      ],
+      "steps_per_second": 38.866691283330184
+    },
+    {
+      "atoms": 4096,
+      "beads": 32,
+      "thermostat": "pile-l",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        0.24504727311432362,
+        0.24405068159103394,
+        0.24227040074765682
+      ],
+      "steps_per_second": 32.780076449062896
+    },
+    {
+      "atoms": 4096,
+      "beads": 32,
+      "thermostat": "pile-g",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        0.37657188810408115,
+        0.4351683799177408,
+        0.3943818546831608
+      ],
+      "steps_per_second": 20.284908915059123
+    },
+    {
+      "atoms": 4096,
+      "beads": 32,
+      "thermostat": "gle",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        0.8440807964652777,
+        0.8007512297481298,
+        0.7960172966122627
+      ],
+      "steps_per_second": 9.990618437784153
+    },
+    {
+      "atoms": 4096,
+      "beads": 32,
+      "thermostat": "piglet",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        0.7620903924107552,
+        0.6997934561222792,
+        0.7287057004868984
+      ],
+      "steps_per_second": 10.978368900716228
+    },
+    {
+      "atoms": 4096,
+      "beads": 32,
+      "thermostat": "nhc",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        0.7041793093085289,
+        0.7392789889127016,
+        0.7365587968379259
+      ],
+      "steps_per_second": 10.861318925718212
+    },
+    {
+      "atoms": 4096,
+      "beads": 32,
+      "thermostat": "bzp",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        0.9732153303921223,
+        0.8875467889010906,
+        0.8899174630641937
+      ],
+      "steps_per_second": 8.989597723427217
+    },
+    {
+      "atoms": 4096,
+      "beads": 128,
+      "thermostat": "none",
+      "rng": null,
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        1.3100665248930454,
+        1.306173613294959,
+        1.2713143602013588
+      ],
+      "steps_per_second": 6.124760076739849
+    },
+    {
+      "atoms": 4096,
+      "beads": 128,
+      "thermostat": "pile-l",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        1.1623303070664406,
+        1.1508990693837404,
+        1.235828459262848
+      ],
+      "steps_per_second": 6.882725118121443
+    },
+    {
+      "atoms": 4096,
+      "beads": 128,
+      "thermostat": "pile-g",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        1.9885308407247066,
+        2.1102778390049934,
+        1.9763472843915224
+      ],
+      "steps_per_second": 4.023070618851682
+    },
+    {
+      "atoms": 4096,
+      "beads": 128,
+      "thermostat": "gle",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        3.963086800649762,
+        4.1677177883684635,
+        4.207821385934949
+      ],
+      "steps_per_second": 1.9195157652773223
+    },
+    {
+      "atoms": 4096,
+      "beads": 128,
+      "thermostat": "piglet",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        3.2206708304584026,
+        3.3124791961163282,
+        3.218031380325556
+      ],
+      "steps_per_second": 2.4839545613735847
+    },
+    {
+      "atoms": 4096,
+      "beads": 128,
+      "thermostat": "nhc",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        3.0449985954910517,
+        3.191508324816823,
+        3.0876111555844545
+      ],
+      "steps_per_second": 2.590999836728365
+    },
+    {
+      "atoms": 4096,
+      "beads": 128,
+      "thermostat": "bzp",
+      "rng": "philox-v1",
+      "api": "native",
+      "status": "measured",
+      "steps_per_repeat": 8,
+      "seconds": [
+        4.211312390863895,
+        4.352183170616627,
+        3.998675098642707
+      ],
+      "steps_per_second": 1.8996453498333106
+    }
+  ]
+}

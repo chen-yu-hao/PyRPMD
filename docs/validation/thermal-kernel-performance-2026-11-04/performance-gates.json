@@ -1,0 +1,38 @@
+{
+  "performance_gates": {
+    "philox_pile_l_over_nve_N512": {
+      "value": 0.5925379756199566,
+      "minimum": 0.5,
+      "passed": true
+    },
+    "philox_pile_l_over_nve_N4096": {
+      "value": 0.5576846212823058,
+      "minimum": 0.5,
+      "passed": true
+    },
+    "native_philox_four_thread_speedup": {
+      "value": 3.010980633235043,
+      "minimum": 2.5,
+      "passed": true
+    },
+    "two_step_non_native_overhead": {
+      "value": 0.12848504916226383,
+      "maximum": 0.1,
+      "passed": false
+    },
+    "small_legacy_P1": {
+      "value": 2.046028877234291,
+      "minimum": 0.98,
+      "passed": true
+    },
+    "small_legacy_P32": {
+      "value": 1.3605142764383789,
+      "minimum": 0.98,
+      "passed": true
+    }
+  },
+  "all_performance_gates_passed": false,
+  "measurements": 346,
+  "physical_converged": false,
+  "public_philox_four_thread_speedup": 2.6507778879380175
+}
