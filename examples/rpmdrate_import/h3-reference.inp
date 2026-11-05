@@ -1,0 +1,29 @@
+# Handwritten identity reference for RPMDrate 710670c examples/H+H2/input.py.
+# Sampling budgets here are deliberately small and are not identity comparisons.
+schema_version = 2
+task = "rate"
+temperature = "1000 K"
+beads = 4
+
+[system]
+symbols = ["H", "H", "H"]
+geometry = [[0.0, 0.0, -1.757], [0.0, 0.0, 0.0], [0.0, 0.0, 1.757]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "rpmdrate"
+module = "h3_bkmp2"
+initializer = ""
+
+[reaction]
+definition = "explicit"
+reactant_fragments = [[0, 1], [2]]
+forming_bonds = [[1, 2]]
+breaking_bonds = [[0, 1]]
+equivalent_paths = [[1, 0, 2]]
+symmetry_factor = 1.0
+rinf = "15.8754 angstrom"
+
+[umbrella]
+centers = [0.0, 0.5, 1.0]
+force_constant = 0.1

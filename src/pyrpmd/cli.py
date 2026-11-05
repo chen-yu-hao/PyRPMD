@@ -35,6 +35,13 @@ def parser():
     p.add_argument("--version", action="version", version=f"PyRPMD {__version__}")
     p.add_argument("--debug", action="store_true", help="Show a traceback when a command fails")
     commands = p.add_subparsers(dest="command", required=True)
+    importer = commands.add_parser("import-rpmdrate", help="Convert a trusted RPMDrate rate input without loading its PES")
+    importer.add_argument("input", help="Trusted RPMDrate Python input")
+    importer.add_argument("--temperature", type=float, required=True, help="Temperature in kelvin")
+    importer.add_argument("--beads", type=int, required=True)
+    importer.add_argument("--pes-module", help="Path to the PES module to use after conversion")
+    importer.add_argument("--output", required=True, help="New or empty output directory")
+    importer.add_argument("--allow-unmapped", action="store_true", help="Write input with explicitly reported replacements")
     from .workflows.instanton import register_parser
     register_parser(commands)
     from .workflows.vtst import register_parser as register_vtst_parser
@@ -344,7 +351,15 @@ def main(argv=None):
             return args._precision_handler(args)
         if args.command in ("run", "analyze") and not args.report and (args.report_output or args.report_overwrite or args.report_style):
             raise InputError("--report-output, --report-overwrite and --report-style require --report")
-        if args.command == "init":
+        if args.command == "import-rpmdrate":
+            from .rpmdrate_import import import_rpmdrate
+
+            result = import_rpmdrate(args.input, temperature=args.temperature, beads=args.beads,
+                                     pes_module=args.pes_module, output=args.output,
+                                     allow_unmapped=args.allow_unmapped)
+            _print({"output": result["output"], "unmapped": result["unmapped"],
+                    "physical_converged": False})
+        elif args.command == "init":
             from .parallel import root_call
             from .scaffold import init_project
 
