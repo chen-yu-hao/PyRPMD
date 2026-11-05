@@ -23,7 +23,7 @@ from ..dynamics import Dynamics, State
 from ..parallel import make_task_potential, root_call
 from ..potentials.base import evaluate_checked
 from ..potentials.cache import StepEvaluationCache
-from ..propagation import loop_options
+from ..propagation import NativeUnavailableError, loop_options
 from ..trajectory import TrajectoryStream, _descriptor, _walk_reverse, materialize_stream
 from ..trajectory_batch import (
     make_trajectory_potential, map_trajectory_tasks, trajectory_batch_size,
@@ -707,9 +707,117 @@ def _sample_replica(task):
                     production.propagation_stats = old_stats
                 raise
 
+        fused_sampling = None
+
+        def sampling_block():
+            """Advance an Andersen sampling block to its next event.
+
+            The legacy loop refreshes momenta immediately before every step
+            whose state clock is divisible by ``andersen_interval``.  A block
+            therefore starts with at most one refresh and ends immediately
+            before the next one, a saved sample, a checkpoint, the
+            equilibration/production handoff, or the configured block limit.
+            Keeping the refresh outside the native block preserves the NumPy
+            RNG stream while allowing the deterministic steps to stay native.
+            """
+            nonlocal state, elapsed
+            interval = options["andersen_interval"]
+            neq, sample_interval = options["neq"], options["interval"]
+            checkpoint_steps = options["checkpoint_steps"]
+            total = options["neq"] + options["nprod"]
+            limits = [sampling.block_steps, 4096, total - elapsed,
+                      interval - (state.step % interval),
+                      checkpoint_steps - (elapsed % checkpoint_steps)]
+            if elapsed < neq:
+                limits.append(neq - elapsed)
+            else:
+                limits.append(sample_interval - ((elapsed - neq) % sample_interval))
+            count = min(int(value) for value in limits if value > 0)
+            start, start_elapsed = state.copy(), elapsed
+            old_rng = copy.deepcopy(rng.bit_generator.state)
+            old_stats = copy.deepcopy(sampling.propagation_stats)
+            try:
+                with provider.step():
+                    if state.step % interval == 0:
+                        state.p[:] = sampling.sample_momenta()
+                    block = sampling.propagate_block(
+                        state, count, observe=np.zeros(count, dtype=bool),
+                        record_energy=False, check_energy=True,
+                        record_previous=True, raise_on_error=False,
+                    )
+                    if block.error is not None:
+                        if block.completed:
+                            elapsed += block.completed
+                        else:
+                            state = start
+                            rng.bit_generator.state = old_rng
+                            sampling.propagation_stats = old_stats
+                        raise PropagationError(block)
+                    prospective = elapsed + count
+                    record = (prospective >= neq
+                              and (prospective - neq) % sample_interval == 0)
+                    try:
+                        # Keep the observation inside the block's active PES
+                        # transaction; StepEvaluationCache intentionally
+                        # rejects nested ``step()`` contexts.
+                        observation = observe() if record else None
+                        if record:
+                            append_record(observation)
+                    except BaseException:
+                        # Observation and append are part of the final step's
+                        # transaction.  Keep the preceding prefix and undo a
+                        # refresh if no step from this block was committed.
+                        state.q[:], state.p[:] = block.previous_q, block.previous_p
+                        state.step, state.time = block.previous_step, block.previous_time
+                        sampling.propagation_stats = copy.deepcopy(old_stats)
+                        stats = sampling.propagation_stats
+                        stats[block.backend + "_steps"] += count - 1
+                        if block.fallback_reason:
+                            reasons = stats["fallback_reasons"]
+                            reasons[block.fallback_reason] = reasons.get(block.fallback_reason, 0) + count - 1
+                        elapsed += count - 1
+                        if count == 1:
+                            rng.bit_generator.state = old_rng
+                        raise
+                    elapsed = prospective
+            except BaseException:
+                # A failed refresh or first propagation step has no committed
+                # prefix and must restore the complete transaction, including
+                # the RNG state consumed by the refresh.
+                if elapsed == start_elapsed:
+                    state = start
+                    rng.bit_generator.state = old_rng
+                    sampling.propagation_stats = old_stats
+                raise
+
         while elapsed < total:
             is_sampling = config["task"] == "pimd" or elapsed < options["neq"]
             dynamics = sampling if is_sampling else production
+            if is_sampling and options["thermostat"] == "andersen" and fused_sampling is None:
+                # The native deterministic block does not carry a thermostat;
+                # keep all unsupported configurations on the old step path.
+                try:
+                    fused_sampling = (
+                        piston is None and monitor is None and friction_provider is None
+                        and system.cell is None and not any(system.pbc)
+                        and type(sampling) is Dynamics and not sampling.plan.active
+                        and getattr(sampling.integrator._native, "BLOCK_ENERGY_CHECK_API", 0) >= 1
+                        and getattr(sampling.integrator._native, "DRPMD_OUTCOMES_API", 0) >= 1
+                        and sampling.can_fuse())
+                except NativeUnavailableError:
+                    # Unsupported native bindings retain the historical
+                    # one-step path; the production preflight below still
+                    # reports strict-native failures at its original point.
+                    fused_sampling = False
+            if is_sampling and fused_sampling:
+                try:
+                    sampling_block()
+                except BaseException:
+                    save()
+                    raise
+                if elapsed % options["checkpoint_steps"] == 0:
+                    save()
+                continue
             if not is_sampling and fused_production is None:
                 # Only plain, unthermostatted Dynamics with a supported native
                 # block. Strict native mode raises here instead of falling back.
