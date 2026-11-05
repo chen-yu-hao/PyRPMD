@@ -1,0 +1,16 @@
+before P= 32 propagation 0.0571 (min 0.0547, max 0.0654, n=10) native 0.0444 (min 0.0426, max 0.0499, n=10) cli 0.5111 (min 0.4868, max 0.5703, n=10) process 0.7659 (min 0.7139, max 0.8177, n=10) calls {'propagate': {'1': 256}, 'run_block': {'1': 256}}
+before P=128 propagation 0.1906 (min 0.1840, max 0.2181, n=10) native 0.1749 (min 0.1694, max 0.1919, n=10) cli 0.6494 (min 0.6361, max 0.6996, n=10) process 0.9080 (min 0.8665, max 0.9627, n=10) calls {'propagate': {'1': 256}, 'run_block': {'1': 256}}
+after  P= 32 propagation 0.0256 (min 0.0250, max 0.0277, n=5) native 0.0239 (min 0.0231, max 0.0254, n=5) cli 0.4718 (min 0.4664, max 0.5256, n=5) process 0.7401 (min 0.7039, max 0.7966, n=5) calls {'propagate_block': {'16': 16}, 'advance': {'16': 16}}
+after  P=128 propagation 0.0984 (min 0.0933, max 0.1195, n=5) native 0.0958 (min 0.0910, max 0.1164, n=5) cli 0.5614 (min 0.5328, max 0.5658, n=5) process 0.8100 (min 0.7610, max 0.8383, n=5) calls {'propagate_block': {'16': 16}, 'advance': {'16': 16}}
+P=32: propagation speedup 2.23x, cli 1.08x, process 1.03x
+P=128: propagation speedup 1.94x, cli 1.16x, process 1.12x
+P=32 run1 identical: True
+P=32 run2 identical: True
+P=32 run3 identical: True
+P=32 run4 identical: True
+P=32 run5 identical: True
+P=128 run1 identical: True
+P=128 run2 identical: True
+P=128 run3 identical: True
+P=128 run4 identical: True
+P=128 run5 identical: True

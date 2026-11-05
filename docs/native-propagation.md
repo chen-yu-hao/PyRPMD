@@ -10,7 +10,7 @@ failure contracts:
 | API | Observations | Numerical failure | Production use |
 | --- | --- | --- | --- |
 | `Dynamics.propagate()` | Centroid CVs, sample interval, energy extrema | Entire block leaves the caller's state unchanged | Recrossing children and ordinary Andersen thermalization |
-| `Dynamics.propagate_block()` | CVs, boolean mask, optional full q/p, centroid RATTLE | Last accepted step and valid result prefix are retained | dRPMD collision blocks, constrained recrossing parents, and native-supported FES/PMF sampling |
+| `Dynamics.propagate_block()` | CVs, boolean mask, optional full q/p, centroid RATTLE | Last accepted step and valid result prefix are retained | dRPMD collision blocks, constrained recrossing parents, native-supported FES/PMF sampling and unthermostatted `diffusion` production |
 
 The second entrypoint also supports bead-average geometric CVs. Its full
 contract is documented in [block-propagation.md](block-propagation.md).
@@ -148,6 +148,20 @@ unchanged. The flux-metric correction is evaluated inside native forces. The
 saved stream/checkpoint includes propagation counters; interruption and a
 changed block size can be tested against an uninterrupted run. The compatible
 Python sampling path retains its original successful PES-call schedule.
+
+**Materials diffusion production:** the unthermostatted NVE production segment
+of the legacy `diffusion` engine uses `propagate_block()` when its PES has a
+supported native block and no barostat, electronic friction or active-learning
+monitor is configured. A block stops at the next saved sample, checkpoint or the
+end of the run, and never exceeds `block_steps` or 4096 steps; `block_steps` is
+therefore an upper bound, and with `sample_interval=16` blocks are 16 steps long.
+Energy is checked at the block's initial state and after every step, and forces
+are reused within a block (L+1 PES batches per L steps instead of 2L). Results
+are bit-identical to the former one-step schedule for a deterministic provider.
+A failed step commits the valid prefix, and a failed observation discards only
+the observed step, matching that schedule's checkpoint. Thermalization keeps its
+per-step Andersen/PILE-L schedule, and `loop_backend="native"` raises instead of
+falling back when the block path is unavailable.
 
 **Recrossing:** every child timepoint evaluates the actual dividing surface in
 C++, including equivalent arrangements. Python accumulates the returned indicator

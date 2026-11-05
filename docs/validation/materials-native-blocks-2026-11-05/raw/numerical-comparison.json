@@ -1,0 +1,1262 @@
+{
+ "p32/run1": {
+  "all_identical": true,
+  "summary": {
+   "propagation": true,
+   "nve_energy_diagnostics": true,
+   "diffusion": true,
+   "diffusion_m2_s": true,
+   "samples_per_replica": true
+  },
+  "arrays": {
+   "checkpoints/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:elapsed": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:fingerprint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:p": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:propagation": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:q": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:rng": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:step": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:time": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:metadata": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:times": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   }
+  }
+ },
+ "p32/run2": {
+  "all_identical": true,
+  "summary": {
+   "propagation": true,
+   "nve_energy_diagnostics": true,
+   "diffusion": true,
+   "diffusion_m2_s": true,
+   "samples_per_replica": true
+  },
+  "arrays": {
+   "checkpoints/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:elapsed": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:fingerprint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:p": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:propagation": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:q": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:rng": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:step": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:time": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:metadata": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:times": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   }
+  }
+ },
+ "p32/run3": {
+  "all_identical": true,
+  "summary": {
+   "propagation": true,
+   "nve_energy_diagnostics": true,
+   "diffusion": true,
+   "diffusion_m2_s": true,
+   "samples_per_replica": true
+  },
+  "arrays": {
+   "checkpoints/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:elapsed": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:fingerprint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:p": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:propagation": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:q": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:rng": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:step": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:time": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:metadata": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:times": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   }
+  }
+ },
+ "p32/run4": {
+  "all_identical": true,
+  "summary": {
+   "propagation": true,
+   "nve_energy_diagnostics": true,
+   "diffusion": true,
+   "diffusion_m2_s": true,
+   "samples_per_replica": true
+  },
+  "arrays": {
+   "checkpoints/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:elapsed": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:fingerprint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:p": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:propagation": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:q": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:rng": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:step": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:time": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:metadata": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:times": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   }
+  }
+ },
+ "p32/run5": {
+  "all_identical": true,
+  "summary": {
+   "propagation": true,
+   "nve_energy_diagnostics": true,
+   "diffusion": true,
+   "diffusion_m2_s": true,
+   "samples_per_replica": true
+  },
+  "arrays": {
+   "checkpoints/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:elapsed": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:fingerprint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:p": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:propagation": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:q": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:rng": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:step": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:time": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:metadata": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:times": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   }
+  }
+ },
+ "p128/run1": {
+  "all_identical": true,
+  "summary": {
+   "propagation": true,
+   "nve_energy_diagnostics": true,
+   "diffusion": true,
+   "diffusion_m2_s": true,
+   "samples_per_replica": true
+  },
+  "arrays": {
+   "checkpoints/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:elapsed": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:fingerprint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:p": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:propagation": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:q": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:rng": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:step": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:time": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:metadata": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:times": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   }
+  }
+ },
+ "p128/run2": {
+  "all_identical": true,
+  "summary": {
+   "propagation": true,
+   "nve_energy_diagnostics": true,
+   "diffusion": true,
+   "diffusion_m2_s": true,
+   "samples_per_replica": true
+  },
+  "arrays": {
+   "checkpoints/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:elapsed": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:fingerprint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:p": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:propagation": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:q": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:rng": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:step": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:time": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:metadata": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:times": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   }
+  }
+ },
+ "p128/run3": {
+  "all_identical": true,
+  "summary": {
+   "propagation": true,
+   "nve_energy_diagnostics": true,
+   "diffusion": true,
+   "diffusion_m2_s": true,
+   "samples_per_replica": true
+  },
+  "arrays": {
+   "checkpoints/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:elapsed": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:fingerprint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:p": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:propagation": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:q": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:rng": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:step": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:time": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:metadata": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:times": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   }
+  }
+ },
+ "p128/run4": {
+  "all_identical": true,
+  "summary": {
+   "propagation": true,
+   "nve_energy_diagnostics": true,
+   "diffusion": true,
+   "diffusion_m2_s": true,
+   "samples_per_replica": true
+  },
+  "arrays": {
+   "checkpoints/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:elapsed": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:fingerprint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:p": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:propagation": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:q": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:rng": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:step": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:time": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:metadata": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:times": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   }
+  }
+ },
+ "p128/run5": {
+  "all_identical": true,
+  "summary": {
+   "propagation": true,
+   "nve_energy_diagnostics": true,
+   "diffusion": true,
+   "diffusion_m2_s": true,
+   "samples_per_replica": true
+  },
+  "arrays": {
+   "checkpoints/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:elapsed": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:fingerprint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:p": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:propagation": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:q": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:rng": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:step": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:time": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:metadata": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:times": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   }
+  }
+ },
+ "p32/warmup": {
+  "all_identical": true,
+  "summary": {
+   "propagation": true,
+   "nve_energy_diagnostics": true,
+   "diffusion": true,
+   "diffusion_m2_s": true,
+   "samples_per_replica": true
+  },
+  "arrays": {
+   "checkpoints/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:elapsed": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:fingerprint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:p": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:propagation": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:q": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:rng": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:step": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:time": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:metadata": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:times": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   }
+  }
+ },
+ "p128/warmup": {
+  "all_identical": true,
+  "summary": {
+   "propagation": true,
+   "nve_energy_diagnostics": true,
+   "diffusion": true,
+   "diffusion_m2_s": true,
+   "samples_per_replica": true
+  },
+  "arrays": {
+   "checkpoints/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:elapsed": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:fingerprint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:p": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:propagation": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:q": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:rng": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:step": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:time": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:metadata": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:times": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   }
+  }
+ },
+ "resume/A_old_then_new": {
+  "all_identical": true,
+  "summary": {
+   "propagation": true,
+   "nve_energy_diagnostics": true,
+   "diffusion": true,
+   "diffusion_m2_s": true,
+   "samples_per_replica": true
+  },
+  "arrays": {
+   "checkpoints/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:elapsed": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:fingerprint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:p": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:propagation": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:q": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:rng": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:step": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:time": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:metadata": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:times": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   }
+  }
+ },
+ "resume/B_new_then_new": {
+  "all_identical": true,
+  "summary": {
+   "propagation": true,
+   "nve_energy_diagnostics": true,
+   "diffusion": true,
+   "diffusion_m2_s": true,
+   "samples_per_replica": true
+  },
+  "arrays": {
+   "checkpoints/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:elapsed": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:fingerprint": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:p": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:propagation": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:q": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:rng": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:step": {
+    "identical": true
+   },
+   "checkpoints/materials_0000.npz:time": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "checkpoints/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:_pyrpmd_checkpoint": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:metadata": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:observables": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:positions": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:radii_gyration_squared": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:sample_steps": {
+    "identical": true
+   },
+   "samples/materials_0000.npz:times": {
+    "identical": true,
+    "max_abs": 0.0
+   },
+   "samples/materials_0000.npz:velocities": {
+    "identical": true,
+    "max_abs": 0.0
+   }
+  }
+ }
+}

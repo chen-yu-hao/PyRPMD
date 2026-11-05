@@ -578,6 +578,7 @@ Constrained recrossing parents, dRPMD collisions and native-capable FES/PMF samp
 use `propagate_block()`, limited to 4096 steps per call. Workflows cap larger
 `block_steps` at that limit while preserving thermostat, classification, sampling and
 checkpoint schedules. The accepted input range and default remain 1..65536 and 256.
-Recrossing children and ordinary Andersen thermalization continue to use `propagate()`.
+Unthermostatted `diffusion` production uses it too, with blocks ending at each saved
+sample and checkpoint. Recrossing children and ordinary Andersen thermalization continue to use `propagate()`.
 See [native propagation](native-propagation.md) and the [block API](block-propagation.md)
 for supported combinations and the two APIs' failure semantics.
