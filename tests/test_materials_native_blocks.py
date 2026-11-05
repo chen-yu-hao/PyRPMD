@@ -132,6 +132,17 @@ def expected_blocks(block_steps, start=NEQ):
     return blocks
 
 
+def expected_sampling_blocks(block_steps):
+    """Andersen equilibration blocks stop at refresh and handoff events."""
+    blocks, elapsed = [], 0
+    while elapsed < NEQ:
+        count = min(block_steps, 4096, NEQ - elapsed,
+                    3 - elapsed % 3, EVERY - elapsed % EVERY)
+        blocks.append(count)
+        elapsed += count
+    return blocks
+
+
 def single_step_reference(cfg, output, monkeypatch):
     """The pre-block production loop: one Dynamics.propagate call per step."""
     with monkeypatch.context() as patch:
@@ -166,17 +177,19 @@ def test_production_blocks_stop_at_events_and_match_single_steps(
     result = _sample_replica(task(cfg, tmp_path / "blocks"))
 
     blocks = expected_blocks(block_steps)
-    assert native_calls["advance"] == blocks
-    assert max(blocks) <= block_steps
-    # Thermalization keeps its per-step Andersen schedule.
-    assert native_calls["run_block"] == [1] * NEQ
+    sampling_blocks = expected_sampling_blocks(block_steps)
+    assert native_calls["advance"] == sampling_blocks + blocks
+    assert max(sampling_blocks + blocks) <= block_steps
+    assert native_calls["run_block"] == []
     assert all(o == {"reuse_forces": True, "check_energy": True} for o in native_calls["options"])
     # Single steps evaluate the PES twice per step. A block of L steps
     # evaluates it L+1 times. Saved observations are unchanged.
-    assert reference_calls - audit.audit_get_calls() == NPROD - len(blocks)
+    assert reference_calls - audit.audit_get_calls() == NEQ + NPROD - len(sampling_blocks + blocks)
     assert_same_stream(reference, result)
     assert result["propagation"]["production"] == {
         "native_steps": NPROD, "python_steps": 0, "fallback_reasons": {}}
+    assert result["propagation"]["sampling"] == {
+        "native_steps": NEQ, "python_steps": 0, "fallback_reasons": {}}
     assert result["sample_steps"].tolist() == list(range(NEQ, NEQ + NPROD + 1, INTERVAL))
 
 
@@ -194,7 +207,7 @@ def test_interrupted_block_resumes_from_its_start_with_a_new_block_size(
     with pytest.raises(KeyboardInterrupt):
         _sample_replica(task(cfg, tmp_path / "resumed"))
     saved = _read_stream(cfg, task(cfg, "")["system"], tmp_path / "resumed", 0)
-    start = NEQ + sum(blocks[:2])
+    start = NEQ
     assert saved["elapsed"] == saved["state"].step == start
     assert saved["propagation"]["production"]["native_steps"] == start - NEQ
     assert saved["sample_steps"].tolist() == list(range(NEQ, start + 1, INTERVAL))
@@ -214,8 +227,10 @@ def test_native_failure_keeps_the_single_step_prefix_and_resumes(
     clean = single_step_reference(cfg, tmp_path / "clean", monkeypatch)
     # Fail the PES at the endpoint of production step 4, the last step of the
     # first block (NEQ=5 -> checkpoint at 9).
-    # With force reuse: call 1 is the initial force, calls 2..4 complete steps 1..3.
-    native_calls["hooks"]["before_advance"] = lambda call: audit.audit_reset(5 if call == 1 else -1)
+    # The first two calls are the Andersen equilibration blocks; call 3 is the
+    # first production block. Its initial force plus endpoint calls 2..4
+    # complete production steps 1..3 before the injected failure.
+    native_calls["hooks"]["before_advance"] = lambda call: audit.audit_reset(5 if call == 3 else -1)
     with pytest.raises(PropagationError, match="3/4 steps.*injected CABI failure"):
         _sample_replica(task(cfg, tmp_path / "blocks"))
     blocked = _read_stream(cfg, task(cfg, "")["system"], tmp_path / "blocks", 0)
