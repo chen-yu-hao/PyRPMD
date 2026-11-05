@@ -429,7 +429,15 @@ path. Replay is bitwise within the same floating-point build and libm;
 CPU/compiler/FMA changes are not a cross-build bitwise guarantee. The legacy
 path keeps the original scalar operation order. No default is switched.
 
-Set `OMP_NUM_THREADS` before launching Python. Large arrays use static
+Set `Dynamics(..., threads=n)` or `NativeEnsemble(..., threads=n)` explicitly;
+both default to one thread, even when `OMP_NUM_THREADS` is unset or larger.
+The native input schema also accepts `threads`. Composed thermal operators
+inherit `Dynamics`' thread count, including the Python propagation loop.
+Workflow paths using `Dynamics` inherit `parallel.threads_per_rank`; the native
+PIMD workflow retains its existing one-thread-per-trajectory restriction.
+Requesting more than one thread requires an OpenMP build. Thread counts are
+execution settings and do not change physics fingerprints or checkpoints.
+Large arrays use static
 OpenMP loops with per-thread FFT/GLE scratch; small systems stay serial.
 Legacy energy and kinetic reductions retain their serial order. Large
 `philox-v1` observations sum each bead independently, then sum beads in order;
@@ -465,17 +473,17 @@ path from direct `NativeEnsemble` measurements.
 
 ```bash
 python -m pip install -e . --no-build-isolation
-OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python benchmarks/efficiency/thermal_throughput.py \
-  --baseline --profile --output baseline.json
-OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python benchmarks/efficiency/thermal_throughput.py \
-  --rng philox-v1 --profile --output candidate.json
+OPENBLAS_NUM_THREADS=1 python benchmarks/efficiency/thermal_throughput.py \
+  --baseline --threads 1 --profile --output baseline.json
+OPENBLAS_NUM_THREADS=1 python benchmarks/efficiency/thermal_throughput.py \
+  --rng philox-v1 --threads 1 --profile --output candidate.json
 for threads in 1 2 4; do
-  OMP_NUM_THREADS=$threads OPENBLAS_NUM_THREADS=1 python benchmarks/efficiency/thermal_throughput.py \
-    --api native --rng philox-v1 --block-steps 8 --output native-$threads.json
+  OPENBLAS_NUM_THREADS=1 python benchmarks/efficiency/thermal_throughput.py \
+    --api native --rng philox-v1 --threads "$threads" --block-steps 8 --output native-$threads.json
 done
 c++ -O3 -std=c++17 -fopenmp -I native benchmarks/efficiency/thermal_kernels.cpp -o /tmp/thermal-kernels
-OMP_NUM_THREADS=1 /tmp/thermal-kernels 4096 32 philox-v1
-OMP_NUM_THREADS=4 OPENBLAS_NUM_THREADS=1 python benchmarks/efficiency/thermal_statistics.py --rng philox-v1 --output statistics.json
+/tmp/thermal-kernels 4096 32 philox-v1 1
+OPENBLAS_NUM_THREADS=1 python benchmarks/efficiency/thermal_statistics.py --rng philox-v1 --threads 4 --output statistics.json
 ```
 
 The component benchmark measures generic four-transform helpers, the actual

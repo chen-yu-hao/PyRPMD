@@ -6,7 +6,7 @@ thermal_output=${PYRPMD_THERMAL_VALIDATION:-docs/validation/thermal-kernel-perfo
 mkdir -p "$thermal_output"
 for thermal_variant in no-openmp fma openmp; do
     thermal_no_openmp=0
-    thermal_flags='-march=native -ffp-contract=off'
+    thermal_flags=''
     if [[ $thermal_variant == no-openmp ]]; then thermal_no_openmp=1; fi
     if [[ $thermal_variant == fma ]]; then thermal_flags='-march=native -mfma -ffp-contract=fast'; fi
     (
@@ -17,7 +17,7 @@ for thermal_variant in no-openmp fma openmp; do
     (
         set -x
         env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 "$thermal_python" -m pytest -q \
-            tests/test_native_thermal_performance.py tests/test_native_ensembles.py \
+            tests/test_native_thermal_performance.py tests/test_native_thermal_threads.py tests/test_native_ensembles.py \
             tests/test_native_nhc.py tests/test_native_prefix.py \
             tests/test_native_periodic_sync.py tests/test_native_pimd_followup.py \
             tests/test_python_nhc_fallback.py tests/test_composed_native_observations.py \

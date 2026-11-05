@@ -25,7 +25,7 @@ def bath(mode, beads, rng="philox-v1"):
     return result
 
 
-def ensemble(mode="pile-l", *, beads=8, atoms=9, rng="philox-v1", seed=49):
+def ensemble(mode="pile-l", *, beads=8, atoms=9, rng="philox-v1", seed=49, threads=1):
     options = {"potential": {"kind": "harmonic", "k": .5}}
     if mode in ("bzp", "mttk", "rgb", "scr"):
         barostat = {"mode": mode, "tau": 2.}
@@ -39,7 +39,7 @@ def ensemble(mode="pile-l", *, beads=8, atoms=9, rng="philox-v1", seed=49):
         options.update(potential={"kind": "periodic_cosine", "heights": [.1, .2, .3]},
                        cell=np.eye(3)*3, barostat=barostat)
     return NativeEnsemble(np.full((beads, atoms, 3), .1), np.ones(atoms), 2., .01,
-                          thermostat=bath(mode, beads, rng), seed=seed, **options)
+                          thermostat=bath(mode, beads, rng), seed=seed, threads=threads, **options)
 
 
 @pytest.mark.parametrize("mode", ["pile-l", "pile-g", "andersen", "langevin", "svr", "ffl", "nhc", "trpmd", "gle", "nm-gle", "nm-gle-g", "piglet", "bzp"])
@@ -168,11 +168,12 @@ for(auto x:pyrpmd::philox::generate({0xffffffff,0xffffffff,0xffffffff,0xffffffff
 
 @pytest.mark.parametrize("rng", ["mt19937_64", "philox-v1"])
 def test_threads_are_bitwise_identical(tmp_path, rng):
+    from pyrpmd import _thermal
     results = []
-    for threads in (1, 2, 4, 8):
+    for threads in ((1, 2, 4, 8) if _thermal.has_openmp() else (1,)):
         output = tmp_path/f"{threads}.npz"
-        subprocess.run([sys.executable, str(Path(__file__).resolve()), "worker", str(output), rng],
-                       env={**os.environ, "OMP_NUM_THREADS": str(threads), "OPENBLAS_NUM_THREADS": "1"},
+        subprocess.run([sys.executable, str(Path(__file__).resolve()), "worker", str(output), rng, str(threads)],
+                       env={**os.environ, "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1"},
                        check=True, capture_output=True)
         with np.load(output) as data:
             results.append({key: data[key].copy() for key in data.files})
@@ -181,10 +182,10 @@ def test_threads_are_bitwise_identical(tmp_path, rng):
             np.testing.assert_array_equal(candidate[key], results[0][key], err_msg=key)
 
 
-def worker(path, rng):
+def worker(path, rng, threads):
     result = {}
     for mode in ("pile-l", "pile-g", "gle", "piglet", "nhc", "bzp"):
-        engine = ensemble(mode, beads=32, atoms=384, rng=rng)
+        engine = ensemble(mode, beads=32, atoms=384, rng=rng, threads=threads)
         engine.run(5)
         for key, value in engine.state().items():
             result[mode+"_"+key] = value
@@ -255,10 +256,10 @@ def test_invalid_rng_rejected_before_output(tmp_path, rng):
 
 
 if __name__ == "__main__" and sys.argv[1] == "worker":
-    worker(sys.argv[2], sys.argv[3])
+    worker(sys.argv[2], sys.argv[3], int(sys.argv[4]))
 
 
-@pytest.mark.parametrize("api", [0, 1])
+@pytest.mark.parametrize("api", [0, 1, 2])
 def test_stale_extension_cannot_silently_select_legacy_noise(monkeypatch, api):
     from pyrpmd import _thermal
     monkeypatch.setattr(_thermal, "THERMAL_KERNEL_API", api)

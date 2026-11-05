@@ -69,6 +69,11 @@ void python_force(PyObject* callback,const Vec& q,const Mat& cell,Vec& energy,Ve
 }
 thermal::Config config(PyObject* dict){
     thermal::Config c;
+    if(PyObject* threads=PyDict_GetItemString(dict,"threads")){
+        const auto count=integer(threads);
+        require(count>0&&count<=std::numeric_limits<int>::max(),"threads is out of range");
+        c.threads=static_cast<int>(count);
+    }
     c.atoms=integer(dict,"atoms");c.beads=integer(dict,"beads");
     require(c.atoms>0&&c.beads>0&&c.atoms<=static_cast<size_t>(PY_SSIZE_T_MAX)/24/c.beads,"invalid/overflowing dimensions");
     require(c.beads<=static_cast<size_t>(PY_SSIZE_T_MAX)/72,"bead count overflow");
@@ -259,7 +264,15 @@ PyObject* restore(PyObject*,PyObject*args){
         h.engine->restore(std::move(s));Py_RETURN_NONE;
     }catch(...){return error();}
 }
+PyObject* has_openmp(PyObject*,PyObject*){
+#ifdef _OPENMP
+    Py_RETURN_TRUE;
+#else
+    Py_RETURN_FALSE;
+#endif
+}
 PyMethodDef methods[]={
+    {"has_openmp",has_openmp,METH_NOARGS,"Whether this thermal extension supports OpenMP."},
     {"create",create,METH_VARARGS,"Create a persistent native ensemble and evaluate the initial PES."},
     {"run",run,METH_VARARGS,"Advance an entire operator block; native PES modes need no Python callbacks."},
     {"run_prefix",run_prefix,METH_VARARGS,"Advance an operator block retaining only fully accepted steps and their observations."},
@@ -290,7 +303,7 @@ PyMODINIT_FUNC PyInit__thermal(){
 #endif
     if(PyModule_AddStringConstant(m,"rng_abi",abi)<0
             ||PyModule_AddStringConstant(m,"philox_abi","philox-v1-salmon-sc11")<0
-            ||PyModule_AddIntConstant(m,"THERMAL_KERNEL_API",2)<0
+            ||PyModule_AddIntConstant(m,"THERMAL_KERNEL_API",3)<0
             ||PyModule_AddIntConstant(m,"COMPOSABLE_OPERATORS_API",1)<0
             ||PyModule_AddIntConstant(m,"MIDDLE_BZP_API",1)<0){Py_DECREF(m);return nullptr;}return m;
 }

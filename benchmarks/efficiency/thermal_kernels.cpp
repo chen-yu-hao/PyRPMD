@@ -52,6 +52,7 @@ int main(int argc,char** argv){
     config.atoms=argc>1?std::stoull(argv[1]):4096;
     config.beads=argc>2?std::stoull(argv[2]):32;
     const std::string rng=argc>3?argv[3]:"mt19937_64";
+    config.threads=argc>4?std::stoi(argv[4]):1;
     if((rng!="mt19937_64"&&rng!="philox-v1")||config.atoms==0||config.beads==0){
         std::cerr<<"positive atoms/beads and mt19937_64 or philox-v1 are required\n";return 2;
     }

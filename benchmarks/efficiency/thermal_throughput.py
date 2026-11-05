@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Matched thermal throughput and short-call profiles (no startup timing).
 
-Run this same file against each installed checkout, with OMP_NUM_THREADS set
-before Python starts. --baseline selects the review's small/P32 cases; the
+Run this same file against each installed checkout, selecting --threads
+explicitly. --baseline selects the review's small/P32 cases; the
 full default matrix covers N=64,1000,4096 and P=8,32,128. JSON retains every
 wall time, the imported source, compiler, affinity and observation contract.
 """
@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import cProfile
 import hashlib
+import inspect
 import json
 import os
 from pathlib import Path
@@ -21,7 +22,6 @@ import subprocess
 import sys
 import time
 
-os.environ.setdefault("OMP_NUM_THREADS", "1")
 os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
 
 import numpy as np
@@ -46,7 +46,7 @@ def thermostat(mode, beads, rng):
     return spec
 
 
-def make_case(atoms, beads, mode, rng, api):
+def make_case(atoms, beads, mode, rng, api, threads=1):
     q = np.full((beads, atoms, 3), .1)
     masses = np.full(atoms, 2.)
     bath = "none" if mode == "none" else thermostat("pile-l" if mode == "bzp" else mode, beads, rng)
@@ -54,13 +54,17 @@ def make_case(atoms, beads, mode, rng, api):
         options = ({"potential": {"kind": "free"}, "cell": np.eye(3)*10,
                     "barostat": {"mode": "bzp", "pressure": (atoms+1)/2000., "tau": 10.}}
                    if mode == "bzp" else {"potential": {"kind": "harmonic", "k": .5}})
+        if "threads" in inspect.signature(NativeEnsemble).parameters:
+            options["threads"] = threads
+        elif threads != 1:
+            raise ValueError("this baseline NativeEnsemble only supports one thread")
         engine = NativeEnsemble(q, masses, 2., .01, thermostat=bath, seed=1749, **options)
         return lambda steps: engine.run(steps, record_centroids=True), engine
     if mode == "bzp":
         return None, None
     dynamics = Dynamics(HarmonicPotential(k=.5), masses, 2., beads, .01,
                         thermostat=bath, potential_identity="thermal-throughput-harmonic-v1", seed=1749,
-                        threads=int(os.environ.get("OMP_NUM_THREADS", "1")))
+                        threads=threads)
     state = State(q, np.zeros_like(q))
     return lambda steps: dynamics.propagate(state, steps), dynamics
 
@@ -90,7 +94,7 @@ def environment():
 
 
 def measure(atoms, beads, mode, args):
-    run, owner = make_case(atoms, beads, mode, args.rng, args.api)
+    run, owner = make_case(atoms, beads, mode, args.rng, args.api, args.threads)
     row = {"atoms": atoms, "beads": beads, "thermostat": mode, "rng": None if mode == "none" else args.rng, "api": args.api}
     if run is None:
         return {**row, "status": "unsupported", "reason": "BZP native built-in model uses the NativeEnsemble API"}
@@ -131,14 +135,15 @@ def main():
     parser.add_argument("--thermostats", nargs="+", choices=("none", "pile-l", "pile-g", "gle", "piglet", "nhc", "bzp"))
     parser.add_argument("--rng", choices=("mt19937_64", "philox-v1"), default="mt19937_64")
     parser.add_argument("--api", choices=("dynamics", "native"), default="dynamics")
+    parser.add_argument("--threads", type=int, default=1)
     parser.add_argument("--seconds", type=float, default=.3)
     parser.add_argument("--repeats", type=int, default=5)
     parser.add_argument("--block-steps", type=int, default=64)
     parser.add_argument("--profile", action="store_true")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
-    if not np.isfinite(args.seconds) or args.seconds <= 0 or args.repeats < 1 or not 1 <= args.block_steps <= 256:
-        parser.error("seconds/repeats must be positive; block-steps must be 1..256")
+    if not np.isfinite(args.seconds) or args.seconds <= 0 or args.repeats < 1 or args.threads < 1 or not 1 <= args.block_steps <= 256:
+        parser.error("seconds/repeats/threads must be positive; block-steps must be 1..256")
     if any(value < 1 for value in (args.atoms or [])+(args.beads or [])):
         parser.error("atoms and beads must be positive")
     if args.baseline and (args.atoms or args.beads):

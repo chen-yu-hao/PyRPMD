@@ -317,14 +317,18 @@ class NativeEnsemble:
                  thermostat: str | dict = "pile-l", barostat: str | dict = "none",
                  integrator: str = "cayley-bcb", cell=None, pbc=None,
                  fixed_atoms=(), seed: int = 0, fuse_modes: bool = True,
-                 allow_python: bool = False, sampling_integrator: str | None = None):
+                 allow_python: bool = False, sampling_integrator: str | None = None,
+                 threads: int = 1):
         try:
             from . import _thermal
         except ImportError as exc:
             raise RuntimeError("native ensemble extension is unavailable; rebuild PyRPMD with C++ enabled") from exc
         self._native = _thermal
-        if getattr(_thermal, "THERMAL_KERNEL_API", 0) < 2:
+        if getattr(_thermal, "THERMAL_KERNEL_API", 0) < 3:
             raise RuntimeError("rebuild PyRPMD: the native extension lacks the versioned thermal-kernel API")
+        threads = _integer(threads, "threads", 1, maximum=2**31-1)
+        if threads > 1 and not _thermal.has_openmp():
+            raise RuntimeError("threads>1 requires the compiled OpenMP kernel")
         coordinates = _array(q)
         if coordinates.ndim != 3 or coordinates.shape[-1] != 3 or 0 in coordinates.shape:
             raise ValueError("q must have shape [P,N,3] with positive P,N")
@@ -377,6 +381,7 @@ class NativeEnsemble:
             raise ValueError("external stress must be symmetric")
         cfg = {
             "atoms": self.natoms, "beads": self.beads, "beta": beta, "dt": dt,
+            "threads": threads,
             "masses": mass, "fixed": fixed,
             "thermostat": _THERMOSTATS[mode], "barostat": _BAROSTATS[bmode],
             "cayley": integrator == "cayley-bcb", "initialize_momenta": p is None,
@@ -489,11 +494,11 @@ class NativeEnsemble:
             self._handle = _thermal.create(cfg, coordinates, mom, h.ravel(), self._binding)
             if isinstance(self._binding, NativePeriodicPES):
                 self._sync_bound_cell(h)
-        # Addresses and initialization draws are not physics. All model, units,
+        # Addresses, thread counts and initialization draws are not physics. All model, units,
         # fixed positions, integrator and stochastic matrices are fingerprinted.
         physics = {key: (value.tolist() if isinstance(value, np.ndarray) else value)
                    for key, value in cfg.items()
-                   if key not in {"address", "context", "initialize_momenta", "seed", "python_callback"}}
+                   if key not in {"address", "context", "initialize_momenta", "seed", "python_callback", "threads"}}
         rng_abi = (getattr(_thermal, "philox_abi", "philox-v1")
                    if cfg.get("rng") == "philox-v1"
                    else getattr(_thermal, "rng_abi", "std-cxx17-local-build-v1"))
@@ -881,7 +886,7 @@ def ensemble_from_config(config: dict, *, base_directory: str | Path = ".",
     spec = dict(config)
     _unknown(spec, {"schema_version", "positions", "q", "masses", "beads", "temperature",
                     "beta", "timestep", "integrator", "sampling_integrator", "cell", "geometry_unit", "cell_unit",
-                    "pbc", "fixed_atoms", "seed", "p", "potential", "thermostat", "barostat", "run"}, "native input")
+                    "pbc", "fixed_atoms", "seed", "p", "potential", "thermostat", "barostat", "run", "threads"}, "native input")
     if spec.get("schema_version", "native-ensembles/1") != "native-ensembles/1":
         raise ValueError("expected schema_version='native-ensembles/1'")
     if ("temperature" in spec) == ("beta" in spec):
@@ -948,7 +953,8 @@ def ensemble_from_config(config: dict, *, base_directory: str | Path = ".",
                           thermostat=t, barostat=b,
                           integrator=spec.get("integrator", "cayley-bcb"), cell=cell,
                           sampling_integrator=spec.get("sampling_integrator"),
-                          pbc=spec.get("pbc"), fixed_atoms=spec.get("fixed_atoms", ()), seed=spec.get("seed", 0))
+                          pbc=spec.get("pbc"), fixed_atoms=spec.get("fixed_atoms", ()), seed=spec.get("seed", 0),
+                          threads=spec.get("threads", 1))
 
 
 def copy_mapping(value: dict) -> dict:

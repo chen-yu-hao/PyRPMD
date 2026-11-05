@@ -63,6 +63,7 @@ enum class Thermostat { None, Andersen, Langevin, PileL, PileG, SVR, GLE, NMGLE,
 enum class Barostat { None, BZP, MTK, RGB, SCR };
 struct Config {
     size_t atoms=0,beads=0; double beta=1,dt=.01;
+    int threads=1;
     Vec masses; std::vector<uint8_t> fixed;
     Thermostat thermostat=Thermostat::PileL; Barostat barostat=Barostat::None;
     bool cayley=true,initialize_momenta=true,has_cell=false,fuse_modes=true,middle_npt=false;
@@ -113,9 +114,9 @@ private:
     }
     bool gle()const{return c.thermostat==Thermostat::GLE||c.thermostat==Thermostat::NMGLE||c.thermostat==Thermostat::NMGLEG||c.thermostat==Thermostat::Piglet;}
     bool active(size_t j)const{return !c.fixed[j/3];}
-    static size_t max_threads(){
+    size_t max_threads()const{
 #ifdef _OPENMP
-        return static_cast<size_t>(std::max(1,omp_get_max_threads()));
+        return static_cast<size_t>(c.threads);
 #else
         return 1;
 #endif
@@ -129,7 +130,7 @@ private:
     template<class F> void parallel_for(size_t n,F&& fn){
 #ifdef _OPENMP
         if(l<32768||max_threads()==1){for(size_t i=0;i<n;++i)fn(i);return;}
-#pragma omp parallel for schedule(static)
+#pragma omp parallel for schedule(static) num_threads(c.threads)
         for(long long i=0;i<static_cast<long long>(n);++i)fn(static_cast<size_t>(i));
 #else
         for(size_t i=0;i<n;++i)fn(i);
@@ -780,6 +781,10 @@ private:
     }
 public:
     Engine(Config config,Vec q,Vec p,Mat cell):c(std::move(config)),d(3*c.atoms),l(d*c.beads),mobile(c.atoms),theta(c.beads/c.beta),baro_mass((c.barostat==Barostat::BZP?3.:1.)*c.atoms*theta*c.baro_tau*c.baro_tau),fft(c.beads),qn(l),pn(l),centroid_q(d),centroid_p(d),centroid_f(d),omega(c.beads),a(c.beads),b(c.beads),cc(c.beads),ah(c.beads),bh(c.beads),ch(c.beads),y(c.gle_size),z(c.gle_size),noise(c.gle_size),status(c.beads),reference_inverse(inverse(transpose(c.reference_cell))),reference_volume(det(c.reference_cell)),fixed_q(d){
+        require(c.threads>0,"threads must be positive");
+#ifndef _OPENMP
+        require(c.threads==1,"threads>1 requires the compiled OpenMP kernel");
+#endif
         require(c.atoms>0&&c.beads>0&&c.masses.size()==c.atoms&&c.fixed.size()==c.atoms,"invalid dimensions");
         if(c.philox)require(c.beads<=UINT32_MAX&&d<=UINT32_MAX,"Philox index exceeds uint32");
         require(c.beta>0&&c.dt>0&&std::isfinite(c.beta)&&std::isfinite(c.dt),"beta and dt must be positive and finite");

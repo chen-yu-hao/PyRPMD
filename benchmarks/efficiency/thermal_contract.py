@@ -65,7 +65,10 @@ def main():
     actions.add_argument("--write", type=Path)
     actions.add_argument("--compare", type=Path)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--threads", type=int, default=1)
     args = parser.parse_args()
+    if args.threads < 1:
+        parser.error("threads must be positive")
     directory = args.write or args.compare
     directory.mkdir(parents=True, exist_ok=True)
     rows = []
@@ -75,6 +78,8 @@ def main():
                       for name, options in cases()
                       for integrator in ("cayley-bcb", "normal-mode-bab")]
     for name, options in configurations:
+        if args.threads != 1:
+            options["threads"] = args.threads
         engine = NativeEnsemble(**options, seed=49)
         engine.run(5)
         checkpoint = directory/(name+".npz")

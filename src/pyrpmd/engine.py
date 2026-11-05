@@ -475,7 +475,8 @@ class _Composition:
                 return PythonNHCBath(d, q, duration, spec)
         return NativeEnsemble(q, d.masses, d.beta, duration, p=np.zeros_like(q),
                               thermostat=spec, potential=None,
-                              integrator="normal-mode-bab", fixed_atoms=d.fixed_atoms, seed=seed)
+                              integrator="normal-mode-bab", fixed_atoms=d.fixed_atoms, seed=seed,
+                              threads=d.integrator.threads)
 
     def _bath(self, q, p, duration, step):
         if self.native_engine is not None:
@@ -511,6 +512,7 @@ class _Composition:
                               thermostat=self.plan.thermostat_spec, barostat=self.plan.barostat_spec,
                               integrator=self.plan.integrator, fixed_atoms=d.fixed_atoms,
                               sampling_integrator=self.plan.sampling_integrator,
+                              threads=d.integrator.threads,
                               cell=d._initial_cell, pbc=d.pbc, seed=seed, **({"allow_python": True} if allow_python else {}))
 
     def _can_native(self, bias, fragments):

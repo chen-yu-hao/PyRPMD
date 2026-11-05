@@ -11,8 +11,10 @@ def main():
     parser.add_argument('directory', type=Path)
     args = parser.parse_args()
     names = ['baseline-dynamics', 'candidate-mt-dynamics', 'candidate-philox-dynamics',
-             'baseline-native-matrix', 'candidate-mt-native-matrix',
-             'candidate-philox-native-1', 'candidate-philox-native-2', 'candidate-philox-native-4']
+             'candidate-philox-native-1', 'candidate-philox-native-4']
+    for name in ['baseline-native-matrix', 'candidate-mt-native-matrix', 'candidate-philox-native-2']:
+        if (args.directory/(name+'.json')).exists():
+            names.append(name)
     if (args.directory/'candidate-philox-dynamics-4.json').exists():
         names.append('candidate-philox-dynamics-4')
     reports = {name: json.loads((args.directory/(name+'.json')).read_text()) for name in names}
@@ -47,7 +49,7 @@ def main():
         writer.writerow(['report', 'api', 'rng', 'threads', 'atoms', 'beads', 'thermostat', 'steps_per_second', 'seconds'])
         for name, report in reports.items():
             for r in report['measurements']:
-                writer.writerow([name, r['api'], r['rng'], report['environment']['thread_environment']['OMP_NUM_THREADS'],
+                writer.writerow([name, r['api'], r['rng'], report['options'].get('threads', report['environment']['thread_environment']['OMP_NUM_THREADS']),
                                  r['atoms'], r['beads'], r['thermostat'], r.get('steps_per_second'), json.dumps(r.get('seconds'))])
     print(json.dumps(output, indent=2))
 
