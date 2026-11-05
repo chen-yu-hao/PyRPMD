@@ -22,9 +22,10 @@ from .block_propagation import (
 from .propagation import NativeUnavailableError
 from .potentials.native import descriptor_binding
 from .potentials._builtin_native import resolve_native_binding
+# Shared pre-drawn noise budget (R6), defined once by the momentum-refresh planner.
+from .momentum_refresh import MAX_PREDRAWN_BYTES
 
 
-MAX_PREDRAWN_BYTES = 64 * 1024**2
 MAX_SAMPLING_STEPS = 4096
 
 
