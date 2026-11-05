@@ -16,6 +16,7 @@ from pathlib import Path
 
 import numpy as np
 
+from ..block_propagation import PropagationError
 from ..checkpoint import atomic_savez, load_checkpoint
 from ..constants import FS_TO_AU
 from ..dynamics import Dynamics, State
@@ -651,9 +652,83 @@ def _sample_replica(task):
                 raise
         save()
         total = options["neq"] + options["nprod"]
+        fused_production = None
+
+        def production_block():
+            """Advance unthermostatted NVE production to its next event.
+
+            A block never crosses a saved sample, a checkpoint or the end of
+            the run, and never exceeds dynamics.block_steps (nor the 4096-step
+            propagate_block limit). Energy is checked at the block's initial
+            state and after every step, as the single-step path did. A failed
+            step leaves the valid prefix committed, which is the state the
+            single-step loop would have saved. A failed observation discards
+            only the final step, again matching the single-step loop.
+            """
+            nonlocal state, elapsed
+            neq, interval, every = options["neq"], options["interval"], options["checkpoint_steps"]
+            count = min(production.block_steps, 4096, total - elapsed,
+                        interval - (elapsed - neq) % interval, every - elapsed % every)
+            start, start_elapsed = state.copy(), elapsed
+            old_stats = copy.deepcopy(production.propagation_stats)
+            try:
+                block = production.propagate_block(
+                    state, count, observe=np.zeros(count, dtype=bool), record_energy=False,
+                    check_energy=True, record_previous=True, raise_on_error=False)
+                if block.error is not None:
+                    # No observation lies inside a block: commit the prefix.
+                    elapsed += block.completed
+                    raise PropagationError(block)
+                prospective = elapsed + count
+                record = (prospective - neq) % interval == 0
+                try:
+                    with provider.step():
+                        observation = observe() if record else None
+                    if record:
+                        append_record(observation)
+                except BaseException:
+                    state.q[:], state.p[:] = block.previous_q, block.previous_p
+                    state.step, state.time = block.previous_step, block.previous_time
+                    production.propagation_stats = copy.deepcopy(old_stats)
+                    stats = production.propagation_stats
+                    stats[block.backend + "_steps"] += count - 1
+                    if block.fallback_reason:
+                        reasons = stats["fallback_reasons"]
+                        reasons[block.fallback_reason] = reasons.get(block.fallback_reason, 0) + count - 1
+                    elapsed += count - 1
+                    raise
+                elapsed = prospective
+            except BaseException:
+                # Nothing committed (including an asynchronous interrupt that
+                # lands between the native return and the commit above):
+                # restore one consistent block start.
+                if elapsed == start_elapsed:
+                    state = start
+                    production.propagation_stats = old_stats
+                raise
+
         while elapsed < total:
             is_sampling = config["task"] == "pimd" or elapsed < options["neq"]
             dynamics = sampling if is_sampling else production
+            if not is_sampling and fused_production is None:
+                # Only plain, unthermostatted Dynamics with a supported native
+                # block. Strict native mode raises here instead of falling back.
+                try:
+                    fused_production = (
+                        piston is None and monitor is None and type(production) is Dynamics
+                        and not production.plan.active and production.can_fuse())
+                except BaseException:
+                    save()
+                    raise
+            if not is_sampling and fused_production:
+                try:
+                    production_block()
+                except BaseException:
+                    save()
+                    raise
+                if elapsed % options["checkpoint_steps"] == 0:
+                    save()
+                continue
             old_state = state.copy()
             old_rng = copy.deepcopy(rng.bit_generator.state)
             old_stats = copy.deepcopy(dynamics.propagation_stats)

@@ -1,0 +1,35 @@
+{
+ "pyrpmd": "/home/user/PyRPMD/src/pyrpmd/__init__.py",
+ "exit": 0,
+ "import_seconds": 0.13055446399999937,
+ "cli_seconds": 0.47575175599996555,
+ "propagate": {
+  "calls": 0,
+  "steps": 0,
+  "seconds": 0.0,
+  "lengths": {}
+ },
+ "propagate_block": {
+  "calls": 16,
+  "steps": 256,
+  "seconds": 0.025564543999848865,
+  "lengths": {
+   "16": 16
+  }
+ },
+ "run_block": {
+  "calls": 0,
+  "steps": 0,
+  "seconds": 0.0,
+  "lengths": {}
+ },
+ "advance": {
+  "calls": 16,
+  "steps": 256,
+  "seconds": 0.023855052999863346,
+  "lengths": {
+   "16": 16
+  }
+ },
+ "process_wall_seconds": 0.7410857677459717
+}
