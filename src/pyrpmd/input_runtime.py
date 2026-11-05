@@ -145,6 +145,10 @@ def resolve_sampling(d, runtime, *, selected, materials, native_pimd):
             from .native_ensemble import _THERMOSTATS
             if sampling["thermostat"] not in _THERMOSTATS or sampling["thermostat"] in ("none", "trpmd"):
                 raise InputError("native PIMD requires an equilibrium sampling thermostat")
+            from .workflows.native_pimd import global_thermostat_warning
+            bath_warning = global_thermostat_warning(sampling["thermostat"], runtime.beads)
+            if bath_warning is not None:
+                notes.append(bath_warning)
             if sampling["thermostat"] == "pile-l":
                 from .workflows.sampling import middle_sampling_method
                 try:

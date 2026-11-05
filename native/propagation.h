@@ -420,6 +420,49 @@ static PyObject* advance(PyObject*,PyObject* args) {
             if(!(total>0))throw std::invalid_argument("empty native fragment");
             fragments.push_back(std::move(frag));}
         if(constraint && !fragments.empty())throw std::invalid_argument("combined centroid constraints are unsupported");
+        // Momentum refreshes are pre-drawn by Python.  Keep the descriptors
+        // alive for the whole block, but never call Python from the hot loop.
+        std::vector<long long> refresh_offsets;
+        std::unique_ptr<Buffer> refresh_momenta;
+        std::string refresh_projection="none";
+        auto* refresh_obj=PyDict_GetItemString(options,"refresh");
+        if(refresh_obj && refresh_obj!=Py_None){
+            if(!PyDict_Check(refresh_obj))throw std::invalid_argument("refresh must be a dictionary");
+            PyRef os(PySequence_Fast(field(refresh_obj,"offsets"),"refresh offsets must be a sequence"));
+            const auto count=PySequence_Fast_GET_SIZE(os.p);
+            refresh_offsets.reserve(static_cast<size_t>(count));
+            for(Py_ssize_t i=0;i<count;++i){
+                auto* item=PySequence_Fast_GET_ITEM(os.p,i);
+                if(PyBool_Check(item))throw std::invalid_argument("refresh offsets must be int64");
+                auto* index=PyNumber_Index(item);
+                if(!index){PyErr_Clear();throw std::invalid_argument("refresh offsets must be int64");}
+                auto value=PyLong_AsLongLong(index);Py_DECREF(index);
+                if(PyErr_Occurred()||value<0||value>=steps)
+                    throw std::invalid_argument("refresh offsets must lie in the block");
+                if(!refresh_offsets.empty()&&value<=refresh_offsets.back())
+                    throw std::invalid_argument("refresh offsets must be strictly increasing");
+                refresh_offsets.push_back(value);
+            }
+            refresh_projection=text(field(refresh_obj,"projection"));
+            if(refresh_projection!="none"&&refresh_projection!="centroid_constraint"&&refresh_projection!="fragments")
+                throw std::invalid_argument("invalid momentum refresh projection");
+            if(refresh_projection=="centroid_constraint"&&!constraint)
+                throw std::invalid_argument("centroid constraint refresh requires a constraint");
+            if(refresh_projection=="fragments"&&fragments.empty())
+                throw std::invalid_argument("fragment refresh requires fragments");
+            auto* momentum_obj=field(refresh_obj,"momenta");
+            PyRef shape(PyObject_GetAttrString(momentum_obj,"shape"));
+            PyRef shape_seq(PySequence_Fast(shape.p,"refresh momenta must have a shape"));
+            if(PySequence_Fast_GET_SIZE(shape_seq.p)!=4
+                    || PyLong_AsSsize_t(PySequence_Fast_GET_ITEM(shape_seq.p,0))!=count
+                    || PyLong_AsSsize_t(PySequence_Fast_GET_ITEM(shape_seq.p,1))!=P
+                    || PyLong_AsSsize_t(PySequence_Fast_GET_ITEM(shape_seq.p,2))!=nd/3
+                    || PyLong_AsSsize_t(PySequence_Fast_GET_ITEM(shape_seq.p,3))!=3
+                    || PyErr_Occurred())throw std::invalid_argument("refresh momenta must have shape [R,P,N,3]");
+            refresh_momenta=std::make_unique<Buffer>(momentum_obj,product(product(count,S),sizeof(double)),"d",false);
+            if(!finite(Vec(refresh_momenta->doubles(),refresh_momenta->doubles()+product(count,S))))
+                throw std::invalid_argument("refresh momenta must be finite");
+        }
         auto* reuse_obj=PyDict_GetItemString(options,"reuse_forces");
         int reuse=reuse_obj ? PyObject_IsTrue(reuse_obj) : 0;
         if(reuse<0)throw std::invalid_argument("invalid reuse_forces option");
@@ -431,12 +474,15 @@ static PyObject* advance(PyObject*,PyObject* args) {
         const bool reuse_forces=reuse && fragments.empty();
         bool force_valid=false;
         Vec current_q(q.doubles(),q.doubles()+S),current_p(p.doubles(),p.doubles()+S),trial_q(S),trial_p(S),work(c->workspace_size()),center(nd),pc(nd),free_q(S);
+        Vec refresh_backup_q,refresh_backup_p;
+        if(!refresh_offsets.empty()){refresh_backup_q.resize(S);refresh_backup_p.resize(S);}
         // Biases and fixed atoms update the PES force buffer in place.
         Vec& forces=pes.force;
         if(!finite(current_q)||!finite(current_p))throw std::invalid_argument("nonfinite initial state");
         fixed.validate(current_q.data(),current_p.data(),P);
         auto project_state=[&](Vec& x,Vec& momentum){project(x,momentum,fragments,*c);fixed.project(x.data(),momentum.data(),P);};
         Py_ssize_t completed=0,written=0;std::string failure;
+        size_t next_refresh=0;Py_ssize_t refreshes_completed=0;
         double previous_clock=clock;
         auto evaluate=[&](const Vec& x){pes.evaluate(x);
             if(!biases.empty())centroid(x,center,P,nd);
@@ -457,7 +503,28 @@ static PyObject* advance(PyObject*,PyObject* args) {
         {
             ReleaseGIL release;
             for(Py_ssize_t step=0;step<steps;++step) {
+                bool refreshed_this_step=false;
                 try {
+                    if(next_refresh<refresh_offsets.size() && refresh_offsets[next_refresh]==step){
+                        std::copy(current_q.begin(),current_q.end(),refresh_backup_q.begin());
+                        std::copy(current_p.begin(),current_p.end(),refresh_backup_p.begin());
+                        const auto* source=refresh_momenta->doubles()+static_cast<Py_ssize_t>(next_refresh)*S;
+                        std::copy(source,source+S,current_p.begin());
+                        if(refresh_projection=="centroid_constraint"){
+                            centroid(current_q,center,P,nd);auto d=constraint->eval(center.data());double z=metric(d,*c);
+                            centroid(current_p,pc,P,nd);double velocity=0;
+                            for(Py_ssize_t i=0;i<nd;++i)velocity+=d.g[i]*pc[i]/c->mass[i/3];
+                            for(Py_ssize_t b=0;b<P;++b)for(Py_ssize_t i=0;i<nd;++i)
+                                current_p[b*nd+i]-=velocity/z*d.g[i];
+                            fixed.project(current_q.data(),current_p.data(),P);
+                        } else if(refresh_projection=="fragments"){
+                            project(current_q,current_p,fragments,*c);fixed.project(current_q.data(),current_p.data(),P);
+                            force_valid=false;
+                        } else {
+                            fixed.project(current_q.data(),current_p.data(),P);
+                        }
+                        refreshed_this_step=true;
+                    }
                     std::unique_ptr<Diff> old_normal;
                     if(constraint){centroid(current_q,center,P,nd);old_normal=std::make_unique<Diff>(constraint->eval(center.data()));metric(*old_normal,*c);if(std::abs(old_normal->v)>std::max(1e-8,10*tolerance))throw std::runtime_error("parent state is not on dividing surface");}
                     if(!force_valid){
@@ -498,9 +565,16 @@ static PyObject* advance(PyObject*,PyObject* args) {
                     bool resolved=outcome && outcome->check(trial_q,trial_p,center,pc,P,nd,step);
                     previous_clock=clock;
                     current_q.swap(trial_q);current_p.swap(trial_p);++completed;if(observed[step])++written;clock+=c->dt;
+                    if(refreshed_this_step){++next_refresh;++refreshes_completed;}
                     force_valid=reuse_forces;
                     if(resolved)break;
-                } catch(const std::exception& e){failure=e.what();break;}
+                } catch(const std::exception& e){
+                    if(refreshed_this_step){
+                        std::copy(refresh_backup_q.begin(),refresh_backup_q.end(),current_q.begin());
+                        std::copy(refresh_backup_p.begin(),refresh_backup_p.end(),current_p.begin());
+                    }
+                    failure=e.what();break;
+                }
             }
             // After a successful final swap, trial_q/p still hold the state
             // immediately before that accepted step. One copy is sufficient
@@ -511,13 +585,18 @@ static PyObject* advance(PyObject*,PyObject* args) {
             }
             std::copy(current_q.begin(),current_q.end(),q.doubles());std::copy(current_p.begin(),current_p.end(),p.doubles());
         }
-        if(outcome || previous){
+        if(outcome || previous || (refresh_obj && refresh_obj!=Py_None)){
             auto* result=outcome ? outcome->result() : PyDict_New();if(!result)return nullptr;
             if(previous && completed && failure.empty()){
                 auto* value=PyFloat_FromDouble(previous_clock);
                 if(!value || PyDict_SetItemString(result,"previous_time",value)<0){Py_XDECREF(value);Py_DECREF(result);return nullptr;}
                 Py_DECREF(value);
             }
+            auto* refresh_count=PyLong_FromSsize_t(refreshes_completed);
+            if(!refresh_count || PyDict_SetItemString(result,"refreshes_completed",refresh_count)<0){
+                Py_XDECREF(refresh_count);Py_DECREF(result);return nullptr;
+            }
+            Py_DECREF(refresh_count);
             return Py_BuildValue("nndsN",completed,written,clock,failure.c_str(),result);
         }
         return Py_BuildValue("nnds",completed,written,clock,failure.c_str());

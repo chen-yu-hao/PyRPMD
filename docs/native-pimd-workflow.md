@@ -44,6 +44,11 @@ Cartesian/normal-mode GLE, normal-mode GLE with centroid SVR, parameterized
 PIGLET, FFL-rescale and NHC (`nhc`). `none` and `trpmd` are rejected in this equilibrium
 workflow. They remain available in the separate native dynamics API.
 
+For production PIMD with more than one bead, use `pile-l` or `pile-g`
+(Langevin, FFL, Andersen and calibrated GLE/PIGLET are also local baths). `svr`
+and `nhc` are accepted but act as **one global bath** on all beads; see
+[thermostat choice](#thermostat-choice).
+
 `thermostat_params` uses the controls documented in
 [native ensembles](native-ensembles.md), including explicit `gamma`, `tau`,
 `pile_scale`, `interval` and `gle`. Frequencies and times accept explicit units;
@@ -83,6 +88,38 @@ sampling engine and its `method`, `time_constant`, and `friction` controls.
 The native route requires an explicit barostat `mode` and uses `tau`/`gamma`.
 Controls for the two engines cannot be mixed; selecting native PIMD does not
 reinterpret an existing Python BZP table.
+
+## Thermostat choice
+
+`svr` and `nhc` couple one bath to the total kinetic energy of the ring
+polymer. With `beads > 1`, the stiff internal ring modes are nearly harmonic
+and exchange energy only weakly. One global bath then cannot thermalize each of
+them, so the trajectory samples a non-canonical distribution. A
+canonical-ensemble estimator can be biased far beyond its reported error bar,
+and the replica scatter does not reveal this. Validation and run summaries
+therefore add an explicit warning for these selections when `beads > 1`. This
+is a warning, not a rejection: existing inputs, fingerprints and checkpoints are
+unchanged, and with `beads = 1` (classical sampling) both thermostats are
+unflagged. `pile-g` and `nm-gle-g` are not affected. They apply SVR to the
+centroid only and use a local bath for every internal mode.
+
+An analytic control (one particle, three dimensions, `NativeEnsemble`,
+`dt = 0.25` a.u., 20 block averages) shows how large the effect is. The
+reference is the exact primitive-action value for the same P:
+
+| Model | Thermostat | ⟨V⟩ deviation from exact discrete-P value |
+| --- | --- | --- |
+| harmonic, βħω = 10, P = 32 | `pile-g`, `andersen`, `langevin` | within 2σ |
+| harmonic, βħω = 10, P = 32 | `svr` | −7σ |
+| harmonic, βħω = 10, P = 32 | `nhc` | −27σ |
+| quartic `x²/2 + x⁴/8`, β = 8, P = 16 | `pile-l`, `pile-g`, `ffl` | within 1σ |
+| quartic `x²/2 + x⁴/8`, β = 8, P = 16 | `svr` | −1.6σ, with a 7× wider error bar |
+| quartic `x²/2 + x⁴/8`, β = 8, P = 16 | `nhc` | ⟨V⟩ = 0.486 vs 0.734 (−100σ) |
+
+The NHC operator is not at fault. With P = 1 on the same quartic model (8
+atoms) it reproduces the classical average (0.6323 ± 0.0030 vs 0.6338). These
+are numerical controls, not a parameter study. Longer `tau` or more NHC chain
+links do not provide a guarantee either.
 
 ## Potentials and parallel execution
 

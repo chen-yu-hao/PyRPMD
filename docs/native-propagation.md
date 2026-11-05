@@ -159,9 +159,31 @@ Energy is checked at the block's initial state and after every step, and forces
 are reused within a block (L+1 PES batches per L steps instead of 2L). Results
 are bit-identical to the former one-step schedule for a deterministic provider.
 A failed step commits the valid prefix, and a failed observation discards only
-the observed step, matching that schedule's checkpoint. Thermalization keeps its
-per-step Andersen/PILE-L schedule, and `loop_backend="native"` raises instead of
+the observed step, matching that schedule's checkpoint. PILE-L thermalization
+keeps its per-step schedule, and `loop_backend="native"` raises instead of
 falling back when the block path is unavailable.
+
+**Materials Andersen sampling and recrossing children:** the legacy materials
+engine also uses deterministic `propagate_block()` segments while an Andersen
+sampling phase is active when the PES has a stateless native binding, there is
+no barostat, active-learning monitor, electronic-friction provider, bond
+constraint or periodic cell, and the configured dynamics object can be fused.
+The NumPy momentum refresh remains at its original step boundary and remains
+the only random-number draw. Blocks stop at the next Andersen refresh, saved
+sample, checkpoint, equilibration/production handoff or the smaller of
+`dynamics.block_steps` and 4096. Unsupported providers and those configurations
+retain the old one-step path. Sampling, checkpoint RNG state, observations and
+restart results are bit-identical to that path; failed blocks retain only their
+valid prefix and failed final observations roll back that final step.
+
+RPMD recrossing child trajectories use the same segmented entrypoint with the
+dividing-surface CV observed at every step. Each block uses
+`min(dynamics.block_steps, 4096, remaining_steps)` and reuses endpoint forces,
+so a deterministic block of L steps needs at most L+1 PES batches. The returned
+CV indicator is accumulated into the existing numerator without changing the
+paired-child result. `dynamics.block_steps = 4096` is a useful execution-only
+setting for dRPMD and state-selected runs when fewer Python returns are desired;
+it is not part of the scientific fingerprint.
 
 **Recrossing:** every child timepoint evaluates the actual dividing surface in
 C++, including equivalent arrangements. Python accumulates the returned indicator
@@ -250,3 +272,29 @@ build commands, classification cadence, checkpoint settings and observations.
 `benchmarks/h3/drpmd_optimization.py` records all timing repeats, source/binary
 hashes, exact output comparisons and interrupted-restart checks. It measures
 both core propagation and complete dRPMD jobs; these are separate workloads.
+
+## Pre-drawn Andersen momentum refreshes
+
+`Dynamics.propagate_block()` accepts a `RefreshPlan` from
+`pyrpmd.momentum_refresh.plan_refresh`.  The plan records strictly increasing
+relative `offsets` (the step before which a refresh is installed), float64
+`momenta` with shape `[R,P,N,3]`, and a `projection` of `none`,
+`centroid_constraint`, or `fragments`.  The planner calls the historical
+`Dynamics.sample_momenta()` and geometric `AndersenSchedule.refreshed()` one
+refresh at a time while restoring the caller's RNG and collision clock.
+
+Native `advance` validates the descriptor before releasing the GIL, installs a
+refresh at the beginning of its offset step, and increments
+`refreshes_completed` only after that step commits.  A failed step therefore
+rolls the momentum and its RNG draw back together.  The Python path applies the
+same transaction and projection rules.  On return, the planner replays exactly
+the successful refresh prefix to commit the NumPy RNG and schedule state; a
+changed block length or a failure after a refresh cannot consume an extra draw.
+
+The default pre-drawn buffer is capped at `MAX_PREDRAWN_BYTES = 64 MiB` and a
+plan shortens its block when that budget is reached.  This is an execution
+option and does not enter a physical checkpoint fingerprint.  The native
+extension exports `MOMENTUM_REFRESH_API = 1`; an older extension falls back in
+`auto` and raises before state mutation in strict `native` mode.  Bond-constraint
+momentum sampling remains on the existing Python path and is outside this
+contract.
