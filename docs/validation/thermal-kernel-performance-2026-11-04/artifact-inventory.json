@@ -2,7 +2,7 @@
   "included": [
     {
       "path": "README.md",
-      "bytes": 10019
+      "bytes": 9836
     },
     {
       "path": "baseline-dynamics.json",
@@ -133,7 +133,7 @@
       "bytes": 50546
     }
   ],
-  "total_bytes_excluding_inventory": 474473,
+  "total_bytes_excluding_inventory": 474290,
   "updated_since_6451297": [
     "README.md",
     "baseline-dynamics.json",
