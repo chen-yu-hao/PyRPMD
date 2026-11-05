@@ -57,7 +57,7 @@ _SECTIONS = {
         "directory checkpoint_interval checkpoint_steps trajectory_stride trajectory_storage chunk_frames diagnostics store_configurations".split()
     ),
     "reaction": set(
-        "definition fragments product_fragments forming_bonds breaking_bonds electronic_weight rinf Rinf equivalent_paths symmetry_factor preparation entry_side".split()
+        "definition fragments product_fragments forming_bonds breaking_bonds electronic_weight electronic rinf Rinf equivalent_paths symmetry_factor preparation entry_side".split()
     ),
     "analysis": set(
         "method measure flux_axis bins bootstrap_samples bootstrap_replicates bootstrap seed overlap_threshold ranges min_count max_grid_points".split()
