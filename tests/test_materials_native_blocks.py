@@ -199,15 +199,17 @@ def test_interrupted_block_resumes_from_its_start_with_a_new_block_size(
     cfg = config(library, block_steps=256, storage=storage)
     reference = single_step_reference(cfg, tmp_path / "reference", monkeypatch)
     blocks = expected_blocks(256)
+    sampling_calls = len(expected_sampling_blocks(256))
 
     def interrupt(call):
-        if call == 3:
+        # The third production block, after the Andersen sampling blocks.
+        if call == sampling_calls + 3:
             raise KeyboardInterrupt  # after the native block mutated q/p
     native_calls["hooks"]["after_advance"] = interrupt
     with pytest.raises(KeyboardInterrupt):
         _sample_replica(task(cfg, tmp_path / "resumed"))
     saved = _read_stream(cfg, task(cfg, "")["system"], tmp_path / "resumed", 0)
-    start = NEQ
+    start = NEQ + sum(blocks[:2])
     assert saved["elapsed"] == saved["state"].step == start
     assert saved["propagation"]["production"]["native_steps"] == start - NEQ
     assert saved["sample_steps"].tolist() == list(range(NEQ, start + 1, INTERVAL))

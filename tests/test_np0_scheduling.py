@@ -5,10 +5,15 @@ import copy
 import numpy as np
 import pytest
 
-from pyrpmd.dynamics import Dynamics
+from pyrpmd.dynamics import Dynamics, native_capabilities
 from pyrpmd.system import System
 from pyrpmd.workflows.materials import _sample_replica
 from pyrpmd.workflows.rate import _child_task
+
+
+pytestmark = pytest.mark.skipif(
+    not native_capabilities()["available"], reason="native build required"
+)
 
 
 def _materials_config(*, andersen_interval=7, block_steps=256):
