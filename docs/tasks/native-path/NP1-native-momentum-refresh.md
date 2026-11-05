@@ -74,8 +74,9 @@ orphan: true
 
 ## 文件所有权
 
-- **独占：** `native/propagation.h`、`src/pyrpmd/block_propagation.py`、新 `src/pyrpmd/momentum_refresh.py`、
-  新测试文件。
+- **独占：** `native/propagation.h`、`src/pyrpmd/block_propagation.py`（`bias_descriptors()` 与新增
+  `_check_bias_snapshot()` 归 NP4；NP4 还会在 `propagate_block` 中插入一行快照校验调用，后合并者 rebase）、
+  新 `src/pyrpmd/momentum_refresh.py`、新测试文件。
 - **共享注册点：** `native/cayley.cpp`（只追加能力常量）、`docs/native-propagation.md`（追加小节）。
 
 ## 交付物

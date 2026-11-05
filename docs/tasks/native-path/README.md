@@ -4,7 +4,7 @@ orphan: true
 
 # 原生路径替换任务卡（第五轮）
 
-更新日期：2026-11-05。基线：`main@ca093eb`（#116 合并后）。
+更新日期：2026-11-05。基线：`main@ca093eb`（#116 合并后）；卡片行号以此为准。之后合并的 #117（`af8f5be`，`main@981f74e`）已把 diffusion 的 NVE 生产段改为按事件分块，NP0 已据此缩小范围。
 
 本目录把"整条轨迹尽量留在 C++、只在 checkpoint/IO/事件处返回 Python"的评估结果，
 拆成可以交给彼此独立的 agent 执行的任务卡。卡片编号用 `NP` 前缀（native path），
@@ -35,7 +35,7 @@ C++ 侧目前有两套互不相通的引擎：
 | 再穿越子轨迹（RPMD） | `rate_recrossing.py:286-293` | 每 256 步；用 `propagate()`，每步 2 次 PES 调用 |
 | PILE-L 采样、TRPMD 子轨迹 | `sampling.py:194-202`、`rate_recrossing.py:296-300` | 每步 |
 | 元动力学/OPES/ABF/VES | `biased_sampling.py:127`（`_history_step`） | 每步 |
-| materials/diffusion | `materials.py:657-680` | 每步（Andersen 路径是 `propagate(state, 1)`） |
+| materials/diffusion | `materials.py` 的 `_sample_replica` | 采样段每步（Andersen 路径是 `propagate(state, 1)`）；diffusion NVE 生产段已按事件分块（#117） |
 | committor/TIS/FFS 射击 | `committor.py:258`、`transition_interface.py:316,327`、`path_sampling.py:430` | 每步 |
 
 **关键事实（已实测，NumPy 2.5.3）：** 旧路径里的 Andersen 动量
@@ -119,6 +119,10 @@ geometric 碰撞调度（`sampling.py:97-102`，`rng.geometric`）都与当前�
   不重排、不改格式、不改已有函数的数学；后合并的一方 rebase。NP2 只在 `cayley.cpp` 的
   `methods[]` 表追加一行（共享注册点）。
 - **`native/propagation.h`：** 第 1 波由 NP1 独占；NP3 在 NP1 合并后独占。
+- **`block_propagation.py`：** 函数级所有权。NP1 拥有 `propagate_block` 与其余部分；NP4 拥有 `bias_descriptors()`
+  和新增的 `_check_bias_snapshot()`，并可在 `propagate_block` 中插入一行快照校验调用（共享插入点，后合并者 rebase）。
+  NP3 在 NP1 合并后接手 `propagate_block` 中 `basin` 相关改动。
+  注意：`propagate_block` 的偏置入口是 `bias_descriptors()`，`propagation._biases()` 只服务旧的 `propagate()`/`run_block`。
 - **`native/cv_core.hpp`：** NP4 独占偏置部分（`struct Bias` 及新增偏置类型）；不改 CV 部分。
 - **`biased_sampling.py`：** 函数级所有权。NP5 拥有 `_fixed_step` 和 `run_biased_sampling` 中的 `fused`
   判定；NP7 拥有 `_history_step` 及新增的历史偏置分块函数。两卡都在第 2 波，后合并者 rebase。
