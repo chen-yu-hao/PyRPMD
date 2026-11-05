@@ -95,3 +95,11 @@ It commits each accepted step and returns a valid prefix on numerical failure;
 `run_block` retains its whole-block transaction contract. Both implementations
 share the existing immutable Cayley context and the provider's lifetime lock.
 See [the segmented API contract](../docs/block-propagation.md).
+
+`advance` also accepts a pre-drawn `refresh` descriptor.  Its strictly
+increasing step offsets and `[R,P,N,3]` float64 momenta are supplied by Python;
+the GIL-free loop installs each momentum before its step and reports the
+successful `refreshes_completed` prefix.  `none`, centroid-constraint and
+fragment projections reuse the corresponding native projection mathematics.
+The `MOMENTUM_REFRESH_API` marker lets older extensions reject this descriptor
+before mutating state.
