@@ -21,7 +21,7 @@ from pyrpmd.system import System
 from pyrpmd.workflows import fes, rate
 from pyrpmd.workflows.sampling import AndersenSchedule, validate_andersen_schedule
 
-from test_fes_block_sampling import cabi_library, cabi_controls, _task, _checkpoint
+from test_fes_block_sampling import cabi_library, cabi_controls, _task, _checkpoint, _failing_call
 
 
 @pytest.fixture(scope="module")
@@ -215,10 +215,15 @@ def test_geometric_fused_failure_commits_prefix_and_replays_failed_refresh_once(
     else:
         failed_step = next(start + 2 for start, end in refreshes if end - start > 2)
     task = _geometric_task(tmp_path / "failed", cabi_library)
-    cabi_controls.audit_reset(2 * failed_step, -1)
+    # Fail that step under the actual native schedule (block-local force reuse).
+    cabi_controls.audit_reset(-1, -1)
+    failing = _failing_call(
+        lambda: fes._sample_window(_geometric_task(tmp_path / "probe", cabi_library)),
+        cabi_controls.audit_get_calls, failed_step)
+    cabi_controls.audit_reset(failing, -1)
     with pytest.raises(PropagationError, match="injected CABI failure"):
         fes._sample_window(task)
-    assert cabi_controls.audit_get_calls() == 2 * failed_step
+    assert cabi_controls.audit_get_calls() == failing
     prefix = _payload(_checkpoint(task))
     assert int(prefix["elapsed"]) == int(prefix["step"]) == failed_step - 1
     if failure_case != "partial":
