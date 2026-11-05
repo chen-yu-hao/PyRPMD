@@ -195,6 +195,29 @@ the exact parent-snapshot times within each block. The native
 constraint implements the same map and momentum projection, rather than
 unconstrained NVE.
 
+**PILE-L/TRPMD sampling blocks:** `pyrpmd.sampling_block.propagate_sampling_block`
+uses the same BCOCB/BAOAB coefficient cache and per-step NumPy noise order as
+`Dynamics.sample_step`. For an eligible built-in `Dynamics`/`CayleyIntegrator`
+with a native PES, PILE-L or TRPMD noise is drawn in Python and passed to
+`advance_sampling`; the C++ loop executes `kick -> sample_free -> kick` without
+Python callbacks. `P<=8` and power-of-two rings use the native real-mode
+kernel; unsupported rings, custom providers, fragment or bond constraints, and
+composed operators use the original one-step Python path. `observe` is a
+binary per-step mask and `cv` uses the existing native centroid descriptors.
+
+The pre-drawn noise buffer is bounded by `MAX_PREDRAWN_BYTES = 64 MiB`; a
+larger request is split into consecutive native chunks, preserving the same
+Generator stream and state clock. `record_step_energies` records every
+accepted step independently of the observation mask. A native failure returns
+the completed prefix and the Python wrapper restores the Generator to the
+chunk start before replaying only accepted noise, so a failed suffix consumes
+no random numbers. With no bias this is E0; umbrella and flux-metric bias
+descriptors use the existing native force implementation and are E1.
+When energy output is requested, the native loop retains accepted q/p snapshots
+and the wrapper applies the same `Dynamics.energy` NumPy reduction order before
+returning energies, preserving the E0 bitwise contract without putting Python
+callbacks inside the native step loop.
+
 ## Python and distributed compatibility
 
 Arbitrary Python PESs, custom/subclassed CVs or biases, Angle,
