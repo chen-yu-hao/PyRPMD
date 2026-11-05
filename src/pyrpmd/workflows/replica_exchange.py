@@ -254,8 +254,11 @@ def _advance_window(dynamics, state, bias, cv, stop, options, values, energies, 
                         interval - state.step % interval)
             production = state.step + np.arange(1, count + 1) - options["neq"]
             observe = (production > 0) & (production % options["sample_interval"] == 0)
+            # Block-local endpoint-force reuse: bitwise identical, one fewer PES
+            # call per step; blocks end at every exchange/bias boundary.
             block = dynamics.propagate_block(state, count, bias=bias, cv=cv,
-                                            observe=observe, check_energy=True)
+                                            observe=observe, check_energy=True,
+                                            reuse_forces=True)
             values.extend(block.values.copy())
             energies.extend(block.energies.tolist())
             walkers.extend([int(label)] * len(block.values))

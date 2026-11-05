@@ -417,10 +417,12 @@ static PyObject* advance(PyObject*,PyObject* args) {
         auto* reuse_obj=PyDict_GetItemString(options,"reuse_forces");
         int reuse=reuse_obj ? PyObject_IsTrue(reuse_obj) : 0;
         if(reuse<0)throw std::invalid_argument("invalid reuse_forces option");
-        // The opt-in cache is local to this call and restricted to ordinary
-        // stateless PES dynamics. Projection, constraint and bias semantics
-        // retain their reference evaluation schedule.
-        const bool reuse_forces=reuse && !constraint && fragments.empty() && biases.empty();
+        // The opt-in cache is local to this call and restricted to stateless
+        // PES dynamics. Native biases are frozen built-in descriptors (pure
+        // functions of q), and the cached endpoint force already includes
+        // their force, so biased steps reuse it too. Projection and constraint
+        // semantics retain their reference evaluation schedule.
+        const bool reuse_forces=reuse && !constraint && fragments.empty();
         bool force_valid=false;
         Vec current_q(q.doubles(),q.doubles()+S),current_p(p.doubles(),p.doubles()+S),trial_q(S),trial_p(S),work(c->workspace_size()),center(nd),pc(nd),forces(S),free_q(S);
         if(!finite(current_q)||!finite(current_p))throw std::invalid_argument("nonfinite initial state");

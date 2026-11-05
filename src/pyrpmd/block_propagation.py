@@ -554,7 +554,8 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
     ``record_previous`` retains only the state before the final accepted step
     of a successful block, allowing a Python classifier to reject that step.
     ``reuse_forces`` opts into block-local force reuse for ordinary native
-    dynamics without bias, constraint or fragment projection. Other cases keep
+    dynamics, with or without a native bias, but without constraint or
+    fragment projection. Other cases keep
     the reference PES evaluation schedule. No cache survives a block.
     ``check_energy`` validates the initial and every candidate step's total
     ring energy, including unobserved steps. Observations reuse that energy.

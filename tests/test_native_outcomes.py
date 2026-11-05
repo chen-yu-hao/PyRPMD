@@ -184,7 +184,7 @@ def test_force_cache_invalidates_between_blocks_and_after_python_edit(native_lib
 
 
 @pytest.mark.parametrize("kind", ["bias", "fragments", "constraint"])
-def test_force_cache_keeps_reference_schedule_for_projected_or_biased_steps(native_library, kind):
+def test_force_cache_reuses_biased_but_not_projected_steps(native_library, kind):
     from pyrpmd.workflows.rate import project_positions, project_momenta
 
     pes = CompiledPotential(native_library)
@@ -205,7 +205,9 @@ def test_force_cache_keeps_reference_schedule_for_projected_or_biased_steps(nati
     dyn.propagate_block(reference, 5, backend="native", **options)
     pes.lib.reset(-1, 0)
     dyn.propagate_block(current, 5, backend="native", reuse_forces=True, **options)
-    assert pes.lib.get_calls() == (15 if kind == "fragments" else 10)
+    # Frozen native biases are pure functions of q: their endpoint force is
+    # reused (1 + 5 calls). Projections/constraints keep the reference schedule.
+    assert pes.lib.get_calls() == {"bias": 6, "fragments": 15, "constraint": 10}[kind]
     np.testing.assert_array_equal(current.q, reference.q)
     np.testing.assert_array_equal(current.p, reference.p)
 

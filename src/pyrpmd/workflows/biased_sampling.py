@@ -74,6 +74,8 @@ def _fixed_step(runtime, dynamics, cv, bias, *, neq, total, interval,
             block = dynamics.propagate_block(
                 state, count, bias=bias, cv=cv, observe=observe,
                 check_energy=True, raise_on_error=False,
+                # Block-local endpoint-force reuse; bitwise identical results.
+                reuse_forces=True,
             )
             runtime.elapsed += block.completed
             runtime.values.extend(block.values.copy())

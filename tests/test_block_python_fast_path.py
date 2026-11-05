@@ -311,3 +311,46 @@ def test_patched_builtin_bias_is_not_treated_as_pure():
         pass
 
     assert not _pure_bias(Sub(patched.cv, [0.5], 0.3))
+
+
+@pytest.mark.parametrize("kind", ["umbrella", "flux", "composite"])
+def test_native_biased_force_reuse_is_bitwise(batch_library, kind):
+    from pyrpmd.bias import CompositeBias, FluxMetricBias, UmbrellaBias
+    from pyrpmd.cv import Distance
+    library = ctypes.CDLL(str(batch_library))
+    function = library.batch
+    doubles = np.ctypeslib.ndpointer(dtype=np.float64, flags="C_CONTIGUOUS")
+    function.argtypes = [ctypes.c_int32, doubles, doubles, doubles,
+                         np.ctypeslib.ndpointer(dtype=np.int32, flags="C_CONTIGUOUS")]
+    function.restype = None
+    lock = threading.RLock()
+
+    class Batch:
+        def evaluate(self, q):
+            q = np.ascontiguousarray(q)
+            e, f, s = np.empty(len(q)), np.empty_like(q), np.empty(len(q), np.int32)
+            function(len(q), q, e, f, s)
+            return e, f, s
+
+        def native_binding(self):
+            return NativePESBinding("fortran-batch-v1", function, 2, self, lock)
+
+    distance = Distance((0, 1))
+    umbrella = UmbrellaBias(distance, [0.5], 0.3)
+    flux = FluxMetricBias(distance, MASSES, 2.0)
+    bias = {"umbrella": umbrella, "flux": flux,
+            "composite": CompositeBias(umbrella, flux)}[kind]
+    results, states = [], []
+    for reuse in (False, True):
+        dynamics = Dynamics(PythonPotential(Batch()), MASSES, 2.0, 4, 0.05)
+        state = _state(4)
+        results.append(propagate_block(dynamics, state, 12, bias=bias, cv=distance,
+                                       reuse_forces=reuse, check_energy=True,
+                                       record_step_energies=True))
+        states.append(state)
+    assert results[0].backend == results[1].backend == "native"
+    np.testing.assert_array_equal(states[1].q, states[0].q)
+    np.testing.assert_array_equal(states[1].p, states[0].p)
+    np.testing.assert_array_equal(results[1].energies, results[0].energies)
+    np.testing.assert_array_equal(results[1].step_energies, results[0].step_energies)
+    np.testing.assert_array_equal(results[1].values, results[0].values)
