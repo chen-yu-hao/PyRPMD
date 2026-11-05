@@ -2,7 +2,8 @@
 
 Date: 2026-11-04 (Europe/Berlin). Baseline: `main@801953d`; implementation branch:
 `agent/t49-thermal-kernel-performance`, based on last verified `main@cb28829`.
-The final remote refresh confirmed `main@cb28829`; no additional rebase was needed.
+The last successful remote refresh confirmed `main@cb28829`. Final refresh attempts
+timed out; current-main verification is still required before publishing a PR.
 
 **Performance acceptance: 6/6 gates passed.** The user-authorized harmonic
 binding cache and the fused preparation of initial-energy terms reduce the
@@ -167,7 +168,9 @@ scope authorization is pending. Initial energy terms are prepared in one native
 pass, then reduced by NumPy in the original order; numerical/restart tests cover
 OpenMP, no-OpenMP and FMA builds.
 
-GitHub publication still requires authentication in the execution environment.
+GitHub publication is blocked by missing authentication in the execution environment.
+The final two main-refresh attempts also timed out. No branch push or PR publication
+was completed in this continuation; G13 publishing restrictions remain in force.
 
 Only final script-produced records belong in this directory. Early probes,
 interrupted suites, provisional Philox mappings and pre-fix FMA results are
