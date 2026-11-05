@@ -227,3 +227,29 @@ build commands, classification cadence, checkpoint settings and observations.
 `benchmarks/h3/drpmd_optimization.py` records all timing repeats, source/binary
 hashes, exact output comparisons and interrupted-restart checks. It measures
 both core propagation and complete dRPMD jobs; these are separate workloads.
+
+## Pre-drawn Andersen momentum refreshes
+
+`Dynamics.propagate_block()` accepts a `RefreshPlan` from
+`pyrpmd.momentum_refresh.plan_refresh`.  The plan records strictly increasing
+relative `offsets` (the step before which a refresh is installed), float64
+`momenta` with shape `[R,P,N,3]`, and a `projection` of `none`,
+`centroid_constraint`, or `fragments`.  The planner calls the historical
+`Dynamics.sample_momenta()` and geometric `AndersenSchedule.refreshed()` one
+refresh at a time while restoring the caller's RNG and collision clock.
+
+Native `advance` validates the descriptor before releasing the GIL, installs a
+refresh at the beginning of its offset step, and increments
+`refreshes_completed` only after that step commits.  A failed step therefore
+rolls the momentum and its RNG draw back together.  The Python path applies the
+same transaction and projection rules.  On return, the planner replays exactly
+the successful refresh prefix to commit the NumPy RNG and schedule state; a
+changed block length or a failure after a refresh cannot consume an extra draw.
+
+The default pre-drawn buffer is capped at `MAX_PREDRAWN_BYTES = 64 MiB` and a
+plan shortens its block when that budget is reached.  This is an execution
+option and does not enter a physical checkpoint fingerprint.  The native
+extension exports `MOMENTUM_REFRESH_API = 1`; an older extension falls back in
+`auto` and raises before state mutation in strict `native` mode.  Bond-constraint
+momentum sampling remains on the existing Python path and is outside this
+contract.
