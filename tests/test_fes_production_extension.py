@@ -10,6 +10,7 @@ import subprocess
 import numpy as np
 import pytest
 
+from pyrpmd import block_propagation
 from pyrpmd.checkpoint import atomic_savez, load_checkpoint
 from pyrpmd.dynamics import Dynamics, native_capabilities
 from pyrpmd.system import System
@@ -299,6 +300,9 @@ def test_propagation_failure_commits_valid_prefix_and_continues_same_rng(
     fes._sample_window(task)
     task["production_steps"] = 62
     if controls is not None:
+        # Pin the two-call reference schedule so the call-count injection
+        # maps to a fixed step independently of block boundaries.
+        monkeypatch.setattr(block_propagation, "_stateless_provider", lambda dynamics: False)
         # Every native step uses two PES calls, including unsampled steps.
         controls.extension_reset(2 * 10)
     original_energy = Dynamics.energy

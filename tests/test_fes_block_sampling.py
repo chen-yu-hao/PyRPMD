@@ -10,6 +10,7 @@ import subprocess
 import numpy as np
 import pytest
 
+from pyrpmd import block_propagation
 from pyrpmd.bias import UmbrellaBias
 from pyrpmd.checkpoint import load_checkpoint
 from pyrpmd.cv import Cartesian, CVStack
@@ -165,13 +166,15 @@ def test_native_checks_unobserved_total_energy_without_replaying(cabi_library, c
         dynamics.propagate_block(reference, 2, backend="native", record_energy=False)
         # All four per-bead energies remain finite. Only their total overflows
         # at the endpoint of step 3, which has no requested observation.
-        cabi_controls.audit_reset(-1, 6)
+        # With endpoint force reuse, call 1 is the initial force and call k+1
+        # is the endpoint of step k.
+        cabi_controls.audit_reset(-1, 4)
         result = dynamics.propagate_block(state, 5, observe=[1, 0, 0, 1, 0],
                                           backend="native", check_energy=True,
                                           record_energy=False, raise_on_error=False)
         assert result.completed == state.step == 2
         assert "nonfinite total ring energy" in result.error
-        assert cabi_controls.audit_get_calls() == 6
+        assert cabi_controls.audit_get_calls() == 4
         np.testing.assert_array_equal(result.steps, [1])
         assert np.isnan(result.energies).all()
         np.testing.assert_array_equal(state.q, reference.q)
@@ -359,9 +362,12 @@ def test_native_completed_resume_and_different_block_partition_preserve_samples(
 
 @pytest.mark.parametrize("failed_step", [1, 14, 23])
 def test_native_failure_checkpoints_valid_prefix_without_replay_and_resumes_same_rng(
-    tmp_path, cabi_library, cabi_controls, failed_step,
+    tmp_path, cabi_library, cabi_controls, failed_step, monkeypatch,
 ):
     task = _task(tmp_path / "failed", cabi_library)
+    # Pin the two-call reference schedule so the call-count injection maps to
+    # a fixed step independently of block boundaries and force reuse.
+    monkeypatch.setattr(block_propagation, "_stateless_provider", lambda dynamics: False)
     cabi_controls.audit_reset(2 * failed_step, -1)
     with pytest.raises(PropagationError, match="injected CABI failure") as caught:
         fes._sample_window(task)
