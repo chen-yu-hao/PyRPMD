@@ -1,4 +1,6 @@
 import copy
+import subprocess
+import sys
 
 import numpy as np
 import pytest
@@ -24,6 +26,41 @@ from pyrpmd.nonadiabatic_input import resolve_nonadiabatic_job
 from pyrpmd.potentials.base import Potential, coordinates
 from pyrpmd.potentials.builtin import HarmonicPotential
 from pyrpmd.potentials.contraction import SplitPotential
+
+
+@pytest.mark.parametrize("modules", [
+    ("pyrpmd.nrpmd_auxiliary", "pyrpmd.nonadiabatic"),
+    ("pyrpmd.nonadiabatic", "pyrpmd.nrpmd_auxiliary"),
+])
+def test_nrpmd_modules_import_in_either_order(modules):
+    result = subprocess.run(
+        [sys.executable, "-c", """
+import importlib
+import sys
+
+for name in sys.argv[1:]:
+    importlib.import_module(name)
+
+import numpy as np
+from pyrpmd import nonadiabatic, nrpmd_auxiliary
+from pyrpmd.potentials.nonadiabatic_models import TullyModelOne
+
+assert nonadiabatic.NRPMDAuxiliaryOperator is nrpmd_auxiliary.NRPMDAuxiliaryOperator
+assert nonadiabatic.NRPMD_COMPATIBILITY is nrpmd_auxiliary.NRPMD_COMPATIBILITY
+dynamics = nonadiabatic.NRPMDDynamics(
+    TullyModelOne(), [2000.0], 10.0, 1, 0.01, 2, native=False,
+)
+state = nonadiabatic.NRPMDState(
+    np.zeros((1, 1, 3)), np.zeros((1, 1, 3)),
+    mapping_q=np.array([[np.sqrt(3.0), 1.0]]), mapping_p=np.zeros((1, 2)),
+)
+dynamics.step(state)
+assert state.step == 1
+assert np.isfinite(dynamics.energy(state))
+""", *modules],
+        capture_output=True, text=True,
+    )
+    assert result.returncode == 0, result.stderr
 
 
 class LinearDiabatic(Potential):

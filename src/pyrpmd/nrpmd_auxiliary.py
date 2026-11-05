@@ -7,11 +7,6 @@ import math
 
 import numpy as np
 
-from .nonadiabatic import (
-    NRPMDState,
-    _mint,
-    validate_diabatic_result,
-)
 from .auxiliary import (
     AuxiliaryCompatibility,
     AuxiliaryLayout,
@@ -110,6 +105,8 @@ class NRPMDAuxiliaryOperator:
         return {"mapping_q": self.state.mapping_q, "mapping_p": self.state.mapping_p}
 
     def propagate(self, dt, q):
+        from .nonadiabatic import _mint
+
         duration = float(dt)
         if not math.isfinite(duration):
             raise ValueError("auxiliary propagation duration must be finite")
@@ -295,6 +292,8 @@ class _NRPMDAdapterMixin:
         return NRPMDAuxiliaryOperator(self, state)
 
     def _check(self, state):
+        from .nonadiabatic import NRPMDState
+
         if (self.electronic_backend, self.electronic_device) != self._electronic_parameters:
             raise ValueError("NRPMDDynamics electronic backend parameters are immutable")
         if (self.integrator.dt != self.dt / self.inner_steps
@@ -325,6 +324,8 @@ class _NRPMDAdapterMixin:
         return wrap_positions(q, self.cell, self.pbc)
 
     def _evaluate(self, q):
+        from .nonadiabatic import validate_diabatic_result
+
         value = self._coordinates(q)
         return validate_diabatic_result(self.potential.evaluate(value), value.shape, self.nstates)
 

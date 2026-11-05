@@ -4,16 +4,41 @@
 
 This record covers the Python auxiliary-degree-of-freedom protocol and the NRPMD adapter. It does not claim physical convergence, production accuracy, GPU performance, NPT support, or validation of other nonadiabatic methods.
 
+## Review fixes
+
+PR #114 identified an [import-order failure](https://github.com/chen-yu-hao/PyRPMD/pull/114#discussion_r4477155348)
+and [two unused copies of modules](https://github.com/chen-yu-hao/PyRPMD/pull/114#issuecomment-6653360228). The adapter now imports its three dependencies from `nonadiabatic`
+inside the methods that use them, so module initialization works in either
+order. The definitions and historical exports stay in `nonadiabatic.py`.
+The unused `src/pyrpmd/_nonadiabatic_legacy.py` and
+`src/pyrpmd/workflows/_nonadiabatic_legacy.py` were removed after auditing
+all Python source, tests, examples, and benchmarks.
+
+`review-import-audit.txt` records the exact grep commands and results before
+removal, plus the remaining historical helper importers. The original audit
+is retained in `import-audit.txt`.
+
+The new regression runs both import orders in separate Python interpreters,
+then constructs the public NRPMD adapter and propagates one step. Before the
+fix it reported `1 failed, 1 passed, 11 deselected in 4.32s`; after the fix,
+`2 passed, 11 deselected in 4.13s`. This initial reproduction used the existing
+T52 dependency environment with `PYTHONPATH=src`. The acceptance run below
+uses a fresh editable installation and compiled native extensions.
+
 ## Environment
 
-- Host: Linux x86_64 container, kernel 6.18.57
-- CPU presented to the container: 112 logical CPUs
-- Python: 3.11.5
-- NumPy/SciPy/pytest: 1.24.3 / 1.15.3 / 7.4.0
-- The host NumPy is below the package declaration (`numpy>=1.26`); no dependency
-  upgrade was possible through the available setuptools 68 installation path.
-- Validation thread settings: `OMP_NUM_THREADS=1`, `OPENBLAS_NUM_THREADS=1`
-- Baseline commit: `801953dc9e2ca620f36069eb4551c41c529c432a`
+- Host: `cluster`, Linux `5.14.0-611.49.1.el9_7.x86_64`, x86_64.
+- CPU: Intel Xeon Platinum 8176 @ 2.10 GHz; 2 sockets, 56 physical cores,
+  112 logical CPUs visible.
+- Python: 3.11.5; isolated environment `/tmp/pyrpmd-t26-review-venv`.
+- Dependencies: NumPy 2.4.6, SciPy 1.17.1, h5py 3.16.0, threadpoolctl 3.7.0,
+  pytest 9.2.0, setuptools 84.2.1, Sphinx 8.2.3, myst-parser 4.0.1.
+- Compiler: GCC/G++ 11.3.1, with the default OpenMP build. `_native`,
+  `_thermal`, and `_electronic` all import from this checkout;
+  `_native.has_openmp()` is `True`. `python -m pip check` reports
+  `No broken requirements found.`
+- Thread settings: `OMP_NUM_THREADS=1`, `OPENBLAS_NUM_THREADS=1`.
+- Branch rebased onto `main@67415fd`, including T52 (#112).
 
 ## Independent numerical checks
 
@@ -28,37 +53,62 @@ This record covers the Python auxiliary-degree-of-freedom protocol and the NRPMD
 
 ## Commands and observed results
 
-The source checkout was tested with `PYTHONPATH=src` because this host's
-setuptools 68 rejects the repository's PEP 621 license string before the
-editable install can start. The focused T26 checks passed:
+Installation used a fresh venv, upgraded setuptools and wheel, and the
+project's declared `test` and `docs` extras. Public dependency wheels were
+obtained through pip, direct IPv4 download, and the existing pip cache after
+slow downloads; the final editable install used the local wheel directory:
 
 ```bash
-PYTHONPATH=src python -m pytest -q tests/test_auxiliary_operators.py tests/test_auxiliary_workflow_checkpoint.py
-# 12 passed in 25.93s
-
-PYTHONPATH=src OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q \
-  tests/test_nonadiabatic*.py tests/test_nrpmd*.py tests/test_complex_nonadiabatic.py \
-  tests/test_thermal_nrpmd*.py tests/test_electrochemistry*.py \
-  tests/test_constant_potential_nonadiabatic.py tests/test_adaptive_nrpmd.py \
-  tests/test_adaptive_constant_potential_example.py tests/test_adaptive_nrpmd_reference.py \
-  tests/test_adaptive_nrpmd_study.py tests/test_published_nrpmd_benchmark.py
-# 918 passed, 5 skipped, 2 failed in 124.73s (0:02:04)
-
-PYTHONPATH=src OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q -m "not campaign"
-# 48 failed, 8318 passed, 879 skipped, 1 deselected, 48 warnings, 35 errors in 1768.93s (0:29:28)
+python -m venv /tmp/pyrpmd-t26-review-venv
+source /tmp/pyrpmd-t26-review-venv/bin/activate
+python -m pip install 'setuptools>=77' wheel
+python -m pip install --no-index --find-links /tmp/t26-offline-wheels \
+  --no-build-isolation -e '.[test,docs]'
+python -m pip check
+unset PYTHONPATH
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1
+python -m pytest -q -m "not campaign"
+python -m sphinx -W --keep-going -b html docs docs/_build/html
+python -m pyrpmd run examples/nonadiabatic/exchange.inp \
+  --output /tmp/t26-review-exchange-20261105
 ```
 
-The two focused-suite failures are the pre-existing serial/process bitwise
-comparison for `rpsh` and a dRPMD bootstrap covariance comparison at sub-
-`1e-18` scale; the `rpsh` difference was below `8e-16`. The two Andersen
-batch cases that fail without the optional native extension are likewise
-baseline environment failures. The required full-suite
-command ran against this source checkout but not the repository's certified
-install: setuptools 68 rejected the PEP 621 license field, the native
-extensions were unavailable, the installed PySCF module had no `__version__`,
-and several optional socket/fixture tests were host-dependent. No failure was
-reported from the T26 auxiliary tests or the T26 focused numerical checks. No
-GPU, native-kernel performance, or physical-convergence claim is made here.
+A fresh environment with network access can use
+`python -m pip install -e '.[test,docs]'` instead of the local wheel directory.
+The full suite runs outside the filesystem sandbox so local socket and
+multiprocess tests can exercise their real paths. No `PYTHONPATH` override
+is used for acceptance.
+
+Raw full non-campaign summary (exit status 0):
+
+```text
+9377 passed, 235 skipped, 1 deselected, 47 warnings, 410 subtests passed in 1712.70s (0:28:32)
+```
+
+The complete raw output is retained in `pytest-review.txt`. The suite has
+no failures or collection errors; optional dependencies account for skips.
+
+The strict Sphinx command exited 0 with `build succeeded.`. The real CLI
+command exited 0 with 8/8 trajectories resolved: 8 nonreactive, 0 product,
+0 unresolved, 0 failed. This pilot checks the software workflow, not a
+converged physical rate.
+
+## Superseded environment diagnostic
+
+The earlier source-path run used NumPy 1.24.3 and pytest 7.4.0, below the
+project requirements, and had no compiled native extensions. Its raw summary
+was:
+
+```text
+48 failed, 8318 passed, 879 skipped, 1 deselected, 48 warnings, 35 errors in 1768.93s (0:29:28)
+```
+
+This was not an acceptable full-suite result. No complete same-environment
+main baseline was run, so the earlier attribution of all failures to baseline
+or optional-dependency issues was unsupported and is withdrawn. The failed
+setuptools 68 build also did not establish that a compatible environment
+could not be installed. The fresh installation above replaces that diagnostic
+as the basis for review acceptance.
 
 ## Interpretation
 
