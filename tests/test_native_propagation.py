@@ -184,7 +184,8 @@ def test_failed_step_rolls_back_only_the_invalid_step_and_never_retries(native_l
     dyn.propagate_block(reference, 2, record_energy=False, backend="native")
     pes.lib.reset(6, nonfinite)  # second force of step 3
     with pytest.raises(PropagationError) as caught:
-        dyn.propagate_block(s, 10, record_energy=False, backend="native", record_states=True)
+        dyn.propagate_block(s, 10, record_energy=False, backend="native", record_states=True,
+                            reuse_forces=False)
     result = caught.value.result
     assert result.completed == 2 and len(result.steps) == 2
     assert pes.lib.get_calls() == 6  # no Python retry and no speculative later force

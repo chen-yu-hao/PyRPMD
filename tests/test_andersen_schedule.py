@@ -392,6 +392,9 @@ def test_geometric_parent_failure_preserves_accepted_prefix_and_refresh(
     else:
         failed_step = next(start + 2 for start, end in refreshes if end - start > 2)
     task = _parent_task(tmp_path / "failed", parent_cabi_library, backend)
+    # Pin the two-call reference schedule so the call-count injection maps to
+    # a fixed step independently of block boundaries and force reuse.
+    monkeypatch.setattr(block_propagation, "_stateless_provider", lambda dynamics: False)
     parent_cabi_controls.audit_reset(2 * failed_step, -1)
     with pytest.raises(PropagationError, match="injected CABI failure"):
         rate._parent_task(task)
