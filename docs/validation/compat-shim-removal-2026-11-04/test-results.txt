@@ -15,6 +15,13 @@ Fixed baseline 801953dc9e2ca620f36069eb4551c41c529c432a:
 python -m pytest -q -m "not campaign"
 9312 passed, 231 skipped, 1 deselected, 47 warnings, 410 subtests passed in 2324.88s (0:38:44)
 
-Final T48 source:
+Initial T48 PR source f2f8a6c:
 python -m pytest -q -m "not campaign"
 9328 passed, 231 skipped, 1 deselected, 47 warnings, 410 subtests passed in 2275.83s (0:37:55)
+
+PR #113 review follow-up (2026-11-05):
+python -m pytest -q tests/test_block_python_fast_path.py tests/test_code_structure.py tests/test_sampling_module_imports.py
+37 passed in 11.96s
+
+python -m pytest -q -m "not campaign"
+9332 passed, 231 skipped, 1 deselected, 47 warnings, 410 subtests passed in 2449.03s (0:40:49)

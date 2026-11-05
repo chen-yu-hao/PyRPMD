@@ -3452,5 +3452,20 @@
       },
       "fingerprint": "7c4a64d70ab4c3676c239d647cfcd5f8b777636345eb07c5946b140c9d09512c"
     }
-  ]
+  ],
+  "review_followup": {
+    "date": "2026-11-05",
+    "reviewed_commit": "f2f8a6cefcc41ffffe8c17e60e4d3deeb5358bbd",
+    "changes": "UTF-8 structure scan and OPES block-propagation registry repair",
+    "baseline_checkpoints": "unchanged from initial validation",
+    "accepted": 32,
+    "array_comparisons": 1333,
+    "output_files": 206,
+    "source_sha256": {
+      "src/pyrpmd/block_propagation.py": "e4e421747ca008231e1fd582cb46d1b75a5bb9401a328f710515343e62d0244d",
+      "tests/test_code_structure.py": "35c9ab2536986cacc57db45e1757bcfe4cb944ae219f45ba90881bd5d0a8c83d",
+      "tests/test_block_python_fast_path.py": "56acbeef5ab9c8243c3d77af67e00292899c8961d8e8c51270054e7cef660818"
+    },
+    "raw_artifacts": "/data1/lyl/PyRPMD/t48-evidence/review-checkpoints"
+  }
 }

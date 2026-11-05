@@ -16,9 +16,11 @@ run fingerprints, or input defaults are changed.
 | `src/pyrpmd/workflows/_opes_serial.py` | Moved into `workflows/opes.py`; private module deleted |
 | `src/pyrpmd/workflows/_shared_metadynamics_serial.py` | Moved into `workflows/shared_metadynamics.py`; private module deleted |
 
-The retained alias is referenced by the historical module-name entry in
-`block_propagation._PURE_BIASES`. It only imports the three original names and
-issues `DeprecationWarning`; it contains no implementation or module mutation.
+The retained alias preserves the historical private import location. It only
+imports the three original names and issues `DeprecationWarning`; it contains
+no implementation or module mutation. `block_propagation._PURE_BIASES` now uses
+the actual defining module, `pyrpmd.opes`, so both OPES classes retain endpoint
+force and energy reuse. The alias exports those same class objects.
 The other four names have no remaining source/test importers or references in
 the generated checkpoint payloads. The public exports are unchanged.
 
@@ -177,3 +179,44 @@ the dedicated environment, local test temporary files, and real local socket /
 MPI communication. Missing optional packages are skipped by the existing tests.
 
 Commands and unedited summary lines are recorded in `test-results.txt`.
+
+## PR #113 review follow-up (2026-11-05)
+
+The source-structure scan now reads Python files explicitly as UTF-8. This
+fixes the Windows default-codepage decoding failure reported in the review.
+The scan also passes with Python's default-encoding warnings treated as errors.
+
+The OPES class relocation had left `_PURE_BIASES` keyed by the old defining
+module. The review fix changes that one registry key to `pyrpmd.opes`, restoring
+the existing Python block fast path for `OPESBias` and `OPESExploreBias`.
+`block_propagation.py` is outside T48's original exclusive files; this one-line
+coordination change is included under the maintainer's instruction to address
+the PR comments. T49's rollback code is untouched.
+
+The existing endpoint-reuse regression now covers both OPES classes with two
+kernels and with force reuse enabled and disabled. All four new cases failed
+before the registry fix: seven steps made 22 PES calls instead of 9 with force
+reuse or 15 without it (including the initial energy check). After the fix,
+the call counts, coordinates, momenta, clocks, observed energies and per-step
+energies match the reference contract. These are evaluation-count checks,
+not wall-clock speed claims. The focused suite reports `37 passed in 11.96s`.
+The full non-campaign suite passes with four additional passing cases over
+the original PR, no new skips, and no failures:
+
+```text
+9332 passed, 231 skipped, 1 deselected, 47 warnings, 410 subtests passed in 2449.03s (0:40:49)
+```
+
+The review-fixed code also replayed all 32 original baseline checkpoints,
+including real two-rank MPI and all six complete examples. All 1,333 arrays
+and 206 output files still match bitwise. `checkpoint-evidence.json` records
+the reviewed source hashes and the refreshed replay inventories; the original
+baseline checkpoints and uninterrupted references were reused without changes.
+The refreshed raw artifacts are archived outside Git at
+`/data1/lyl/PyRPMD/t48-evidence/review-checkpoints`.
+
+The maintainer requires integration after #114. At this review's initial
+check, #114 was still open, so this follow-up retains the explicitly selected
+`801953d` base. Rebasing onto main and verifying all platform CI jobs remains
+dependent on #114 merging; the global structure test must not exempt the old
+T26 module mutation to bypass that dependency.

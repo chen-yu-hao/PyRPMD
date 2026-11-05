@@ -76,7 +76,7 @@ def test_package_has_no_import_time_compatibility_patches():
     for path in sorted(SOURCE.rglob('*.py')):
         relative = path.relative_to(SOURCE).as_posix()
         found.extend(f'{relative}:{line}: {message}'
-                     for line, message in violations(path.read_text(), relative))
+                     for line, message in violations(path.read_text(encoding="utf-8"), relative))
     assert not found, '\n'.join(found)
 
 

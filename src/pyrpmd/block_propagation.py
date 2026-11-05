@@ -295,7 +295,7 @@ _PURE_BIASES = {
     "pyrpmd.bias": {"UmbrellaBias", "FluxMetricBias", "CompositeBias", "WallBias",
                     "MetadynamicsBias", "GridMetadynamicsBias"},
     "pyrpmd.steered": {"SteeredBias"},
-    "pyrpmd._opes_serial": {"OPESBias", "OPESExploreBias"},
+    "pyrpmd.opes": {"OPESBias", "OPESExploreBias"},
     "pyrpmd.ves": {"VESBias"},
     "pyrpmd.abf": {"ABFBias"},
     "pyrpmd.workflows.tempering": {"_ScaledBias"},
