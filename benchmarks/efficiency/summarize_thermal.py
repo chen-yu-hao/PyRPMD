@@ -41,6 +41,10 @@ def main():
         gates[f'small_legacy_P{beads}'] = {'value': value, 'minimum': .98, 'passed': value >= .98}
     output = {'performance_gates': gates, 'all_performance_gates_passed': all(g['passed'] for g in gates.values()),
               'measurements': sum(len(r['measurements']) for r in reports.values()), 'physical_converged': False}
+    # Keep the unchanged default stream visible alongside the optional-stream gates.
+    output['default_mt_pile_l_over_nve'] = {
+        str(atoms): row('candidate-mt-dynamics', atoms)['steps_per_second']/row('candidate-mt-dynamics', atoms, thermostat='none')['steps_per_second']
+        for atoms in (512, 4096)}
     if 'candidate-philox-dynamics-4' in reports:
         output['public_philox_four_thread_speedup'] = row('candidate-philox-dynamics-4', 4096)['steps_per_second']/row('candidate-philox-dynamics', 4096)['steps_per_second']
     (args.directory/'performance-gates.json').write_text(json.dumps(output, indent=2)+'\n')

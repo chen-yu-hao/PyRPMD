@@ -1,5 +1,10 @@
 # T49 thermal kernel validation
 
+This is the historical tuned-build record. The [2026-11-05 PR review
+follow-up](../thermal-kernel-performance-2026-11-05/README.md) fixes executor
+thread counts and reports the default build without CPU binding. Use that
+record for the current branch's performance limits and validation status.
+
 Date: 2026-11-04 (Europe/Berlin). Baseline: `main@801953d`; implementation branch:
 `agent/t49-thermal-kernel-performance`, based on last verified `main@cb28829`.
 The final SSH refresh confirmed `main@cb28829`; the branch is current with this baseline.

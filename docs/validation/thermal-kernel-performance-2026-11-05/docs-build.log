@@ -1,0 +1,283 @@
+Running Sphinx v8.2.3
+loading translations [en]... done
+loading pickled environment... The configuration has changed (6 options: 'html_css_files', 'html_permalinks_icon', 'html_theme_options', 'include_patterns', 'mathjax3_config', ...)
+done
+myst v4.0.1: MdParserConfig(commonmark_only=False, gfm_only=False, enable_extensions={'dollarmath', 'colon_fence'}, disable_syntax=[], all_links_external=False, links_external_new_tab=False, url_schemes=('http', 'https', 'mailto', 'ftp'), ref_domains=None, fence_as_directive=set(), number_code_blocks=[], title_to_header=False, heading_anchors=4, heading_slug_func=None, html_meta={}, footnote_sort=True, footnote_transition=True, words_per_minute=200, substitutions={}, linkify_fuzzy_links=True, dmath_allow_labels=True, dmath_allow_space=True, dmath_allow_digits=True, dmath_double_inline=False, update_mathjax=True, mathjax_classes='tex2jax_process|mathjax_process|math|output_area', enable_checkboxes=False, suppress_warnings=[], highlight_code_blocks=True)
+building [mo]: targets for 0 po files that are out of date
+writing output... 
+building [html]: targets for 1 source files that are out of date
+updating environment: [config changed ('include_patterns')] 87 added, 0 changed, 0 removed
+reading sources... [  1%] andersen-sampling
+reading sources... [  2%] auxiliary-operators
+reading sources... [  3%] batched-dynamics
+reading sources... [  5%] batched-ml-potentials
+reading sources... [  6%] bond-constraints
+reading sources... [  7%] builtin-native-potentials
+reading sources... [  8%] committor
+reading sources... [  9%] condensed-phase-nqe
+reading sources... [ 10%] data-archive-plan
+reading sources... [ 11%] distribution
+reading sources... [ 13%] enhanced-sampling
+reading sources... [ 14%] excited-state-interface
+reading sources... [ 15%] finite-temperature-string
+reading sources... [ 16%] general-coordinate-rates
+reading sources... [ 17%] implementation-review-2026-11-03
+reading sources... [ 18%] index
+reading sources... [ 20%] instanton
+reading sources... [ 21%] literature-validation
+reading sources... [ 22%] low-temperature
+reading sources... [ 23%] manual/adaptive-nrpmd
+reading sources... [ 24%] manual/analysis-reports
+reading sources... [ 25%] manual/api
+reading sources... [ 26%] manual/development
+reading sources... [ 28%] manual/electrochemistry
+reading sources... [ 29%] manual/examples
+reading sources... [ 30%] manual/execution
+reading sources... [ 31%] manual/input
+reading sources... [ 32%] manual/installation
+reading sources... [ 33%] manual/jaxpip-generation
+reading sources... [ 34%] manual/nonadiabatic
+reading sources... [ 36%] manual/pcet
+reading sources... [ 37%] manual/periodic
+reading sources... [ 38%] manual/pes-generation
+reading sources... [ 39%] manual/potentials
+reading sources... [ 40%] manual/quickstart
+reading sources... [ 41%] manual/references
+reading sources... [ 43%] manual/reproduction
+reading sources... [ 44%] manual/results
+reading sources... [ 45%] manual/science
+reading sources... [ 46%] manual/troubleshooting
+reading sources... [ 47%] manual/workflows
+reading sources... [ 48%] mixed-sampling
+reading sources... [ 49%] mlcolvar
+reading sources... [ 51%] molecular-nonadiabatic
+reading sources... [ 52%] native-ensembles
+reading sources... [ 53%] nonadiabatic-comparison
+reading sources... [ 54%] nonadiabatic-ensembles
+reading sources... [ 55%] nonadiabatic-hopping-extensions
+reading sources... [ 56%] nonadiabatic-iesh-multistate
+reading sources... [ 57%] nonadiabatic-models
+reading sources... [ 59%] nonadiabatic-performance
+reading sources... [ 60%] nonadiabatic-spin-methods
+reading sources... [ 61%] nonadiabatic-workflow
+reading sources... [ 62%] opes
+reading sources... [ 63%] performance-dynamics
+reading sources... [ 64%] pimd-engine-convergence
+reading sources... [ 66%] plumed
+reading sources... [ 67%] portable-persistence
+reading sources... [ 68%] propagation-stack
+reading sources... [ 69%] publication-readiness
+reading sources... [ 70%] qcmd
+reading sources... [ 71%] quantum-statistics
+reading sources... [ 72%] rate-input-v2
+reading sources... [ 74%] rate-pmf-selection
+reading sources... [ 75%] rate-postprocessing
+reading sources... [ 76%] rate-studies
+reading sources... [ 77%] rate_precision
+reading sources... [ 78%] replica-exchange
+reading sources... [ 79%] rpc-mts
+reading sources... [ 80%] rpmdrate-import
+reading sources... [ 82%] t19-performance
+reading sources... [ 83%] tempering
+reading sources... [ 84%] tier2-methods
+reading sources... [ 85%] tier2-ml-lifecycle
+reading sources... [ 86%] tier2-nonadiabatic
+reading sources... [ 87%] tier2-path-integral
+reading sources... [ 89%] tier2-sampling
+reading sources... [ 90%] tier2-spectroscopy
+reading sources... [ 91%] torch-materials-workflows
+reading sources... [ 92%] trajectory-export
+reading sources... [ 93%] transition-interface-sampling
+reading sources... [ 94%] transition-state-search
+reading sources... [ 95%] trpmd-spectroscopy
+reading sources... [ 97%] tunnelling-phase-projection
+reading sources... [ 98%] validation/tier1-2026-10-31/README
+reading sources... [ 99%] validation/tier1-2026-10-31/pmf-replay
+reading sources... [100%] vtst
+
+looking for now-outdated files... none found
+pickling environment... done
+checking consistency... done
+preparing documents... done
+copying assets... 
+copying downloadable files... [  1%] validation/tier1-2026-10-31/recrossing-performance.json
+copying downloadable files... [  3%] ../../examples/rate/research.inp
+copying downloadable files... [  4%] ../../benchmarks/efficiency/t19_cuda.py
+copying downloadable files... [  5%] ../../examples/materials/rigid_water.inp
+copying downloadable files... [  7%] ../../benchmarks/condensed_phase/piglet_reference.py
+copying downloadable files... [  8%] ../../benchmarks/condensed_phase/results/rejected_protocol.json
+copying downloadable files... [ 10%] ../../benchmarks/condensed_phase/results/execution_interruption.json
+copying downloadable files... [ 11%] ../../benchmarks/condensed_phase/results/harmonic_summary.json
+copying downloadable files... [ 12%] ../../benchmarks/condensed_phase/results/lj_summary.json
+copying downloadable files... [ 14%] ../../benchmarks/condensed_phase/results/piglet_harmonic_reference.json
+copying downloadable files... [ 15%] ../../benchmarks/condensed_phase/results/comparisons.json
+copying downloadable files... [ 16%] ../../benchmarks/condensed_phase/results/piglet_pressure_diagnostic.json
+copying downloadable files... [ 18%] ../../benchmarks/condensed_phase/results/integrity_manifest.json
+copying downloadable files... [ 19%] ../../benchmarks/condensed_phase/results/software_validation.json
+copying downloadable files... [ 21%] ../../benchmarks/condensed_phase/results/validation.pdf
+copying downloadable files... [ 22%] ../../examples/rate/general_coordinate.inp
+copying downloadable files... [ 23%] validation/instanton-production-2026-11-02/validation-250-300.json
+copying downloadable files... [ 25%] validation/instanton-production-2026-11-02/validation-200.json
+copying downloadable files... [ 26%] validation/instanton-production-2026-11-02/bkmp2-build.json
+copying downloadable files... [ 27%] validation/golden-rule-instanton-2026-11-02/validation.json
+copying downloadable files... [ 29%] validation/golden-rule-instanton-2026-11-02/workflow.json
+copying downloadable files... [ 30%] validation/golden-rule-instanton-2026-11-02/run.json
+copying downloadable files... [ 32%] method-references.json
+copying downloadable files... [ 33%] references.bib
+copying downloadable files... [ 34%] ../../benchmarks/torch_literature/mixed_sampling_summary.json
+copying downloadable files... [ 36%] validation/t25-rp-iesh/fock-fourier-reference.json
+copying downloadable files... [ 37%] validation/t25-rp-iesh/performance-python.json
+copying downloadable files... [ 38%] validation/t25-rp-iesh/performance-native.json
+copying downloadable files... [ 40%] validation/t12-nonadiabatic-2026-11-02/mash-reference.json
+copying downloadable files... [ 41%] validation/t12-nonadiabatic-2026-11-02/iesh-friction-reference.json
+copying downloadable files... [ 42%] validation/t12-nonadiabatic-2026-11-02/iesh-kernel-performance.json
+copying downloadable files... [ 44%] validation/t12-nonadiabatic-2026-11-02/environment.json
+copying downloadable files... [ 45%] validation/t12-nonadiabatic-2026-11-02/baseline-pytest.log
+copying downloadable files... [ 47%] validation/t12-nonadiabatic-2026-11-02/workflow-pytest.log
+copying downloadable files... [ 48%] validation/t12-nonadiabatic-2026-11-02/fourier-pytest.log
+copying downloadable files... [ 49%] validation/t12-nonadiabatic-2026-11-02/cli-verification.json
+copying downloadable files... [ 51%] validation/t12-nonadiabatic-2026-11-02/ipi-pytest.log
+copying downloadable files... [ 52%] validation/t12-nonadiabatic-2026-11-02/pytest.log
+copying downloadable files... [ 53%] ../../examples/rate/pilot.inp
+copying downloadable files... [ 55%] ../../examples/rate/minimal.inp
+copying downloadable files... [ 56%] validation/t19-performance/environment.json
+copying downloadable files... [ 58%] validation/t19-performance/openmm-cpu.json
+copying downloadable files... [ 59%] validation/t19-performance/lammps-cpu.json
+copying downloadable files... [ 60%] validation/t19-performance/lammps-continuous-image-rejected.json
+copying downloadable files... [ 62%] validation/t19-performance/cuda-blocked.json
+copying downloadable files... [ 63%] validation/t19-performance/openmm-cuda-blocked.json
+copying downloadable files... [ 64%] validation/t19-performance/pr84-cpu-smoke-final.json
+copying downloadable files... [ 66%] validation/t19-performance/validation.json
+copying downloadable files... [ 67%] validation/t19-performance/commit-mapping.json
+copying downloadable files... [ 68%] validation/t19-performance/baseline-full.log
+copying downloadable files... [ 70%] validation/t19-performance/candidate-full.log
+copying downloadable files... [ 71%] validation/t19-performance/lammps-focused.log
+copying downloadable files... [ 73%] validation/t19-performance/openmm-focused.log
+copying downloadable files... [ 74%] validation/t19-performance/cuda-harness-tests.log
+copying downloadable files... [ 75%] validation/t19-performance/pr84-cpu-harness-test.log
+copying downloadable files... [ 77%] ../../examples/rate/toy_exchange.py
+copying downloadable files... [ 78%] ../../benchmarks/transition_state_search/analytic.py
+copying downloadable files... [ 79%] ../../benchmarks/transition_state_search/h3.py
+copying downloadable files... [ 81%] ../../benchmarks/transition_state_search/rates.py
+copying downloadable files... [ 82%] validation/splitting-phase-projection-2026-11-03.json
+copying downloadable files... [ 84%] validation/tier1-2026-10-31/pytest-full.txt
+copying downloadable files... [ 85%] validation/tier1-2026-10-31/pytest-final-targeted.txt
+copying downloadable files... [ 86%] validation/tier1-2026-10-31/sphinx-strict.txt
+copying downloadable files... [ 88%] validation/tier1-2026-10-31/ci-initial-feature.json
+copying downloadable files... [ 89%] validation/tier1-2026-10-31/merged-docs-verification.json
+copying downloadable files... [ 90%] validation/tier1-2026-10-31/verification.json
+copying downloadable files... [ 92%] validation/batched-dynamics-2026-10-31.json
+copying downloadable files... [ 93%] validation/tier1-2026-10-31/rpc-mts.json
+copying downloadable files... [ 95%] validation/tier1-2026-10-31/trpmd-spectrum.json
+copying downloadable files... [ 96%] validation/tier1-2026-10-31/pmf-sampling-diagnostic.json
+copying downloadable files... [ 97%] validation/tier1-2026-10-31/pmf-estimator-diagnostic.json
+copying downloadable files... [ 99%] validation/tier1-2026-10-31/broad-pilot/manifest.json
+copying downloadable files... [100%] validation/tier1-2026-10-31/stiff-pilot/manifest.json
+
+copying static files... 
+Writing evaluated template result to /tmp/pyrpmd-t49/docs/_build/html/_static/basic.css
+Writing evaluated template result to /tmp/pyrpmd-t49/docs/_build/html/_static/documentation_options.js
+Writing evaluated template result to /tmp/pyrpmd-t49/docs/_build/html/_static/language_data.js
+copying static files: done
+copying extra files... 
+copying extra files: done
+copying assets: done
+writing output... [  1%] andersen-sampling
+writing output... [  2%] auxiliary-operators
+writing output... [  3%] batched-dynamics
+writing output... [  5%] batched-ml-potentials
+writing output... [  6%] bond-constraints
+writing output... [  7%] builtin-native-potentials
+writing output... [  8%] committor
+writing output... [  9%] condensed-phase-nqe
+writing output... [ 10%] data-archive-plan
+writing output... [ 11%] distribution
+writing output... [ 13%] enhanced-sampling
+writing output... [ 14%] excited-state-interface
+writing output... [ 15%] finite-temperature-string
+writing output... [ 16%] general-coordinate-rates
+writing output... [ 17%] implementation-review-2026-11-03
+writing output... [ 18%] index
+writing output... [ 20%] instanton
+writing output... [ 21%] literature-validation
+writing output... [ 22%] low-temperature
+writing output... [ 23%] manual/adaptive-nrpmd
+writing output... [ 24%] manual/analysis-reports
+writing output... [ 25%] manual/api
+writing output... [ 26%] manual/development
+writing output... [ 28%] manual/electrochemistry
+writing output... [ 29%] manual/examples
+writing output... [ 30%] manual/execution
+writing output... [ 31%] manual/input
+writing output... [ 32%] manual/installation
+writing output... [ 33%] manual/jaxpip-generation
+writing output... [ 34%] manual/nonadiabatic
+writing output... [ 36%] manual/pcet
+writing output... [ 37%] manual/periodic
+writing output... [ 38%] manual/pes-generation
+writing output... [ 39%] manual/potentials
+writing output... [ 40%] manual/quickstart
+writing output... [ 41%] manual/references
+writing output... [ 43%] manual/reproduction
+writing output... [ 44%] manual/results
+writing output... [ 45%] manual/science
+writing output... [ 46%] manual/troubleshooting
+writing output... [ 47%] manual/workflows
+writing output... [ 48%] mixed-sampling
+writing output... [ 49%] mlcolvar
+writing output... [ 51%] molecular-nonadiabatic
+writing output... [ 52%] native-ensembles
+writing output... [ 53%] nonadiabatic-comparison
+writing output... [ 54%] nonadiabatic-ensembles
+writing output... [ 55%] nonadiabatic-hopping-extensions
+writing output... [ 56%] nonadiabatic-iesh-multistate
+writing output... [ 57%] nonadiabatic-models
+writing output... [ 59%] nonadiabatic-performance
+writing output... [ 60%] nonadiabatic-spin-methods
+writing output... [ 61%] nonadiabatic-workflow
+writing output... [ 62%] opes
+writing output... [ 63%] performance-dynamics
+writing output... [ 64%] pimd-engine-convergence
+writing output... [ 66%] plumed
+writing output... [ 67%] portable-persistence
+writing output... [ 68%] propagation-stack
+writing output... [ 69%] publication-readiness
+writing output... [ 70%] qcmd
+writing output... [ 71%] quantum-statistics
+writing output... [ 72%] rate-input-v2
+writing output... [ 74%] rate-pmf-selection
+writing output... [ 75%] rate-postprocessing
+writing output... [ 76%] rate-studies
+writing output... [ 77%] rate_precision
+writing output... [ 78%] replica-exchange
+writing output... [ 79%] rpc-mts
+writing output... [ 80%] rpmdrate-import
+writing output... [ 82%] t19-performance
+writing output... [ 83%] tempering
+writing output... [ 84%] tier2-methods
+writing output... [ 85%] tier2-ml-lifecycle
+writing output... [ 86%] tier2-nonadiabatic
+writing output... [ 87%] tier2-path-integral
+writing output... [ 89%] tier2-sampling
+writing output... [ 90%] tier2-spectroscopy
+writing output... [ 91%] torch-materials-workflows
+writing output... [ 92%] trajectory-export
+writing output... [ 93%] transition-interface-sampling
+writing output... [ 94%] transition-state-search
+writing output... [ 95%] trpmd-spectroscopy
+writing output... [ 97%] tunnelling-phase-projection
+writing output... [ 98%] validation/tier1-2026-10-31/README
+writing output... [ 99%] validation/tier1-2026-10-31/pmf-replay
+writing output... [100%] vtst
+
+generating indices... genindex done
+highlighting module code... 
+writing additional pages... search done
+copying images... [ 50%] ../benchmarks/condensed_phase/results/validation.png
+copying images... [100%] validation/t13-nonadiabatic-2026-11-02/lambert-figure1-comparison.png
+
+dumping search index in English (code: en)... done
+dumping object inventory... done
+build succeeded.
+
+The HTML pages are in docs/_build/html.
