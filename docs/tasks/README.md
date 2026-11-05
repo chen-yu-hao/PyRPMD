@@ -15,6 +15,9 @@ SHARC/Newton-X、LAMMPS/CP2K/Tinker-HP、PLUMED/infretis、TorchSim 的比较）
 **用法：** 交给 agent 时，同时提供本页（通用规则）和对应的卡片文件。agent 必须先完整阅读
 两者再动手。
 
+> 第五轮"原生路径替换"任务卡（NP0–NP8，让整条轨迹尽量留在 C++）见
+> [native-path/README.md](native-path/README.md)，同样遵守本页的 G1–G15。
+
 ## 通用执行规则
 
 所有卡片都遵守以下规则；卡片中的具体要求优先于本节。
