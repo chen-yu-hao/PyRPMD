@@ -21,7 +21,7 @@ for thermal_variant in no-openmp fma openmp; do
             tests/test_native_nhc.py tests/test_native_prefix.py \
             tests/test_native_periodic_sync.py tests/test_native_pimd_followup.py \
             tests/test_python_nhc_fallback.py tests/test_composed_native_observations.py \
-            tests/test_propagation_composition.py
+            tests/test_propagation_composition.py tests/test_builtin_native_pes.py
     ) > "$thermal_output/tests-$thermal_variant.log" 2>&1
     tail -1 "$thermal_output/tests-$thermal_variant.log"
 done

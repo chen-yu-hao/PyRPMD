@@ -111,11 +111,11 @@ def test_overlapping_tokens_are_owned_and_immutable():
         other._restore_rollback_token(first)
 
 
-@pytest.mark.parametrize("beads", [1, 7, 32])
-def test_initial_energy_retains_numpy_reduction_order(beads):
+@pytest.mark.parametrize("beads,atoms", [(1, 1), (1, 13), (1, 42), (1, 43), (7, 13), (8, 13), (32, 13), (129, 13)])
+def test_initial_energy_retains_numpy_reduction_order(beads, atoms):
     rng = np.random.default_rng(7149)
-    q, p = rng.normal(size=(2, beads, 13, 3))
-    masses = np.linspace(.7, 3.1, 13)
+    q, p = rng.normal(size=(2, beads, atoms, 3))
+    masses = np.linspace(.7, 3.1, atoms)
     engine = NativeEnsemble(q, masses, 2.3, .01, p=p, potential={"kind": "harmonic", "k": .7})
     before = engine.state()
     difference = q - np.roll(q, -1, axis=0)
@@ -258,8 +258,9 @@ if __name__ == "__main__" and sys.argv[1] == "worker":
     worker(sys.argv[2], sys.argv[3])
 
 
-def test_stale_extension_cannot_silently_select_legacy_noise(monkeypatch):
+@pytest.mark.parametrize("api", [0, 1])
+def test_stale_extension_cannot_silently_select_legacy_noise(monkeypatch, api):
     from pyrpmd import _thermal
-    monkeypatch.setattr(_thermal, "THERMAL_KERNEL_API", 0)
+    monkeypatch.setattr(_thermal, "THERMAL_KERNEL_API", api)
     with pytest.raises(RuntimeError, match="rebuild PyRPMD"):
         ensemble()

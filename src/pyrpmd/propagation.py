@@ -227,14 +227,15 @@ def propagate(dynamics, state, steps, *, bias=None, observe=None, sample_interva
     if not composed and not getattr(dynamics, "_stochastic_propagation", False):
         return _propagate(dynamics, state, steps, **kwargs)
     operators = dynamics._operator_rollback_token() if composed else None
-    rng_state = copy.deepcopy(dynamics.rng.bit_generator.state)
+    rng_state = None if composed else copy.deepcopy(dynamics.rng.bit_generator.state)
     stats = copy.deepcopy(dynamics.propagation_stats)
     try:
         return _propagate(dynamics, state, steps, **kwargs)
     except BaseException:
         if operators is not None:
             dynamics._restore_operator_rollback_token(operators)
-        dynamics.rng.bit_generator.state = rng_state
+        else:
+            dynamics.rng.bit_generator.state = rng_state
         dynamics.propagation_stats = stats
         raise
 

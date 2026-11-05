@@ -214,6 +214,42 @@ PyObject* physical_state(PyObject*,PyObject*args){
         return dict;
     }catch(...){if(qview.obj)PyBuffer_Release(&qview);if(pview.obj)PyBuffer_Release(&pview);Py_XDECREF(dict);return error();}
 }
+PyObject* initial_energy_terms(PyObject*,PyObject*args){
+    PyObject *cap,*objects[5];
+    if(!PyArg_ParseTuple(args,"OOOOOO",&cap,&objects[0],&objects[1],&objects[2],&objects[3],&objects[4]))return nullptr;
+    Py_buffer views[5]{};
+    try{auto& h=handle(cap);Lock lock(h);const auto& c=h.engine->c;
+        const size_t d=3*c.atoms,l=d*c.beads;
+        for(size_t i=0;i<5;++i){
+            const int flags=PyBUF_C_CONTIGUOUS|PyBUF_FORMAT|(i>=3?PyBUF_WRITABLE:0);
+            require(PyObject_GetBuffer(objects[i],&views[i],flags)==0,"expected contiguous initial-energy buffers");
+            require(views[i].itemsize==8&&views[i].format&&std::strcmp(views[i].format,"d")==0
+                    &&views[i].len==Py_ssize_t((i==2?c.atoms:l)*8),"invalid initial-energy buffer");
+        }
+        const auto* q=static_cast<const double*>(views[0].buf);
+        const auto* p=static_cast<const double*>(views[1].buf);
+        const auto* masses=static_cast<const double*>(views[2].buf);
+        auto* kinetic=static_cast<double*>(views[3].buf);
+        auto* spring=static_cast<double*>(views[4].buf);
+        // Materialize the original scalar terms in one pass. NumPy still owns
+        // the reduction order; no dot-product contraction or reassociation.
+        unlocked([&]{
+            for(size_t k=0;k<c.beads;++k){const size_t next=(k+1)%c.beads;
+#ifdef _OPENMP
+#pragma omp simd
+#endif
+                for(size_t atom=0;atom<c.atoms;++atom)for(size_t axis=0;axis<3;++axis){
+                    const size_t j=3*atom+axis,i=k*d+j;
+                    const double delta=q[i]-q[next*d+j];
+                    kinetic[i]=p[i]*p[i]/(2*masses[atom]);
+                    spring[i]=(masses[atom]*delta)*delta;
+                }
+            }
+        });
+        for(auto& view:views)PyBuffer_Release(&view);
+        return bytes(h.engine->s.energy);
+    }catch(...){for(auto& view:views)if(view.obj)PyBuffer_Release(&view);return error();}
+}
 PyObject* restore(PyObject*,PyObject*args){
     PyObject *cap,*dict;if(!PyArg_ParseTuple(args,"OO",&cap,&dict))return nullptr;
     try{auto&h=handle(cap);Lock lock(h);thermal::State s;
@@ -232,6 +268,7 @@ PyMethodDef methods[]={
     {"apply_thermostat",apply_thermostat,METH_VARARGS,"Apply only the bath to external q/p, retaining transactional RNG and auxiliary state."},
     {"snapshot",snapshot,METH_VARARGS,"Capture a private binary rollback token, reusing unowned storage."},
     {"restore_snapshot",restore_snapshot,METH_VARARGS,"Restore a token owned by this executor."},
+    {"initial_energy_terms",initial_energy_terms,METH_VARARGS,"Prepare unchanged energy terms for NumPy reduction."},
     {"physical_state",physical_state,METH_VARARGS,"Copy physical arrays without serializing a checkpoint."},
     {"state",state,METH_VARARGS,"Copy all state, including cached forces, auxiliary momenta and Gaussian RNG cache."},
     {"restore",restore,METH_VARARGS,"Validate and atomically restore a complete native state."},
@@ -253,7 +290,7 @@ PyMODINIT_FUNC PyInit__thermal(){
 #endif
     if(PyModule_AddStringConstant(m,"rng_abi",abi)<0
             ||PyModule_AddStringConstant(m,"philox_abi","philox-v1-salmon-sc11")<0
-            ||PyModule_AddIntConstant(m,"THERMAL_KERNEL_API",1)<0
+            ||PyModule_AddIntConstant(m,"THERMAL_KERNEL_API",2)<0
             ||PyModule_AddIntConstant(m,"COMPOSABLE_OPERATORS_API",1)<0
             ||PyModule_AddIntConstant(m,"MIDDLE_BZP_API",1)<0){Py_DECREF(m);return nullptr;}return m;
 }

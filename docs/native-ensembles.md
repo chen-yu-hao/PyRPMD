@@ -442,10 +442,17 @@ their existing threading contract.
 `Dynamics.propagate()` and `propagate_block()` use private binary rollback
 tokens. Tokens preserve the original executor and lazy bath selection, RNG,
 auxiliaries, cell, cached forces and the Python generator. Live state transfer
-reuses array buffers and does not produce JSON or checkpoint digests. Public
+reuses array buffers and does not produce JSON or checkpoint digests. Native
+code prepares the initial-energy terms in one traversal; NumPy still performs
+their reductions in the original order. Public
 `operator_state_dict()`, `state()`, `save()` and checkpoint readers retain
 their existing persistent format. A failed whole block restores its initial
 state; a prefix API still retains only fully accepted steps.
+
+Repeated harmonic-provider checks compare detached copies of the original
+parameter arrays before expanding them over atoms. Unchanged inputs reuse the
+same binding. Changed values, shapes or provider capabilities still follow the
+existing validation and binding-identity checks.
 
 ## Reproducing thermal performance and compatibility checks
 

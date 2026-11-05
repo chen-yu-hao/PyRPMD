@@ -4,12 +4,11 @@ Date: 2026-11-04 (Europe/Berlin). Baseline: `main@801953d`; implementation branc
 `agent/t49-thermal-kernel-performance`, based on last verified `main@cb28829`.
 The final remote refresh confirmed `main@cb28829`; no additional rebase was needed.
 
-**Acceptance is incomplete: 5/6 performance gates passed.** The full
-non-campaign suite, all three native builds, the pure Python package, and
-346 same-host performance measurements have completed. The short-call
-overhead gate is not met: the measured default-stream overhead
-is 12.85% of native time, against a maximum of 10%. No card-complete or
-physical-convergence claim is made.
+**Performance acceptance: 6/6 gates passed.** The user-authorized harmonic
+binding cache and the fused preparation of initial-energy terms reduce the
+measured two-step overhead to 9.36% of native time (maximum 10%). The final
+full non-campaign suite passes 9399 tests; all three builds pass 456 focused
+tests each. No real-material physical-convergence claim is made.
 
 ## Hardware and build
 
@@ -36,11 +35,11 @@ wall-time repeats. The last column uses the candidate's own NVE control.
 
 | N | P | Baseline NVE | Baseline PILE-L | Candidate MT PILE-L | Candidate Philox PILE-L | Philox / NVE |
 | --- | --- | --- | --- | --- | --- | --- |
-| 3 | 1 | 262,328.67 | 60,789.60 | 124,377.28 | 122,619.38 | 0.457 |
-| 3 | 32 | 57,065.57 | 17,131.21 | 23,307.26 | 18,321.26 | 0.301 |
-| 64 | 32 | 3,592.01 | 1,057.08 | 1,925.36 | 1,822.72 | 0.526 |
-| 512 | 32 | 450.88 | 123.30 | 231.34 | 263.12 | 0.593 |
-| 4096 | 32 | 54.69 | 14.69 | 27.82 | 31.20 | 0.558 |
+| 3 | 1 | 293,360.56 | 57,622.84 | 161,531.91 | 135,583.80 | 0.483 |
+| 3 | 32 | 55,060.65 | 16,658.42 | 24,056.51 | 17,272.42 | 0.301 |
+| 64 | 32 | 3,568.68 | 1,058.69 | 1,832.24 | 1,836.54 | 0.550 |
+| 512 | 32 | 440.92 | 127.31 | 235.08 | 253.49 | 0.610 |
+| 4096 | 32 | 54.35 | 15.32 | 29.01 | 31.73 | 0.551 |
 
 `baseline-dynamics.json`, `candidate-mt-dynamics.json` and
 `candidate-philox-dynamics.json` contain every raw repeat. The short-call
@@ -51,13 +50,13 @@ and Python reductions, is counted as overhead.
 ## Scaling and component profile
 
 For N=4096, P=32, direct `NativeEnsemble` Philox PILE-L rises from
-32.780 to 98.700 steps/s at four threads
-(3.011x).
-The complete `Dynamics.propagate` path rises from 31.205 to 82.716 steps/s
-(2.651x). Both exceed the 2.5x target.
-The two public single-thread PILE-L/NVE gates are 0.593 and 0.558 at
-N=512 and N=4096 respectively. Legacy small-system PILE-L improves by
-2.046x (P=1) and 1.361x (P=32), rather than regressing.
+35.225 to 91.897 steps/s at four threads
+(2.609x).
+The complete `Dynamics.propagate` path rises from 31.731 to 89.353 steps/s
+(2.816x). Both exceed the 2.5x target.
+The two public single-thread PILE-L/NVE ratios are 0.610 and 0.551 at
+N=512 and N=4096. Legacy small-system PILE-L improves by 2.803x (P=1)
+and 1.444x (P=32).
 
 `summarize_thermal.py` checks matching hardware/software/affinity, produces
 `throughput.csv`, and writes every pass/fail gate to `performance-gates.json`.
@@ -108,13 +107,13 @@ STREAM-style triad bandwidth (24 logical bytes/element, 192 MiB working set): 13
 ## Build and test evidence
 
 - `build-openmp.log`, `build-no-openmp.log`, `build-fma.log`: full compiler logs.
-- `tests-openmp.log`, `tests-no-openmp.log`, `tests-fma.log`: 368 passed in each build.
+- `tests-openmp.log`, `tests-no-openmp.log`, `tests-fma.log`: 456 passed in each build.
 - `build-no-native.log`, `tests-no-native.log`: a pure Python wheel with no native
   shared libraries; `40 passed, 13 skipped, 18 subtests passed in 8.97s`.
 - `tests-full.log`: final full-suite output. Original summary line:
 
   ```text
-  9387 passed, 235 skipped, 1 deselected, 47 warnings, 410 subtests passed in 1665.97s (0:27:45)
+  9399 passed, 235 skipped, 1 deselected, 47 warnings, 410 subtests passed in 1718.78s (0:28:38)
   ```
 
   Optional dependencies including Torch, ASE and PySCF were absent in this
@@ -160,15 +159,21 @@ measurements overlap and are not added to claim whole-run throughput.
 
 ## Coordination and retained limits
 
-The remaining short-call profile includes the built-in harmonic provider's
-parameter expansion and validation. A small source-parameter cache in
-`src/pyrpmd/potentials/_builtin_native.py` has been proposed but is outside T49's
-file list. It is not applied: G2 scope authorization is pending. The proposal
-preserves the original expanded key and binding identity when parameters change.
+The user explicitly authorized the G2 scope extension for
+`src/pyrpmd/potentials/_builtin_native.py`. The applied cache compares detached
+original parameter arrays and preserves the prior expanded key, binding identity
+and validation whenever parameters or provider capabilities change. No further
+scope authorization is pending. Initial energy terms are prepared in one native
+pass, then reduced by NumPy in the original order; numerical/restart tests cover
+OpenMP, no-OpenMP and FMA builds.
+
+GitHub publication still requires authentication in the execution environment.
 
 Only final script-produced records belong in this directory. Early probes,
 interrupted suites, provisional Philox mappings and pre-fix FMA results are
-retained separately in `/tmp/t49-development-results` and excluded from acceptance.
+retained separately in `/tmp/t49-development-results`, `/tmp/t49-before-authorized-cache`
+and `/tmp/t49-authorized-cache-pass1` and excluded from final acceptance. The prior
+incomplete record is also retained in Git at `6451297`.
 No trajectories, compiled libraries, checkpoint NPZs or encoded source payloads
 are included. `artifact-inventory.json` lists the included files and byte sizes;
 the record is below the 1 MB card limit.

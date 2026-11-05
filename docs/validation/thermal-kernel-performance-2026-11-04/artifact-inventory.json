@@ -2,15 +2,15 @@
   "included": [
     {
       "path": "README.md",
-      "bytes": 9486
+      "bytes": 9767
     },
     {
       "path": "baseline-dynamics.json",
-      "bytes": 42952
+      "bytes": 43248
     },
     {
       "path": "baseline-native-matrix.json",
-      "bytes": 24003
+      "bytes": 24112
     },
     {
       "path": "build-fma.log",
@@ -30,35 +30,35 @@
     },
     {
       "path": "candidate-mt-dynamics.json",
-      "bytes": 42700
+      "bytes": 42999
     },
     {
       "path": "candidate-mt-native-matrix.json",
-      "bytes": 24109
+      "bytes": 24201
     },
     {
       "path": "candidate-philox-dynamics-4.json",
-      "bytes": 2890
+      "bytes": 3006
     },
     {
       "path": "candidate-philox-dynamics.json",
-      "bytes": 42626
+      "bytes": 42873
     },
     {
       "path": "candidate-philox-native-1.json",
-      "bytes": 24029
+      "bytes": 24152
     },
     {
       "path": "candidate-philox-native-2.json",
-      "bytes": 24034
+      "bytes": 24150
     },
     {
       "path": "candidate-philox-native-4.json",
-      "bytes": 24056
+      "bytes": 24169
     },
     {
       "path": "docs-build.log",
-      "bytes": 8678
+      "bytes": 8574
     },
     {
       "path": "environment.json",
@@ -102,7 +102,7 @@
     },
     {
       "path": "performance-gates.json",
-      "bytes": 905
+      "bytes": 903
     },
     {
       "path": "statistics-philox.json",
@@ -110,7 +110,7 @@
     },
     {
       "path": "tests-fma.log",
-      "bytes": 903
+      "bytes": 1016
     },
     {
       "path": "tests-full.log",
@@ -122,23 +122,43 @@
     },
     {
       "path": "tests-no-openmp.log",
-      "bytes": 903
+      "bytes": 1016
     },
     {
       "path": "tests-openmp.log",
-      "bytes": 903
+      "bytes": 1016
     },
     {
       "path": "throughput.csv",
-      "bytes": 50602
+      "bytes": 50546
     }
   ],
-  "total_bytes_excluding_inventory": 472252,
-  "excluded": [
-    "Checkpoint NPZs in /tmp/t49-legacy and /tmp/t49-legacy-fma",
-    "Compiled shared libraries and standalone profiling binaries",
-    "Interrupted suites and provisional measurements in /tmp/t49-development-results",
-    "Out-of-scope cache proposal /tmp/t49-builtin-cache-proposal.patch"
+  "total_bytes_excluding_inventory": 474221,
+  "updated_since_6451297": [
+    "README.md",
+    "baseline-dynamics.json",
+    "baseline-native-matrix.json",
+    "build-no-native.log",
+    "candidate-mt-dynamics.json",
+    "candidate-mt-native-matrix.json",
+    "candidate-philox-dynamics-4.json",
+    "candidate-philox-dynamics.json",
+    "candidate-philox-native-1.json",
+    "candidate-philox-native-2.json",
+    "candidate-philox-native-4.json",
+    "docs-build.log",
+    "environment.json",
+    "performance-gates.json",
+    "tests-fma.log",
+    "tests-full.log",
+    "tests-no-openmp.log",
+    "tests-openmp.log",
+    "throughput.csv"
   ],
-  "inventory_comparison": "This validation directory did not exist on the task baseline; only final accepted or explicitly failed-gate records are included."
+  "excluded": [
+    "Raw NPZ references and compiled binaries",
+    "Previous incomplete validation at Git commit 6451297 and /tmp/t49-before-authorized-cache",
+    "Interrupted checks and non-accepted timings in /tmp/t49-authorized-cache-pass1 and /tmp/t49-development-results"
+  ],
+  "scope_extension": "The user authorized the harmonic binding cache; the proposed patch is applied."
 }

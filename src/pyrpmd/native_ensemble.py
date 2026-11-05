@@ -323,7 +323,7 @@ class NativeEnsemble:
         except ImportError as exc:
             raise RuntimeError("native ensemble extension is unavailable; rebuild PyRPMD with C++ enabled") from exc
         self._native = _thermal
-        if getattr(_thermal, "THERMAL_KERNEL_API", 0) < 1:
+        if getattr(_thermal, "THERMAL_KERNEL_API", 0) < 2:
             raise RuntimeError("rebuild PyRPMD: the native extension lacks the versioned thermal-kernel API")
         coordinates = _array(q)
         if coordinates.ndim != 3 or coordinates.shape[-1] != 3 or 0 in coordinates.shape:
@@ -780,25 +780,14 @@ class NativeEnsemble:
 
     def _initial_energy(self, q, p, masses, beta):
         """Original NumPy energy reduction, with reusable transaction scratch."""
-        if not hasattr(self, "_energy_work"):
-            self._energy_work = (np.empty_like(q), np.empty_like(q))
-        difference, work = self._energy_work
-        # A contiguous mass row avoids a separate three-element broadcast loop
-        # for every atom. The scalar operations and NumPy sum order are intact.
-        mass_row = np.repeat(masses, 3)
-        flat_work = work.reshape(self.beads, -1)
-        np.multiply(p, p, out=work)
-        np.divide(flat_work, 2*mass_row, out=flat_work)
-        kinetic = np.sum(work)
-        np.subtract(q[:-1], q[1:], out=difference[:-1])
-        np.subtract(q[-1], q[0], out=difference[-1])
-        np.multiply(mass_row, difference.reshape(self.beads, -1), out=flat_work)
-        np.multiply(work, difference, out=work)
-        spring = np.sum(work)
         with self._call_lock:
-            raw = self._native.physical_state(self._handle)
-        potential = np.sum(np.frombuffer(raw["energy"], dtype=np.float64))
-        return float(potential + kinetic + .5*(self.beads/beta)**2*spring)
+            if not hasattr(self, "_energy_work"):
+                self._energy_work = (np.empty_like(q), np.empty_like(q))
+            kinetic, spring = self._energy_work
+            raw = self._native.initial_energy_terms(self._handle, q, p, masses, kinetic, spring)
+            potential = np.frombuffer(raw, dtype=np.float64)
+            return float(np.sum(potential) + np.sum(kinetic)
+                         + .5*(self.beads/beta)**2*np.sum(spring))
 
     def _physical_state(self) -> dict:
         """Refresh reusable arrays for the internal propagation cache."""

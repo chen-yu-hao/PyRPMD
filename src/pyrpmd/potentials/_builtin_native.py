@@ -123,6 +123,20 @@ def builtin_binding(potential, natoms=None):
     if not hasattr(_native, "builtin_pes"):
         raise NativeUnavailableError("installed native extension lacks built-in PES bindings; rebuild it")
 
+    # A harmonic binding expands scalar/vector parameters over all atoms.
+    # Compare the original arrays first; unchanged values need no expansion.
+    from .builtin import HarmonicPotential
+    source_parameters = None
+    if kind is HarmonicPotential:
+        current = tuple(np.asarray(getattr(potential, name)) for name in ("k", "center"))
+        with _CACHE_LOCK:
+            previous = _CACHE.get(potential, {}).get(natoms)
+            if previous is not None and len(previous) == 3 and all(
+                    new.dtype == old.dtype and new.shape == old.shape and np.array_equal(new, old)
+                    for new, old in zip(current, previous[2])):
+                return previous[1]
+        source_parameters = tuple(value.copy() for value in current)
+
     model, parameters = _parameters(potential, natoms)
     # Historical Morse/quartic constructors accepted some nonfinite parameters.
     # Their Python semantics remain available, but no invalid native context is
@@ -141,7 +155,8 @@ def builtin_binding(potential, natoms=None):
                 "cabi-v1", _EVALUATE(address), natoms,
                 (capsule, _native), threading.RLock(), context=context,
             )
-            cached[natoms] = (key, binding)
+            cached[natoms] = ((key, binding) if source_parameters is None else
+                              (key, binding, source_parameters))
         return cached[natoms][1]
 
 

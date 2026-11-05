@@ -8,19 +8,20 @@
     "python": "3.11.5 (main, Sep 11 2023, 13:54:46) [GCC 11.2.0]",
     "numpy": "1.26.4",
     "source": "/tmp/pyrpmd-t49",
-    "revision": "cb28829ecb1cabe471136b74e585ba3e4b9728fb",
+    "revision": "6451297588c088d68cb9525b31915dd51de82dcb",
     "dirty": true,
     "source_sha256": {
       "native/thermal.hpp": "948329d9e076509ef50b2f5d22f69323b06cddb2f9824e915ec57104256dcfe2",
-      "native/thermal.cpp": "2c932d1df9c5a08fd3dbe2875ff17a9423c10d9d07c45aafaf085fa005acf8e0",
+      "native/thermal.cpp": "1a9f5f2b95b90e1bcba73aba968c375bfca91294ab33fa82001e95f58980a563",
       "native/philox.h": "29150f4acad2006a646c110b915d6d5fefca4010c1ced64e7f84616aa2abd3d4",
-      "src/pyrpmd/native_ensemble.py": "dd07c7a37f728ebb6ed600f25a7abda1e5c57eaea30b0bdcefffac8e4dbf6c22",
-      "src/pyrpmd/propagation.py": "65ba1246956b2d956575bb6c60c4a68bae9c20e376e5bc978749956bd7ba079e",
+      "src/pyrpmd/native_ensemble.py": "e017538190a8ec15ab0ee3cf2869b3b38aa1a46b2d9eee62386673fd61e1840b",
+      "src/pyrpmd/propagation.py": "c562b78db27c6b03d31d1fe71235c4263f239fd5fb154c86e8f3920f9ff6060d",
       "src/pyrpmd/block_propagation.py": "6cae3f8948f8ec17dbd658a1cef28e8e12b5571dc203044fce1bdf131f1f6e5d",
       "src/pyrpmd/dynamics.py": "711080fdb159c06330bc8406a1a553d8d96091d31c4d6343383cf15f9f02746a",
-      "src/pyrpmd/engine.py": "9f5a08ee05128c7d45a27e4905e074fbfd45ca414497f71e198f56a02d0fb9bb"
+      "src/pyrpmd/engine.py": "9f5a08ee05128c7d45a27e4905e074fbfd45ca414497f71e198f56a02d0fb9bb",
+      "src/pyrpmd/potentials/_builtin_native.py": "92421385c3ebc4e39d2ff13c1af7f29592e049e938d82e87b0239bfd221c57fd"
     },
-    "script_sha256": "2faa8d6cb0dc0b0760df4bd6c901804e1adb3d28d4da0fbaec253708d0eb5811",
+    "script_sha256": "99c4779d6ed60c92fa6164373accbd2d25380d3d9bedcc22b1cbade793101f26",
     "compiler": "c++ (GCC) 11.3.1 20221121 (Red Hat 11.3.1-4)\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
     "build_flags": {
       "CXXFLAGS": "-march=native -ffp-contract=off",
@@ -70,15 +71,15 @@
       "status": "measured",
       "steps_per_repeat": 64,
       "seconds": [
-        0.9142187628895044,
-        0.8721871245652437,
-        0.8186986595392227,
-        0.7314496543258429,
-        0.7737295068800449,
-        0.7311162613332272,
-        0.7335433177649975
+        0.883792482316494,
+        0.8713846001774073,
+        0.760990809649229,
+        0.7066099233925343,
+        0.7162619344890118,
+        0.7002994660288095,
+        0.7149437069892883
       ],
-      "steps_per_second": 82.71624570461448
+      "steps_per_second": 89.35278690421853
     }
   ]
 }
