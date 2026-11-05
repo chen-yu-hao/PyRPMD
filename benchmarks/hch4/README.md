@@ -42,7 +42,11 @@ result = potential.evaluate(q)  # q has shape [batch, 6, 3], in bohr
 The atom order is **H, C, H, H, H, H**. The last atom is the incoming H; the
 other four H atoms are equivalent methane hydrogens. The adapter returns the
 unmodified upstream energy and **forces = −dV/dq**, with no bead scaling.
-Its canonical-path lock serializes the legacy `COMMON` blocks. Initialization
+The batch entry point admits all frames in one pass and passes the whole
+ring to upstream `get_potential(q, 6, P, ...)` in a single call, writing
+energies and gradients directly into the output arrays; only a batch that
+contains rejected frames is compacted first. Its results are bit-identical to
+per-frame calls. Its canonical-path lock serializes the legacy `COMMON` blocks. Initialization
 runs once per loaded library: calling upstream `PREPOT` twice would rescale
 parameters twice. Separate Python objects therefore share the initialized
 library without reinitializing it. A 0.2 bohr pair-distance rejection prevents

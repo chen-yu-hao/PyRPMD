@@ -95,6 +95,12 @@ static void kick(Vec& p,const Vec& f,const Cayley& c) {
     #pragma omp parallel for num_threads(c.threads) schedule(static) if(c.threads>1)
     for(Py_ssize_t i=0;i<n;++i)p[i]+=h*f[i];
 }
+// Out-of-place first half kick: the trial momentum copy is fused into it.
+static void kick(Vec& p,const Vec& p0,const Vec& f,const Cayley& c) {
+    auto n=static_cast<Py_ssize_t>(p.size());double h=.5*c.dt;
+    #pragma omp parallel for num_threads(c.threads) schedule(static) if(c.threads>1)
+    for(Py_ssize_t i=0;i<n;++i)p[i]=p0[i]+h*f[i];
+}
 static double metric(const Diff& d,const Cayley& c) {
     double z=0;for(Py_ssize_t i=0;i<c.nd;++i)z+=d.g[i]*d.g[i]/c.mass[i/3];
     if(!std::isfinite(z)||z<=1e-28)throw std::runtime_error("singular constrained dividing surface");
@@ -417,18 +423,22 @@ static PyObject* advance(PyObject*,PyObject* args) {
         auto* reuse_obj=PyDict_GetItemString(options,"reuse_forces");
         int reuse=reuse_obj ? PyObject_IsTrue(reuse_obj) : 0;
         if(reuse<0)throw std::invalid_argument("invalid reuse_forces option");
-        // The opt-in cache is local to this call and restricted to ordinary
-        // stateless PES dynamics. Projection, constraint and bias semantics
-        // retain their reference evaluation schedule.
-        const bool reuse_forces=reuse && !constraint && fragments.empty() && biases.empty();
+        // The cache is local to this call. Each step ends with a PES/bias call
+        // at its accepted coordinates; the next step starts at exactly those
+        // coordinates, so that force is reused bit-for-bit. Native biases are
+        // pure functions of q, RATTLE and fixed-atom projection leave the
+        // endpoint q unchanged. Only fragment projection moves q afterwards.
+        const bool reuse_forces=reuse && fragments.empty();
         bool force_valid=false;
-        Vec current_q(q.doubles(),q.doubles()+S),current_p(p.doubles(),p.doubles()+S),trial_q(S),trial_p(S),work(c->workspace_size()),center(nd),pc(nd),forces(S),free_q(S);
+        Vec current_q(q.doubles(),q.doubles()+S),current_p(p.doubles(),p.doubles()+S),trial_q(S),trial_p(S),work(c->workspace_size()),center(nd),pc(nd),free_q(S);
+        // Biases and fixed atoms update the PES force buffer in place.
+        Vec& forces=pes.force;
         if(!finite(current_q)||!finite(current_p))throw std::invalid_argument("nonfinite initial state");
         fixed.validate(current_q.data(),current_p.data(),P);
         auto project_state=[&](Vec& x,Vec& momentum){project(x,momentum,fragments,*c);fixed.project(x.data(),momentum.data(),P);};
         Py_ssize_t completed=0,written=0;std::string failure;
         double previous_clock=clock;
-        auto evaluate=[&](const Vec& x){pes.evaluate(x);forces=pes.force;
+        auto evaluate=[&](const Vec& x){pes.evaluate(x);
             if(!biases.empty())centroid(x,center,P,nd);
             double eb=0;for(const auto& b:biases)eb+=b.add(x,center,forces,*c,beta);
             if(!std::isfinite(eb)||!finite(forces))throw std::runtime_error("nonfinite biased forces/energy");
@@ -448,14 +458,13 @@ static PyObject* advance(PyObject*,PyObject* args) {
             ReleaseGIL release;
             for(Py_ssize_t step=0;step<steps;++step) {
                 try {
-                    trial_q=current_q;trial_p=current_p;
                     std::unique_ptr<Diff> old_normal;
-                    if(constraint){centroid(trial_q,center,P,nd);old_normal=std::make_unique<Diff>(constraint->eval(center.data()));metric(*old_normal,*c);if(std::abs(old_normal->v)>std::max(1e-8,10*tolerance))throw std::runtime_error("parent state is not on dividing surface");}
+                    if(constraint){centroid(current_q,center,P,nd);old_normal=std::make_unique<Diff>(constraint->eval(center.data()));metric(*old_normal,*c);if(std::abs(old_normal->v)>std::max(1e-8,10*tolerance))throw std::runtime_error("parent state is not on dividing surface");}
                     if(!force_valid){
-                        const double eb=evaluate(trial_q);
-                        if(check_energy && step==0)total_energy(trial_q,trial_p,eb);
+                        const double eb=evaluate(current_q);
+                        if(check_energy && step==0)total_energy(current_q,current_p,eb);
                     }
-                    kick(trial_p,forces,*c);project_state(trial_q,trial_p);
+                    trial_q=current_q;kick(trial_p,current_p,forces,*c);project_state(trial_q,trial_p);
                     c->propagate(trial_q.data(),trial_p.data(),work.data());project_state(trial_q,trial_p);
                     if(constraint){free_q=trial_q;double lambda=0;bool converged=false;
                         for(int iteration=0;iteration<50;++iteration){centroid(trial_q,center,P,nd);auto d=constraint->eval(center.data());metric(d,*c);if(std::abs(d.v)<tolerance){converged=true;break;}

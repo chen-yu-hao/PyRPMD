@@ -89,11 +89,14 @@ this change. Providers are not called concurrently inside a process. The GIL is
 released during propagation; no Python callback is invoked from that section.
 
 `propagate()` retains two force evaluations per BCB step. The segmented
-`propagate_block()` API additionally accepts `reuse_forces=True` for ordinary
-native propagation without bias, constraints or fragment projections. Within
-a block of L steps it reuses each endpoint force, reducing PES batches from
-2L to L+1. Its default remains false for direct API callers; ordinary native
-dRPMD collision blocks enable it. No force cache survives a block or restart,
+`propagate_block()` API reuses each endpoint PES/bias force within a block of
+L steps, reducing PES batches from 2L to L+1 with bit-identical results for a
+deterministic provider. Its default `reuse_forces=None` enables this unless the
+provider metadata declares it stateful, history- or time-dependent;
+`reuse_forces=False` restores the two-call reference schedule. The native loop
+reuses forces with umbrella/flux biases, centroid RATTLE and fixed atoms;
+fragment projection moves q after the force call and is re-evaluated. No force
+cache survives a block or restart,
 so a Python classifier can still change the full state between blocks.
 Energy observations reuse the last returned physical energy and add the same
 kinetic, ring-spring and bias terms. Work arrays are allocated once per block,

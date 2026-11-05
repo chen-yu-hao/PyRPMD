@@ -76,7 +76,7 @@ def test_fixed_native_failure_preserves_valid_prefix_without_python_retry(native
     potential.lib.reset(6, nonfinite)
     with pytest.raises(PropagationError) as raised:
         dynamics.propagate_block(actual, 8, backend="native", record_energy=False,
-                                  record_states=True)
+                                  record_states=True, reuse_forces=False)
     assert raised.value.result.completed == 2
     assert potential.lib.get_calls() == 6
     np.testing.assert_array_equal(actual.q, expected.q)

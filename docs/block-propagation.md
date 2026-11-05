@@ -103,10 +103,12 @@ Fortran batch v1 使用按值传递的 `int32_t B`，q/force 为 C 连续
 hartree/bohr；status 每帧 0 表示成功。提供者需保证确定性的完整输出，
 不能使用 Python 回调，也不能让异常或 STOP 穿越原生边界。
 
-默认每步有两次物理力调用。`reuse_forces=True` 在无偏置、约束和片段投影
-的原生传播中启用块内终点力复用，L 步由 2L 次 PES 批调用降为 L+1 次。
-普通原生 dRPMD 碰撞自动使用它；其他分支保持参考调用顺序。缓存不跨块、
-不写入 checkpoint，恢复时重新求力。能量观测继续复用终点 PES 能量；
+块内终点力复用默认开启（`reuse_forces=None`）：每步从上一步终点的
+PES/偏置力出发，L 步由 2L 次 PES 批调用降为 L+1 次，对确定性 PES 结果
+逐位相同。提供者元数据声明 stateful、history_dependent 或 time_dependent
+时自动关闭；`reuse_forces=False` 恢复每步两次调用的参考顺序。原生循环在
+伞形/通量偏置、质心 RATTLE 和固定原子下同样复用；片段投影会在求力后移动
+坐标，因此仍重新求值。缓存不跨块、不写入 checkpoint，恢复时重新求力。能量观测继续复用终点 PES 能量；
 片段投影改变终点坐标时重新求值。这不会合并两次半步 kick 或更换积分器。
 
 `Dynamics.propagation_stats` 记录接受的 native/Python 步数和回退原因；

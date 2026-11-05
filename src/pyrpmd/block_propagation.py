@@ -346,6 +346,11 @@ def _fast_python_step_supported(dynamics, bias, constraint, fragment_data, compo
             or not _original_methods(dynamics, _BLOCK_DYNAMICS_METHODS)
             or not _original_methods(dynamics.integrator, _BLOCK_INTEGRATOR_METHODS)):
         return False
+    return _stateless_provider(dynamics)
+
+
+def _stateless_provider(dynamics):
+    """Whether repeated PES calls at identical coordinates are interchangeable."""
     metadata = getattr(dynamics.potential, "metadata", None)
     metadata = metadata if isinstance(metadata, dict) else {}
     capabilities = metadata.get("capabilities", {})
@@ -535,7 +540,7 @@ def _composed_native_prefix(dynamics, state, steps, mask, record_energy,
 def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=None,
                     constraint_tolerance=1e-10, fragment_data=(), observe=None,
                     record_energy=True, record_states=False, backend=None, raise_on_error=True,
-                    outcome=None, record_previous=False, reuse_forces=False,
+                    outcome=None, record_previous=False, reuse_forces=None,
                     check_energy=False, diagnostics=None, record_step_energies=False):
     """Advance at most 4096 selected-integrator steps, observing in step order.
 
@@ -553,9 +558,15 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
     Unsupported backends reject this option before mutating the state.
     ``record_previous`` retains only the state before the final accepted step
     of a successful block, allowing a Python classifier to reject that step.
-    ``reuse_forces`` opts into block-local force reuse for ordinary native
-    dynamics without bias, constraint or fragment projection. Other cases keep
-    the reference PES evaluation schedule. No cache survives a block.
+    ``reuse_forces`` controls block-local force reuse: each step starts from
+    the previous step's endpoint PES/bias force at the same coordinates, i.e.
+    one PES call per step instead of two. The results are identical for a
+    deterministic provider. ``None`` (default) enables it unless the provider
+    declares itself stateful, history- or time-dependent; ``False`` restores
+    the two-call reference schedule. The native loop reuses forces with or
+    without its pure umbrella/flux biases, centroid RATTLE and fixed atoms;
+    fragment projection, which moves q after the force call, re-evaluates.
+    No cache survives a block.
     ``check_energy`` validates the initial and every candidate step's total
     ring energy, including unobserved steps. Observations reuse that energy.
     Its default is False, preserving the original PES evaluation schedule.
@@ -594,6 +605,8 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
     backend = backend or getattr(dynamics, "loop_backend", "auto")
     if backend not in ("auto", "native", "python"):
         raise ValueError("loop backend must be auto, native or python")
+    if reuse_forces is None:
+        reuse_forces = _stateless_provider(dynamics)
     if not isinstance(record_previous, (bool, np.bool_)) or not isinstance(reuse_forces, (bool, np.bool_)):
         raise ValueError("record_previous and reuse_forces must be boolean")
     if not isinstance(check_energy, (bool, np.bool_)):
