@@ -303,6 +303,7 @@ static PyObject* integrator_schemes(PyObject*,PyObject*){
 #include "fixed_atoms.hpp"
 #include "fused.hpp"
 #include "propagation.h"
+#include "sampling_block.h"
 
 static PyObject* sample_free(PyObject*,PyObject* args){
     PyObject *capsule,*qo,*po,*no,*co,*ao,*fo;
@@ -350,6 +351,7 @@ static PyMethodDef methods[]={
  {"bind_pes",fused::bind_pes,METH_VARARGS,"Bind a trusted native PES; retain its lifetime owner."},
  {"run_block",fused::run_block,METH_VARARGS,"Transactional fused RPMD with the selected native integrator."},
  {"advance",fused_blocks::advance,METH_VARARGS,"RPMD blocks with the selected integrator, native RATTLE and valid-prefix failure results."},
+ {"advance_sampling",fused_blocks::advance_sampling,METH_VARARGS,"PILE-L/TRPMD sampling blocks with externally supplied noise."},
  {"create",create,METH_VARARGS,"Create an immutable independent ring-propagator context."},
  {"free_step",free_step,METH_VARARGS,"Update q,p using the selected full-ring free step."},
  {"sample_free",sample_free,METH_VARARGS,"Fused half-free/PILE-L/half-free with externally supplied real-mode noise."},
@@ -367,6 +369,7 @@ PyMODINIT_FUNC PyInit__native(){
             || PyModule_AddIntConstant(result,"BLOCK_DIAGNOSTICS_API",1)<0
             || PyModule_AddIntConstant(result,"BLOCK_STEP_ENERGIES_API",1)<0
             || PyModule_AddIntConstant(result,"SAMPLING_FREE_API",1)<0
+            || PyModule_AddIntConstant(result,"SAMPLING_BLOCK_API",1)<0
             || PyModule_AddIntConstant(result,"FIXED_ATOMS_API",1)<0){
         Py_DECREF(result);return nullptr;
     }
