@@ -73,6 +73,28 @@ def cabi_controls(cabi_library):
     controls.audit_reset(-1, -1)
 
 
+def _failing_call(run, get_calls, step):
+    """PES call number at which ``step`` fails, under the actual schedule.
+
+    Probes an identical failure-free run. With block-local force reuse a
+    block starting after step ``s`` evaluates its start force once, then one
+    endpoint per step, so step ``s+j`` ends on call ``before + 1 + j``.
+    """
+    from unittest.mock import patch
+    blocks, original = [], Dynamics.propagate_block
+
+    def spy(self, state, steps, **options):
+        blocks.append((state.step, get_calls(), steps, bool(options.get("reuse_forces"))))
+        return original(self, state, steps, **options)
+
+    with patch.object(Dynamics, "propagate_block", spy):
+        run()
+    for start, before, count, reuse in blocks:
+        if start < step <= start + count:
+            return before + (1 + step - start if reuse else 2 * (step - start))
+    raise AssertionError(f"step {step} was not propagated")
+
+
 def _small_state(beads=4):
     return State(np.full((beads, 1, 3), 0.1), np.full((beads, 1, 3), 0.2))
 
@@ -362,10 +384,14 @@ def test_native_failure_checkpoints_valid_prefix_without_replay_and_resumes_same
     tmp_path, cabi_library, cabi_controls, failed_step,
 ):
     task = _task(tmp_path / "failed", cabi_library)
-    cabi_controls.audit_reset(2 * failed_step, -1)
+    cabi_controls.audit_reset(-1, -1)
+    failing = _failing_call(lambda: fes._sample_window(_task(tmp_path / "probe", cabi_library)),
+                            cabi_controls.audit_get_calls, failed_step)
+    cabi_controls.audit_reset(failing, -1)
     with pytest.raises(PropagationError, match="injected CABI failure") as caught:
         fes._sample_window(task)
-    assert cabi_controls.audit_get_calls() == 2 * failed_step
+    # The failed call is the last one: the failing step is never retried.
+    assert cabi_controls.audit_get_calls() == failing
     saved = _saved(task)
     prefix = failed_step - 1
     assert int(saved["step"]) == int(saved["elapsed"]) == prefix

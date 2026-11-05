@@ -26,6 +26,7 @@ def native_pes(tmp_path_factory):
     source = source.replace("#include <stdio.h>", """#include <stdio.h>
 static int extension_calls=0, extension_fail_at=-1;
 void extension_reset(int fail) { extension_calls=0; extension_fail_at=fail; }
+int extension_get_calls(void) { return extension_calls; }
 """)
     start = source.index("{", source.index("pyrpmd_rc_v1 pyrpmd_pes_evaluate_v1")) + 1
     source = source[:start] + """
@@ -42,6 +43,8 @@ void extension_reset(int fail) { extension_calls=0; extension_fail_at=fail; }
     controls = ctypes.CDLL(str(library))
     controls.extension_reset.argtypes = [ctypes.c_int]
     controls.extension_reset.restype = None
+    controls.extension_get_calls.argtypes = []
+    controls.extension_get_calls.restype = ctypes.c_int
     return library, controls
 
 
@@ -288,6 +291,28 @@ def test_preflight_rejects_changed_physics_budget_and_missing_streams(tmp_path):
         fes.validate_fes_checkpoints(task["config"], task["system"], task["output"], production_steps=62)
 
 
+def _failing_call(run, get_calls, step):
+    """PES call number at which ``step`` fails, under the actual schedule.
+
+    Probes an identical failure-free run. With block-local force reuse a
+    block starting after step ``s`` evaluates its start force once, then one
+    endpoint per step, so step ``s+j`` ends on call ``before + 1 + j``.
+    """
+    from unittest.mock import patch
+    blocks, original = [], Dynamics.propagate_block
+
+    def spy(self, state, steps, **options):
+        blocks.append((state.step, get_calls(), steps, bool(options.get("reuse_forces"))))
+        return original(self, state, steps, **options)
+
+    with patch.object(Dynamics, "propagate_block", spy):
+        run()
+    for start, before, count, reuse in blocks:
+        if start < step <= start + count:
+            return before + (1 + step - start if reuse else 2 * (step - start))
+    raise AssertionError(f"step {step} was not propagated")
+
+
 @pytest.mark.parametrize("backend", ["python", "native"])
 def test_propagation_failure_commits_valid_prefix_and_continues_same_rng(
         tmp_path, request, monkeypatch, backend):
@@ -299,8 +324,15 @@ def test_propagation_failure_commits_valid_prefix_and_continues_same_rng(
     fes._sample_window(task)
     task["production_steps"] = 62
     if controls is not None:
-        # Every native step uses two PES calls, including unsampled steps.
-        controls.extension_reset(2 * 10)
+        # Fail step 39 under the actual native schedule (block-local force
+        # reuse), probing an identical extension of the same checkpoint.
+        probe = _task(tmp_path / "probe", library)
+        fes._sample_window(probe)
+        probe["production_steps"] = 62
+        controls.extension_reset(-1)
+        failing = _failing_call(lambda: fes._sample_window(probe),
+                                controls.extension_get_calls, 39)
+        controls.extension_reset(failing)
     original_energy = Dynamics.energy
 
     def energy(dynamics, state, bias=None):
