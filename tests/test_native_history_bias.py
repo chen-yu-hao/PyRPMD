@@ -3,7 +3,6 @@
 import numpy as np
 import pytest
 
-from pyrpmd import _native
 from pyrpmd.bias import (
     CompositeBias,
     GridMetadynamicsBias,
@@ -17,6 +16,8 @@ from pyrpmd.block_propagation import (
 from pyrpmd.cv import Cartesian, CVStack
 from pyrpmd.dynamics import Dynamics, State, native_capabilities
 from pyrpmd.potentials import HarmonicPotential
+
+_native = pytest.importorskip("pyrpmd._native")
 
 
 pytestmark = pytest.mark.skipif(
