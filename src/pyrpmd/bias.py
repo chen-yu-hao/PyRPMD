@@ -184,6 +184,18 @@ class WallBias:
         return (len(q) * self.kappa * delta**2,
                 -2.0 * len(q) * self.kappa * delta * result.jacobian[0])
 
+    def native_descriptor(self):
+        """Return a detached descriptor for one fixed wall potential."""
+        return {
+            "kind": "wall",
+            "kappa": float(self.kappa),
+            "has_lower": self.lower is not None,
+            "lower": 0.0 if self.lower is None else float(self.lower),
+            "has_upper": self.upper is not None,
+            "upper": 0.0 if self.upper is None else float(self.upper),
+            "version": 0,
+        }
+
 
 class MetadynamicsBias:
     """History-dependent standard or well-tempered metadynamics in CV space.
@@ -196,7 +208,9 @@ class MetadynamicsBias:
     A periodic dimension uses a wrapped Gaussian (a sum over images), not a
     minimum-image Gaussian with a discontinuous force at half a period.
     Depositions are explicit events; evaluating forces never changes history.
-    This class deliberately has no frozen native-bias descriptor.
+    ``native_descriptor`` returns a frozen snapshot with a ``hill_count``
+    version. The native path rejects the block if the history changes while
+    that snapshot is in use.
 
     Change history through ``deposit`` or ``truncate_history``. ``hills``
     returns a serializable snapshot, so editing its records cannot invalidate
@@ -246,6 +260,21 @@ class MetadynamicsBias:
     @property
     def hill_count(self):
         return len(self._hills)
+
+    def native_descriptor(self):
+        """Return an immutable, detached snapshot of the current hill history."""
+        centers, heights = self._history_arrays()
+        return {
+            "kind": "hills",
+            "hill_count": int(self.hill_count),
+            "centers": tuple(tuple(float(x) for x in row) for row in centers),
+            "heights": tuple(float(x) for x in heights),
+            "sigma": tuple(float(x) for x in self.sigma),
+            "periods": tuple(0.0 if period is None else float(period)
+                             for period in self.cv.periods),
+            "mode": self.mode,
+            "bias_factor": None if self.bias_factor is None else float(self.bias_factor),
+        }
 
     @staticmethod
     def _kernel(delta, sigma, period, *, gradient=True):
@@ -496,6 +525,23 @@ class GridMetadynamicsBias(MetadynamicsBias):
         """Read-only values and history-bound metadata for an atomic checkpoint."""
         return {"values": self._grid, "metadata": self._grid_metadata()}
 
+    def native_descriptor(self):
+        """Return a detached, versioned snapshot of the Hermite grid."""
+        state = self.grid_state()
+        return {
+            "kind": "grid",
+            "hill_count": int(self.hill_count),
+            "grid_algorithm": self.grid_algorithm,
+            "grid_ranges": tuple(tuple(float(x) for x in row) for row in self.grid_ranges),
+            "grid_bins": tuple(int(x) for x in self.grid_bins),
+            "grid_nodes": tuple(len(axis) for axis in self.grid_axes),
+            "periods": tuple(0.0 if period is None else float(period)
+                             for period in self.cv.periods),
+            "values": tuple(float(x) for x in np.asarray(state["values"], dtype=float).ravel()),
+            "grid_metadata": json.dumps(state["metadata"], sort_keys=True,
+                                         separators=(",", ":"), allow_nan=False),
+        }
+
     def _coordinates(self, values):
         values = np.asarray(values, dtype=float)
         if values.ndim < 1 or values.shape[-1] != self.cv.dimension or not np.isfinite(values).all():
@@ -595,3 +641,13 @@ class GridMetadynamicsBias(MetadynamicsBias):
             restored += self._hill_values(hill)
         restored.flags.writeable = False
         self._grid = restored
+
+
+# Keep the native-dispatch guard aware of every exact built-in bias.  Subclasses
+# remain deliberately absent: their descriptors are rejected by the lowering
+# functions and therefore retain the Python compatibility path.
+_BUILTIN_BIAS_METHODS.update({
+    WallBias: WallBias.energy_force,
+    MetadynamicsBias: MetadynamicsBias.energy_force,
+    GridMetadynamicsBias: GridMetadynamicsBias.energy_force,
+})
