@@ -5,10 +5,15 @@ import copy
 import numpy as np
 import pytest
 
-from pyrpmd.dynamics import Dynamics, State
+from pyrpmd.dynamics import Dynamics, State, native_capabilities
 from pyrpmd.potentials import HarmonicPotential
 from pyrpmd.sampling_block import propagate_sampling_block
 import pyrpmd.sampling_block as sampling_block
+
+
+requires_native = pytest.mark.skipif(
+    not native_capabilities()["available"], reason="native build required"
+)
 
 
 def _pair(beads=8, atoms=2, seed=19):
@@ -22,6 +27,7 @@ def _pair(beads=8, atoms=2, seed=19):
     ("pile-l", {}),
     ("trpmd", {"friction_scale": 0.5}),
 ])
+@requires_native
 def test_native_sampling_block_matches_repeated_steps(thermostat, kwargs):
     actual, expected = _pair(), _pair()
     dynamics = Dynamics(HarmonicPotential(0.4), [1.0, 2.0], 3.0, 8, 0.01,
@@ -48,6 +54,7 @@ def test_native_sampling_block_matches_repeated_steps(thermostat, kwargs):
     np.testing.assert_array_equal(result.energies, np.asarray(reference_energies)[[0, 2, 4, 5]])
 
 
+@requires_native
 def test_native_sampling_block_bias_and_observation_mask_are_bitwise_stable():
     from pyrpmd.bias import UmbrellaBias
     from pyrpmd.cv import Cartesian
@@ -93,6 +100,7 @@ def test_unsupported_ring_falls_back_and_native_backend_rejects():
         propagate_sampling_block(strict, _pair(beads=12, atoms=1), 1)
 
 
+@requires_native
 def test_noise_budget_chunking_preserves_state_and_rng(monkeypatch):
     actual, expected = _pair(beads=8, atoms=2), _pair(beads=8, atoms=2)
     dynamics = Dynamics(HarmonicPotential(0.4), [1.0, 2.0], 3.0, 8, 0.01,
