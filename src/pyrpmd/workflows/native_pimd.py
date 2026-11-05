@@ -32,6 +32,22 @@ from .pimd import OBSERVABLE_NAMES as _NAMES
 _SCHEMA = "pyrpmd.native-pimd-journal.v1"
 
 
+# Thermostats with one bath for the whole system. With P>1 the stiff, nearly
+# harmonic internal ring-polymer modes exchange energy too slowly through a
+# single global bath; analytic harmonic and quartic controls show biased
+# estimators (see docs/native-pimd-workflow.md, "Thermostat choice").
+GLOBAL_BATH_THERMOSTATS = ("nhc", "svr")
+
+
+def global_thermostat_warning(thermostat, beads):
+    """Warning text for a single global bath on a ring polymer, else None."""
+    if thermostat not in GLOBAL_BATH_THERMOSTATS or int(beads) <= 1:
+        return None
+    return (f"sampling.thermostat='{thermostat}' is one global bath for all {int(beads)} beads; "
+            "it does not thermalize the ring-polymer internal modes and can bias PIMD "
+            "estimators far beyond their error bars. Use 'pile-l' or 'pile-g' for P>1.")
+
+
 def sampling_splitting(integrator, thermostat, barostat="none", *, middle=None):
     """Name the full map reported by the shared native executor."""
     if barostat != "none":
@@ -335,6 +351,9 @@ def _summary(streams, config, system, output, return_data=False):
         "warnings": ["Bead, timestep, equilibration, system-size and statistical convergence have not been certified.",
                      "PIMD sampling times are not physical dynamics. H_P excludes piston/thermostat heat and is not an NPT conserved quantity.",
                      "Propagation memory excludes trajectory history; offline correlation diagnostics retain scalar time series."]}
+    bath_warning = global_thermostat_warning(config["sampling"].get("thermostat", "pile-l"), config["beads"])
+    if bath_warning is not None:
+        summary["warnings"].append(bath_warning)
     if config["sampling"]["equilibration_steps"] == 0:
         summary["warnings"].append("No equilibration: collapsed-ring initial geometry is not an equilibrium sample.")
     if system.cell is not None:
