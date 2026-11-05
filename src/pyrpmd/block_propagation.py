@@ -7,11 +7,13 @@ including its requested observations, is transactional.
 """
 from dataclasses import dataclass
 import copy
+import json
 import numbers
 import numpy as np
 
 from . import cv as cv_module
-from .bias import UmbrellaBias, FluxMetricBias, CompositeBias
+from .bias import (UmbrellaBias, FluxMetricBias, CompositeBias, WallBias,
+                   MetadynamicsBias, GridMetadynamicsBias)
 from .potentials.native import descriptor_binding
 from .potentials._builtin_native import resolve_native_binding
 from .validation import checked_integer
@@ -133,7 +135,60 @@ def bias_descriptors(bias, dynamics):
         if bias.beta != dynamics.beta or not np.array_equal(bias.masses, dynamics.masses):
             raise NotNative("flux metric masses/beta differ from the integrator")
         return [{"kind": "flux", "cvs": [cv_descriptor(bias.cv, len(dynamics.masses))]}]
+    history_api = getattr(getattr(dynamics.integrator, "_native", None),
+                          "NATIVE_HISTORY_BIAS_API", 0)
+    if type(bias) is WallBias:
+        if history_api < 1:
+            raise NotNative("installed native extension lacks history-bias support; rebuild it")
+        descriptor = dict(bias.native_descriptor())
+        descriptor["cvs"] = cv_descriptors(bias.cv, len(dynamics.masses))
+        return [descriptor]
+    if type(bias) is GridMetadynamicsBias:
+        if history_api < 1:
+            raise NotNative("installed native extension lacks history-bias support; rebuild it")
+        descriptor = dict(bias.native_descriptor())
+        descriptor["cvs"] = cv_descriptors(bias.cv, len(dynamics.masses))
+        return [descriptor]
+    if type(bias) is MetadynamicsBias:
+        if history_api < 1:
+            raise NotNative("installed native extension lacks history-bias support; rebuild it")
+        descriptor = dict(bias.native_descriptor())
+        descriptor["cvs"] = cv_descriptors(bias.cv, len(dynamics.masses))
+        return [descriptor]
     raise NotNative(f"bias {type(bias).__name__} requires the Python path")
+
+
+def _check_bias_snapshot(bias, descriptors):
+    """Reject a history bias that changed while its native block was running."""
+    if bias is None:
+        if descriptors:
+            raise RuntimeError("native bias snapshot has no corresponding bias")
+        return
+    index = 0
+
+    def visit(current):
+        nonlocal index
+        if type(current) is CompositeBias:
+            for part in current.biases:
+                visit(part)
+            return
+        if index >= len(descriptors):
+            raise RuntimeError("native bias snapshot is incomplete")
+        descriptor = descriptors[index]
+        index += 1
+        if type(current) in (MetadynamicsBias, GridMetadynamicsBias):
+            if descriptor.get("hill_count") != current.hill_count:
+                raise RuntimeError("native bias snapshot expired during block")
+            if type(current) is GridMetadynamicsBias:
+                current_metadata = json.dumps(current.grid_state()["metadata"],
+                                              sort_keys=True, separators=(",", ":"),
+                                              allow_nan=False)
+                if descriptor.get("grid_metadata") != current_metadata:
+                    raise RuntimeError("native grid bias snapshot expired during block")
+
+    visit(bias)
+    if index != len(descriptors):
+        raise RuntimeError("native bias snapshot has extra descriptors")
 
 
 def _native_plan(dynamics, bias, cv, constraint, fragment_data, tolerance, record_energy, clock):
@@ -806,6 +861,7 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
                 if refresh_plan is not None:
                     refresh_plan.commit(0)
                 raise
+        _check_bias_snapshot(bias, options["biases"])
         completed, written, clock, message = native_result[:4]
         if len(native_result) == 5:
             metadata = native_result[4]

@@ -109,3 +109,10 @@ successful `refreshes_completed` prefix.  `none`, centroid-constraint and
 fragment projections reuse the corresponding native projection mathematics.
 The `MOMENTUM_REFRESH_API` marker lets older extensions reject this descriptor
 before mutating state.
+
+History-bias descriptors are available on the tagged `advance` path when
+`NATIVE_HISTORY_BIAS_API` is present. Frozen wall, direct-hill metadynamics and
+`tensor_hermite_v1` grid snapshots are evaluated in C++ with the full ring CV
+Jacobian; `CompositeBias` is lowered as a sequence of descriptors. The Python
+side validates the history version after each block, so subclasses and changed
+histories retain the compatibility path.

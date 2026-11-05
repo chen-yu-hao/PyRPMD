@@ -254,7 +254,54 @@ template<bool Numeric> struct Bias {
     int kind;size_t d;double beta=1.;
     std::vector<Coordinate<Numeric>> cv;
     Vec center,K,periods;
-    mutable Vec grad,hvp,direction,delta;
+    double kappa=0.,lower=0.,upper=0.;bool has_lower=false,has_upper=false;
+    size_t hill_count=0;
+    Vec hill_centers,hill_heights,hill_sigma;
+    std::vector<size_t> grid_bins,grid_nodes;
+    Vec grid_ranges,grid_values;
+    mutable Vec grad,hvp,direction,delta,hill_factors,hill_derivatives,hill_gradient;
+    mutable std::vector<size_t> grid_left;
+    mutable Vec grid_fraction,grid_basis,grid_dbasis,grid_gradient;
+    static bool truth(PyObject* obj) {
+        int value=PyObject_IsTrue(obj);
+        if(value<0)throw std::invalid_argument("native boolean field is invalid");
+        return value!=0;
+    }
+    static double wrap(double value,double period) {
+        double shifted=std::fmod(value+.5*period,period);
+        if(shifted<0.)shifted+=period;
+        return shifted-.5*period;
+    }
+    static void gaussian(double delta,double sigma,double period,double& value,double& derivative) {
+        if(period<=0.){
+            value=std::exp(-.5*(delta/sigma)*(delta/sigma));
+            derivative=-delta/(sigma*sigma)*value;return;
+        }
+        const double wrapped=wrap(delta,period),ratio=sigma/period;
+        if(ratio>=.2){
+            const double pi=3.1415926535897932384626433832795;
+            const int count=std::max(1,static_cast<int>(std::ceil(std::sqrt(72.)/(2.*pi*ratio))));
+            double norm=1.,sum=1.,dsum=0.;
+            for(int mode=1;mode<=count;++mode){
+                const double coeff=std::exp(-.5*std::pow(2.*pi*ratio*mode,2));
+                const double phase=wrapped*(2.*pi/period)*mode;
+                norm+=2.*coeff;sum+=2.*coeff*std::cos(phase);
+                dsum-=2.*coeff*mode*std::sin(phase)*(2.*pi/period);
+            }
+            value=sum/norm;derivative=dsum/norm;return;
+        }
+        const int count=static_cast<int>(std::ceil(8.5*ratio))+1;
+        const double inverse_sigma=1./sigma;
+        double norm=0.,sum=0.,dsum=0.;
+        for(int image=-count;image<=count;++image){
+            const double shift=wrapped+static_cast<double>(image)*period;
+            const double term=std::exp(-.5*(shift*inverse_sigma)*(shift*inverse_sigma));
+            const double image_shift=static_cast<double>(image)*period;
+            norm+=std::exp(-.5*(image_shift*inverse_sigma)*(image_shift*inverse_sigma));
+            sum+=term;dsum-=shift*inverse_sigma*inverse_sigma*term;
+        }
+        value=sum/norm;derivative=dsum/norm;
+    }
     Bias(PyObject* obj,size_t size):d(Numeric?3*size:size) {
         if constexpr(Numeric) {
             using namespace numeric;
@@ -265,14 +312,64 @@ template<bool Numeric> struct Bias {
             else {ensure(cv.size()==1,"metric needs one CV");beta=number(field(obj,"beta"));ensure(beta>0,"invalid metric beta");}
         } else {
             using namespace tagged;
-            auto tag=text(field(obj,"kind"));kind=tag=="umbrella"?0:1;
+            auto tag=text(field(obj,"kind"));
+            if(tag=="umbrella")kind=0;
+            else if(tag=="flux")kind=1;
+            else if(tag=="wall")kind=2;
+            else if(tag=="hills")kind=3;
+            else if(tag=="grid")kind=4;
+            else throw std::invalid_argument("unsupported native bias");
             PyRef specs(PySequence_Fast(field(obj,"cvs"),"CVs must be a sequence"));
             for(Py_ssize_t i=0;i<PySequence_Fast_GET_SIZE(specs.p);++i)cv.emplace_back(PySequence_Fast_GET_ITEM(specs.p,i),size);
             if(kind==0){center=vector(field(obj,"center"),cv.size());K=vector(field(obj,"stiffness"),cv.size()*cv.size());periods=vector(field(obj,"periods"),cv.size());}
-            else if(tag!="flux" || cv.size()!=1 || cv[0].bead_average)throw std::invalid_argument("invalid native bias");
+            else if(kind==1){if(cv.size()!=1 || cv[0].bead_average)throw std::invalid_argument("invalid native bias");}
+            if(kind==2){
+                if(cv.size()!=1)throw std::invalid_argument("wall bias needs one CV");
+                kappa=number(field(obj,"kappa"));has_lower=truth(field(obj,"has_lower"));has_upper=truth(field(obj,"has_upper"));
+                lower=number(field(obj,"lower"));upper=number(field(obj,"upper"));
+                if(!(kappa>0.)||(!has_lower&&!has_upper)||(has_lower&&has_upper&&lower>=upper))throw std::invalid_argument("invalid wall bias");
+            } else if(kind==3){
+                if(cv.empty())throw std::invalid_argument("history bias needs at least one CV");
+                hill_sigma=vector(field(obj,"sigma"),cv.size());periods=vector(field(obj,"periods"),cv.size());
+                for(double width:hill_sigma)if(!(width>0.))throw std::invalid_argument("invalid hill width");
+                for(double period:periods)if(period<0.)throw std::invalid_argument("invalid hill period");
+                PyRef centers(PySequence_Fast(field(obj,"centers"),"hill centers must be a sequence"));
+                PyRef heights(PySequence_Fast(field(obj,"heights"),"hill heights must be a sequence"));
+                hill_count=static_cast<size_t>(PySequence_Fast_GET_SIZE(centers.p));
+                if(PySequence_Fast_GET_SIZE(heights.p)!=static_cast<Py_ssize_t>(hill_count))throw std::invalid_argument("hill count mismatch");
+                hill_centers.reserve(hill_count*cv.size());
+                for(Py_ssize_t i=0;i<PySequence_Fast_GET_SIZE(centers.p);++i){
+                    auto row=vector(PySequence_Fast_GET_ITEM(centers.p,i),cv.size());hill_centers.insert(hill_centers.end(),row.begin(),row.end());
+                }
+                hill_heights.resize(hill_count);
+                for(size_t i=0;i<hill_count;++i){hill_heights[i]=number(PySequence_Fast_GET_ITEM(heights.p,static_cast<Py_ssize_t>(i)));if(hill_heights[i]<0.)throw std::invalid_argument("invalid hill height");}
+            } else if(kind==4){
+                if(cv.size()<1||cv.size()>2)throw std::invalid_argument("grid bias needs one or two CVs");
+                if(text(field(obj,"grid_algorithm"))!="tensor_hermite_v1")throw std::invalid_argument("unsupported grid algorithm");
+                periods=vector(field(obj,"periods"),cv.size());
+                for(double period:periods)if(period<0.)throw std::invalid_argument("invalid grid period");
+                PyRef ranges(PySequence_Fast(field(obj,"grid_ranges"),"grid ranges must be a sequence"));
+                if(PySequence_Fast_GET_SIZE(ranges.p)!=static_cast<Py_ssize_t>(cv.size()))throw std::invalid_argument("grid range dimension mismatch");
+                grid_ranges.reserve(2*cv.size());
+                for(Py_ssize_t i=0;i<PySequence_Fast_GET_SIZE(ranges.p);++i){
+                    auto row=vector(PySequence_Fast_GET_ITEM(ranges.p,i),2);if(!(row[1]>row[0]))throw std::invalid_argument("invalid grid range");grid_ranges.insert(grid_ranges.end(),row.begin(),row.end());
+                }
+                auto bins=vector(field(obj,"grid_bins"),cv.size());auto nodes=vector(field(obj,"grid_nodes"),cv.size());
+                grid_bins.resize(cv.size());grid_nodes.resize(cv.size());
+                for(size_t i=0;i<cv.size();++i){
+                    if(bins[i]<2.||std::floor(bins[i])!=bins[i]||nodes[i]<2.||std::floor(nodes[i])!=nodes[i])throw std::invalid_argument("invalid grid bins");
+                    grid_bins[i]=static_cast<size_t>(bins[i]);grid_nodes[i]=static_cast<size_t>(nodes[i]);
+                    const size_t expected=grid_bins[i]+(periods[i]>0.?0:1);if(grid_nodes[i]!=expected)throw std::invalid_argument("invalid grid node count");
+                    if(periods[i]>0.&&std::abs((grid_ranges[2*i+1]-grid_ranges[2*i])-periods[i])>1e-10*std::max(1.,periods[i]))throw std::invalid_argument("periodic grid range mismatch");
+                }
+                size_t count=1u<<cv.size();for(size_t node:grid_nodes)count*=node;grid_values=vector(field(obj,"values"),static_cast<Py_ssize_t>(count));
+                if(!finite(grid_values))throw std::invalid_argument("nonfinite grid coefficients");
+            }
         }
         grad.resize(cv.size()*d);delta.resize(cv.size());
         if(kind==1){hvp.resize(d);direction.resize(d);}
+        if(kind==3){hill_factors.resize(cv.size());hill_derivatives.resize(cv.size());hill_gradient.resize(cv.size());}
+        if(kind==4){grid_left.resize(cv.size());grid_fraction.resize(cv.size());grid_basis.resize(4*cv.size());grid_dbasis.resize(4*cv.size());grid_gradient.resize(cv.size());}
     }
     double apply(const double* q,const double* centroid,double* force,size_t P,const Vec& mass,double thermal_beta) const {
         if(kind==1){
@@ -281,6 +378,84 @@ template<bool Numeric> struct Bias {
             for(size_t i=0;i<d;++i)direction[i]=hvp[i]/(thermal_beta*z);
             for(size_t b=0;b<P;++b)for(size_t i=0;i<d;++i)force[b*d+i]+=direction[i];
             return -static_cast<double>(P)*std::log(std::sqrt(z/(2.*3.14159265358979323846*thermal_beta)))/thermal_beta;
+        }
+        if constexpr(!Numeric)grad.resize(cv.size()*P*d);
+        if constexpr(!Numeric){
+            const size_t k=cv.size(),width=P*d;
+            if(kind==2){
+                if(k!=1)throw std::invalid_argument("wall bias needs one CV");
+                const double value=cv[0].ring_into(q,centroid,P,grad.data());
+                double excess=0.;
+                if(has_lower&&value<lower)excess=value-lower;
+                if(has_upper&&value>upper)excess+=value-upper;
+                const double derivative=2.*kappa*excess;
+                for(size_t j=0;j<width;++j)force[j]-=P*derivative*grad[j];
+                return P*kappa*excess*excess;
+            }
+            if(kind==3){
+                for(size_t i=0;i<k;++i)delta[i]=cv[i].ring_into(q,centroid,P,grad.data()+i*width);
+                std::fill(hill_gradient.begin(),hill_gradient.end(),0.);
+                double energy=0.;
+                for(size_t h=0;h<hill_count;++h){
+                    double term=hill_heights[h];
+                    for(size_t i=0;i<k;++i){
+                        gaussian(delta[i]-hill_centers[h*k+i],hill_sigma[i],periods[i],hill_factors[i],hill_derivatives[i]);
+                        term*=hill_factors[i];
+                    }
+                    energy+=term;
+                    for(size_t i=0;i<k;++i){
+                        double derivative=hill_heights[h]*hill_derivatives[i];
+                        for(size_t j=0;j<k;++j)if(j!=i)derivative*=hill_factors[j];
+                        hill_gradient[i]+=derivative;
+                    }
+                }
+                for(size_t i=0;i<k;++i)for(size_t j=0;j<width;++j)force[j]-=P*hill_gradient[i]*grad[i*width+j];
+                return P*energy;
+            }
+            if(kind==4){
+                for(size_t i=0;i<k;++i){
+                    const double value=cv[i].ring_into(q,centroid,P,grad.data()+i*width);
+                    if(!std::isfinite(value))throw std::invalid_argument("nonfinite grid CV value");
+                    const double lo=grid_ranges[2*i],hi=grid_ranges[2*i+1],spacing=(hi-lo)/grid_bins[i];
+                    double scaled=0.;
+                    if(periods[i]>0.){
+                        double wrapped=std::fmod(value-lo,periods[i]);if(wrapped<0.)wrapped+=periods[i];scaled=wrapped/spacing;
+                    } else {
+                        if(value<lo||value>hi)throw std::invalid_argument("grid CV value is outside its range");
+                        scaled=(value-lo)/spacing;
+                    }
+                    const double left_value=std::floor(scaled);
+                    grid_left[i]=std::min(grid_bins[i]-1,static_cast<size_t>(left_value));
+                    grid_fraction[i]=scaled-static_cast<double>(grid_left[i]);
+                    const double t=grid_fraction[i],t2=t*t,t3=t2*t;
+                    grid_basis[4*i]=2.*t3-3.*t2+1.;grid_basis[4*i+1]=-2.*t3+3.*t2;
+                    grid_basis[4*i+2]=(t3-2.*t2+t)*spacing;grid_basis[4*i+3]=(t3-t2)*spacing;
+                    grid_dbasis[4*i]=(6.*t2-6.*t)/spacing;grid_dbasis[4*i+1]=(-6.*t2+6.*t)/spacing;
+                    grid_dbasis[4*i+2]=3.*t2-4.*t+1.;grid_dbasis[4*i+3]=3.*t2-2.*t;
+                }
+                std::fill(grid_gradient.begin(),grid_gradient.end(),0.);double energy=0.;
+                const size_t combinations=1u<< (2*k);
+                for(size_t combo=0;combo<combinations;++combo){
+                    size_t encoded=combo,mask=0,flat=0;std::array<size_t,2> choices{};
+                    for(size_t i=0;i<k;++i){choices[i]=encoded%4;encoded/=4;if(choices[i]>=2)mask|=1u<<i;}
+                    flat=mask;
+                    for(size_t i=0;i<k;++i){
+                        const size_t axis=grid_left[i]+choices[i]%2;
+                        const size_t index=periods[i]>0.?axis%grid_nodes[i]:axis;
+                        flat=flat*grid_nodes[i]+index;
+                    }
+                    const double coefficient=grid_values[flat];double term=coefficient;
+                    for(size_t i=0;i<k;++i)term*=grid_basis[4*i+choices[i]];
+                    energy+=term;
+                    for(size_t axis=0;axis<k;++axis){
+                        double derivative=coefficient;
+                        for(size_t i=0;i<k;++i)derivative*=(i==axis?grid_dbasis[4*i+choices[i]]:grid_basis[4*i+choices[i]]);
+                        grid_gradient[axis]+=derivative;
+                    }
+                }
+                for(size_t i=0;i<k;++i)for(size_t j=0;j<width;++j)force[j]-=P*grid_gradient[i]*grad[i*width+j];
+                return P*energy;
+            }
         }
         const size_t k=cv.size(),width=Numeric?d:P*d;double e=0.;
         if constexpr(!Numeric)grad.resize(k*width);

@@ -371,7 +371,8 @@ PyMODINIT_FUNC PyInit__native(){
             || PyModule_AddIntConstant(result,"MOMENTUM_REFRESH_API",1)<0
             || PyModule_AddIntConstant(result,"SAMPLING_FREE_API",1)<0
             || PyModule_AddIntConstant(result,"SAMPLING_BLOCK_API",1)<0
-            || PyModule_AddIntConstant(result,"FIXED_ATOMS_API",1)<0){
+            || PyModule_AddIntConstant(result,"FIXED_ATOMS_API",1)<0
+            || PyModule_AddIntConstant(result,"NATIVE_HISTORY_BIAS_API",1)<0){
         Py_DECREF(result);return nullptr;
     }
     return result;

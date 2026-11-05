@@ -240,6 +240,27 @@ stateless native providers are eligible. Long user-specified blocks may delay
 signal handling until the next block boundary. Per-step time accumulation is
 retained, so changing block sizes does not alter the state clock by rounding.
 
+## Native history-bias descriptors
+
+`Dynamics.propagate_block()` accepts frozen native descriptors for `WallBias`,
+`MetadynamicsBias` and `GridMetadynamicsBias`, including their flattened
+`CompositeBias` components. A metadynamics descriptor copies the hill centers,
+heights, widths and periodicity together with its `hill_count`; a grid
+descriptor additionally copies the `tensor_hermite_v1` coefficient array and
+history-bound grid metadata. The C++ `Bias<false>` evaluator uses the complete
+ring Jacobian and applies the same physical-energy convention as the Python
+implementation: the bias potential is multiplied by the bead count in the
+Hamiltonian. Periodic hills use the same wrapped image sum and broad-Gaussian
+Fourier branch as `MetadynamicsBias._kernel`; grid values outside a
+nonperiodic range are rejected.
+
+Descriptors are rebuilt for every block and are never cached across a hill
+deposition. The Python endpoint checks the hill count (and the grid metadata)
+after `advance` returns, before committing the state clock. Subclasses or
+overridden `energy_force` methods retain the Python path. The extension exports
+`NATIVE_HISTORY_BIAS_API = 1`; an older extension causes `auto` to fall back
+and a strict native request to fail before mutating the state.
+
 ## Validation
 
 ```bash
