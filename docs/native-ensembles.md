@@ -71,14 +71,14 @@ potential and convergence studies.
 | `langevin` | Cartesian exact OU update; `gamma` |
 | `pile-l` | Normal-mode OU, internal friction `2*pile_scale*omega_k`, `gamma_centroid` |
 | `pile-g` | PILE internal modes plus global centroid SVR; `tau`, `pile_scale` |
-| `svr` | Bussi stochastic velocity rescaling, including the sign and zero-energy cases; `tau` |
+| `svr` | Bussi stochastic velocity rescaling, including the sign and zero-energy cases; `tau`. One global bath: not ergodic for ring-polymer internal modes, so do not use for PIMD with P>1 |
 | `gle` | Cartesian extended OU; explicit drift/covariance matrices in `gle` |
 | `nm-gle` | Extended OU separately in each real normal mode |
 | `nm-gle-g` | Normal-mode GLE plus centroid SVR; `gle`, `tau` |
 | `piglet` | Per-mode GLE with supplied calibrated matrices and provenance; NVT or isotropic BZP NPT with a canonical centroid |
 | `trpmd` | Internal-mode PILE with exactly zero centroid friction; `pile_scale`; NVT only |
 | `ffl` | Fast-forward Langevin **rescale variant**: preserve direction, update speed; `gamma` |
-| `nhc` | Global Nosé–Hoover chain with three-stage Suzuki–Yoshida composition; `tau` (alias `tdamp`), `chain_length`, `substeps` |
+| `nhc` | Global Nosé–Hoover chain with three-stage Suzuki–Yoshida composition; `tau` (alias `tdamp`), `chain_length`, `substeps`. One global bath: biased for PIMD with P>1 ([details](native-pimd-workflow.md#thermostat-choice)) |
 
 Defaults of the numeric API are in atomic units, not physical recommendations.
 NHC uses a symmetric bath/2–deterministic-map–bath/2 split, with the same chain
