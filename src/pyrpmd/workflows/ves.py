@@ -88,7 +88,7 @@ def resolve_ves(config, system):
                  "rate", "recrossing", "collision", "outcomes"):
         if config.get(name):
             raise ValueError("VES does not combine " + name + " controls")
-    if set(config.get("reaction", {})) - {"electronic_weight"}:
+    if set(config.get("reaction", {})) - {"electronic_weight", "electronic", "electronic_weight_model"}:
         raise ValueError("VES does not use reaction controls")
     table = config.get("ves", {})
     if not isinstance(table, Mapping):

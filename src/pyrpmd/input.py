@@ -251,7 +251,7 @@ class JobSpec:
         if "nonadiabatic" in d or potential.get("provider", potential.get("type")) == "diabatic_python":
             validate_nonadiabatic(d, potential=potential, parallel=parallel, system=system)
             runtime.notes.append("Experimental NRPMD: state-selected scattering, not electronic thermal-equilibrium RPMD rate; real-chemistry validation is pending")
-        reaction = resolve_reaction(d, system)
+        reaction = resolve_reaction(d, system, None if selected else runtime.temperature)
         collision, outcomes = resolve_collision(d, system, sys_spec, runtime, selected=selected)
         output = resolve_output(d, base, runtime.dt, selected=selected, original_task=original_task)
         if "store_configurations" in output and method != "metadynamics":

@@ -258,6 +258,41 @@ exits are explicitly included. Users still supply `electronic_weight` and any
 additional `symmetry_factor` for the selected PES and channel definition.
 `reaction.entry_side` selects either end of the numerical downhill paths.
 
+### Temperature-dependent electronic factor
+
+Instead of a fixed `electronic_weight`, `[reaction.electronic]` lists the electronic
+levels of the transition state and of each reactant fragment (in `fragments` order).
+PyRPMD then uses
+
+    electronic_weight(T) = Q_el^TS(T) / prod_r Q_el^r(T),   Q_el(T) = sum_i g_i exp(-E_i / k_B T)
+
+at the job temperature, and re-evaluates it for every temperature in `pyrpmd study`:
+
+```toml
+[reaction.electronic]
+transition_state = "doublet"                 # lowest reactive surface, spin doublet
+reactants = ["Cl(2P)", "singlet"]            # Cl(2P3/2, 2P1/2) + H2(X 1Σg+)
+```
+
+Each entry is a preset name, a level list such as
+`[{energy = 0, degeneracy = 4}, {energy = "882.3515 cm-1", degeneracy = 2}]`
+(or `[[energy, degeneracy], ...]`; a bare number is hartree), or a table
+`{preset = ...}` / `{levels = [...]}`. Presets are `singlet`, `doublet`, `triplet`,
+`H(2S)`, `F(2P)`, `Cl(2P)`, `Br(2P)`, `I(2P)`, `O(3P)` and `S(3P)`; atomic
+fine-structure energies are NIST ASD values measured from the lowest J level.
+Each species' level energies are measured from that species' energy on the PES used
+for the simulation. Presets assume the PES correlates with the lowest listed level, so
+it sits at zero. Shifting all levels of one species by `c` multiplies the weight by
+`exp(-c/k_B T)` (or its inverse for a reactant); this is not a convention that cancels.
+Use such a shift only when it is physical, for example the spin-orbit lowering of a
+reactant asymptote relative to a spin-orbit-free PES. Nothing is inferred from atom
+labels.
+`electronic_weight` and `[reaction.electronic]` are mutually exclusive, and the table
+is rejected for state-selected ensembles without a thermal temperature. The resolved
+value and per-species log partition functions are recorded as
+`reaction.electronic_weight_model`. Python users can call
+`pyrpmd.electronic_partition.electronic_weight(ts, reactants, temperature)` directly.
+
 The main `[recrossing]` fields are `parent_replicas`, `parent_samples`,
 `equilibration`, `parent_interval`, `child_pairs`, `child_time`, `dividing_surface`,
 `plateau_fraction`, `plateau_tolerance` and `bootstrap`. Corresponding `_steps` fields

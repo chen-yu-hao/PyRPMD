@@ -168,7 +168,22 @@ def validate_task_sections(d):
     return materials, native_pimd, source_pmf
 
 
-def resolve_reaction(d, system):
+def evaluate_reaction_electronic(reaction, temperature, system=None):
+    """Evaluate ``reaction.electronic`` at one temperature (kelvin).
+
+    Reactant entries are checked against ``reaction.fragments`` or, when the
+    reaction table defines none (as for dRPMD), the resolved system fragments.
+    """
+    from .electronic_partition import ElectronicModel
+
+    fragments = reaction.get("fragments", reaction.get("reactant_fragments"))
+    if not fragments and system is not None:
+        fragments = getattr(system, "fragments", None)
+    count = len(fragments) if isinstance(fragments, (list, tuple)) and fragments else None
+    return ElectronicModel.from_mapping(reaction["electronic"], reactant_count=count).evaluate(temperature)
+
+
+def resolve_reaction(d, system, temperature=None):
     reaction = deepcopy(d.get("reaction", {}))
     if d["task"] == "rate":
         from .workflows.prepare import preparation_options
@@ -177,6 +192,17 @@ def resolve_reaction(d, system):
             preparation_options(reaction)
         except (ValueError, TypeError) as error:
             raise InputError(str(error)) from error
+    if "electronic" in reaction:
+        if "electronic_weight" in reaction:
+            raise InputError("Give either reaction.electronic_weight or [reaction.electronic], not both")
+        if temperature is None:
+            raise InputError("[reaction.electronic] needs a thermal temperature; state-selected ensembles have none")
+        try:
+            evaluated = evaluate_reaction_electronic(reaction, temperature, system)
+        except (ValueError, TypeError, OverflowError) as error:
+            raise InputError(f"reaction.electronic: {error}") from error
+        reaction["electronic_weight"] = evaluated["electronic_weight"]
+        reaction["electronic_weight_model"] = evaluated
     ew = float(reaction.get("electronic_weight", 1.0))
     if not math.isfinite(ew) or ew < 0:
         raise InputError("electronic_weight must be finite and nonnegative")

@@ -24,6 +24,7 @@ import numpy as np
 
 from .constants import KB_AU, KCAL_MOL_TO_AU
 from .input import InputError, JobSpec
+from .input_tasks import evaluate_reaction_electronic
 from .io import fingerprint, jsonable, referenced_files, write_json
 from .system import System
 from .units import parse_quantity, time_steps
@@ -316,6 +317,11 @@ Numerical quantities follow PyRPMD atomic units; strings accept explicit units.
         for key in ("masses_amu", "isotopes"):
             config["system"].pop(key, None)
         config["system"]["masses"] = isotope_system.masses.tolist()
+        if config.get("reaction", {}).get("electronic"):
+            # A level-resolved electronic factor is temperature dependent.
+            evaluated = evaluate_reaction_electronic(config["reaction"], temperature, isotope_system)
+            config["reaction"].update(electronic_weight=evaluated["electronic_weight"],
+                                      electronic_weight_model=evaluated)
         if task == "rate":
             config["reaction"].update(rinf=setting["separation"], rinf_au=setting["separation"])
             config["reaction"].pop("Rinf", None)

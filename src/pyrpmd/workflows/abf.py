@@ -65,7 +65,7 @@ def resolve_abf(config, system):
     for other in ("umbrella", "metadynamics", "opes", "plumed", "steered", "rate", "recrossing"):
         if config.get(other):
             raise ValueError("ABF does not combine " + other + " controls")
-    if set(config.get("reaction", {})) - {"electronic_weight"}:
+    if set(config.get("reaction", {})) - {"electronic_weight", "electronic", "electronic_weight_model"}:
         raise ValueError("ABF does not use reaction controls")
     if config.get("eabf" if method == "abf" else "abf"):
         raise ValueError("select exactly one ABF method")
