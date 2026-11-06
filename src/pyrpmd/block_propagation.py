@@ -70,13 +70,25 @@ def _pair(atoms, natoms):
     a, b = atoms
     if a == b or min(a, b) < 0 or max(a, b) >= natoms:
         raise ValueError("native CV atom indices are out of range")
-    weights = np.zeros(natoms)
+    weights = [0.0] * natoms
     weights[a], weights[b] = 1.0, -1.0
-    return weights.tolist()
+    return weights
 
 
-def cv_descriptor(cv, natoms):
-    """A value/derivative-preserving lowering; subclasses deliberately fall back."""
+def cv_descriptor(cv, natoms, memo=None):
+    """A value/derivative-preserving lowering; subclasses deliberately fall back.
+
+    ``memo`` shares one lowering of the same CV object among the consumers of
+    a single native plan (umbrella, flux metric and observation). The native
+    loop then recognizes them as one coordinate by identity.
+    """
+    if memo is not None:
+        key = (id(cv), natoms)
+        if key in memo:
+            return memo[key][1]
+        descriptor = cv_descriptor(cv, natoms)
+        memo[key] = (cv, descriptor)  # retain cv: its id stays unique
+        return descriptor
     from .propagation import _check_cv_methods
     _check_cv_methods(cv)
     tag = {"estimator": getattr(cv, "estimator", "centroid")}
@@ -110,50 +122,50 @@ def cv_descriptor(cv, natoms):
     raise NotNative(f"CV {type(cv).__name__} requires the Python path")
 
 
-def cv_descriptors(cv, natoms):
+def cv_descriptors(cv, natoms, memo=None):
     if cv is None:
         return []
     if type(cv) is cv_module.CVStack:
         from .propagation import _check_cv_methods
         _check_cv_methods(cv)
-        return [cv_descriptor(c, natoms) for c in cv.cvs]
-    return [cv_descriptor(cv, natoms)]
+        return [cv_descriptor(c, natoms, memo) for c in cv.cvs]
+    return [cv_descriptor(cv, natoms, memo)]
 
 
-def bias_descriptors(bias, dynamics):
+def bias_descriptors(bias, dynamics, memo=None):
     if bias is None:
         return []
     from .propagation import _check_bias_methods
     _check_bias_methods(bias)
     if type(bias) is CompositeBias:
-        return [d for part in bias.biases for d in bias_descriptors(part, dynamics)]
+        return [d for part in bias.biases for d in bias_descriptors(part, dynamics, memo)]
     if type(bias) is UmbrellaBias:
-        return [{"kind": "umbrella", "cvs": cv_descriptors(bias.cv, len(dynamics.masses)),
+        return [{"kind": "umbrella", "cvs": cv_descriptors(bias.cv, len(dynamics.masses), memo),
                  "center": bias.center.tolist(), "stiffness": bias.stiffness.ravel().tolist(),
                  "periods": [0.0 if p is None else float(p) for p in bias.cv.periods]}]
     if type(bias) is FluxMetricBias:
         if bias.beta != dynamics.beta or not np.array_equal(bias.masses, dynamics.masses):
             raise NotNative("flux metric masses/beta differ from the integrator")
-        return [{"kind": "flux", "cvs": [cv_descriptor(bias.cv, len(dynamics.masses))]}]
+        return [{"kind": "flux", "cvs": [cv_descriptor(bias.cv, len(dynamics.masses), memo)]}]
     history_api = getattr(getattr(dynamics.integrator, "_native", None),
                           "NATIVE_HISTORY_BIAS_API", 0)
     if type(bias) is WallBias:
         if history_api < 1:
             raise NotNative("installed native extension lacks history-bias support; rebuild it")
         descriptor = dict(bias.native_descriptor())
-        descriptor["cvs"] = cv_descriptors(bias.cv, len(dynamics.masses))
+        descriptor["cvs"] = cv_descriptors(bias.cv, len(dynamics.masses), memo)
         return [descriptor]
     if type(bias) is GridMetadynamicsBias:
         if history_api < 1:
             raise NotNative("installed native extension lacks history-bias support; rebuild it")
         descriptor = dict(bias.native_descriptor())
-        descriptor["cvs"] = cv_descriptors(bias.cv, len(dynamics.masses))
+        descriptor["cvs"] = cv_descriptors(bias.cv, len(dynamics.masses), memo)
         return [descriptor]
     if type(bias) is MetadynamicsBias:
         if history_api < 1:
             raise NotNative("installed native extension lacks history-bias support; rebuild it")
         descriptor = dict(bias.native_descriptor())
-        descriptor["cvs"] = cv_descriptors(bias.cv, len(dynamics.masses))
+        descriptor["cvs"] = cv_descriptors(bias.cv, len(dynamics.masses), memo)
         return [descriptor]
     raise NotNative(f"bias {type(bias).__name__} requires the Python path")
 
@@ -212,8 +224,9 @@ def _native_plan(dynamics, bias, cv, constraint, fragment_data, tolerance, recor
     for indices, masses, total, reference in fragment_data:
         weights = np.zeros(len(dynamics.masses));weights[indices] = masses
         fragments.append({"weights": weights.tolist(), "reference": reference.tolist()})
-    return binding, {"beta": dynamics.beta, "time": clock, "cvs": cv_descriptors(cv, len(dynamics.masses)),
-                     "biases": bias_descriptors(bias, dynamics), "constraint": native_constraint,
+    memo = {}
+    return binding, {"beta": dynamics.beta, "time": clock, "cvs": cv_descriptors(cv, len(dynamics.masses), memo),
+                     "biases": bias_descriptors(bias, dynamics, memo), "constraint": native_constraint,
                      "constraint_tolerance": tolerance, "fragments": fragments, "record_energy": record_energy,
                      **fixed_descriptor(dynamics)}
 
