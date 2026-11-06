@@ -24,6 +24,25 @@ from .entrance import (
     h3_entrance_from_centroid_samples,
     bond_pmf_rate_from_entrance_bridge,
 )
+from .dvr_heom import (
+    DVRHEOMResult,
+    DVRSystemHEOM,
+    HEOMResult as DVRHEOMResultAlias,
+    drude_lorentz_exponents,
+    drude_lorentz_spectral_density,
+)
+from .spectral_density import (
+    ExponentialFit,
+    SpectralPipelineResult,
+    analyze_kubo_tcf,
+    correlation_from_spectral_density,
+    fit_exponential_correlation,
+    force_tcf_to_spectral_density,
+    harmonic_bath_kubo_tcf,
+    harmonic_bath_spectral_density,
+    spectral_density_from_kubo,
+    spectral_density_to_correlation,
+)
 
 __all__ = [
     "solve_mbar",
@@ -45,4 +64,19 @@ __all__ = [
     "entrance_flux_ratio",
     "h3_entrance_from_centroid_samples",
     "bond_pmf_rate_from_entrance_bridge",
+    "DVRSystemHEOM",
+    "DVRHEOMResult",
+    "DVRHEOMResultAlias",
+    "drude_lorentz_exponents",
+    "drude_lorentz_spectral_density",
+    "ExponentialFit",
+    "SpectralPipelineResult",
+    "analyze_kubo_tcf",
+    "correlation_from_spectral_density",
+    "fit_exponential_correlation",
+    "force_tcf_to_spectral_density",
+    "harmonic_bath_kubo_tcf",
+    "harmonic_bath_spectral_density",
+    "spectral_density_from_kubo",
+    "spectral_density_to_correlation",
 ]
