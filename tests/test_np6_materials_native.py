@@ -50,10 +50,15 @@ def test_native_diffusion_writes_legacy_fields_and_resumes_read_only(tmp_path):
     assert result["task"] == "diffusion"
     assert result["propagation"][0]["python_steps"] == 0
     assert result["propagation"][0]["native_blocks"] > 0
-    trajectory = np.load(result["files"]["trajectories"][0], allow_pickle=False)
-    assert set(("positions", "velocities", "times", "sample_steps",
-                "observables", "radii_gyration_squared")) <= set(trajectory.files)
-    assert trajectory["positions"].shape[0] == result["samples_per_replica"][0]
+    # Close the archive before resume: the completed-run reanalysis atomically
+    # replaces trajectory.npz, which Windows refuses while a handle is open.
+    with np.load(result["files"]["trajectories"][0], allow_pickle=False) as trajectory:
+        assert set(("positions", "velocities", "times", "sample_steps",
+                    "observables", "radii_gyration_squared")) <= set(trajectory.files)
+        assert trajectory["positions"].shape[0] == result["samples_per_replica"][0]
+        # No handoff frame: the native record starts one interval after neq.
+        assert trajectory["positions"].shape[0] == 12 // 2
+        assert trajectory["sample_steps"][0] == 2 + 2
     journal = json.loads((tmp_path / "run" / "samples" / "native_pimd_0000" / "journal.json").read_text())
     before = json.dumps(journal, sort_keys=True)
     resumed = resume_run(tmp_path / "run")
@@ -67,6 +72,9 @@ def test_native_diffusion_writes_legacy_fields_and_resumes_read_only(tmp_path):
     ({"barostat": {"mode": "bzp", "pressure": "1 bar", "tau": "10 fs", "gamma": "0.01 fs^-1"}},
      "fixed-cell"),
     ({"parallel": {"mode": "bead", "bead_workers": 2}}, "trajectory parallelism"),
+    # 12 steps / interval 2 saves six native frames (no handoff frame), so
+    # max_lag=6 must fail in preflight rather than after production.
+    ({"diffusion": {"max_lag": 6}}, "max_lag"),
 ])
 def test_native_diffusion_rejects_unsupported_route_before_output(tmp_path, change, message):
     with pytest.raises(ValueError, match=message):

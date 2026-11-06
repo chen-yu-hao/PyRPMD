@@ -252,6 +252,12 @@ A completed resume reanalyzes those journals without constructing the PES or
 consuming new random numbers.  The summary records `python_steps = 0` and the
 number of native blocks for each replica.
 
+The native engine records only steps after the equilibration boundary, so a
+replica saves `production_steps // sample_interval` frames and has no frame at
+production time zero; the legacy engine saves one more (the handoff frame).
+`diffusion.max_lag`, `diffusion.block_length` and `diffusion.fit_range` are
+checked against the native frame count before any output is created.
+
 This opt-in currently supports fixed-cell PILE-L equilibration and one
 trajectory worker per native replica.  NPT, trajectory batching, bond
 constraints, and other equilibrium thermostats are rejected before creating

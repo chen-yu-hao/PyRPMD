@@ -201,7 +201,13 @@ def test_native_workflow_process_replicas(tmp_path):
 
 
 @pytest.mark.parametrize("change", [
-    {"task": "diffusion"}, {"task": "rate"},
+    # Native diffusion is an explicit NP6 route, but only with fixed-cell
+    # PILE-L equilibration; other diffusion combinations must still fail.
+    {"task": "diffusion", "sampling": {"engine": "native", "thermostat": "pile-g",
+                                       "equilibration_steps": 7, "production_steps": 30,
+                                       "sample_interval": 3, "replicas": 1}},
+    {"task": "diffusion", "barostat": {"mode": "bzp", "pressure": "1 bar"}},
+    {"task": "rate"},
     {"potential": {"provider": "ase", "factory": "anything:calculator"}},
     {"potential": {"provider": "builtin", "name": "harmonic", "params": {"center": 1.}}},
     {"parallel": {"mode": "bead", "bead_workers": 2}},
@@ -212,6 +218,13 @@ def test_no_unsupported_native_workflow_fallback(change):
     c = config();c.update(change)
     with pytest.raises(InputError):
         JobSpec.from_mapping(c).resolve()
+
+
+def test_native_diffusion_is_an_explicit_route():
+    c = config();c["task"] = "diffusion"
+    resolved, _ = JobSpec.from_mapping(c).resolve()
+    assert resolved["task"] == "diffusion"
+    assert resolved["sampling"]["engine"] == "native"
 
 
 def test_non_native_workflow_cannot_silently_ignore_barostat():

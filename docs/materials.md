@@ -455,6 +455,11 @@ mpiexec -n 4 python tests/mpi_materials_smoke.py /fresh/shared/output
 摘要中的 `propagation.python_steps` 为 0，并记录原生块数，便于检查没有逐步
 Python 回调。
 
+原生引擎只记录平衡边界之后的步，因此每个副本保存
+`production_steps // sample_interval` 帧，没有生产段零时刻的帧；`legacy`
+引擎多保存一帧（交接帧）。`diffusion.max_lag`、`diffusion.block_length` 和
+`diffusion.fit_range` 按原生帧数在产生输出前检查。
+
 目前该路径只接受固定晶胞、原生 PILE-L 平衡和非批量轨迹；NPT、轨迹合批、
 键约束及不支持的平衡恒温器会在产生输出副作用前拒绝。需要原生压浴时，请
 使用 `task="pimd"` 加原生 barostat；不要把 diffusion 的 NVE 生产段和 NPT

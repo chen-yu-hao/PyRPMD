@@ -68,8 +68,14 @@ def resolve_materials(config, system):
     return select_engine(config).resolve(config, system)
 
 
-def _resolve_legacy_materials(config, system):
-    """Historical numerical controls, also reused by tensor schedule validation."""
+def _resolve_legacy_materials(config, system, *, handoff_frame=True):
+    """Historical numerical controls, also reused by tensor schedule validation.
+
+    ``handoff_frame`` states whether the engine saves the equilibration
+    endpoint as the first production frame.  The legacy engine does; the
+    native diffusion route records only steps after the handoff, so its
+    planned frame count is one smaller and lag/fit checks must use that.
+    """
     from ..electronic_friction import validate_electronic_friction
     friction_spec = validate_electronic_friction(config, system)
     if not np.any(system.mobile_mask):
@@ -177,7 +183,7 @@ def _resolve_legacy_materials(config, system):
         # These limits depend only on the declared recording schedule. Fail
         # before constructing a provider or allocating an output directory,
         # rather than discovering invalid analysis choices after production.
-        frames = options["nprod"] // options["interval"] + 1
+        frames = options["nprod"] // options["interval"] + (1 if handoff_frame else 0)
         max_lag = table.get("max_lag")
         if max_lag is None:
             max_lag = max(1, (frames - 1) // 4)

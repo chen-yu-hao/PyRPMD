@@ -17,7 +17,7 @@ from pyrpmd import JobSpec, prepare, run, resume_run, extend_run, analyze_run
 | `JobSpec.with_overrides(...)` | Return a new configuration with overrides applied |
 | `JobSpec.resolve()` | Return `(config, identity)`; the identity is a `System`, or the PCET model |
 | `prepare(job, numerical=False)` | Return preparation information; `numerical=True` runs the model preparation and PES |
-| `run(job, output=None, resume=False, init_from=None, init_index=None, init_bias=False)` | Run the task and return the JSON-compatible summary on the root rank; `init_from` warm-starts a new run from an earlier run's configuration ([warm start](../checkpoints.md#warm-start-a-new-run-from-an-old-configuration)) |
+| `run(job, output=None, resume=False, init_from=None, init_index=None, init_bias=False)` | Run the task and return the JSON-compatible summary on the root rank; `init_from` warm-starts a new run from an earlier run's configuration ([warm start](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/checkpoints.md#warm-start-a-new-run-from-an-old-configuration)) |
 | `resume_run(directory, parallel=None, execution=None, adaptive_budget=None)` | Continue from saved input and checkpoints; override execution resources or extend an adaptive FES/rate pilot budget |
 | `extend_run(directory, *, max_time=None, production_steps=None)` | Authorize exactly one total budget: dRPMD duration from launch, or fixed-window gas-phase rate production steps per window and replica |
 | `analyze_run(directory, ...)` | Read the summary, or reanalyze offline for supported tasks |

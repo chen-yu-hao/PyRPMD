@@ -156,12 +156,14 @@ def resolve_native_pimd(config, system):
     if task == "diffusion":
         # Reuse the materials validation contract without selecting its
         # legacy numerical backend. This validates atom/axis/lag choices
-        # before provider construction or output creation.
+        # before provider construction or output creation. NativeEnsemble
+        # records only steps after sample_start, so unlike the legacy
+        # engine there is no saved handoff frame at production time zero.
         from .materials import _resolve_legacy_materials
         legacy = copy.deepcopy(config)
         legacy.setdefault("sampling", {})["engine"] = "legacy"
         legacy.setdefault("dynamics", {})["loop_backend"] = "auto"
-        diffusion = _resolve_legacy_materials(legacy, system)
+        diffusion = _resolve_legacy_materials(legacy, system, handoff_frame=False)
         options.update({key: diffusion[key] for key in (
             "atom_indices", "axes", "reference_atoms", "production_dt",
         )})

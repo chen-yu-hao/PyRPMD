@@ -320,7 +320,6 @@ extension exports `MOMENTUM_REFRESH_API = 1`; an older extension falls back in
 momentum sampling remains on the existing Python path and is outside this
 contract.
 
-
 ## Serial MetaD history blocks
 
 Serial standard and well-tempered MetaD can keep a frozen wall and hill
