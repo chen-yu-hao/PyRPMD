@@ -3,24 +3,18 @@ from __future__ import annotations
 
 import copy
 import json
-import os
 from pathlib import Path
-
 import numpy as np
-
-from . import _shared_metadynamics_serial as _serial
-for _name, _value in vars(_serial).items():
-    if not _name.startswith("__"):
-        globals()[_name] = _value
-
+from ..bias import CompositeBias
 from ..checkpoint import atomic_savez, load_checkpoint
-from ..shared_metadynamics import AsynchronousMetadynamicsBias
-from ..walker_exchange import (
-    AsyncWalkerStore, allgather_centers, ensure_manifest, make_record, mpi_world,
-    read_committed_records, validate_record)
-
-MPI_KIND = "PyRPMD.shared-metadynamics.mpi.v1"
-ASYNC_KIND = "PyRPMD.shared-metadynamics.async-walker.v1"
+from ..dynamics import Dynamics, State
+from ..potentials import make_potential
+from ..propagation import loop_options
+from ..units import parse_quantity
+from ..walker_exchange import allgather_centers, mpi_world
+from .common import _fingerprint, fingerprint_matches, write_json
+from .metadynamics import resolve_metadynamics, resolve_walls
+from .shared_metadynamics import MPI_KIND, _analyze, _bias, validate_shared
 
 def _root_collective(comm, operation, label):
     """Run a root-only operation without stranding peers on an exception."""
@@ -81,7 +75,7 @@ def _read_mpi_checkpoint_root(config, system, output, cv, options):
         for state in rng:
             np.random.default_rng().bit_generator.state = state
         hills = json.loads(str(data["hills"]))
-        bias = _serial._bias(cv, config, options, hills)
+        bias = _bias(cv, config, options, hills)
         production = max(0, elapsed - options["neq"])
         if bias.hill_count != walkers * (production // options["pace"]):
             raise ValueError("MPI shared metadynamics history disagrees with clock")
@@ -112,7 +106,7 @@ def _run_mpi(config, system, output, *, return_data=False):
     cv, _, options = resolve_metadynamics(config, system)
     checked = copy.deepcopy(config)
     checked["parallel"] = {}
-    walkers = _serial.validate_shared(checked, options)
+    walkers = validate_shared(checked, options)
     if comm.Get_size() != walkers:
         raise ValueError(
             f"MPI shared metadynamics needs {walkers} ranks, got {comm.Get_size()}")
@@ -132,7 +126,7 @@ def _run_mpi(config, system, output, *, return_data=False):
         if restored is None:
             state = State(np.repeat(system.geometry[None], config["beads"], axis=0),
                           dynamics.sample_momenta())
-            bias, elapsed = _serial._bias(cv, config, options), 0
+            bias, elapsed = _bias(cv, config, options), 0
             saved = {"samples": [], "sample_steps": [], "sample_bias": [],
                      "configurations": []}
         else:
@@ -142,7 +136,7 @@ def _run_mpi(config, system, output, *, return_data=False):
             dynamics.integrator._check(state.q, state.p)
             dynamics._check_fixed(state.q, state.p)
             dynamics.rng.bit_generator.state = restored["rng"][rank]
-            bias = _serial._bias(cv, config, options, restored["hills"])
+            bias = _bias(cv, config, options, restored["hills"])
             saved = {key: restored[key] for key in (
                 "samples", "sample_steps", "sample_bias", "configurations")}
         walls = resolve_walls(config, system)
@@ -240,7 +234,7 @@ def _run_mpi(config, system, output, *, return_data=False):
                 samples=saved["samples"], sample_steps=saved["sample_steps"],
                 sample_bias=saved["sample_bias"],
                 configurations=saved["configurations"])
-            result = _serial._analyze(
+            result = _analyze(
                 config, system, output, cv, options, ensemble, return_data)
             summary = result["summary"] if return_data else result
             summary["walkers_mode"] = "mpi-sync"
@@ -262,13 +256,13 @@ def reanalyze_mpi(config, system, output, cv, options, *, return_data=False):
     restored = _read_mpi_checkpoint_root(config, system, output, cv, options)
     if restored is None:
         raise ValueError("MPI shared metadynamics checkpoint does not exist")
-    bias = _serial._bias(cv, config, options, restored["hills"])
+    bias = _bias(cv, config, options, restored["hills"])
     ensemble = dict(
         states=[], rng=[], bias=bias, elapsed=restored["elapsed"],
         samples=restored["samples"], sample_steps=restored["sample_steps"],
         sample_bias=restored["sample_bias"],
         configurations=restored["configurations"])
-    result = _serial._analyze(
+    result = _analyze(
         config, system, output, cv, options, ensemble, return_data)
     summary = result["summary"] if return_data else result
     summary["walkers_mode"] = "mpi-sync"

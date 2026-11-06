@@ -245,14 +245,22 @@ def test_native_step_energies_match_observed_energies(batch_library):
 def _biases():
     from pyrpmd.bias import CompositeBias, MetadynamicsBias, UmbrellaBias, WallBias
     from pyrpmd.cv import Distance
+    from pyrpmd.opes import OPESBias, OPESExploreBias
     distance = Distance((0, 1))
     metadynamics = MetadynamicsBias(distance, 0.2, 0.01, 2.0, bias_factor=5.0)
     metadynamics.deposit([0.4], step=1, time=0.05)
     metadynamics.deposit([0.6], step=2, time=0.1)
+    opes = OPESBias(distance, 0.2, 2.0, barrier=0.1, bias_factor=5.0)
+    explore = OPESExploreBias(distance, 0.2, 2.0, barrier=0.1, bias_factor=5.0)
+    for bias in (opes, explore):
+        bias.update([0.4], step=1, time=0.05)
+        bias.update([0.6], step=2, time=0.1)
     return {
         "umbrella": UmbrellaBias(distance, [0.5], 0.3),
         "composite": CompositeBias(UmbrellaBias(distance, [0.5], 0.3),
                                    WallBias(distance, 0.2, upper=0.7), metadynamics),
+        "opes": opes,
+        "opes_explore": explore,
     }
 
 
@@ -265,7 +273,7 @@ class CountingBias:
         return self.bias.energy_force(q)
 
 
-@pytest.mark.parametrize("name", ["umbrella", "composite"])
+@pytest.mark.parametrize("name", ["umbrella", "composite", "opes", "opes_explore"])
 @pytest.mark.parametrize("reuse", [False, True])
 def test_pure_builtin_bias_uses_endpoint_reuse_bitwise(name, reuse):
     reference_provider, provider = Counting(), Counting()
@@ -281,6 +289,7 @@ def test_pure_builtin_bias_uses_endpoint_reuse_bitwise(name, reuse):
                              check_energy=True)
     np.testing.assert_array_equal(actual.q, expected.q)
     np.testing.assert_array_equal(actual.p, expected.p)
+    assert (actual.step, actual.time) == (expected.step, expected.time)
     np.testing.assert_array_equal(result.energies, energies)
     np.testing.assert_array_equal(result.step_energies, energies)
     # One initial energy check, then the fast step schedule.

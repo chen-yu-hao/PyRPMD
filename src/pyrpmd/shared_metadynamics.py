@@ -1,12 +1,4 @@
-"""Distributed multiple-walker metadynamics bias histories.
-
-The serial implementation is retained verbatim in
-:mod:`pyrpmd._shared_metadynamics_serial`.  ``SharedMetadynamicsBias`` adds a
-thin MPI allgather operation whose batch is committed by the unchanged serial
-algorithm.  ``AsynchronousMetadynamicsBias`` consumes immutable records from
-per-walker logs and rebuilds a deterministic global hill order after every
-merge.
-"""
+"""Synchronous and asynchronous shared metadynamics histories."""
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
@@ -14,14 +6,55 @@ import json
 
 import numpy as np
 
-from ._shared_metadynamics_serial import SharedMetadynamicsBias as _SerialSharedMetadynamicsBias
 from .bias import MetadynamicsBias
 from .path_integral import _integer
 from .walker_exchange import allgather_centers, validate_record
 
 
-class SharedMetadynamicsBias(_SerialSharedMetadynamicsBias):
-    """Existing serial shared bias plus a rank-ordered MPI deposition."""
+class SharedMetadynamicsBias(MetadynamicsBias):
+    """Deposit a complete walker batch against the same pre-deposition bias.
+
+    All walkers see one frozen history for an entire MD step. At a deposition
+    barrier, each contributes the configured hill height (WT-scaled using the
+    bias BEFORE any hill in this batch). Total deposition grows with walker
+    count; choose height/pace accordingly. There is one correlated bias history.
+    """
+
+    _shared_clocks = True
+
+    def __init__(self, *args, walkers, **kwargs):
+        self.walkers = _integer(walkers, "walkers", 2)
+        super().__init__(*args, **kwargs)
+        if self.hill_count % self.walkers:
+            raise ValueError("shared history must end at a complete walker deposition")
+
+    def deposit(self, *args, **kwargs):
+        raise ValueError("shared bias requires deposit_walkers with all walkers")
+
+    def truncate_history(self, count):
+        """Rollback only to a complete synchronized deposition barrier."""
+        if (isinstance(count, (bool, np.bool_)) or not isinstance(count, (int, np.integer))
+                or count % self.walkers):
+            raise ValueError("shared history rollback must retain complete walker batches")
+        super().truncate_history(count)
+
+    def deposit_walkers(self, values, *, step, time):
+        centers = np.asarray(values)
+        if centers.dtype.kind not in "fiu" or centers.shape != (self.walkers, self.cv.dimension) or not np.isfinite(centers).all():
+            raise ValueError("shared deposition needs finite [walkers,dimension] centers")
+        before = np.asarray(self.physical_energy(centers), dtype=float)
+        heights = np.full(self.walkers, self.height)
+        if self.mode == "well_tempered":
+            heights *= np.exp(-self.beta * before / (self.bias_factor - 1))
+        old_count = self.hill_count
+        try:
+            for walker in range(self.walkers):
+                self._append({"center": centers[walker], "height": heights[walker],
+                    "step": step, "time": time, "bias_before": before[walker], "walker": walker})
+        except BaseException:
+            self.truncate_history(old_count)
+            raise
+        return self.hills[-self.walkers:]
 
     def deposit_mpi(self, values, *, step, time, comm=None):
         centers = allgather_centers(values, walkers=self.walkers, comm=comm)

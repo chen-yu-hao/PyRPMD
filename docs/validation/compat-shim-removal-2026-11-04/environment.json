@@ -1,0 +1,16 @@
+{
+  "numpy": "1.26.4",
+  "scipy": "1.17.1",
+  "pytest": "9.2.0",
+  "sphinx": "8.2.3",
+  "h5py": "3.16.0",
+  "threadpoolctl": "3.7.0",
+  "python": "3.11.5",
+  "platform": "Linux-5.14.0-611.49.1.el9_7.x86_64-x86_64-with-glibc2.34",
+  "cpu": "Intel Xeon Platinum 8176 @ 2.10GHz",
+  "logical_cpus": 112,
+  "mpi": "MPICH 4.1.1, mpi4py 4.1.2",
+  "OMP_NUM_THREADS": 1,
+  "OPENBLAS_NUM_THREADS": 1,
+  "compiler": "g++ (GCC) 11.3.1 20221121 (Red Hat 11.3.1-4)"
+}
