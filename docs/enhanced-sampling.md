@@ -1358,3 +1358,22 @@ parity, and the asynchronous toy campaign establishes only statistical
 compatibility for its specified model and budget. Neither establishes CV
 adequacy, equilibrium, bead convergence, timestep convergence, or a molecular
 free-energy error bar.
+
+
+### Serial MetaD history blocks
+
+For a new serial standard or well-tempered MetaD run, the native path can keep
+the frozen history in C++ between semantic events. A block ends at the next
+hill (pace), the equilibrium or freeze boundary, a checkpoint, 4096 steps, or
+the pre-drawn buffer limit. The observation mask includes both saved samples
+and the hill endpoint, so sample_bias is evaluated from the same frozen bias
+before the Python deposition transaction. Andersen uses the NP1 RefreshPlan;
+PILE-L uses the NP2 sampling block when its native descriptor is available.
+Walls are included through the NP4 detached descriptor.
+
+The checkpoint carries native_path_contract = 1 for new runs. A checkpoint
+created before this contract was introduced has no marker and continues through
+the historical _history_step path, preserving its exact restart schedule.
+Shared, asynchronous and custom-walker histories remain on their existing
+paths. The block path records a valid prefix on a propagation failure and never
+deposits a hill from a failed block.
