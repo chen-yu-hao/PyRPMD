@@ -22,6 +22,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from itertools import product
+from math import comb
 from typing import Callable, Iterable, Sequence
 
 import numpy as np
@@ -148,6 +149,7 @@ class DVRSystemHEOM:
         hbar: float = 1.0,
         counterterm: float | ArrayLike | Callable[[np.ndarray], ArrayLike] | None = None,
         depth: int = 4,
+        max_ados: int = 100000,
         hamiltonian: np.ndarray | None = None,
     ) -> None:
         self.grid = np.asarray(grid, dtype=float)
@@ -168,10 +170,19 @@ class DVRSystemHEOM:
         if isinstance(depth, (bool, np.bool_)) or int(depth) != depth or depth < 0:
             raise ValueError("depth must be a non-negative integer")
         self.depth = int(depth)
+        if isinstance(max_ados, (bool, np.bool_)) or int(max_ados) != max_ados or max_ados < 1:
+            raise ValueError("max_ados must be a positive integer")
+        self.max_ados = int(max_ados)
         self.potential_values = _as_operator(potential, self.grid, "potential")
         self.coupling_values = _as_operator(coupling, self.grid, "coupling")
         self.coefficients, self.rates = _validate_exponents(exponents)
         self.n_exponents = self.coefficients.size
+        requested_ados = comb(self.depth + self.n_exponents, self.n_exponents)
+        if requested_ados > self.max_ados:
+            raise ValueError(
+                f"requested hierarchy has {requested_ados} ADOs, exceeding "
+                f"max_ados={self.max_ados}; no automatic truncation is performed"
+            )
         self.indices = _hierarchy_indices(self.n_exponents, self.depth)
         self.index_map = {idx: i for i, idx in enumerate(self.indices)}
         self.dim = self.grid.size
