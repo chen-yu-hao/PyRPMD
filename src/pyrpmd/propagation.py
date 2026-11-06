@@ -220,6 +220,9 @@ def propagate(dynamics, state, steps, *, bias=None, observe=None, sample_interva
     Every physical step is checked for finite energy, even when observations are
     decimated. The final step is always sampled. On failure q/p/clock are unchanged
     for the ENTIRE block. No thermostat/RNG or constraint method is substituted.
+    The native loop starts each step from the previous step's endpoint PES/bias
+    force, one PES call per step, unless the provider declares itself stateful,
+    history- or time-dependent or fragment projections move q after that call.
     """
     kwargs = dict(bias=bias, observe=observe, sample_interval=sample_interval,
                   record_centroids=record_centroids, backend=backend, fragment_data=fragment_data)
@@ -277,6 +280,10 @@ def _propagate(dynamics, state, steps, *, bias=None, observe=None, sample_interv
                     "fragments": [{"atoms": ix.tolist(), "reference": ref.tolist()}
                                   for ix, _m, _total, ref in fragment_data],
                     "time": float(state.time)}
+            from .block_propagation import _stateless_provider
+            # Endpoint-force reuse is bitwise identical for a deterministic
+            # provider; an older extension ignores this optional field.
+            spec["reuse_forces"] = bool(not fragment_data and _stateless_provider(dynamics))
             spec.update(fixed_descriptor(dynamics))
         except NativeUnavailableError as exc:
             if backend == "native":

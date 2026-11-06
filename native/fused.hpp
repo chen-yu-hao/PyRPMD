@@ -118,6 +118,13 @@ static PyObject* run_block(PyObject*,PyObject* args){
         PES pes(*binding_ptr,P,d);
         double initial=0.,minimum=std::numeric_limits<double>::infinity(),maximum=-minimum;
         double clock=number(field(spec,"time"));
+        // Optional block-local endpoint-force reuse, as in advance(): each step
+        // starts at exactly the coordinates of the previous endpoint call.
+        // Fragment projection moves q after that call and always re-evaluates.
+        PyObject* reuse_obj=PyDict_GetItemString(spec,"reuse_forces");
+        const int reuse_flag=reuse_obj ? PyObject_IsTrue(reuse_obj) : 0;
+        ensure(reuse_flag>=0,"invalid reuse_forces option");
+        const bool reuse=reuse_flag && fragments.empty();
         Py_ssize_t step=0,sample=0;std::exception_ptr failure;
         auto project=[&](){for(const auto& f:fragments){double com[3]={0,0,0},vel[3]={0,0,0};
             for(Py_ssize_t b=0;b<P;++b)for(size_t a:f.atoms)for(int k=0;k<3;++k){com[k]+=q[b*d+3*a+k]*c->mass[a];vel[k]+=p[b*d+3*a+k];}
@@ -135,8 +142,10 @@ static PyObject* run_block(PyObject*,PyObject* args){
             ensure(std::isfinite(e),"nonfinite ring-polymer energy");return e;};
         Py_BEGIN_ALLOW_THREADS
         try{
+            bool force_valid=false;double bias_energy=0.;
             for(step=0;step<steps;++step){
-                double bias_energy=force();if(step==0)initial=energy(bias_energy);
+                if(!force_valid)bias_energy=force();
+                if(step==0)initial=energy(bias_energy);
                 for(Py_ssize_t j=0;j<size;++j)p[j]+=.5*c->dt*pes.force[j];
                 project();
                 c->propagate(q.data(),p.data(),work.data());project();
@@ -147,6 +156,7 @@ static PyObject* run_block(PyObject*,PyObject* args){
                 // only at roundoff, just as the reference constrained BCB path.
                 clock+=c->dt;ensure(std::isfinite(clock),"state clock overflow");
                 const double e=energy(bias_energy);minimum=std::min(minimum,e);maximum=std::max(maximum,e);
+                force_valid=reuse;
                 if((step+1)%stride==0||step+1==steps){eb.data()[sample]=e;
                     if(cb||ncv){centroid(q.data(),center.data(),P,d);
                         if(cb)std::copy(center.begin(),center.end(),cb->data()+sample*d);
