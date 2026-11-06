@@ -108,6 +108,7 @@ JaxPIP 拟合与原生执行 <manual/jaxpip-generation>
 自动分析与出图 <manual/analysis-reports>
 示例索引 <manual/examples>
 副本交换伞形采样 <replica-exchange>
+热启动 <warm-start>
 ```
 
 ```{toctree}

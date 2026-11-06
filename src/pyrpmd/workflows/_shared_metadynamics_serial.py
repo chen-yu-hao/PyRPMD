@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 
 import numpy as np
+from ..warm_start import initial_ring
 
 from ..analysis.metadynamics import bias_fes
 from ..bias import CompositeBias
@@ -176,7 +177,7 @@ def run_shared_metadynamics(config, system, output, *, return_data=False):
                 dyn._check_fixed(state.q, state.p)
                 dyn.rng.bit_generator.state = rng
         else:
-            states = [State(np.repeat(system.geometry[None],config["beads"],axis=0),dyn.sample_momenta()) for dyn in dynamics]
+            states = [State(initial_ring(config, system),dyn.sample_momenta()) for dyn in dynamics]
             bias, elapsed = _bias(cv,config,options), 0
             saved = dict(samples=[],sample_steps=[],sample_bias=[],configurations=[])
         walls = resolve_walls(config,system)

@@ -25,7 +25,9 @@ implementation alongside.
   check, PyRPMD withholds the number and tells you why.
 - **Restart with confidence.** Checkpoints hold full q/p, RNG state, bias history and a physics
   fingerprint, written atomically with per-array SHA256. Change the block size or loop backend
-  on restart; changes to the science are refused.
+  on restart; changes to the science are refused for a restart. To change temperature, beads or
+  potential, start a new run from the old configuration with `--init-from`
+  ([warm start](docs/checkpoints.md#warm-start-a-new-run-from-an-old-configuration)).
 - **Bring your own potential.** Python, RPMDrate/f2py, a versioned C ABI `.so`, a plain `.o`
   linked from a manifest, ASE, Torch, OpenMM, LAMMPS as a library, or an i-PI socket.
 - **Laptop to cluster.** Trajectory and window process pools, persistent bead-PES pools, MPI
@@ -189,6 +191,9 @@ Two more patterns worth knowing:
 ```bash
 # Restart with a different block size; the scientific settings keep the run identity.
 pyrpmd resume runs/meta --loop-backend auto --block-steps 128
+# Changed scientific settings: a new run warm-started from the old configuration
+# (optionally importing the metadynamics bias). See docs/checkpoints.md.
+pyrpmd run high.inp --output runs/meta-high --init-from runs/meta --init-bias
 pyrpmd checkpoint runs/meta/checkpoints/metadynamics_0000.npz --require-integrity
 
 # 2 trajectory groups × 2 bead-PES ranks.

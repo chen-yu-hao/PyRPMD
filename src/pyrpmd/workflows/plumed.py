@@ -11,6 +11,7 @@ from pathlib import Path
 import tempfile
 
 import numpy as np
+from ..warm_start import initial_ring
 
 from ..checkpoint import atomic_savez, load_checkpoint
 from ..dynamics import Dynamics, State
@@ -131,7 +132,7 @@ def run_plumed(config, system, output):
             seed=config.get("seed", 0), native=config.get("native", config.get("dynamics", {}).get("native", True)),
             threads=config.get("parallel", {}).get("threads_per_rank", 1),
             **loop_options(config))
-        state = State(np.repeat(system.geometry[None], config["beads"], axis=0), dynamics.sample_momenta())
+        state = State(initial_ring(config, system), dynamics.sample_momenta())
         total = sampling["equilibration_steps"] + sampling["production_steps"]
         def save():
             atomic_savez(snapshot, kind="PyRPMD.plumed-md-state.v1", q=state.q, p=state.p,
@@ -337,7 +338,7 @@ def _run_file_restart(config, system, output):
             seed=config.get("seed", 0), native=config.get("native", config.get("dynamics", {}).get("native", True)),
             threads=config.get("parallel", {}).get("threads_per_rank", 1), **loop_options(config))
         if restored is None:
-            state = State(np.repeat(system.geometry[None], config["beads"], axis=0), dynamics.sample_momenta())
+            state = State(initial_ring(config, system), dynamics.sample_momenta())
             steps, positions, biases, api_version = [], [], [], 0
         else:
             arrays, rng, contents = restored

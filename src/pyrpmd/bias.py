@@ -222,7 +222,7 @@ class MetadynamicsBias:
     _shared_clocks = False
 
     def __init__(self, cv, sigma, height, beta, *, mode="well_tempered",
-                 bias_factor=None, hills=None):
+                 bias_factor=None, hills=None, initial_hills=None):
         self.cv = cv
         self.sigma = np.atleast_1d(np.asarray(sigma, float)).copy()
         if self.sigma.shape != (cv.dimension,) or not np.isfinite(self.sigma).all() or np.any(self.sigma <= 0):
@@ -249,8 +249,38 @@ class MetadynamicsBias:
         self._hills = []
         self._centers = np.empty((16, cv.dimension))
         self._heights = np.empty(16)
+        self._set_initial_hills(initial_hills)
         for hill in ([] if hills is None else hills):
             self._append(hill)
+
+    def _set_initial_hills(self, initial_hills):
+        """Static imported hills: part of V, never part of this run's history.
+
+        A warm start can seed a run with the scaled hills of a parent run.
+        They contribute to energies, forces and the well-tempered height
+        factor exactly like deposited hills, but ``hills``/``hill_count``
+        report only hills deposited by this run.
+        """
+        records = [] if initial_hills is None else list(initial_hills)
+        centers = np.empty((len(records), self.cv.dimension))
+        heights = np.empty(len(records))
+        for i, hill in enumerate(records):
+            center = np.asarray(hill["center"], float)
+            height = float(hill["height"])
+            if center.shape != (self.cv.dimension,) or not np.isfinite(center).all():
+                raise ValueError("invalid initial metadynamics hill center")
+            if not np.isfinite(height) or height < 0:
+                raise ValueError("invalid initial metadynamics hill height")
+            centers[i], heights[i] = center, height
+        centers.flags.writeable = False
+        heights.flags.writeable = False
+        self._initial_centers, self._initial_heights = centers, heights
+
+    @property
+    def initial_hills(self):
+        """Detached imported initial-bias hills (centers and heights only)."""
+        return [{"center": c.tolist(), "height": float(h)}
+                for c, h in zip(self._initial_centers, self._initial_heights)]
 
     @property
     def hills(self):
@@ -307,13 +337,18 @@ class MetadynamicsBias:
     def _history_arrays(self):
         # Numeric buffers grow at deposition; live slices exclude rolled-back
         # hills without rebuilding history dictionaries during force calls.
-        return self._centers[:self.hill_count], self._heights[:self.hill_count]
+        centers, heights = self._centers[:self.hill_count], self._heights[:self.hill_count]
+        initial = getattr(self, "_initial_heights", None)
+        if initial is not None and len(initial):
+            return (np.concatenate([self._initial_centers, centers]),
+                    np.concatenate([initial, heights]))
+        return centers, heights
 
     def _evaluate(self, values, *, gradient):
         values = np.asarray(values, float)
         if values.ndim < 1 or values.shape[-1] != self.cv.dimension or not np.isfinite(values).all():
             raise ValueError("metadynamics values must be finite [...,D]")
-        if not self._hills:
+        if not self._hills and not len(getattr(self, "_initial_heights", ())):
             return np.zeros(values.shape[:-1]), np.zeros_like(values) if gradient else None
         centers, heights = self._history_arrays()
         delta = values[..., None, :] - centers

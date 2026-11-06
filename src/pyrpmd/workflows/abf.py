@@ -7,6 +7,7 @@ from collections.abc import Mapping
 from pathlib import Path
 
 import numpy as np
+from ..warm_start import initial_ring
 
 from ..abf import ABFBias, ExtendedABF, MeanForceEstimator, validate_centroid_cv
 from ..analysis.fes_result import FESResult, write_fes_result
@@ -135,7 +136,7 @@ def resolve_abf(config, system):
         raise ValueError("ABF analysis uses the sampling grid; put bins/ranges in the method table")
     options["min_count"] = checked_integer(analysis.get("min_count", 1), "analysis.min_count")
     # Validate all allocation/bias controls before constructing a PES.
-    initial = np.repeat(system.geometry[None], config["beads"], axis=0)
+    initial = initial_ring(config, system)
     _new_bias(cv, options, config["beta"], initial).energy_force(initial)
     return cv, selected, options
 
@@ -264,7 +265,7 @@ def _sample(task):
                             threads=config.get("parallel", {}).get("threads_per_rank", 1), **loop_options(config))
         sampler = fes_sampler(config)
         if saved is None:
-            state = State(np.repeat(system.geometry[None], config["beads"], axis=0), dynamics.sample_momenta())
+            state = State(initial_ring(config, system), dynamics.sample_momenta())
             bias = _new_bias(cv, options, config["beta"], state.q)
             if isinstance(bias, ExtendedABF):
                 bias.momentum = dynamics.rng.normal(size=cv.dimension) * np.sqrt(bias.mass / config["beta"])
