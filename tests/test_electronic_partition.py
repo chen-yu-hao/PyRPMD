@@ -42,14 +42,20 @@ def test_explicit_levels_units_and_presets_are_equivalent():
     assert electronic_partition_function("H(2S)", "500 K") == 2
 
 
-def test_common_energy_shift_cancels_only_within_one_species():
-    shifted = [[-1.0, 4], [-1.0 + 882.3515 * WAVENUMBER_TO_AU, 2]]
-    model = ElectronicModel.from_mapping({"transition_state": [[-1.0, 2]], "reactants": [shifted, "singlet"]})
+def test_energy_shifts_cancel_only_between_numerator_and_denominator():
+    c = 1.0
+    shifted = [[-c, 4], [-c + 882.3515 * WAVENUMBER_TO_AU, 2]]
+    model = ElectronicModel.from_mapping({"transition_state": [[-c, 2]], "reactants": [shifted, "singlet"]})
     assert model.weight(400) == pytest.approx(_cl_h2(400), rel=1e-10)
-    # A shift of one species alone is a physical energy offset, not a convention.
-    lowered = ElectronicModel.from_mapping({"transition_state": "doublet", "reactants": [shifted, "singlet"]})
+    # Shifting one species is a physical offset: the weight changes by exp(-c/kT).
+    small = 200 * WAVENUMBER_TO_AU
+    lowered = [[-small, 4], [-small + 882.3515 * WAVENUMBER_TO_AU, 2]]
+    one = ElectronicModel.from_mapping({"transition_state": "doublet", "reactants": [lowered, "singlet"]})
+    beta = 1 / (KB_AU * 400)
+    assert one.evaluate(400)["log_electronic_weight"] == pytest.approx(
+        math.log(_cl_h2(400)) - beta * small, rel=1e-12)
     with pytest.raises(ValueError, match="not finite"):
-        lowered.weight(400)
+        ElectronicModel.from_mapping({"transition_state": "doublet", "reactants": [shifted, "singlet"]}).weight(400)
 
 
 @pytest.mark.parametrize("spec, message", [

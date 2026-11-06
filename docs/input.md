@@ -280,10 +280,13 @@ Each entry is a preset name, a level list such as
 `{preset = ...}` / `{levels = [...]}`. Presets are `singlet`, `doublet`, `triplet`,
 `H(2S)`, `F(2P)`, `Cl(2P)`, `Br(2P)`, `I(2P)`, `O(3P)` and `S(3P)`; atomic
 fine-structure energies are NIST ASD values measured from the lowest J level.
-The ratio is invariant to a common energy shift within one species, so energies only
-need a common zero per species; shifting one species relative to the PES zero (for
-example the spin-orbit lowering of an asymptote on a spin-orbit-free PES) is a
-physical choice the user makes explicitly. Nothing is inferred from atom labels.
+Each species' level energies are measured from that species' energy on the PES used
+for the simulation. Presets assume the PES correlates with the lowest listed level, so
+it sits at zero. Shifting all levels of one species by `c` multiplies the weight by
+`exp(-c/k_B T)` (or its inverse for a reactant); this is not a convention that cancels.
+Use such a shift only when it is physical, for example the spin-orbit lowering of a
+reactant asymptote relative to a spin-orbit-free PES. Nothing is inferred from atom
+labels.
 `electronic_weight` and `[reaction.electronic]` are mutually exclusive, and the table
 is rejected for state-selected ensembles without a thermal temperature. The resolved
 value and per-species log partition functions are recorded as

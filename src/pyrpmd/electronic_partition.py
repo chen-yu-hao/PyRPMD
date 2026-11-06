@@ -6,10 +6,11 @@ potential. The electronic factor that multiplies such a rate is
     w_el(T) = Q_el^TS(T) / prod_r Q_el^r(T),
     Q_el(T) = sum_i g_i exp(-E_i / k_B T),
 
-where every species lists its electronic levels relative to a reference the
-user chooses. Presets measure energies from the species' own lowest level;
-an explicit level list may shift that reference, for example to a
-spin-orbit-free PES asymptote. Nothing is inferred from geometry or atom
+where every species lists its electronic levels relative to its energy on
+the simulated PES. Presets put the lowest level at zero, i.e. assume the PES
+correlates with it. Shifting one species' levels changes the weight by a
+Boltzmann factor; an explicit level list may do so where that is physical,
+for example the spin-orbit lowering of an asymptote on a spin-orbit-free PES. Nothing is inferred from geometry or atom
 labels: each species is selected explicitly.
 
 Preset level energies are the NIST Atomic Spectra Database fine-structure
