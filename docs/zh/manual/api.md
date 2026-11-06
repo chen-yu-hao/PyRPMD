@@ -16,7 +16,7 @@ from pyrpmd import JobSpec, prepare, run, resume_run, extend_run, analyze_run
 | `JobSpec.with_overrides(...)` | 返回应用覆盖后的新配置 |
 | `JobSpec.resolve()` | 返回 `(config, identity)`；identity 是 `System` 或 PCET 模型 |
 | `prepare(job, numerical=False)` | 返回准备信息；`numerical=True` 执行模型准备并调用 PES |
-| `run(job, output=None, resume=False)` | 运行任务，在 root rank 返回 JSON 兼容的摘要 |
+| `run(job, output=None, resume=False, init_from=None, init_index=None, init_bias=False)` | 运行任务，在 root rank 返回 JSON 兼容的摘要；`init_from` 从旧运行的构型热启动新运行（见[热启动](../warm-start.md)） |
 | `resume_run(directory, parallel=None, execution=None, adaptive_budget=None)` | 按保存的输入与检查点续跑；可覆盖执行资源或增加自适应 FES/rate pilot 的预算 |
 | `extend_run(directory, *, max_time=None, production_steps=None)` | 必须且只能授权一种总预算：dRPMD 从发射计的时限，或固定窗口气相速率中每窗口、每副本的生产步数 |
 | `analyze_run(directory, ...)` | 读取摘要，或对支持的任务离线重分析 |

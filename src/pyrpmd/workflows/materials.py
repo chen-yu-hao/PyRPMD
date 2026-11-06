@@ -15,6 +15,7 @@ from collections.abc import Mapping
 from pathlib import Path
 
 import numpy as np
+from ..warm_start import initial_ring
 
 from ..block_propagation import PropagationError
 from ..checkpoint import atomic_savez, load_checkpoint
@@ -583,7 +584,7 @@ def _sample_replica(task):
                 last_saved = (elapsed, saved["frames"])
             del saved
         else:
-            q = np.repeat(system.geometry[None], config["beads"], axis=0)
+            q = initial_ring(config, system)
             if system.bond_constraints:
                 state = State(q, np.zeros_like(q))
                 sampling.initialize_constraints(state)

@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 
 import numpy as np
+from ..warm_start import initial_ring
 
 from . import _shared_metadynamics_serial as _serial
 for _name, _value in vars(_serial).items():
@@ -130,7 +131,7 @@ def _run_mpi(config, system, output, *, return_data=False):
             fixed_atoms=system.fixed_atoms, fixed_positions=system.geometry,
             **loop_options(config))
         if restored is None:
-            state = State(np.repeat(system.geometry[None], config["beads"], axis=0),
+            state = State(initial_ring(config, system),
                           dynamics.sample_momenta())
             bias, elapsed = _serial._bias(cv, config, options), 0
             saved = {"samples": [], "sample_steps": [], "sample_bias": [],

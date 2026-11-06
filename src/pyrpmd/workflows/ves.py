@@ -14,6 +14,7 @@ from collections.abc import Mapping
 from pathlib import Path
 
 import numpy as np
+from ..warm_start import initial_ring
 
 from ..analysis.fes_result import FESResult, estimate_fes_uncertainty, write_fes_result
 from ..analysis.frozen_bias import frozen_bias_fes
@@ -121,7 +122,7 @@ def resolve_ves(config, system):
     }
     # The core owns basis allocation, centroid, target and optimizer checks.
     bias = VESBias(cv, config["beta"], bounds, **kwargs)
-    initial = np.repeat(system.geometry[None], config["beads"], axis=0)
+    initial = initial_ring(config, system)
     bias.energy_force(initial)
     # A tensor target requires a regular D-dimensional CV density. Normalize
     # Jacobian rows so the rank decision is independent of each CV's unit.
@@ -374,7 +375,7 @@ def _sample_replica(task):
             threads=config.get("parallel", {}).get("threads_per_rank", 1), **loop_options(config))
         bias = _new_bias(cv, options, config["beta"], None if saved is None else saved["bias_state"])
         if saved is None:
-            state = State(np.repeat(system.geometry[None], config["beads"], axis=0), dynamics.sample_momenta())
+            state = State(initial_ring(config, system), dynamics.sample_momenta())
             runtime = SamplingRuntime(state, operator_checkpoint=True)
         else:
             dynamics.load_operator_state_dict(saved["operator_state"])

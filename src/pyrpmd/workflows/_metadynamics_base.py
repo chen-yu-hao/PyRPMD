@@ -23,6 +23,7 @@ from ..bias import CompositeBias, FluxMetricBias, GridMetadynamicsBias, Metadyna
 from ..checkpoint import load_checkpoint
 from ..cv import RPMDrateCoordinate, make_cvs
 from ..dynamics import Dynamics, State
+from ..warm_start import initial_ring
 from ..parallel import make_task_potential, root_call
 from ..potentials import validate_periodic_spec
 from ..propagation import loop_options
@@ -243,6 +244,15 @@ def resolve_metadynamics(config, system):
                    min_count=checked_integer(analysis.get("min_count", 1), "analysis.min_count"))
     if not isinstance(table.get("shared_walkers", False), bool):
         raise ValueError("metadynamics.shared_walkers must be boolean")
+    from ..warm_start import initial_hills
+    options["initial_hills"] = initial_hills(config)
+    if options["initial_hills"] is not None:
+        if (table.get("shared_walkers") or options["multiple_walkers"]
+                or options["grid"] is not None):
+            raise ValueError("an imported initial bias requires independent direct metadynamics histories")
+        for hill in options["initial_hills"]:
+            if len(hill["center"]) != cv.dimension:
+                raise ValueError("initial bias hill dimension differs from the metadynamics CVs")
     if table.get("shared_walkers", False):
         from .shared_metadynamics import validate_shared
         validate_shared(config, options)
@@ -256,6 +266,11 @@ def validate_metadynamics(config, system):
 
 def _new_bias(cv, options, beta, hills=None, grid_state=None):
     common = dict(mode=options["mode"], bias_factor=options["bias_factor"], hills=hills)
+    if options.get("initial_hills"):
+        if options["grid"] is not None:
+            raise ValueError("an imported initial bias is not supported with grid metadynamics")
+        return MetadynamicsBias(cv, options["sigma"], options["height"], beta,
+                                initial_hills=options["initial_hills"], **common)
     if options["grid"] is not None:
         return GridMetadynamicsBias(cv, options["sigma"], options["height"], beta,
                                     grid_ranges=options["grid"]["ranges"],
@@ -634,7 +649,7 @@ def _sample_replica(task):
             if options["store_configurations"]:
                 configurations = list(saved["sample_configurations"])
         else:
-            state = State(np.repeat(system.geometry[None], config["beads"], axis=0), dynamics.sample_momenta())
+            state = State(initial_ring(config, system), dynamics.sample_momenta())
         metric = (FluxMetricBias(cv.cvs[0], system.masses, config["beta"])
                   if options["measure"] == "rate_flux" else None)
 
@@ -758,6 +773,7 @@ def _analyze(streams, config, system, output, return_data):
         "fixed_atoms": list(system.fixed_atoms), "pbc": list(system.pbc),
         "wall_ensemble": bool(config.get("metadynamics", {}).get("walls")),
         "hills_per_replica": [len(s["hills"]) for s in streams],
+        "initial_bias_hills": len(options["initial_hills"] or ()),
         "samples": sum(len(values) for values in observed), "common_support": data["common_support"],
         "reference_bin": data["reference_bin"], "converged": False,
         "sampling_diagnostics": {

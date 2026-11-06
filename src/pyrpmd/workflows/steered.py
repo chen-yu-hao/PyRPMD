@@ -7,6 +7,7 @@ from collections.abc import Mapping
 from pathlib import Path
 
 import numpy as np
+from ..warm_start import initial_ring
 
 from ..checkpoint import save_metadata_npz
 from ..dynamics import Dynamics, State
@@ -124,7 +125,7 @@ def resolve_steered(config, system):
     stiffness, atomic = _alias(table, "stiffness", required=True)
     stiffness = _stiffness(stiffness, cv, scales, atomic)
     probe = SteeredBias(cv, centers, stiffness)
-    probe.energy_force(np.repeat(system.geometry[None], config["beads"], axis=0))
+    probe.energy_force(initial_ring(config, system))
     thermostat = table.get("thermostat", "langevin")
     if thermostat not in ("none", "langevin"):
         raise ValueError("steered.thermostat must be none or langevin")
@@ -200,7 +201,7 @@ def _driver(task, provider):
                         potential_identity=identity, **loop_options(config))
     centers = options["centers"][::-1] if task["direction"] == "reverse" else options["centers"]
     bias = SteeredBias(cv, centers, options["stiffness"])
-    state = State(np.repeat(system.geometry[None], config["beads"], axis=0), dynamics.sample_momenta())
+    state = State(initial_ring(config, system), dynamics.sample_momenta())
     simulation = SteeredMD(dynamics, state, bias, thermostat=options["thermostat"], gamma=options["gamma"],
                            equilibration_steps=options["equilibration_steps"],
                            initial_equilibrium=options["initial_equilibrium"],

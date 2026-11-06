@@ -12,6 +12,7 @@ from collections.abc import Mapping
 from pathlib import Path
 
 import numpy as np
+from ..warm_start import initial_ring
 
 from ..bias import UmbrellaBias, displacement
 from ..checkpoint import atomic_savez, load_checkpoint
@@ -299,7 +300,7 @@ def _sample_ladder(task):
                            fixed_atoms=getattr(system, "fixed_atoms", ()), fixed_positions=system.geometry,
                            **loop_options(config))
             if saved is None:
-                q = np.repeat(system.geometry[None], config["beads"], axis=0)
+                q = initial_ring(config, system)
                 q = steer_to_center(q, cv, center, system.masses, fixed_atoms=dyn.fixed_atoms)
                 state = State(q, dyn.sample_momenta())
             else:

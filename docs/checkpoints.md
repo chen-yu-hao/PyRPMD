@@ -117,3 +117,57 @@ JSON manifests and derived CSV/HDF5 result views are separate from the NPZ
 container. Adaptive decisions have their own content checksum; network path
 records use scientific/dependency fingerprints. This is not a claim that every
 file in an output directory is covered by one global cryptographic archive.
+
+## Warm start: a new run from an old configuration
+
+`resume` continues *one* calculation and therefore refuses changed scientific
+settings. To reuse a cheaper calculation as the starting point of a more
+accurate one (more beads, a smaller timestep, another temperature or PES),
+create a **new** run and initialize it from the old one:
+
+```bash
+pyrpmd run high.inp --output runs/high --init-from runs/low
+pyrpmd run high.inp --output runs/high --init-from runs/low/checkpoints/metadynamics_0000.npz
+pyrpmd run high.inp --output runs/high --init-from runs/low --init-bias   # metadynamics only
+```
+
+Python: `run(job, output=..., init_from=..., init_index=None, init_bias=False)`.
+
+| Item | Rule |
+| --- | --- |
+| Identity | The new run has its own input, output directory and physics fingerprint. `manifest.json` records `initialized_from` with the parent's `physics_fingerprint`, the checkpoint used, its index and bead count, and the parent run path |
+| Imported | One ring configuration q only. The configuration (after bead interpolation) and any initial bias are stored in `input/resolved.json` under `warm_start`, so they are part of the new fingerprint and `resume` of the new run reuses exactly this state without reading the parent again |
+| Beads | A different bead count is mapped by ring-polymer normal-mode (Fourier) interpolation: the centroid is preserved exactly, higher modes are zero-padded (more beads) or truncated (fewer beads) |
+| Momenta / RNG | Momenta are drawn again from the Maxwell distribution of the new temperature and bead count, using the new input's seed. No parent RNG, thermostat or sample state is reused |
+| Equilibration | Required: the new input must set `sampling.equilibration_steps >= 1`, and the full equilibration stage runs before production. `results/summary.json` carries a `warm_start` entry marking the run |
+| Selection | A run directory must contain exactly one checkpoint with ring coordinates; otherwise pass one checkpoint file. `--init-index` selects one configuration in a checkpoint holding several |
+| System | Same atoms in the same order. Masses may change. Fixed atoms must keep their positions. Periodic systems need the same cell and periodicity, and a parent with a barostat is rejected (its final cell is not imported) |
+
+Supported workflows: FES with umbrella, metadynamics, OPES, ABF/eABF, steered
+MD or VES (including fixed-window replica exchange and shared or distributed
+walkers), PLUMED, `pimd` with `[path_integral]`, and `pimd`/`diffusion` with the
+legacy materials engine. Rate, dRPMD, surface/site rates, networks,
+nonadiabatic, PCET, spectroscopy, path sampling, tempering, adaptive umbrella
+and the native/torch materials engines prepare their own initial states and
+reject `--init-from`.
+
+### Importing a metadynamics bias
+
+The bias is imported only with `--init-bias`, and only between independent,
+direct (non-grid, non-walker) metadynamics runs. Requirements:
+
+* identical metadynamics CVs (definitions, atoms, estimators and units) and
+  identical Gaussian widths;
+* if the temperature changed, both runs must be well-tempered; otherwise the
+  import is rejected.
+
+Both biases are taken to estimate the same F(s): V_old ≈ -f_old F and
+V_new ≈ -f_new F with f = (γ-1)/γ for well-tempered and f = 1 for standard
+metadynamics. Imported hill heights are multiplied by f_new/f_old. This assumes
+F(s) is not changed appreciably by the new settings; check that assumption.
+
+The imported hills are a static **initial bias**. They enter energies, forces,
+the well-tempered height factor and the final bias estimate, but they are not
+part of the new run's own history: `HILLS.csv`, the checkpoint `hills` and
+`hills_per_replica` contain only hills the new run deposited, and the summary
+reports `initial_bias_hills` separately.
