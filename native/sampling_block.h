@@ -129,33 +129,39 @@ static PyObject* advance_sampling(PyObject*,PyObject* args) {
         if(reuse_forces<0)throw std::invalid_argument("invalid reuse_forces option");
 
         PES pes(binding,*c);
-        PyRef bs(PySequence_Fast(field(spec,"biases"),"biases must be a sequence"));
-        std::vector<Bias> biases;
-        for(Py_ssize_t i=0;i<PySequence_Fast_GET_SIZE(bs.p);++i)
-            biases.emplace_back(PySequence_Fast_GET_ITEM(bs.p,i),nd);
+        // Umbrella, flux metric and observations of one centroid coordinate
+        // share a single evaluation per force call, as in advance().
+        BiasStack biases(field(spec,"biases"),nd);
+        const auto observation_entry=biases.observations(field(spec,"cvs"),observations);
+        std::vector<Py_ssize_t> fixed_coordinates;
+        for(Py_ssize_t i=0;i<nd;++i)if(fixed[i/3])fixed_coordinates.push_back(i);
 
-        Vec current_q(q.doubles(),q.doubles()+S), current_p(p.doubles(),p.doubles()+S);
-        Vec trial_q(S),trial_p(S),sample_work(6*S);
-        Vec center(nd),centroid_p(nd);
+        // Double-buffered state, as in advance(): the caller's arrays and one
+        // private buffer; the accepted half is copied back once at the end.
+        Vec alternate_q(S),alternate_p(S),sample_work(6*S);
+        double *cq=q.doubles(),*cp=p.doubles(),*tq=alternate_q.data(),*tp=alternate_p.data();
+        Vec center(nd),centroid_p(nd),observed_values(observations.size());
+        Vec kinetic(S),spring_products(S);
         bool force_valid=false;
         double clock=clock0;
         std::string failure;
         Py_ssize_t completed=0,written=0;
         double bias_energy=0.;
-        auto evaluate=[&](const Vec& x){
+        const double* shared_point=nullptr;
+        auto evaluate=[&](const double* x){
+            shared_point=nullptr;
             pes.evaluate(x);
-            if(!biases.empty())centroid(x,center,P,nd);
             double eb=0.;
-            for(const auto& b:biases)eb+=b.add(x,center,pes.force,*c,beta);
-            if(!std::isfinite(eb)||!finite(pes.force))
-                throw std::runtime_error("nonfinite biased forces/energy");
+            if(!biases.empty()){
+                centroid(x,center.data(),P,nd);
+                eb=biases.add(x,center.data(),pes.force.data(),P,c->mass,beta);
+                shared_point=x;
+            }
             for(Py_ssize_t b=0;b<P;++b)
-                for(Py_ssize_t i=0;i<nd;++i)
-                    if(fixed[i/3])pes.force[b*nd+i]=0.;
+                for(auto i:fixed_coordinates)pes.force[b*nd+i]=0.;
             return eb;
         };
-        auto total_energy=[&](const Vec& x,const Vec& momentum,double eb){
-            Vec kinetic(S),spring_products(S);
+        auto total_energy=[&](const double* x,const double* momentum,double eb){
             for(Py_ssize_t b=0;b<P;++b)for(Py_ssize_t i=0;i<nd;++i){
                 const auto j=b*nd+i;
                 const double dq=x[j]-x[((b+1)%P)*nd+i];
@@ -174,37 +180,38 @@ static PyObject* advance_sampling(PyObject*,PyObject* args) {
             if(!std::isfinite(energy))throw std::runtime_error("nonfinite total ring energy");
             return energy;
         };
-        if(!finite(current_q)||!finite(current_p))throw std::invalid_argument("nonfinite initial state");
+        if(!finite_values(cq,S)||!finite_values(cp,S))throw std::invalid_argument("nonfinite initial state");
         for(Py_ssize_t atom=0;atom<natoms;++atom)if(fixed[atom])
             for(Py_ssize_t b=0;b<P;++b)for(int k=0;k<3;++k)
-                if(current_p[b*nd+3*atom+k]!=0.)throw std::invalid_argument("fixed atoms must have zero momenta");
+                if(cp[b*nd+3*atom+k]!=0.)throw std::invalid_argument("fixed atoms must have zero momenta");
         {
             ReleaseGIL release;
             for(Py_ssize_t step=0;step<steps;++step){
                 try {
-                    if(!force_valid)bias_energy=evaluate(current_q);
-                    if(check_energy && step==0)total_energy(current_q,current_p,bias_energy);
-                    trial_q=current_q;trial_p=current_p;
-                    kick(trial_p,pes.force,*c);
-                    c->sample_free(trial_q.data(),trial_p.data(),
+                    if(!force_valid)bias_energy=evaluate(cq);
+                    if(check_energy && step==0)total_energy(cq,cp,bias_energy);
+                    kick(tp,cp,pes.force.data(),*c);
+                    c->sample_free(cq,tq,tp,
                                    noise.doubles()+step*S,decay.doubles(),amplitude.doubles(),
                                    fixed,sample_work.data());
-                    bias_energy=evaluate(trial_q);
-                    kick(trial_p,pes.force,*c);
-                    if(!finite(trial_q)||!finite(trial_p))
+                    bias_energy=evaluate(tq);
+                    kick(tp,pes.force.data(),*c);
+                    // The endpoint PES call validated q.
+                    if(!finite_values(tp,S))
                         throw std::runtime_error("nonfinite integration state");
                     double energy=std::numeric_limits<double>::quiet_NaN();
                     if(check_energy || step_energies || (record_energy && observed[step]))
-                        energy=total_energy(trial_q,trial_p,bias_energy);
+                        energy=total_energy(tq,tp,bias_energy);
                     const double next_clock=clock+c->dt;
                     if(!std::isfinite(next_clock))throw std::runtime_error("nonfinite integration clock");
-                    Vec observed_values(observations.size());
                     if(observed[step]){
-                        centroid(trial_q,center,P,nd);centroid(trial_p,centroid_p,P,nd);
+                        centroid(tq,center.data(),P,nd);centroid(tp,centroid_p.data(),P,nd);
                         for(size_t i=0;i<observations.size();++i){
-                            auto d=observations[i].ring(trial_q,center,P);
-                            if(!std::isfinite(d.v))throw std::runtime_error("nonfinite CV observation");
-                            observed_values[i]=d.v;
+                            const auto entry=observation_entry[i];
+                            const double value=entry>=0 && shared_point==tq ? biases.shared[static_cast<size_t>(entry)].value
+                                                                            : observations[i].observe(tq,center.data(),P);
+                            if(!std::isfinite(value))throw std::runtime_error("nonfinite CV observation");
+                            observed_values[i]=value;
                         }
                     }
                     // All checks, including CV evaluation and clock overflow,
@@ -221,16 +228,15 @@ static PyObject* advance_sampling(PyObject*,PyObject* args) {
                     }
                     if(energy_states){
                         auto* snapshot=energy_states->doubles()+step*2*S;
-                        std::copy(trial_q.begin(),trial_q.end(),snapshot);
-                        std::copy(trial_p.begin(),trial_p.end(),snapshot+S);
+                        std::copy(tq,tq+S,snapshot);
+                        std::copy(tp,tp+S,snapshot+S);
                     }
-                    current_q.swap(trial_q);current_p.swap(trial_p);
+                    std::swap(cq,tq);std::swap(cp,tp);
                     ++completed;if(observed[step])++written;clock=next_clock;
                     force_valid=bool(reuse_forces);
                 } catch(const std::exception& e){failure=e.what();break;}
             }
-            std::copy(current_q.begin(),current_q.end(),q.doubles());
-            std::copy(current_p.begin(),current_p.end(),p.doubles());
+            if(cq!=q.doubles()){std::copy(cq,cq+S,q.doubles());std::copy(cp,cp+S,p.doubles());}
         }
         return Py_BuildValue("nnds",completed,written,clock,failure.c_str());
     } catch(const std::bad_alloc&) {return PyErr_NoMemory();}

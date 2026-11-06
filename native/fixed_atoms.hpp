@@ -49,6 +49,11 @@ struct NativeFixedAtoms {
             size_t j=3*a+k,i=b*3*atoms+j;q[i]=positions[j];p[i]=0.;
         }
     }
+    // Momentum half of project() for a state whose fixed positions already hold.
+    void project_momenta(double* p,size_t beads) const {
+        if(!any)return;
+        for(size_t b=0;b<beads;++b)for(size_t a=0;a<atoms;++a)if(mask[a])for(size_t k=0;k<3;++k)p[b*3*atoms+3*a+k]=0.;
+    }
     void clear_force(double* f,size_t beads) const {
         if(!any)return;
         for(size_t b=0;b<beads;++b)for(size_t a=0;a<atoms;++a)if(mask[a])for(size_t k=0;k<3;++k)f[b*3*atoms+3*a+k]=0.;

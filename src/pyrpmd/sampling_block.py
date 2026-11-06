@@ -112,8 +112,9 @@ def _eligibility(dynamics, bias, cv):
         raise NativeUnavailableError("PES has no explicit native binding")
     binding = descriptor_binding(resolve_native_binding(dynamics.potential, len(dynamics.masses)))
     # Descriptor lowering rejects Python callbacks before any random draw.
-    bias_specs = bias_descriptors(bias, dynamics)
-    cv_specs = [] if cv is None else cv_descriptors(cv, len(dynamics.masses))
+    memo = {}
+    bias_specs = bias_descriptors(bias, dynamics, memo)
+    cv_specs = [] if cv is None else cv_descriptors(cv, len(dynamics.masses), memo)
     return kernel, bias_specs, cv_specs, binding
 
 
