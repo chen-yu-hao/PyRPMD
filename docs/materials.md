@@ -439,3 +439,24 @@ mpiexec -n 4 python tests/mpi_materials_smoke.py /fresh/shared/output
 `explicit-periodic-v1` 约定，旧的歧义记录会拒绝恢复或再分析，避免改变已采样的数学定义。
 请保留旧代码与原始记录，在新目录中用明确的 `periodic_*` 或展开 CV 重新运行。
 不要手动改 checkpoint 哈希。非周期记录和已经使用明确周期 CV 的记录不受此变更影响。
+
+## 原生 diffusion opt-in
+
+固定晶胞材料可以显式设置 `sampling.engine="native"` 来运行
+`task="diffusion"`。这是一条 E2 opt-in 路径：平衡段使用原生 PILE-L，
+在 `neq` 边界把已提交的状态交给 `thermostat="none"` 的原生引擎，生产段
+因此是无恒温器的 NVE RPMD。原生引擎的中间分裂、随机流和检查点身份与旧
+`legacy` 引擎不同；旧输入不会被自动改道。
+
+原生路径把每个副本的质心坐标、质心速度、观测量、回转半径平方、采样步和
+时间写入与旧材料分析兼容的 `samples/native_pimd_NNNN/trajectory.npz`，
+并用 journal/checkpoint 记录事务边界。`resume` 会在加载前验证时钟和哈希；
+已完成续算只重建摘要和 diffusion 分析，不构造 PES，也不消耗新随机数。
+摘要中的 `propagation.python_steps` 为 0，并记录原生块数，便于检查没有逐步
+Python 回调。
+
+目前该路径只接受固定晶胞、原生 PILE-L 平衡和非批量轨迹；NPT、轨迹合批、
+键约束及不支持的平衡恒温器会在产生输出副作用前拒绝。需要原生压浴时，请
+使用 `task="pimd"` 加原生 barostat；不要把 diffusion 的 NVE 生产段和 NPT
+活塞混用。`examples/ensembles/diffusion_native.inp` 是自由粒子数值控制，
+短时结果不能当作材料势能或长时扩散系数的验证。

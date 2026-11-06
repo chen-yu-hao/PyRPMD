@@ -18,6 +18,8 @@ import numpy as np
 from ..warm_start import initial_ring
 
 from ..block_propagation import PropagationError
+from ..momentum_refresh import plan_refresh
+from ..sampling_block import propagate_sampling_block, _eligibility as _sampling_eligibility
 from ..checkpoint import atomic_savez, load_checkpoint
 from ..constants import FS_TO_AU
 from ..dynamics import Dynamics, State
@@ -32,6 +34,7 @@ from ..trajectory_batch import (
 from ..units import parse_quantity
 from .common import _fingerprint, checked_integer, write_json
 from .pimd import OBSERVABLE_NAMES, select_engine
+from .sampling import AndersenSchedule
 
 
 CHECKPOINT_KIND = "PyRPMD.materials.v1"
@@ -709,76 +712,73 @@ def _sample_replica(task):
                 raise
 
         fused_sampling = None
+        fused_pile = None
+        andersen_schedule = AndersenSchedule(options["andersen_interval"], "fixed")
 
-        def sampling_block():
-            """Advance an Andersen sampling block to its next event.
-
-            The legacy loop refreshes momenta immediately before every step
-            whose state clock is divisible by ``andersen_interval``.  A block
-            therefore starts with at most one refresh and ends immediately
-            before the next one, a saved sample, a checkpoint, the
-            equilibration/production handoff, or the configured block limit.
-            Keeping the refresh outside the native block preserves the NumPy
-            RNG stream while allowing the deterministic steps to stay native.
-            """
-            nonlocal state, elapsed
-            interval = options["andersen_interval"]
+        def _block_count():
             neq, sample_interval = options["neq"], options["interval"]
             checkpoint_steps = options["checkpoint_steps"]
             total = options["neq"] + options["nprod"]
             limits = [sampling.block_steps, 4096, total - elapsed,
-                      interval - (state.step % interval),
                       checkpoint_steps - (elapsed % checkpoint_steps)]
+            if options["thermostat"] == "andersen":
+                limits.append(andersen_schedule.steps_until_collision(elapsed))
             if elapsed < neq:
-                limits.append(neq - elapsed)
+                distance = neq - elapsed
+                # The handoff endpoint is also the first saved production
+                # frame.  Keep the endpoint in this transaction, and observe
+                # it after the native block commits.  There are no earlier
+                # observation events inside an equilibration block.
+                limits.append(distance)
             else:
-                limits.append(sample_interval - ((elapsed - neq) % sample_interval))
-            count = min(int(value) for value in limits if value > 0)
+                distance = sample_interval - ((elapsed - neq) % sample_interval)
+                limits.append(distance)
+            return min(int(value) for value in limits if value > 0)
+
+        def _restore_refresh_prefix(plan, count):
+            rng.bit_generator.state = copy.deepcopy(plan.rng_state)
+            if plan.schedule_state is not None:
+                andersen_schedule.next_collision_step = int(plan.schedule_state)
+            for index in range(int(count)):
+                sampling.sample_momenta()
+                andersen_schedule.refreshed(plan.start_step + int(plan.offsets[index]), rng)
+
+        def sampling_block():
+            """Advance an Andersen block across all due refreshes."""
+            nonlocal state, elapsed
+            count = _block_count()
             start, start_elapsed = state.copy(), elapsed
             old_rng = copy.deepcopy(rng.bit_generator.state)
             old_stats = copy.deepcopy(sampling.propagation_stats)
+            plan = plan_refresh(sampling, andersen_schedule, state.step, count)
             try:
                 with provider.step():
-                    if state.step % interval == 0:
-                        state.p[:] = sampling.sample_momenta()
                     block = sampling.propagate_block(
                         state, count, observe=np.zeros(count, dtype=bool),
                         record_energy=False, check_energy=True,
-                        record_previous=True, raise_on_error=False,
+                        raise_on_error=False, refresh=plan,
                     )
                     if block.error is not None:
-                        if block.completed:
-                            elapsed += block.completed
-                        else:
+                        elapsed += block.completed
+                        if not block.completed:
                             state = start
                             rng.bit_generator.state = old_rng
                             sampling.propagation_stats = old_stats
                         raise PropagationError(block)
-                    prospective = elapsed + count
-                    record = (prospective >= neq
-                              and (prospective - neq) % sample_interval == 0)
+                    prospective = elapsed + block.completed
+                    record = (prospective >= options["neq"]
+                              and (prospective - options["neq"]) % options["interval"] == 0)
                     try:
-                        # Keep the observation inside the block's active PES
-                        # transaction; StepEvaluationCache intentionally
-                        # rejects nested ``step()`` contexts.
                         observation = observe() if record else None
                         if record:
                             append_record(observation)
                     except BaseException:
-                        # Observation and append are part of the final step's
-                        # transaction.  Keep the preceding prefix and undo a
-                        # refresh if no step from this block was committed.
-                        state.q[:], state.p[:] = block.previous_q, block.previous_p
-                        state.step, state.time = block.previous_step, block.previous_time
+                        if block.completed != 1:
+                            raise
+                        state = start
+                        elapsed = start_elapsed
                         sampling.propagation_stats = copy.deepcopy(old_stats)
-                        stats = sampling.propagation_stats
-                        stats[block.backend + "_steps"] += count - 1
-                        if block.fallback_reason:
-                            reasons = stats["fallback_reasons"]
-                            reasons[block.fallback_reason] = reasons.get(block.fallback_reason, 0) + count - 1
-                        elapsed += count - 1
-                        if count == 1:
-                            rng.bit_generator.state = old_rng
+                        _restore_refresh_prefix(plan, 0)
                         raise
                     elapsed = prospective
             except BaseException:
@@ -791,31 +791,85 @@ def _sample_replica(task):
                     sampling.propagation_stats = old_stats
                 raise
 
+        def pile_sampling_block():
+            """Advance a native PILE-L block to a record/checkpoint boundary."""
+            nonlocal state, elapsed
+            count = _block_count()
+            start, start_elapsed = state.copy(), elapsed
+            old_rng = copy.deepcopy(rng.bit_generator.state)
+            old_stats = copy.deepcopy(sampling.propagation_stats)
+            try:
+                with provider.step():
+                    block = propagate_sampling_block(
+                        sampling, state, count, thermostat="pile-l",
+                        method=options["sampling_method"],
+                        gamma_centroid=options["gamma_centroid"],
+                        observe=np.zeros(count, dtype=bool), record_energy=False,
+                        check_energy=True, raise_on_error=False,
+                    )
+                    if block.error is not None:
+                        elapsed += block.completed
+                        if not block.completed:
+                            state = start
+                            rng.bit_generator.state = old_rng
+                            sampling.propagation_stats = old_stats
+                        raise PropagationError(block)
+                    prospective = elapsed + block.completed
+                    record = (prospective >= options["neq"]
+                              and (prospective - options["neq"]) % options["interval"] == 0)
+                    if record:
+                        try:
+                            append_record(observe())
+                        except BaseException:
+                            state = start
+                            elapsed = start_elapsed
+                            rng.bit_generator.state = old_rng
+                            sampling.propagation_stats = old_stats
+                            raise
+                    elapsed = prospective
+            except BaseException:
+                if elapsed == start_elapsed:
+                    state = start
+                    rng.bit_generator.state = old_rng
+                    sampling.propagation_stats = old_stats
+                raise
+
         while elapsed < total:
             is_sampling = config["task"] == "pimd" or elapsed < options["neq"]
             dynamics = sampling if is_sampling else production
             if is_sampling and options["thermostat"] == "andersen" and fused_sampling is None:
-                # The native deterministic block does not carry a thermostat;
-                # keep all unsupported configurations on the old step path.
+                # NP1 supplies the historical NumPy refreshes as a pre-drawn
+                # plan for the deterministic native block.
                 try:
                     fused_sampling = (
                         piston is None and monitor is None and friction_provider is None
                         and system.cell is None and not any(system.pbc)
                         and type(sampling) is Dynamics and not sampling.plan.active
                         and getattr(sampling.integrator._native, "BLOCK_ENERGY_CHECK_API", 0) >= 1
-                        and getattr(sampling.integrator._native, "DRPMD_OUTCOMES_API", 0) >= 1
+                        and getattr(sampling.integrator._native, "MOMENTUM_REFRESH_API", 0) >= 1
                         and sampling.can_fuse())
                 except NativeUnavailableError:
-                    # Unsupported native bindings retain the historical
-                    # one-step path; the production preflight below still
-                    # reports strict-native failures at its original point.
                     fused_sampling = False
-            if is_sampling and fused_sampling:
+            if is_sampling and options["thermostat"] == "pile-l" and fused_pile is None:
                 try:
-                    sampling_block()
+                    fused_pile = (
+                        piston is None and monitor is None and friction_provider is None
+                        and type(sampling) is Dynamics and not sampling.plan.active
+                        and _sampling_eligibility(sampling, None, None) is not None)
+                except (NativeUnavailableError, ValueError, TypeError):
+                    fused_pile = False
+            if is_sampling and ((options["thermostat"] == "andersen" and fused_sampling)
+                                or (options["thermostat"] == "pile-l" and fused_pile)):
+                try:
+                    (sampling_block if options["thermostat"] == "andersen" else pile_sampling_block)()
                 except BaseException:
                     save()
                     raise
+                if (config["task"] == "diffusion" and elapsed == options["neq"]
+                        and options["thermostat"] == "pile-l"):
+                    expected = {"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}.get(sampling.integrator_name)
+                    if options["sampling_method"] != expected:
+                        state.p[:] = sampling.sample_momenta()
                 if elapsed % options["checkpoint_steps"] == 0:
                     save()
                 continue

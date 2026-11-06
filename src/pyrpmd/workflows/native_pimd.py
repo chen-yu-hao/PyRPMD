@@ -1,9 +1,10 @@
-"""Opt-in PIMD workflow: native trajectory blocks, immutable streamed records.
+"""Opt-in native PIMD and diffusion workflow with immutable trajectory records.
 
 The journal is the commit point. A crash before publication can leave an
 unreferenced transaction directory, but cannot advance the accepted trajectory.
 Restart reads only committed records. Python runs at checkpoint/phase boundaries,
-never at the observation cadence. This is not a diffusion/rate propagator.
+never at the observation cadence. Diffusion is an explicit E2 route: native
+PILE-L equilibrates, then a thermostat-free native NVE engine records centroids.
 """
 from __future__ import annotations
 
@@ -16,6 +17,7 @@ from pathlib import Path
 
 import numpy as np
 
+from ..checkpoint import atomic_savez
 from ..io import file_sha256, jsonable, referenced_files, write_json
 from ..native_ensemble import (
     _COLUMNS,
@@ -75,8 +77,9 @@ def resolve_native_pimd(config, system):
         raise ValueError("native PIMD does not support trajectory PES batching; use sampling.engine='legacy'")
     if system.bond_constraints:
         raise ValueError("native PIMD does not implement bond constraints; use legacy velocity-verlet")
-    if config.get("task") != "pimd":
-        raise ValueError("sampling.engine='native' currently requires task='pimd'")
+    task = config.get("task")
+    if task not in ("pimd", "diffusion"):
+        raise ValueError("sampling.engine='native' requires task='pimd' or task='diffusion'")
     s = config.get("sampling", {})
     loop = loop_options(config)
     if loop["integrator"] not in ("cayley-bcb", "normal-mode-bab"):
@@ -95,6 +98,8 @@ def resolve_native_pimd(config, system):
         raise ValueError(f"native PIMD sampling.integrator must be {expected}")
     if any(config.get(key) for key in ("umbrella", "metadynamics", "reaction", "electronic_friction")):
         raise ValueError("native PIMD is unbiased; reaction/bias settings are unsupported")
+    if task == "diffusion" and mode != "pile-l":
+        raise ValueError("native diffusion currently supports only PILE-L equilibration")
     parallel = config.get("parallel", {})
     if (parallel.get("mode", "serial") != "serial" or parallel.get("bead_workers", 1) != 1
             or parallel.get("pes_ranks", 1) != 1 or parallel.get("threads_per_rank", 1) != 1):
@@ -110,8 +115,10 @@ def resolve_native_pimd(config, system):
         "checkpoint_steps": checked_integer(config.get("output", {}).get("checkpoint_steps", 1000), "checkpoint_steps"),
         "thermostat": mode, "sample_dt": dt, "production_dt": dt,
     }
-    if options["nprod"] // options["interval"] < 2:
-        raise ValueError("native PIMD production needs at least two saved frames")
+    minimum_frames = 3 if task == "diffusion" else 2
+    if options["nprod"] // options["interval"] < minimum_frames:
+        raise ValueError("native diffusion production needs at least three saved frames" if task == "diffusion"
+                         else "native PIMD production needs at least two saved frames")
     b = config.get("barostat", {})
     native_barostat_fields = {"mode", "pressure", "tau", "gamma", "compressibility", "cell_mask",
                               "reference_cell", "reference_cell_unit", "stress"}
@@ -120,6 +127,8 @@ def resolve_native_pimd(config, system):
     if b.get("mode", "none") not in ("none", "bzp", "mttk", "mtk", "rgb", "scr", "isotropic", "flexible", "anisotropic", "stochastic-rescaling"):
         raise ValueError("unsupported native PIMD barostat; select Suzuki-Chin through the legacy path_integral workflow")
     if b.get("mode", "none") != "none":
+        if task == "diffusion":
+            raise ValueError("native diffusion uses a fixed cell; NPT is available on task='pimd'")
         if not all(system.pbc) or system.fixed_atoms:
             raise ValueError("native NPT requires 3D PBC and all atoms mobile")
         if mode == "piglet":
@@ -144,6 +153,21 @@ def resolve_native_pimd(config, system):
         # and validates all its parameters using the existing provider contract.
         from ..potentials import make_potential
         _native_potential(make_potential(spec, system))
+    if task == "diffusion":
+        # Reuse the materials validation contract without selecting its
+        # legacy numerical backend. This validates atom/axis/lag choices
+        # before provider construction or output creation.
+        from .materials import _resolve_legacy_materials
+        legacy = copy.deepcopy(config)
+        legacy.setdefault("sampling", {})["engine"] = "legacy"
+        legacy.setdefault("dynamics", {})["loop_backend"] = "auto"
+        diffusion = _resolve_legacy_materials(legacy, system)
+        options.update({key: diffusion[key] for key in (
+            "atom_indices", "axes", "reference_atoms", "production_dt",
+        )})
+        options["diffusion"] = {key: config.get("diffusion", {})[key]
+                                 for key in ("fit_range", "max_lag", "bootstrap", "seed", "block_length")
+                                 if key in config.get("diffusion", {})}
     return options
 
 
@@ -168,13 +192,15 @@ def _native_potential(provider):
     raise ValueError("potential has no callback-free native binding")
 
 
-def _engine(config, system, replica, provider):
+def _engine(config, system, replica, provider, *, thermostat=None):
     s = config["sampling"]
     t = copy.deepcopy(s.get("thermostat_params", {}))
     if "mode" in t:
         raise ValueError("set thermostat mode in sampling.thermostat, not thermostat_params")
-    t["mode"] = s.get("thermostat", "pile-l")
-    if "gamma_centroid" in s:
+    t["mode"] = s.get("thermostat", "pile-l") if thermostat is None else thermostat
+    if thermostat == "none":
+        t = {"mode": "none"}
+    if thermostat != "none" and "gamma_centroid" in s:
         if "gamma_centroid" in t:
             raise ValueError("gamma_centroid was specified twice")
         t["gamma_centroid"] = s["gamma_centroid"]
@@ -192,7 +218,7 @@ def _engine(config, system, replica, provider):
                 barostat=copy.deepcopy(config.get("barostat", {"mode": "none"})),
                 seed=seed, fixed_atoms=list(system.fixed_atoms), pbc=list(map(bool, system.pbc)),
                 potential=potential if isinstance(potential, dict) else {"kind": "free"})
-    if mixed_sampling_method(config) is not None:
+    if thermostat is None and mixed_sampling_method(config) is not None:
         spec["sampling_integrator"] = mixed_sampling_method(config)
     if system.cell is not None:
         spec["cell"] = system.cell.tolist()
@@ -239,9 +265,10 @@ def _journal(path, identity, options, natoms):
     return value
 
 
-def _commit(path, journal, engine, start, steps, options):
+def _commit(path, journal, engine, start, steps, options, *, checkpoint_engine=None):
     directory = Path(tempfile.mkdtemp(prefix="chunk-", dir=path.parent))
     before = engine.state()
+    checkpoint_before = None if checkpoint_engine is None else checkpoint_engine.state()
     published = False
     try:
         production = start >= options["neq"] and steps > 0
@@ -250,7 +277,12 @@ def _commit(path, journal, engine, start, steps, options):
                        sample_start=options["neq"] if production else 0,
                        record_centroids=production, record_moments=production,
                        trajectory=directory/"samples.npy" if production else None)
-        engine.save(directory/"state.npz")
+        if checkpoint_engine is not None:
+            current = engine.state()
+            checkpoint_engine.set_state(current["q"], current["p"], step=current["step"])
+            checkpoint_engine.save(directory/"state.npz")
+        else:
+            engine.save(directory/"state.npz")
         entry = {"start": start, "end": start+steps, "directory": directory.name,
                  "state_sha256": file_sha256(directory/"state.npz"),
                  "samples_sha256": file_sha256(directory/"samples.npy") if production else None}
@@ -262,11 +294,73 @@ def _commit(path, journal, engine, start, steps, options):
     finally:
         if not published:
             engine.restore(before)
+            if checkpoint_engine is not None and checkpoint_before is not None:
+                checkpoint_engine.restore(checkpoint_before)
             shutil.rmtree(directory)
+
+
+def _sample_diffusion(task):
+    """Run native PILE-L equilibration followed by native NVE production."""
+    config, system, output, replica = task["config"], task["system"], Path(task["output"]), task["replica"]
+    options = resolve_native_pimd(config, system)
+    path = output/"samples"/f"native_pimd_{replica:04d}"/"journal.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    identity = _fingerprint(config, system, {"native_pimd_replica": replica, "files": referenced_files(config)})
+    total = options["neq"] + options["nprod"]
+    journal = _journal(path, identity, options, system.natoms) if path.exists() else None
+    if journal is not None and journal["blocks"][-1]["end"] >= total:
+        return _replica_summary(path, journal, options, system, replica, task="diffusion")
+    provider = make_task_potential(config["potential"], system)
+    sampling_engine = production_engine = None
+    try:
+        elapsed = 0 if journal is None else journal["blocks"][-1]["end"]
+        if elapsed < options["neq"]:
+            sampling_engine = _engine(config, system, replica, provider)
+            if journal is None:
+                journal = _commit(path, {"schema": _SCHEMA, "identity": identity, "blocks": []},
+                                  sampling_engine, 0, 0, options)
+                elapsed = 0
+            else:
+                sampling_engine.load(path.parent/journal["blocks"][-1]["directory"]/"state.npz")
+            if sampling_engine.state()["step"] != elapsed:
+                raise ValueError("native diffusion checkpoint and journal clocks differ")
+            while elapsed < options["neq"]:
+                count = min(options["checkpoint_steps"], options["neq"] - elapsed)
+                checkpoint_engine = None
+                if elapsed + count == options["neq"]:
+                    production_engine = _engine(config, system, replica, provider, thermostat="none")
+                    checkpoint_engine = production_engine
+                journal = _commit(path, journal, sampling_engine, elapsed, count, options,
+                                  checkpoint_engine=checkpoint_engine)
+                elapsed += count
+        else:
+            production_engine = _engine(config, system, replica, provider, thermostat="none")
+            if journal is None:
+                journal = _commit(path, {"schema": _SCHEMA, "identity": identity, "blocks": []},
+                                  production_engine, 0, 0, options)
+                elapsed = 0
+            else:
+                production_engine.load(path.parent/journal["blocks"][-1]["directory"]/"state.npz")
+            if production_engine.state()["step"] != elapsed:
+                raise ValueError("native diffusion checkpoint and journal clocks differ")
+        if elapsed >= options["neq"]:
+            if production_engine is None:
+                production_engine = _engine(config, system, replica, provider, thermostat="none")
+                production_engine.load(path.parent/journal["blocks"][-1]["directory"]/"state.npz")
+            while elapsed < total:
+                count = min(options["checkpoint_steps"], total - elapsed)
+                journal = _commit(path, journal, production_engine, elapsed, count, options)
+                elapsed += count
+    finally:
+        if callable(getattr(provider, "close", None)):
+            provider.close()
+    return _replica_summary(path, journal, options, system, replica, task="diffusion")
 
 
 def _sample(task):
     config, system, output, replica = task["config"], task["system"], Path(task["output"]), task["replica"]
+    if config.get("task") == "diffusion":
+        return _sample_diffusion(task)
     options = resolve_native_pimd(config, system)
     path = output/"samples"/f"native_pimd_{replica:04d}"/"journal.json"
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -295,11 +389,11 @@ def _sample(task):
     return _replica_summary(path, journal, options, system, replica)
 
 
-def _replica_summary(path, journal, options, system, replica):
+def _replica_summary(path, journal, options, system, replica, *, task="pimd"):
     from ..analysis.diagnostics import correlated_mean_diagnostics
     # Only scalar diagnostic series are assembled. Coordinates/velocities and
     # radii remain memory-mapped per chunk; MPI returns summaries, not trajectories.
-    scalars, count = [], 0
+    scalars, frames, count = [], [], 0
     radii_sum = np.zeros(system.natoms)
     for entry in journal["blocks"]:
         if entry["samples_sha256"] is None:
@@ -309,6 +403,8 @@ def _replica_summary(path, journal, options, system, replica):
         if not len(data):
             continue
         scalars.append(np.array(data[:, [2, 3, 4, 5, 6, 7]]))
+        if task == "diffusion":
+            frames.append(np.array(data))
         radii_sum += data[:, len(_COLUMNS)+6*system.natoms:].sum(axis=0)
         count += len(data)
     values = np.ascontiguousarray(np.concatenate(scalars))
@@ -320,13 +416,116 @@ def _replica_summary(path, journal, options, system, replica):
               "checkpoint": str(path.parent/journal["blocks"][-1]["directory"]/"state.npz"),
               "native_blocks": len(journal["blocks"])-1,
               "diagnostics": {name: correlated_mean_diagnostics(obs[:, i]) for i, name in enumerate(_NAMES)}}
+    if task == "diffusion":
+        data = np.ascontiguousarray(np.concatenate(frames))
+        natoms = system.natoms
+        offset = len(_COLUMNS)
+        result.update(
+            task="diffusion",
+            sample_steps=data[:, 0].astype(np.int64),
+            times=(data[:, 0] - options["neq"]) * options["production_dt"],
+            positions=data[:, offset:offset + 3 * natoms].reshape(-1, natoms, 3),
+            velocities=data[:, offset + 3 * natoms:offset + 6 * natoms].reshape(-1, natoms, 3),
+            radii_gyration_squared=data[:, offset + 6 * natoms:].copy(),
+            observables=obs,
+        )
     if system.cell is not None:
         result["volume_mean_bohr3"] = float(values[:, 4].mean())
         result["pressure_mean_au"] = float(values[:, 5].mean())
     return result
 
 
+def _diffusion_summary(streams, config, system, output, return_data=False):
+    from ..analysis.diagnostics import nve_energy_diagnostics
+    from ..analysis.diffusion import analyze_diffusion
+
+    times = streams[0]["times"]
+    if any(not np.array_equal(s["times"], times) for s in streams):
+        raise ValueError("native diffusion replicas need the same completed sample clock")
+    output = Path(output)
+    trajectories = []
+    for stream in streams:
+        path = output/"samples"/f"native_pimd_{stream['replica']:04d}"/"trajectory.npz"
+        metadata = json.dumps({
+            "task": "diffusion", "positions": "unwrapped_ring_polymer_centroids",
+            "position_unit": "bohr", "velocity_unit": "bohr/atomic_time",
+            "time_unit": "atomic_time", "energy_unit": "hartree",
+            "pressure_unit": "hartree/bohr^3", "cell_unit": "bohr",
+            "equilibration_steps": config["sampling"]["equilibration_steps"],
+            "sample_interval_steps": config["sampling"]["sample_interval"],
+            "production_timestep_au": config["dt_au"],
+            "beads": config["beads"], "beta_au": config["beta"],
+            "observable_names": list(_NAMES),
+            "system": system.to_dict(),
+        })
+        atomic_savez(path, kind="PyRPMD.materials-trajectory.v1",
+                     positions=stream["positions"], velocities=stream["velocities"],
+                     times=stream["times"], sample_steps=stream["sample_steps"],
+                     observables=stream["observables"],
+                     radii_gyration_squared=stream["radii_gyration_squared"],
+                     metadata=metadata)
+        trajectories.append(str(path))
+    result = {
+        "task": "diffusion", "status": "complete", "physical_converged": False,
+        "converged": False, "replicas": len(streams),
+        "samples_per_replica": [s["frames"] for s in streams],
+        "phase": "unthermostatted_rpmd_production", "backend": "native-cxx17",
+        "python_step_callbacks": 0, "sampling_thermostat": "pile-l",
+        "integrator": loop_options(config)["integrator"],
+        "coordinate_convention": "continuous_unwrapped_ring_polymer_centroids",
+        "cell": system.to_dict().get("cell"), "pbc": system.to_dict().get("pbc", [False, False, False]),
+        "ensemble": "fixed_cell", "fixed_atoms": list(system.fixed_atoms),
+        "mobile_atoms": int(system.mobile_mask.sum()), "trajectory_storage": ["native_pimd_journal"] * len(streams),
+        "propagation": [{"native_steps": config["sampling"]["equilibration_steps"] + config["sampling"]["production_steps"],
+                         "python_steps": 0, "native_blocks": s["native_blocks"]} for s in streams],
+        "files": {"journals": [s["journal"] for s in streams],
+                  "checkpoints": [s["checkpoint"] for s in streams], "trajectories": trajectories},
+        "warnings": ["Native diffusion is an opt-in E2 contract with a new thermostat/RNG map.",
+                      "Bead count, timestep, system size and statistical convergence have not been certified."],
+    }
+    diagnostics = nve_energy_diagnostics(
+        [s["observables"][:, 4] for s in streams], times,
+        beads=config["beads"], beta=config["beta"],
+    )
+    result["nve_energy_diagnostics"] = diagnostics
+    if not diagnostics["within_tolerance"]:
+        result["warnings"].append("Saved production frames exceed the NVE energy diagnostic tolerance.")
+    table = config.get("diffusion", {})
+    params = {key: table[key] for key in ("fit_range", "max_lag", "bootstrap", "seed", "block_length") if key in table}
+    params.setdefault("seed", int(config.get("seed", 0)))
+    selected_atoms = options_atom_indices(config, system)
+    params.update(atom_indices=selected_atoms,
+                  axes=config.get("diffusion", {}).get("axes", [0, 1, 2]))
+    refs = config.get("diffusion", {}).get("reference_atoms")
+    if refs is not None:
+        params.update(reference_positions=np.array([s["positions"][:, refs] for s in streams]),
+                      reference_velocities=np.array([s["velocities"][:, refs] for s in streams]),
+                      reference_masses=system.masses[refs])
+    diffusion = analyze_diffusion(np.array([s["positions"] for s in streams]), times,
+                                 velocities=np.array([s["velocities"] for s in streams]), **params)
+    diffusion["input"]["atoms"] = system.natoms
+    diffusion["input"]["atom_indices"] = options_atom_indices(config, system)
+    result["diffusion"] = diffusion
+    result["analysis_status"] = diffusion["status"]
+    result["diffusion_m2_s"] = diffusion["diffusion_m2_s"]
+    result["diffusion_tensor_m2_s"] = diffusion["diffusion_tensor_m2_s"]
+    result["files"]["diffusion"] = str(output/"results"/"diffusion.json")
+    write_json(output/"results"/"diffusion.json", diffusion)
+    write_json(output/"summary.json", result)
+    return {"summary": result, "streams": streams} if return_data else result
+
+
+def options_atom_indices(config, system):
+    table = config.get("diffusion", {})
+    if "atom_indices" in table:
+        return [int(i) for i in table["atom_indices"]]
+    return [i for i, symbol in enumerate(system.symbols)
+            if symbol in ("H", "D", "T") and system.mobile_mask[i]]
+
+
 def _summary(streams, config, system, output, return_data=False):
+    if config.get("task") == "diffusion":
+        return _diffusion_summary(streams, config, system, output, return_data)
     means = np.asarray([s["means"] for s in streams])
     errors = np.std(means, axis=0, ddof=1)/np.sqrt(len(streams)) if len(streams)>1 else None
     bmode = config.get("barostat", {}).get("mode", "none")
@@ -379,6 +578,22 @@ def run_native_pimd(config, system, output, executor=None, return_data=False):
     tasks = [dict(config=copy.deepcopy(config), system=system, output=str(output), replica=r) for r in range(options["replicas"])]
     streams = executor.map(_sample, tasks) if executor is not None else run_tasks(_sample, tasks, config.get("parallel", {}))
     return root_call(_summary, list(streams) if streams is not None else streams, config, system, str(output), return_data)
+
+
+def _reanalyze_native_diffusion(config, system, output, return_data=False):
+    """Reanalyze committed native diffusion journals without constructing a PES."""
+    if config.get("task") != "diffusion":
+        raise ValueError("native diffusion reanalysis requires task='diffusion'")
+    options = resolve_native_pimd(config, system)
+    streams = []
+    for replica in range(options["replicas"]):
+        path = Path(output)/"samples"/f"native_pimd_{replica:04d}"/"journal.json"
+        if not path.exists():
+            raise ValueError(f"native diffusion journal is missing: {path}")
+        identity = _fingerprint(config, system, {"native_pimd_replica": replica, "files": referenced_files(config)})
+        journal = _journal(path, identity, options, system.natoms)
+        streams.append(_replica_summary(path, journal, options, system, replica, task="diffusion"))
+    return _diffusion_summary(streams, config, system, output, return_data)
 
 
 def _check_native_pimd(config, system, provider):

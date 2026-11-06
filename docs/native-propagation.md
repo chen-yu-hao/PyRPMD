@@ -339,3 +339,23 @@ serial checkpoints carry native_path_contract=1; checkpoints without that
 execution marker continue through the historical per-step scheduler so restart
 behavior is unchanged. Shared or custom-walker histories remain on their
 existing paths.
+
+## Materials and diffusion integration
+
+The materials workflow uses the same transactional native block contract as the
+other production paths.  When a legacy fixed-cell materials run selects an
+eligible PILE-L sampler, `propagate_sampling_block()` advances the sampling
+block and commits the sampler clock only after the state and RNG prefix have
+succeeded.  Andersen sampling uses a pre-drawn `RefreshPlan` from
+`plan_refresh()`, with block ends at refresh/observation/checkpoint/ensemble
+handoff events.  This preserves the old engine's refresh schedule and makes
+chunk and resume boundaries execution details rather than new random draws.
+
+The native `diffusion` opt-in uses `NativeEnsemble` for both the PILE-L
+equilibration blocks and the unthermostatted production blocks.  Production
+is fixed-cell NVE and records the materials trajectory schema; it does not
+invoke Python once per physical step.  The native path has a distinct
+thermostat/RNG/checkpoint identity (E2), so it is not expected to reproduce
+legacy arrays bit-for-bit.  `python_steps = 0` in the summary is the required
+runtime check.  NPT remains the native `task="pimd"` route with a barostat, and
+is intentionally outside this diffusion integration.
