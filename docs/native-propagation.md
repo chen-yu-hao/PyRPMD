@@ -319,3 +319,23 @@ extension exports `MOMENTUM_REFRESH_API = 1`; an older extension falls back in
 `auto` and raises before state mutation in strict `native` mode.  Bond-constraint
 momentum sampling remains on the existing Python path and is outside this
 contract.
+
+
+## Serial MetaD history blocks
+
+Serial standard and well-tempered MetaD can keep a frozen wall and hill
+history in the native loop between Python events. The NP7 scheduler ends a
+block at the next pace deposition, equilibrium or freeze boundary,
+checkpoint, 4096-step limit, or pre-drawn buffer limit. Its observation mask
+contains both ordinary sample steps and the deposition endpoint. Python then
+computes sample_bias from the frozen history and performs the single hill
+transaction at the block tail; a failed native prefix is retained without a
+hill deposit.
+
+Andersen uses the NP1 pre-drawn RefreshPlan, while eligible PILE-L runs use
+the NP2 sampling block. NP4 detached wall, direct MetaD and tensor-Hermite grid
+descriptors are rebuilt at every block and checked for history expiry. New
+serial checkpoints carry native_path_contract=1; checkpoints without that
+execution marker continue through the historical per-step scheduler so restart
+behavior is unchanged. Shared or custom-walker histories remain on their
+existing paths.
