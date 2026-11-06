@@ -76,6 +76,19 @@ class EngineRoute:
             raise ValueError("reanalyze_diffusion requires a diffusion run")
         if self.analyzer is None:
             raise ValueError(f"sampling.engine={self.name!r} does not support diffusion reanalysis")
+        if self.name == "native":
+            # Keep missing native journals as a local preflight error.  The
+            # actual analyzer runs through root_call so completed reanalysis
+            # remains collective, but an absent run should not be wrapped in
+            # a generic root-stage failure.
+            from pathlib import Path
+
+            options = self.resolve(config, system)
+            missing = [Path(output) / "samples" / f"native_pimd_{replica:04d}" / "journal.json"
+                       for replica in range(options["replicas"])
+                       if not (Path(output) / "samples" / f"native_pimd_{replica:04d}" / "journal.json").exists()]
+            if missing:
+                raise ValueError(f"native diffusion journal is missing: {missing[0]}")
         from ..parallel import root_call
 
         def analyze():
@@ -96,7 +109,8 @@ _ROUTES = {
     "legacy": EngineRoute("legacy", ".materials", "_resolve_legacy_materials",
                           "_run_legacy_materials", "_reanalyze_legacy_diffusion"),
     "native": EngineRoute("native", ".native_pimd", "resolve_native_pimd",
-                          "run_native_pimd", checker="_check_native_pimd"),
+                          "run_native_pimd", analyzer="_reanalyze_native_diffusion",
+                          checker="_check_native_pimd"),
     "torch": EngineRoute("torch", ".torch_materials", "resolve_torch_materials",
                          "run_torch_materials", "analyze_torch_materials", "check_torch_materials"),
 }

@@ -53,6 +53,8 @@ include_patterns = [
     "molecular-nonadiabatic.md", "nonadiabatic-performance.md",
     "tier2-*.md", "qcmd.md",
     "andersen-sampling.md", "trajectory-export.md", "bond-constraints.md", "distribution.md",
+    # Chinese warm-start chapter; the English text lives in checkpoints.md.
+    "warm-start.md",
     "portable-persistence.md",
     "literature-validation.md", "publication-readiness.md",
     "validation/tier1-2026-10-31/README.md",

@@ -225,8 +225,45 @@ an expensive electronic-structure or machine-learning potential.
 
 ## Scope remaining
 
-This follow-up integrates PIMD only. Diffusion, rate, FES and metadynamics retain
-their previous workflow dispatch. Surface/frozen-atom NPT, inferred
-Suzuki–Chin actions, and native socket/GPU/bead-MPI backends remain outside
-this workflow. The separately documented condensed-phase benchmark reports
-the evidence and limits of the SC, PIGLET-NPT and RPC additions.
+The native route still does not cover rate, FES or metadynamics workflows.
+Surface/frozen-atom NPT, inferred Suzuki–Chin actions, and native
+socket/GPU/bead-MPI backends remain outside this workflow. The separately
+documented condensed-phase benchmark reports the evidence and limits of the
+SC, PIGLET-NPT and RPC additions.
+
+## Native diffusion opt-in
+
+`task="diffusion"` may opt into the native route by setting
+`sampling.engine="native"`.  The route is deliberately separate from the
+legacy materials engine because `NativeEnsemble` has its own thermostat
+splitting, random-number stream, and checkpoint fingerprint.  Equilibration
+uses native PILE-L; after the equilibration boundary the accepted state is
+handed to a second native engine with `thermostat="none"` for fixed-cell NVE
+RPMD production.  The handoff uses `set_state`, so the production engine uses
+the same Cayley map as native unthermostatted propagation and does not redraw
+momenta at the boundary.
+
+Native diffusion writes the same materials trajectory fields as the legacy
+analysis (`sample_steps`, `times`, centroid `positions` and `velocities`,
+`observables`, and `radii_gyration_squared`) under each replica's
+`trajectory.npz`.  The journal remains the commit point, and `resume` checks
+the checkpoint and journal clocks before replaying an incomplete transaction.
+A completed resume reanalyzes those journals without constructing the PES or
+consuming new random numbers.  The summary records `python_steps = 0` and the
+number of native blocks for each replica.
+
+The native engine records only steps after the equilibration boundary, so a
+replica saves `production_steps // sample_interval` frames and has no frame at
+production time zero; the legacy engine saves one more (the handoff frame).
+`diffusion.max_lag`, `diffusion.block_length` and `diffusion.fit_range` are
+checked against the native frame count before any output is created.
+
+This opt-in currently supports fixed-cell PILE-L equilibration and one
+trajectory worker per native replica.  NPT, trajectory batching, bond
+constraints, and other equilibrium thermostats are rejected before creating
+an output directory.  For a native pressure-controlled calculation use
+`task="pimd"` with the native barostat controls described above; native NPT is
+not part of the diffusion route.  The short
+[`diffusion_native.inp`](../examples/ensembles/diffusion_native.inp) input is a
+numerical control, not a materials validation or a claim of physical
+long-time diffusion convergence.

@@ -57,8 +57,8 @@ def validate_task_sections(d):
     if engine != "torch" and any(key in d.get("sampling", {}) for key in ("device", "normal_mode_layout")):
         raise InputError("sampling.device/normal_mode_layout require sampling.engine='torch'")
     native_pimd = engine == "native"
-    if native_pimd and task != "pimd":
-        raise InputError("sampling.engine='native' currently requires task='pimd'")
+    if native_pimd and task not in ("pimd", "diffusion"):
+        raise InputError("sampling.engine='native' requires task='pimd' or task='diffusion'")
     if "diffusion" in d and task != "diffusion":
         raise InputError("[diffusion] requires task='diffusion'")
     if "electronic_friction" in d and task != "diffusion":

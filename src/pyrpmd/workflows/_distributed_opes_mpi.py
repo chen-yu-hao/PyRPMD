@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 
 import numpy as np
+from ..warm_start import initial_ring
 
 from . import _opes_serial as _serial
 for _name, _value in vars(_serial).items():
@@ -130,7 +131,7 @@ def _run_mpi(config, system, output, *, return_data=False):
             threads=config.get("parallel", {}).get("threads_per_rank", 1),
             **loop_options(config))
         if restored is None:
-            state = State(np.repeat(system.geometry[None], config["beads"], axis=0),
+            state = State(initial_ring(config, system),
                           dynamics.sample_momenta())
             bias = _new_shared_bias(cv, options, config["beta"], walkers)
             elapsed = 0

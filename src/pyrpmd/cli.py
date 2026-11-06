@@ -54,6 +54,15 @@ def parser():
     _input_options(r)
     r.add_argument("--output")
     r.add_argument("--resume", action="store_true")
+    r.add_argument("--init-from", metavar="RUN_OR_CHECKPOINT",
+                   help="Warm-start this new run from a configuration saved by an earlier run "
+                        "(its directory, or one checkpoint file). Settings, fingerprint and output "
+                        "stay new; momenta are resampled and equilibration is required")
+    r.add_argument("--init-index", type=int, metavar="INT",
+                   help="Select one configuration from a checkpoint holding several (replicas/windows)")
+    r.add_argument("--init-bias", action="store_true",
+                   help="Also import the parent's metadynamics hills as an initial bias "
+                        "(identical CVs; well-tempered rescaling)")
     _report_shortcut_options(r)
     v = commands.add_parser(
         "validate", help="Resolve input, units, system and resources"
@@ -367,7 +376,8 @@ def main(argv=None):
         elif args.command == "run":
             from .runner import run
 
-            result = run(_job(args), resume=args.resume)
+            result = run(_job(args), resume=args.resume, init_from=args.init_from,
+                         init_index=args.init_index, init_bias=args.init_bias)
             if result is not None:
                 result = _report_after_result(args, result, result["output"])
             if result is not None:
