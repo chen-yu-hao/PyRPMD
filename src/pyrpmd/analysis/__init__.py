@@ -27,7 +27,6 @@ from .entrance import (
 from .dvr_heom import (
     DVRHEOMResult,
     DVRSystemHEOM,
-    HEOMResult,
     drude_lorentz_exponents,
     drude_lorentz_spectral_density,
 )
@@ -66,7 +65,6 @@ __all__ = [
     "bond_pmf_rate_from_entrance_bridge",
     "DVRSystemHEOM",
     "DVRHEOMResult",
-    "HEOMResult",
     "drude_lorentz_exponents",
     "drude_lorentz_spectral_density",
     "ExponentialFit",
