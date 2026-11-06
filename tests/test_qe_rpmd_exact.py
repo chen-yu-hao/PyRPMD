@@ -12,6 +12,7 @@ import numpy as np
 from pyrpmd.analysis.dvr_heom import DVRSystemHEOM
 from pyrpmd.analysis.heom import SpinBosonHEOM
 from pyrpmd.analysis.spectral_density import (
+    analyze_kubo_tcf,
     fit_exponential_correlation,
     harmonic_bath_kubo_tcf,
     spectral_density_from_kubo,
