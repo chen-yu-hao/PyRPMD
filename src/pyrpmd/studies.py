@@ -319,7 +319,7 @@ Numerical quantities follow PyRPMD atomic units; strings accept explicit units.
         config["system"]["masses"] = isotope_system.masses.tolist()
         if config.get("reaction", {}).get("electronic"):
             # A level-resolved electronic factor is temperature dependent.
-            evaluated = evaluate_reaction_electronic(config["reaction"], temperature)
+            evaluated = evaluate_reaction_electronic(config["reaction"], temperature, isotope_system)
             config["reaction"].update(electronic_weight=evaluated["electronic_weight"],
                                       electronic_weight_model=evaluated)
         if task == "rate":

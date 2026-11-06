@@ -118,3 +118,15 @@ def test_temperature_study_reevaluates_electronic_weight_per_case():
         assert reaction["electronic_weight_model"]["temperature_K"] == pytest.approx(t)
         seen.add(round(reaction["electronic_weight"], 12))
     assert len(seen) == 3
+
+
+def test_drpmd_reactant_count_uses_system_fragments():
+    from test_checkpoint import collision_job
+
+    job = collision_job()
+    job["reaction"] = {"electronic": {"transition_state": "doublet", "reactants": ["Cl(2P)"]}}
+    with pytest.raises(InputError, match="2 entries"):
+        JobSpec.from_mapping(job).resolve()
+    job["reaction"]["electronic"]["reactants"] = ["Cl(2P)", "singlet"]
+    config, _ = JobSpec.from_mapping(job).resolve()
+    assert config["reaction"]["electronic_weight"] == pytest.approx(_cl_h2(config["temperature_K"]), rel=1e-12)
