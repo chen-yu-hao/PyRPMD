@@ -124,3 +124,23 @@ def test_exponential_fit_reports_residual_for_fixed_poles():
     assert fit.success
     assert fit.relative_l2_error < 1e-10
     assert fit.rms_error < 1e-10
+
+
+def test_full_kubo_to_correlation_pipeline_records_fit_error():
+    time = np.linspace(0.0, 20.0, 401)
+    kubo = np.exp(-0.8 * time)
+    result = analyze_kubo_tcf(
+        time,
+        kubo,
+        beta=2.0,
+        frequencies=np.linspace(0.02, 6.0, 400),
+        correlation_time=np.linspace(0.0, 8.0, 161),
+        n_terms=2,
+        initial_exponents=np.array([0.8 + 0.0j, 2.0 + 0.0j]),
+        window=None,
+        max_nfev=300,
+    )
+    assert result.frequencies.shape == (400,)
+    assert result.correlation.shape == (161,)
+    assert np.isfinite(result.fit.relative_l2_error)
+    assert np.isfinite(result.fit.absolute_l2_error)
