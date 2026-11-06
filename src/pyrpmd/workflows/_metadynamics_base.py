@@ -31,12 +31,13 @@ from ..thermostats import NoseHooverChain, nhc_options
 from .common import (_atomic_npz, _fingerprint, _dimension, checked_integer,
                      fingerprint_matches, resolve_cvs)
 from .sampling import (fes_sampler, legacy_metadynamics_sampling, middle_sampling_method,
-                       read_operator_checkpoint, validate_andersen_schedule)
+                       read_operator_checkpoint, validate_andersen_schedule, AndersenSchedule)
 from .biased_sampling import SamplingRuntime, run_biased_sampling, dispatch_replicas, dispatch_tasks
 from ..analysis.fes_result import FESResult, write_fes_result
 
 
 METADYNAMICS_FIELDS = {"cvs", "mode", "sigma", "sigma_au", "height", "height_au", "pace", "bias_factor", "walls", "walls_during_equilibration", "grid", "shared_walkers", "multiple_walkers", "block_steps", "freeze_after_steps", "freeze_equilibration_steps"}
+NATIVE_PATH_CONTRACT = 1
 
 
 def resolve_walls(config, system):
@@ -518,6 +519,18 @@ def _read_stream(config, system, output, replica, cv, options):
         elapsed = int(data["elapsed"])
         if elapsed < 0 or elapsed > options["neq"] + options["nprod"] or int(data["step"]) != elapsed:
             raise ValueError("metadynamics checkpoint has an invalid sampling clock")
+        contract = 0
+        collision_clock = None
+        if "native_path_contract" in data:
+            marker = np.asarray(data["native_path_contract"])
+            if marker.shape != () or marker.dtype.kind not in "iu" or int(marker) not in (0, NATIVE_PATH_CONTRACT):
+                raise ValueError("metadynamics checkpoint has an invalid native-path contract marker")
+            contract = int(marker)
+            if contract == NATIVE_PATH_CONTRACT and config["sampling"].get("thermostat", "andersen") == "andersen":
+                kind = str(data["andersen_schedule"]) if "andersen_schedule" in data else "fixed"
+                collision_clock = AndersenSchedule(
+                    config["sampling"].get("andersen_interval", 10), kind)
+                collision_clock.restore(data, elapsed)
         hills = json.loads(str(data["hills"]))
         cached_grid = None
         if "grid_values" in data or "grid_metadata" in data:
@@ -561,7 +574,8 @@ def _read_stream(config, system, output, replica, cv, options):
                   "samples": samples, "sample_steps": clocks,
                   "sample_bias": data["sample_bias"].copy(), "sample_energies": data["sample_energies"].copy(),
                   "hills": bias.hills, "propagation": json.loads(str(data["propagation"])),
-                  "checkpoint": str(checkpoint), "complete": elapsed == options["neq"] + options["nprod"]}
+                  "checkpoint": str(checkpoint), "complete": elapsed == options["neq"] + options["nprod"],
+                  "native_path_contract": contract, "collision_clock": collision_clock}
         sampler = None if legacy_metadynamics_sampling(config["sampling"]) else fes_sampler(config)
         operators = read_operator_checkpoint(data, sampler, elapsed, "metadynamics")
         if operators is not None:
@@ -615,6 +629,12 @@ def _sample_replica(task):
         configurations = []
         elapsed = 0
         saved = task.get("saved") if shared else (_read_stream(config, system, output, replica, cv, options) if checkpoint.exists() else None)
+        native_path_contract = 0 if shared else (saved.get("native_path_contract", 0) if saved is not None else NATIVE_PATH_CONTRACT)
+        collision_clock = None
+        if native_path_contract == NATIVE_PATH_CONTRACT and thermostat == "andersen":
+            collision_clock = (saved.get("collision_clock") if saved is not None else
+                               AndersenSchedule(config["sampling"].get("andersen_interval", 10),
+                                                config["sampling"].get("andersen_schedule", "fixed")))
         if saved is not None:
             state = saved["state"]
             dynamics.integrator._check(state.q, state.p)
@@ -645,7 +665,9 @@ def _sample_replica(task):
 
         runtime = SamplingRuntime(state, elapsed, samples, sample_steps, sample_bias, energies, chain,
                                   configurations if options["store_configurations"] else None,
-                                  operator_checkpoint=store_operators)
+                                  collision_clock=collision_clock,
+                                  operator_checkpoint=store_operators,
+                                  native_path_contract=native_path_contract)
         update = _MetadynamicsUpdate(bias, options, replica if shared else None)
 
         def save(current):
@@ -658,13 +680,17 @@ def _sample_replica(task):
                     -1, config["beads"], system.natoms, 3)
             _atomic_npz(checkpoint, fingerprint=fingerprint, elapsed=current.elapsed,
                         q=current.state.q, p=current.state.p, step=current.state.step, time=current.state.time,
+                        native_path_contract=np.asarray(current.native_path_contract, dtype=np.int64),
                         rng=json.dumps(dynamics.rng.bit_generator.state),
                         thermostat_state=json.dumps(current.chain.state_dict() if current.chain else None),
                         hills=json.dumps(update.bias.hills, allow_nan=False),
                         samples=np.asarray(current.values).reshape(-1, cv.dimension),
                         sample_steps=np.asarray(current.clocks, dtype=int),
                         sample_bias=np.asarray(current.biases), sample_energies=np.asarray(current.energies),
-                        propagation=json.dumps(dynamics.propagation_stats), **grid_payload, **observations)
+                        propagation=json.dumps(dynamics.propagation_stats),
+                        **(current.collision_clock.checkpoint_fields()
+                           if current.collision_clock is not None else {}),
+                        **grid_payload, **observations)
             _write_hills(_hills_path(output, replica), update.bias)
 
         run_biased_sampling(runtime, dynamics, cv, neq=options["neq"], nprod=options["nprod"],
