@@ -1,0 +1,230 @@
+src/pyrpmd/_matrix_path.py:13:from .nonadiabatic import DiabaticResult, validate_diabatic_result
+src/pyrpmd/adaptive_nrpmd.py:26:from .nonadiabatic import _positive_integer
+src/pyrpmd/adaptive_nrpmd.py:101:            object.__setattr__(self, key, _positive_integer(getattr(self, key), key))
+src/pyrpmd/adaptive_nrpmd.py:205:        count = _positive_integer(count, "count")
+src/pyrpmd/adaptive_nrpmd.py:414:    nstates = _positive_integer(nstates, "nstates")
+src/pyrpmd/adaptive_string.py:35:def _positive_integer(value, name):
+src/pyrpmd/adaptive_string.py:101:    max_iterations = _positive_integer(max_iterations, "max_iterations")
+src/pyrpmd/adaptive_string.py:102:    max_images = _positive_integer(max_images, "max_images")
+src/pyrpmd/adaptive_string.py:103:    adapt_every = _positive_integer(adapt_every, "adapt_every")
+src/pyrpmd/adiabatic.py:16:from .nonadiabatic import DiabaticResult, NRPMDState, _mint, _positive_integer
+src/pyrpmd/adiabatic.py:94:    if nstates is not None and s != _positive_integer(nstates, "nstates"):
+src/pyrpmd/adiabatic.py:274:        self.nstates = _positive_integer(nstates, "nstates")
+src/pyrpmd/adiabatic.py:327:        _mint(trial, self._local_result(state.electronic_frame), .5*self.dt)
+src/pyrpmd/adiabatic.py:335:        _mint(trial, self._local_result(new), .5*self.dt)
+src/pyrpmd/adiabatic.py:393:        self.nstates = _positive_integer(nstates, "nstates")
+src/pyrpmd/adiabatic.py:400:        self.electronic_substeps = _positive_integer(electronic_substeps, "electronic_substeps")
+src/pyrpmd/advanced_surface_hopping.py:18:from .nonadiabatic import _positive_integer, validate_diabatic_result
+src/pyrpmd/advanced_surface_hopping.py:203:        self.nstates = _positive_integer(nstates, "nstates")
+src/pyrpmd/advanced_surface_hopping.py:209:        self.electronic_substeps = _positive_integer(electronic_substeps, "electronic_substeps")
+src/pyrpmd/batched_nonadiabatic.py:13:from .nonadiabatic import NRPMDState, NRPMDDynamics, validate_diabatic_result
+src/pyrpmd/electrochemistry/diabatic.py:12:from ..nonadiabatic import DiabaticResult, validate_diabatic_result
+src/pyrpmd/electrochemistry/nonadiabatic.py:17:from ..nonadiabatic import DiabaticResult, validate_diabatic_result
+src/pyrpmd/finite_temperature_string.py:23:from .adaptive_string import _real_array, _positive_real, _positive_integer, _validated, _reparameterize
+src/pyrpmd/finite_temperature_string.py:81:        _positive_integer(self.blocks, "blocks")
+src/pyrpmd/finite_temperature_string.py:108:    block_size = _positive_integer(block_size, "block_size")
+src/pyrpmd/finite_temperature_string.py:185:        self.sampling_steps = _positive_integer(sampling_steps, "sampling_steps")
+src/pyrpmd/finite_temperature_string.py:186:        self.sample_interval = _positive_integer(sample_interval, "sample_interval")
+src/pyrpmd/finite_temperature_string.py:187:        self.block_size = _positive_integer(block_size, "block_size")
+src/pyrpmd/finite_temperature_string.py:359:    max_iterations = _positive_integer(max_iterations, "max_iterations")
+src/pyrpmd/golden_rule_adapters.py:19:from .nonadiabatic import validate_diabatic_result
+src/pyrpmd/iesh.py:25:from .nonadiabatic import DiabaticResult, _positive_integer, validate_diabatic_result
+src/pyrpmd/iesh.py:97:        self.nband = _positive_integer(nband, "nband")
+src/pyrpmd/iesh.py:100:        self.natoms = _positive_integer(natoms, "natoms")
+src/pyrpmd/iesh.py:341:        self.nstates = _positive_integer(
+src/pyrpmd/iesh.py:343:        self.nelectrons = _positive_integer(
+src/pyrpmd/iesh.py:363:        self.electronic_substeps = _positive_integer(electronic_substeps, "electronic_substeps")
+src/pyrpmd/kc_rpmd.py:18:from .nonadiabatic import _positive_integer
+src/pyrpmd/kc_rpmd.py:71:        self.nbeads = _positive_integer(nbeads, "nbeads")
+src/pyrpmd/mash.py:22:from .adiabatic import AdiabaticRPSHDynamics
+src/pyrpmd/mash.py:24:from .nonadiabatic import _positive_integer, validate_diabatic_result
+src/pyrpmd/mash.py:120:    nstates = _positive_integer(nstates, "nstates")
+src/pyrpmd/mash.py:205:        self.nstates = _positive_integer(nstates, "nstates")
+src/pyrpmd/mash.py:207:        if _positive_integer(nbeads, "nbeads") != 1:
+src/pyrpmd/mash.py:219:        self.max_events = _positive_integer(max_events, "max_events")
+src/pyrpmd/mv_rpmd.py:18:from .nonadiabatic import NRPMDState, _positive_integer
+src/pyrpmd/mv_rpmd.py:32:        nstates = _positive_integer(nstates, "nstates")
+src/pyrpmd/mv_rpmd.py:67:        self.nbeads = _positive_integer(nbeads, "nbeads")
+src/pyrpmd/mv_rpmd.py:68:        self.nstates = _positive_integer(nstates, "nstates")
+src/pyrpmd/mv_rpmd.py:147:        self.max_evaluations = _positive_integer(max_evaluations, "max_evaluations")
+src/pyrpmd/nonadiabatic.py:14:from .validation import positive_integer as _positive_integer
+src/pyrpmd/nonadiabatic.py:42:    if nstates is not None and matrix.shape[1] != _positive_integer(nstates, "nstates"):
+src/pyrpmd/nonadiabatic.py:72:        self.nstates = _positive_integer(nstates, "nstates")
+src/pyrpmd/nonadiabatic.py:109:        nstates = _positive_integer(nstates, "nstates")
+src/pyrpmd/nonadiabatic.py:127:def _mint(state, result, duration):
+src/pyrpmd/nonadiabatic.py:162:        self.nstates = _positive_integer(nstates, "nstates")
+src/pyrpmd/nonadiabatic.py:196:            _mint(state, result, duration)
+src/pyrpmd/nonadiabatic_ensemble.py:18:from .nonadiabatic import NRPMDDynamics, NRPMDState
+src/pyrpmd/nonadiabatic_registry.py:76:            from .nonadiabatic import NRPMDDynamics
+src/pyrpmd/nonadiabatic_registry.py:115:        from .nonadiabatic import NRPMDState
+src/pyrpmd/nonadiabatic_sampling.py:13:def _positive_integer(value, name):
+src/pyrpmd/nonadiabatic_sampling.py:59:    nbeads = _positive_integer(nbeads, "nbeads")
+src/pyrpmd/nonadiabatic_sampling.py:60:    count = _positive_integer(count, "count")
+src/pyrpmd/potentials/contraction.py:13:from ..validation import positive_integer as _positive_integer
+src/pyrpmd/potentials/contraction.py:90:        self.nbeads = _positive_integer(nbeads, "nbeads")
+src/pyrpmd/potentials/contraction.py:91:        self.contracted_beads = _positive_integer(contracted_beads, "contracted_beads")
+src/pyrpmd/potentials/diabatic.py:22:        from ..nonadiabatic import DiabaticResult, validate_diabatic_result
+src/pyrpmd/potentials/diabatic.py:39:    from ..nonadiabatic import validate_diabatic_result
+src/pyrpmd/potentials/excited_state/_provider.py:34:        from ...adiabatic import AdiabaticResult
+src/pyrpmd/potentials/multistate_external.py:126:        from ..nonadiabatic import DiabaticResult, validate_diabatic_result
+src/pyrpmd/potentials/nah2_leps.py:255:        from ..nonadiabatic import DiabaticResult, validate_diabatic_result
+src/pyrpmd/potentials/nonadiabatic_models.py:113:    from ..nonadiabatic import DiabaticResult
+src/pyrpmd/potentials/pyscf_multistate.py:709:        from ..adiabatic import AdiabaticResult
+src/pyrpmd/rp_iesh.py:25:from .nonadiabatic import _positive_integer
+src/pyrpmd/rp_iesh.py:123:        _positive_integer(nbeads, "nbeads")
+src/pyrpmd/rp_mash.py:16:from .nonadiabatic import _positive_integer, validate_diabatic_result
+src/pyrpmd/rp_mash.py:97:        if _positive_integer(nstates, "nstates") != 2:
+src/pyrpmd/rp_mash.py:107:        self.max_events = _positive_integer(max_events, "max_events")
+src/pyrpmd/runner.py:286:        from .workflows.nonadiabatic import run_nonadiabatic
+src/pyrpmd/runner.py:527:        from .workflows.nonadiabatic import analyze_nonadiabatic
+src/pyrpmd/runner.py:626:        from .workflows.nonadiabatic import prepare_nonadiabatic
+src/pyrpmd/runner.py:878:                from .nonadiabatic import validate_diabatic_result
+src/pyrpmd/spin_mapping.py:14:from .nonadiabatic import _positive_integer, validate_diabatic_result
+src/pyrpmd/spin_mapping.py:97:def _spin_mint(state, result, duration):
+src/pyrpmd/spin_mapping.py:149:        if _positive_integer(nstates, "nstates") != 2:
+src/pyrpmd/spin_mapping.py:192:    def _mint(self, state, result, duration):
+src/pyrpmd/spin_mapping.py:194:            _spin_mint(state, result, duration)
+src/pyrpmd/spin_mapping.py:206:        self._mint(trial, self._evaluate(trial.q), 0.5 * self.dt)
+src/pyrpmd/spin_mapping.py:208:        self._mint(trial, self._evaluate(trial.q), 0.5 * self.dt)
+src/pyrpmd/surface_hopping.py:16:from .nonadiabatic import _positive_integer, validate_diabatic_result
+src/pyrpmd/surface_hopping.py:92:        self.nstates = _positive_integer(nstates, "nstates")
+src/pyrpmd/surface_hopping.py:100:        self.electronic_substeps = _positive_integer(electronic_substeps, "electronic_substeps")
+src/pyrpmd/thermal_nrpmd.py:24:from .nonadiabatic import (
+src/pyrpmd/thermal_nrpmd.py:28:    _mint,
+src/pyrpmd/thermal_nrpmd.py:29:    _positive_integer,
+src/pyrpmd/thermal_nrpmd.py:183:    nstates = state.mapping_q.shape[1] if nstates is None else _positive_integer(nstates, "nstates")
+src/pyrpmd/thermal_nrpmd.py:214:        _mint(trial, first.mapping, half)
+src/pyrpmd/thermal_nrpmd.py:217:        _mint(trial, second.mapping, half)
+src/pyrpmd/thermal_nrpmd.py:316:        self.nstates = _positive_integer(nstates, "nstates")
+src/pyrpmd/thermal_nrpmd.py:443:        count = _positive_integer(count, "count")
+src/pyrpmd/thermal_nrpmd.py:445:        stride = _positive_integer(stride, "stride")
+src/pyrpmd/thermal_nrpmd.py:585:        block_size = _positive_integer(block_size, "block_size")
+src/pyrpmd/thermal_nrpmd.py:624:    stride = _positive_integer(stride, "stride")
+src/pyrpmd/workflows/drpmd_sampling.py:178:        from pyrpmd.nonadiabatic import NRPMDDynamics
+src/pyrpmd/workflows/drpmd_sampling.py:207:        from pyrpmd.nonadiabatic import NRPMDState
+src/pyrpmd/workflows/drpmd_sampling.py:287:        from pyrpmd.nonadiabatic import DiagonalPotential, NRPMDState
+src/pyrpmd/workflows/drpmd_trajectory.py:33:    from pyrpmd.nonadiabatic import NRPMDState
+src/pyrpmd/workflows/nonadiabatic.py:21:from ..nonadiabatic import NRPMDState, NRPMDDynamics
+src/pyrpmd/workflows/nonadiabatic_extensions.py:20:from ..nonadiabatic import validate_diabatic_result
+src/pyrpmd/workflows/nonadiabatic_extensions.py:28:from .nonadiabatic import _streams
+src/pyrpmd/workflows/nonadiabatic_multistate.py:25:from .nonadiabatic import _streams
+src/pyrpmd/workflows/nonadiabatic_rate.py:23:from ..nonadiabatic import _positive_integer
+src/pyrpmd/workflows/nonadiabatic_rate.py:68:    nstates = _positive_integer(config["nstates"], "nstates")
+src/pyrpmd/workflows/nonadiabatic_rate.py:71:    beads = _positive_integer(config.get("beads", 1), "beads")
+src/pyrpmd/workflows/nonadiabatic_rate.py:99:    sampling = {"samples": _positive_integer(sample.get("samples", 100), "sampling.samples"),
+src/pyrpmd/workflows/nonadiabatic_rate.py:101:                "stride": _positive_integer(sample.get("stride", 10), "sampling.stride"),
+src/pyrpmd/workflows/nonadiabatic_rate.py:106:                "steps": _positive_integer(dyn.get("steps", 100), "dynamics.steps"),
+src/pyrpmd/workflows/nonadiabatic_rate.py:107:                "stride": _positive_integer(dyn.get("stride", 1), "dynamics.stride"),
+src/pyrpmd/workflows/nonadiabatic_rate.py:135:        rate["block_size"] = _positive_integer(rate["block_size"], "rate.block_size")
+src/pyrpmd/workflows/state_selected.py:31:_positive_integer = partial(positive_integer, error_type=InputError)
+src/pyrpmd/workflows/state_selected.py:135:    samples = _positive_integer(samples, "samples")
+src/pyrpmd/workflows/state_selected.py:136:    stride = _positive_integer(stride, "stride")
+src/pyrpmd/nrpmd_auxiliary.py:10:from .nonadiabatic import (
+src/pyrpmd/nrpmd_auxiliary.py:12:    _mint,
+src/pyrpmd/nrpmd_auxiliary.py:118:            _mint(self.state, result, duration)
+tests/test_adaptive_nrpmd.py:14:from pyrpmd.nonadiabatic import DiabaticResult, NRPMDState
+tests/test_adaptive_nrpmd_reference.py:11:from pyrpmd.nonadiabatic import DiabaticResult
+tests/test_adiabatic_on_the_fly.py:7:from pyrpmd.adiabatic import (
+tests/test_adiabatic_on_the_fly.py:14:from pyrpmd.nonadiabatic import DiabaticResult, NRPMDDynamics, NRPMDState
+tests/test_adiabatic_on_the_fly.py:20:    from pyrpmd.adiabatic import _aligned_overlap_log, _hermitian_propagator
+tests/test_adiabatic_provider_diagnostics.py:6:from pyrpmd.adiabatic import (
+tests/test_advanced_surface_hopping.py:14:from pyrpmd.nonadiabatic import DiabaticResult
+tests/test_batched_nonadiabatic.py:4:from pyrpmd.batched_nonadiabatic import BatchedNRPMDState, BatchedNRPMDDynamics
+tests/test_batched_nonadiabatic.py:6:from pyrpmd.nonadiabatic import NRPMDState, NRPMDDynamics
+tests/test_complex_nonadiabatic.py:8:from pyrpmd.nonadiabatic import (
+tests/test_complex_nonadiabatic.py:10:    validate_diabatic_result, _mint,
+tests/test_complex_nonadiabatic.py:48:def test_soc_mint_matches_matrix_exponential_force_quadrature(states, duration):
+tests/test_complex_nonadiabatic.py:65:    _mint(s, r, duration)
+tests/test_complex_nonadiabatic.py:79:    _mint(s, r, .41)
+tests/test_complex_nonadiabatic.py:80:    _mint(s, r, -.41)
+tests/test_complex_nonadiabatic.py:113:    _mint(s, r, .05)
+tests/test_constant_potential_nonadiabatic.py:12:from pyrpmd.nonadiabatic import DiabaticResult, NRPMDState
+tests/test_dac_paper_validation.py:11:from pyrpmd.nonadiabatic import NRPMDDynamics, NRPMDState
+tests/test_drpmd_checkpoint_clock.py:10:from pyrpmd.nonadiabatic import DiabaticResult, NRPMDDynamics, NRPMDState
+tests/test_electrode_diabatic.py:7:from pyrpmd.nonadiabatic import DiabaticResult, NRPMDState
+tests/test_excited_state_pyscf.py:119:    from pyrpmd.adiabatic import AdiabaticPythonPotential, AdiabaticRPSHDynamics
+tests/test_excited_state_rpsh.py:5:from pyrpmd.adiabatic import AdiabaticPythonPotential, AdiabaticRPSHDynamics
+tests/test_golden_rule_adapters.py:6:from pyrpmd.nonadiabatic import DiabaticResult
+tests/test_iesh.py:14:from pyrpmd.nonadiabatic import DiabaticResult
+tests/test_isomorphic.py:10:from pyrpmd.nonadiabatic import DiabaticResult
+tests/test_mash.py:4:from pyrpmd.adiabatic import AdiabaticPythonPotential, AdiabaticResult
+tests/test_multistate_external.py:15:from pyrpmd.nonadiabatic import NRPMDState, NRPMDDynamics, validate_diabatic_result
+tests/test_multistate_mash.py:9:from pyrpmd.adiabatic import AdiabaticPythonPotential, AdiabaticResult
+tests/test_multistate_mash.py:13:from pyrpmd.nonadiabatic import DiabaticResult
+tests/test_mv_rpmd.py:13:from pyrpmd.nonadiabatic import DiabaticResult
+tests/test_nonadiabatic.py:10:from pyrpmd.nonadiabatic import (
+tests/test_nonadiabatic.py:12:    validate_diabatic_result, _mint,
+tests/test_nonadiabatic.py:70:def test_mint_matches_independent_ode_including_momentum(gap):
+tests/test_nonadiabatic.py:83:    _mint(s,r,.41)
+tests/test_nonadiabatic_checkpoint_validation.py:11:from pyrpmd.nonadiabatic import DiabaticResult, NRPMDDynamics, NRPMDState
+tests/test_nonadiabatic_checkpoint_validation.py:13:from pyrpmd.workflows.nonadiabatic import _append, _load, _observe, _save
+tests/test_nonadiabatic_ensemble.py:10:from pyrpmd.nonadiabatic import DiabaticResult, NRPMDDynamics, NRPMDState
+tests/test_nonadiabatic_literature_reference.py:7:from benchmarks.tier2_literature.nonadiabatic import (
+tests/test_nonadiabatic_models.py:9:from pyrpmd.nonadiabatic import DiabaticResult, validate_diabatic_result
+tests/test_nonadiabatic_output.py:10:from pyrpmd.nonadiabatic import DiabaticResult, NRPMDDynamics
+tests/test_nonadiabatic_output.py:13:from pyrpmd.workflows.nonadiabatic import _write_results
+tests/test_nonadiabatic_public_extensions.py:16:from pyrpmd.nonadiabatic import DiabaticResult
+tests/test_nonadiabatic_task_workflow.py:10:from pyrpmd.nonadiabatic import NRPMDDynamics
+tests/test_nrpmd_contraction.py:7:from pyrpmd.nonadiabatic import DiabaticResult, NRPMDState, _mint
+tests/test_nrpmd_contraction.py:55:def test_multistate_mint_matches_independent_exponential_force_quadrature(nstates, spectrum, duration):
+tests/test_nrpmd_contraction.py:59:    _mint(state, result, duration)
+tests/test_nrpmd_contraction.py:72:def test_multistate_mint_reverse_flow_restores_nuclear_and_mapping_state(spectrum):
+tests/test_nrpmd_contraction.py:75:    _mint(state, result, 0.73)
+tests/test_nrpmd_contraction.py:76:    _mint(state, result, -0.73)
+tests/test_nrpmd_contraction.py:87:    _mint(state, result, duration)
+tests/test_nrpmd_input.py:72:    from pyrpmd.nonadiabatic import DiabaticResult
+tests/test_nrpmd_input.py:90:from pyrpmd.nonadiabatic import DiabaticResult
+tests/test_nrpmd_workflow.py:11:from pyrpmd.nonadiabatic import DiabaticResult, NRPMDState, NRPMDDynamics
+tests/test_nrpmd_workflow.py:17:from pyrpmd.nonadiabatic import DiabaticResult
+tests/test_published_nrpmd_benchmark.py:14:from pyrpmd.nonadiabatic import NRPMDState
+tests/test_pyscf_multistate.py:21:from pyrpmd.adiabatic import AdiabaticPythonPotential, ElectronicFrame
+tests/test_pyscf_multistate.py:497:    from pyrpmd.adiabatic import AdiabaticResult, AdiabaticRPSHDynamics, AdiabaticRPSHState
+tests/test_rp_iesh.py:11:from pyrpmd.nonadiabatic import DiabaticResult
+tests/test_rp_iesh.py:129:def test_bead_count_is_a_strict_positive_integer(beads):
+tests/test_rp_mash.py:11:from pyrpmd.nonadiabatic import DiabaticResult
+tests/test_rp_mash_ba.py:9:from pyrpmd.nonadiabatic import DiabaticResult
+tests/test_rp_mash_ba_reference.py:13:from pyrpmd.nonadiabatic import DiabaticResult
+tests/test_rpsh_decoherence.py:8:from pyrpmd.nonadiabatic import DiabaticResult
+tests/test_spin_mapping.py:8:from pyrpmd.nonadiabatic import DiabaticResult
+tests/test_spin_mapping.py:10:from pyrpmd.spin_mapping import (SMNRPMDDynamics, SMNRPMDState, W_RADIUS, _spin_mint,
+tests/test_spin_mapping.py:84:    _spin_mint(state, result, duration)
+tests/test_surface_hopping.py:10:from pyrpmd.nonadiabatic import DiabaticResult
+tests/test_thermal_nrpmd.py:12:from pyrpmd.nonadiabatic import DiabaticResult, NRPMDState
+tests/test_thermal_nrpmd_bias.py:10:from pyrpmd.nonadiabatic import DiabaticResult, NRPMDState
+tests/test_validation.py:92:        ("workflows.state_selected", "_positive_integer", 0, {},
+tests/test_auxiliary_operators.py:16:from pyrpmd.nonadiabatic import (
+tests/test_auxiliary_operators.py:21:    _mint,
+tests/test_auxiliary_operators.py:220:        _mint(legacy, dynamics._evaluate(legacy.q), 0.5 * dt)
+tests/test_auxiliary_operators.py:222:        _mint(legacy, dynamics._evaluate(legacy.q), 0.5 * dt)
+tests/test_auxiliary_workflow_checkpoint.py:3:from pyrpmd.nonadiabatic import DiabaticResult, NRPMDDynamics, NRPMDState
+examples/electrochemistry/adaptive_constant_potential.py:27:from pyrpmd.nonadiabatic import DiabaticResult
+examples/excited_state/toy_rpsh.py:17:from pyrpmd.adiabatic import AdiabaticPythonPotential, AdiabaticRPSHDynamics
+examples/nonadiabatic/adiabatic_on_the_fly.py:12:from pyrpmd.adiabatic import (
+examples/nonadiabatic/matrix_pes.py:9:from pyrpmd.nonadiabatic import DiabaticResult
+examples/nonadiabatic/method_models.py:15:from pyrpmd.nonadiabatic import DiabaticResult
+examples/nonadiabatic/published_nrpmd_benchmark.py:37:from pyrpmd.nonadiabatic import DiabaticResult
+examples/nonadiabatic/pyscf_lih_rpsh.py:24:from pyrpmd.adiabatic import AdiabaticPythonPotential, AdiabaticRPSHDynamics
+examples/nonadiabatic/rp_mash_ba_reference.py:38:from pyrpmd.nonadiabatic import DiabaticResult
+examples/nonadiabatic/soc_and_rpsh.py:13:from pyrpmd.nonadiabatic import DiabaticResult, NRPMDDynamics, NRPMDState
+examples/nonadiabatic/thermal_rate_model.py:4:from pyrpmd.nonadiabatic import DiabaticResult
+examples/nonadiabatic/thermal_rates.py:13:from pyrpmd.nonadiabatic import DiabaticResult
+benchmarks/efficiency/audit_optimization.py:27:         "com_gradient_n1000", "nrpmd_mint_s16", "fes_bootstrap", "normal_mode_n32_p256")
+benchmarks/efficiency/audit_optimization.py:37:    "nrpmd_mint_s16": {"rtol": 2e-11, "atol": 2e-11},
+benchmarks/efficiency/audit_optimization.py:328:def _mint_case(smoke):
+benchmarks/efficiency/audit_optimization.py:330:    from pyrpmd.nonadiabatic import DiabaticResult, NRPMDState, _mint
+benchmarks/efficiency/audit_optimization.py:348:            _mint(state, result, .017)
+benchmarks/efficiency/audit_optimization.py:358:                "operation": "actual _mint flow including the density basis contraction"}
+benchmarks/efficiency/audit_optimization.py:472:    if name == "nrpmd_mint_s16":
+benchmarks/efficiency/audit_optimization.py:473:        return _mint_case(smoke)
+benchmarks/electrochemical_string/validate.py:28:from pyrpmd.nonadiabatic import DiabaticResult, NRPMDState
+benchmarks/molecular_nonadiabatic/run_molecular.py:24:from pyrpmd.nonadiabatic import NRPMDDynamics
+benchmarks/nonadiabatic/electronic_backends.py:26:from pyrpmd.batched_nonadiabatic import BatchedNRPMDState, BatchedNRPMDDynamics
+benchmarks/nonadiabatic/electronic_backends.py:34:from pyrpmd.nonadiabatic import NRPMDState, NRPMDDynamics
+benchmarks/nonadiabatic/population_dynamics.py:18:from pyrpmd.nonadiabatic import NRPMDDynamics
+benchmarks/paper_validation/tully_sac_pilot.py:20:from pyrpmd.nonadiabatic import NRPMDDynamics
+benchmarks/paper_validation/tully_sac_pilot.py:45:            from pyrpmd.nonadiabatic import NRPMDState
+benchmarks/tier2_literature/nonadiabatic.py:29:from pyrpmd.adiabatic import AdiabaticPythonPotential, AdiabaticResult, AdiabaticRPSHDynamics
+benchmarks/tier2_literature/nonadiabatic.py:32:from pyrpmd.nonadiabatic import DiabaticResult, NRPMDDynamics, NRPMDState
+benchmarks/tier2_literature/nonadiabatic.py:33:from pyrpmd.adiabatic import QDNRPMDDynamics
+benchmarks/tier2_literature/nonadiabatic_analysis.py:25:    from .nonadiabatic import CHANNELS, MAIN_SEEDS, quantum_scattering, run_trajectory, wilson, _atomic_json, _write_csv
+benchmarks/tier2_literature/nonadiabatic_analysis.py:27:    from nonadiabatic import CHANNELS, MAIN_SEEDS, quantum_scattering, run_trajectory, wilson, _atomic_json, _write_csv

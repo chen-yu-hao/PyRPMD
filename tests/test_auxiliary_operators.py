@@ -1,4 +1,6 @@
 import copy
+import subprocess
+import sys
 
 import numpy as np
 import pytest
@@ -6,11 +8,12 @@ import pytest
 from pyrpmd.auxiliary import (
     AuxiliaryCompatibility,
     AuxiliaryLayout,
+    AuxiliaryPropagationCore,
     AuxiliarySplitPoint,
     validate_auxiliary_operator,
 )
 from pyrpmd.dynamics import CayleyIntegrator
-from pyrpmd.engine import ForceSplitting
+from pyrpmd.engine import AuxiliaryLayout as EngineAuxiliaryLayout, ForceSplitting
 from pyrpmd.input import InputError
 from pyrpmd.nonadiabatic import (
     DiabaticResult,
@@ -23,6 +26,41 @@ from pyrpmd.nonadiabatic_input import resolve_nonadiabatic_job
 from pyrpmd.potentials.base import Potential, coordinates
 from pyrpmd.potentials.builtin import HarmonicPotential
 from pyrpmd.potentials.contraction import SplitPotential
+
+
+@pytest.mark.parametrize("modules", [
+    ("pyrpmd.nrpmd_auxiliary", "pyrpmd.nonadiabatic"),
+    ("pyrpmd.nonadiabatic", "pyrpmd.nrpmd_auxiliary"),
+])
+def test_nrpmd_modules_import_in_either_order(modules):
+    result = subprocess.run(
+        [sys.executable, "-c", """
+import importlib
+import sys
+
+for name in sys.argv[1:]:
+    importlib.import_module(name)
+
+import numpy as np
+from pyrpmd import nonadiabatic, nrpmd_auxiliary
+from pyrpmd.potentials.nonadiabatic_models import TullyModelOne
+
+assert nonadiabatic.NRPMDAuxiliaryOperator is nrpmd_auxiliary.NRPMDAuxiliaryOperator
+assert nonadiabatic.NRPMD_COMPATIBILITY is nrpmd_auxiliary.NRPMD_COMPATIBILITY
+dynamics = nonadiabatic.NRPMDDynamics(
+    TullyModelOne(), [2000.0], 10.0, 1, 0.01, 2, native=False,
+)
+state = nonadiabatic.NRPMDState(
+    np.zeros((1, 1, 3)), np.zeros((1, 1, 3)),
+    mapping_q=np.array([[np.sqrt(3.0), 1.0]]), mapping_p=np.zeros((1, 2)),
+)
+dynamics.step(state)
+assert state.step == 1
+assert np.isfinite(dynamics.energy(state))
+""", *modules],
+        capture_output=True, text=True,
+    )
+    assert result.returncode == 0, result.stderr
 
 
 class LinearDiabatic(Potential):
@@ -140,6 +178,29 @@ class DummyAuxiliary:
         return {"kind": "dummy", "layout": self.layout.value}
 
 
+class _AuxiliaryHolder:
+    def __init__(self, nbeads):
+        self.q = np.zeros((nbeads, 1, 3))
+        self.p = np.zeros_like(self.q)
+        self.values = np.zeros((nbeads, 3))
+        self.step = 0
+        self.time = 0.0
+
+    def copy(self):
+        result = _AuxiliaryHolder(len(self.q))
+        result.q[:] = self.q
+        result.p[:] = self.p
+        result.values[:] = self.values
+        result.step, result.time = self.step, self.time
+        return result
+
+
+class _BoundDummyAuxiliary(DummyAuxiliary):
+    def __init__(self, holder):
+        super().__init__(AuxiliaryLayout.PER_BEAD, len(holder.q))
+        self.values = holder.values
+
+
 def _focused_state(q, p=None):
     q = np.asarray(q, dtype=float)
     p = np.zeros_like(q) if p is None else np.asarray(p, dtype=float)
@@ -149,6 +210,7 @@ def _focused_state(q, p=None):
 
 
 def test_protocol_accepts_per_ring_and_per_bead_layouts():
+    assert EngineAuxiliaryLayout is AuxiliaryLayout
     validate_auxiliary_operator(
         DummyAuxiliary(AuxiliaryLayout.PER_RING, 1), nbeads=8, checkpoint=True
     )
@@ -159,6 +221,21 @@ def test_protocol_accepts_per_ring_and_per_bead_layouts():
         validate_auxiliary_operator(
             DummyAuxiliary(AuxiliaryLayout.PER_BEAD, 1), nbeads=8
         )
+
+
+def test_auxiliary_core_commits_operator_owned_arrays():
+    holder = _AuxiliaryHolder(2)
+    core = AuxiliaryPropagationCore(
+        dt=0.25,
+        nbeads=2,
+        operator_factory=_BoundDummyAuxiliary,
+        free_step=lambda q, p: None,
+        validate_state=lambda state: None,
+    )
+    core.step(holder)
+    np.testing.assert_allclose(holder.values, 0.25)
+    assert holder.step == 1
+    assert holder.time == 0.25
 
 
 def test_nrpmd_auxiliary_core_is_bitwise_legacy_equivalent_for_10000_steps():
