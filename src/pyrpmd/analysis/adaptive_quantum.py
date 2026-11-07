@@ -152,20 +152,31 @@ def spectral_diagnostics(chi, frequencies):
     return {'negative_absorption_fraction':float(trapezoid(np.maximum(-S,0),w)/max(denominator,1e-30)),
             'minimum_absorption':float(S.min()),'finite':True,'physical_converged':False}
 
-def matched_rate_defect(full_rp, active_rp, active_q, *, beta, observable, units):
+def matched_rate_defect(full_rp, active_rp, active_q, *, beta, observable, units, mode='additive'):
     """Experimental plateau-rate defect transfer, not a general rate theorem.
 
     Caller must establish the SAME dividing surface, reactant normalization,
     temperature and units for all three rates. Returns negative results unchanged
     so a failed transfer cannot be hidden. Uncertainty must be propagated from
     whole replicas and from the quantum reference separately.
+
+    ``mode='additive'`` (default) returns ``full + q - rp``; ``mode='ratio'``
+    returns ``full * q / rp``, which is invariant to a prefactor shared by
+    both active-space rates and is the transfer used by
+    :mod:`pyrpmd.analysis.subspace_correction`.
     """
     values=_real([full_rp,active_rp,active_q,beta],'rates and beta')
     if values.shape!=(4,) or values[3]<=0 or np.any(values[:3]<0) or not observable or not units:
         raise ValueError('Positive beta, nonnegative matched rates, observable and units required')
-    corrected=float(values[0]+values[2]-values[1])
+    if mode=='additive':
+        corrected=float(values[0]+values[2]-values[1]); label='matched-plateau-additive-rate-defect'
+    elif mode=='ratio':
+        if values[1]<=0: raise ValueError('ratio mode requires a positive active-space RPMD rate')
+        corrected=float(values[0]*values[2]/values[1]); label='matched-plateau-multiplicative-rate-defect'
+    else:
+        raise ValueError("mode must be 'additive' or 'ratio'")
     return {'rate':corrected,'negative_rate':corrected<0,'beta':float(beta),'observable':str(observable),
-            'units':str(units),'approximation':'matched-plateau-additive-rate-defect',
+            'units':str(units),'approximation':label,
             'physical_converged':False,'exact_general_rate_claim':False}
 
 __all__=['Selection','select_active_subspace','passive_reservoir_self_energy',

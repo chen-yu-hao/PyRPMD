@@ -242,8 +242,15 @@ def hybrid_flux_side_correction(
     ``mode='additive_defect'`` uses ``k_RP,full + k_Q,sub - k_RP,sub`` and
     preserves the zero-defect and full-subspace algebraic limits.  The optional
     ``mode='inverse_defect'`` applies the corresponding scalar inverse formula
-    with a positive ridge.  Both are controlled approximations: a low-dimensional
-    quantum rate does not determine the exact rate of a coupled full system.
+    with a positive ridge.  ``mode='ratio'`` uses
+    ``k_RP,full * k_Q,sub / k_RP,sub`` (scalar curves only); it keeps the same
+    two limits and, unlike the additive form, is invariant to a prefactor
+    shared by both subspace rates, which matters whenever the subspace
+    model's absolute rate differs from the full system's (zero-point energy,
+    partition functions).  For plateau rates it is the transfer used by
+    :mod:`pyrpmd.analysis.subspace_correction`.  All modes are controlled
+    approximations: a low-dimensional quantum rate does not determine the
+    exact rate of a coupled full system.
     """
     t = _time(time)
     full, sub, quantum = (_curve(v, n) for v, n in (
@@ -258,6 +265,12 @@ def hybrid_flux_side_correction(
         raise ValueError("ridge must be finite and nonnegative")
     if mode == "additive_defect":
         corrected = full + quantum - sub
+    elif mode == "ratio":
+        if full.ndim != 1:
+            raise ValueError("ratio mode requires scalar rate curves")
+        if np.any(sub == 0):
+            raise ValueError("ratio mode requires a nonzero RPMD subspace rate at every time")
+        corrected = full * (quantum / sub)
     elif mode == "inverse_defect":
         if ridge <= 0:
             raise ValueError("inverse_defect requires a positive ridge")
@@ -274,13 +287,13 @@ def hybrid_flux_side_correction(
                 si = np.linalg.pinv(sub[i] + ridge * eye)
                 corrected[i] = np.linalg.pinv(fi + qi - si) - ridge * eye
     else:
-        raise ValueError("mode must be additive_defect or inverse_defect")
+        raise ValueError("mode must be additive_defect, inverse_defect or ratio")
     diagnostics = {
         "mode": mode,
         "ridge": ridge,
         "inverse_defect_rms": float(np.sqrt(np.mean(np.abs(quantum - sub) ** 2))),
         "physical_converged": False,
-        "approximation": "matched-subspace-flux-side-defect-transfer",
+        "approximation": "matched-subspace-flux-side-defect-transfer" if mode != "ratio" else "matched-subspace-multiplicative-defect",
         "exact_general_rate_claim": False,
         "assumption": "the selected subspace carries the full-system quantum flux-side defect",
     }

@@ -47,3 +47,15 @@ def test_inverse_flux_side_mode_requires_ridge():
         time, curve, curve, curve + 0.1, mode="inverse_defect", ridge=0.05
     )
     assert np.all(np.isfinite(result["rate"]))
+
+
+def test_hybrid_flux_side_ratio_mode_cancels_shared_prefactor():
+    t = np.linspace(0.0, 1.0, 5)
+    full = np.full(5, 2.0)
+    out = hybrid_flux_side_correction(t, full, 1e-6 * np.ones(5), 3e-6 * np.ones(5), mode="ratio")
+    assert np.allclose(out["rate"], 6.0)
+    assert out["diagnostics"]["approximation"] == "matched-subspace-multiplicative-defect"
+    same = hybrid_flux_side_correction(t, full, full, full, mode="ratio")
+    assert np.allclose(same["rate"], full)
+    with pytest.raises(ValueError):
+        hybrid_flux_side_correction(t, full, np.zeros(5), full, mode="ratio")
