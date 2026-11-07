@@ -82,18 +82,23 @@ def normalize_thermostat(spec=None):
             raise ValueError("specify only one of NHC tau and tdamp")
         result["tau"] = result.pop("tdamp")
     fields = {
-        "none": set(), "andersen": {"interval"}, "langevin": {"gamma"},
-        "pile-l": {"gamma_centroid", "pile_scale"}, "pile-g": {"tau", "pile_scale"},
-        "svr": {"tau"}, "gle": {"gle"}, "nm-gle": {"gle"},
-        "nm-gle-g": {"gle", "tau"}, "piglet": {"gle"},
-        "trpmd": {"pile_scale", "gamma_centroid"}, "ffl": {"gamma"},
-        "nhc": {"tau", "chain_length", "substeps"},
+        "none": set(), "andersen": {"interval", "rng"}, "langevin": {"gamma", "rng"},
+        "pile-l": {"gamma_centroid", "pile_scale", "rng"}, "pile-g": {"tau", "pile_scale", "rng"},
+        "svr": {"tau", "rng"}, "gle": {"gle", "rng"}, "nm-gle": {"gle", "rng"},
+        "nm-gle-g": {"gle", "tau", "rng"}, "piglet": {"gle", "rng"},
+        "trpmd": {"pile_scale", "gamma_centroid", "rng"}, "ffl": {"gamma", "rng"},
+        "nhc": {"tau", "chain_length", "substeps", "rng"},
     }
     if mode not in fields:
         raise ValueError(f"unsupported thermostat {mode!r}")
     unknown = set(result) - fields[mode] - {"mode"}
     if unknown:
         raise ValueError(f"unknown {mode} thermostat parameters: {', '.join(sorted(unknown))}")
+    if "rng" in result:
+        if not isinstance(result["rng"], str) or result["rng"] not in ("mt19937_64", "philox-v1"):
+            raise ValueError("rng must be 'mt19937_64' or 'philox-v1'")
+        if result["rng"] == "mt19937_64":
+            del result["rng"]  # Explicit legacy selection retains the old identity.
     for name in ("gamma", "gamma_centroid", "pile_scale", "tau"):
         if name in result:
             result[name] = _real(result[name], name, zero=name != "tau")
@@ -470,7 +475,8 @@ class _Composition:
                 return PythonNHCBath(d, q, duration, spec)
         return NativeEnsemble(q, d.masses, d.beta, duration, p=np.zeros_like(q),
                               thermostat=spec, potential=None,
-                              integrator="normal-mode-bab", fixed_atoms=d.fixed_atoms, seed=seed)
+                              integrator="normal-mode-bab", fixed_atoms=d.fixed_atoms, seed=seed,
+                              threads=d.integrator.threads)
 
     def _bath(self, q, p, duration, step):
         if self.native_engine is not None:
@@ -506,6 +512,7 @@ class _Composition:
                               thermostat=self.plan.thermostat_spec, barostat=self.plan.barostat_spec,
                               integrator=self.plan.integrator, fixed_atoms=d.fixed_atoms,
                               sampling_integrator=self.plan.sampling_integrator,
+                              threads=d.integrator.threads,
                               cell=d._initial_cell, pbc=d.pbc, seed=seed, **({"allow_python": True} if allow_python else {}))
 
     def _can_native(self, bias, fragments):

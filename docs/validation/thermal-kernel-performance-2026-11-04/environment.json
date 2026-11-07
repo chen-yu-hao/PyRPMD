@@ -1,0 +1,15 @@
+{
+  "hostname": "cluster",
+  "python": "3.11.5 (main, Sep 11 2023, 13:54:46) [GCC 11.2.0]",
+  "numpy": "1.26.4",
+  "scipy": "1.17.1",
+  "pytest": "9.2.0",
+  "openmp": true,
+  "legacy_rng_abi": "mt19937_64-normal-v1-libstdc++-20221121",
+  "philox_rng_abi": "philox-v1-salmon-sc11",
+  "thermal_kernel_api": 2,
+  "compiled_artifacts": {
+    "/tmp/pyrpmd-t49/src/pyrpmd/_native.cpython-311-x86_64-linux-gnu.so": "a353d133fb9620ffaccc5873fe48a65facb3e4480f689e30f50b9aee5276eb20",
+    "/tmp/pyrpmd-t49/src/pyrpmd/_thermal.cpython-311-x86_64-linux-gnu.so": "e94dd885ebf4468ab5a5030bb48e0c8693447b3897a5aca36acf6f51edd293a2"
+  }
+}

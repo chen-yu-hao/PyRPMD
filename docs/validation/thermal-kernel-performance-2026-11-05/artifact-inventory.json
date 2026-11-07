@@ -1,0 +1,127 @@
+{
+  "included": [
+    {
+      "path": "PR_DRAFT.md",
+      "bytes": 7655
+    },
+    {
+      "path": "README.md",
+      "bytes": 11853
+    },
+    {
+      "path": "baseline-dynamics.json",
+      "bytes": 44316
+    },
+    {
+      "path": "baseline-processes-1.json",
+      "bytes": 3813
+    },
+    {
+      "path": "baseline-processes-4.json",
+      "bytes": 4860
+    },
+    {
+      "path": "build-baseline-default.log",
+      "bytes": 2502
+    },
+    {
+      "path": "build-fma.log",
+      "bytes": 2271
+    },
+    {
+      "path": "build-no-native.log",
+      "bytes": 2296
+    },
+    {
+      "path": "build-no-openmp.log",
+      "bytes": 1826
+    },
+    {
+      "path": "build-openmp.log",
+      "bytes": 1880
+    },
+    {
+      "path": "candidate-mt-dynamics.json",
+      "bytes": 43968
+    },
+    {
+      "path": "candidate-philox-dynamics-4.json",
+      "bytes": 4075
+    },
+    {
+      "path": "candidate-philox-dynamics.json",
+      "bytes": 43798
+    },
+    {
+      "path": "candidate-philox-native-1.json",
+      "bytes": 4070
+    },
+    {
+      "path": "candidate-philox-native-4.json",
+      "bytes": 4074
+    },
+    {
+      "path": "candidate-processes-1.json",
+      "bytes": 3902
+    },
+    {
+      "path": "candidate-processes-4.json",
+      "bytes": 4962
+    },
+    {
+      "path": "docs-build.log",
+      "bytes": 16448
+    },
+    {
+      "path": "legacy-reference.json",
+      "bytes": 21177
+    },
+    {
+      "path": "legacy-replay-1.json",
+      "bytes": 21177
+    },
+    {
+      "path": "legacy-replay-4.json",
+      "bytes": 21177
+    },
+    {
+      "path": "performance-gates.json",
+      "bytes": 1003
+    },
+    {
+      "path": "tests-fma.log",
+      "bytes": 1222
+    },
+    {
+      "path": "tests-full.log",
+      "bytes": 30436
+    },
+    {
+      "path": "tests-no-native.log",
+      "bytes": 518
+    },
+    {
+      "path": "tests-no-openmp.log",
+      "bytes": 1214
+    },
+    {
+      "path": "tests-openmp.log",
+      "bytes": 1222
+    },
+    {
+      "path": "threads-before.log",
+      "bytes": 886
+    },
+    {
+      "path": "throughput.csv",
+      "bytes": 7146
+    }
+  ],
+  "total_bytes_excluding_inventory": 315747,
+  "combined_record_bytes_excluding_inventories": 790333,
+  "excluded": [
+    "Compiled libraries, wheel files and checkpoint NPZs remain outside git.",
+    "Development-only workflow configuration failures remain in /tmp.",
+    "The 2026-11-04 records are retained as historical tuned-build evidence."
+  ]
+}

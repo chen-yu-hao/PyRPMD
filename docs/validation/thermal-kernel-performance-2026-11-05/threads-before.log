@@ -1,0 +1,15 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____________ test_four_trajectory_processes_do_not_oversubscribe ______________
+
+    def test_four_trajectory_processes_do_not_oversubscribe():
+>       assert run_workers("native-loop", 1, workers=4) == [{"before": 1, "after": 1}]*4
+E       AssertionError: assert [{'before': 1..., 'after': 8}] == [{'before': 1..., 'after': 1}]
+E         
+E         At index 0 diff: {'before': 1, 'after': 8} != {'before': 1, 'after': 1}
+E         Use -v to get more diff
+
+tests/test_native_thermal_threads.py:64: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_native_thermal_threads.py::test_four_trajectory_processes_do_not_oversubscribe
+1 failed, 18 deselected in 4.16s

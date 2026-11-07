@@ -1,0 +1,32 @@
+warning: no previously-included files found matching 'docs/validation/tier1-2026-10-31/*.npz'
+no previously-included directories found matching 'benchmarks/brhcl/build'
+warning: no previously-included files matching '*.csv' found under directory 'benchmarks/condensed_phase/results'
+warning: no previously-included files matching '*.npz' found under directory 'benchmarks/condensed_phase/results'
+no previously-included directories found matching 'docs/validation/tier2-literature-2026-11-01/sampling/opes'
+warning: no previously-included files matching 'bck.*' found under directory 'docs/validation/tier2-literature-2026-11-01/sampling'
+warning: no previously-included files matching '__pycache__' found anywhere in distribution
+warning: no previously-included files matching '*.py[cod]' found anywhere in distribution
+warning: no previously-included files matching '*.so' found anywhere in distribution
+warning: no previously-included files matching '*.o' found anywhere in distribution
+warning: no files found matching '*.md' under directory 'benchmarks/torch_literature'
+warning: no files found matching '*.gz' under directory 'benchmarks/torch_literature'
+/tmp/pyrpmd-t49-venv/lib/python3.11/site-packages/setuptools/_distutils/cmd.py:90: SetuptoolsDeprecationWarning: setup.py install is deprecated.
+!!
+
+        ********************************************************************************
+        Please avoid running ``setup.py`` directly.
+        Instead, use pypa/build, pypa/installer or other
+        standards-based tools.
+
+        This deprecation is overdue, please update your project and remove deprecated
+        calls to avoid build errors in the future.
+
+        See https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html for details.
+        ********************************************************************************
+
+!!
+  self.initialize_options()
+WARNING: The directory '/home/lyl/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Processing /tmp/t49-review-numpy-wheel/pyrpmd-0.2.0-py3-none-any.whl
+Installing collected packages: pyrpmd
+Successfully installed pyrpmd-0.2.0

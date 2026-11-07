@@ -1,0 +1,14 @@
++ env PYRPMD_NO_OPENMP=1 'CXXFLAGS=-march=native -ffp-contract=off' /tmp/pyrpmd-t49-venv/bin/python setup.py build_ext --inplace --force
+running build_ext
+building 'pyrpmd._native' extension
+g++ -pthread -B /home/lyl/anaconda3/compiler_compat -march=native -ffp-contract=off -fPIC -I/tmp/pyrpmd-t49-venv/include -I/home/lyl/anaconda3/include/python3.11 -c native/cayley.cpp -o build/temp.linux-x86_64-cpython-311/native/cayley.o -O3 -std=c++17
+g++ -pthread -B /home/lyl/anaconda3/compiler_compat -march=native -ffp-contract=off -shared -march=native -ffp-contract=off build/temp.linux-x86_64-cpython-311/native/cayley.o -o build/lib.linux-x86_64-cpython-311/pyrpmd/_native.cpython-311-x86_64-linux-gnu.so
+building 'pyrpmd._thermal' extension
+g++ -pthread -B /home/lyl/anaconda3/compiler_compat -march=native -ffp-contract=off -fPIC -I/tmp/pyrpmd-t49-venv/include -I/home/lyl/anaconda3/include/python3.11 -c native/thermal.cpp -o build/temp.linux-x86_64-cpython-311/native/thermal.o -O3 -std=c++17
+g++ -pthread -B /home/lyl/anaconda3/compiler_compat -march=native -ffp-contract=off -shared -march=native -ffp-contract=off build/temp.linux-x86_64-cpython-311/native/thermal.o -o build/lib.linux-x86_64-cpython-311/pyrpmd/_thermal.cpython-311-x86_64-linux-gnu.so
+building 'pyrpmd._electronic' extension
+g++ -pthread -B /home/lyl/anaconda3/compiler_compat -march=native -ffp-contract=off -fPIC -I/tmp/pyrpmd-t49-venv/include -I/home/lyl/anaconda3/include/python3.11 -c native/electronic.cpp -o build/temp.linux-x86_64-cpython-311/native/electronic.o -O3 -std=c++17
+g++ -pthread -B /home/lyl/anaconda3/compiler_compat -march=native -ffp-contract=off -shared -march=native -ffp-contract=off build/temp.linux-x86_64-cpython-311/native/electronic.o -o build/lib.linux-x86_64-cpython-311/pyrpmd/_electronic.cpython-311-x86_64-linux-gnu.so
+copying build/lib.linux-x86_64-cpython-311/pyrpmd/_native.cpython-311-x86_64-linux-gnu.so -> src/pyrpmd
+copying build/lib.linux-x86_64-cpython-311/pyrpmd/_thermal.cpython-311-x86_64-linux-gnu.so -> src/pyrpmd
+copying build/lib.linux-x86_64-cpython-311/pyrpmd/_electronic.cpython-311-x86_64-linux-gnu.so -> src/pyrpmd

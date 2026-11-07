@@ -43,6 +43,7 @@ include_patterns = [
     "builtin-native-potentials.md",
     "torch-materials-workflows.md",
     "pimd-engine-convergence.md",
+    "native-ensembles.md",
     "implementation-review-2026-11-03.md",
     "excited-state-interface.md",
     "rpc-mts.md", "mixed-sampling.md", "trpmd-spectroscopy.md", "propagation-stack.md", "auxiliary-operators.md", "condensed-phase-nqe.md",

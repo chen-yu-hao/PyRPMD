@@ -12,7 +12,7 @@ and its cached Gaussian draw. An explicitly selected Python PES bridge uses the
 same native operators and reports its force callbacks separately.
 
 The standard `pyrpmd run` PIMD workflow can explicitly select this driver with
-`sampling.engine="native"`; see [native PIMD](native-pimd-workflow.md). Historical
+`sampling.engine="native"`; see [native PIMD](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md). Historical
 inputs retain their integrators, checkpoints and random streams. The common
 `Dynamics` interface also exposes these thermostats and barostats to task
 adapters. Thermostatted sampling must not be relabeled as ordinary RPMD real-time
@@ -354,7 +354,7 @@ accuracy, arbitrary flexible-cell thermodynamics or calibrated PIGLET speedups**
 `benchmarks/efficiency/native_ensembles.py` compares one native block with repeated
 one-step calls to the same native engine, using identical final states. It
 measures call overhead on a cheap harmonic PES, not a general ML/ab-initio speedup.
-See the [validation summary](validation/native-ensembles-2026-10-31/README.md).
+See the [validation summary](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/native-ensembles-2026-10-31/README.md).
 
 ## Method sources
 
@@ -372,4 +372,129 @@ rescaling (10.1063/1.2408420), BZP (10.1063/1.3073889), constant-pressure PIMD
 ## Standard PIMD workflow
 
 For the opt-in `task="pimd"` route, streaming checkpoint journals and native
-normal-mode fusion, see [Native PIMD workflow](native-pimd-workflow.md).
+normal-mode fusion, see [Native PIMD workflow](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md).
+
+## Versioned random streams and CPU threading
+
+Existing inputs keep `mt19937_64` with the C++ standard library's normal
+sampler. Its draw order, serialized Gaussian cache, checkpoint schema and
+fingerprint remain unchanged. Explicit `rng="mt19937_64"` selects that same
+contract. Random draws on this path remain serial; independent transforms,
+kicks and built-in per-bead PES evaluations can use OpenMP.
+
+A new run can opt into `philox-v1` in its thermostat specification:
+
+```python
+engine = NativeEnsemble(
+    q, masses, beta, dt, thermostat={"mode": "pile-l", "rng": "philox-v1"},
+    potential={"kind": "harmonic", "k": 0.5}, seed=49,
+)
+```
+
+The standard input route accepts the option for the native PIMD engine:
+
+```toml
+[sampling]
+engine = "native"
+thermostat = "pile-l"
+
+[sampling.thermostat_params]
+rng = "philox-v1"
+```
+
+`pyrpmd-native` inputs put `rng = "philox-v1"` directly in their
+`[thermostat]` table. Other standard workflow engines reject this option
+before provider construction or output creation. Python `Dynamics` accepts
+it in an explicit thermostat mapping; the compiled thermal extension is
+required for this stream.
+
+The independent implementation in `native/philox.h` follows Philox4x32-10
+(Salmon et al., SC'11, DOI 10.1145/2063384.2063405). The seed and the physical
+step plus a monotonically increasing bath-event counter select a stream;
+bead/mode, degree of freedom, purpose and auxiliary component select draws.
+The event origin retains all 128 Philox output bits, and the seed remains the
+key for the coordinate draw. Two 52-bit uniforms strictly inside `(0, 1)` produce a Box--Muller pair.
+Neither thread count nor OpenMP scheduling enters this mapping. PILE-G/SVR
+uses a sum of independent squared normals for its chi-square draw. The
+checkpoint stores the seed and event counter, so restoring into an engine
+constructed with another seed continues the saved stream. There is no hidden
+noise buffer or cached half-pair on the Philox path.
+
+The `philox-v1` ABI and thermostat option enter the physics fingerprint;
+loading a Philox checkpoint into a legacy engine is rejected. This version
+also fixes the packed two-real-FFT rounding path used by fused PILE-L/TRPMD
+for power-of-two rings with P >= 8 and at least 8 atoms. It implements the
+same C-O-C map, but its rounding need not match the legacy four-transform
+path. Replay is bitwise within the same floating-point build and libm;
+CPU/compiler/FMA changes are not a cross-build bitwise guarantee. The legacy
+path keeps the original scalar operation order. No default is switched.
+
+Set `Dynamics(..., threads=n)` or `NativeEnsemble(..., threads=n)` explicitly;
+both default to one thread, even when `OMP_NUM_THREADS` is unset or larger.
+The native input schema also accepts `threads`. Composed thermal operators
+inherit `Dynamics`' thread count, including the Python propagation loop.
+Workflow paths using `Dynamics` inherit `parallel.threads_per_rank`; the native
+PIMD workflow retains its existing one-thread-per-trajectory restriction.
+Requesting more than one thread requires an OpenMP build. Thread counts are
+execution settings and do not change physics fingerprints or checkpoints.
+Large arrays use static
+OpenMP loops with per-thread FFT/GLE scratch; small systems stay serial.
+Legacy energy and kinetic reductions retain their serial order. Large
+`philox-v1` observations sum each bead independently, then sum beads in order;
+its SVR reductions use fixed 2048-element blocks and sum block totals in
+index order. Both allow ulp differences from the legacy sum. Built-in PES
+reductions retain atom order within each independent bead. Thread-count
+changes therefore do not reorder sums. Arbitrary external PES callbacks keep
+their existing threading contract.
+
+`Dynamics.propagate()` and `propagate_block()` use private binary rollback
+tokens. Tokens preserve the original executor and lazy bath selection, RNG,
+auxiliaries, cell, cached forces and the Python generator. Live state transfer
+reuses array buffers and does not produce JSON or checkpoint digests. Native
+code prepares the initial-energy terms in one traversal; NumPy still performs
+their reductions in the original order. Public
+`operator_state_dict()`, `state()`, `save()` and checkpoint readers retain
+their existing persistent format. A failed whole block restores its initial
+state; a prefix API still retains only fully accepted steps.
+
+Repeated harmonic-provider checks compare detached copies of the original
+parameter arrays before expanding them over atoms. Unchanged inputs reuse the
+same binding. Changed values, shapes or provider capabilities still follow the
+existing validation and binding-identity checks.
+
+## Reproducing thermal performance and compatibility checks
+
+Use the same interpreter, compiler flags, CPU affinity and observation options
+for both checkouts. Install each checkout before measuring it, and select it
+with `PYTHONPATH=/absolute/checkout/src` when using a shared environment. The
+script reports its imported source, revision, compiler and every wall time.
+Startup and warm-up are excluded; JSON distinguishes the public `Dynamics`
+path from direct `NativeEnsemble` measurements.
+
+```bash
+python -m pip install -e . --no-build-isolation
+OPENBLAS_NUM_THREADS=1 python benchmarks/efficiency/thermal_throughput.py \
+  --baseline --threads 1 --profile --output baseline.json
+OPENBLAS_NUM_THREADS=1 python benchmarks/efficiency/thermal_throughput.py \
+  --rng philox-v1 --threads 1 --profile --output candidate.json
+for threads in 1 2 4; do
+  OPENBLAS_NUM_THREADS=1 python benchmarks/efficiency/thermal_throughput.py \
+    --api native --rng philox-v1 --threads "$threads" --block-steps 8 --output native-$threads.json
+done
+c++ -O3 -std=c++17 -fopenmp -I native benchmarks/efficiency/thermal_kernels.cpp -o /tmp/thermal-kernels
+/tmp/thermal-kernels 4096 32 philox-v1 1
+OPENBLAS_NUM_THREADS=1 python benchmarks/efficiency/thermal_statistics.py --rng philox-v1 --threads 4 --output statistics.json
+```
+
+The component benchmark measures generic four-transform helpers, the actual
+middle map, PES, kicks, noise generation/application, observations, state
+copies, and a STREAM-style triad. Component timings overlap and must not be
+added to claim a whole-run speedup. The full matrix uses canonical synthetic
+GLE/PIGLET matrices to measure implementation cost; it does not validate a
+calibrated PIGLET model or real-material dynamics.
+
+`benchmarks/efficiency/thermal_contract.py --write /tmp/thermal-reference
+--output reference.json` records legacy checkpoints in `main@801953d`.
+Run the same script with `--compare /tmp/thermal-reference --output replay.json`
+in the candidate using identical build flags. Keep NPZ references outside Git;
+the report records their SHA256 values and exact replay results.

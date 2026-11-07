@@ -25,8 +25,12 @@
 #include <string>
 #include <vector>
 #include "ring_fft.h"
+#include "philox.h"
 #include "include/pyrpmd/pes_api_v1.h"
 #include "include/pyrpmd/thermal_pes.h"
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 namespace thermal {
 using Vec = std::vector<double>;
@@ -59,11 +63,13 @@ enum class Thermostat { None, Andersen, Langevin, PileL, PileG, SVR, GLE, NMGLE,
 enum class Barostat { None, BZP, MTK, RGB, SCR };
 struct Config {
     size_t atoms=0,beads=0; double beta=1,dt=.01;
+    int threads=1;
     Vec masses; std::vector<uint8_t> fixed;
     Thermostat thermostat=Thermostat::PileL; Barostat barostat=Barostat::None;
     bool cayley=true,initialize_momenta=true,has_cell=false,fuse_modes=true,middle_npt=false;
     double gamma=1,gamma0=1,pile_scale=1,tau=1;
     uint64_t interval=10,seed=0;
+    bool philox=false;
     size_t gle_size=0; Vec gle_T,gle_S,gle_Croot;
     size_t nhc_length=3,nhc_substeps=1;
     double pressure=0,baro_tau=1,baro_gamma=1,compressibility=0;
@@ -78,7 +84,7 @@ struct Config {
 };
 struct State {
     Vec q,p,aux,energy,force,virial; Mat cell=identity(),cell_p{};
-    uint64_t step=0,evaluations=0; bool force_valid=false;
+    uint64_t step=0,evaluations=0,rng_counter=0,rng_seed=0; bool force_valid=false;
     std::mt19937_64 rng; std::normal_distribution<double> gaussian;
 };
 struct CommonObservations {
@@ -88,6 +94,7 @@ struct CommonObservations {
 struct Output { Vec samples,centroids,energy_parts; size_t frames=0; uint64_t completed=0; std::string error; };
 static constexpr size_t ncolumns=18; // step,t,U,Kprim,Kcv,H_P,V,P,cell[9],K_fict
 class Engine {
+    friend struct KernelProfile; // Standalone benchmarks/efficiency/thermal_kernels.cpp.
 public:
     const Config c;
     State s;
@@ -95,7 +102,8 @@ private:
     size_t d,l,mobile;
     double theta,baro_mass;
     RingFFT fft;
-    Vec xr,xi,tmp,qn,pn,centroid_q,centroid_p,centroid_f;
+    Vec qn,pn,centroid_q,centroid_p,centroid_f;
+    Vec parallel_xr,parallel_xi,parallel_tmp,pile_noise,partial_sums;
     Vec omega,a,b,cc,ah,bh,ch,y,z,noise,nhc_mass;
     std::vector<int32_t> status;
     Mat reference_inverse;
@@ -106,39 +114,170 @@ private:
     }
     bool gle()const{return c.thermostat==Thermostat::GLE||c.thermostat==Thermostat::NMGLE||c.thermostat==Thermostat::NMGLEG||c.thermostat==Thermostat::Piglet;}
     bool active(size_t j)const{return !c.fixed[j/3];}
+    size_t max_threads()const{
+#ifdef _OPENMP
+        return static_cast<size_t>(c.threads);
+#else
+        return 1;
+#endif
+    }
+    void ensure_parallel_scratch(){
+        const size_t need=max_threads()*c.beads*8;
+        if(parallel_xr.size()!=need){
+            parallel_xr.resize(need);parallel_xi.resize(need);parallel_tmp.resize(2*need);
+        }
+    }
+    template<class F> void parallel_for(size_t n,F&& fn){
+#ifdef _OPENMP
+        if(l<32768||max_threads()==1){for(size_t i=0;i<n;++i)fn(i);return;}
+#pragma omp parallel for schedule(static) num_threads(c.threads)
+        for(long long i=0;i<static_cast<long long>(n);++i)fn(static_cast<size_t>(i));
+#else
+        for(size_t i=0;i<n;++i)fn(i);
+#endif
+    }
+    template<class F> double fixed_sum(size_t count,F&& term){
+        // philox-v1 only: fixed 2048-element blocks in every thread layout.
+        const size_t blocks=(count+2047)/2048;partial_sums.resize(blocks);
+        parallel_for(blocks,[&](size_t block){
+            double value=0.;const size_t end=std::min((block+1)*2048,count);
+            for(size_t i=block*2048;i<end;++i)value+=term(i);
+            partial_sums[block]=value;
+        });
+        return std::accumulate(partial_sums.begin(),partial_sums.end(),0.);
+    }
     double g(){return s.gaussian(s.rng);}
+    pyrpmd::philox::Stream begin_random(){
+        if(!c.philox)return {};
+        require(s.rng_counter<UINT64_MAX,"Philox event counter overflow");
+        return pyrpmd::philox::Stream(s.rng_seed,s.step,s.rng_counter++);
+    }
+    double random_normal(const pyrpmd::philox::Stream& stream,size_t bead,size_t dof,uint32_t purpose,uint32_t component=0){
+        if(!c.philox)return g();
+        return stream.normal(static_cast<uint32_t>(bead),static_cast<uint32_t>(dof),purpose,component);
+    }
     void means(){
         std::fill(centroid_q.begin(),centroid_q.end(),0.);
         std::fill(centroid_p.begin(),centroid_p.end(),0.);
         std::fill(centroid_f.begin(),centroid_f.end(),0.);
-        for(size_t k=0;k<c.beads;++k)for(size_t j=0;j<d;++j){size_t i=k*d+j;centroid_q[j]+=s.q[i]/c.beads;centroid_p[j]+=s.p[i]/c.beads;centroid_f[j]+=s.force[i]/c.beads;}
+        if(fft.radix2&&l>=32768){
+            // Each freedom still sums beads in order, including subnormals
+            // in builds which enable fused multiply-add instructions.
+            parallel_for((d+255)/256,[&](size_t block){
+                const size_t begin=block*256,end=std::min(begin+256,d);
+                for(size_t k=0;k<c.beads;++k)for(size_t j=begin;j<end;++j){
+                    size_t i=k*d+j;
+                    centroid_q[j]+=s.q[i]/c.beads;centroid_p[j]+=s.p[i]/c.beads;centroid_f[j]+=s.force[i]/c.beads;
+                }
+            });
+        }else for(size_t k=0;k<c.beads;++k)for(size_t j=0;j<d;++j){size_t i=k*d+j;centroid_q[j]+=s.q[i]/c.beads;centroid_p[j]+=s.p[i]/c.beads;centroid_f[j]+=s.force[i]/c.beads;}
+    }
+    void tile_fft(double* real,double* imag,size_t width,bool inverse){
+        const size_t n=c.beads;
+        for(size_t k=0;k<n;++k)if(k<size_t(fft.reverse[k]))for(size_t j=0;j<width;++j){
+            std::swap(real[k*8+j],real[fft.reverse[k]*8+j]);
+            std::swap(imag[k*8+j],imag[fft.reverse[k]*8+j]);
+        }
+        for(size_t length=2;length<=n;length*=2){
+            const size_t half=length/2,stride=n/length;
+            for(size_t start=0;start<n;start+=length)for(size_t k=0;k<half;++k){
+                const size_t lo=(start+k)*8,hi=(start+k+half)*8;
+                const double wr=fft.cosine[k*stride],wi=(inverse?1.:-1.)*fft.sine[k*stride];
+                for(size_t j=0;j<width;++j){
+                    const double tr=wr*real[hi+j]-wi*imag[hi+j];
+                    const double ti=wr*imag[hi+j]+wi*real[hi+j];
+                    real[hi+j]=real[lo+j]-tr;imag[hi+j]=imag[lo+j]-ti;
+                    real[lo+j]+=tr;imag[lo+j]+=ti;
+                }
+            }
+            if(length==n)break;
+        }
+    }
+    // Eight adjacent freedoms share FFT butterflies. Each scalar follows
+    // RingFFT's original operation order; SIMD operates across freedoms only.
+    void modes_tile(const Vec& v,Vec& out,size_t first,bool inverse){
+#ifdef _OPENMP
+        const size_t tid=static_cast<size_t>(omp_get_thread_num());
+#else
+        const size_t tid=0;
+#endif
+        const size_t n=c.beads,width=std::min(size_t(8),d-first);
+        double* real=parallel_xr.data()+tid*n*8;
+        double* imag=parallel_xi.data()+tid*n*8;
+        const double sc=inverse?std::sqrt(double(n)):std::sqrt(1./n);
+        const double pair=inverse?std::sqrt(n/2.):std::sqrt(2./n);
+        if(!inverse){
+            for(size_t k=0;k<n;++k)for(size_t j=0;j<width;++j){real[k*8+j]=v[k*d+first+j];imag[k*8+j]=0.;}
+        }else{
+            std::fill(real,real+n*8,0.);std::fill(imag,imag+n*8,0.);
+            for(size_t j=0;j<width;++j)real[j]=sc*v[first+j];
+            for(size_t k=1;k<=(n-1)/2;++k)for(size_t j=0;j<width;++j){
+                real[k*8+j]=real[(n-k)*8+j]=pair*v[(2*k-1)*d+first+j];
+                imag[k*8+j]=-pair*v[2*k*d+first+j];imag[(n-k)*8+j]=-imag[k*8+j];
+            }
+            if(n%2==0)for(size_t j=0;j<width;++j)real[(n/2)*8+j]=sc*v[(n-1)*d+first+j];
+        }
+        tile_fft(real,imag,width,inverse);
+        if(inverse){
+            for(size_t k=0;k<n;++k)for(size_t j=0;j<width;++j)out[k*d+first+j]=real[k*8+j]/n;
+        }else{
+            for(size_t j=0;j<width;++j)out[first+j]=sc*real[j];
+            for(size_t k=1;k<=(n-1)/2;++k)for(size_t j=0;j<width;++j){
+                out[(2*k-1)*d+first+j]=pair*real[k*8+j];out[2*k*d+first+j]=-pair*imag[k*8+j];
+            }
+            if(n%2==0)for(size_t j=0;j<width;++j)out[(n-1)*d+first+j]=sc*real[(n/2)*8+j];
+        }
     }
     void to_modes(const Vec& v,Vec& out){
         if(c.beads==1){std::copy(v.begin(),v.end(),out.begin());return;}
         double sc=std::sqrt(1./c.beads),pair=std::sqrt(2./c.beads);
-        for(size_t j=0;j<d;++j){
-            for(size_t k=0;k<c.beads;++k){xr[k]=v[k*d+j];xi[k]=0;}
-            fft.transform(xr.data(),xi.data(),tmp.data());out[j]=sc*xr[0];
-            for(size_t k=1;k<=(c.beads-1)/2;++k){out[(2*k-1)*d+j]=pair*xr[k];out[2*k*d+j]=-pair*xi[k];}
-            if(c.beads%2==0)out[(c.beads-1)*d+j]=sc*xr[c.beads/2];
-        }
+        ensure_parallel_scratch();
+        if(fft.radix2&&c.beads>=8&&d>=24){parallel_for((d+7)/8,[&](size_t block){modes_tile(v,out,block*8,false);});return;}
+        parallel_for(d,[&](size_t j){
+#ifdef _OPENMP
+            const size_t tid=static_cast<size_t>(omp_get_thread_num());
+#else
+            const size_t tid=0;
+#endif
+            double* real=parallel_xr.data()+tid*c.beads;
+            double* imag=parallel_xi.data()+tid*c.beads;
+            double* work=parallel_tmp.data()+2*tid*c.beads;
+            for(size_t k=0;k<c.beads;++k){real[k]=v[k*d+j];imag[k]=0;}
+            fft.transform(real,imag,work);out[j]=sc*real[0];
+            for(size_t k=1;k<=(c.beads-1)/2;++k){out[(2*k-1)*d+j]=pair*real[k];out[2*k*d+j]=-pair*imag[k];}
+            if(c.beads%2==0)out[(c.beads-1)*d+j]=sc*real[c.beads/2];
+        });
     }
     void from_modes(const Vec& v,Vec& out){
         if(c.beads==1){std::copy(v.begin(),v.end(),out.begin());return;}
         double sc=std::sqrt(double(c.beads)),pair=std::sqrt(c.beads/2.);
-        for(size_t j=0;j<d;++j){
-            std::fill(xr.begin(),xr.end(),0.);std::fill(xi.begin(),xi.end(),0.);xr[0]=sc*v[j];
-            for(size_t k=1;k<=(c.beads-1)/2;++k){xr[k]=xr[c.beads-k]=pair*v[(2*k-1)*d+j];xi[k]=-pair*v[2*k*d+j];xi[c.beads-k]=-xi[k];}
-            if(c.beads%2==0)xr[c.beads/2]=sc*v[(c.beads-1)*d+j];
-            fft.transform(xr.data(),xi.data(),tmp.data(),true);
-            for(size_t k=0;k<c.beads;++k)out[k*d+j]=xr[k];
-        }
+        ensure_parallel_scratch();
+        if(fft.radix2&&c.beads>=8&&d>=24){parallel_for((d+7)/8,[&](size_t block){modes_tile(v,out,block*8,true);});return;}
+        parallel_for(d,[&](size_t j){
+#ifdef _OPENMP
+            const size_t tid=static_cast<size_t>(omp_get_thread_num());
+#else
+            const size_t tid=0;
+#endif
+            double* real=parallel_xr.data()+tid*c.beads;
+            double* imag=parallel_xi.data()+tid*c.beads;
+            double* work=parallel_tmp.data()+2*tid*c.beads;
+            std::fill(real,real+c.beads,0.);std::fill(imag,imag+c.beads,0.);real[0]=sc*v[j];
+            for(size_t k=1;k<=(c.beads-1)/2;++k){real[k]=real[c.beads-k]=pair*v[(2*k-1)*d+j];imag[k]=-pair*v[2*k*d+j];imag[c.beads-k]=-imag[k];}
+            if(c.beads%2==0)real[c.beads/2]=sc*v[(c.beads-1)*d+j];
+            fft.transform(real,imag,work,true);
+            for(size_t k=0;k<c.beads;++k)out[k*d+j]=real[k];
+        });
     }
     void free_modes(bool half,bool internal_only=false){
         const Vec& aa=half?ah:a;const Vec& bb=half?bh:b;const Vec& cl=half?ch:cc;
-        for(size_t k=internal_only?1:0;k<c.beads;++k)for(size_t j=0;j<d;++j)if(active(j)){
-            size_t i=k*d+j;double x=qn[i],p=pn[i],m=c.masses[j/3];qn[i]=aa[k]*x+bb[k]*p/m;pn[i]=aa[k]*p-cl[k]*m*x;
-        }
+        const size_t begin=internal_only?1:0;
+        parallel_for(c.beads-begin,[&](size_t offset){size_t k=begin+offset;
+            for(size_t j=0;j<d;++j)if(active(j)){
+                size_t i=k*d+j;double x=qn[i],p=pn[i],m=c.masses[j/3];
+                qn[i]=aa[k]*x+bb[k]*p/m;pn[i]=aa[k]*p-cl[k]*m*x;
+            }
+        });
     }
     void pin(){
         // FFT roundoff must never move a pinned atom.
@@ -152,7 +291,94 @@ private:
     // Keep q and p in the SAME real, orthonormal basis across C-O-C/A-O-A.
     // Normal-mode baths need four transforms instead of ten, with the same map.
     // RNG draw ordering is shared with the unfused reference implementation.
+    void philox_middle_tile(size_t first,const Vec& decay,const Vec& amplitude,
+                            const std::vector<pyrpmd::philox::Stream>& streams){
+#ifdef _OPENMP
+        const size_t tid=static_cast<size_t>(omp_get_thread_num());
+#else
+        const size_t tid=0;
+#endif
+        const size_t n=c.beads,width=std::min(size_t(8),d-first);
+        double* real=parallel_xr.data()+tid*n*8;
+        double* imag=parallel_xi.data()+tid*n*8;
+        const double sc=std::sqrt(1./n),pair=std::sqrt(2./n);
+        // The optional v1 stream also fixes this packed two-real-FFT rounding
+        // path. Legacy mt19937 keeps its original four separate transforms.
+        for(size_t k=0;k<n;++k)for(size_t j=0;j<width;++j){real[k*8+j]=s.q[k*d+first+j];imag[k*8+j]=s.p[k*d+first+j];}
+        tile_fft(real,imag,width,false);
+        for(size_t j=0;j<width;++j){qn[first+j]=sc*real[j];pn[first+j]=sc*imag[j];}
+        for(size_t k=1;k<=(n-1)/2;++k)for(size_t j=0;j<width;++j){
+            qn[(2*k-1)*d+first+j]=pair*(.5*(real[k*8+j]+real[(n-k)*8+j]));
+            qn[2*k*d+first+j]=-pair*(.5*(imag[k*8+j]-imag[(n-k)*8+j]));
+            pn[(2*k-1)*d+first+j]=pair*(.5*(imag[k*8+j]+imag[(n-k)*8+j]));
+            pn[2*k*d+first+j]=-pair*(.5*(real[(n-k)*8+j]-real[k*8+j]));
+        }
+        if(n%2==0)for(size_t j=0;j<width;++j){qn[(n-1)*d+first+j]=sc*real[(n/2)*8+j];pn[(n-1)*d+first+j]=sc*imag[(n/2)*8+j];}
+        for(size_t k=0;k<n;++k){
+            double draws[8];
+            const double rate=k==0?(c.thermostat==Thermostat::TRPMD?0.:c.gamma0):2*c.pile_scale*omega[k];
+            if(rate!=0.)for(size_t j=0;j<width;j+=2){
+                const auto pair=streams[k].normal_pair(static_cast<uint32_t>(k),static_cast<uint32_t>((first+j)/2),10);
+                draws[j]=pair[0];if(j+1<width)draws[j+1]=pair[1];
+            }
+            for(size_t j=0;j<width;++j)if(active(first+j)){
+                const size_t i=k*d+first+j;const double m=c.masses[(first+j)/3];
+                double x=qn[i],p=pn[i];
+                qn[i]=ah[k]*x+bh[k]*p/m;pn[i]=ah[k]*p-ch[k]*m*x;
+                if(rate!=0.)pn[i]=decay[k]*pn[i]+amplitude[k]*std::sqrt(theta*m)*draws[j];
+                x=qn[i];p=pn[i];
+                qn[i]=ah[k]*x+bh[k]*p/m;pn[i]=ah[k]*p-ch[k]*m*x;
+            }
+        }
+        const double isc=std::sqrt(double(n)),ipair=std::sqrt(n/2.);
+        for(size_t j=0;j<width;++j){real[j]=isc*qn[first+j];imag[j]=isc*pn[first+j];}
+        for(size_t k=1;k<=(n-1)/2;++k)for(size_t j=0;j<width;++j){
+            const double qr=ipair*qn[(2*k-1)*d+first+j],qi=-ipair*qn[2*k*d+first+j];
+            const double pr=ipair*pn[(2*k-1)*d+first+j],pi=-ipair*pn[2*k*d+first+j];
+            real[k*8+j]=qr-pi;imag[k*8+j]=qi+pr;
+            real[(n-k)*8+j]=qr+pi;imag[(n-k)*8+j]=-qi+pr;
+        }
+        if(n%2==0)for(size_t j=0;j<width;++j){real[(n/2)*8+j]=isc*qn[(n-1)*d+first+j];imag[(n/2)*8+j]=isc*pn[(n-1)*d+first+j];}
+        tile_fft(real,imag,width,true);
+        for(size_t k=0;k<n;++k)for(size_t j=0;j<width;++j){s.q[k*d+first+j]=real[k*8+j]/n;s.p[k*d+first+j]=imag[k*8+j]/n;}
+    }
+    void pile_middle_tiles(){
+        // Preserve mode-major mt19937 draw order, then perform each tile's
+        // complete C-O-C map while its four modal arrays are still in cache.
+        Vec decay(c.beads),amplitude(c.beads);
+        std::vector<pyrpmd::philox::Stream> streams(c.beads);
+        for(size_t k=0;k<c.beads;++k){
+            const double rate=k==0?(c.thermostat==Thermostat::TRPMD?0.:c.gamma0):2*c.pile_scale*omega[k];
+            decay[k]=std::exp(-rate*c.dt);amplitude[k]=std::sqrt(-std::expm1(-2*rate*c.dt));
+            if(rate==0)continue;
+            if(c.philox)streams[k]=begin_random();
+            else for(size_t j=0;j<d;++j)if(active(j))pile_noise[k*d+j]=g();
+        }
+        ensure_parallel_scratch();
+        parallel_for((d+7)/8,[&](size_t block){
+            const size_t first=block*8,end=std::min(first+8,d);
+            if(c.philox){philox_middle_tile(first,decay,amplitude,streams);return;}
+            modes_tile(s.q,qn,first,false);modes_tile(s.p,pn,first,false);
+            for(size_t k=0;k<c.beads;++k)for(size_t j=first;j<end;++j)if(active(j)){
+                const size_t i=k*d+j;const double m=c.masses[j/3];
+                double x=qn[i],p=pn[i];
+                qn[i]=ah[k]*x+bh[k]*p/m;pn[i]=ah[k]*p-ch[k]*m*x;
+                const double rate=k==0?(c.thermostat==Thermostat::TRPMD?0.:c.gamma0):2*c.pile_scale*omega[k];
+                if(rate!=0.){
+                    const double draw=c.philox?random_normal(streams[k],k,j,10):pile_noise[i];
+                    pn[i]=decay[k]*pn[i]+amplitude[k]*std::sqrt(theta*m)*draw;
+                }
+                x=qn[i];p=pn[i];
+                qn[i]=ah[k]*x+bh[k]*p/m;pn[i]=ah[k]*p-ch[k]*m*x;
+            }
+            modes_tile(qn,s.q,first,true);modes_tile(pn,s.p,first,true);
+        });
+        pin();
+    }
     void free_bath_free(){
+        if(fft.radix2&&c.beads>=8&&d>=24&&(c.thermostat==Thermostat::PileL||c.thermostat==Thermostat::TRPMD)){
+            pile_middle_tiles();return;
+        }
         to_modes(s.q,qn);to_modes(s.p,pn);
         free_modes(true);bath(c.dt,true);free_modes(true);
         from_modes(qn,s.q);from_modes(pn,s.p);pin();
@@ -163,15 +389,15 @@ private:
         std::fill(s.energy.begin(),s.energy.end(),nan);std::fill(s.force.begin(),s.force.end(),nan);std::fill(s.virial.begin(),s.virial.end(),nan);
         if(c.potential<=2){
             std::fill(s.energy.begin(),s.energy.end(),0.);std::fill(s.force.begin(),s.force.end(),0.);std::fill(s.virial.begin(),s.virial.end(),0.);
-            if(c.potential==1){double k=c.parameters[0];for(size_t b0=0;b0<c.beads;++b0)for(size_t atom=0;atom<c.atoms;++atom){
+            if(c.potential==1){double k=c.parameters[0];parallel_for(c.beads,[&](size_t b0){for(size_t atom=0;atom<c.atoms;++atom){
                 size_t i=b0*d+3*atom;for(int j=0;j<3;++j){s.energy[b0]+=.5*k*s.q[i+j]*s.q[i+j];s.force[i+j]=-k*s.q[i+j];}
                 for(int j=0;j<3;++j)for(int k0=0;k0<3;++k0)s.virial[9*b0+3*j+k0]+=s.q[i+j]*s.force[i+k0];
-            }}
+            }});}
             if(c.potential==2){Mat inv=inverse(s.cell);double pi=std::acos(-1.);
-                for(size_t b0=0;b0<c.beads;++b0)for(size_t atom=0;atom<c.atoms;++atom){size_t i=b0*d+3*atom;double grad[3]{};
+                parallel_for(c.beads,[&](size_t b0){for(size_t atom=0;atom<c.atoms;++atom){size_t i=b0*d+3*atom;double grad[3]{};
                     for(int j=0;j<3;++j){double frac=0;for(int k0=0;k0<3;++k0)frac+=s.q[i+k0]*inv[3*k0+j];double phase=2*pi*frac;s.energy[b0]+=.5*c.parameters[j]*(1-std::cos(phase));grad[j]=pi*c.parameters[j]*std::sin(phase);}
                     for(int j=0;j<3;++j)for(int k0=0;k0<3;++k0)s.force[i+j]-=inv[3*j+k0]*grad[k0];
-                }
+                }});
             }
         }else if(c.potential==6){
             c.python_force(s.q,s.cell,s.energy,s.force,s.virial);
@@ -200,20 +426,31 @@ private:
         require(finite(s.energy)&&finite(s.force)&&finite(s.virial),"native PES left missing/nonfinite energy, force or virial");
         ++s.evaluations;s.force_valid=true;
     }
-    void kick(double h){for(size_t i=0;i<l;++i)if(active(i%d))s.p[i]+=h*s.force[i];}
+    void kick(double h){
+        if(mobile==c.atoms)parallel_for(l,[&](size_t i){s.p[i]+=h*s.force[i];});
+        else parallel_for(l,[&](size_t i){if(active(i%d))s.p[i]+=h*s.force[i];});
+    }
     void svr(Vec& p,size_t begin,size_t end,double h){
         size_t dof=0;double k=0;
-        for(size_t i=begin;i<end;++i)if(active(i%d)){++dof;k+=p[i]*p[i]/(2*c.masses[(i%d)/3]);}
+        if(c.philox&&l>=32768){
+            dof=3*mobile*((end-begin)/d);
+            k=fixed_sum(end-begin,[&](size_t offset){const size_t i=begin+offset;return active(i%d)?p[i]*p[i]/(2*c.masses[(i%d)/3]):0.;});
+        }else for(size_t i=begin;i<end;++i)if(active(i%d)){++dof;k+=p[i]*p[i]/(2*c.masses[(i%d)/3]);}
         if(!dof)return;
+        const auto epoch=begin_random();
         if(k<=std::numeric_limits<double>::min()){
             // Exact zero-energy limit of the CIR kinetic-energy transition:
             // K' = theta*(1-exp(-h/tau))*chi_square(dof)/2, not a full redraw.
             double variance=theta*(-std::expm1(-h/c.tau));
-            for(size_t i=begin;i<end;++i)if(active(i%d))p[i]=std::sqrt(c.masses[(i%d)/3]*variance)*g();
+            for(size_t i=begin;i<end;++i)if(active(i%d))p[i]=std::sqrt(c.masses[(i%d)/3]*variance)*random_normal(epoch,i/d,i%d,3);
             return;
         }
-        double decay=std::exp(-h/c.tau),one=-std::expm1(-h/c.tau),r=g();
-        double chi=0;if(dof>1){std::gamma_distribution<double> dist(.5*(dof-1),2.);chi=dist(s.rng);}
+        double decay=std::exp(-h/c.tau),one=-std::expm1(-h/c.tau),r=random_normal(epoch,0,0,3);
+        double chi=0;if(dof>1){
+            if(c.philox){for(size_t i=0,draw=0;i<end-begin;++i)if(active((begin+i)%d)){
+                if(draw++>0) {const double z=random_normal(epoch,(begin+i)/d,(begin+i)%d,3,1);chi+=z*z;}
+            }}else{std::gamma_distribution<double> dist(.5*(dof-1),2.);chi=dist(s.rng);}
+        }
         double newk=decay*k+.5*one*theta*(r*r+chi)+r*std::sqrt(2*decay*one*theta*k);
         require(newk>=-1.e-13*theta&&std::isfinite(newk),"invalid SVR kinetic energy");
         double scale=std::sqrt(std::max(0.,newk)/k);
@@ -223,7 +460,16 @@ private:
     void ou(Vec& p,size_t begin,size_t end,double rate,double h){
         double decay=std::exp(-rate*h),amplitude=std::sqrt(-std::expm1(-2*rate*h));
         if(rate==0)return;
-        for(size_t i=begin;i<end;++i)if(active(i%d))p[i]=decay*p[i]+amplitude*std::sqrt(theta*c.masses[(i%d)/3])*g();
+        const auto epoch=begin_random();
+        if(c.philox)parallel_for((end-begin)/3,[&](size_t offset){
+            const size_t i=begin+3*offset,atom=(i%d)/3;
+            if(!c.fixed[atom]){
+                const double scale=amplitude*std::sqrt(theta*c.masses[atom]);
+                for(size_t j=0;j<3;++j)p[i+j]=decay*p[i+j]+scale*random_normal(epoch,i/d,i%d+j,10);
+            }
+        });
+        // Keep this legacy expression: extracting the scale changes FMA rounding.
+        else for(size_t i=begin;i<end;++i)if(active(i%d))p[i]=decay*p[i]+amplitude*std::sqrt(theta*c.masses[(i%d)/3])*g();
     }
     // Global Nose--Hoover chain, in the same bead Hamiltonian convention as
     // the public Python thermostat: kT_P=P/beta and 3*P*N_mobile freedoms.
@@ -256,26 +502,47 @@ private:
         auto kind=c.thermostat;if(kind==Thermostat::None)return;
         bool nm=normal_thermostat();Vec& p=nm?pn:s.p;if(nm&&!modes_ready)to_modes(s.p,pn);
         if(kind==Thermostat::Andersen){
-            if(s.step%c.interval==0)for(size_t i=0;i<l;++i)if(active(i%d))p[i]=std::sqrt(theta*c.masses[(i%d)/3])*g();
+            if(s.step%c.interval==0){
+                const auto epoch=begin_random();
+                if(c.philox)parallel_for(l,[&](size_t i){if(active(i%d))p[i]=std::sqrt(theta*c.masses[(i%d)/3])*random_normal(epoch,i/d,i%d,2);});
+                else for(size_t i=0;i<l;++i)if(active(i%d))p[i]=std::sqrt(theta*c.masses[(i%d)/3])*g();
+            }
         }else if(kind==Thermostat::NHC)nhc_bath(p,h);
         else if(kind==Thermostat::SVR)svr(p,0,l,h);
         else if(kind==Thermostat::Langevin)ou(p,0,l,c.gamma,h);
         else if(kind==Thermostat::FFL){
             double decay=std::exp(-c.gamma*h),amp=std::sqrt(-std::expm1(-2*c.gamma*h));
-            for(size_t i=0;i<l;i+=3)if(active(i%d)){
+            // FFL rescale variant: retain direction, update Maxwellian speed.
+            const auto epoch=begin_random();
+            if(c.philox)parallel_for(c.atoms*c.beads,[&](size_t atom_index){size_t i=atom_index*3;if(active(i%d)){
+                double old[3]{p[i],p[i+1],p[i+2]},old2=0,new2=0;
+                for(int j=0;j<3;++j){old2+=old[j]*old[j];p[i+j]=decay*old[j]+amp*std::sqrt(theta*c.masses[(i%d)/3])*random_normal(epoch,i/d,i%d,5,j);new2+=p[i+j]*p[i+j];}
+                if(old2>std::numeric_limits<double>::min()){double r=std::sqrt(new2/old2);for(int j=0;j<3;++j)p[i+j]=old[j]*r;}
+            }});
+            else for(size_t i=0;i<l;i+=3)if(active(i%d)){
                 double old[3]{p[i],p[i+1],p[i+2]},old2=0,new2=0;
                 for(int j=0;j<3;++j){old2+=old[j]*old[j];p[i+j]=decay*old[j]+amp*std::sqrt(theta*c.masses[(i%d)/3])*g();new2+=p[i+j]*p[i+j];}
-                // FFL rescale variant: retain direction, update Maxwellian speed.
                 if(old2>std::numeric_limits<double>::min()){double r=std::sqrt(new2/old2);for(int j=0;j<3;++j)p[i+j]=old[j]*r;}
             }
         }else if(gle()){
             size_t n=c.gle_size;
-            for(size_t i=0;i<l;++i)if(active(i%d)){
+            const auto epoch=begin_random();
+            if(c.philox)parallel_for(l,[&](size_t i){if(active(i%d)){
+                size_t mode=nm?i/d:0;
+                if(kind==Thermostat::NMGLEG&&mode==0)return;
+                double local_y[64],local_z[64],local_noise[64];
+                size_t offset=mode*n*n;double scale=std::sqrt(theta*c.masses[(i%d)/3]);
+                local_y[0]=p[i]/scale;for(size_t j=1;j<n;++j)local_y[j]=s.aux[i*(n-1)+j-1];
+                for(size_t j=0;j<n;++j)local_noise[j]=random_normal(epoch,i/d,i%d,4,static_cast<uint32_t>(j));
+                for(size_t j=0;j<n;++j){local_z[j]=0;for(size_t k=0;k<n;++k)local_z[j]+=c.gle_T[offset+j*n+k]*local_y[k]+c.gle_S[offset+j*n+k]*local_noise[k];}
+                p[i]=scale*local_z[0];for(size_t j=1;j<n;++j)s.aux[i*(n-1)+j-1]=local_z[j];
+            }});
+            else for(size_t i=0;i<l;++i)if(active(i%d)){
                 size_t mode=nm?i/d:0;
                 if(kind==Thermostat::NMGLEG&&mode==0)continue;
                 size_t offset=mode*n*n;double scale=std::sqrt(theta*c.masses[(i%d)/3]);
                 y[0]=p[i]/scale;for(size_t j=1;j<n;++j)y[j]=s.aux[i*(n-1)+j-1];
-                for(size_t j=0;j<n;++j)noise[j]=g();
+                for(size_t j=0;j<n;++j)noise[j]=random_normal(epoch,i/d,i%d,4,static_cast<uint32_t>(j));
                 for(size_t j=0;j<n;++j){z[j]=0;for(size_t k=0;k<n;++k)z[j]+=c.gle_T[offset+j*n+k]*y[k]+c.gle_S[offset+j*n+k]*noise[k];}
                 p[i]=scale*z[0];for(size_t j=1;j<n;++j)s.aux[i*(n-1)+j-1]=z[j];
             }
@@ -300,8 +567,14 @@ private:
     void baro_bath(double h){
         if(c.barostat==Barostat::None||c.barostat==Barostat::SCR||c.baro_gamma==0)return;
         double decay=std::exp(-c.baro_gamma*h),amp=std::sqrt(baro_mass*theta*(-std::expm1(-2*c.baro_gamma*h)));
-        if(c.barostat==Barostat::BZP)s.cell_p[0]=decay*s.cell_p[0]+amp*g();
-        else for(int i=0;i<9;++i)if(c.cell_mask[i])s.cell_p[i]=decay*s.cell_p[i]+amp*g();
+        if(c.philox){
+            const auto epoch=begin_random();
+            if(c.barostat==Barostat::BZP)s.cell_p[0]=decay*s.cell_p[0]+amp*random_normal(epoch,0,0,6);
+            else for(int i=0;i<9;++i)if(c.cell_mask[i])s.cell_p[i]=decay*s.cell_p[i]+amp*random_normal(epoch,0,static_cast<size_t>(i),6);
+        }else{
+            if(c.barostat==Barostat::BZP)s.cell_p[0]=decay*s.cell_p[0]+amp*g();
+            else for(int i=0;i<9;++i)if(c.cell_mask[i])s.cell_p[i]=decay*s.cell_p[i]+amp*g();
+        }
     }
     void coupled_kick(double h){
         if(c.barostat==Barostat::None||c.barostat==Barostat::SCR){kick(h);return;}
@@ -342,7 +615,8 @@ private:
         Mat v=stress_volume();double vol=det(s.cell),lam=std::sqrt(vol);
         double press=(v[0]+v[4]+v[8])/(3*vol),D=theta*c.compressibility/(4*c.baro_tau);
         double force=-2*lam*(c.pressure-press-theta/(2*vol));
-        double next=lam+D*force*c.dt/theta+std::sqrt(2*D*c.dt)*g();
+        const auto epoch=begin_random();
+        double next=lam+D*force*c.dt/theta+std::sqrt(2*D*c.dt)*random_normal(epoch,0,0,7);
         require(next>0&&std::isfinite(next),"SCR proposed non-positive sqrt(volume); reduce timestep");
         double halfscale=std::exp(std::log(next/lam)/3.);
         require(halfscale>.01&&halfscale<100,"unstable SCR cell; reduce timestep");
@@ -401,10 +675,28 @@ private:
         for(double x:s.cell_p)require(std::isfinite(x),"nonfinite cell momentum");
         ++s.step;
     }
+    std::array<double,3> mode_energy_sums(bool virial){
+        partial_sums.resize(3*c.beads);const double wn=c.beads/c.beta;
+        parallel_for(c.beads,[&](size_t k){
+            double spring=0.,kinetic=0.,cv=0.;const size_t next=(k+1)%c.beads;
+            for(size_t j=0;j<d;++j)if(active(j)){
+                const size_t i=k*d+j;const double delta=s.q[i]-s.q[next*d+j];
+                spring+=.5*c.masses[j/3]*wn*wn*delta*delta;
+                kinetic+=.5*s.p[i]*s.p[i]/c.masses[j/3];
+                if(virial)cv+=.5*(s.q[i]-centroid_q[j])*s.force[i]/c.beads;
+            }
+            partial_sums[3*k]=spring;partial_sums[3*k+1]=kinetic;partial_sums[3*k+2]=cv;
+        });
+        std::array<double,3> total{};
+        for(size_t k=0;k<c.beads;++k)for(size_t j=0;j<3;++j)total[j]+=partial_sums[3*k+j];
+        return total;
+    }
     void observe(double* row,double* cq,bool moments=false){
         means();double spring=0,kinetic=0,cv=1.5*mobile/c.beta,U=std::accumulate(s.energy.begin(),s.energy.end(),0.);
         double wn=c.beads/c.beta;
-        for(size_t k=0;k<c.beads;++k)for(size_t j=0;j<d;++j)if(active(j)){
+        if(c.philox&&l>=32768){
+            const auto sums=mode_energy_sums(true);spring=sums[0];kinetic=sums[1];cv-=sums[2];
+        }else for(size_t k=0;k<c.beads;++k)for(size_t j=0;j<d;++j)if(active(j)){
             size_t i=k*d+j;double delta=s.q[i]-s.q[((k+1)%c.beads)*d+j];spring+=.5*c.masses[j/3]*wn*wn*delta*delta;
             kinetic+=.5*s.p[i]*s.p[i]/c.masses[j/3];cv-=.5*(s.q[i]-centroid_q[j])*s.force[i]/c.beads;
         }
@@ -441,7 +733,9 @@ private:
     double nuclear_energy(double* parts=nullptr){
         double spring=0,kinetic=0,U=std::accumulate(s.energy.begin(),s.energy.end(),0.);
         const double wn=c.beads/c.beta;
-        for(size_t k=0;k<c.beads;++k)for(size_t j=0;j<d;++j)if(active(j)){
+        if(c.philox&&l>=32768){
+            const auto sums=mode_energy_sums(false);spring=sums[0];kinetic=sums[1];
+        }else for(size_t k=0;k<c.beads;++k)for(size_t j=0;j<d;++j)if(active(j)){
             const size_t i=k*d+j;
             const double delta=s.q[i]-s.q[((k+1)%c.beads)*d+j];
             spring+=.5*c.masses[j/3]*wn*wn*delta*delta;
@@ -486,8 +780,13 @@ private:
         }
     }
 public:
-    Engine(Config config,Vec q,Vec p,Mat cell):c(std::move(config)),d(3*c.atoms),l(d*c.beads),mobile(c.atoms),theta(c.beads/c.beta),baro_mass((c.barostat==Barostat::BZP?3.:1.)*c.atoms*theta*c.baro_tau*c.baro_tau),fft(c.beads),xr(c.beads),xi(c.beads),tmp(2*c.beads),qn(l),pn(l),centroid_q(d),centroid_p(d),centroid_f(d),omega(c.beads),a(c.beads),b(c.beads),cc(c.beads),ah(c.beads),bh(c.beads),ch(c.beads),y(c.gle_size),z(c.gle_size),noise(c.gle_size),status(c.beads),reference_inverse(inverse(transpose(c.reference_cell))),reference_volume(det(c.reference_cell)),fixed_q(d){
+    Engine(Config config,Vec q,Vec p,Mat cell):c(std::move(config)),d(3*c.atoms),l(d*c.beads),mobile(c.atoms),theta(c.beads/c.beta),baro_mass((c.barostat==Barostat::BZP?3.:1.)*c.atoms*theta*c.baro_tau*c.baro_tau),fft(c.beads),qn(l),pn(l),centroid_q(d),centroid_p(d),centroid_f(d),omega(c.beads),a(c.beads),b(c.beads),cc(c.beads),ah(c.beads),bh(c.beads),ch(c.beads),y(c.gle_size),z(c.gle_size),noise(c.gle_size),status(c.beads),reference_inverse(inverse(transpose(c.reference_cell))),reference_volume(det(c.reference_cell)),fixed_q(d){
+        require(c.threads>0,"threads must be positive");
+#ifndef _OPENMP
+        require(c.threads==1,"threads>1 requires the compiled OpenMP kernel");
+#endif
         require(c.atoms>0&&c.beads>0&&c.masses.size()==c.atoms&&c.fixed.size()==c.atoms,"invalid dimensions");
+        if(c.philox)require(c.beads<=UINT32_MAX&&d<=UINT32_MAX,"Philox index exceeds uint32");
         require(c.beta>0&&c.dt>0&&std::isfinite(c.beta)&&std::isfinite(c.dt),"beta and dt must be positive and finite");
         require(c.interval>0&&c.tau>0&&c.gamma>=0&&c.gamma0>=0&&c.pile_scale>=0,"invalid thermostat parameters");
         require(std::isfinite(theta)&&std::isfinite(c.tau)&&std::isfinite(c.gamma)&&std::isfinite(c.gamma0)&&std::isfinite(c.pile_scale),"nonfinite thermostat parameters");
@@ -534,8 +833,9 @@ public:
                 }
             }
         }
-        s.q=std::move(q);s.p=std::move(p);s.cell=cell;s.rng.seed(c.seed);
+        s.q=std::move(q);s.p=std::move(p);s.cell=cell;s.rng.seed(c.seed);s.rng_seed=c.seed;
         s.energy.resize(c.beads);s.force.resize(l);s.virial.resize(9*c.beads);
+        if(!c.philox&&fft.radix2&&c.beads>=8&&d>=24&&(c.thermostat==Thermostat::PileL||c.thermostat==Thermostat::TRPMD))pile_noise.resize(l);
         if(gle())s.aux.assign(l*(c.gle_size-1),0.);
         if(c.thermostat==Thermostat::NHC){
             require(c.nhc_length>0&&c.nhc_length<=64&&c.nhc_substeps>0&&c.nhc_substeps<=100000,"invalid NHC chain length/substeps");
@@ -554,15 +854,16 @@ public:
             else{a[k]=std::cos(2*t);b[k]=w==0?c.dt:std::sin(2*t)/w;cc[k]=w*std::sin(2*t);ah[k]=std::cos(t);bh[k]=w==0?.5*c.dt:std::sin(t)/w;ch[k]=w*std::sin(t);}
         }
         if(c.initialize_momenta){
+            const auto epoch=begin_random();
             if(gle()){
                 bool nm=normal_thermostat();Vec& p0=nm?pn:s.p;size_t n=c.gle_size;
                 for(size_t i=0;i<l;++i)if(active(i%d)){
-                    size_t offset=(nm?i/d:0)*n*n;for(size_t j=0;j<n;++j)noise[j]=g();
+                    size_t offset=(nm?i/d:0)*n*n;for(size_t j=0;j<n;++j)noise[j]=random_normal(epoch,i/d,i%d,1,static_cast<uint32_t>(j));
                     for(size_t j=0;j<n;++j){z[j]=0;for(size_t k=0;k<n;++k)z[j]+=c.gle_Croot[offset+j*n+k]*noise[k];}
                     p0[i]=std::sqrt(theta*c.masses[(i%d)/3])*z[0];for(size_t j=1;j<n;++j)s.aux[i*(n-1)+j-1]=z[j];
                 }
                 if(nm)from_modes(pn,s.p);
-            }else for(size_t i=0;i<l;++i)if(active(i%d))s.p[i]=std::sqrt(theta*c.masses[(i%d)/3])*g();
+            }else for(size_t i=0;i<l;++i)if(active(i%d))s.p[i]=std::sqrt(theta*c.masses[(i%d)/3])*random_normal(epoch,i/d,i%d,1);
         }
         refresh();
     }
@@ -579,7 +880,7 @@ public:
         const Config& o=other.c;
         require(c.atoms==o.atoms&&c.beads==o.beads&&c.beta==o.beta&&c.masses==o.masses&&c.fixed==o.fixed
                 &&c.thermostat==o.thermostat&&c.gamma==o.gamma&&c.gamma0==o.gamma0&&c.pile_scale==o.pile_scale
-                &&c.tau==o.tau&&c.interval==o.interval&&c.gle_size==o.gle_size
+                &&c.tau==o.tau&&c.interval==o.interval&&c.gle_size==o.gle_size&&c.philox==o.philox
                 &&c.gle_T==o.gle_T&&c.gle_S==o.gle_S&&c.gle_Croot==o.gle_Croot
                 &&c.nhc_length==o.nhc_length&&c.nhc_substeps==o.nhc_substeps,
                 "thermostat state transfer parameters differ");
@@ -587,7 +888,7 @@ public:
         require(s.aux.size()==other.s.aux.size(),"thermostat state transfer shape mismatch");
         // Allocate before mutating; RNG and distribution assignment are values.
         Vec aux=other.s.aux;
-        s.aux.swap(aux);s.rng=other.s.rng;s.gaussian=other.s.gaussian;
+        s.aux.swap(aux);s.rng=other.s.rng;s.gaussian=other.s.gaussian;s.rng_counter=other.s.rng_counter;s.rng_seed=other.s.rng_seed;
         if(has_step)s.step=step;
     }
     Vec apply_thermostat(Vec q,Vec p,double dt,bool has_step=false,uint64_t step=0){
@@ -657,8 +958,8 @@ public:
                 try{
                     if(common&&common->check_energy&&k==0)nuclear_energy();
                     one_step();
-                    if(common&&common->check_energy)nuclear_energy();
                     const bool observed=common?common->mask[k]!=0:s.step>sample_start&&(s.step-sample_start)%stride==0;
+                    if(common&&common->check_energy&&!(observed&&(common->record_energy||common->energy_parts)))nuclear_energy();
                     if(observed){
                         if(common)observe_common(out.samples.data()+frame*ncolumns,out.centroids.data()+frame*width,common->energy_parts?out.energy_parts.data()+frame*4:nullptr,*common);
                         else if(path.empty())observe(out.samples.data()+frame*ncolumns,centroids?out.centroids.data()+frame*width:nullptr,moments);
@@ -676,9 +977,18 @@ public:
         }catch(...){s=std::move(before);throw;}
         return out;
     }
-    std::string rng_state() const {std::ostringstream text;text.imbue(std::locale::classic());text<<s.rng<<'\n'<<s.gaussian;return text.str();}
+    std::string rng_state() const {
+        if(c.philox)return std::string("philox-v1\n")+std::to_string(s.rng_seed)+"\n"+std::to_string(s.rng_counter);
+        std::ostringstream text;text.imbue(std::locale::classic());text<<s.rng<<'\n'<<s.gaussian;return text.str();
+    }
     void set_rng(const std::string& text,State& state)const{
-        require(text.size()<100000,"RNG state too large");std::istringstream stream(text);stream.imbue(std::locale::classic());
+        require(text.size()<100000,"RNG state too large");
+        if(c.philox){
+            std::istringstream stream(text);std::string version;stream>>version>>state.rng_seed>>state.rng_counter;
+            require(version=="philox-v1"&&!stream.fail(),"invalid Philox RNG state");stream>>std::ws;require(stream.eof(),"trailing RNG state data");
+            state.rng.seed(c.seed);state.gaussian.reset();return;
+        }
+        std::istringstream stream(text);stream.imbue(std::locale::classic());
         stream>>state.rng>>state.gaussian;require(!stream.fail(),"invalid RNG state");stream>>std::ws;require(stream.eof(),"trailing RNG state data");
     }
     void restore(State state){

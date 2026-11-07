@@ -317,12 +317,18 @@ class NativeEnsemble:
                  thermostat: str | dict = "pile-l", barostat: str | dict = "none",
                  integrator: str = "cayley-bcb", cell=None, pbc=None,
                  fixed_atoms=(), seed: int = 0, fuse_modes: bool = True,
-                 allow_python: bool = False, sampling_integrator: str | None = None):
+                 allow_python: bool = False, sampling_integrator: str | None = None,
+                 threads: int = 1):
         try:
             from . import _thermal
         except ImportError as exc:
             raise RuntimeError("native ensemble extension is unavailable; rebuild PyRPMD with C++ enabled") from exc
         self._native = _thermal
+        if getattr(_thermal, "THERMAL_KERNEL_API", 0) < 3:
+            raise RuntimeError("rebuild PyRPMD: the native extension lacks the versioned thermal-kernel API")
+        threads = _integer(threads, "threads", 1, maximum=2**31-1)
+        if threads > 1 and not _thermal.has_openmp():
+            raise RuntimeError("threads>1 requires the compiled OpenMP kernel")
         coordinates = _array(q)
         if coordinates.ndim != 3 or coordinates.shape[-1] != 3 or 0 in coordinates.shape:
             raise ValueError("q must have shape [P,N,3] with positive P,N")
@@ -375,6 +381,7 @@ class NativeEnsemble:
             raise ValueError("external stress must be symmetric")
         cfg = {
             "atoms": self.natoms, "beads": self.beads, "beta": beta, "dt": dt,
+            "threads": threads,
             "masses": mass, "fixed": fixed,
             "thermostat": _THERMOSTATS[mode], "barostat": _BAROSTATS[bmode],
             "cayley": integrator == "cayley-bcb", "initialize_momenta": p is None,
@@ -395,6 +402,8 @@ class NativeEnsemble:
             "external_stress": external.ravel(),
             "potential": 0, "address": 0, "context": 0, "parameters": np.ones(3),
         }
+        if t.get("rng") == "philox-v1":
+            cfg["rng"] = "philox-v1"
         if middle_npt:
             cfg["middle_npt"] = True  # Scientific/checkpoint-significant, absent on legacy maps.
         if mode == "nhc":
@@ -485,14 +494,17 @@ class NativeEnsemble:
             self._handle = _thermal.create(cfg, coordinates, mom, h.ravel(), self._binding)
             if isinstance(self._binding, NativePeriodicPES):
                 self._sync_bound_cell(h)
-        # Addresses and initialization draws are not physics. All model, units,
+        # Addresses, thread counts and initialization draws are not physics. All model, units,
         # fixed positions, integrator and stochastic matrices are fingerprinted.
         physics = {key: (value.tolist() if isinstance(value, np.ndarray) else value)
                    for key, value in cfg.items()
-                   if key not in {"address", "context", "initialize_momenta", "seed", "python_callback"}}
+                   if key not in {"address", "context", "initialize_momenta", "seed", "python_callback", "threads"}}
+        rng_abi = (getattr(_thermal, "philox_abi", "philox-v1")
+                   if cfg.get("rng") == "philox-v1"
+                   else getattr(_thermal, "rng_abi", "std-cxx17-local-build-v1"))
         physics.update(potential_identity=self._potential_identity, initial_cell=h.tolist(),
                        fixed_positions=coordinates[0, fixed.astype(bool)].tolist(),
-                       rng_abi=getattr(_thermal, "rng_abi", "std-cxx17-local-build-v1"), format=_FORMAT)
+                       rng_abi=rng_abi, format=_FORMAT)
         if self._report_gle_parameters:
             # New parameter records carry their calibration and source into
             # restart identity. Legacy explicit matrices keep their old hash.
@@ -530,7 +542,8 @@ class NativeEnsemble:
                    record_moments: bool = True, sample_start: int = 0,
                    observe=None, record_energy: bool | None = None,
                    check_energy: bool = False, energy_parts: bool = False,
-                   ring_radii: bool = False) -> dict:
+                   ring_radii: bool = False, _outer_transaction: bool = False,
+                   _atomic: bool = False) -> dict:
         """Advance a C++ block and retain every fully accepted step on failure.
 
         Force and observation validation share a per-step transaction including
@@ -569,10 +582,12 @@ class NativeEnsemble:
                       "ring_radii": bool(ring_radii)}
         return self._run(steps, stride=stride, record_centroids=record_centroids,
                          record_moments=record_moments, sample_start=sample_start,
-                         keep_prefix=True, common_options=common)
+                         keep_prefix=True, common_options=common,
+                         outer_transaction=_outer_transaction, atomic=_atomic)
 
     def _run(self, steps, *, stride=1, record_centroids=False, trajectory=None,
-             record_moments=False, sample_start=0, keep_prefix=False, common_options=None):
+             record_moments=False, sample_start=0, keep_prefix=False, common_options=None,
+             outer_transaction=False, atomic=False):
         steps = _integer(steps, "steps")
         stride = _integer(stride, "stride", 1)
         sample_start = _integer(sample_start, "sample_start")
@@ -592,7 +607,7 @@ class NativeEnsemble:
         with self._call_lock, self._lease():
             callback_start = 0 if self._python_binding is None else self._python_binding.calls
             before = (self._native.state(self._handle)
-                      if keep_prefix or isinstance(self._binding, NativePeriodicPES) else None)
+                      if not outer_transaction and (keep_prefix or isinstance(self._binding, NativePeriodicPES)) else None)
             try:
                 if path is not None:
                     if path.exists():
@@ -601,10 +616,12 @@ class NativeEnsemble:
                     fd, temporary = tempfile.mkstemp(prefix=path.name + ".", suffix=".tmp", dir=path.parent)
                     os.close(fd)
                     before = self._native.state(self._handle)
-                advance = self._native.run_prefix if keep_prefix else self._native.run
+                advance = self._native.run_prefix if keep_prefix and not atomic else self._native.run
                 result = advance(self._handle, steps, stride, record_centroids,
                                  temporary or "", record_moments, sample_start,
                                  *(() if common_options is None else (common_options,)))
+                if keep_prefix and atomic:
+                    result.update(completed=steps, error="")
                 if keep_prefix and result["error"] and self._python_binding is not None:
                     accepted = self._native.state(self._handle)
                     self._python_binding.set_cell(np.frombuffer(accepted["cell"], dtype=np.float64).reshape(3, 3))
@@ -761,6 +778,43 @@ class NativeEnsemble:
         raw["digest"] = _state_digest(raw)
         return raw
 
+    def _rollback_token(self):
+        """Capture an owned binary state without serializing a checkpoint."""
+        with self._call_lock:
+            return self._native.snapshot(self._handle)
+
+    def _initial_energy(self, q, p, masses, beta):
+        """Original NumPy energy reduction, with reusable transaction scratch."""
+        with self._call_lock:
+            if not hasattr(self, "_energy_work"):
+                self._energy_work = (np.empty_like(q), np.empty_like(q))
+            kinetic, spring = self._energy_work
+            raw = self._native.initial_energy_terms(self._handle, q, p, masses, kinetic, spring)
+            potential = np.frombuffer(raw, dtype=np.float64)
+            return float(np.sum(potential) + np.sum(kinetic)
+                         + .5*(self.beads/beta)**2*np.sum(spring))
+
+    def _physical_state(self) -> dict:
+        """Refresh reusable arrays for the internal propagation cache."""
+        with self._call_lock:
+            if not hasattr(self, "_physical_buffers"):
+                shape = (self.beads, self.natoms, 3)
+                self._physical_buffers = (np.empty(shape), np.empty(shape))
+            q, p = self._physical_buffers
+            raw = self._native.physical_state(self._handle, q, p)
+        result = {"q": q, "p": p, "step": raw["step"]}
+        if self._cfg["has_cell"]:
+            result["cell"] = np.frombuffer(raw["cell"], dtype=np.float64).reshape(3, 3)
+        return result
+
+    def _restore_rollback_token(self, token) -> None:
+        """Restore a token produced by :meth:`_rollback_token`."""
+        with self._call_lock, self._lease():
+            self._native.restore_snapshot(self._handle, token)
+            if self._cfg["has_cell"]:
+                raw = self._native.physical_state(self._handle)
+                self._sync_bound_cell(np.frombuffer(raw["cell"], dtype=np.float64).reshape(3, 3))
+
     def restore(self, state: dict) -> None:
         """Restore only an intact checkpoint with exactly matching physics."""
         expected = set(_ARRAYS) | {"step", "force_evaluations", "rng", "format", "fingerprint", "digest"}
@@ -832,7 +886,7 @@ def ensemble_from_config(config: dict, *, base_directory: str | Path = ".",
     spec = dict(config)
     _unknown(spec, {"schema_version", "positions", "q", "masses", "beads", "temperature",
                     "beta", "timestep", "integrator", "sampling_integrator", "cell", "geometry_unit", "cell_unit",
-                    "pbc", "fixed_atoms", "seed", "p", "potential", "thermostat", "barostat", "run"}, "native input")
+                    "pbc", "fixed_atoms", "seed", "p", "potential", "thermostat", "barostat", "run", "threads"}, "native input")
     if spec.get("schema_version", "native-ensembles/1") != "native-ensembles/1":
         raise ValueError("expected schema_version='native-ensembles/1'")
     if ("temperature" in spec) == ("beta" in spec):
@@ -899,7 +953,8 @@ def ensemble_from_config(config: dict, *, base_directory: str | Path = ".",
                           thermostat=t, barostat=b,
                           integrator=spec.get("integrator", "cayley-bcb"), cell=cell,
                           sampling_integrator=spec.get("sampling_integrator"),
-                          pbc=spec.get("pbc"), fixed_atoms=spec.get("fixed_atoms", ()), seed=spec.get("seed", 0))
+                          pbc=spec.get("pbc"), fixed_atoms=spec.get("fixed_atoms", ()), seed=spec.get("seed", 0),
+                          threads=spec.get("threads", 1))
 
 
 def copy_mapping(value: dict) -> dict:
