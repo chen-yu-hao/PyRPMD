@@ -8,6 +8,7 @@ to make the comparison agree.
 """
 
 import numpy as np
+import pytest
 
 from pyrpmd.analysis.dvr_heom import DVRSystemHEOM
 from pyrpmd.analysis.heom import SpinBosonHEOM
@@ -73,6 +74,17 @@ def test_generic_dvr_heom_accepts_callable_potential_coupling_and_counterterm():
     assert result.rho.shape == (5, grid.size, grid.size)
     assert np.all(np.isfinite(result.rho))
     assert result.trace_error < 2e-9
+
+
+def test_generic_dvr_heom_rejects_complex_diagonal_operators():
+    with pytest.raises(ValueError, match="real-valued"):
+        DVRSystemHEOM(
+            np.linspace(-1.0, 1.0, 5),
+            np.ones(5, dtype=complex) * (1.0 + 0.2j),
+            np.zeros(5),
+            beta=2.0,
+            exponents=((0.1, 1.0),),
+        )
 
 
 def test_drude_harmonic_kubo_pipeline_recovers_input_spectral_density():

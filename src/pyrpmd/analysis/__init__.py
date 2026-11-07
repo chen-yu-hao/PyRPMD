@@ -42,6 +42,16 @@ from .spectral_density import (
     spectral_density_from_kubo,
     spectral_density_to_correlation,
 )
+from .quantum_correction import (
+    InverseResponse,
+    QuantumCorrectionResult,
+    causal_susceptibility,
+    frequency_response,
+    regularized_inverse,
+    inverse_response_defect,
+    hybrid_quantum_correction,
+    run_quantum_correction,
+)
 
 __all__ = [
     "solve_mbar",
@@ -77,4 +87,12 @@ __all__ = [
     "harmonic_bath_spectral_density",
     "spectral_density_from_kubo",
     "spectral_density_to_correlation",
+    "InverseResponse",
+    "QuantumCorrectionResult",
+    "causal_susceptibility",
+    "frequency_response",
+    "regularized_inverse",
+    "inverse_response_defect",
+    "hybrid_quantum_correction",
+    "run_quantum_correction",
 ]

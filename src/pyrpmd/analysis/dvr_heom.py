@@ -39,6 +39,8 @@ def _as_operator(value: ArrayLike | Callable[[np.ndarray], ArrayLike], grid: np.
         out = np.asarray(value)
     if out.ndim == 0:
         out = np.full(grid.shape, out, dtype=out.dtype)
+    if out.dtype.kind not in "fiu":
+        raise ValueError(f"{name} must be real-valued")
     out = np.asarray(out, dtype=float)
     if out.shape != grid.shape:
         raise ValueError(f"{name} must have shape {grid.shape}, got {out.shape}")
