@@ -102,6 +102,18 @@ It commits each accepted step and returns a valid prefix on numerical failure;
 share the existing immutable Cayley context and the provider's lifetime lock.
 See [the segmented API contract](../docs/block-propagation.md).
 
+`advance` and `advance_sampling` double-buffer the state between the caller's
+q/p arrays and one private array: each step reads the accepted half, writes the
+other and swaps pointers on acceptance, so neither the block start nor each step
+copies the ring. `Cayley::propagate` and `sample_free` accept a separate
+position input for that purpose, and the cyclic Cayley solve sweeps complete
+bead rows (vectorized across Cartesian coordinates, without integer modulo).
+A `BiasStack` evaluates each distinct centroid umbrella/flux/observed coordinate
+once per force call and applies the centroid bias forces in one pass over the
+force rows. `run_block` also reuses endpoint forces when Python passes
+`reuse_forces`. All of these keep each element's floating-point operations and
+their order, so results are bit-identical to the previous kernels.
+
 `advance` also accepts a pre-drawn `refresh` descriptor.  Its strictly
 increasing step offsets and `[R,P,N,3]` float64 momenta are supplied by Python;
 the GIL-free loop installs each momentum before its step and reports the

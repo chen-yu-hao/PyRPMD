@@ -1,0 +1,330 @@
+{
+ "schema": "pyrpmd.native-step-efficiency.v1",
+ "base_commit": "18d455606913448d888c9fd3fbf25ece6b3c653e",
+ "hardware": "Intel(R) Xeon(R) Processor @ 2.10GHz, 4 vCPU shared cloud VM; one pinned core, OMP_NUM_THREADS=1",
+ "software": {
+  "python": "3.13.18",
+  "numpy": "2.5.3",
+  "cxx": "g++ 13.3.0",
+  "fortran": "GNU Fortran 13.3.0",
+  "os": "Linux 6.18 x86_64, glibc 2.39"
+ },
+ "bitwise_ab_parity": {
+  "default_build_builtin_pes": {
+   "schema": "pyrpmd.native-ab-parity.v1",
+   "pes": "builtin harmonic",
+   "comparisons": 209,
+   "mismatches": []
+  },
+  "default_build_cbe_pes": {
+   "schema": "pyrpmd.native-ab-parity.v1",
+   "pes": "CBE/PES-2008",
+   "comparisons": 209,
+   "mismatches": []
+  },
+  "scratch_harness_default_build": {
+   "advance": 156,
+   "advance_mid_block_failures": 84,
+   "advance_sampling": 24,
+   "run_block": 8,
+   "free_step_cases": "3 schemes x 14 bead counts x 2 thread counts",
+   "mismatches": 0
+  },
+  "scratch_harness_fma_build": {
+   "flags": "-mfma -mavx2 -ffp-contract=fast for base and candidate",
+   "advance": 156,
+   "advance_mid_block_failures": 84,
+   "advance_sampling": 24,
+   "run_block": 8,
+   "mismatches": 0
+  },
+  "negative_control": "An FMA-built reference against the default candidate is flagged in 201 of 209 comparisons"
+ },
+ "cbe_wrapper_parity": {
+  "cases": 8,
+  "frames": 334,
+  "includes": [
+   "valid rings",
+   "NaN/+-Inf coordinates",
+   "coincident atoms",
+   "pair distance exactly 0.2 bohr and one ulp either side",
+   "1e160/1e200/1e-300 scaled coordinates",
+   "all-rejected batch"
+  ],
+  "mismatches": 0
+ },
+ "loop_overhead_builtin_harmonic_pes": {
+  "description": "benchmarks/efficiency/native_step_overhead.py; best of 3 alternating rounds x 9 repeats, 256-step blocks",
+  "results": [
+   {
+    "beads": 1,
+    "case": "unbiased",
+    "base_us_per_step": 1.081,
+    "new_us_per_step": 0.602,
+    "ratio": 1.8
+   },
+   {
+    "beads": 1,
+    "case": "umbrella_flux",
+    "base_us_per_step": 1.781,
+    "new_us_per_step": 0.934,
+    "ratio": 1.91
+   },
+   {
+    "beads": 16,
+    "case": "unbiased",
+    "base_us_per_step": 4.177,
+    "new_us_per_step": 2.003,
+    "ratio": 2.09
+   },
+   {
+    "beads": 16,
+    "case": "umbrella_flux",
+    "base_us_per_step": 5.186,
+    "new_us_per_step": 2.852,
+    "ratio": 1.82
+   },
+   {
+    "beads": 64,
+    "case": "unbiased",
+    "base_us_per_step": 16.714,
+    "new_us_per_step": 6.562,
+    "ratio": 2.55
+   },
+   {
+    "beads": 64,
+    "case": "umbrella_flux",
+    "base_us_per_step": 18.967,
+    "new_us_per_step": 8.828,
+    "ratio": 2.15
+   },
+   {
+    "beads": 128,
+    "case": "unbiased",
+    "base_us_per_step": 33.218,
+    "new_us_per_step": 13.789,
+    "ratio": 2.41
+   },
+   {
+    "beads": 128,
+    "case": "umbrella_flux",
+    "base_us_per_step": 42.335,
+    "new_us_per_step": 19.943,
+    "ratio": 2.12
+   },
+   {
+    "beads": 256,
+    "case": "unbiased",
+    "base_us_per_step": 67.777,
+    "new_us_per_step": 25.582,
+    "ratio": 2.65
+   },
+   {
+    "beads": 256,
+    "case": "umbrella_flux",
+    "base_us_per_step": 73.626,
+    "new_us_per_step": 32.012,
+    "ratio": 2.3
+   },
+   {
+    "beads": 512,
+    "case": "unbiased",
+    "base_us_per_step": 147.883,
+    "new_us_per_step": 51.376,
+    "ratio": 2.88
+   },
+   {
+    "beads": 512,
+    "case": "umbrella_flux",
+    "base_us_per_step": 160.08,
+    "new_us_per_step": 64.609,
+    "ratio": 2.48
+   }
+  ]
+ },
+ "end_to_end_hch4_cbe": {
+  "description": "Real CBE/PES-2008, H+CH4 rate coordinate at xi=0.9, umbrella+flux, check_energy, observation every 20 steps; base used the base wrapper. Minimum over alternating rounds; configurations with fewer than 7 rounds are noisier.",
+  "results": [
+   {
+    "api": "propagate",
+    "beads": 1,
+    "block_steps": 64,
+    "rounds": 7,
+    "base_min_us_per_step": 8.4,
+    "new_min_us_per_step": 4.835,
+    "speedup_min": 1.737,
+    "speedup_median": 1.766
+   },
+   {
+    "api": "propagate",
+    "beads": 16,
+    "block_steps": 64,
+    "rounds": 7,
+    "base_min_us_per_step": 80.63,
+    "new_min_us_per_step": 40.891,
+    "speedup_min": 1.972,
+    "speedup_median": 2.33
+   },
+   {
+    "api": "propagate",
+    "beads": 64,
+    "block_steps": 64,
+    "rounds": 2,
+    "base_min_us_per_step": 379.649,
+    "new_min_us_per_step": 160.26,
+    "speedup_min": 2.369,
+    "speedup_median": 2.169
+   },
+   {
+    "api": "propagate",
+    "beads": 128,
+    "block_steps": 64,
+    "rounds": 7,
+    "base_min_us_per_step": 624.156,
+    "new_min_us_per_step": 306.486,
+    "speedup_min": 2.036,
+    "speedup_median": 1.976
+   },
+   {
+    "api": "propagate",
+    "beads": 256,
+    "block_steps": 16,
+    "rounds": 2,
+    "base_min_us_per_step": 1541.827,
+    "new_min_us_per_step": 837.591,
+    "speedup_min": 1.841,
+    "speedup_median": 1.369
+   },
+   {
+    "api": "propagate",
+    "beads": 512,
+    "block_steps": 16,
+    "rounds": 7,
+    "base_min_us_per_step": 2469.289,
+    "new_min_us_per_step": 1351.187,
+    "speedup_min": 1.827,
+    "speedup_median": 1.807
+   },
+   {
+    "api": "propagate_block",
+    "beads": 1,
+    "block_steps": 256,
+    "rounds": 7,
+    "base_min_us_per_step": 4.342,
+    "new_min_us_per_step": 3.201,
+    "speedup_min": 1.356,
+    "speedup_median": 1.3
+   },
+   {
+    "api": "propagate_block",
+    "beads": 1,
+    "block_steps": 10,
+    "rounds": 7,
+    "base_min_us_per_step": 15.019,
+    "new_min_us_per_step": 11.324,
+    "speedup_min": 1.326,
+    "speedup_median": 1.262
+   },
+   {
+    "api": "propagate_block",
+    "beads": 16,
+    "block_steps": 256,
+    "rounds": 7,
+    "base_min_us_per_step": 41.797,
+    "new_min_us_per_step": 38.567,
+    "speedup_min": 1.084,
+    "speedup_median": 1.067
+   },
+   {
+    "api": "propagate_block",
+    "beads": 16,
+    "block_steps": 10,
+    "rounds": 7,
+    "base_min_us_per_step": 57.391,
+    "new_min_us_per_step": 50.833,
+    "speedup_min": 1.129,
+    "speedup_median": 1.208
+   },
+   {
+    "api": "propagate_block",
+    "beads": 64,
+    "block_steps": 256,
+    "rounds": 2,
+    "base_min_us_per_step": 208.503,
+    "new_min_us_per_step": 151.617,
+    "speedup_min": 1.375,
+    "speedup_median": 1.211
+   },
+   {
+    "api": "propagate_block",
+    "beads": 64,
+    "block_steps": 10,
+    "rounds": 2,
+    "base_min_us_per_step": 236.379,
+    "new_min_us_per_step": 175.716,
+    "speedup_min": 1.345,
+    "speedup_median": 1.19
+   },
+   {
+    "api": "propagate_block",
+    "beads": 128,
+    "block_steps": 256,
+    "rounds": 7,
+    "base_min_us_per_step": 324.545,
+    "new_min_us_per_step": 299.273,
+    "speedup_min": 1.084,
+    "speedup_median": 1.363
+   },
+   {
+    "api": "propagate_block",
+    "beads": 128,
+    "block_steps": 10,
+    "rounds": 7,
+    "base_min_us_per_step": 366.458,
+    "new_min_us_per_step": 337.794,
+    "speedup_min": 1.085,
+    "speedup_median": 1.193
+   },
+   {
+    "api": "propagate_block",
+    "beads": 256,
+    "block_steps": 256,
+    "rounds": 2,
+    "base_min_us_per_step": 724.55,
+    "new_min_us_per_step": 601.904,
+    "speedup_min": 1.204,
+    "speedup_median": 1.143
+   },
+   {
+    "api": "propagate_block",
+    "beads": 256,
+    "block_steps": 10,
+    "rounds": 2,
+    "base_min_us_per_step": 933.783,
+    "new_min_us_per_step": 817.188,
+    "speedup_min": 1.143,
+    "speedup_median": 1.111
+   },
+   {
+    "api": "propagate_block",
+    "beads": 512,
+    "block_steps": 256,
+    "rounds": 7,
+    "base_min_us_per_step": 1281.593,
+    "new_min_us_per_step": 1231.495,
+    "speedup_min": 1.041,
+    "speedup_median": 0.87
+   },
+   {
+    "api": "propagate_block",
+    "beads": 512,
+    "block_steps": 10,
+    "rounds": 7,
+    "base_min_us_per_step": 1439.63,
+    "new_min_us_per_step": 1405.286,
+    "speedup_min": 1.024,
+    "speedup_median": 0.905
+   }
+  ]
+ }
+}

@@ -28,13 +28,25 @@ static std::vector<CV> cvs(PyObject* obj,Py_ssize_t nd) {
     for(Py_ssize_t i=0;i<PySequence_Fast_GET_SIZE(seq.p);++i)out.emplace_back(PySequence_Fast_GET_ITEM(seq.p,i),nd);
     return out;
 }
-static void centroid(const Vec& q,Vec& c,Py_ssize_t beads,Py_ssize_t nd) {
-    std::fill(c.begin(),c.end(),0.);
-    for(Py_ssize_t b=0;b<beads;++b) for(Py_ssize_t i=0;i<nd;++i)c[i]+=q[b*nd+i];
-    for(auto& x:c)x/=beads;
+static void centroid(const double* q,double* c,Py_ssize_t beads,Py_ssize_t nd) {
+    std::fill(c,c+nd,0.);
+    for(Py_ssize_t b=0;b<beads;++b){const double* row=q+b*nd;for(Py_ssize_t i=0;i<nd;++i)c[i]+=row[i];}
+    for(Py_ssize_t i=0;i<nd;++i)c[i]/=beads;
+}
+// A double is nonfinite exactly when all exponent bits are set. Adding one
+// exponent unit then carries into the sign bit. This is a branch-free integer
+// reduction which compilers vectorize, unlike an early-exit isfinite scan.
+static bool finite_values(const double* x,Py_ssize_t n) {
+    constexpr uint64_t exponent=0x7ff0000000000000ULL,unit=0x0010000000000000ULL,sign=0x8000000000000000ULL;
+    for(Py_ssize_t start=0;start<n;start+=1024){
+        const Py_ssize_t end=std::min(n,start+1024);uint64_t carry=0;
+        for(Py_ssize_t i=start;i<end;++i){uint64_t bits;std::memcpy(&bits,x+i,sizeof bits);carry|=(bits&exponent)+unit;}
+        if(carry&sign)return false;
+    }
+    return true;
 }
 struct Fragment {Vec weights,reference;};
-static void project(Vec& q,Vec& p,const std::vector<Fragment>& fragments,const Cayley& c) {
+static void project(double* q,double* p,const std::vector<Fragment>& fragments,const Cayley& c) {
     for(const auto& f:fragments){double total=std::accumulate(f.weights.begin(),f.weights.end(),0.);double center[3]={0,0,0},velocity[3]={0,0,0};
         for(Py_ssize_t b=0;b<c.beads;++b)for(size_t a=0;a<f.weights.size();++a)if(f.weights[a]>0)for(int k=0;k<3;++k){center[k]+=f.weights[a]*q[b*c.nd+3*a+k];velocity[k]+=p[b*c.nd+3*a+k];}
         for(int k=0;k<3;++k){center[k]/=c.beads*total;velocity[k]/=c.beads*total;}
@@ -44,7 +56,7 @@ static void project(Vec& q,Vec& p,const std::vector<Fragment>& fragments,const C
 using CABI=decltype(&pyrpmd_pes_evaluate_v1);
 using FortranBatch=void(*)(int32_t,const double*,double*,double*,int32_t*);
 struct PES {
-    void* address;void* context;std::string kind;
+    void* address;void* context;std::string kind;int kind_code=0;
     Vec energies,force;std::vector<int32_t> status;Py_ssize_t natoms,beads;
     PES(PyObject* obj,const Cayley& c):energies(c.beads),force(c.beads*c.nd),status(c.beads),natoms(c.nd/3),beads(c.beads) {
         PyRef seq(PySequence_Fast(obj,"invalid native PES binding"));
@@ -53,23 +65,27 @@ struct PES {
         address=PyLong_AsVoidPtr(PySequence_Fast_GET_ITEM(seq.p,1));context=PyLong_AsVoidPtr(PySequence_Fast_GET_ITEM(seq.p,2));
         auto n=PyLong_AsSsize_t(PySequence_Fast_GET_ITEM(seq.p,3));
         if(PyErr_Occurred() || !address || n!=natoms || (kind!="cabi-v1" && kind!="fortran-batch-v1") || (kind=="fortran-batch-v1" && beads>INT32_MAX))throw std::invalid_argument("invalid native PES address, kind, or atom count");
+        kind_code=kind=="fortran-batch-v1" ? 1 : 0;
     }
-    void evaluate(const Vec& q) {
-        if(!finite(q))throw std::runtime_error("PES received nonfinite coordinates");
+    void evaluate(const double* q) {
+        const Py_ssize_t size=beads*3*natoms;
+        if(!finite_values(q,size))throw std::runtime_error("PES received nonfinite coordinates");
         const double nan=std::numeric_limits<double>::quiet_NaN();
         std::fill(energies.begin(),energies.end(),nan);std::fill(force.begin(),force.end(),nan);std::fill(status.begin(),status.end(),-1);
-        if(kind=="fortran-batch-v1")reinterpret_cast<FortranBatch>(address)(static_cast<int32_t>(beads),q.data(),energies.data(),force.data(),status.data());
+        if(kind_code==1)reinterpret_cast<FortranBatch>(address)(static_cast<int32_t>(beads),q,energies.data(),force.data(),status.data());
         else {
-            pyrpmd_pes_input_v1 in{1,sizeof(pyrpmd_pes_input_v1),1,1,beads,natoms,q.data(),static_cast<int64_t>(q.size())};
+            pyrpmd_pes_input_v1 in{1,sizeof(pyrpmd_pes_input_v1),1,1,beads,natoms,q,static_cast<int64_t>(size)};
             pyrpmd_pes_output_v1 out{1,sizeof(pyrpmd_pes_output_v1),energies.data(),beads,force.data(),static_cast<int64_t>(force.size()),status.data(),beads,nullptr,0,0};
             char message[4096]={0};pyrpmd_error_v1 error{message,sizeof(message),0};
             int32_t rc=reinterpret_cast<CABI>(address)(static_cast<pyrpmd_pes_context_v1*>(context),&in,&out,&error);
             message[sizeof(message)-1]=0;
             if(rc)throw std::runtime_error("native PES global status "+std::to_string(rc)+": "+message);
         }
-        for(Py_ssize_t b=0;b<beads;++b)if(status[b])throw std::runtime_error("native PES frame "+std::to_string(b)+" status "+std::to_string(status[b]));
-        if(!finite(energies)||!finite(force))throw std::runtime_error("native PES returned nonfinite energy/forces");
+        int32_t any=0;for(Py_ssize_t b=0;b<beads;++b)any|=status[b];
+        if(any)for(Py_ssize_t b=0;b<beads;++b)if(status[b])throw std::runtime_error("native PES frame "+std::to_string(b)+" status "+std::to_string(status[b]));
+        if(!finite_values(energies.data(),beads)||!finite_values(force.data(),size))throw std::runtime_error("native PES returned nonfinite energy/forces");
     }
+    void evaluate(const Vec& q) {evaluate(q.data());}
 };
 struct Buffer {
     Py_buffer b{};
@@ -90,16 +106,22 @@ static Py_ssize_t product(Py_ssize_t a,Py_ssize_t b) {
     return a*b;
 }
 struct ReleaseGIL {PyThreadState* state;ReleaseGIL():state(PyEval_SaveThread()){}~ReleaseGIL(){PyEval_RestoreThread(state);}};
-static void kick(Vec& p,const Vec& f,const Cayley& c) {
-    auto n=static_cast<Py_ssize_t>(p.size());double h=.5*c.dt;
-    #pragma omp parallel for num_threads(c.threads) schedule(static) if(c.threads>1)
-    for(Py_ssize_t i=0;i<n;++i)p[i]+=h*f[i];
+// One OpenMP region per call only with several threads: an inactive
+// parallel region still costs a runtime call on every half kick.
+static void kick(double* p,const double* f,const Cayley& c) {
+    const Py_ssize_t n=c.beads*c.nd;const double h=.5*c.dt;
+    if(c.threads>1){
+        #pragma omp parallel for num_threads(c.threads) schedule(static)
+        for(Py_ssize_t i=0;i<n;++i)p[i]+=h*f[i];
+    } else for(Py_ssize_t i=0;i<n;++i)p[i]+=h*f[i];
 }
 // Out-of-place first half kick: the trial momentum copy is fused into it.
-static void kick(Vec& p,const Vec& p0,const Vec& f,const Cayley& c) {
-    auto n=static_cast<Py_ssize_t>(p.size());double h=.5*c.dt;
-    #pragma omp parallel for num_threads(c.threads) schedule(static) if(c.threads>1)
-    for(Py_ssize_t i=0;i<n;++i)p[i]=p0[i]+h*f[i];
+static void kick(double* p,const double* p0,const double* f,const Cayley& c) {
+    const Py_ssize_t n=c.beads*c.nd;const double h=.5*c.dt;
+    if(c.threads>1){
+        #pragma omp parallel for num_threads(c.threads) schedule(static)
+        for(Py_ssize_t i=0;i<n;++i)p[i]=p0[i]+h*f[i];
+    } else for(Py_ssize_t i=0;i<n;++i)p[i]=p0[i]+h*f[i];
 }
 static double metric(const Diff& d,const Cayley& c) {
     double z=0;for(Py_ssize_t i=0;i<c.nd;++i)z+=d.g[i]*d.g[i]/c.mass[i/3];
@@ -296,11 +318,11 @@ struct Outcome {
         return -1;
     }
 
-    bool check(const Vec& q,const Vec& p,Vec& center,Vec& momentum,
+    bool check(const double* q,const double* p,Vec& center,Vec& momentum,
                Py_ssize_t beads,Py_ssize_t nd,Py_ssize_t step) {
         const long long now=start+step+1;
         if(now%interval)return false;
-        centroid(q,center,beads,nd);centroid(p,momentum,beads,nd);
+        centroid(q,center.data(),beads,nd);centroid(p,momentum.data(),beads,nd);
         int label=classify(center,momentum,64*std::numeric_limits<double>::epsilon()*(beads+natoms+1));
         if(label==-2){pending_check=true;return true;}
         if(label!=candidate){candidate=label;candidate_since=label<0 ? -1 : now;}
@@ -333,7 +355,7 @@ struct NuclearDiagnostics {
         }
     }
 
-    void write(Py_ssize_t row,const Vec& q,const Vec& p,const Vec& center,
+    void write(Py_ssize_t row,const double* q,const double* p,const Vec& center,
                const Vec& momentum,const PES& pes,const Cayley& c) const {
         const auto P=c.beads,nd=c.nd;
         if(energy_parts){
@@ -363,6 +385,128 @@ struct NuclearDiagnostics {
                 if(!std::isfinite(values[a]))throw std::runtime_error("nonfinite ring radius diagnostics");
             }
         }
+    }
+};
+
+// One centroid reaction coordinate shared by every umbrella, flux metric and
+// observation lowered from an equal descriptor. Each force evaluation then
+// computes its value, gradient and (for the flux metric) Hessian-vector
+// product once, as RPMDrate reuses xi, dxi and d2xi within a step. Results
+// are bit-identical to evaluating each consumer separately.
+struct SharedCoordinate {
+    const native_cv::Coordinate<false>* cv;
+    bool metric=false;
+    double value=0.,z=0.;
+    Vec gradient,direction,hvp;
+    SharedCoordinate(const native_cv::Coordinate<false>* coordinate,Py_ssize_t nd)
+        :cv(coordinate),gradient(nd),direction(nd),hvp(nd) {}
+    void evaluate(const double* center,const std::vector<double>& mass) {
+        if(metric)z=cv->metric(center,gradient.data(),direction.data(),hvp.data(),mass,&value);
+        else value=cv->eval(center,gradient.data());
+    }
+};
+static bool same_descriptor(PyObject* a,PyObject* b) {
+    if(a==b)return true;
+    const int equal=PyObject_RichCompareBool(a,b,Py_EQ);
+    if(equal<0){PyErr_Clear();return false;}
+    return equal==1;
+}
+
+// A native bias stack. Centroid umbrella and flux-metric biases sharing a
+// coordinate descriptor are routed through one SharedCoordinate and applied as
+// row terms in one pass over the ring force; other biases keep apply().
+struct BiasStack {
+    struct Route {int kind=-1;std::vector<size_t> entries;};
+    struct RowTerm {const double* vector;double scale;bool add;};
+    std::vector<Bias> biases;
+    std::vector<SharedCoordinate> shared;
+    std::vector<PyObject*> descriptors;
+    std::vector<std::unique_ptr<PyRef>> owners;
+    std::vector<Route> routes;
+    Vec values;std::vector<const double*> gradients;
+    std::vector<RowTerm> terms;
+    bool generic=false;
+    Py_ssize_t nd;
+    BiasStack(PyObject* specs,Py_ssize_t dims):nd(dims) {
+        owners.push_back(std::make_unique<PyRef>(PySequence_Fast(specs,"biases must be a sequence")));
+        auto* list=owners.back()->p;
+        for(Py_ssize_t i=0;i<PySequence_Fast_GET_SIZE(list);++i)biases.emplace_back(PySequence_Fast_GET_ITEM(list,i),nd);
+        routes.resize(biases.size());size_t widest=0;
+        for(size_t i=0;i<biases.size();++i){
+            const auto& b=biases[i];
+            bool centroid_only=(b.kind==0 || b.kind==1) && !b.cv.empty();
+            for(const auto& coordinate:b.cv)centroid_only=centroid_only && !coordinate.bead_average;
+            if(!centroid_only){generic=true;continue;}
+            owners.push_back(std::make_unique<PyRef>(PySequence_Fast(native_cv::tagged::field(PySequence_Fast_GET_ITEM(list,static_cast<Py_ssize_t>(i)),"cvs"),"CVs must be a sequence")));
+            auto* cvs=owners.back()->p;
+            if(PySequence_Fast_GET_SIZE(cvs)!=static_cast<Py_ssize_t>(b.cv.size())){generic=true;continue;}
+            routes[i].kind=b.kind;
+            for(size_t k=0;k<b.cv.size();++k){
+                const size_t entry=share(PySequence_Fast_GET_ITEM(cvs,static_cast<Py_ssize_t>(k)),&b.cv[k]);
+                if(b.kind==1)shared[entry].metric=true;
+                routes[i].entries.push_back(entry);
+            }
+            widest=std::max(widest,b.cv.size());
+        }
+        values.resize(widest);gradients.resize(widest);terms.reserve(biases.size()*std::max<size_t>(widest,1));
+    }
+    size_t share(PyObject* descriptor,const native_cv::Coordinate<false>* coordinate) {
+        for(size_t i=0;i<shared.size();++i)if(same_descriptor(descriptors[i],descriptor))return i;
+        shared.emplace_back(coordinate,nd);descriptors.push_back(descriptor);return shared.size()-1;
+    }
+    bool empty() const {return biases.empty();}
+    // Index of the shared coordinate equal to each centroid observation, or -1.
+    std::vector<long long> observations(PyObject* specs,const std::vector<CV>& cvs) {
+        std::vector<long long> entry(cvs.size(),-1);
+        if(shared.empty())return entry;
+        owners.push_back(std::make_unique<PyRef>(PySequence_Fast(specs,"CVs must be a sequence")));
+        auto* list=owners.back()->p;
+        for(size_t i=0;i<cvs.size() && static_cast<Py_ssize_t>(i)<PySequence_Fast_GET_SIZE(list);++i){
+            if(cvs[i].bead_average)continue;
+            for(size_t e=0;e<shared.size();++e)
+                if(same_descriptor(descriptors[e],PySequence_Fast_GET_ITEM(list,static_cast<Py_ssize_t>(i)))){entry[i]=static_cast<long long>(e);break;}
+        }
+        return entry;
+    }
+    bool apply_terms(double* force,Py_ssize_t P,bool check) {
+        bool finite=true;
+        if(!terms.empty())for(Py_ssize_t b=0;b<P;++b){
+            double* row=force+b*nd;
+            for(const auto& term:terms){
+                const double* v=term.vector;
+                if(term.add)for(Py_ssize_t i=0;i<nd;++i)row[i]+=v[i];
+                else {const double scale=term.scale;for(Py_ssize_t i=0;i<nd;++i)row[i]-=scale*v[i];}
+            }
+            if(check)finite=finite_values(row,nd)&&finite;
+        }
+        terms.clear();
+        return finite;
+    }
+    // Adds every bias at x (centroid center) to force; returns the bias energy.
+    double add(const double* x,const double* center,double* force,Py_ssize_t P,const std::vector<double>& mass,double beta) {
+        for(auto& entry:shared)entry.evaluate(center,mass);
+        double eb=0;
+        for(size_t i=0;i<biases.size();++i){
+            const auto& b=biases[i];const auto& route=routes[i];
+            if(route.kind==0){
+                for(size_t k=0;k<route.entries.size();++k){values[k]=shared[route.entries[k]].value;gradients[k]=shared[route.entries[k]].gradient.data();}
+                eb+=b.umbrella_terms(values.data(),gradients.data(),static_cast<size_t>(P));
+                for(size_t k=0;k<route.entries.size();++k)terms.push_back({b.grad.data()+k*nd,b.row_scale[k],false});
+            } else if(route.kind==1){
+                const auto& entry=shared[route.entries[0]];
+                eb+=b.flux_terms(entry.z,entry.hvp.data(),static_cast<size_t>(P),beta);
+                terms.push_back({b.direction.data(),0.,true});
+            } else {
+                // Generic biases update the force in place: keep the order.
+                apply_terms(force,P,false);
+                eb+=b.apply(x,center,force,static_cast<size_t>(P),mass,beta);
+            }
+        }
+        // The PES forces were checked; only biased sums can overflow.
+        const bool finite=apply_terms(force,P,!generic);
+        if(!std::isfinite(eb)||!finite||(generic && !finite_values(force,P*nd)))
+            throw std::runtime_error("nonfinite biased forces/energy");
+        return eb;
     }
 };
 
@@ -402,8 +546,7 @@ static PyObject* advance(PyObject*,PyObject* args) {
         auto* outcome_obj=PyDict_GetItemString(options,"outcome");
         if(outcome_obj && outcome_obj!=Py_None)outcome=std::make_unique<Outcome>(outcome_obj,nd/3,steps);
         PES pes(binding,*c);
-        PyRef bs(PySequence_Fast(field(options,"biases"),"biases must be a sequence"));std::vector<Bias> biases;
-        for(Py_ssize_t i=0;i<PySequence_Fast_GET_SIZE(bs.p);++i)biases.emplace_back(PySequence_Fast_GET_ITEM(bs.p,i),nd);
+        BiasStack biases(field(options,"biases"),nd);
         std::unique_ptr<CV> constraint;
         if(field(options,"constraint")!=Py_None)constraint=std::make_unique<CV>(field(options,"constraint"),nd);
         if(constraint && fixed.any)throw std::invalid_argument("combined fixed atoms and centroid RATTLE are unsupported");
@@ -460,8 +603,19 @@ static PyObject* advance(PyObject*,PyObject* args) {
                     || PyLong_AsSsize_t(PySequence_Fast_GET_ITEM(shape_seq.p,3))!=3
                     || PyErr_Occurred())throw std::invalid_argument("refresh momenta must have shape [R,P,N,3]");
             refresh_momenta=std::make_unique<Buffer>(momentum_obj,product(product(count,S),sizeof(double)),"d",false);
-            if(!finite(Vec(refresh_momenta->doubles(),refresh_momenta->doubles()+product(count,S))))
+            if(!finite_values(refresh_momenta->doubles(),product(count,S)))
                 throw std::invalid_argument("refresh momenta must be finite");
+        }
+        // The caller's q/p arrays are one half of the step double buffer, so
+        // a refresh source aliasing any written buffer is read from a copy.
+        const double* refresh_source=refresh_momenta ? refresh_momenta->doubles() : nullptr;
+        Vec refresh_copy;
+        if(refresh_momenta){
+            bool aliased=false;
+            for(const Buffer* written:{&q,&p,&records,states.get(),previous.get(),diagnostics.energy_parts.get(),
+                                       diagnostics.ring_radii.get(),step_energies.get()})
+                aliased=aliased||(written&&overlap(*refresh_momenta,*written));
+            if(aliased){refresh_copy.assign(refresh_source,refresh_source+product(static_cast<Py_ssize_t>(refresh_offsets.size()),S));refresh_source=refresh_copy.data();}
         }
         auto* reuse_obj=PyDict_GetItemString(options,"reuse_forces");
         int reuse=reuse_obj ? PyObject_IsTrue(reuse_obj) : 0;
@@ -473,29 +627,46 @@ static PyObject* advance(PyObject*,PyObject* args) {
         // endpoint q unchanged. Only fragment projection moves q afterwards.
         const bool reuse_forces=reuse && fragments.empty();
         bool force_valid=false;
-        Vec current_q(q.doubles(),q.doubles()+S),current_p(p.doubles(),p.doubles()+S),trial_q(S),trial_p(S),work(c->workspace_size()),center(nd),pc(nd),free_q(S);
+        // Umbrella, flux metric and observations of one centroid coordinate
+        // share its single evaluation per force call.
+        const auto observation_entry=biases.observations(field(options,"cvs"),observations);
+        // Double-buffered state: the caller's arrays and one private buffer.
+        // Each step reads the accepted half and writes the other, so a failed
+        // step leaves the accepted state untouched without per-step copies.
+        Vec alternate_q(S),alternate_p(S),work(c->workspace_size()),center(nd),pc(nd),free_q;
+        if(constraint)free_q.resize(S);
+        double *cq=q.doubles(),*cp=p.doubles(),*tq=alternate_q.data(),*tp=alternate_p.data();
         Vec refresh_backup_q,refresh_backup_p;
         if(!refresh_offsets.empty()){refresh_backup_q.resize(S);refresh_backup_p.resize(S);}
+        Vec kinetic_mass(nd),spring_mass(nd);
+        for(Py_ssize_t i=0;i<nd;++i){kinetic_mass[i]=2*c->mass[i/3];spring_mass[i]=.5*c->omega2*c->mass[i/3];}
         // Biases and fixed atoms update the PES force buffer in place.
         Vec& forces=pes.force;
-        if(!finite(current_q)||!finite(current_p))throw std::invalid_argument("nonfinite initial state");
-        fixed.validate(current_q.data(),current_p.data(),P);
-        auto project_state=[&](Vec& x,Vec& momentum){project(x,momentum,fragments,*c);fixed.project(x.data(),momentum.data(),P);};
+        if(!finite_values(cq,S)||!finite_values(cp,S))throw std::invalid_argument("nonfinite initial state");
+        fixed.validate(cq,cp,P);
+        auto project_state=[&](double* x,double* momentum){project(x,momentum,fragments,*c);fixed.project(x,momentum,P);};
         Py_ssize_t completed=0,written=0;std::string failure;
         size_t next_refresh=0;Py_ssize_t refreshes_completed=0;
         double previous_clock=clock;
-        auto evaluate=[&](const Vec& x){pes.evaluate(x);
-            if(!biases.empty())centroid(x,center,P,nd);
-            double eb=0;for(const auto& b:biases)eb+=b.add(x,center,forces,*c,beta);
-            if(!std::isfinite(eb)||!finite(forces))throw std::runtime_error("nonfinite biased forces/energy");
+        const double* shared_point=nullptr;
+        auto evaluate=[&](const double* x){
+            shared_point=nullptr;
+            pes.evaluate(x);
+            double eb=0;
+            if(!biases.empty()){
+                centroid(x,center.data(),P,nd);
+                eb=biases.add(x,center.data(),forces.data(),P,c->mass,beta);
+                shared_point=x;
+            }
             fixed.clear_force(forces.data(),P);
             return eb;
         };
-        auto total_energy=[&](const Vec& x,const Vec& momentum,double eb){
+        auto total_energy=[&](const double* x,const double* momentum,double eb){
             double energy=std::accumulate(pes.energies.begin(),pes.energies.end(),0.)+eb;
-            for(Py_ssize_t b=0;b<P;++b)for(Py_ssize_t i=0;i<nd;++i){
-                const auto j=b*nd+i;const double dq=x[j]-x[((b+1)%P)*nd+i];
-                energy+=momentum[j]*momentum[j]/(2*c->mass[i/3])+.5*c->omega2*c->mass[i/3]*dq*dq;
+            for(Py_ssize_t b=0;b<P;++b){
+                const double* xb=x+b*nd;const double* xn=x+(b+1==P ? 0 : b+1)*nd;const double* pb=momentum+b*nd;
+                for(Py_ssize_t i=0;i<nd;++i){const double dq=xb[i]-xn[i];
+                    energy+=pb[i]*pb[i]/kinetic_mass[i]+spring_mass[i]*dq*dq;}
             }
             if(!std::isfinite(energy))throw std::runtime_error("nonfinite total ring energy");
             return energy;
@@ -506,84 +677,103 @@ static PyObject* advance(PyObject*,PyObject* args) {
                 bool refreshed_this_step=false;
                 try {
                     if(next_refresh<refresh_offsets.size() && refresh_offsets[next_refresh]==step){
-                        std::copy(current_q.begin(),current_q.end(),refresh_backup_q.begin());
-                        std::copy(current_p.begin(),current_p.end(),refresh_backup_p.begin());
-                        const auto* source=refresh_momenta->doubles()+static_cast<Py_ssize_t>(next_refresh)*S;
-                        std::copy(source,source+S,current_p.begin());
+                        std::copy(cq,cq+S,refresh_backup_q.begin());
+                        std::copy(cp,cp+S,refresh_backup_p.begin());
+                        const auto* source=refresh_source+static_cast<Py_ssize_t>(next_refresh)*S;
+                        std::copy(source,source+S,cp);
                         if(refresh_projection=="centroid_constraint"){
-                            centroid(current_q,center,P,nd);auto d=constraint->eval(center.data());double z=metric(d,*c);
-                            centroid(current_p,pc,P,nd);double velocity=0;
+                            centroid(cq,center.data(),P,nd);auto d=constraint->eval(center.data());double z=metric(d,*c);
+                            centroid(cp,pc.data(),P,nd);double velocity=0;
                             for(Py_ssize_t i=0;i<nd;++i)velocity+=d.g[i]*pc[i]/c->mass[i/3];
                             for(Py_ssize_t b=0;b<P;++b)for(Py_ssize_t i=0;i<nd;++i)
-                                current_p[b*nd+i]-=velocity/z*d.g[i];
-                            fixed.project(current_q.data(),current_p.data(),P);
+                                cp[b*nd+i]-=velocity/z*d.g[i];
+                            fixed.project(cq,cp,P);
                         } else if(refresh_projection=="fragments"){
-                            project(current_q,current_p,fragments,*c);fixed.project(current_q.data(),current_p.data(),P);
+                            project(cq,cp,fragments,*c);fixed.project(cq,cp,P);
                             force_valid=false;
                         } else {
-                            fixed.project(current_q.data(),current_p.data(),P);
+                            fixed.project(cq,cp,P);
                         }
                         refreshed_this_step=true;
                     }
                     std::unique_ptr<Diff> old_normal;
-                    if(constraint){centroid(current_q,center,P,nd);old_normal=std::make_unique<Diff>(constraint->eval(center.data()));metric(*old_normal,*c);if(std::abs(old_normal->v)>std::max(1e-8,10*tolerance))throw std::runtime_error("parent state is not on dividing surface");}
+                    if(constraint){centroid(cq,center.data(),P,nd);old_normal=std::make_unique<Diff>(constraint->eval(center.data()));metric(*old_normal,*c);if(std::abs(old_normal->v)>std::max(1e-8,10*tolerance))throw std::runtime_error("parent state is not on dividing surface");}
                     if(!force_valid){
-                        const double eb=evaluate(current_q);
-                        if(check_energy && step==0)total_energy(current_q,current_p,eb);
+                        const double eb=evaluate(cq);
+                        if(check_energy && step==0)total_energy(cq,cp,eb);
                     }
-                    trial_q=current_q;kick(trial_p,current_p,forces,*c);project_state(trial_q,trial_p);
-                    c->propagate(trial_q.data(),trial_p.data(),work.data());project_state(trial_q,trial_p);
-                    if(constraint){free_q=trial_q;double lambda=0;bool converged=false;
-                        for(int iteration=0;iteration<50;++iteration){centroid(trial_q,center,P,nd);auto d=constraint->eval(center.data());metric(d,*c);if(std::abs(d.v)<tolerance){converged=true;break;}
+                    if(fragments.empty()){
+                        // Accepted fixed positions already hold, so the
+                        // pre-propagation projection only resets momenta.
+                        kick(tp,cp,forces.data(),*c);fixed.project_momenta(tp,P);
+                        c->propagate(cq,tq,tp,work.data());
+                    } else {
+                        // Fragment projection may move q at roundoff: keep the
+                        // copy, project and propagate-in-place order.
+                        std::copy(cq,cq+S,tq);kick(tp,cp,forces.data(),*c);project_state(tq,tp);
+                        c->propagate(tq,tp,work.data());
+                    }
+                    project_state(tq,tp);
+                    if(constraint){std::copy(tq,tq+S,free_q.begin());double lambda=0;bool converged=false;
+                        for(int iteration=0;iteration<50;++iteration){centroid(tq,center.data(),P,nd);auto d=constraint->eval(center.data());metric(d,*c);if(std::abs(d.v)<tolerance){converged=true;break;}
                             double derivative=0;for(Py_ssize_t i=0;i<nd;++i)derivative+=d.g[i]*old_normal->g[i]/c->mass[i/3];
                             if(std::abs(derivative)<1e-25)throw std::runtime_error("RATTLE normals became orthogonal");
                             lambda-=d.v/derivative;
-                            for(Py_ssize_t b=0;b<P;++b)for(Py_ssize_t i=0;i<nd;++i)trial_q[b*nd+i]=free_q[b*nd+i]+lambda*old_normal->g[i]/c->mass[i/3];}
+                            for(Py_ssize_t b=0;b<P;++b)for(Py_ssize_t i=0;i<nd;++i)tq[b*nd+i]=free_q[b*nd+i]+lambda*old_normal->g[i]/c->mass[i/3];}
                         if(!converged)throw std::runtime_error("centroid RATTLE constraint failed to converge");
-                        for(Py_ssize_t b=0;b<P;++b)for(Py_ssize_t i=0;i<nd;++i)trial_p[b*nd+i]+=lambda/c->dt*old_normal->g[i];}
-                    double eb=evaluate(trial_q);kick(trial_p,forces,*c);project_state(trial_q,trial_p);
-                    if(constraint){centroid(trial_q,center,P,nd);auto d=constraint->eval(center.data());double z=metric(d,*c);centroid(trial_p,pc,P,nd);double v=0;for(Py_ssize_t i=0;i<nd;++i)v+=d.g[i]*pc[i]/c->mass[i/3];for(Py_ssize_t b=0;b<P;++b)for(Py_ssize_t i=0;i<nd;++i)trial_p[b*nd+i]-=v/z*d.g[i];}
-                    if(!finite(trial_q)||!finite(trial_p))throw std::runtime_error("nonfinite integration state");
+                        for(Py_ssize_t b=0;b<P;++b)for(Py_ssize_t i=0;i<nd;++i)tp[b*nd+i]+=lambda/c->dt*old_normal->g[i];}
+                    double eb=evaluate(tq);kick(tp,forces.data(),*c);project_state(tq,tp);
+                    if(!fragments.empty())shared_point=nullptr;
+                    if(constraint){centroid(tq,center.data(),P,nd);auto d=constraint->eval(center.data());double z=metric(d,*c);centroid(tp,pc.data(),P,nd);double v=0;for(Py_ssize_t i=0;i<nd;++i)v+=d.g[i]*pc[i]/c->mass[i/3];for(Py_ssize_t b=0;b<P;++b)for(Py_ssize_t i=0;i<nd;++i)tp[b*nd+i]-=v/z*d.g[i];}
+                    // The endpoint PES call already validated q unless a
+                    // fragment projection moved it afterwards.
+                    if((!fragments.empty() && !finite_values(tq,S))||!finite_values(tp,S))throw std::runtime_error("nonfinite integration state");
                     // Fragment projection can change last-bit coordinates after the
                     // final force. Re-evaluate only when a physical energy is requested.
                     double energy=std::numeric_limits<double>::quiet_NaN();
                     if(check_energy || step_energies || ((record_energy || diagnostics.energy_parts) && observed[step])){
-                        if(!fragments.empty())eb=evaluate(trial_q);
-                        energy=total_energy(trial_q,trial_p,eb);
+                        if(!fragments.empty())eb=evaluate(tq);
+                        energy=total_energy(tq,tp,eb);
                         if(step_energies)step_energies->doubles()[step]=energy;
                     }
                     if(observed[step]) {
-                        centroid(trial_q,center,P,nd);centroid(trial_p,pc,P,nd);
+                        centroid(tq,center.data(),P,nd);centroid(tp,pc.data(),P,nd);
                         auto* row=records.doubles()+written*width;row[0]=clock+c->dt;row[1]=std::numeric_limits<double>::quiet_NaN();
                         if(record_energy)row[1]=energy;
                         std::copy(center.begin(),center.end(),row+2);std::copy(pc.begin(),pc.end(),row+2+nd);
-                        diagnostics.write(written,trial_q,trial_p,center,pc,pes,*c);
-                        for(size_t i=0;i<observations.size();++i){auto d=observations[i].ring(trial_q,center,P);if(!std::isfinite(d.v))throw std::runtime_error("nonfinite CV observation");row[2+2*nd+i]=d.v;}
-                        if(states){auto* dest=states->doubles()+written*2*S;std::copy(trial_q.begin(),trial_q.end(),dest);std::copy(trial_p.begin(),trial_p.end(),dest+S);}
+                        diagnostics.write(written,tq,tp,center,pc,pes,*c);
+                        for(size_t i=0;i<observations.size();++i){
+                            const auto entry=observation_entry[i];
+                            const double value=entry>=0 && shared_point==tq ? biases.shared[static_cast<size_t>(entry)].value
+                                                                            : observations[i].observe(tq,center.data(),P);
+                            if(!std::isfinite(value))throw std::runtime_error("nonfinite CV observation");
+                            row[2+2*nd+i]=value;
+                        }
+                        if(states){auto* dest=states->doubles()+written*2*S;std::copy(tq,tq+S,dest);std::copy(tp,tp+S,dest+S);}
                     }
                     if(!std::isfinite(clock+c->dt))throw std::runtime_error("nonfinite integration clock");
-                    bool resolved=outcome && outcome->check(trial_q,trial_p,center,pc,P,nd,step);
+                    bool resolved=outcome && outcome->check(tq,tp,center,pc,P,nd,step);
                     previous_clock=clock;
-                    current_q.swap(trial_q);current_p.swap(trial_p);++completed;if(observed[step])++written;clock+=c->dt;
+                    std::swap(cq,tq);std::swap(cp,tp);++completed;if(observed[step])++written;clock+=c->dt;
                     if(refreshed_this_step){++next_refresh;++refreshes_completed;}
                     force_valid=reuse_forces;
                     if(resolved)break;
                 } catch(const std::exception& e){
                     if(refreshed_this_step){
-                        std::copy(refresh_backup_q.begin(),refresh_backup_q.end(),current_q.begin());
-                        std::copy(refresh_backup_p.begin(),refresh_backup_p.end(),current_p.begin());
+                        std::copy(refresh_backup_q.begin(),refresh_backup_q.end(),cq);
+                        std::copy(refresh_backup_p.begin(),refresh_backup_p.end(),cp);
                     }
                     failure=e.what();break;
                 }
             }
-            // After a successful final swap, trial_q/p still hold the state
-            // immediately before that accepted step. One copy is sufficient
-            // for a Python classifier's final-step rollback.
+            // After a successful final swap, the trial half still holds the
+            // state immediately before that accepted step. Copy it out before
+            // the accepted half can overwrite the caller's arrays.
             if(previous && completed && failure.empty()){
-                std::copy(trial_q.begin(),trial_q.end(),previous->doubles());
-                std::copy(trial_p.begin(),trial_p.end(),previous->doubles()+S);
+                std::copy(tq,tq+S,previous->doubles());
+                std::copy(tp,tp+S,previous->doubles()+S);
             }
-            std::copy(current_q.begin(),current_q.end(),q.doubles());std::copy(current_p.begin(),current_p.end(),p.doubles());
+            if(cq!=q.doubles()){std::copy(cq,cq+S,q.doubles());std::copy(cp,cp+S,p.doubles());}
         }
         if(outcome || previous || (refresh_obj && refresh_obj!=Py_None)){
             auto* result=outcome ? outcome->result() : PyDict_New();if(!result)return nullptr;

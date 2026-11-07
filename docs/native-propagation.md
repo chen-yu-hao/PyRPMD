@@ -88,19 +88,49 @@ ordinary lock for the whole block. No Fortran COMMON state is made reentrant by
 this change. Providers are not called concurrently inside a process. The GIL is
 released during propagation; no Python callback is invoked from that section.
 
-`propagate()` retains two force evaluations per BCB step. The segmented
-`propagate_block()` API reuses each endpoint PES/bias force within a block of
-L steps, reducing PES batches from 2L to L+1 with bit-identical results for a
-deterministic provider. Its default `reuse_forces=None` enables this unless the
-provider metadata declares it stateful, history- or time-dependent;
-`reuse_forces=False` restores the two-call reference schedule. The native loop
-reuses forces with umbrella/flux biases, centroid RATTLE and fixed atoms;
-fragment projection moves q after the force call and is re-evaluated. No force
-cache survives a block or restart,
+Both entrypoints reuse each endpoint PES/bias force within a block of L
+steps, reducing PES batches from 2L to L+1 with bit-identical results for a
+deterministic provider. `propagate()` does so whenever the provider metadata
+does not declare it stateful, history- or time-dependent and no fragment
+projection is active. The segmented `propagate_block()` API exposes the choice
+as `reuse_forces=None` (the same default); `reuse_forces=False` restores the
+two-call reference schedule. The native loop reuses forces with umbrella/flux
+biases, centroid RATTLE and fixed atoms; fragment projection moves q after the
+force call and is re-evaluated. No force cache survives a block or restart,
 so a Python classifier can still change the full state between blocks.
 Energy observations reuse the last returned physical energy and add the same
 kinetic, ring-spring and bias terms. Work arrays are allocated once per block,
 and the existing cyclic Cayley factorization is preserved.
+
+### Per-step data flow
+
+The `propagate_block()` and PILE-L/TRPMD sampling loops keep their
+valid-prefix contract without copying the ring every step:
+
+* **Double-buffered state.** The caller's `q`/`p` arrays are one half of a step
+  buffer and a private array the other. A step reads the accepted half and
+  writes the other; acceptance swaps two pointers. A failed step therefore
+  leaves the accepted state untouched. The block start no longer copies the
+  input state, and the end copies once, only when the accepted state finished in
+  the private half. The free-ring step and first half kick read the accepted
+  half and write the trial half directly, so no separate `q` copy remains
+  (fragment projection keeps the historical copy/project/propagate order).
+* **One reaction-coordinate evaluation.** Centroid umbrella, flux-metric and
+  observed CVs lowered from the same descriptor share one evaluation per force
+  call: value, gradient and the metric Hessian-vector product, as RPMDrate
+  reuses ξ, ∇ξ and ∇²ξ. The observation at a saved step reuses the endpoint
+  value instead of evaluating again and materializing a `[P,N,3]` Jacobian. The
+  centroid bias forces are added in one pass over the force rows, in bias
+  order; other bias kinds keep their own evaluation.
+* **Cheaper checks.** Finite checks are branch-free vectorized scans, and
+  checks already implied by an earlier one (PES-validated endpoint
+  coordinates, unbiased forces) are not repeated. The cyclic Cayley solve
+  sweeps whole bead rows, so its Thomas recurrences vectorize across
+  Cartesian coordinates and contain no integer modulo.
+
+Every coordinate and force element performs the same floating-point
+operations in the same order as before, so trajectories, energies, CV
+observations and failure prefixes are bit-identical to the previous loop.
 
 ## Workflow/event semantics
 

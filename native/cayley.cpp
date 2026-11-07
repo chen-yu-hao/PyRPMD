@@ -28,6 +28,9 @@ struct Cayley {
     int threads, scheme; // 0: Cayley BCB; 1: exact normal-mode BAB; 2: full VV.
     double dt, alpha, omega2;
     std::vector<double> mass, invdiag, lower, z1, z2;
+    // Per-Cartesian-coordinate copies of mass[j/3] and dt*m*omega2. They hold
+    // exactly the values the original per-coordinate expressions computed.
+    std::vector<double> coordinate_mass, spring_kick;
     std::vector<double> exact_a, exact_b, exact_c;
     std::vector<double> half_a, half_b, half_c;
     std::unique_ptr<RingFFT> fourier;
@@ -38,6 +41,11 @@ struct Cayley {
         dt(h), alpha(.25*h*h*(p/beta)*(p/beta)), omega2((p/beta)*(p/beta)),
         mass(std::move(m)), invdiag(p,1.), lower(p,0.), z1(p,0.), z2(p,0.) {
         si[0]=si[3]=1.; si[1]=si[2]=0.;
+        coordinate_mass.resize(nd); spring_kick.resize(nd);
+        for (Py_ssize_t j=0;j<nd;++j) {
+            coordinate_mass[j]=mass[j/3];
+            spring_kick[j]=dt*coordinate_mass[j]*omega2;
+        }
         if (scheme != 2) {
             fourier = std::make_unique<RingFFT>(p);
             half_a.resize(p); half_b.resize(p); half_c.resize(p);
@@ -112,18 +120,89 @@ struct Cayley {
         x[beads-1]*=invdiag[beads-1];
         for (Py_ssize_t k=beads-1;k-->0;) x[k]=(x[k]+alpha*x[k+1])*invdiag[k];
     }
-    Py_ssize_t workspace_size() const { return (spectral_exact ? 4 : scheme==1 ? 2 : 1)*beads*nd; }
-    void propagate(double* q,double* p,double* workspace) const {
-        const Py_ssize_t n=beads, dims=nd;
-        #pragma omp parallel for num_threads(threads) schedule(static) if(threads>1)
-        for (Py_ssize_t j=0;j<dims;j++) {
+    // Cayley BCB rows: two extra rows hold the rank-two correction weights.
+    Py_ssize_t workspace_size() const { return (spectral_exact ? 4*beads : scheme==1 ? 2*beads : scheme==0 ? beads+2 : beads)*nd; }
+    void propagate(double* q,double* p,double* workspace) const { propagate(q,q,p,workspace); }
+    // Out-of-place positions: reads q0 and writes q, which may alias q0. p is
+    // updated in place. Every coordinate performs exactly the arithmetic of
+    // the historical in-place step, so both forms are bit-identical.
+    void propagate(const double* q0,double* q,double* p,double* workspace) const {
+        if (scheme==0 && beads>=3) {
+            // The Thomas recurrences share their coefficients for every
+            // Cartesian coordinate. Sweeping complete bead rows keeps memory
+            // access contiguous and hides the recurrence latency.
+            if (threads>1) {
+                #pragma omp parallel num_threads(threads)
+                {
+                    #ifdef _OPENMP
+                    const Py_ssize_t team=omp_get_num_threads(),rank=omp_get_thread_num();
+                    #else
+                    const Py_ssize_t team=1,rank=0;
+                    #endif
+                    const Py_ssize_t width=(nd+team-1)/team,j0=std::min(nd,rank*width),j1=std::min(nd,j0+width);
+                    if (j0<j1) cayley_rows(q0,q,p,workspace,j0,j1);
+                }
+            } else cayley_rows(q0,q,p,workspace,0,nd);
+            return;
+        }
+        if (threads>1) {
+            #pragma omp parallel for num_threads(threads) schedule(static)
+            for (Py_ssize_t j=0;j<nd;j++) propagate_coordinate(q0,q,p,workspace,j);
+        } else for (Py_ssize_t j=0;j<nd;j++) propagate_coordinate(q0,q,p,workspace,j);
+    }
+    void cayley_rows(const double* q0,double* q,double* p,double* x,Py_ssize_t j0,Py_ssize_t j1) const {
+        const Py_ssize_t n=beads,dims=nd;
+        double* c1=x+n*dims; double* c2=c1+dims;
+        const double* m=coordinate_mass.data();
+        for (Py_ssize_t k=0;k<n;k++) {
+            const double* qk=q0+k*dims; const double* pk=p+k*dims; double* xk=x+k*dims;
+            for (Py_ssize_t j=j0;j<j1;j++) xk[j]=qk[j]+.5*dt*pk[j]/m[j];
+        }
+        // solve(x) for each coordinate.
+        for (Py_ssize_t k=1;k<n;k++) {
+            const double l=lower[k]; double* xk=x+k*dims; const double* xp=xk-dims;
+            for (Py_ssize_t j=j0;j<j1;j++) xk[j]-=l*xp[j];
+        }
+        {
+            const double d=invdiag[n-1]; double* xk=x+(n-1)*dims;
+            for (Py_ssize_t j=j0;j<j1;j++) xk[j]*=d;
+        }
+        for (Py_ssize_t k=n-1;k-->0;) {
+            const double d=invdiag[k]; double* xk=x+k*dims; const double* xn=xk+dims;
+            for (Py_ssize_t j=j0;j<j1;j++) xk[j]=(xk[j]+alpha*xn[j])*d;
+        }
+        {
+            const double* last=x+(n-1)*dims;
+            for (Py_ssize_t j=j0;j<j1;j++) {
+                c1[j]=si[0]*last[j]+si[1]*x[j];
+                c2[j]=si[2]*last[j]+si[3]*x[j];
+            }
+        }
+        for (Py_ssize_t k=0;k<n;k++) {
+            const double a=z1[k],b=z2[k]; double* xk=x+k*dims;
+            for (Py_ssize_t j=j0;j<j1;j++) xk[j]-=a*c1[j]+b*c2[j];
+        }
+        const double* f=spring_kick.data();
+        for (Py_ssize_t k=0;k<n;k++) {
+            const double* xk=x+k*dims;
+            const double* xm=x+(k==0 ? n-1 : k-1)*dims;
+            const double* xp=x+(k+1==n ? 0 : k+1)*dims;
+            const double* qk0=q0+k*dims; double* qk=q+k*dims; double* pk=p+k*dims;
+            for (Py_ssize_t j=j0;j<j1;j++) {
+                qk[j]=2.*xk[j]-qk0[j];
+                pk[j]-=f[j]*(2.*xk[j]-xm[j]-xp[j]);
+            }
+        }
+    }
+    void propagate_coordinate(const double* q0,double* q,double* p,double* workspace,Py_ssize_t j) const {
+            const Py_ssize_t n=beads, dims=nd;
             const double m=mass[j/3];
-            if(n==1){ q[j]+=dt*p[j]/m; continue; }
+            if(n==1){ q[j]=q0[j]+dt*p[j]/m; return; }
             if(scheme==1){
                 if(spectral_exact){
                     double* qr=workspace+4*j*n; double* qi=qr+n;
                     double* pr=qi+n; double* pi=pr+n;
-                    for(Py_ssize_t b=0;b<n;++b){qr[b]=q[b*dims+j];pr[b]=p[b*dims+j];qi[b]=pi[b]=0.;}
+                    for(Py_ssize_t b=0;b<n;++b){qr[b]=q0[b*dims+j];pr[b]=p[b*dims+j];qi[b]=pi[b]=0.;}
                     fourier->transform(qr,qi,nullptr);fourier->transform(pr,pi,nullptr);
                     for(Py_ssize_t k=0;k<n;++k){
                         const double xr=qr[k],xi=qi[k],vr=pr[k],vi=pi[k];
@@ -132,65 +211,69 @@ struct Cayley {
                     }
                     fourier->transform(qr,qi,nullptr,true);fourier->transform(pr,pi,nullptr,true);
                     for(Py_ssize_t b=0;b<n;++b){q[b*dims+j]=qr[b];p[b*dims+j]=pr[b];}
-                    continue;
+                    return;
                 }
                 double* qnew=workspace+2*j*n;
                 double* pnew=qnew+n;
                 for(Py_ssize_t b=0;b<n;++b){
                     double x=0.,v=0.;
                     for(Py_ssize_t k=0;k<n;++k){
-                        const Py_ssize_t d=(b+n-k)%n, index=k*dims+j;
-                        x+=exact_a[d]*q[index]+exact_b[d]*p[index]/m;
-                        v+=exact_a[d]*p[index]-exact_c[d]*m*q[index];
+                        const Py_ssize_t d=b>=k ? b-k : b+n-k, index=k*dims+j;
+                        x+=exact_a[d]*q0[index]+exact_b[d]*p[index]/m;
+                        v+=exact_a[d]*p[index]-exact_c[d]*m*q0[index];
                     }
                     qnew[b]=x;pnew[b]=v;
                 }
                 for(Py_ssize_t b=0;b<n;++b){q[b*dims+j]=qnew[b];p[b*dims+j]=pnew[b];}
-                continue;
+                return;
             }
             if(scheme==2){
                 double* qnew=workspace+j*n;
                 const double factor=.5*dt*m*omega2;
                 for(Py_ssize_t b=0;b<n;++b){
                     const Py_ssize_t index=b*dims+j;
-                    p[index]-=factor*(2.*q[index]-q[((b+n-1)%n)*dims+j]-q[((b+1)%n)*dims+j]);
-                    qnew[b]=q[index]+dt*p[index]/m;
+                    const Py_ssize_t before=b==0 ? n-1 : b-1, after=b+1==n ? 0 : b+1;
+                    p[index]-=factor*(2.*q0[index]-q0[before*dims+j]-q0[after*dims+j]);
+                    qnew[b]=q0[index]+dt*p[index]/m;
                 }
                 for(Py_ssize_t b=0;b<n;++b){
                     const Py_ssize_t index=b*dims+j;
+                    const Py_ssize_t before=b==0 ? n-1 : b-1, after=b+1==n ? 0 : b+1;
                     q[index]=qnew[b];
-                    p[index]-=factor*(2.*qnew[b]-qnew[(b+n-1)%n]-qnew[(b+1)%n]);
+                    p[index]-=factor*(2.*qnew[b]-qnew[before]-qnew[after]);
                 }
-                continue;
+                return;
             }
+            // Cayley P=2; P>=3 uses cayley_rows.
             double* x=workspace+j*n;
-            for(Py_ssize_t k=0;k<n;k++) x[k]=q[k*dims+j]+.5*dt*p[k*dims+j]/m;
-            if(n==2){
-                const double a=x[0],b=x[1],den=1.+4.*alpha;
-                x[0]=((1.+2.*alpha)*a+2.*alpha*b)/den;
-                x[1]=(2.*alpha*a+(1.+2.*alpha)*b)/den;
-            }else{
-                solve(x);
-                const double c1=si[0]*x[n-1]+si[1]*x[0];
-                const double c2=si[2]*x[n-1]+si[3]*x[0];
-                for(Py_ssize_t k=0;k<n;k++)x[k]-=z1[k]*c1+z2[k]*c2;
-            }
+            for(Py_ssize_t k=0;k<n;k++) x[k]=q0[k*dims+j]+.5*dt*p[k*dims+j]/m;
+            const double a=x[0],b=x[1],den=1.+4.*alpha;
+            x[0]=((1.+2.*alpha)*a+2.*alpha*b)/den;
+            x[1]=(2.*alpha*a+(1.+2.*alpha)*b)/den;
             for(Py_ssize_t k=0;k<n;k++) {
-                q[k*dims+j]=2.*x[k]-q[k*dims+j];
+                q[k*dims+j]=2.*x[k]-q0[k*dims+j];
                 p[k*dims+j]-=dt*m*omega2*(2.*x[k]-x[(k+n-1)%n]-x[(k+1)%n]);
             }
-        }
     }
     void sample_free(double* q,double* p,const double* noise,const double* decay,
+                     const double* amplitude,const unsigned char* fixed,double* work) const {
+        sample_free(q,q,p,noise,decay,amplitude,fixed,work);
+    }
+    // Out-of-place positions as in propagate(): reads q0, writes q (which may
+    // alias q0); fixed coordinates are copied unchanged.
+    void sample_free(const double* q0,double* q,double* p,const double* noise,const double* decay,
                      const double* amplitude,const unsigned char* fixed,double* work) const {
         const Py_ssize_t n=beads,dims=nd;
         const double scale0=std::sqrt(static_cast<double>(n)),scale=std::sqrt(.5*n);
         #pragma omp parallel for num_threads(threads) schedule(static) if(threads>1)
         for(Py_ssize_t j=0;j<dims;++j){
-            if(fixed[j/3])continue; // Fixed coordinates never enter a transform.
+            if(fixed[j/3]){ // Fixed coordinates never enter a transform.
+                if(q!=q0)for(Py_ssize_t b=0;b<n;++b)q[b*dims+j]=q0[b*dims+j];
+                continue;
+            }
             const double m=mass[j/3];
             double* qr=work+6*j*n;double* qi=qr+n;double* pr=qi+n;double* pi=pr+n;double* temporary=pi+n;
-            for(Py_ssize_t b=0;b<n;++b){qr[b]=q[b*dims+j];pr[b]=p[b*dims+j];qi[b]=pi[b]=0.;}
+            for(Py_ssize_t b=0;b<n;++b){qr[b]=q0[b*dims+j];pr[b]=p[b*dims+j];qi[b]=pi[b]=0.;}
             fourier->transform(qr,qi,temporary);fourier->transform(pr,pi,temporary);
             for(Py_ssize_t k=0;k<n;++k){
                 const double xr=qr[k],xi=qi[k],vr=pr[k],vi=pi[k];

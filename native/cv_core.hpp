@@ -226,8 +226,16 @@ template<bool Numeric> struct Coordinate {
     Diff ring(const Vec& q,const Vec& centroid,size_t beads) const {
         Diff out(q.size());out.v=ring_into(q.data(),centroid.data(),beads,out.g.data());return out;
     }
-    double metric(const double* x,double* g,double* direction,double* hv,const std::vector<double>& mass) const {
-        MetricState prepared;eval(x,g,&prepared);
+    // The value of ring_into, with its derivative validation, without
+    // materializing the [P,N,3] ring Jacobian.
+    double observe(const double* q,const double* centroid,size_t beads) const {
+        if(!bead_average)return eval(centroid,ring_grad.data());
+        double value=0.;
+        for(size_t b=0;b<beads;++b)value+=eval(q+b*d,ring_grad.data())/beads;
+        return value;
+    }
+    double metric(const double* x,double* g,double* direction,double* hv,const std::vector<double>& mass,double* value=nullptr) const {
+        MetricState prepared;const double v=eval(x,g,&prepared);if(value)*value=v;
         double z=0.;for(size_t j=0;j<d;++j){z+=g[j]*g[j]/mass[j/3];direction[j]=g[j]/mass[j/3];}
         numeric::ensure(z>1.e-30&&std::isfinite(z),Numeric?"rate coordinate has invalid mass metric":"rate coordinate has zero/invalid mass metric");
         if(kind==0){simple->hvp(direction,hv,geometry0);return z;}
@@ -259,7 +267,7 @@ template<bool Numeric> struct Bias {
     Vec hill_centers,hill_heights,hill_sigma;
     std::vector<size_t> grid_bins,grid_nodes;
     Vec grid_ranges,grid_values;
-    mutable Vec grad,hvp,direction,delta,hill_factors,hill_derivatives,hill_gradient;
+    mutable Vec grad,hvp,direction,delta,row_scale,hill_factors,hill_derivatives,hill_gradient;
     mutable std::vector<size_t> grid_left;
     mutable Vec grid_fraction,grid_basis,grid_dbasis,grid_gradient;
     static bool truth(PyObject* obj) {
@@ -366,7 +374,7 @@ template<bool Numeric> struct Bias {
                 if(!finite(grid_values))throw std::invalid_argument("nonfinite grid coefficients");
             }
         }
-        grad.resize(cv.size()*d);delta.resize(cv.size());
+        grad.resize(cv.size()*d);delta.resize(cv.size());row_scale.resize(cv.size());
         if(kind==1){hvp.resize(d);direction.resize(d);}
         if(kind==3){hill_factors.resize(cv.size());hill_derivatives.resize(cv.size());hill_gradient.resize(cv.size());}
         if(kind==4){grid_left.resize(cv.size());grid_fraction.resize(cv.size());grid_basis.resize(4*cv.size());grid_dbasis.resize(4*cv.size());grid_gradient.resize(cv.size());}
@@ -477,6 +485,27 @@ template<bool Numeric> struct Bias {
     }
     template<class Integrator> double add(const Vec& q,const Vec& c,Vec& f,const Integrator& integrator,double thermal_beta) const {
         return apply(q.data(),c.data(),f.data(),integrator.beads,integrator.mass,thermal_beta);
+    }
+    // Tagged umbrella from centroid CV values/gradients evaluated once for the
+    // whole bias stack. Returns apply()'s energy and leaves its force as row
+    // terms: every bead row receives row[j]-=row_scale[i]*grad[i*d+j], in CV
+    // order, exactly the per-element arithmetic of apply(). A centroid ring
+    // Jacobian has identical rows gradient/P, so each is formed only once.
+    double umbrella_terms(const double* values,const double* const* gradients,size_t P) const {
+        const size_t k=cv.size();double e=0.;
+        for(size_t i=0;i<k;++i){delta[i]=values[i]-center[i];
+            if(periods[i]>0)delta[i]-=periods[i]*std::floor((delta[i]+.5*periods[i])/periods[i]);}
+        for(size_t i=0;i<k;++i){double kd=0.;for(size_t j=0;j<k;++j)kd+=K[i*k+j]*delta[j];
+            e+=P*.5*delta[i]*kd;row_scale[i]=P*kd;
+            for(size_t j=0;j<d;++j)grad[i*d+j]=gradients[i][j]/P;
+        }
+        return e;
+    }
+    // Tagged flux metric from a shared metric z and Hessian-vector product;
+    // every bead row receives row[j]+=direction[j].
+    double flux_terms(double z,const double* hv,size_t P,double thermal_beta) const {
+        for(size_t i=0;i<d;++i)direction[i]=hv[i]/(thermal_beta*z);
+        return -static_cast<double>(P)*std::log(std::sqrt(z/(2.*3.14159265358979323846*thermal_beta)))/thermal_beta;
     }
 };
 } // namespace native_cv
