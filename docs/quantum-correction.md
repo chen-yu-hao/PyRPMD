@@ -103,3 +103,12 @@ Before interpreting a corrected spectrum or rate, record at least:
 The workflow intentionally does not perform automatic smoothing, spectral
 clipping, normalization, or Hermitization. Such operations would hide whether
 the approximation or the numerical reference is failing.
+
+## Three-dimensional stress test
+
+`examples/three_d_quantum_correction.py` runs a coupled three-dimensional
+harmonic oscillator in an `8^3` normal-mode Fock basis. It compares a finite
+spectral Kubo quantum reference with the analytic classical quadratic
+correlation, transfers an `x^2` defect to `x^2+y^2+z^2`, and checks the
+full-subspace algebraic limit. The reproducibility record is stored in
+`validation/2026-11-07-qe-rpmd-3d/README.md`.
