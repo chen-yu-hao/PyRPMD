@@ -543,7 +543,7 @@ class NativeEnsemble:
                    observe=None, record_energy: bool | None = None,
                    check_energy: bool = False, energy_parts: bool = False,
                    ring_radii: bool = False, _outer_transaction: bool = False,
-                   _atomic: bool = False) -> dict:
+                   _atomic: bool = False, _positions_only: bool = False) -> dict:
         """Advance a C++ block and retain every fully accepted step on failure.
 
         Force and observation validation share a per-step transaction including
@@ -563,23 +563,32 @@ class NativeEnsemble:
         stride/start and enabled centroid/momentum records.
         """
         common = None
+        if not isinstance(_positions_only, (bool, np.bool_)):
+            raise ValueError("_positions_only must be boolean")
+        if _positions_only and getattr(self._native, "COMMON_POSITION_OBSERVATIONS_API", 0) < 1:
+            raise RuntimeError("position-only observations require a rebuilt native thermal extension")
         for name, flag in (("check_energy", check_energy), ("energy_parts", energy_parts),
                            ("ring_radii", ring_radii)):
             if not isinstance(flag, (bool, np.bool_)):
                 raise ValueError(f"{name} must be boolean")
         if record_energy is not None and not isinstance(record_energy, (bool, np.bool_)):
             raise ValueError("record_energy must be boolean or None")
-        if observe is not None or record_energy is not None or check_energy or energy_parts or ring_radii:
+        if observe is not None or record_energy is not None or check_energy or energy_parts or ring_radii or _positions_only:
             steps = _integer(steps, "steps")
             values = np.ones(steps, dtype=np.uint8) if observe is None else np.asarray(observe)
             if values.shape != (steps,) or values.dtype.kind not in "bui" or np.any((values != 0) & (values != 1)):
                 raise ValueError("observe must be a boolean/binary mask with length steps")
-            if stride != 1 or sample_start != 0 or not record_centroids or not record_moments:
-                raise ValueError("common observations require stride=1, sample_start=0 and centroid/momentum records")
+            if stride != 1 or sample_start != 0:
+                raise ValueError("common observations require stride=1 and sample_start=0")
+            if _positions_only:
+                if record_moments or energy_parts or ring_radii:
+                    raise ValueError("position-only observations cannot request momentum/diagnostic records")
+            elif not record_centroids or not record_moments:
+                raise ValueError("common observations require centroid/momentum records")
             common = {"mask": np.asarray(values, dtype=np.uint8).tobytes(),
                       "record_energy": True if record_energy is None else bool(record_energy),
                       "check_energy": bool(check_energy), "energy_parts": bool(energy_parts),
-                      "ring_radii": bool(ring_radii)}
+                      "ring_radii": bool(ring_radii), "positions_only": bool(_positions_only)}
         return self._run(steps, stride=stride, record_centroids=record_centroids,
                          record_moments=record_moments, sample_start=sample_start,
                          keep_prefix=True, common_options=common,
@@ -654,7 +663,8 @@ class NativeEnsemble:
                          if record_moments and (common_options is None or common_options["ring_radii"]) else None)
                 common_records = {}
                 if common_options is not None:
-                    common_records["centroid_momenta"] = records[:, 3*self.natoms:6*self.natoms].reshape(frames, self.natoms, 3)
+                    common_records["centroid_momenta"] = (None if common_options.get("positions_only", False)
+                                                          else records[:, 3*self.natoms:6*self.natoms].reshape(frames, self.natoms, 3))
                     common_records["energy_parts"] = (np.frombuffer(result["energy_parts"], dtype=np.float64).reshape(frames, 4)
                                                        if common_options["energy_parts"] else None)
                 if isinstance(self._binding, NativePeriodicPES):

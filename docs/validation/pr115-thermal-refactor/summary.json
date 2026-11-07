@@ -1,0 +1,454 @@
+{
+  "schema": "pyrpmd.pr115-thermal-refactor.validation.v1",
+  "base_pr": 115,
+  "base_head": "9559e39ef586f7c26b6a103aa2ed51484180a271",
+  "source_artifact_id": 13404157745,
+  "source_artifact_sha256": "9fa1be7c3b302f65f54726e91823473b642cbafd20ba8c462a7e21d0f2074e8c",
+  "merged": false,
+  "physical_converged": false,
+  "fingerprint_checks": [
+    {
+      "build": "default",
+      "cases": 270,
+      "byte_exact_mismatches": 0
+    },
+    {
+      "build": "fma",
+      "cases": 270,
+      "byte_exact_mismatches": 0
+    },
+    {
+      "build": "serial",
+      "cases": 258,
+      "byte_exact_mismatches": 0
+    }
+  ],
+  "legacy_checkpoint_replays": [
+    {
+      "threads": 1,
+      "accepted": 118,
+      "expected": 118
+    },
+    {
+      "threads": 4,
+      "accepted": 118,
+      "expected": 118
+    }
+  ],
+  "tests": {
+    "focused": {
+      "passed": 514,
+      "failed": 11,
+      "skipped": 1
+    },
+    "new_observers": {
+      "default": 33,
+      "fma_thermal": 33,
+      "serial_thermal": 33
+    },
+    "observer_and_buffer_budget": {
+      "passed": 58
+    },
+    "unchanged_baseline_thread_test": {
+      "passed": 12,
+      "failed": 11,
+      "skipped": 1
+    },
+    "failure_explanation": "The original thread-count tests require an absolute process thread count of one. This environment starts Python with six threads when OMP_NUM_THREADS is absent, before importing NumPy or PyRPMD. All 11 failing nodes also fail on the unmodified PR115 baseline; original tests were not weakened or skipped."
+  },
+  "benchmark": {
+    "environment": {
+      "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+      "processor": "AMD EPYC 9V74 80-Core Processor",
+      "affinity": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "cpu_quota": "400000 100000",
+      "thread_environment": {
+        "OPENBLAS_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OMP_DYNAMIC": "FALSE",
+        "OMP_THREAD_LIMIT": null,
+        "OMP_PLACES": null,
+        "OMP_PROC_BIND": null
+      }
+    },
+    "protocol": {
+      "rounds": 5,
+      "repeats": 3,
+      "block_steps": 16,
+      "warmup_steps": 8,
+      "ordering": "alternating paired subprocesses",
+      "small_case_calls": "fixed 256/32 for N=3 P=1/32; 16 for N=64; 4 for N=512"
+    },
+    "results": [
+      {
+        "case": [
+          "dynamics",
+          3,
+          1,
+          "none",
+          "mt19937_64",
+          1,
+          true
+        ],
+        "baseline_sps": 1424405.19737497,
+        "candidate_sps": 1496510.3878637245,
+        "paired_speedups": [
+          1.0550200255541204,
+          1.1096951846193956,
+          1.0971048655384608,
+          0.9656448325300779,
+          0.9070101123096627
+        ],
+        "median_paired_speedup": 1.0550200255541204,
+        "ratio_of_median_throughputs": 1.050621263262474
+      },
+      {
+        "case": [
+          "dynamics",
+          3,
+          1,
+          "pile-l",
+          "mt19937_64",
+          1,
+          true
+        ],
+        "baseline_sps": 770713.0997788986,
+        "candidate_sps": 812356.8581439066,
+        "paired_speedups": [
+          1.1307204496039183,
+          1.0241364788279432,
+          1.1794392063542856,
+          0.9975942186256991,
+          0.945553678353963
+        ],
+        "median_paired_speedup": 1.0241364788279432,
+        "ratio_of_median_throughputs": 1.054032763134498
+      },
+      {
+        "case": [
+          "dynamics",
+          3,
+          32,
+          "none",
+          "mt19937_64",
+          1,
+          true
+        ],
+        "baseline_sps": 176925.65880564856,
+        "candidate_sps": 179633.92483153506,
+        "paired_speedups": [
+          0.9862678059437429,
+          1.0004596701071757,
+          1.0392547115697917,
+          0.9981259270116715,
+          1.0131919102107545
+        ],
+        "median_paired_speedup": 1.0004596701071757,
+        "ratio_of_median_throughputs": 1.0153073671968718
+      },
+      {
+        "case": [
+          "dynamics",
+          3,
+          32,
+          "pile-l",
+          "mt19937_64",
+          1,
+          true
+        ],
+        "baseline_sps": 50401.432458915035,
+        "candidate_sps": 55087.20114983235,
+        "paired_speedups": [
+          1.086032039105397,
+          1.0445328444290436,
+          1.1068679190383628,
+          0.9762583345248255,
+          1.1031477320879572
+        ],
+        "median_paired_speedup": 1.086032039105397,
+        "ratio_of_median_throughputs": 1.092968958664755
+      },
+      {
+        "case": [
+          "dynamics",
+          64,
+          32,
+          "none",
+          "mt19937_64",
+          1,
+          true
+        ],
+        "baseline_sps": 8763.231152574734,
+        "candidate_sps": 8937.330149269821,
+        "paired_speedups": [
+          1.0303663685202753,
+          0.9872375274582886,
+          1.0144774943973267,
+          0.9906972469063408,
+          1.135765719682135
+        ],
+        "median_paired_speedup": 1.0144774943973267,
+        "ratio_of_median_throughputs": 1.0198669866929089
+      },
+      {
+        "case": [
+          "dynamics",
+          64,
+          32,
+          "pile-l",
+          "mt19937_64",
+          1,
+          true
+        ],
+        "baseline_sps": 2889.421207058192,
+        "candidate_sps": 3088.3385338259986,
+        "paired_speedups": [
+          1.1159827245879608,
+          1.0600301110594283,
+          1.0686782516961828,
+          1.0885633545690352,
+          0.9346186038637853
+        ],
+        "median_paired_speedup": 1.0686782516961828,
+        "ratio_of_median_throughputs": 1.0688433123844656
+      },
+      {
+        "case": [
+          "dynamics",
+          512,
+          32,
+          "none",
+          "mt19937_64",
+          1,
+          true
+        ],
+        "baseline_sps": 547.6574977392013,
+        "candidate_sps": 544.2206025423435,
+        "paired_speedups": [
+          1.0123379502480723,
+          0.9911094631448287,
+          0.9375433010584489,
+          1.0617864006245545,
+          0.9974591785653273
+        ],
+        "median_paired_speedup": 0.9974591785653273,
+        "ratio_of_median_throughputs": 0.9937243711424646
+      },
+      {
+        "case": [
+          "dynamics",
+          512,
+          32,
+          "pile-l",
+          "mt19937_64",
+          1,
+          true
+        ],
+        "baseline_sps": 368.2255863171146,
+        "candidate_sps": 404.9701685053029,
+        "paired_speedups": [
+          1.1215851934604506,
+          1.0323010453120023,
+          1.0979917328045024,
+          1.1023194597938557,
+          1.053398626229359
+        ],
+        "median_paired_speedup": 1.0979917328045024,
+        "ratio_of_median_throughputs": 1.0997882373022934
+      },
+      {
+        "case": [
+          "dynamics",
+          4096,
+          32,
+          "none",
+          "mt19937_64",
+          1,
+          true
+        ],
+        "baseline_sps": 70.19264533833598,
+        "candidate_sps": 71.92340897755003,
+        "paired_speedups": [
+          1.0344232757950353,
+          1.008355044603534,
+          1.0381305442215571,
+          0.9806349014172768,
+          1.0828027820657866
+        ],
+        "median_paired_speedup": 1.0344232757950353,
+        "ratio_of_median_throughputs": 1.0246573359768902
+      },
+      {
+        "case": [
+          "dynamics",
+          4096,
+          32,
+          "pile-l",
+          "mt19937_64",
+          1,
+          true
+        ],
+        "baseline_sps": 42.969796350209414,
+        "candidate_sps": 49.55239246461103,
+        "paired_speedups": [
+          1.1319657439722326,
+          1.0076573677851637,
+          1.103133728915244,
+          1.202690476358552,
+          1.1848131898695191
+        ],
+        "median_paired_speedup": 1.1319657439722326,
+        "two_step_outside_over_native": {
+          "baseline": [
+            0.06540844056832239,
+            0.06797972013703225,
+            0.0742337355490194,
+            0.0677998359005317,
+            0.07036284609261116
+          ],
+          "candidate": [
+            0.07933702554200038,
+            0.08229294405955521,
+            0.07484643090458684,
+            0.07400797980913525,
+            0.0746350818170952
+          ]
+        },
+        "ratio_of_median_throughputs": 1.153191233692443
+      },
+      {
+        "case": [
+          "dynamics",
+          4096,
+          32,
+          "pile-l",
+          "philox-v1",
+          1,
+          true
+        ],
+        "baseline_sps": 45.437162383779615,
+        "candidate_sps": 54.860340744776785,
+        "paired_speedups": [
+          1.2144566687281215,
+          1.0824926506125052,
+          1.2406614218702556,
+          1.233898449110808,
+          1.2073892353005105
+        ],
+        "median_paired_speedup": 1.2144566687281215,
+        "ratio_of_median_throughputs": 1.2073892353005105
+      },
+      {
+        "case": [
+          "dynamics",
+          4096,
+          32,
+          "pile-l",
+          "philox-v1",
+          4,
+          true
+        ],
+        "baseline_sps": 117.05030367018688,
+        "candidate_sps": 138.36978598864087,
+        "paired_speedups": [
+          1.2982271042027513,
+          1.5860425394545392,
+          1.182139487467935,
+          1.3544661198480805,
+          1.001696540175074
+        ],
+        "median_paired_speedup": 1.2982271042027513,
+        "ratio_of_median_throughputs": 1.182139487467935
+      },
+      {
+        "case": [
+          "native",
+          4096,
+          32,
+          "pile-l",
+          "philox-v1",
+          1,
+          true
+        ],
+        "baseline_sps": 46.373372034153675,
+        "candidate_sps": 48.837406014854,
+        "paired_speedups": [
+          1.057189691011443,
+          1.0865223172538454,
+          1.048271142933876,
+          1.0473347520447571,
+          1.0491188089043744
+        ],
+        "median_paired_speedup": 1.0491188089043744,
+        "ratio_of_median_throughputs": 1.0531346734691964
+      },
+      {
+        "case": [
+          "native",
+          4096,
+          32,
+          "pile-l",
+          "philox-v1",
+          4,
+          true
+        ],
+        "baseline_sps": 128.31541571620363,
+        "candidate_sps": 133.0424791913871,
+        "paired_speedups": [
+          0.9053243522134008,
+          1.047614697754267,
+          1.403557745889961,
+          1.0368394042820104,
+          1.1283986307269238
+        ],
+        "median_paired_speedup": 1.047614697754267,
+        "ratio_of_median_throughputs": 1.0368394042820104
+      },
+      {
+        "case": [
+          "dynamics",
+          4096,
+          32,
+          "pile-l",
+          "mt19937_64",
+          1,
+          false
+        ],
+        "baseline_sps": 43.43052989109069,
+        "candidate_sps": 49.46368153142525,
+        "paired_speedups": [
+          1.2259916199894354,
+          1.1802913012041267,
+          1.1488835465261997,
+          1.1208660136076118,
+          1.092031813986351
+        ],
+        "median_paired_speedup": 1.1488835465261997,
+        "ratio_of_median_throughputs": 1.1389149903412115
+      }
+    ],
+    "candidate_mt_to_nve": {
+      "512": 0.744128698203398,
+      "4096": 0.6889605647040198
+    },
+    "public_philox_4_to_1": 2.5222188581068004,
+    "two_step_overhead_medians": {
+      "baseline": 0.06797972013703225,
+      "candidate": 0.07484643090458684
+    }
+  },
+  "limits": [
+    "Benchmark uses the PR115 branch, not a merge with current main/#132.",
+    "Same-host shared-container timings; not acceptance on the original review machine.",
+    "Two of five public Philox four-thread scaling rounds were below 2.5x; the ratio of throughput medians is not a robust all-round gate pass.",
+    "FMA/serial matrices rebuild the thermal extension, not every project extension.",
+    "Full non-campaign suite, Windows/macOS, strict Sphinx, remote CI, GPU/MPI and physical convergence were not verified."
+  ],
+  "validation_stage": "local_before_publication"
+}

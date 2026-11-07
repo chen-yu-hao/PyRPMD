@@ -359,12 +359,14 @@ def _propagate_composed(dynamics, state, steps, *, bias, observe,
     engine = component._prepare_native(state, bias, fragment_data, backend)
     minimum, maximum = np.inf, -np.inf
     if engine is not None and observe is None:
-        # Energy extrema inspect every endpoint. The native common observer
-        # also emits dense centroid/momentum buffers, even if the public result
-        # samples sparsely. Bound those temporary records independently of the
+        # Energy extrema inspect every endpoint. Request only the public
+        # positions, never unused momenta/radii; older extensions retain the
+        # original observer. Bound temporary records independently of the
         # requested result size and the caller's block_steps setting.
         from .native_ensemble import _COLUMNS
-        native_row_bytes = (len(_COLUMNS) + 7 * natoms) * 8
+        positions_only = getattr(engine._native, "COMMON_POSITION_OBSERVATIONS_API", 0) >= 1
+        native_row_bytes = (len(_COLUMNS) + (3 * natoms * bool(record_centroids)
+                                          if positions_only else 7 * natoms)) * 8
         native_chunk_limit = _COMPOSED_NATIVE_BUFFER_BYTES // native_row_bytes
         if not native_chunk_limit:
             raise ValueError("one native observation exceeds the block buffer budget")
@@ -379,6 +381,8 @@ def _propagate_composed(dynamics, state, steps, *, bias, observe,
             # thermal estimators. This API owns whole-block rollback, so the
             # native call needs one snapshot, not a snapshot before each step.
             result = engine.run_prefix(count, record_energy=True, check_energy=True,
+                                       record_centroids=record_centroids if positions_only else True,
+                                       record_moments=not positions_only, _positions_only=positions_only,
                                        _outer_transaction=True, _atomic=True)
             if result["error"] is not None:
                 raise RuntimeError(result["error"])

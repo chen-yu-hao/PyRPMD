@@ -498,3 +498,15 @@ calibrated PIGLET model or real-material dynamics.
 Run the same script with `--compare /tmp/thermal-reference --output replay.json`
 in the candidate using identical build flags. Keep NPZ references outside Git;
 the report records their SHA256 values and exact replay results.
+
+
+### PR #115 follow-up: tile-local scratch and compact observations
+
+The follow-up [validation record](validation/pr115-thermal-refactor/README.md)
+checks a tile-local thermal path without changing the default RNG, checkpoint
+format, or floating-point map. The common `Dynamics.propagate()` fast path now
+requests only its public position/energy records; energy checks still run on
+every step. Direct `NativeEnsemble` estimator output is unchanged, and older
+extensions retain the previous observer through a capability check. Rebuild
+the native extension to enable the compact records. Performance measurements
+and remaining platform/CI limits are reported separately from earlier evidence.

@@ -8,6 +8,15 @@
  */
 #ifndef PYRPMD_THERMAL_HPP
 #define PYRPMD_THERMAL_HPP
+// Internal buffers in a tile are disjoint. State this to the vectorizer
+// without requiring a compiler-specific public API or fast-math.
+#if defined(_MSC_VER)
+#define PYRPMD_THERMAL_RESTRICT __restrict
+#elif defined(__GNUC__) || defined(__clang__)
+#define PYRPMD_THERMAL_RESTRICT __restrict__
+#else
+#define PYRPMD_THERMAL_RESTRICT
+#endif
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -90,6 +99,7 @@ struct State {
 struct CommonObservations {
     std::vector<uint8_t> mask;
     bool record_energy=true,check_energy=false,energy_parts=false,ring_radii=false;
+    bool positions_only=false; // private whole-block observer; no momentum/radius output
 };
 struct Output { Vec samples,centroids,energy_parts; size_t frames=0; uint64_t completed=0; std::string error; };
 static constexpr size_t ncolumns=18; // step,t,U,Kprim,Kcv,H_P,V,P,cell[9],K_fict
@@ -105,6 +115,9 @@ private:
     Vec qn,pn,centroid_q,centroid_p,centroid_f;
     Vec parallel_xr,parallel_xi,parallel_tmp,pile_noise,partial_sums;
     Vec omega,a,b,cc,ah,bh,ch,y,z,noise,nhc_mass;
+    // Immutable full-step PILE coefficients; scratch is not checkpoint state.
+    Vec pile_decay,pile_amplitude;
+    std::vector<pyrpmd::philox::Stream> pile_streams;
     std::vector<int32_t> status;
     Mat reference_inverse;
     double reference_volume;
@@ -172,7 +185,23 @@ private:
             });
         }else for(size_t k=0;k<c.beads;++k)for(size_t j=0;j<d;++j){size_t i=k*d+j;centroid_q[j]+=s.q[i]/c.beads;centroid_p[j]+=s.p[i]/c.beads;centroid_f[j]+=s.force[i]/c.beads;}
     }
-    void tile_fft(double* real,double* imag,size_t width,bool inverse){
+    void position_means(){
+        std::fill(centroid_q.begin(),centroid_q.end(),0.);
+        // Preserve the divide-then-add order used by means(), not NumPy's
+        // sum-then-divide. No unused momentum or force moments are evaluated.
+        if(fft.radix2&&l>=32768){
+            parallel_for((d+255)/256,[&](size_t block){
+                const size_t begin=block*256,end=std::min(begin+256,d);
+                for(size_t k=0;k<c.beads;++k)for(size_t j=begin;j<end;++j)
+                    centroid_q[j]+=s.q[k*d+j]/c.beads;
+            });
+        }else for(size_t k=0;k<c.beads;++k)for(size_t j=0;j<d;++j)
+            centroid_q[j]+=s.q[k*d+j]/c.beads;
+    }
+    template<size_t Lanes> void tile_fft_lanes(double* PYRPMD_THERMAL_RESTRICT real,double* PYRPMD_THERMAL_RESTRICT imag,size_t width,bool inverse){
+        // A complete tile has a compile-time SIMD width. Keep the original
+        // butterfly expressions (including FMA association) in every lane.
+        if constexpr(Lanes!=0)width=Lanes;
         const size_t n=c.beads;
         for(size_t k=0;k<n;++k)if(k<size_t(fft.reverse[k]))for(size_t j=0;j<width;++j){
             std::swap(real[k*8+j],real[fft.reverse[k]*8+j]);
@@ -193,40 +222,48 @@ private:
             if(length==n)break;
         }
     }
+    void tile_fft(double* real,double* imag,size_t width,bool inverse){
+        if(width==8)tile_fft_lanes<8>(real,imag,width,inverse);
+        else tile_fft_lanes<0>(real,imag,width,inverse);
+    }
     // Eight adjacent freedoms share FFT butterflies. Each scalar follows
     // RingFFT's original operation order; SIMD operates across freedoms only.
-    void modes_tile(const Vec& v,Vec& out,size_t first,bool inverse){
+    void modes_tile(const double* v,size_t input_stride,double* out,size_t output_stride,
+                    size_t width,bool inverse){
 #ifdef _OPENMP
         const size_t tid=static_cast<size_t>(omp_get_thread_num());
 #else
         const size_t tid=0;
 #endif
-        const size_t n=c.beads,width=std::min(size_t(8),d-first);
+        const size_t n=c.beads;
         double* real=parallel_xr.data()+tid*n*8;
         double* imag=parallel_xi.data()+tid*n*8;
         const double sc=inverse?std::sqrt(double(n)):std::sqrt(1./n);
         const double pair=inverse?std::sqrt(n/2.):std::sqrt(2./n);
         if(!inverse){
-            for(size_t k=0;k<n;++k)for(size_t j=0;j<width;++j){real[k*8+j]=v[k*d+first+j];imag[k*8+j]=0.;}
+            for(size_t k=0;k<n;++k)for(size_t j=0;j<width;++j){real[k*8+j]=v[k*input_stride+j];imag[k*8+j]=0.;}
         }else{
             std::fill(real,real+n*8,0.);std::fill(imag,imag+n*8,0.);
-            for(size_t j=0;j<width;++j)real[j]=sc*v[first+j];
+            for(size_t j=0;j<width;++j)real[j]=sc*v[j];
             for(size_t k=1;k<=(n-1)/2;++k)for(size_t j=0;j<width;++j){
-                real[k*8+j]=real[(n-k)*8+j]=pair*v[(2*k-1)*d+first+j];
-                imag[k*8+j]=-pair*v[2*k*d+first+j];imag[(n-k)*8+j]=-imag[k*8+j];
+                real[k*8+j]=real[(n-k)*8+j]=pair*v[(2*k-1)*input_stride+j];
+                imag[k*8+j]=-pair*v[2*k*input_stride+j];imag[(n-k)*8+j]=-imag[k*8+j];
             }
-            if(n%2==0)for(size_t j=0;j<width;++j)real[(n/2)*8+j]=sc*v[(n-1)*d+first+j];
+            if(n%2==0)for(size_t j=0;j<width;++j)real[(n/2)*8+j]=sc*v[(n-1)*input_stride+j];
         }
         tile_fft(real,imag,width,inverse);
         if(inverse){
-            for(size_t k=0;k<n;++k)for(size_t j=0;j<width;++j)out[k*d+first+j]=real[k*8+j]/n;
+            for(size_t k=0;k<n;++k)for(size_t j=0;j<width;++j)out[k*output_stride+j]=real[k*8+j]/n;
         }else{
-            for(size_t j=0;j<width;++j)out[first+j]=sc*real[j];
+            for(size_t j=0;j<width;++j)out[j]=sc*real[j];
             for(size_t k=1;k<=(n-1)/2;++k)for(size_t j=0;j<width;++j){
-                out[(2*k-1)*d+first+j]=pair*real[k*8+j];out[2*k*d+first+j]=-pair*imag[k*8+j];
+                out[(2*k-1)*output_stride+j]=pair*real[k*8+j];out[2*k*output_stride+j]=-pair*imag[k*8+j];
             }
-            if(n%2==0)for(size_t j=0;j<width;++j)out[(n-1)*d+first+j]=sc*real[(n/2)*8+j];
+            if(n%2==0)for(size_t j=0;j<width;++j)out[(n-1)*output_stride+j]=sc*real[(n/2)*8+j];
         }
+    }
+    void modes_tile(const Vec& v,Vec& out,size_t first,bool inverse){
+        modes_tile(v.data()+first,d,out.data()+first,d,std::min(size_t(8),d-first),inverse);
     }
     void to_modes(const Vec& v,Vec& out){
         if(c.beads==1){std::copy(v.begin(),v.end(),out.begin());return;}
@@ -280,6 +317,7 @@ private:
         });
     }
     void pin(){
+        if(mobile==c.atoms)return;
         // FFT roundoff must never move a pinned atom.
         for(size_t k=0;k<c.beads;++k)for(size_t j=0;j<d;++j)if(!active(j)){s.q[k*d+j]=fixed_q[j];s.p[k*d+j]=0.;}
     }
@@ -291,8 +329,7 @@ private:
     // Keep q and p in the SAME real, orthonormal basis across C-O-C/A-O-A.
     // Normal-mode baths need four transforms instead of ten, with the same map.
     // RNG draw ordering is shared with the unfused reference implementation.
-    void philox_middle_tile(size_t first,const Vec& decay,const Vec& amplitude,
-                            const std::vector<pyrpmd::philox::Stream>& streams){
+    void philox_middle_tile(size_t first){
 #ifdef _OPENMP
         const size_t tid=static_cast<size_t>(omp_get_thread_num());
 #else
@@ -301,77 +338,104 @@ private:
         const size_t n=c.beads,width=std::min(size_t(8),d-first);
         double* real=parallel_xr.data()+tid*n*8;
         double* imag=parallel_xi.data()+tid*n*8;
+        double* qm=parallel_tmp.data()+tid*2*n*8;
+        double* pm=qm+n*8;
         const double sc=std::sqrt(1./n),pair=std::sqrt(2./n);
         // The optional v1 stream also fixes this packed two-real-FFT rounding
         // path. Legacy mt19937 keeps its original four separate transforms.
         for(size_t k=0;k<n;++k)for(size_t j=0;j<width;++j){real[k*8+j]=s.q[k*d+first+j];imag[k*8+j]=s.p[k*d+first+j];}
         tile_fft(real,imag,width,false);
-        for(size_t j=0;j<width;++j){qn[first+j]=sc*real[j];pn[first+j]=sc*imag[j];}
+        for(size_t j=0;j<width;++j){qm[j]=sc*real[j];pm[j]=sc*imag[j];}
         for(size_t k=1;k<=(n-1)/2;++k)for(size_t j=0;j<width;++j){
-            qn[(2*k-1)*d+first+j]=pair*(.5*(real[k*8+j]+real[(n-k)*8+j]));
-            qn[2*k*d+first+j]=-pair*(.5*(imag[k*8+j]-imag[(n-k)*8+j]));
-            pn[(2*k-1)*d+first+j]=pair*(.5*(imag[k*8+j]+imag[(n-k)*8+j]));
-            pn[2*k*d+first+j]=-pair*(.5*(real[(n-k)*8+j]-real[k*8+j]));
+            qm[(2*k-1)*8+j]=pair*(.5*(real[k*8+j]+real[(n-k)*8+j]));
+            qm[2*k*8+j]=-pair*(.5*(imag[k*8+j]-imag[(n-k)*8+j]));
+            pm[(2*k-1)*8+j]=pair*(.5*(imag[k*8+j]+imag[(n-k)*8+j]));
+            pm[2*k*8+j]=-pair*(.5*(real[(n-k)*8+j]-real[k*8+j]));
         }
-        if(n%2==0)for(size_t j=0;j<width;++j){qn[(n-1)*d+first+j]=sc*real[(n/2)*8+j];pn[(n-1)*d+first+j]=sc*imag[(n/2)*8+j];}
+        if(n%2==0)for(size_t j=0;j<width;++j){qm[(n-1)*8+j]=sc*real[(n/2)*8+j];pm[(n-1)*8+j]=sc*imag[(n/2)*8+j];}
         for(size_t k=0;k<n;++k){
             double draws[8];
             const double rate=k==0?(c.thermostat==Thermostat::TRPMD?0.:c.gamma0):2*c.pile_scale*omega[k];
             if(rate!=0.)for(size_t j=0;j<width;j+=2){
-                const auto pair=streams[k].normal_pair(static_cast<uint32_t>(k),static_cast<uint32_t>((first+j)/2),10);
+                const auto pair=pile_streams[k].normal_pair(static_cast<uint32_t>(k),static_cast<uint32_t>((first+j)/2),10);
                 draws[j]=pair[0];if(j+1<width)draws[j+1]=pair[1];
             }
             for(size_t j=0;j<width;++j)if(active(first+j)){
-                const size_t i=k*d+first+j;const double m=c.masses[(first+j)/3];
-                double x=qn[i],p=pn[i];
-                qn[i]=ah[k]*x+bh[k]*p/m;pn[i]=ah[k]*p-ch[k]*m*x;
-                if(rate!=0.)pn[i]=decay[k]*pn[i]+amplitude[k]*std::sqrt(theta*m)*draws[j];
-                x=qn[i];p=pn[i];
-                qn[i]=ah[k]*x+bh[k]*p/m;pn[i]=ah[k]*p-ch[k]*m*x;
+                const size_t i=k*8+j;const double m=c.masses[(first+j)/3];
+                double x=qm[i],p=pm[i];
+                qm[i]=ah[k]*x+bh[k]*p/m;pm[i]=ah[k]*p-ch[k]*m*x;
+                if(rate!=0.)pm[i]=pile_decay[k]*pm[i]+pile_amplitude[k]*std::sqrt(theta*m)*draws[j];
+                x=qm[i];p=pm[i];
+                qm[i]=ah[k]*x+bh[k]*p/m;pm[i]=ah[k]*p-ch[k]*m*x;
             }
         }
         const double isc=std::sqrt(double(n)),ipair=std::sqrt(n/2.);
-        for(size_t j=0;j<width;++j){real[j]=isc*qn[first+j];imag[j]=isc*pn[first+j];}
+        for(size_t j=0;j<width;++j){real[j]=isc*qm[j];imag[j]=isc*pm[j];}
         for(size_t k=1;k<=(n-1)/2;++k)for(size_t j=0;j<width;++j){
-            const double qr=ipair*qn[(2*k-1)*d+first+j],qi=-ipair*qn[2*k*d+first+j];
-            const double pr=ipair*pn[(2*k-1)*d+first+j],pi=-ipair*pn[2*k*d+first+j];
+            const double qr=ipair*qm[(2*k-1)*8+j],qi=-ipair*qm[2*k*8+j];
+            const double pr=ipair*pm[(2*k-1)*8+j],pi=-ipair*pm[2*k*8+j];
             real[k*8+j]=qr-pi;imag[k*8+j]=qi+pr;
             real[(n-k)*8+j]=qr+pi;imag[(n-k)*8+j]=-qi+pr;
         }
-        if(n%2==0)for(size_t j=0;j<width;++j){real[(n/2)*8+j]=isc*qn[(n-1)*d+first+j];imag[(n/2)*8+j]=isc*pn[(n-1)*d+first+j];}
+        if(n%2==0)for(size_t j=0;j<width;++j){real[(n/2)*8+j]=isc*qm[(n-1)*8+j];imag[(n/2)*8+j]=isc*pm[(n-1)*8+j];}
         tile_fft(real,imag,width,true);
         for(size_t k=0;k<n;++k)for(size_t j=0;j<width;++j){s.q[k*d+first+j]=real[k*8+j]/n;s.p[k*d+first+j]=imag[k*8+j]/n;}
     }
-    void pile_middle_tiles(){
-        // Preserve mode-major mt19937 draw order, then perform each tile's
-        // complete C-O-C map while its four modal arrays are still in cache.
-        Vec decay(c.beads),amplitude(c.beads);
-        std::vector<pyrpmd::philox::Stream> streams(c.beads);
+    template<bool HasFixed> void legacy_middle_map(
+            double* PYRPMD_THERMAL_RESTRICT qm,double* PYRPMD_THERMAL_RESTRICT pm,
+            size_t first,size_t width){
+        // Hoist atom lookup out of the mode loop. The all-mobile path has no
+        // lane-wise branch. Keep sqrt(theta*m) inside the update expression:
+        // caching it allows FMA builds to reassociate the thermal kick and
+        // changes last bits, despite the cached root itself being identical.
+        double masses[8];
+        for(size_t j=0;j<width;++j){
+            masses[j]=c.masses[(first+j)/3];
+        }
         for(size_t k=0;k<c.beads;++k){
             const double rate=k==0?(c.thermostat==Thermostat::TRPMD?0.:c.gamma0):2*c.pile_scale*omega[k];
-            decay[k]=std::exp(-rate*c.dt);amplitude[k]=std::sqrt(-std::expm1(-2*rate*c.dt));
+            for(size_t j=0;j<width;++j){
+                if constexpr(HasFixed){if(!active(first+j))continue;}
+                const size_t i=k*8+j;const double m=masses[j];
+                double x=qm[i],p=pm[i];
+                qm[i]=ah[k]*x+bh[k]*p/m;pm[i]=ah[k]*p-ch[k]*m*x;
+                if(rate!=0.){
+                    const double draw=pile_noise[k*d+first+j];
+                    pm[i]=pile_decay[k]*pm[i]+pile_amplitude[k]*std::sqrt(theta*m)*draw;
+                }
+                x=qm[i];p=pm[i];
+                qm[i]=ah[k]*x+bh[k]*p/m;pm[i]=ah[k]*p-ch[k]*m*x;
+            }
+        }
+    }
+    void pile_middle_tiles(){
+        // The legacy generator remains serial, in precisely the same mode/
+        // freedom order. No stream is split, skipped or replaced.
+        for(size_t k=0;k<c.beads;++k){
+            const double rate=k==0?(c.thermostat==Thermostat::TRPMD?0.:c.gamma0):2*c.pile_scale*omega[k];
             if(rate==0)continue;
-            if(c.philox)streams[k]=begin_random();
+            if(c.philox)pile_streams[k]=begin_random();
             else for(size_t j=0;j<d;++j)if(active(j))pile_noise[k*d+j]=g();
         }
         ensure_parallel_scratch();
         parallel_for((d+7)/8,[&](size_t block){
-            const size_t first=block*8,end=std::min(first+8,d);
-            if(c.philox){philox_middle_tile(first,decay,amplitude,streams);return;}
-            modes_tile(s.q,qn,first,false);modes_tile(s.p,pn,first,false);
-            for(size_t k=0;k<c.beads;++k)for(size_t j=first;j<end;++j)if(active(j)){
-                const size_t i=k*d+j;const double m=c.masses[j/3];
-                double x=qn[i],p=pn[i];
-                qn[i]=ah[k]*x+bh[k]*p/m;pn[i]=ah[k]*p-ch[k]*m*x;
-                const double rate=k==0?(c.thermostat==Thermostat::TRPMD?0.:c.gamma0):2*c.pile_scale*omega[k];
-                if(rate!=0.){
-                    const double draw=c.philox?random_normal(streams[k],k,j,10):pile_noise[i];
-                    pn[i]=decay[k]*pn[i]+amplitude[k]*std::sqrt(theta*m)*draw;
-                }
-                x=qn[i];p=pn[i];
-                qn[i]=ah[k]*x+bh[k]*p/m;pn[i]=ah[k]*p-ch[k]*m*x;
-            }
-            modes_tile(qn,s.q,first,true);modes_tile(pn,s.p,first,true);
+            const size_t first=block*8,width=std::min(size_t(8),d-first);
+            if(c.philox){philox_middle_tile(first);return;}
+#ifdef _OPENMP
+            const size_t tid=static_cast<size_t>(omp_get_thread_num());
+#else
+            const size_t tid=0;
+#endif
+            // Keep the four-transform legacy map in per-worker scratch instead
+            // of scattering temporary modes through two full-ring arrays.
+            double* qm=parallel_tmp.data()+tid*2*c.beads*8;
+            double* pm=qm+c.beads*8;
+            modes_tile(s.q.data()+first,d,qm,8,width,false);
+            modes_tile(s.p.data()+first,d,pm,8,width,false);
+            if(mobile==c.atoms)legacy_middle_map<false>(qm,pm,first,width);
+            else legacy_middle_map<true>(qm,pm,first,width);
+            modes_tile(qm,8,s.q.data()+first,d,width,true);
+            modes_tile(pm,8,s.p.data()+first,d,width,true);
         });
         pin();
     }
@@ -758,8 +822,16 @@ private:
     void observe_common(double* row,double* cq,double* parts,const CommonObservations& options){
         const double nan=std::numeric_limits<double>::quiet_NaN();
         std::fill(row,row+ncolumns,nan);
-        std::fill(cq,cq+2*d+c.atoms,nan);
         row[0]=static_cast<double>(s.step);row[1]=s.step*c.dt;
+        if(options.positions_only){
+            if(cq){
+                position_means();std::copy(centroid_q.begin(),centroid_q.end(),cq);
+                for(size_t j=0;j<d;++j)require(std::isfinite(cq[j]),"nonfinite centroid observation");
+            }
+            if(options.record_energy)row[5]=nuclear_energy();
+            return;
+        }
+        std::fill(cq,cq+2*d+c.atoms,nan);
         means();
         std::copy(centroid_q.begin(),centroid_q.end(),cq);
         // Record momenta directly. Dividing by masses to form velocities would
@@ -853,6 +925,15 @@ public:
             if(c.cayley){double den=1+t*t,root=std::sqrt(den);a[k]=(1-t*t)/den;b[k]=c.dt/den;cc[k]=c.dt*w*w/den;ah[k]=1/root;bh[k]=.5*c.dt/root;ch[k]=.5*c.dt*w*w/root;}
             else{a[k]=std::cos(2*t);b[k]=w==0?c.dt:std::sin(2*t)/w;cc[k]=w*std::sin(2*t);ah[k]=std::cos(t);bh[k]=w==0?.5*c.dt:std::sin(t)/w;ch[k]=w*std::sin(t);}
         }
+        if(fft.radix2&&c.beads>=8&&d>=24&&(c.thermostat==Thermostat::PileL||c.thermostat==Thermostat::TRPMD)){
+            pile_decay.resize(c.beads);pile_amplitude.resize(c.beads);
+            pile_streams.resize(c.beads);
+            for(size_t k=0;k<c.beads;++k){
+                const double rate=k==0?(c.thermostat==Thermostat::TRPMD?0.:c.gamma0):2*c.pile_scale*omega[k];
+                pile_decay[k]=std::exp(-rate*c.dt);
+                pile_amplitude[k]=std::sqrt(-std::expm1(-2*rate*c.dt));
+            }
+        }
         if(c.initialize_momenta){
             const auto epoch=begin_random();
             if(gle()){
@@ -913,7 +994,10 @@ public:
         require(!moments||centroids,"record_moments requires centroid records");
         require(!keep_prefix||path.empty(),"valid-prefix propagation requires in-memory observations");
         if(common){
-            require(path.empty()&&centroids&&moments&&stride==1&&sample_start==0,"common observations require in-memory centroid/momentum records and a relative mask");
+            require(path.empty()&&stride==1&&sample_start==0,"common observations require in-memory records and a relative mask");
+            if(common->positions_only)
+                require(!moments&&!common->energy_parts&&!common->ring_radii,"position-only observations cannot request momentum/diagnostic records");
+            else require(centroids&&moments,"common observations require centroid/momentum records");
             require(common->mask.size()==steps,"observation mask length must equal steps");
             for(uint8_t observed:common->mask)require(observed<=1,"observation mask must be binary");
         }
@@ -961,7 +1045,7 @@ public:
                     const bool observed=common?common->mask[k]!=0:s.step>sample_start&&(s.step-sample_start)%stride==0;
                     if(common&&common->check_energy&&!(observed&&(common->record_energy||common->energy_parts)))nuclear_energy();
                     if(observed){
-                        if(common)observe_common(out.samples.data()+frame*ncolumns,out.centroids.data()+frame*width,common->energy_parts?out.energy_parts.data()+frame*4:nullptr,*common);
+                        if(common)observe_common(out.samples.data()+frame*ncolumns,centroids?out.centroids.data()+frame*width:nullptr,common->energy_parts?out.energy_parts.data()+frame*4:nullptr,*common);
                         else if(path.empty())observe(out.samples.data()+frame*ncolumns,centroids?out.centroids.data()+frame*width:nullptr,moments);
                         else {observe(row.data(),centroids?coordinate.data():nullptr,moments);stream.write(reinterpret_cast<const char*>(row.data()),sizeof(double)*ncolumns);if(centroids)stream.write(reinterpret_cast<const char*>(coordinate.data()),static_cast<std::streamsize>(sizeof(double)*width));}
                         ++frame;
@@ -1004,4 +1088,5 @@ public:
     }
 };
 } // namespace thermal
+#undef PYRPMD_THERMAL_RESTRICT
 #endif

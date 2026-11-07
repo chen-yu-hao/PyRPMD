@@ -126,6 +126,7 @@ PyObject* run_impl(PyObject*args,bool keep_prefix){
             common.mask.assign(data,data+PyBytes_Size(mask));
             common.record_energy=boolean(options,"record_energy");common.check_energy=boolean(options,"check_energy");
             common.energy_parts=boolean(options,"energy_parts");common.ring_radii=boolean(options,"ring_radii");
+            if(PyDict_GetItemString(options,"positions_only"))common.positions_only=boolean(options,"positions_only");
         }
         unlocked([&]{out=h.engine->run(n,save,centroids!=0,path,moments!=0,sample_start,keep_prefix,options==Py_None?nullptr:&common);});
         dict=PyDict_New();if(!dict)throw std::bad_alloc();
@@ -304,6 +305,7 @@ PyMODINIT_FUNC PyInit__thermal(){
     if(PyModule_AddStringConstant(m,"rng_abi",abi)<0
             ||PyModule_AddStringConstant(m,"philox_abi","philox-v1-salmon-sc11")<0
             ||PyModule_AddIntConstant(m,"THERMAL_KERNEL_API",3)<0
+            ||PyModule_AddIntConstant(m,"COMMON_POSITION_OBSERVATIONS_API",1)<0
             ||PyModule_AddIntConstant(m,"COMPOSABLE_OPERATORS_API",1)<0
             ||PyModule_AddIntConstant(m,"MIDDLE_BZP_API",1)<0){Py_DECREF(m);return nullptr;}return m;
 }
