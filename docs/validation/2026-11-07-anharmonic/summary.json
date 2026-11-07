@@ -1,0 +1,96 @@
+{
+  "units": "hbar=m=kB=1; omega angular frequency; rates length/time",
+  "physical_converged": false,
+  "selector": {
+    "morse": {
+      "dimension": 3,
+      "status": "full_dimension_required_no_reduction",
+      "residual_loading": 0.0
+    },
+    "fermi": {
+      "dimension": 2,
+      "status": "candidate",
+      "residual_loading": 0.022500000000002157
+    },
+    "eckart": {
+      "dimension": 2,
+      "status": "candidate",
+      "residual_loading": 0.010000000000000139
+    }
+  },
+  "morse": {
+    "32": {
+      "energy_quantum": 2.787261532134014,
+      "energy_pimd": 2.7021077054164904,
+      "energy_pimd_block_se": 0.013411903950633233
+    },
+    "64": {
+      "energy_quantum": 2.787261532134014,
+      "energy_pimd": 2.756117649654115,
+      "energy_pimd_block_se": 0.01214250042492172
+    }
+  },
+  "fermi": {
+    "32": {
+      "eta": 0.04,
+      "relative_absorption_L2": {
+        "quantum": 0.0,
+        "rpmd": 0.7469826681334718,
+        "inverse_d2": 0.020987864756964545,
+        "embedded_d2": 0.0004915802726425701,
+        "embedded_d1": 1.2393866073544373
+      },
+      "inverse_defect_sampling_interval": [
+        0.018953344187580875,
+        0.038465898248477015
+      ]
+    },
+    "64": {
+      "eta": 0.04,
+      "relative_absorption_L2": {
+        "quantum": 0.0,
+        "rpmd": 0.7402577428188778,
+        "inverse_d2": 0.02723502023173055,
+        "embedded_d2": 0.0004915802726425701,
+        "embedded_d1": 1.2393866073544373
+      },
+      "inverse_defect_sampling_interval": [
+        0.022155015513295746,
+        0.06223962788887622
+      ]
+    }
+  },
+  "eckart": {
+    "beta4_P32": {
+      "quantum_rate": 0.00595969049384029,
+      "rpmd_rate": 0.004078550621262972,
+      "rpmd_relative_error": -0.3156438869638605,
+      "corrected_2d_rate": 0.005568042052162331,
+      "corrected_2d_relative_error": -0.06571623846620078,
+      "sampling_SE_upper_delta_method": 0.0003396417163640231
+    },
+    "beta8_P32": {
+      "quantum_rate": 0.0006969017530852449,
+      "rpmd_rate": 0.0003280701169159373,
+      "rpmd_relative_error": -0.5292448103860519,
+      "corrected_2d_rate": 0.0006533024950534389,
+      "corrected_2d_relative_error": -0.06256155597082114,
+      "sampling_SE_upper_delta_method": 3.729681910102788e-05
+    },
+    "beta8_P64": {
+      "quantum_rate": 0.0006969017530852449,
+      "rpmd_rate": 0.0003496504091175702,
+      "rpmd_relative_error": -0.49827876372869306,
+      "corrected_2d_rate": 0.000706597041043631,
+      "corrected_2d_relative_error": 0.013911986754896466,
+      "sampling_SE_upper_delta_method": 4.0331446955874645e-05
+    }
+  },
+  "numerical_checks": {
+    "fast_tests_passed": 24,
+    "morse_ground_energy_max_change": 6.006306563222097e-13,
+    "fermi_d3_basis_relative_spectrum_change": 8.940935891761656e-13,
+    "analytic_eckart_max_probability_error": 7.085290159691837e-05,
+    "eckart_full_max_unitarity_defect": 1.3150358579849808e-10
+  }
+}
