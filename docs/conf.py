@@ -38,6 +38,7 @@ include_patterns = [
     "rate_precision.md",
     "quantum-statistics.md", "performance-dynamics.md", "batched-dynamics.md",
     "batched-ml-potentials.md",
+    "mace-second-derivatives.md",
     "t19-performance.md",
     "tempering.md",
     "builtin-native-potentials.md",
