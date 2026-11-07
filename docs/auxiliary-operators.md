@@ -4,7 +4,7 @@ orphan: true
 
 # Auxiliary operators in the propagation stack
 
-PyRPMD represents electronic mapping variables and other non-nuclear degrees of freedom as **auxiliary operators**. The protocol is implemented in `pyrpmd.auxiliary`; `NRPMDDynamics` is the first adapter. The design separates three responsibilities:
+PyRPMD represents electronic mapping variables and other non-nuclear degrees of freedom as **auxiliary operators**. The protocol is implemented in `pyrpmd.auxiliary` and re-exported by `pyrpmd.engine`; `NRPMDDynamics` is the first adapter. The design separates three responsibilities:
 
 1. the nuclear integrator owns nuclear coordinates, momenta, the ring-polymer spring map, and the trajectory clock;
 2. an auxiliary operator owns its state arrays and the fixed-nuclear-coordinate auxiliary flow;

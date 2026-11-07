@@ -263,11 +263,20 @@ class AuxiliaryPropagationCore:
         trial.step = int(trial.step) + 1
         trial.time = next_time
         self.validate_state(trial)
-        fields = self.state_fields + tuple(operator.state_arrays)
-        if len(fields) != len(set(fields)):
+        trial_arrays = operator.state_arrays
+        if set(self.state_fields) & set(trial_arrays):
             raise ValueError("nuclear and auxiliary commit fields overlap")
-        for name in fields:
+        target_operator = self.operator(state)
+        target_arrays = target_operator.state_arrays
+        if set(target_arrays) != set(trial_arrays):
+            raise ValueError("auxiliary state array names changed during propagation")
+        for name in self.state_fields:
             getattr(state, name)[:] = getattr(trial, name)
+        for name, source in trial_arrays.items():
+            target = target_arrays[name]
+            if target.shape != source.shape or target.dtype != source.dtype:
+                raise ValueError("auxiliary state array shape or dtype changed during propagation")
+            target[:] = source
         state.step, state.time = trial.step, trial.time
         return state
 
