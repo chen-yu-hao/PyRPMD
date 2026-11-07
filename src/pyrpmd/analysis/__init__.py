@@ -52,6 +52,25 @@ from .quantum_correction import (
     hybrid_quantum_correction,
     run_quantum_correction,
 )
+from .quantum_subspace import (
+    QuantumSubspaceSelection,
+    memory_embed,
+    select_subspace,
+    select_quantum_subspace,
+    spectral_matrix,
+)
+from .quantum_joint import (
+    JointPropagationResult,
+    JointRPMDQuantumPropagator,
+    OnlineQuantumRPMD,
+)
+from .flux_side_correction import (
+    FluxSideResult,
+    flux_side_rate,
+    estimate_flux_side_rate,
+    hybrid_flux_side_correction,
+    quantum_corrected_flux_side,
+)
 
 __all__ = [
     "solve_mbar",
@@ -95,4 +114,17 @@ __all__ = [
     "inverse_response_defect",
     "hybrid_quantum_correction",
     "run_quantum_correction",
+    "QuantumSubspaceSelection",
+    "memory_embed",
+    "select_subspace",
+    "select_quantum_subspace",
+    "spectral_matrix",
+    "JointPropagationResult",
+    "JointRPMDQuantumPropagator",
+    "OnlineQuantumRPMD",
+    "FluxSideResult",
+    "flux_side_rate",
+    "estimate_flux_side_rate",
+    "hybrid_flux_side_correction",
+    "quantum_corrected_flux_side",
 ]

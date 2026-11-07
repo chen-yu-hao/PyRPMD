@@ -103,3 +103,36 @@ def test_invalid_observable_direction(target):
     z, f = force_samples((.8, .02))
     with pytest.raises(ValueError):
         select_subspace(z, f, target=target)
+
+from pyrpmd.analysis.quantum_subspace import select_quantum_subspace
+
+
+def test_selector_captures_even_nonlinear_force_and_joint_coordinate_group():
+    rng = np.random.default_rng(12)
+    positions = rng.normal(size=(600, 3))
+    forces = np.column_stack([
+        -(positions[:, 0] + 0.8 * positions[:, 1] ** 2),
+        -positions[:, 1],
+        -positions[:, 2],
+    ])
+    selection = select_quantum_subspace(
+        positions,
+        forces,
+        max_dimension=2,
+        joint_coordinates=[(0, 1)],
+        target_observables=positions[:, 0] ** 2,
+    )
+    assert selection.selected_indices == (0, 1)
+    assert selection.basis.shape == (3, 2)
+    assert selection.diagnostics["selection_is_error_bound"] is False
+    assert selection.diagnostics["physical_converged"] is False
+
+
+def test_selector_reports_nested_ranking_without_forcing_full_space():
+    rng = np.random.default_rng(3)
+    positions = rng.normal(size=(300, 5))
+    forces = -positions.copy()
+    forces[:, 0] -= 0.5 * positions[:, 2] ** 2
+    selection = select_quantum_subspace(positions, forces, max_dimension=2)
+    assert 1 <= len(selection.selected_indices) <= 2
+    assert len(selection.diagnostics["ranking"]) == 5

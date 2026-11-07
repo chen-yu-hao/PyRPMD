@@ -9,6 +9,7 @@ It is not an exact nonlinear system-bath or reaction-rate theory.
 from __future__ import annotations
 from math import comb
 from itertools import combinations_with_replacement
+from dataclasses import dataclass
 import numpy as np
 from scipy.linalg import null_space, eigh
 
@@ -184,4 +185,248 @@ def memory_embed(spec, frequencies, damping, cross, bath,
         'passivity_grid_passed': bool(eigenvalues.min() > -1e-10)}
 
 
-__all__ = ['select_subspace', 'memory_embed', 'spectral_matrix']
+__all__ = ['select_subspace', 'select_quantum_subspace', 'QuantumSubspaceSelection', 'memory_embed', 'spectral_matrix']
+
+@dataclass(frozen=True)
+class QuantumSubspaceSelection:
+    """Auditable coordinate selection based on force nonlinearity and coupling.
+
+    ``selected_indices`` is a coordinate set, while ``basis`` is the matching
+    column subset of the identity. The score is a ranking diagnostic and is
+    not an estimate or bound on the quantum-dynamical error.
+    """
+    selected_indices: tuple[int, ...]
+    basis: np.ndarray
+    scores: np.ndarray
+    nonlinear_scores: np.ndarray
+    coupling_scores: np.ndarray
+    target_scores: np.ndarray
+    diagnostics: dict
+
+    def __post_init__(self):
+        basis = np.array(self.basis, dtype=float, copy=True)
+        arrays = {
+            "scores": np.asarray(self.scores, dtype=float),
+            "nonlinear_scores": np.asarray(self.nonlinear_scores, dtype=float),
+            "coupling_scores": np.asarray(self.coupling_scores, dtype=float),
+            "target_scores": np.asarray(self.target_scores, dtype=float),
+        }
+        if basis.ndim != 2 or basis.shape[1] != len(self.selected_indices):
+            raise ValueError("basis must have one column per selected coordinate")
+        for name, value in arrays.items():
+            if value.ndim != 1 or not np.isfinite(value).all():
+                raise ValueError(f"{name} must be a finite one-dimensional array")
+            value.flags.writeable = False
+            object.__setattr__(self, name, value)
+        basis.flags.writeable = False
+        object.__setattr__(self, "basis", basis)
+        object.__setattr__(self, "selected_indices", tuple(int(i) for i in self.selected_indices))
+        object.__setattr__(self, "diagnostics", dict(self.diagnostics))
+
+
+def _selection_features(z):
+    """Return centered linear/quadratic features and their coordinate labels."""
+    n = z.shape[1]
+    columns, labels = [], []
+    for i in range(n):
+        columns.append(z[:, i])
+        labels.append((i,))
+    for i in range(n):
+        columns.append(z[:, i] * z[:, i])
+        labels.append((i, i))
+    for i in range(n):
+        for j in range(i + 1, n):
+            columns.append(z[:, i] * z[:, j])
+            labels.append((i, j))
+    return np.column_stack(columns), labels
+
+
+def _normalise_scores(values):
+    values = np.asarray(values, dtype=float)
+    scale = float(np.max(values)) if len(values) else 0.0
+    return values / scale if scale > 0 else np.zeros_like(values)
+
+
+def select_quantum_subspace(
+    positions,
+    forces,
+    *,
+    max_dimension=3,
+    joint_coordinates=None,
+    target_observables=None,
+    masses=None,
+    nonlinear_weight=1.0,
+    coupling_weight=1.0,
+    target_weight=1.0,
+    coupling_threshold=0.15,
+    min_score=0.0,
+):
+    """Select quantum coordinates from nonlinear and joint force diagnostics.
+
+    The selector combines three independently reported signals: quadratic
+    force-response strength, linear/nonlinear force coupling to residual
+    coordinates, and correlations with target observables including quadratic
+    features. ``joint_coordinates`` defines inseparable coordinate groups;
+    selecting one coordinate selects the complete group. A greedy closure then
+    adds the strongest coupled group while the dimension budget permits it.
+
+    This is an automatic *ranking* procedure. Its score is not an error bound,
+    and it does not establish that the resulting low-dimensional inverse
+    response defect is transferable to the full system. A full-dimensional
+    selection is the algebraic no-reduction limit.
+    """
+    z = np.asarray(positions, dtype=float)
+    force = np.asarray(forces, dtype=float)
+    if (z.ndim != 2 or force.shape != z.shape or len(z) < 8 or z.shape[1] < 1
+            or not np.isfinite(z).all() or not np.isfinite(force).all()):
+        raise ValueError("positions and forces must be finite matching [samples, coordinates] arrays")
+    samples, ndim = z.shape
+    if isinstance(max_dimension, (bool, np.bool_)) or int(max_dimension) != max_dimension:
+        raise ValueError("max_dimension must be an integer")
+    max_dimension = int(max_dimension)
+    if max_dimension < 1 or max_dimension > ndim:
+        raise ValueError("max_dimension must be between one and the coordinate count")
+    weights = np.asarray([nonlinear_weight, coupling_weight, target_weight], dtype=float)
+    if weights.shape != (3,) or not np.isfinite(weights).all() or np.any(weights < 0):
+        raise ValueError("selection weights must be finite and nonnegative")
+    if not np.isfinite(coupling_threshold) or coupling_threshold < 0:
+        raise ValueError("coupling_threshold must be finite and nonnegative")
+    if not np.isfinite(min_score) or min_score < 0:
+        raise ValueError("min_score must be finite and nonnegative")
+
+    if masses is None:
+        mass = np.ones(ndim)
+    else:
+        mass = np.asarray(masses, dtype=float)
+        if mass.shape != (ndim,) or not np.isfinite(mass).all() or np.any(mass <= 0):
+            raise ValueError("masses must be positive and match the coordinate count")
+    # Mass weighting makes a coordinate score comparable across heterogeneous
+    # coordinates while preserving the input force convention.
+    zc = z - z.mean(axis=0)
+    fc = force - force.mean(axis=0)
+    zw = zc * np.sqrt(mass)[None, :]
+    fw = fc / np.sqrt(mass)[None, :]
+    affine = np.column_stack([np.ones(samples), zw])
+    affine_coeff = np.linalg.lstsq(affine, fw, rcond=None)[0]
+    residual = fw - affine @ affine_coeff
+    total_force = np.linalg.norm(fw, axis=0)
+    nonlinear = np.linalg.norm(residual, axis=0) / np.maximum(total_force, np.finfo(float).tiny)
+
+    features, labels = _selection_features(zw)
+    if features.shape[1] > 5000 or samples <= features.shape[1] + 1:
+        raise ValueError("quadratic force model requires more samples than features and at most 5000 features")
+    # The linear and quadratic model is deliberately used only as a diagnostic;
+    # its residual and coefficient norms are both retained for auditability.
+    design = np.column_stack([np.ones(samples), features])
+    coeff = np.linalg.lstsq(design, fw, rcond=None)[0]
+    model_residual = fw - design @ coeff
+    nonlinear_strength = np.zeros(ndim)
+    for column, label in enumerate(labels):
+        if len(label) == 2:
+            contribution = np.linalg.norm(features[:, column, None] * coeff[column + 1], axis=0)
+            nonlinear_strength += contribution
+    nonlinear_strength /= np.maximum(total_force, np.finfo(float).tiny)
+    nonlinear = _normalise_scores(.5 * nonlinear + .5 * nonlinear_strength)
+
+    # Harmonic coupling plus nonlinear force cross-coupling. The diagonal is
+    # excluded so a stiff uncoupled coordinate is not selected by itself.
+    linear_K = -affine_coeff[1:].T
+    linear_K = .5 * (linear_K + linear_K.T)
+    denom = np.sqrt(np.maximum(np.diag(linear_K) ** 2, np.finfo(float).tiny))
+    linear_coupling = np.abs(linear_K) / np.maximum(denom[:, None], np.finfo(float).tiny)
+    np.fill_diagonal(linear_coupling, 0.0)
+    nonlinear_coupling = np.zeros((ndim, ndim))
+    for column, label in enumerate(labels):
+        if len(label) == 2:
+            i, j = label
+            value = np.linalg.norm(coeff[column + 1]) / max(np.linalg.norm(fw, axis=0).mean(), np.finfo(float).tiny)
+            nonlinear_coupling[i, j] += value
+            nonlinear_coupling[j, i] += value
+    coupling_matrix = np.maximum(linear_coupling, nonlinear_coupling)
+    coupling = _normalise_scores(np.max(coupling_matrix, axis=1))
+
+    target_score = np.zeros(ndim)
+    if target_observables is not None:
+        target = np.asarray(target_observables, dtype=float)
+        if target.ndim == 1:
+            target = target[:, None]
+        if target.ndim != 2 or target.shape[0] != samples or target.shape[1] < 1 or not np.isfinite(target).all():
+            raise ValueError("target_observables must be finite [samples] or [samples, observables]")
+        target = target - target.mean(axis=0)
+        target_norm = np.linalg.norm(target, axis=0)
+        # Correlation with x_i, x_i^2 and x_i*x_j catches even symmetry-forced
+        # resonance partners such as x*y^2 that have zero linear covariance.
+        for column, label in enumerate(labels):
+            feature = features[:, column]
+            score = np.linalg.norm(target.T @ feature) / np.maximum(target_norm * np.linalg.norm(feature), np.finfo(float).tiny)
+            for i in label:
+                target_score[i] = max(target_score[i], float(np.max(score)))
+        target_score = _normalise_scores(target_score)
+
+    total = weights[0] * nonlinear + weights[1] * coupling + weights[2] * target_score
+    scale = max(float(np.sum(weights)), np.finfo(float).tiny)
+    total = total / scale
+
+    if joint_coordinates is None:
+        groups = [(i,) for i in range(ndim)]
+    else:
+        groups = []
+        seen = set()
+        for raw in joint_coordinates:
+            group = tuple(sorted(set(int(i) for i in raw)))
+            if not group or any(i < 0 or i >= ndim for i in group) or seen.intersection(group):
+                raise ValueError("joint_coordinates must be nonempty disjoint in-range groups")
+            seen.update(group)
+            groups.append(group)
+        groups.extend((i,) for i in range(ndim) if i not in seen)
+    if any(len(group) > max_dimension for group in groups):
+        raise ValueError("joint coordinate group exceeds max_dimension")
+    group_scores = {group: float(np.mean(total[list(group)])) for group in groups}
+    selected_groups = []
+    selected = set()
+    # Primary ranking is score; closure adds a coupled group only when it is
+    # supported by the current active set and there is dimension budget.
+    while True:
+        candidates = [g for g in groups if g not in selected_groups and len(selected) + len(g) <= max_dimension]
+        if not candidates:
+            break
+        if not selected:
+            group = max(candidates, key=lambda g: (group_scores[g], tuple(-i for i in g)))
+        else:
+            def candidate_key(g):
+                cross = max((coupling_matrix[i, j] for i in selected for j in g), default=0.0)
+                return (group_scores[g] + float(coupling_weight) * cross, group_scores[g], tuple(-i for i in g))
+            group = max(candidates, key=candidate_key)
+        cross = max((coupling_matrix[i, j] for i in selected for j in group), default=0.0)
+        if selected and group_scores[group] <= min_score + 1e-15 and cross < coupling_threshold:
+            break
+        selected_groups.append(group)
+        selected.update(group)
+        if len(selected) >= max_dimension:
+            break
+        if all(group_scores[g] < min_score for g in groups if g not in selected_groups):
+            break
+    if not selected:
+        selected_groups = [min(groups, key=lambda g: (len(g), g))]
+        selected.update(selected_groups[0])
+    selected_indices = tuple(sorted(selected))
+    basis = np.eye(ndim)[:, selected_indices]
+    ranking = tuple(sorted(range(ndim), key=lambda i: (-total[i], i)))
+    diagnostics = {
+        "feature_model": "mass-weighted linear plus quadratic force response",
+        "target_feature_model": "linear, squares and pair products",
+        "selected_groups": [list(g) for g in selected_groups],
+        "candidate_groups": [list(g) for g in groups],
+        "ranking": list(ranking),
+        "score_components": {"nonlinear": nonlinear.tolist(), "coupling": coupling.tolist(), "target": target_score.tolist(), "combined": total.tolist()},
+        "linear_stiffness": linear_K.tolist(),
+        "coupling_matrix": coupling_matrix.tolist(),
+        "force_model_relative_residual": float(np.linalg.norm(model_residual) / max(np.linalg.norm(fw), np.finfo(float).tiny)),
+        "max_dimension": max_dimension,
+        "budget_exhausted": bool(len(selected) >= max_dimension),
+        "closure_threshold": float(coupling_threshold),
+        "selection_is_error_bound": False,
+        "physical_converged": False,
+        "interpretation": "automatic nonlinear-force and joint-coordinate ranking; validate by nested quantum-defect convergence",
+    }
+    return QuantumSubspaceSelection(selected_indices, basis, total, nonlinear, coupling, target_score, diagnostics)
