@@ -72,6 +72,24 @@ from .flux_side_correction import (
     quantum_corrected_flux_side,
 )
 
+from .subspace_model import (
+    SubspaceModel,
+    curvature_width_criterion,
+    model_from_function,
+    project_linear_subspace,
+    project_path_subspace,
+    ring_polymer_mean_path,
+)
+from .subspace_quantum import QuantumRateResult, exact_quantum_rate
+from .subspace_rpmd import RingPolymerRateResult, ring_polymer_rate
+from .subspace_correction import (
+    SubspaceCorrection,
+    apply_subspace_correction,
+    correct_rate_run,
+    nested_subspace_sensitivity,
+    subspace_correction,
+)
+
 __all__ = [
     "solve_mbar",
     "reconstruct_fes",
@@ -127,4 +145,19 @@ __all__ = [
     "estimate_flux_side_rate",
     "hybrid_flux_side_correction",
     "quantum_corrected_flux_side",
+    "SubspaceModel",
+    "curvature_width_criterion",
+    "model_from_function",
+    "project_linear_subspace",
+    "project_path_subspace",
+    "ring_polymer_mean_path",
+    "QuantumRateResult",
+    "exact_quantum_rate",
+    "RingPolymerRateResult",
+    "ring_polymer_rate",
+    "SubspaceCorrection",
+    "apply_subspace_correction",
+    "correct_rate_run",
+    "nested_subspace_sensitivity",
+    "subspace_correction",
 ]

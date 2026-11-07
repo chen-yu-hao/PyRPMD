@@ -1,0 +1,324 @@
+"""Subspace quantum correction of full-dimensional RPMD rate constants.
+
+    k ~= k_RPMD(full system) * C_S,      C_S = k_QM(H_S) / k_RPMD(H_S)
+
+``H_S`` is a one- to three-dimensional subspace Hamiltonian
+(:mod:`pyrpmd.analysis.subspace_model`).  The exact quantum rate
+(:mod:`pyrpmd.analysis.subspace_quantum`) and the RPMD rate
+(:mod:`pyrpmd.analysis.subspace_rpmd`) are computed for the *same* ``H_S``
+and the same reactant normalization, so ``C_S`` isolates the RPMD method
+error inside ``S`` -- deep tunnelling, resonances, coherence -- while the
+full RPMD rate keeps everything RPMD already describes for the environment
+(zero-point energy, adiabatic following, recrossing).
+
+The correction is multiplicative, not additive: rates of the subspace model
+and of the full system may differ by orders of magnitude (the environment
+changes zero-point energies and partition functions), but a common
+prefactor cancels in the ratio.  ``C_S`` is exact when ``S`` is the full
+system and is a transferable-defect approximation otherwise; use
+:func:`nested_subspace_sensitivity` (does ``C_S`` change when a coordinate
+is added?) and the curvature-times-width test to decide whether ``S`` holds
+the RPMD defect.  Nothing here marks a rate as physically converged.
+"""
+
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Mapping, Sequence
+
+import numpy as np
+
+from .subspace_model import SubspaceModel
+from .subspace_quantum import QuantumRateResult, _json_safe, exact_quantum_rate
+from .subspace_rpmd import RingPolymerRateResult, ring_polymer_rate
+
+SCHEMA = "pyrpmd.subspace_correction"
+CORRECTED_SCHEMA = "pyrpmd.rate_quantum_corrected"
+
+
+@dataclass(frozen=True)
+class SubspaceCorrection:
+    """Correction factor ``C_S`` at one temperature with its provenance.
+
+    ``log_standard_error`` is the standard error of ``ln C_S``: the RPMD
+    statistical and TI-quadrature error plus, for the iterative quantum
+    route, the spread of the trapped-norm extrapolation.  Grid, absorbing
+    potential and bead-number convergence are not included.
+    """
+
+    beta: float
+    dimension: int
+    factor: float
+    log_standard_error: float
+    quantum_rate: float
+    rpmd_rate: float
+    nbeads: int
+    model: Mapping[str, Any]
+    quantum: QuantumRateResult | None = None
+    rpmd: RingPolymerRateResult | None = None
+    diagnostics: Mapping[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self):
+        if not np.isfinite(self.factor) or self.factor <= 0:
+            raise ValueError("correction factor must be positive and finite")
+        if not 1 <= int(self.dimension) <= 3:
+            raise ValueError("subspace dimension must be one to three")
+        object.__setattr__(self, "model", dict(self.model))
+        object.__setattr__(self, "diagnostics", dict(self.diagnostics))
+
+    @property
+    def log_factor(self) -> float:
+        return float(np.log(self.factor))
+
+    def to_dict(self) -> dict:
+        record = {
+            "schema": SCHEMA,
+            "schema_version": 1,
+            "beta": self.beta,
+            "dimension": int(self.dimension),
+            "factor": self.factor,
+            "log_factor": self.log_factor,
+            "log_standard_error": self.log_standard_error,
+            "quantum_rate": self.quantum_rate,
+            "rpmd_rate": self.rpmd_rate,
+            "nbeads": int(self.nbeads),
+            "model": self.model,
+            "diagnostics": self.diagnostics,
+            "approximation": "multiplicative subspace defect: k_RPMD(full) * k_QM(S) / k_RPMD(S)",
+            "exact_general_rate_claim": False,
+            "physical_converged": False,
+        }
+        if self.quantum is not None:
+            record["quantum"] = self.quantum.to_dict()
+        if self.rpmd is not None:
+            record["rpmd"] = self.rpmd.to_dict()
+        return _json_safe(record)
+
+    def write(self, path) -> Path:
+        path = Path(path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(self.to_dict(), indent=2, sort_keys=True))
+        return path
+
+    @classmethod
+    def from_dict(cls, data: Mapping[str, Any]) -> "SubspaceCorrection":
+        if data.get("schema") != SCHEMA:
+            raise ValueError(f"not a {SCHEMA} record")
+        return cls(float(data["beta"]), int(data["dimension"]), float(data["factor"]),
+                   float(data["log_standard_error"]), float(data["quantum_rate"]),
+                   float(data["rpmd_rate"]), int(data["nbeads"]), data.get("model", {}),
+                   diagnostics=data.get("diagnostics", {}))
+
+    @classmethod
+    def read(cls, path) -> "SubspaceCorrection":
+        return cls.from_dict(json.loads(Path(path).read_text()))
+
+
+def subspace_correction(
+    model: SubspaceModel,
+    beta: float,
+    nbeads: int,
+    *,
+    quantum_options: Mapping[str, Any] | None = None,
+    rpmd_options: Mapping[str, Any] | None = None,
+) -> SubspaceCorrection:
+    """Compute ``C_S = k_QM(H_S) / k_RPMD(H_S)`` for one temperature.
+
+    ``nbeads`` should match (or exceed) the bead number of the full RPMD
+    calculation the factor will multiply, so that ``C_S`` corrects the same
+    finite-``P`` estimator.
+    """
+    quantum = exact_quantum_rate(model, beta, **dict(quantum_options or {}))
+    rpmd = ring_polymer_rate(model, beta, nbeads, **dict(rpmd_options or {}))
+    if quantum.rate <= 0 or rpmd.rate <= 0:
+        raise FloatingPointError("subspace rates must be positive to form a correction factor")
+    quantum_spread = float(quantum.diagnostics.get("relative_extrapolation_spread", 0.0) or 0.0)
+    log_error = float(np.hypot(rpmd.log_rate_standard_error, quantum_spread))
+    diagnostics = {
+        "rpmd_log_standard_error": rpmd.log_rate_standard_error,
+        "quantum_relative_extrapolation_spread": quantum_spread,
+        "quantum_method": quantum.method,
+        "rpmd_transmission": rpmd.transmission,
+        "rpmd_qtst_rate": rpmd.qtst_rate,
+        "quantum_over_rpmd_qtst": quantum.rate / rpmd.qtst_rate if rpmd.qtst_rate > 0 else None,
+        "rpmd_spline_outside_fraction": rpmd.diagnostics.get("spline_outside_fraction"),
+        "units": quantum.diagnostics.get("units"),
+    }
+    return SubspaceCorrection(float(beta), model.dimension, quantum.rate / rpmd.rate, log_error,
+                              quantum.rate, rpmd.rate, int(nbeads), model.describe(),
+                              quantum, rpmd, diagnostics)
+
+
+def apply_subspace_correction(
+    rate: float,
+    correction: SubspaceCorrection,
+    *,
+    standard_error: float | None = None,
+    beta: float | None = None,
+    beta_rtol: float = 1e-6,
+) -> dict:
+    """Multiply a full-dimensional RPMD rate by ``C_S``.
+
+    Relative errors are combined in quadrature assuming the full RPMD run and
+    the subspace calculation are statistically independent.  ``beta`` (when
+    given) must match the correction's temperature.
+    """
+    if not isinstance(correction, SubspaceCorrection):
+        raise TypeError("correction must be a SubspaceCorrection")
+    rate = float(rate)
+    if not np.isfinite(rate) or rate < 0:
+        raise ValueError("rate must be finite and nonnegative")
+    if beta is not None and not np.isclose(float(beta), correction.beta, rtol=beta_rtol, atol=0):
+        raise ValueError(f"correction beta {correction.beta:.12g} does not match the rate's beta {float(beta):.12g}")
+    corrected = rate * correction.factor
+    relative = None
+    if standard_error is not None:
+        standard_error = float(standard_error)
+        if not np.isfinite(standard_error) or standard_error < 0:
+            raise ValueError("standard_error must be finite and nonnegative")
+        relative = float(np.hypot(standard_error / rate, correction.log_standard_error)) if rate > 0 else None
+    return {
+        "rpmd_rate": rate,
+        "rpmd_rate_standard_error": standard_error,
+        "correction_factor": correction.factor,
+        "correction_log_standard_error": correction.log_standard_error,
+        "corrected_rate": corrected,
+        "corrected_rate_standard_error": None if relative is None else corrected * relative,
+        "corrected_relative_standard_error": relative,
+        "subspace_dimension": correction.dimension,
+        "beta": correction.beta,
+        "approximation": "multiplicative subspace defect",
+        "physical_converged": False,
+    }
+
+
+def nested_subspace_sensitivity(corrections: Sequence[SubspaceCorrection], *, tolerance: float = 0.05) -> dict:
+    """Target-response sensitivity ``ln(C_{d+1} / C_d)`` for nested subspaces.
+
+    Adding a coordinate that RPMD already treats well leaves ``C`` unchanged;
+    a coordinate that carries part of the defect changes it.  The
+    recommended dimension is the smallest ``d`` whose next step changes
+    ``ln C`` by less than ``max(tolerance, 2 sigma)``.  The caller is
+    responsible for the subspaces being nested and at the same temperature.
+    """
+    items = sorted(corrections, key=lambda c: c.dimension)
+    if len(items) < 2:
+        raise ValueError("at least two nested corrections are required")
+    betas = np.array([c.beta for c in items])
+    if not np.allclose(betas, betas[0], rtol=1e-9, atol=0):
+        raise ValueError("nested corrections must share one temperature")
+    if len({c.dimension for c in items}) != len(items):
+        raise ValueError("nested corrections must have distinct dimensions")
+    steps, recommended = [], items[-1].dimension
+    for low, high in zip(items, items[1:]):
+        change = high.log_factor - low.log_factor
+        sigma = float(np.hypot(low.log_standard_error, high.log_standard_error))
+        settled = abs(change) <= max(tolerance, 2.0 * sigma)
+        steps.append({"from": low.dimension, "to": high.dimension, "log_change": change,
+                      "standard_error": sigma, "settled": bool(settled)})
+    for step in steps:
+        if step["settled"]:
+            recommended = step["from"]
+            break
+    return {
+        "beta": float(betas[0]),
+        "steps": steps,
+        "factors": {str(c.dimension): c.factor for c in items},
+        "recommended_dimension": int(recommended),
+        "tolerance": float(tolerance),
+        "full_budget_used": bool(recommended == items[-1].dimension and not steps[-1]["settled"]),
+    }
+
+
+def _rate_summary(root: Path):
+    from .rate_io import _metadata, _read_json
+
+    summary, config, manifest, files = _metadata(root)
+    published = root / "results" / "summary.json"
+    if published.is_file():
+        data = _read_json(published)
+        if "rate_extension" in data:
+            summary = data
+            files.append(published)
+    return summary, config, manifest, files
+
+
+def correct_rate_run(directory, correction, *, output=None, beta_rtol: float = 1e-6) -> dict:
+    """Write ``rate_quantum_corrected.json`` next to a saved PyRPMD rate run.
+
+    ``correction`` is a :class:`SubspaceCorrection` or the path of a JSON
+    record written by :meth:`SubspaceCorrection.write`.  The run's
+    temperature (``input/resolved.json``) must match the correction.  Source
+    scientific files are never modified; the output records their SHA-256.
+    A run without a publishable ``rate_*`` keeps ``corrected_rate`` empty and
+    only reports the corrected point estimate.
+    """
+    from ..io import file_sha256, write_json
+    from .rate_io import _root
+
+    if not isinstance(correction, SubspaceCorrection):
+        correction = SubspaceCorrection.read(correction)
+    root = _root(directory, "summary.json")
+    summary, config, manifest, files = _rate_summary(root)
+    task = summary.get("task")
+    if task not in ("rate", "surface_rate"):
+        raise ValueError("correct_rate_run accepts a gas or surface rate run")
+    unit = "s_inv" if task == "surface_rate" else "cm3_s"
+    beta = config.get("beta")
+    if beta is None:
+        raise ValueError("input/resolved.json with beta is required to check the correction temperature")
+    if not np.isclose(float(beta), correction.beta, rtol=beta_rtol, atol=0):
+        raise ValueError(f"correction beta {correction.beta:.12g} does not match run beta {float(beta):.12g}")
+    estimate = summary.get("rate_estimate_" + unit)
+    publishable = summary.get("rate_" + unit)
+    error = summary.get("rate_standard_error_" + unit)
+    if estimate is None:
+        raise ValueError("the saved run has no rate estimate to correct")
+    applied = apply_subspace_correction(estimate, correction, standard_error=error, beta=beta, beta_rtol=beta_rtol)
+    target = Path(output).resolve() if output else root / "rate_quantum_corrected.json"
+    protected = {Path(p).resolve() for p in files}
+    protected.update((root / name).resolve() for name in (
+        "summary.json", "rate_pmf.json", "rate_pmf.npz", "recrossing.npz", "manifest.json",
+        "results/summary.json", "input/resolved.json", "input/system.json", "rate_postprocess.json",
+    ))
+    if target in protected:
+        raise ValueError("the corrected rate must not overwrite a source scientific file")
+    if target.exists():
+        try:
+            previous = json.loads(target.read_text())
+        except (OSError, ValueError) as exc:
+            raise ValueError("refusing to overwrite an unrelated file") from exc
+        if not isinstance(previous, dict) or previous.get("schema") != CORRECTED_SCHEMA:
+            raise ValueError("refusing to overwrite an unrelated file")
+    result = {
+        "schema": CORRECTED_SCHEMA,
+        "schema_version": 1,
+        "task": task,
+        "rate_unit": {"cm3_s": "cm^3 molecule^-1 s^-1", "s_inv": "s^-1"}[unit],
+        "source_directory": str(root),
+        "source_status": summary.get("status"),
+        "source_rate_publishable": publishable is not None,
+        "rpmd_rate_estimate_" + unit: estimate,
+        "rpmd_rate_standard_error_" + unit: error,
+        "corrected_rate_estimate_" + unit: applied["corrected_rate"],
+        "corrected_rate_" + unit: applied["corrected_rate"] if publishable is not None else None,
+        "corrected_rate_standard_error_" + unit: applied["corrected_rate_standard_error"],
+        "correction": correction.to_dict(),
+        "physics_fingerprint": manifest.get("physics_fingerprint"),
+        "source_files": [{"path": str(p), "sha256": file_sha256(p)} for p in dict.fromkeys(files)],
+        "uncertainty_scope": "full-run RPMD standard error and subspace ln C_S error combined in quadrature; grid, absorbing-potential and bead convergence excluded",
+        "approximation": applied["approximation"],
+        "exact_general_rate_claim": False,
+        "physical_converged": False,
+    }
+    result = _json_safe(result)
+    write_json(target, result)
+    return result
+
+
+__all__ = [
+    "SubspaceCorrection", "apply_subspace_correction", "correct_rate_run",
+    "nested_subspace_sensitivity", "subspace_correction",
+]
