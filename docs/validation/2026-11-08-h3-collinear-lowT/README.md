@@ -63,7 +63,7 @@ basis. That route was not shipped.
 | 200 | | | 64 | 4.80e−9 | 6% | 6.92e−9 | 0.694 ± 0.026 |
 | 200 | | | 128 | 4.99e−9 | 9% | 7.20e−9 | 0.692 ± 0.028 |
 | 150 | 0.43 | 40 | 64 | 1.30e−10 | 8% | 2.13e−10 | 0.612 ± 0.029 |
-| 150 | | | 128 | PENDING_150_K | | | |
+| 150 | | | 128 | 1.52e−10 | 9% | 2.48e−10 | 0.612 ± 0.032 |
 | 100 | 0.29 | 60 | 64 | 2.14e−12 | 10% | 3.92e−12 | 0.546 ± 0.031 |
 
 P ≈ βħω is not enough. For a harmonic reactant H₂ mode and TS stretch, the exact RPMD bead
@@ -81,10 +81,19 @@ at which the harmonic estimate is within 5%: P ≥ 2βħω(H₂).
 | 400 | 1.16 | 64 | 5.83e−6 | 3.78e−6 ± 6% | 0.65 ± 0.04 |
 | 300 | 0.87 | 64 | 5.85e−7 (±2%) | 3.56e−7 ± 6% | 0.61 ± 0.04 |
 | 200 | 0.58 | 128 | 8.77e−9 (±2%) | 4.99e−9 ± 9% | 0.57 ± 0.05 |
-| 150 | 0.43 | PENDING_150_P | 2.94e−10 (±7%) | PENDING_150_RATE | PENDING_150_RATIO |
+| 150 | 0.43 | 128 | 2.94e−10 (±7%) | 1.52e−10 ± 9% | 0.52 ± 0.06 |
 | 100 | 0.29 | — | not converged | (2.1e−12 at P = 64, bead-unconverged) | — |
 
-PENDING_SUMMARY
+RPMD underestimates the exact collinear rate at every temperature. The ratio is flat
+(0.61–0.65) from 600 K to 300 K, above and just below T_c, and then falls to 0.57 at
+0.58 T_c and 0.52 at 0.43 T_c. The deficit is already present above T_c. In collinear
+H + H₂ it comes from RPMD's dynamics (κ ≈ 0.6–0.75, against strong quantum recrossing and
+resonance effects that the exact rate has) more than from the deep-tunnelling regime. Below
+T_c the deficit grows slowly: at 0.43 T_c RPMD is within a factor of 2 of the exact rate.
+
+For the subspace correction this means C = k_QM/k_RPMD ≈ 1.6 at 300–600 K and 1.9 at
+150 K for collinear H + H₂. Unlike Cl + HBr at 300 K (C = 1.0 ± 0.3), the correction is
+significant here.
 
 Checks that support the comparison:
 
