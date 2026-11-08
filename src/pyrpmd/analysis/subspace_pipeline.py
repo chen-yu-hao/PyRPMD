@@ -40,7 +40,7 @@ DEFAULTS = {
     "path": {"step": 10.0, "max_steps": 600, "spread_factor": 2.0, "asymptote_tolerance": 1e-6,
              "smoothing": 1.5},
     "subspace": {"dimension": "auto", "threshold": 0.5},
-    "quantum": {"spacing_1d": None, "spacing_2d": None, "absorber_fraction": 0.2,
+    "quantum": {"spacing_1d": None, "spacing_2d": None, "refinement": 3, "absorber_fraction": 0.2,
                 "threshold_margin": 1.0, "truncation_kt": 30.0, "padding": None, "dense_limit": 6000},
     "rpmd": {"nbeads": None, "windows": 48, "walkers": 32, "burn_in": 200, "sweeps": 400,
              "trajectories": 512, "seed": 0},
@@ -219,7 +219,7 @@ def path_model(run: RateRun, path, options: Mapping[str, Any]):
     spacing = options.get("spacing_1d")
     if spacing is None:
         emax = float(np.ptp(energies)) + 30.0 / run.beta
-        spacing = 0.5 * np.pi / np.sqrt(2.0 * emax)
+        spacing = 0.5 * np.pi / np.sqrt(2.0 * emax) / float(options.get("refinement", 3))
     axis = np.arange(0.0, arc[-1] - 1e-9, float(spacing))
     rate_surface, _ = _dividing_arc(run, path, arc)
     # Bennett--Chandler needs a dividing surface the dynamics must cross: use
@@ -321,14 +321,26 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
         emax = (floor_guess - energies.min()) + float(options["truncation_kt"]) / run.beta
         spacing = 0.5 * np.pi / np.sqrt(2.0 * emax)
     spacing = np.broadcast_to(np.asarray(spacing, dtype=float), (2,))
-    axes = [np.arange(lo[i], hi[i] + spacing[i], spacing[i]) for i in range(2)]
+    # One V_S for both halves of C_S: it is projected on a grid `refinement`
+    # times finer than the quantum DVR grid.  The DVR uses every
+    # `refinement`-th node (exact V_S values); RPMD uses the cubic spline of
+    # the fine grid, which resolves the narrow transverse valleys that a
+    # spline through the DVR nodes alone would ring across.
+    refinement = max(1, int(options.get("refinement", 3)))
+    fine = spacing / refinement
+    counts = [int(np.ceil((hi[i] - lo[i]) / spacing[i])) * refinement + 1 for i in range(2)]
+    axes = [lo[i] + fine[i] * np.arange(counts[i]) for i in range(2)]
     skip = (floor_guess + 2.0 * float(options["truncation_kt"]) / run.beta + 0.05)
-    model = project_linear_subspace(run.energy, run.gradient, ts, masses, np.column_stack([e0, e1]), axes,
-                                    environment="adiabatic", dividing_surface=0.0, rigid_body=True,
-                                    skip_above=skip, wall_energy=skip + 1.0)
+    fine_model = project_linear_subspace(run.energy, run.gradient, ts, masses, np.column_stack([e0, e1]), axes,
+                                         environment="adiabatic", dividing_surface=0.0, rigid_body=True,
+                                         skip_above=skip, wall_energy=skip + 1.0)
     reference_point = np.array([np.interp(reference_arc, arc, plane[:, 0]), np.interp(reference_arc, arc, plane[:, 1])])
-    model = type(model)(model.axes, model.values, model.masses, 0.0, "asymptotic", float(reference_point[0]),
-                        dict(model.provenance, plane_basis=[e0.tolist(), e1.tolist()]))
+    provenance = dict(fine_model.provenance, plane_basis=[e0.tolist(), e1.tolist()], refinement=refinement)
+    rpmd_model = type(fine_model)(fine_model.axes, fine_model.values, fine_model.masses, 0.0, "asymptotic",
+                                  float(reference_point[0]), provenance)
+    model = type(fine_model)(tuple(a[::refinement] for a in fine_model.axes),
+                             fine_model.values[::refinement, ::refinement], fine_model.masses, 0.0, "asymptotic",
+                             float(reference_point[0]), provenance)
     tree = cKDTree(plane)
     width_lo, width_hi = absorb_lo - arc[0], arc[-1] - absorb_hi
     strength = 30.0 * np.sqrt(2.0 / run.beta)
@@ -351,18 +363,19 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
     thresholds = []
     for at in (reference_arc, arc[-1] - (fraction + 0.05) * product_length):
         center, normal = tangent_normal(at)
-        thresholds.append(_in_plane_threshold(model, center, normal))
+        thresholds.append(_in_plane_threshold(rpmd_model, center, normal))
     floor = max(thresholds) - float(options["threshold_margin"]) / run.beta
     truncation = floor + float(options["truncation_kt"]) / run.beta
     quantum = {"absorber": absorber, "normalization": "slice", "energy_floor": floor,
                "truncation_energy": truncation, "dense_limit": int(options["dense_limit"])}
     retained = int(np.sum(model.values <= truncation))
     info = {"shape": list(model.shape), "spacing": spacing.tolist(), "retained_points": retained,
+            "rpmd_grid_shape": list(rpmd_model.shape), "refinement": refinement,
             "curvature_normal_in_plane_overlap": candidate_overlap,
             "path_off_plane_max": float(residual.max()), "path_off_plane_rms": float(np.sqrt(np.mean(residual**2))),
             "absorber_arc": [float(absorb_lo), float(absorb_hi)], "reactant_reference": float(reference_point[0]),
             "channel_thresholds": thresholds, "energy_floor": floor, "truncation_energy": truncation}
-    return model, quantum, info
+    return model, quantum, info, rpmd_model
 
 
 def _rpmd_options(options, run):
@@ -428,9 +441,9 @@ def run_subspace_pipeline(specification) -> dict:
             candidate = np.asarray(sampled_cw["candidate_direction"])
         if candidate is None:
             candidate = np.asarray(static_cw["candidate_direction"])
-        model2, quantum2, info2 = plane_model(run, path, candidate, options["quantum"])
+        model2, quantum2, info2, rpmd_model2 = plane_model(run, path, candidate, options["quantum"])
         corrections[2] = subspace_correction(model2, run.beta, nbeads, quantum_options=quantum2,
-                                             rpmd_options=rpmd_options)
+                                             rpmd_options=rpmd_options, rpmd_model=rpmd_model2)
         corrections[2].write(out_dir / "C_S_2d.json")
         models[2] = info2
     sensitivity = nested_subspace_sensitivity(list(corrections.values())) if len(corrections) > 1 else None
