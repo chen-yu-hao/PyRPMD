@@ -16,3 +16,5 @@ rpmd --temperature 200 --beads 128
 rpmd --temperature 150 --beads 64
 rpmd --temperature 100 --beads 64
 rpmd --temperature 100 --beads 128
+rpmd --temperature 600 --beads 32
+rpmd --temperature 400 --beads 64
