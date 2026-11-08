@@ -1,0 +1,107 @@
+{
+  "task": "rate",
+  "beta": 5.0,
+  "temperature_K": 63155.00496079742,
+  "beads": 2,
+  "dt_au": 0.003,
+  "seed": 17,
+  "native": false,
+  "potential": {
+    "provider": "free"
+  },
+  "sampling": {
+    "equilibration_steps": 50,
+    "production_steps": 200,
+    "sample_interval": 2,
+    "andersen_interval": 20
+  },
+  "reaction": {
+    "fragments": [
+      [
+        0
+      ],
+      [
+        1,
+        2
+      ]
+    ],
+    "forming_bonds": [
+      [
+        0,
+        1
+      ]
+    ],
+    "breaking_bonds": [
+      [
+        1,
+        2
+      ]
+    ],
+    "rinf": 4.0
+  },
+  "umbrella": {
+    "centers": [
+      0.0,
+      0.1,
+      0.2,
+      0.30000000000000004,
+      0.4,
+      0.5,
+      0.6000000000000001,
+      0.7000000000000001,
+      0.8,
+      0.9,
+      1.0
+    ],
+    "kappa": 10.0
+  },
+  "analysis": {
+    "bins": 30,
+    "bootstrap": 2
+  },
+  "parallel": {
+    "backend": "serial"
+  },
+  "output": {
+    "checkpoint_steps": 200
+  },
+  "recrossing": {
+    "dividing_surface": 1.0,
+    "parent_replicas": 2,
+    "parent_samples": 3,
+    "equilibration_steps": 20,
+    "parent_interval_steps": 5,
+    "child_pairs": 1,
+    "child_steps": 40,
+    "bootstrap": 20
+  },
+  "test_system": {
+    "symbols": [
+      "H",
+      "H",
+      "H"
+    ],
+    "masses": [
+      2.0,
+      2.0,
+      2.0
+    ],
+    "geometry": [
+      [
+        -1.5,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        1.5,
+        0.0,
+        0.0
+      ]
+    ]
+  }
+}
