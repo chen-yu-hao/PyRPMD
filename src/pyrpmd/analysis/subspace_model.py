@@ -345,6 +345,19 @@ def _complement_hessian(x, complement, sqrt_m, gradient, hessian, step):
     return 0.5 * (k + k.T)
 
 
+def _vibrational_complement(x, directions, sqrt_m, rigid_body):
+    """Mass-weighted complement of ``directions``, optionally without rigid-body modes."""
+    columns = [np.asarray(directions, dtype=float).reshape(len(sqrt_m), -1)]
+    if rigid_body:
+        from .centroid_path import rigid_body_modes
+
+        columns.append(rigid_body_modes(np.asarray(x).reshape(-1, 3), (sqrt_m**2).reshape(-1, 3)[:, 0]))
+    block = np.column_stack(columns)
+    q, singular, _ = np.linalg.svd(block, full_matrices=False)
+    span = q[:, singular > 1e-10 * singular.max()]
+    return null_space(span.T) if span.shape[1] < len(sqrt_m) else np.zeros((len(sqrt_m), 0))
+
+
 def _bath_zero_point(k: np.ndarray) -> tuple[float, float]:
     eigenvalues = np.linalg.eigvalsh(k) if k.size else np.zeros(0)
     return 0.5 * float(np.sum(np.sqrt(np.maximum(eigenvalues, 0.0)))), float(eigenvalues.min()) if eigenvalues.size else np.inf
@@ -366,6 +379,9 @@ def project_linear_subspace(
     relax_tolerance: float = 1e-7,
     max_iterations: int = 200,
     finite_difference_step: float = 1e-3,
+    rigid_body: bool = False,
+    skip_above: float | None = None,
+    wall_energy: float | None = None,
 ) -> SubspaceModel:
     """Project a full Cartesian Hamiltonian onto a 1-3D mass-weighted subspace.
 
@@ -383,7 +399,15 @@ def project_linear_subspace(
     ``potential(x)`` and ``gradient(x)`` act on one Cartesian vector.  The
     complement Hessian is taken from ``hessian(x)`` when supplied, otherwise
     by central differences of the gradient.  Negative complement curvature is
-    recorded (its zero-point term is dropped), never hidden.
+    recorded (its zero-point term is dropped), never hidden.  ``rigid_body``
+    (molecules in 3D Cartesian coordinates) removes the overall translations
+    and rotations from the complement, as in a reaction-path Hamiltonian;
+    without it, off-equilibrium rotations acquire spurious curvature.
+    ``skip_above`` keeps the frozen energy (no relaxation, no zero-point
+    term) at points whose frozen energy exceeds it -- regions a grid needs
+    only as walls.  ``wall_energy`` replaces failed or non-finite potential
+    evaluations (e.g. overlapping atoms outside the PES domain); the count is
+    recorded.
     """
     if environment not in ("frozen", "relaxed", "adiabatic"):
         raise ValueError("environment must be 'frozen', 'relaxed' or 'adiabatic'")
@@ -402,7 +426,9 @@ def project_linear_subspace(
     grids = tuple(_axis(a, f"axes[{i}]") for i, a in enumerate(axes))
     if len(grids) != d:
         raise ValueError("one grid axis is required per basis column")
-    w = null_space(u.T) if n > d else np.zeros((n, 0))
+    if rigid_body and n % 3:
+        raise ValueError("rigid_body requires Cartesian coordinates of atoms in 3D")
+    w = (_vibrational_complement(x0, u, sqrt_m, rigid_body) if n > d else np.zeros((n, 0)))
     shape = tuple(len(a) for a in grids)
     values = np.empty(shape)
     zpe = np.zeros(shape)
@@ -416,8 +442,31 @@ def project_linear_subspace(
         x = cartesian(s, yy)
         return float(potential(x)), w.T @ (np.asarray(gradient(x), float) / sqrt_m)
 
+    skipped, walls = 0, 0
+
+    def safe_frozen(s):
+        try:
+            value = float(potential(cartesian(s, np.zeros(w.shape[1]))))
+        except Exception:
+            if wall_energy is None:
+                raise
+            return np.nan
+        return value
+
     for index in _snake_indices(shape):
         s = np.array([grids[a][index[a]] for a in range(d)])
+        if skip_above is not None or wall_energy is not None:
+            frozen = safe_frozen(s)
+            if not np.isfinite(frozen):
+                if wall_energy is None:
+                    raise FloatingPointError("potential is not finite on the subspace grid")
+                values[index] = float(wall_energy)
+                walls += 1
+                continue
+            if skip_above is not None and frozen > skip_above:
+                values[index] = frozen
+                skipped += 1
+                continue
         if environment != "frozen" and w.shape[1]:
             result = minimize(objective, y, args=(s,), jac=True, method="BFGS",
                               options={"gtol": relax_tolerance, "maxiter": int(max_iterations)})
@@ -427,7 +476,8 @@ def project_linear_subspace(
         x = cartesian(s, y if environment != "frozen" else np.zeros_like(y))
         values[index] = float(potential(x))
         if environment == "adiabatic" and w.shape[1]:
-            k = _complement_hessian(x, w, sqrt_m, gradient, hessian, finite_difference_step)
+            local = _vibrational_complement(x, u, sqrt_m, True) if rigid_body else w
+            k = _complement_hessian(x, local, sqrt_m, gradient, hessian, finite_difference_step)
             zpe[index], lowest = _bath_zero_point(k)
             min_curvature = min(min_curvature, lowest)
             unstable += int(lowest < 0)
@@ -438,6 +488,9 @@ def project_linear_subspace(
         "environment": environment,
         "full_dimension": n,
         "complement_dimension": int(w.shape[1]),
+        "rigid_body_removed": bool(rigid_body),
+        "points_skipped_above": int(skipped),
+        "wall_points": int(walls),
         "basis_mass_weighted": u.tolist(),
         "relaxation_failures": int(failures),
         "max_relaxed_gradient": max_gradient,
@@ -492,6 +545,7 @@ def project_path_subspace(
     reactant: str = "asymptotic",
     reactant_reference: float | None = None,
     finite_difference_step: float = 1e-3,
+    rigid_body: bool = False,
 ) -> SubspaceModel:
     """One-dimensional vibrationally adiabatic model along a curved path.
 
@@ -503,6 +557,8 @@ def project_path_subspace(
     ``V(x(xi))`` alone (``'frozen'``).  Curvature coupling is neglected; check
     :func:`curvature_width_criterion` before trusting a one-dimensional ``S``.
     ``axis`` is the arc-length grid and must lie within the path.
+    ``rigid_body`` removes overall translations and rotations from the
+    normal plane (molecules in 3D Cartesian coordinates).
     """
     if environment not in ("frozen", "adiabatic"):
         raise ValueError("environment must be 'frozen' or 'adiabatic' for a path model")
@@ -529,7 +585,7 @@ def project_path_subspace(
         x = u / sqrt_m
         values[i] = float(potential(x))
         if environment == "adiabatic" and n > 1:
-            complement = null_space(tangent[None, :])
+            complement = _vibrational_complement(x, tangent, sqrt_m, rigid_body)
             k = _complement_hessian(x, complement, sqrt_m, gradient, hessian, finite_difference_step)
             zpe[i], lowest = _bath_zero_point(k)
             min_curvature = min(min_curvature, lowest)
@@ -547,9 +603,134 @@ def project_path_subspace(
         "minimum_complement_curvature": None if not np.isfinite(min_curvature) else min_curvature,
         "zero_point_range": [float(zpe.min()), float(zpe.max())],
         "cut": "normal plane in mass-weighted coordinates",
+        "rigid_body_removed": bool(rigid_body),
     }
     return SubspaceModel((grid,), values + zpe, np.ones(1), dividing_surface, reactant,
                          reactant_reference, info)
+
+
+def relaxed_path(
+    potential: Callable[[np.ndarray], float],
+    gradient: Callable[[np.ndarray], np.ndarray],
+    start: Any,
+    direction: Any,
+    masses: Any,
+    *,
+    step: float,
+    max_steps: int = 400,
+    max_angle_degrees: float = 20.0,
+    min_step: float | None = None,
+    asymptote_tolerance: float = 1e-6,
+    rigid_body: bool = True,
+) -> np.ndarray:
+    """Follow a valley from ``start`` along ``direction`` (mass-weighted).
+
+    Downhill, each new point minimizes ``V`` on the sphere of radius ``step``
+    around the current point, restricted to the forward hemisphere
+    (Gonzalez--Schlegel steepest-descent construction; directions
+    ``(t + W y)/|t + W y|`` with ``W`` the complement of the tangent ``t`` and,
+    for molecules, of the rigid-body modes).  Where the forward valley still
+    rises (a core path ending before the barrier top) the point is instead
+    the minimum on the hyperplane ``step`` ahead.  The step is halved when
+    the tangent turns by more than ``max_angle_degrees`` and grows back
+    afterwards.  The follower stops when the energy changed by less than
+    ``asymptote_tolerance`` over the last ten points or after ``max_steps``.
+    Returns the Cartesian points ``[k, n]`` including ``start``.
+    """
+    from scipy.optimize import minimize
+
+    x = np.asarray(start, dtype=float).ravel().copy()
+    n = x.size
+    sqrt_m = np.sqrt(_positive_vector(masses, n, "masses"))
+    t = np.asarray(direction, dtype=float).ravel()
+    if t.shape != (n,) or not np.isfinite(t).all() or np.linalg.norm(t) == 0:
+        raise ValueError("direction must be a finite nonzero mass-weighted vector")
+    if rigid_body and n % 3:
+        raise ValueError("rigid_body requires Cartesian coordinates of atoms in 3D")
+    t = t / np.linalg.norm(t)
+    smallest = step / 64.0 if min_step is None else float(min_step)
+    energy = float(potential(x))
+    points, energies = [x.copy()], [energy]
+    current = float(step)
+    cos_limit = np.cos(np.radians(max_angle_degrees))
+
+    def sphere(y, w, h):
+        v = t + w @ y
+        norm = np.linalg.norm(v)
+        d = v / norm
+        trial = x + h * d / sqrt_m
+        g = np.asarray(gradient(trial), float) / sqrt_m
+        # d(d)/dy = (W - d d^T W)/|v|
+        return float(potential(trial)), h * (w.T @ g - (d @ g) * (w.T @ d)) / norm
+
+    def plane(y, w, h):
+        trial = x + (h * t + w @ y) / sqrt_m
+        return float(potential(trial)), w.T @ (np.asarray(gradient(trial), float) / sqrt_m)
+
+    while len(points) <= max_steps:
+        w = _vibrational_complement(x, t, sqrt_m, rigid_body)
+        result = minimize(sphere, np.zeros(w.shape[1]), args=(w, current), jac=True, method="BFGS",
+                          options={"gtol": 1e-10, "maxiter": 400})
+        v = t + w @ result.x
+        trial = x + current * (v / np.linalg.norm(v)) / sqrt_m
+        trial_energy = float(result.fun)
+        if trial_energy > energy:
+            result = minimize(plane, np.zeros(w.shape[1]), args=(w, current), jac=True, method="BFGS",
+                              options={"gtol": 1e-10, "maxiter": 400})
+            trial = x + (current * t + w @ result.x) / sqrt_m
+            trial_energy = float(result.fun)
+        move = (trial - x) * sqrt_m
+        new_t = move / np.linalg.norm(move)
+        if new_t @ t < cos_limit and current > smallest:
+            current *= 0.5
+            continue
+        x, t, energy = trial, new_t, trial_energy
+        points.append(x.copy())
+        energies.append(energy)
+        current = min(step, 1.5 * current)
+        if len(energies) > 10 and np.ptp(energies[-10:]) < asymptote_tolerance:
+            break
+    return np.asarray(points)
+
+
+def assemble_reaction_path(
+    core: Any,
+    potential: Callable[[np.ndarray], float],
+    gradient: Callable[[np.ndarray], np.ndarray],
+    masses: Any,
+    *,
+    step: float,
+    max_steps: int = 400,
+    rigid_body: bool = True,
+    max_angle_degrees: float = 20.0,
+    asymptote_tolerance: float = 1e-6,
+) -> tuple[np.ndarray, dict]:
+    """Extend a sampled core path (e.g. the ring-polymer mean path) to both asymptotes.
+
+    ``core`` is ordered from reactants to products, ``[points, n]`` Cartesian.
+    The ends are continued with :func:`relaxed_path` along the end tangents.
+    The returned ``info`` records which points are sampled and which are the
+    relaxed (classical valley) continuation.
+    """
+    points = np.asarray(core, dtype=float).reshape(len(core), -1)
+    if len(points) < 2:
+        raise ValueError("a core path needs at least two points")
+    sqrt_m = np.sqrt(_positive_vector(masses, points.shape[1], "masses"))
+    mw = points * sqrt_m
+    options = dict(step=step, max_steps=max_steps, rigid_body=rigid_body,
+                   max_angle_degrees=max_angle_degrees, asymptote_tolerance=asymptote_tolerance)
+    back = relaxed_path(potential, gradient, points[0], mw[0] - mw[1], masses, **options)
+    ahead = relaxed_path(potential, gradient, points[-1], mw[-1] - mw[-2], masses, **options)
+    path = np.concatenate([back[:0:-1], points, ahead[1:]])
+    info = {
+        "core_points": int(len(points)),
+        "reactant_continuation_points": int(len(back) - 1),
+        "product_continuation_points": int(len(ahead) - 1),
+        "core_slice": [int(len(back) - 1), int(len(back) - 1 + len(points))],
+        "continuation": "steepest-descent sphere (uphill: hyperplane) path following in mass-weighted coordinates",
+        "step": float(step),
+    }
+    return path, info
 
 
 def ring_polymer_mean_path(reaction_values: Any, centroid_means: Any, *, bandwidth: float) -> tuple[np.ndarray, np.ndarray]:
@@ -608,6 +789,7 @@ def curvature_width_criterion(curvature: Any, width: Any, *, threshold: float = 
 
 __all__ = [
     "MAX_DIMENSION", "GridPotential", "SubspaceModel", "model_from_function",
-    "project_linear_subspace", "project_path_subspace", "path_curvature",
+    "project_linear_subspace", "project_path_subspace", "path_curvature", "relaxed_path",
+    "assemble_reaction_path",
     "ring_polymer_mean_path", "curvature_width_criterion",
 ]

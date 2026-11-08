@@ -294,3 +294,102 @@ def test_three_dimensional_separable_iterative_rate_equals_one_dimensional_rate(
     one = exact_quantum_rate(model_1d, beta)
     assert three.method == "flux_eigenstates"
     assert three.rate / one.rate == pytest.approx(1.0, abs=3e-3)
+
+
+def _separable_2d(omega=0.01):
+    s = np.linspace(-6.0, 6.0, 81)
+    y = np.linspace(-0.9, 0.9, 12)
+    return model_from_function(lambda p: eckart(p) + 0.5 * MASS * omega**2 * p[..., 1] ** 2,
+                               [s, y], masses=[MASS, MASS], dividing_surface=0.0)
+
+
+def test_dense_route_options_are_consistent():
+    from pyrpmd.analysis.subspace_quantum import absorbing_potential
+
+    beta = 1.0 / (500.0 * KELVIN)
+    model = _separable_2d()
+    base = exact_quantum_rate(model, beta)
+    high = exact_quantum_rate(model, beta, truncation_energy=10.0)
+    assert high.rate == pytest.approx(base.rate, rel=1e-10)
+    floor = exact_quantum_rate(model, beta, energy_floor=-1.0)
+    assert floor.rate == pytest.approx(base.rate, rel=1e-10)
+    axis0 = model.axes[0]
+    width = 0.2 * (axis0[-1] - axis0[0])
+    strength = base.diagnostics["cap_strength"]
+    absorber = lambda p: absorbing_potential(np.r_[axis0[0], p[:, 0], axis0[-1]], width=width,
+                                             strength=strength)[1:-1]
+    custom = exact_quantum_rate(model, beta, absorber=absorber)
+    assert custom.rate == pytest.approx(base.rate, rel=1e-10)
+    # For a channel perpendicular to the slice, the quantum line density is
+    # the free translational density times the transverse partition function.
+    sliced = exact_quantum_rate(model, beta, normalization="slice")
+    # Finite-box and grid effects in the slice density are a few 1e-3 here.
+    assert sliced.rate == pytest.approx(base.rate, rel=5e-3)
+    truncated = exact_quantum_rate(model, beta, truncation_energy=float(model.values.min()) + 60.0 / beta)
+    assert truncated.diagnostics["retained_points"] < model.values.size
+    assert truncated.rate == pytest.approx(base.rate, rel=1e-3)
+
+
+def test_energy_floor_removes_closed_channel_contamination():
+    """An exothermic 1D model: the floor makes the rate absorber independent."""
+    beta = 1.0 / (300.0 * KELVIN)
+    drop = 0.02
+
+    def potential(p):
+        x = p[..., 0]
+        return V0 / np.cosh(x / A) ** 2 - drop * 0.5 * (1.0 + np.tanh(x / (2 * A)))
+
+    model = model_from_function(potential, [np.linspace(-10.0, 10.0, 401)], masses=MASS, dividing_surface=0.0)
+    floor = -1.0 / beta
+    rates = [exact_quantum_rate(model, beta, energy_floor=floor, cap_strength=f * 30 * np.sqrt(2 / (beta * MASS)) / 4.0).rate
+             for f in (0.5, 1.0, 2.0)]
+    assert np.ptp(rates) / np.mean(rates) < 2e-3
+
+
+def test_relaxed_path_follows_a_curved_valley():
+    from pyrpmd.analysis.subspace_model import relaxed_path
+
+    radius, k, slope = 10.0, 0.5, 0.01
+
+    def potential(x):
+        r, theta = np.hypot(x[0], x[1]), np.arctan2(x[1], x[0])
+        return 0.5 * k * (r - radius) ** 2 - slope * theta
+
+    def gradient(x):
+        r = np.hypot(x[0], x[1])
+        return k * (r - radius) * x / r - slope * np.array([-x[1], x[0]]) / r**2
+
+    points = relaxed_path(potential, gradient, [radius, 0.0], [0.0, 1.0], [1.0, 1.0], step=0.5,
+                          max_steps=40, rigid_body=False)
+    radii = np.hypot(points[:, 0], points[:, 1])
+    assert np.max(np.abs(radii - radius)) < 0.05
+    assert np.arctan2(points[-1, 1], points[-1, 0]) > 1.5
+
+
+def test_rigid_body_complement_keeps_only_vibrations():
+    masses = np.array([16.0, 1.0, 1.0]) * 1822.888
+    a, theta0, kb, ka = 1.8, 1.82, 0.5, 0.15
+
+    def internals(x):
+        g = x.reshape(3, 3)
+        u, v = g[1] - g[0], g[2] - g[0]
+        return np.linalg.norm(u), np.linalg.norm(v), np.arccos(u @ v / np.linalg.norm(u) / np.linalg.norm(v))
+
+    def potential(x):
+        r1, r2, t = internals(x)
+        return 0.5 * kb * ((r1 - a) ** 2 + (r2 - a) ** 2) + 0.5 * ka * (t - theta0) ** 2
+
+    def gradient(x, h=1e-6):
+        return np.array([(potential(x + h * e) - potential(x - h * e)) / (2 * h) for e in np.eye(9)])
+
+    eq = np.array([[0.0, 0.0, 0.0], [a, 0.0, 0.0], [a * np.cos(theta0), a * np.sin(theta0), 0.0]]).ravel()
+    sqrt_m = np.sqrt(np.repeat(masses, 3))
+    hess = np.array([(gradient(eq + 1e-4 * e) - gradient(eq - 1e-4 * e)) / 2e-4 for e in np.eye(9)])
+    values, vectors = np.linalg.eigh(hess / sqrt_m[:, None] / sqrt_m[None, :])
+    vib = values[values > 1e-8]
+    mode = vectors[:, np.argmax(values)]
+    model = project_linear_subspace(potential, gradient, eq, np.repeat(masses, 3), mode,
+                                    [np.linspace(-1.0, 1.0, 9)], environment="adiabatic", rigid_body=True)
+    assert model.provenance["complement_dimension"] == 2
+    expected = 0.5 * float(np.sum(np.sqrt(np.sort(vib)[:2])))
+    assert model.values[4] == pytest.approx(expected, rel=1e-3)

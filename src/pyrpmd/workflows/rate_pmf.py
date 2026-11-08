@@ -432,6 +432,14 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options):
             estimate = _ui_rate_pmf(
                 sampled, config, centers, samples, stiffness, pmf_options
             )
+        if config.get("output", {}).get("centroid_path"):
+            from ..analysis.centroid_path import write_centroid_path
+
+            write_centroid_path(
+                output, streams, masses=system.masses, reference=system.geometry,
+                permutations=rate_coordinate(config, system).permutations,
+                beta=config["beta"], nbeads=config["beads"],
+            )
     _save_pmf_arrays(output, estimate, method)
     xi = estimate["xi_star"]
     barrier = estimate["free_energy_barrier_hartree"]

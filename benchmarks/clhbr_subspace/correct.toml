@@ -1,0 +1,30 @@
+# One-command subspace quantum correction of the Cl + HBr RPMD rate:
+#   pyrpmd subspace-correct benchmarks/clhbr_subspace/correct.toml
+# The rate run must have been made with output.centroid_path = true
+# (rate_production.inp in this directory).
+
+[source]
+rate_run = "../../runs/clhbr-300K-production"
+
+[path]
+step = 10.0              # mass-weighted continuation step (bohr sqrt(m_e))
+spread_factor = 2.0      # orientation-locked windows: spread <= 2 x TS spread
+smoothing = 1.5          # local-quadratic fit of xbar(xi), bandwidth in window spacings
+
+[subspace]
+dimension = "auto"       # 1D always; 2D added when curvature x width > threshold
+threshold = 0.5
+
+[quantum]
+spacing_2d = 5.5         # mass-weighted grid spacing of the 2D plane
+truncation_kt = 30.0     # energy-truncated DVR: keep V <= floor + 30 kT
+threshold_margin = 1.0   # flux operator restricted to E >= channel threshold - 1 kT
+
+[rpmd]
+walkers = 32
+sweeps = 800
+trajectories = 1024
+seed = 11
+
+[output]
+directory = "../../runs/clhbr-300K-production/subspace"

@@ -141,6 +141,11 @@ def parser():
     rate.add_argument("--output", help="New result JSON (default: DIRECTORY/rate_postprocess.json)")
     rate.add_argument("--bootstrap", type=int, default=200)
     rate.add_argument("--seed", type=int, default=0)
+    subspace = commands.add_parser(
+        "subspace-correct",
+        help="Correct a saved RPMD rate with an exact 1-2D subspace quantum calculation",
+    )
+    subspace.add_argument("input", help="TOML/JSON file with source.rate_run and optional path/subspace/quantum/rpmd settings")
     na_rate = commands.add_parser("nonadiabatic-rate", help="Run a signed thermal NRPMD population-rate workflow")
     na_rate.add_argument("input", help="TOML/JSON thermal NRPMD rate specification")
     na_rate.add_argument("--output", required=True, help="New run directory")
@@ -535,6 +540,24 @@ def main(argv=None):
             )
             if result is not None:
                 _print(_rate_postprocess_summary(result))
+        elif args.command == "subspace-correct":
+            from .analysis.subspace_pipeline import run_subspace_pipeline
+            from .parallel import root_call
+
+            report = root_call(run_subspace_pipeline, args.input)
+            if report is not None:
+                corrected = report["corrected_rate"]
+                unit = "s_inv" if corrected.get("task") == "surface_rate" else "cm3_s"
+                _print({
+                    "rate_run": report["rate_run"],
+                    "curvature_width_max": report["curvature_width_path"]["maximum"],
+                    "dimensions_computed": report["dimensions_computed"],
+                    "correction_factors": {d: c["factor"] for d, c in report["corrections"].items()},
+                    "applied_dimension": report["applied_dimension"],
+                    "rpmd_rate_" + unit: corrected.get("rpmd_rate_estimate_" + unit),
+                    "corrected_rate_" + unit: corrected.get("corrected_rate_estimate_" + unit),
+                    "physical_converged": False,
+                })
         elif args.command == "project":
             from .analysis.projection import project_run
             from .parallel import root_call

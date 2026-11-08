@@ -82,6 +82,8 @@ from .subspace_model import (
 )
 from .subspace_quantum import QuantumRateResult, exact_quantum_rate
 from .subspace_rpmd import RingPolymerRateResult, ring_polymer_rate
+from .centroid_path import CentroidAccumulator, RingPolymerMeanPath, mean_path_from_rate_run
+from .subspace_pipeline import run_subspace_pipeline
 from .subspace_correction import (
     SubspaceCorrection,
     apply_subspace_correction,
@@ -160,4 +162,8 @@ __all__ = [
     "correct_rate_run",
     "nested_subspace_sensitivity",
     "subspace_correction",
+    "CentroidAccumulator",
+    "RingPolymerMeanPath",
+    "mean_path_from_rate_run",
+    "run_subspace_pipeline",
 ]

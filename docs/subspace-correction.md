@@ -17,6 +17,74 @@ magnitude, but a shared prefactor cancels in the ratio. `C_S` is exact when `S` 
 whole system and an approximation otherwise. Nothing in this workflow marks a rate as
 physically converged.
 
+## One command from a rate run
+
+```bash
+pyrpmd subspace-correct correct.toml
+```
+
+`correct.toml` names a finished rate run (`[source] rate_run = "..."`) and optional
+`[path]`, `[subspace]`, `[quantum]`, `[rpmd]` and `[output]` settings
+(`benchmarks/clhbr_subspace/correct.toml` is a complete example). The rate run must have
+been made with
+
+```toml
+[output]
+centroid_path = true
+```
+
+which makes every umbrella window of the rate PMF stage accumulate, for each recorded ring
+polymer aligned onto the transition-state geometry (mass-weighted Kabsch, after assigning
+the nearest equivalent reaction path): the mean centroid, the centroid covariance, the
+bead-about-centroid covariance `Sigma(xi)` and the mean interatomic distances. The moments
+are additive, so replicas and checkpoint resumes combine exactly; they are written to
+`centroid_path.npz` and read back with `mean_path_from_rate_run(run_dir)`. The switch is
+analysis-only (it is not part of the physics fingerprint and does not change the
+trajectories) but disables one fused native fast path, so it is off by default.
+Extend the umbrella windows past the dividing surface (e.g. `stop = 1.45`) if the
+reaction path bends after the transition state.
+
+The command then runs:
+
+1. **Mean path.** Windows where the aligned centroids stay compact (spread at most twice
+   that near the transition state) are kept; near the reactant asymptote the fragments
+   rotate freely and a mean geometry has no meaning. `xbar(xi)` is fitted by local
+   quadratic regression in `xi` (window means carry transverse noise). For a linear
+   reference the mean path is built from mean bond lengths along the axis: the Kabsch
+   rotation about the axis is undetermined, and axial projections of librating light atoms
+   are shorter than the bonds.
+2. **Path to both asymptotes.** The sampled core is continued by steepest-descent path
+   following (minimum on a sphere around each point, forward hemisphere, rigid-body modes
+   excluded; uphill segments use the hyperplane minimum), with step halving at sharp turns.
+3. **Curvature × width.** From `Sigma(xi)` along the sampled windows
+   (`rho = sqrt(2 n^T Sigma n)` along the curvature normal) and, along the whole path, with
+   the harmonic bead width of the mode along the normal. Above the threshold (default 0.5)
+   a 2D subspace is added.
+4. **1D model** along the path (normal-cut vibrationally adiabatic, rigid-body modes
+   removed) and its `C_S`. With large curvature the normal cuts cross inside the bend and
+   the adiabatic potential develops a cusp; `C_S(1D)` is then not trustworthy, which is
+   what the curvature test says.
+5. **2D model**: the plane through the transition state spanned by the rate dividing-surface
+   normal (mass-weighted `grad xi`, so the 2D dividing line is the rate's `xi = 1` surface)
+   and the principal direction of the path within the complement; for a collinear atom
+   transfer this is exactly the collinear plane. The curvature-normal candidate is reported
+   with its overlap with that plane. Absorbing regions are keyed to arc length along the
+   path, so hairpin channels that leave the grid on the same side are both absorbed; the
+   rate is normalized by the quantum line density on the reference slice, matching RPMD
+   constrained TI along axis 0; an energy-truncated DVR keeps the dense exact route
+   affordable.
+6. **Nested sensitivity** `ln(C_2D/C_1D)` selects the dimension, and
+   `rate_quantum_corrected.json` is written next to the run. Every intermediate result is
+   in `subspace_pipeline.json`.
+
+**Exo- or endothermic reactions.** The box holds deep states of the lower channel whose net
+flux vanishes but whose Boltzmann weight is enormous (`exp(25)` for Cl + HBr at 300 K); any
+absorber reflection then swamps the reactive flux. Both models therefore restrict the
+thermal flux operator to energies above the higher channel threshold minus one `kT`
+(`exact_quantum_rate(..., energy_floor=...)`), which is exact in the continuum limit because
+the cumulative reaction probability vanishes below that threshold. Without it the Cl + HBr
+1D rate changes by 10% and the 2D rate by orders of magnitude when the absorber changes.
+
 ## Workflow
 
 1. **Build `H_S`** (`pyrpmd.analysis.subspace_model`). Coordinates are mass weighted and

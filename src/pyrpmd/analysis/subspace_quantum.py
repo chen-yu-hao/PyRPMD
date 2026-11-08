@@ -147,12 +147,27 @@ class _GridOperators:
         t0 = self.kinetic[0]
         return 1j * (self.apply_axis(t0, self.product * psi, 0) - self.product * self.apply_axis(t0, psi, 0))
 
-    def dense_hamiltonian(self) -> np.ndarray:
-        h = np.diag(self.potential.ravel()).astype(float)
+    def dense_hamiltonian(self, keep=None) -> np.ndarray:
+        """Dense ``H`` on all grid points, or on the flat indices ``keep``.
+
+        Dropping points is the energy-truncated DVR: excluded points act as
+        infinite walls, exact once the truncation energy is high enough.
+        """
+        if keep is None:
+            h = np.diag(self.potential.ravel()).astype(float)
+            for axis, matrix in enumerate(self.kinetic):
+                left = int(np.prod(self.shape[:axis]))
+                right = int(np.prod(self.shape[axis + 1:]))
+                h += np.kron(np.kron(np.eye(left), matrix), np.eye(right))
+            return h
+        index = np.unravel_index(np.asarray(keep), self.shape)
+        h = np.diag(self.potential.ravel()[keep]).astype(float)
         for axis, matrix in enumerate(self.kinetic):
-            left = int(np.prod(self.shape[:axis]))
-            right = int(np.prod(self.shape[axis + 1:]))
-            h += np.kron(np.kron(np.eye(left), matrix), np.eye(right))
+            same = np.ones((len(keep), len(keep)), dtype=bool)
+            for other in range(len(self.shape)):
+                if other != axis:
+                    same &= index[other][:, None] == index[other][None, :]
+            h += np.where(same, matrix[np.ix_(index[axis], index[axis])], 0.0)
         return h
 
 
@@ -220,16 +235,37 @@ def _lowest_states(operators, beta, shift, tolerance):
         count = min(2 * count, n - 2)
 
 
-def _dense_rate(model, operators, eps, beta, shift):
-    hamiltonian = operators.dense_hamiltonian()
+def _slice_density(model, operators, keep, energies, vectors, beta, shift):
+    """Quantum line density on the axis-0 grid line nearest ``reactant_reference``.
+
+    ``int <x|exp(-beta H)|x> dl`` along the line: the normalization shared with
+    the RPMD constrained-centroid TI along axis 0.
+    """
+    axis0 = model.axes[0]
+    row = int(np.argmin(abs(axis0 - model.reactant_reference)))
+    index = np.unravel_index(keep, operators.shape)
+    on_line = index[0] == row
+    cell = float(np.prod(model.spacing))
+    weights = np.exp(-beta * (energies - shift))
+    density = np.sum(vectors[on_line] ** 2 * weights[None, :], axis=1) / cell
+    line = float(np.sum(density) * cell / model.spacing[0])
+    return line, {"normalization": "quantum line density on the reference slice",
+                  "reference_line": float(axis0[row]), "slice_points": int(on_line.sum())}
+
+
+def _dense_rate(model, operators, eps, beta, shift, *, keep=None, energy_floor=None, normalization="default"):
+    keep = np.arange(operators.size) if keep is None else np.asarray(keep)
+    hamiltonian = operators.dense_hamiltonian(keep if len(keep) < operators.size else None)
     energies, vectors = eigh(hamiltonian)
     half = np.exp(-0.5 * beta * (energies - shift))
+    if energy_floor is not None:
+        half = np.where(energies >= energy_floor, half, 0.0)
     boltzmann_half = (vectors * half[None, :]) @ vectors.T
-    product = operators.product.ravel()
+    product = operators.product.ravel()[keep]
     commutator = hamiltonian * product[None, :] - product[:, None] * hamiltonian
     flux_operator = 1j * commutator
     thermal_flux = boltzmann_half @ flux_operator @ boltzmann_half
-    absorbing = hamiltonian - 1j * np.diag(np.broadcast_to(eps, operators.shape).ravel())
+    absorbing = hamiltonian - 1j * np.diag(np.broadcast_to(eps, operators.shape).ravel()[keep])
     triangular, unitary = schur(absorbing, output="complex")
     rhs = 1j * (unitary.conj().T @ flux_operator @ unitary)
     solution, scale, info = ztrsyl(triangular, triangular, rhs, trana="C", tranb="N", isgn=-1)
@@ -241,13 +277,24 @@ def _dense_rate(model, operators, eps, beta, shift):
     # Tr[F_beta h] vanishes for an exact thermal flux operator; a nonzero value
     # measures how well the grid represents the dividing surface.
     side_check = float(np.real(np.trace(thermal_flux * product[None, :])))
-    partition, info_q = _reactant_partition(model, beta, shift, energies=energies, vectors=vectors, operators=operators)
+    if normalization == "slice":
+        partition, info_q = _slice_density(model, operators, keep, energies, vectors, beta, shift)
+    else:
+        full_vectors = vectors
+        if len(keep) < operators.size:
+            full_vectors = np.zeros((operators.size, vectors.shape[1]))
+            full_vectors[keep] = vectors
+        partition, info_q = _reactant_partition(model, beta, shift, energies=energies, vectors=full_vectors,
+                                                operators=operators)
     return flux, partition, {
         "grid_points": operators.size,
+        "retained_points": int(len(keep)),
         "sylvester_scale": float(scale),
         "sylvester_info": int(info),
         "flux_side_t0": side_check,
         "lowest_levels": (energies[:6]).tolist(),
+        "energy_floor": energy_floor,
+        "states_below_floor": int(np.sum(energies < energy_floor)) if energy_floor is not None else 0,
         "partition": info_q,
     }
 
@@ -462,6 +509,10 @@ def exact_quantum_rate(
     max_time: float = 4.0e4,
     norm_tolerance: float = 1e-4,
     chebyshev_tolerance: float = 1e-14,
+    absorber: Any = None,
+    normalization: str = "default",
+    energy_floor: float | None = None,
+    truncation_energy: float | None = None,
 ) -> QuantumRateResult:
     """Exact thermal rate constant of ``model`` at inverse temperature ``beta``.
 
@@ -474,6 +525,27 @@ def exact_quantum_rate(
     is ``60/beta`` above the higher of the reactant reference and the lowest
     dividing-surface energy, so capped points carry less than ``exp(-30)`` of
     the thermal weight.
+
+    Options for curved (e.g. hairpin) two-dimensional subspaces, dense route:
+
+    ``absorber``
+        callable ``eps(points[N, d])`` replacing the axis-0 absorbing ends,
+        e.g. absorption keyed to arc length along a reaction path so that
+        channels leaving the grid on the same side are both absorbed.
+    ``normalization='slice'``
+        divide by the quantum line density ``int <x|exp(-beta H)|x> dl`` on
+        the axis-0 grid line nearest ``reactant_reference`` -- the exact
+        counterpart of RPMD constrained TI along axis 0 when the reactant
+        channel crosses that line obliquely.
+    ``energy_floor``
+        drop eigenstates below this energy from the thermal flux operator.
+        The cumulative reaction probability vanishes below the higher
+        channel threshold, so this is exact in the continuum limit; it
+        removes deep states of the lower channel of an exo- or endothermic
+        reaction whose zero net flux would otherwise be swamped by
+        absorber reflection errors times an enormous Boltzmann weight.
+    ``truncation_energy``
+        energy-truncated DVR: grid points with ``V`` above it are removed.
     """
     if not isinstance(model, SubspaceModel):
         raise TypeError("model must be a SubspaceModel")
@@ -497,13 +569,26 @@ def exact_quantum_rate(
     eps_axis = absorbing_potential(axis0, width=width, strength=strength, power=int(cap_power))
     eps = eps_axis.reshape((-1,) + (1,) * (model.dimension - 1))
     shift = float(operators.potential.min())
+    if absorber is not None:
+        eps = np.asarray(absorber(model.grid_points().reshape(-1, model.dimension)), dtype=float).reshape(model.shape)
+        if not np.isfinite(eps).all() or np.any(eps < 0):
+            raise ValueError("absorber must return finite nonnegative values")
+    if normalization not in ("default", "slice"):
+        raise ValueError("normalization must be 'default' or 'slice'")
+    keep = None
+    if truncation_energy is not None:
+        keep = np.flatnonzero(operators.potential.ravel() <= float(truncation_energy))
+    retained = operators.size if keep is None else len(keep)
     if method == "auto":
-        method = "sylvester" if operators.size <= dense_limit else "flux_eigenstates"
+        method = "sylvester" if retained <= dense_limit else "flux_eigenstates"
     if method == "sylvester":
-        if operators.size > max(dense_limit, 6000):
+        if retained > max(dense_limit, 6000):
             raise ValueError("grid too large for the dense Sylvester route")
-        flux, partition, info = _dense_rate(model, operators, eps, beta, shift)
+        flux, partition, info = _dense_rate(model, operators, eps, beta, shift, keep=keep,
+                                            energy_floor=energy_floor, normalization=normalization)
     else:
+        if keep is not None or energy_floor is not None or normalization != "default":
+            raise ValueError("truncation_energy, energy_floor and slice normalization need the dense route")
         surface_index = int(np.searchsorted(axis0, model.dividing_surface))
         surface_energy = float(operators.potential[surface_index].min())
         reference_energy = float(np.min(model.energy(
@@ -525,8 +610,9 @@ def exact_quantum_rate(
         raise FloatingPointError("exact quantum rate produced a non-finite flux or partition function")
     info.update({
         "energy_shift": shift,
-        "cap_width": width,
-        "cap_strength": strength,
+        "cap_width": width if absorber is None else None,
+        "cap_strength": strength if absorber is None else None,
+        "absorber": "axis-0 ends" if absorber is None else "callable",
         "cap_power": int(cap_power),
         "model": model.describe(),
         "units": "axis-0 length per time" if model.reactant == "asymptotic" else "per time",
