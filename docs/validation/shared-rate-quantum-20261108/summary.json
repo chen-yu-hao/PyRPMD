@@ -1,0 +1,158 @@
+{
+  "base_pr": 138,
+  "base_commit": "1891c58e6ceacaa1fe8fa3b33edfc0a2a3dc2785",
+  "source_archive_provenance": {
+    "artifact_id": 13608900366,
+    "artifact_source_commit": "de3b0a86702d90c9169c00ef6e7111fb796a34a0",
+    "sdist_sha256": "14beb6cc6bc278668b0f4bb6f094a67d661f97f2f48b441ef8b1172eb267ae43"
+  },
+  "python": "3.13.5",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "tests": {
+    "added": 36,
+    "targeted_total_passed": 120,
+    "failed": 0,
+    "full_repository_suite_run": false
+  },
+  "native_pipeline": {
+    "scope": "actual native PMF, RATTLE parents and paired children; NOOP provider checks transport only",
+    "kappa_native": 0.9927336975787545,
+    "kappa_shared": 0.9927336975787544,
+    "curve_max_difference": 0.0,
+    "qtst_unchanged": true,
+    "primary_corrected_rate": null,
+    "physical_converged": false,
+    "native_children": 12,
+    "unmet_gates": [
+      "physical_core_hamiltonian",
+      "kinetic_metric",
+      "conditional_initial_measure",
+      "common_positive_flux",
+      "environment_coupling",
+      "quantum_numerics"
+    ]
+  },
+  "finite_quantum_control": {
+    "scope": "restricted physical Cartesian double well, reparameterized by actual native RPMDrate xi",
+    "full_molecular_rate_test": false,
+    "bath_coupling_implemented": false,
+    "physical_converged": false,
+    "shared_coordinate": {
+      "schema": "PyRPMD.shared-rate-coordinate.v1",
+      "beta": 2.0,
+      "xi_star": 1.0,
+      "pes_identity": "explicit Cartesian double-well control",
+      "normalization_id": "finite box Z; not an RPMD denominator",
+      "fragments": [
+        [
+          0
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "masses": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "com_weights": [
+        1.0,
+        -0.5,
+        -0.5
+      ],
+      "rinf": 10.0,
+      "reference_difference": [
+        0.0
+      ],
+      "paths": [
+        [
+          [
+            [
+              0,
+              1
+            ]
+          ],
+          [
+            [
+              1,
+              2
+            ]
+          ]
+        ]
+      ],
+      "coordinate": "s0/(s0-s1)",
+      "side": "((1-xi_star)*s0+xi_star*s1)>0",
+      "rp_estimator": "xi(centroid Cartesian positions)",
+      "quantum_lift": "same physical-coordinate surface, not a centroid operator identity",
+      "identity": "c6b6151c966a4951dbc60262d9c43cf62d65fc17fdd79209262ac2fb2e4d279a"
+    },
+    "cartesian_fd_grid": 2400,
+    "beta": 2.0,
+    "FD_state_doubling_relative_flux_change": 0.0010504984617473662,
+    "fd_doublet_gap": 0.14531426092196043,
+    "fd_ground": 4.058413580641565,
+    "barrier": 9.604,
+    "normalization": "Cfs_K/Z of a finite closed model; Cfs(0)=0; not RPMD kappa",
+    "native_side": "S=(1-xi_star)*s0+xi_star*s1 > 0",
+    "records": [
+      {
+        "xi_nodes": 81,
+        "states": 32,
+        "first_two_energies": [
+          4.062146005300285,
+          4.207621336369894
+        ],
+        "doublet_gap": 0.1454753310696093,
+        "low_energy_max_absolute_error": 0.0038934948063689134,
+        "flux_relative_L2": 0.01354967818220651,
+        "side_min_eigenvalue": -4.61923187088883e-16,
+        "side_max_eigenvalue": 1.0000000000000007,
+        "mass_orthogonality_error": 8.881784197001252e-16,
+        "reactant_population": 0.499742546796634,
+        "seconds": 1.1393559549999281
+      },
+      {
+        "xi_nodes": 161,
+        "states": 32,
+        "first_two_energies": [
+          4.059350881126271,
+          4.204705546959191
+        ],
+        "doublet_gap": 0.14535466583292056,
+        "low_energy_max_absolute_error": 0.0009777053956661064,
+        "flux_relative_L2": 0.008020177639298435,
+        "side_min_eigenvalue": -3.0969689115654094e-16,
+        "side_max_eigenvalue": 1.0000000000000007,
+        "mass_orthogonality_error": 1.5543122344752192e-15,
+        "reactant_population": 0.49993536855515175,
+        "seconds": 2.128885807000188
+      },
+      {
+        "xi_nodes": 321,
+        "states": 32,
+        "first_two_energies": [
+          4.05865097413167,
+          4.203975484401798
+        ],
+        "doublet_gap": 0.14532451027012794,
+        "low_energy_max_absolute_error": 0.0002476428382722773,
+        "flux_relative_L2": 0.004764571537147113,
+        "side_min_eigenvalue": -3.0116754661408166e-16,
+        "side_max_eigenvalue": 1.0000000000000016,
+        "mass_orthogonality_error": 1.5543122344752192e-15,
+        "reactant_population": 0.4999838248914297,
+        "seconds": 4.215238667999984
+      }
+    ]
+  },
+  "limitations": [
+    "Restricted finite-box quantum core, not full-system open scattering.",
+    "The NOOP end-to-end native test validates transport, not quantum-rate improvement.",
+    "Conditional quantum-to-parent mapping and environment closure are provider responsibilities.",
+    "No PMF-as-quantum-potential and no quantum-transmission-as-kappa substitution.",
+    "Rate candidate is always separate from published rate; physical_converged remains false."
+  ]
+}
