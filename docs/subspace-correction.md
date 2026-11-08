@@ -72,7 +72,15 @@ The command then runs:
    path, so hairpin channels that leave the grid on the same side are both absorbed; the
    rate is normalized by the quantum line density on the reference slice, matching RPMD
    constrained TI along axis 0; an energy-truncated DVR keeps the dense exact route
-   affordable.
+   affordable. Both halves of `C_S` share one `V_S`: it is projected on a grid
+   `refinement` (3) times finer than the DVR; the DVR uses every third node and RPMD the
+   spline of the fine grid (a spline through DVR nodes alone rings across narrow valleys).
+   The box only extends to a reference slice where the reactant channel is within
+   `reference_kt` (0.3 kT) of its asymptote — `C_S` needs both rates on the same slice,
+   not at infinity — and products are absorbed once the path is `product_drop_kt` (15 kT)
+   below its maximum. The default grid is anisotropic: a third of the narrowest
+   in-plane vibrational width along the transfer axis, a quarter of the shortest de
+   Broglie wavelength along the path axis.
 6. **Nested sensitivity** `ln(C_2D/C_1D)` selects the dimension, and
    `rate_quantum_corrected.json` is written next to the run. Every intermediate result is
    in `subspace_pipeline.json`.
@@ -84,6 +92,13 @@ thermal flux operator to energies above the higher channel threshold minus one `
 (`exact_quantum_rate(..., energy_floor=...)`), which is exact in the continuum limit because
 the cumulative reaction probability vanishes below that threshold. Without it the Cl + HBr
 1D rate changes by 10% and the 2D rate by orders of magnitude when the absorber changes.
+
+**Cl + HBr (BrHCl_LEPS1, 300 K)** is worked through in
+[docs/validation/2026-11-08-clhbr-subspace](validation/2026-11-08-clhbr-subspace/README.md):
+curvature × width is 1–12 at the H-transfer corner, the 1D model develops a cusp there
+(normal cuts cross), and in the collinear plane RPMD matches the exact rate within its
+statistical error (C_S(2D) ≈ 0.9 ± 0.2), with the 2D quantum rate converged to 2.5% in the
+grid.
 
 ## Workflow
 
