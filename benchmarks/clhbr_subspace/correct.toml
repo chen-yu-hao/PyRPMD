@@ -16,9 +16,14 @@ dimension = "auto"       # 1D always; 2D added when curvature x width > threshol
 threshold = 0.5
 
 [quantum]
-spacing_2d = 5.5         # mass-weighted grid spacing of the 2D plane
+# spacing_2d defaults to sigma/3 along the transfer axis and a quarter of the
+# shortest de Broglie wavelength along the path axis ((2.1, 5.1) here).
+refinement = 3           # RPMD spline grid 3x finer than the DVR grid (same V_S)
 truncation_kt = 30.0     # energy-truncated DVR: keep V <= floor + 30 kT
 threshold_margin = 1.0   # flux operator restricted to E >= channel threshold - 1 kT
+reference_kt = 0.3       # reference slice: reactant channel within 0.3 kT of its asymptote
+product_drop_kt = 15.0   # absorb products once the path is 15 kT below its maximum
+dense_limit = 8000       # dense exact route (~40 min at 7100 points on 4 cores)
 
 [rpmd]
 walkers = 32
