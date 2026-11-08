@@ -48,14 +48,17 @@ does not touch the dynamics).
   so the pipeline adds a 2D subspace. The curvature normal at the peak lies entirely in the
   collinear plane (overlap 1.00).
 
-## 1D model fails as predicted
+## 1D model
 
-The normal-cut vibrationally adiabatic potential along the path develops a cusp at the
-corner (0.068 Eh, 36 mEh above the reactant threshold): normal planes cross inside a bend
-whose radius (~5 mass-weighted units) is smaller than the H-stretch width. The exact 1D
-rate tunnels through the cusp while the ring polymer sees a wall, so C_S(1D) is many
-orders of magnitude from one (value in the pipeline output below). It is a model
-artifact, not a quantum effect — exactly the regime the curvature × width test excludes.
+Built from the first assembled path, the normal-cut vibrationally adiabatic potential had a
+cusp at the corner (0.068 Eh): the window means were averaged as Cartesian positions
+(librating H shortens the axial bonds), ordered by noisy ξ and joined to the continuation
+with sharp kinks, and normal planes crossed inside the bend. With the path built from
+mean bond lengths and fitted in ξ, the 1D barrier is smooth (2.5 mEh above the reactant
+threshold) and C_S(1D) = 0.99 ± 0.09: along this path the effective mass is dominated by
+the Cl approach and tunnelling is small. Because curvature × width is far above 0.5, the
+1D model is not a trustworthy carrier of the RPMD defect here, whatever its value; the 2D
+result is the one applied.
 
 ## 2D model (collinear plane)
 
@@ -111,7 +114,30 @@ polymer itself once the transverse coordinate is included.
 
 ## One-command pipeline result
 
-(filled in from `runs/clhbr-300K-production/subspace/subspace_pipeline.json`)
+`pyrpmd subspace-correct benchmarks/clhbr_subspace/correct.toml` (about 45 min on 4 cores, 39 of
+them for the 2D stage, mostly the 7099-point dense solve), output in `runs/clhbr-300K-production/subspace/`:
+
+| | 1D path model | 2D collinear plane |
+| --- | ---: | ---: |
+| exact quantum rate (model units) | 8.83 × 10⁻⁴ | 4.686 × 10⁻⁴ |
+| RPMD rate, same V_S (P = 16) | 8.94 × 10⁻⁴ (κ = 1.000) | 4.575 × 10⁻⁴ (κ = 0.092 ± 0.024) |
+| C_S | 0.99 ± 0.09 | 1.02 ± 0.29 |
+| DVR points / energy-floor states | 2137 / 116 | 7099 / 50 |
+
+Nested sensitivity: ln(C_2D/C_1D) = 0.036 ± 0.30, i.e. undetermined, so the pipeline applies
+the dimension chosen by curvature × width (2D). The first run of the pipeline counted this
+step as "settled" (a large uncertainty passed the old `max(tolerance, 2σ)` test) and applied
+1D; the selection rule was corrected and the corrections re-applied from the saved C_S records
+(`output.reuse = true`).
+
+| Rate (cm³ molecule⁻¹ s⁻¹) | Value |
+| --- | ---: |
+| RPMD (full system) | 5.75 × 10⁻¹³ ± 3.32 × 10⁻¹³ |
+| RPMD × C_S(2D) | 5.89 × 10⁻¹³ ± 3.79 × 10⁻¹³ |
+
+The corrected rate is not marked publishable because the source RPMD run is not (energy
+gate); `rate_quantum_corrected.json` keeps `corrected_rate_cm3_s` empty and reports the
+corrected estimate.
 
 ## Limits
 

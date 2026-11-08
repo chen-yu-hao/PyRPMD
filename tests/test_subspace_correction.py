@@ -195,8 +195,13 @@ def test_nested_sensitivity_selects_smallest_settled_dimension():
     result = nested_subspace_sensitivity([_record(1, 1.30), _record(2, 1.90), _record(3, 1.92)])
     assert result["recommended_dimension"] == 2
     assert not result["steps"][0]["settled"] and result["steps"][1]["settled"]
+    assert [step["status"] for step in result["steps"]] == ["changed", "settled"]
     settled = nested_subspace_sensitivity([_record(1, 0.97), _record(2, 0.98)])
     assert settled["recommended_dimension"] == 1
+    # A small change with a large uncertainty is not settled.
+    noisy = nested_subspace_sensitivity([_record(1, 0.99, 0.09), _record(2, 1.02, 0.28)])
+    assert noisy["steps"][0]["status"] == "undetermined"
+    assert noisy["recommended_dimension"] is None
     with pytest.raises(ValueError):
         nested_subspace_sensitivity([_record(1, 1.0), _record(2, 1.0, beta=2.0)])
 
@@ -325,9 +330,15 @@ def test_dense_route_options_are_consistent():
     sliced = exact_quantum_rate(model, beta, normalization="slice")
     # Finite-box and grid effects in the slice density are a few 1e-3 here.
     assert sliced.rate == pytest.approx(base.rate, rel=5e-3)
-    truncated = exact_quantum_rate(model, beta, truncation_energy=float(model.values.min()) + 60.0 / beta)
-    assert truncated.diagnostics["retained_points"] < model.values.size
-    assert truncated.rate == pytest.approx(base.rate, rel=1e-3)
+    # Energy-truncated DVR: a wide transverse grid, truncated 30 kT above the
+    # barrier (as the pipeline does), must keep the rate.
+    wide = model_from_function(lambda p: eckart(p) + 0.5 * MASS * 0.01**2 * p[..., 1] ** 2,
+                               [np.linspace(-6.0, 6.0, 81), np.linspace(-1.6, 1.6, 20)],
+                               masses=[MASS, MASS], dividing_surface=0.0)
+    full = exact_quantum_rate(wide, beta)
+    truncated = exact_quantum_rate(wide, beta, truncation_energy=V0 + 30.0 / beta)
+    assert truncated.diagnostics["retained_points"] < wide.values.size
+    assert truncated.rate == pytest.approx(full.rate, rel=1e-3)
 
 
 def test_energy_floor_is_exact_below_the_open_channel_threshold():

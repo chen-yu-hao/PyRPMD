@@ -206,10 +206,18 @@ def nested_subspace_sensitivity(corrections: Sequence[SubspaceCorrection], *, to
     """Target-response sensitivity ``ln(C_{d+1} / C_d)`` for nested subspaces.
 
     Adding a coordinate that RPMD already treats well leaves ``C`` unchanged;
-    a coordinate that carries part of the defect changes it.  The
-    recommended dimension is the smallest ``d`` whose next step changes
-    ``ln C`` by less than ``max(tolerance, 2 sigma)``.  The caller is
-    responsible for the subspaces being nested and at the same temperature.
+    a coordinate that carries part of the defect changes it.  Each step is
+
+    ``settled``       ``|change| <= tolerance`` and its standard error ``<= tolerance``;
+    ``changed``       ``|change| > max(tolerance, 2 sigma)``;
+    ``undetermined``  otherwise (too noisy to tell).
+
+    The recommended dimension is the smallest ``d`` whose next step is
+    settled, provided no earlier step changed or was undetermined; otherwise
+    the largest dimension computed (``recommended_dimension`` is then
+    ``None`` when the deciding step was undetermined, so a caller can fall
+    back to another criterion).  The caller is responsible for the subspaces
+    being nested and at the same temperature.
     """
     items = sorted(corrections, key=lambda c: c.dimension)
     if len(items) < 2:
@@ -219,24 +227,33 @@ def nested_subspace_sensitivity(corrections: Sequence[SubspaceCorrection], *, to
         raise ValueError("nested corrections must share one temperature")
     if len({c.dimension for c in items}) != len(items):
         raise ValueError("nested corrections must have distinct dimensions")
-    steps, recommended = [], items[-1].dimension
+    steps = []
     for low, high in zip(items, items[1:]):
         change = high.log_factor - low.log_factor
         sigma = float(np.hypot(low.log_standard_error, high.log_standard_error))
-        settled = abs(change) <= max(tolerance, 2.0 * sigma)
+        if abs(change) <= tolerance and sigma <= tolerance:
+            status = "settled"
+        elif abs(change) > max(tolerance, 2.0 * sigma):
+            status = "changed"
+        else:
+            status = "undetermined"
         steps.append({"from": low.dimension, "to": high.dimension, "log_change": change,
-                      "standard_error": sigma, "settled": bool(settled)})
+                      "standard_error": sigma, "status": status, "settled": status == "settled"})
+    recommended = items[-1].dimension
     for step in steps:
-        if step["settled"]:
+        if step["status"] == "settled":
             recommended = step["from"]
+            break
+        if step["status"] == "undetermined":
+            recommended = None
             break
     return {
         "beta": float(betas[0]),
         "steps": steps,
         "factors": {str(c.dimension): c.factor for c in items},
-        "recommended_dimension": int(recommended),
+        "recommended_dimension": recommended,
         "tolerance": float(tolerance),
-        "full_budget_used": bool(recommended == items[-1].dimension and not steps[-1]["settled"]),
+        "full_budget_used": bool(recommended == items[-1].dimension and steps[-1]["status"] != "settled"),
     }
 
 

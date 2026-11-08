@@ -45,7 +45,7 @@ DEFAULTS = {
                 "reference_kt": 0.3, "product_drop_kt": 15.0},
     "rpmd": {"nbeads": None, "windows": 48, "walkers": 32, "burn_in": 200, "sweeps": 400,
              "trajectories": 512, "seed": 0},
-    "output": {"directory": None},
+    "output": {"directory": None, "reuse": False},
 }
 
 
@@ -462,6 +462,20 @@ def run_subspace_pipeline(specification) -> dict:
                                                                       [int(d) for d in requested]))
     rpmd_options, nbeads = _rpmd_options(options["rpmd"], run)
     corrections, models = {}, {}
+    if options["output"].get("reuse"):
+        # Re-select and re-apply from saved C_S records (same temperature)
+        # without recomputing the subspace rates.
+        previous = {}
+        if (out_dir / "subspace_pipeline.json").is_file():
+            previous = json.loads((out_dir / "subspace_pipeline.json").read_text()).get("models", {})
+        for d in list(dimensions):
+            record = out_dir / f"C_S_{d}d.json"
+            if record.is_file():
+                saved = SubspaceCorrection.read(record)
+                if np.isclose(saved.beta, run.beta, rtol=1e-9, atol=0):
+                    corrections[d] = saved
+                    models[d] = previous.get(str(d), {"reused": True})
+                    dimensions.remove(d)
     if 1 in dimensions:
         model1, quantum1, info1 = path_model(run, path, options["quantum"])
         corrections[1] = subspace_correction(model1, run.beta, nbeads, quantum_options=quantum1,
@@ -480,8 +494,14 @@ def run_subspace_pipeline(specification) -> dict:
         corrections[2].write(out_dir / "C_S_2d.json")
         models[2] = info2
     sensitivity = nested_subspace_sensitivity(list(corrections.values())) if len(corrections) > 1 else None
-    chosen = max(corrections) if sensitivity is None else (
-        sensitivity["recommended_dimension"] if sensitivity["recommended_dimension"] in corrections else max(corrections))
+    if sensitivity is None:
+        chosen, reason = max(corrections), "only dimension computed"
+    elif sensitivity["recommended_dimension"] in corrections:
+        chosen, reason = sensitivity["recommended_dimension"], "nested sensitivity"
+    else:
+        # Undetermined nested step: fall back on curvature x width.
+        chosen = verdict if verdict in corrections else max(corrections)
+        reason = "nested sensitivity undetermined; curvature x width verdict"
     corrected = correct_rate_run(run.root, corrections[chosen], output=out_dir / "rate_quantum_corrected.json")
     report = {
         "schema": "pyrpmd.subspace_pipeline", "schema_version": 1,
@@ -489,7 +509,8 @@ def run_subspace_pipeline(specification) -> dict:
         "path": path_info, "curvature_width_sampled": sampled_cw, "curvature_width_path": static_cw,
         "recommended_dimension_from_curvature_width": verdict, "dimensions_computed": sorted(corrections),
         "models": models, "corrections": {str(d): c.to_dict() for d, c in corrections.items()},
-        "nested_sensitivity": sensitivity, "applied_dimension": int(chosen), "corrected_rate": corrected,
+        "nested_sensitivity": sensitivity, "applied_dimension": int(chosen), "applied_dimension_reason": reason,
+        "corrected_rate": corrected,
         "options": {k: v for k, v in options.items()},
         "physical_converged": False,
     }

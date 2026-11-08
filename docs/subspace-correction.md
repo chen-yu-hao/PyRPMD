@@ -96,9 +96,10 @@ the cumulative reaction probability vanishes below that threshold. Without it th
 **Cl + HBr (BrHCl_LEPS1, 300 K)** is worked through in
 [docs/validation/2026-11-08-clhbr-subspace](validation/2026-11-08-clhbr-subspace/README.md):
 curvature × width is 1–12 at the H-transfer corner, the 1D model develops a cusp there
-(normal cuts cross), and in the collinear plane RPMD matches the exact rate within its
-statistical error (C_S(2D) ≈ 0.9 ± 0.2), with the 2D quantum rate converged to 2.5% in the
-grid.
+with the first, kinked path (normal cuts cross; with the corrected path C_S(1D) = 0.99), and
+in the collinear plane RPMD matches the exact rate within its statistical error
+(C_S(2D) = 1.02 ± 0.29 in the pipeline run, 0.9 ± 0.2 with a second RPMD run), with the 2D
+quantum rate converged to 2.5% in the grid. The corrected rate is RPMD × C_S(2D).
 
 ## Workflow
 
