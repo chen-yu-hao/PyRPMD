@@ -1,0 +1,92 @@
+{
+  "scope": "noncollinear RPMD baseline and gated quantum audit; NO corrected gas-phase quantum rate",
+  "base_commit": "ffa14f247e453e9626b2e3fb3c288da0ca753d2e",
+  "reaction": "35Cl + H79Br -> H35Cl + 79Br",
+  "pes": "historical BrHCl_LEPS1 parameterization, independent analytic implementation",
+  "physical_converged": false,
+  "tests": {
+    "command": "python -m pytest -q tests/test_noncollinear_bimolecular.py tests/test_noncollinear_kernels.py",
+    "passed": 32,
+    "scope": "new files in repository overlay only; not full repository test suite",
+    "compileall": "passed"
+  },
+  "paired_checks": {
+    "T300_P32__T300_cayley32": {
+      "rate_change": 3.2583979783476534e-14,
+      "paired_sampling_SE": 1.460375955447199e-13,
+      "changed_outcomes": 5,
+      "unit": "cm^3 molecule^-1 s^-1"
+    },
+    "T300_cayley32__T300_cayley32_half": {
+      "rate_change": -9.635068098056204e-14,
+      "paired_sampling_SE": 1.2969576702470243e-13,
+      "changed_outcomes": 3,
+      "unit": "cm^3 molecule^-1 s^-1"
+    }
+  },
+  "selection": {
+    "150": {
+      "selected_dimension": 3,
+      "internal_dimension": 3,
+      "status": "full_internal_space_required_no_reduction",
+      "budget_two_status": "dimension_budget_exceeded",
+      "pilot_resampling_counts": {"3:full_internal_space_required_no_reduction": 64}
+    },
+    "300": {
+      "selected_dimension": 3,
+      "internal_dimension": 3,
+      "status": "full_internal_space_required_no_reduction",
+      "budget_two_status": "residual_coupling_exceeds_budget",
+      "pilot_resampling_counts": {"3:full_internal_space_required_no_reduction": 64}
+    },
+    "600": {
+      "selected_dimension": 3,
+      "internal_dimension": 3,
+      "status": "full_internal_space_required_no_reduction",
+      "budget_two_status": "residual_coupling_exceeds_budget",
+      "pilot_resampling_counts": {"3:full_internal_space_required_no_reduction": 64}
+    }
+  },
+  "quantum_audit": {
+    "quantum_J0_pilot": {
+      "J": 0,
+      "parity": 1,
+      "edge_reactant_threshold_Eh": 0.03205248709838057,
+      "max_discrete_unitarity_defect": 7.97043177888234e-12,
+      "maximum_arrangement_impurity": 0.4802912576065722,
+      "largest_alpha_boundary_probability": 0.005070175474562589,
+      "reference_usable_for_rate_correction": false,
+      "physical_converged": false,
+      "configuration": {"J":0,"parity":1,"nalpha":96,"alpha_max":0.35,"jmax":23,"nquad":28,"channels":64,"rho_min":3.5,"rho_max":12,"radial_step":0.08,"energy_max_above_edge":0.008,"energy_points":61}
+    },
+    "quantum_J0_check": {
+      "J": 0,
+      "parity": 1,
+      "edge_reactant_threshold_Eh": 0.03190837061212182,
+      "max_discrete_unitarity_defect": 3.861756400151692e-12,
+      "maximum_arrangement_impurity": 0.0432605943448882,
+      "largest_alpha_boundary_probability": 0.003231358687124211,
+      "reference_usable_for_rate_correction": false,
+      "physical_converged": false,
+      "configuration": {"J":0,"parity":1,"nalpha":144,"alpha_max":0.35,"jmax":47,"nquad":52,"channels":96,"rho_min":3.5,"rho_max":16,"radial_step":0.08,"energy_max_above_edge":0.008,"energy_points":41}
+    }
+  },
+  "quantum_refinement_comparison": {
+    "common_TOTAL_energy_points": 40,
+    "CRP_relative_L2_change": 0.49086106749223885,
+    "edge_threshold_change_Eh": -0.00014411648625875517,
+    "meaning": "Several numerical parameters changed together. This is not an isolated error bound. No threshold alignment was used."
+  },
+  "limitations": [
+    "Rates are incoming-flux RPMD baselines on a historical PES, not selective-quantum corrected rates or experimental predictions.",
+    "No full all-J quantum thermal rate. J=0 discrete-lead unitarity is insufficient and basis sensitivity is substantial.",
+    "All three Cl+HBr pilot windows request all 3 internal directions under the conservative local selector; no low-dimensional claim follows.",
+    "Generic arbitrary-atom Cartesian API is software-tested, not a real polyatomic quantum-rate benchmark.",
+    "Sampling SE excludes preparation, bead, integrator, PES, impact cutoff, launch and quantum-transfer errors.",
+    "Finite impact-tail bounds are unavailable. Any zero observed outer-annulus reactions does not prove a zero tail.",
+    "Curvilinear reduced quantum kinetic operators and general residual-bath quantum feedback are NOT implemented."
+  ],
+  "actual_collision_propagations": 19456,
+  "rate_results_file": "rates.csv",
+  "rate_unit": "cm^3 molecule^-1 s^-1"
+}
