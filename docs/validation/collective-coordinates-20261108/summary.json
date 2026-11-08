@@ -1,0 +1,147 @@
+{
+  "scope": "candidate coordinate screening and full-chart kinetic checks; no new molecular rate",
+  "parent_sha": "d035f8f279d3603bf0af54c4a32b591748960173",
+  "tests_passed": 34,
+  "full_repository_suite_run": false,
+  "archived_pilots": {
+    "morse": {
+      "required_dimension": 1,
+      "status": "candidate_requires_dynamical_probes",
+      "pilot_sha256": "74e3e1e7ca1a34d071a46d9df7bc83abcbd015db702d1a66790e66b3f1607d13",
+      "reuses_PR134_pilot": true,
+      "target": "x position response, not total energy",
+      "rotation_projector_error": 2.073284422832364e-16,
+      "holdout_relative_force_error": 0.04689759864795584
+    },
+    "fermi": {
+      "required_dimension": 2,
+      "status": "candidate_requires_dynamical_probes",
+      "pilot_sha256": "beb93c065ad3be717131af12b19ce39a78c6d149a66521acf2690d881b1588f4",
+      "reuses_PR134_pilot": true,
+      "target": "x position response, not total energy",
+      "rotation_projector_error": 6.325852921045867e-15,
+      "holdout_relative_force_error": 2.4348732446049577e-15
+    },
+    "eckart": {
+      "required_dimension": 2,
+      "status": "candidate_requires_dynamical_probes",
+      "pilot_sha256": "86be595568dbd4d4a322a98053653dfed3b0793b936f52bfe5ca25f33e68dbfa",
+      "reuses_PR134_pilot": true,
+      "target": "x position response, not total energy",
+      "rotation_projector_error": 2.5817366671389512e-15,
+      "holdout_relative_force_error": 0.08823070027112136
+    }
+  },
+  "new_ClHBr_pilots": {
+    "150": {
+      "candidate_dimension": 1,
+      "status": "candidate_requires_dynamical_probes",
+      "holdout_relative_force_error": 0.005957155404919558,
+      "metric_relative_variation_max": 2.797163367714941,
+      "run": {
+        "T_K": 150,
+        "beads": 32,
+        "independent_chains": 256,
+        "hmc_cycles": 800,
+        "seed": 900151,
+        "acceptance_mean": 0.9902294921875,
+        "angle_degrees_range": [138.63975571891606, 179.20284719212353],
+        "pilot_distribution": "restrained PIMD near TS; centroid geometries/physical PES forces",
+        "equilibrium_converged": false,
+        "target": "log(r_BrH/r_HCl) response; not a full flux-side rate"
+      },
+      "stability": {
+        "retained_fraction_sensitivity": {
+          "0.95": {"dimension": 1, "status": "candidate_requires_dynamical_probes"},
+          "0.99": {"dimension": 1, "status": "candidate_requires_dynamical_probes"},
+          "0.995": {"dimension": 2, "status": "candidate_requires_dynamical_probes"}
+        },
+        "group_bootstrap_dimension_counts": {"1": 32},
+        "bootstrap_force_fit_failures": 0
+      }
+    },
+    "300": {
+      "candidate_dimension": 1,
+      "status": "candidate_requires_dynamical_probes",
+      "holdout_relative_force_error": 0.004844005276572574,
+      "metric_relative_variation_max": 4.107206570874918,
+      "run": {
+        "T_K": 300,
+        "beads": 32,
+        "independent_chains": 256,
+        "hmc_cycles": 800,
+        "seed": 900301,
+        "acceptance_mean": 0.95375,
+        "angle_degrees_range": [128.2816787174195, 178.85524414282446],
+        "pilot_distribution": "restrained PIMD near TS; centroid geometries/physical PES forces",
+        "equilibrium_converged": false,
+        "target": "log(r_BrH/r_HCl) response; not a full flux-side rate"
+      },
+      "stability": {
+        "retained_fraction_sensitivity": {
+          "0.95": {"dimension": 1, "status": "candidate_requires_dynamical_probes"},
+          "0.99": {"dimension": 1, "status": "candidate_requires_dynamical_probes"},
+          "0.995": {"dimension": 2, "status": "candidate_requires_dynamical_probes"}
+        },
+        "group_bootstrap_dimension_counts": {"1": 32},
+        "bootstrap_force_fit_failures": 0
+      }
+    },
+    "600": {
+      "candidate_dimension": 2,
+      "status": "candidate_requires_dynamical_probes",
+      "holdout_relative_force_error": 0.01439803920238915,
+      "metric_relative_variation_max": 6.056280037873373,
+      "run": {
+        "T_K": 600,
+        "beads": 32,
+        "independent_chains": 256,
+        "hmc_cycles": 800,
+        "seed": 900601,
+        "acceptance_mean": 0.8924609375000001,
+        "angle_degrees_range": [113.38848988462608, 179.61785350364673],
+        "pilot_distribution": "restrained PIMD near TS; centroid geometries/physical PES forces",
+        "equilibrium_converged": false,
+        "target": "log(r_BrH/r_HCl) response; not a full flux-side rate"
+      },
+      "stability": {
+        "retained_fraction_sensitivity": {
+          "0.95": {"dimension": 1, "status": "candidate_requires_dynamical_probes"},
+          "0.99": {"dimension": 2, "status": "candidate_requires_dynamical_probes"},
+          "0.995": {"dimension": 2, "status": "candidate_requires_dynamical_probes"}
+        },
+        "group_bootstrap_dimension_counts": {"2": 29, "1": 3},
+        "bootstrap_force_fit_failures": 0
+      }
+    }
+  },
+  "metric_checks": [
+    {"nodes_per_axis": 31, "relative_ground_error_correct": 0.024136099316976356, "relative_ground_error_wrong": 0.06215420671104033},
+    {"nodes_per_axis": 51, "relative_ground_error_correct": 0.009027755354725553, "relative_ground_error_wrong": 0.05488722579912375},
+    {"nodes_per_axis": 81, "relative_ground_error_correct": 0.0036169757112274326, "relative_ground_error_wrong": 0.052376182787238434},
+    {"nodes_per_axis": 121, "relative_ground_error_correct": 0.0016519207517542434, "relative_ground_error_wrong": 0.05147939683139713}
+  ],
+  "real_time_propagation": {
+    "projection_loss": 2.220446049250313e-16,
+    "norm_drift": 8.770761894538737e-15,
+    "hbar": 1.0,
+    "physical_converged": false,
+    "bath_coupling_implemented": false,
+    "norm_range": [0.9999999999999892, 0.9999999999999984]
+  },
+  "approval_gate": {
+    "selected_candidate": null,
+    "dimension": null,
+    "status": "no_core_approved",
+    "ledger": {
+      "nonlinear_transfer_1d": {
+        "collective_stretch": {"status": "insufficient_physical_evidence"},
+        "bend": {"status": "insufficient_physical_evidence"},
+        "stretch_and_bend": {"status": "insufficient_physical_evidence"},
+        "finite_J_kinetic": {"status": "insufficient_physical_evidence"}
+      }
+    },
+    "physical_converged": false
+  },
+  "physical_converged": false
+}
