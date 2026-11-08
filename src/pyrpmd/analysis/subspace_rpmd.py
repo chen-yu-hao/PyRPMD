@@ -278,11 +278,16 @@ def ring_polymer_rate(
         start_h = ring.kinetic(momenta) + ring.spring(modes) + energy
         trial = (modes, momenta, force, energy, gradient)
         steps = max(1, int(round(leapfrog_steps * rng.uniform(0.5, 1.5))))
-        for _ in range(steps):
-            trial = ring.step(trial[0], trial[1], trial[2], hmc_step, propagator, True)
-        new_modes, new_momenta, new_force, new_energy, new_gradient = trial
-        delta = ring.kinetic(new_momenta) + ring.spring(new_modes) + new_energy - start_h
-        accept = np.log(rng.uniform(size=batch)) < -ring.beta_p * np.nan_to_num(delta, nan=np.inf)
+        try:
+            for _ in range(steps):
+                trial = ring.step(trial[0], trial[1], trial[2], hmc_step, propagator, True)
+            new_modes, new_momenta, new_force, new_energy, new_gradient = trial
+            delta = ring.kinetic(new_momenta) + ring.spring(new_modes) + new_energy - start_h
+            accept = np.log(rng.uniform(size=batch)) < -ring.beta_p * np.nan_to_num(delta, nan=np.inf)
+        except FloatingPointError:
+            # A non-finite trial (e.g. a step into a wall region) is rejected.
+            new_modes, new_momenta, new_force, new_energy, new_gradient = modes, momenta, force, energy, gradient
+            accept = np.zeros(batch, dtype=bool)
         modes = np.where(accept[:, None, None], new_modes, modes)
         force = np.where(accept[:, None, None], new_force, force)
         energy = np.where(accept, new_energy, energy)
@@ -338,10 +343,14 @@ def ring_polymer_rate(
         momenta = ring.sample_momenta(rng, nwalk, True)
         start_h = ring.kinetic(momenta) + ring.spring(surf_modes) + surf_energy
         trial = (surf_modes, momenta, surf_force, surf_energy, surf_gradient)
-        for _ in range(max(1, int(round(leapfrog_steps * rng.uniform(0.5, 1.5))))):
-            trial = ring.step(trial[0], trial[1], trial[2], hmc_step, propagator, True)
-        delta = ring.kinetic(trial[1]) + ring.spring(trial[0]) + trial[3] - start_h
-        accept = np.log(rng.uniform(size=nwalk)) < -ring.beta_p * np.nan_to_num(delta, nan=np.inf)
+        try:
+            for _ in range(max(1, int(round(leapfrog_steps * rng.uniform(0.5, 1.5))))):
+                trial = ring.step(trial[0], trial[1], trial[2], hmc_step, propagator, True)
+            delta = ring.kinetic(trial[1]) + ring.spring(trial[0]) + trial[3] - start_h
+            accept = np.log(rng.uniform(size=nwalk)) < -ring.beta_p * np.nan_to_num(delta, nan=np.inf)
+        except FloatingPointError:
+            trial = (surf_modes, momenta, surf_force, surf_energy, surf_gradient)
+            accept = np.zeros(nwalk, dtype=bool)
         surf_modes = np.where(accept[:, None, None], trial[0], surf_modes)
         surf_force = np.where(accept[:, None, None], trial[2], surf_force)
         surf_energy = np.where(accept, trial[3], surf_energy)

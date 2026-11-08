@@ -87,9 +87,11 @@ def _snake_indices(shape: Sequence[int]):
 class GridPotential:
     """Tensor-product cubic spline of a gridded potential with gradients.
 
-    Points outside the grid are extrapolated by the boundary polynomials and
-    counted in :attr:`outside_fraction`; a ring polymer that leaves the grid
-    is sampling a potential the exact quantum calculation never saw.
+    Outside the grid the potential is continued as a constant along the
+    exceeded axes (zero force there): flat in an asymptotic channel, and no
+    polynomial blow-up for trajectories that run out of the box.  Such points
+    are counted in :attr:`outside_fraction`; a ring polymer that leaves the
+    grid is sampling a potential the exact quantum calculation never saw.
     """
 
     def __init__(self, axes: Sequence[np.ndarray], values: np.ndarray):
@@ -139,7 +141,7 @@ class GridPotential:
 
     def energy(self, points: np.ndarray) -> np.ndarray:
         points = np.asarray(points, dtype=float)
-        flat = points.reshape(-1, self.dimension)
+        flat = np.clip(points.reshape(-1, self.dimension), self.lower, self.upper)
         if self._spline is not None:
             value = self._spline(flat)
         elif isinstance(self._fallback, tuple):  # pragma: no cover
@@ -150,8 +152,10 @@ class GridPotential:
 
     def energy_and_gradient(self, points: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         points = np.asarray(points, dtype=float)
-        flat = points.reshape(-1, self.dimension)
-        self._count(flat)
+        raw = points.reshape(-1, self.dimension)
+        self._count(raw)
+        flat = np.clip(raw, self.lower, self.upper)
+        clamped = flat != raw
         gradient = np.empty_like(flat)
         if self._spline is not None:
             value = self._spline(flat)
@@ -169,6 +173,7 @@ class GridPotential:
                 shift = np.zeros(self.dimension)
                 shift[axis] = step
                 gradient[:, axis] = (self._fallback(flat + shift) - self._fallback(flat - shift)) / (2 * step)
+        gradient[clamped] = 0.0
         return (np.asarray(value, dtype=float).reshape(points.shape[:-1]),
                 gradient.reshape(points.shape))
 
