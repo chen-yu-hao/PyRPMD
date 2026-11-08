@@ -303,23 +303,53 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
     residual = np.linalg.norm(off_plane, axis=1)
     arc = _arc(path, masses)
     energies = np.array([run.energy(p) for p in path])
-    fraction = float(options["absorber_fraction"])
     surface_arc, _ = _dividing_arc(run, path, arc)
-    reactant_length, product_length = surface_arc - arc[0], arc[-1] - surface_arc
-    absorb_lo = arc[0] + fraction * reactant_length
-    absorb_hi = arc[-1] - fraction * product_length
-    reference_arc = absorb_lo + 0.05 * reactant_length
+    k_ts = int(np.argmin(abs(arc - surface_arc)))
+    beta = run.beta
+    # Box along the path.  C_S needs the quantum and RPMD rates normalized on
+    # the same reference slice, so the slice only has to lie where the
+    # reactant channel is (nearly) free, not at the asymptote: the first
+    # point, going out from the TS, within `reference_kt` of the asymptote.
+    # Absorbers are two de Broglie wavelengths long; products are absorbed
+    # once the path has dropped `product_drop_kt` below its maximum.
+    tolerance = float(options.get("reference_kt", 0.3)) / beta
+    reactant_side = np.flatnonzero(np.abs(energies[:k_ts] - energies[0]) <= tolerance)
+    k_ref = int(reactant_side[-1]) if len(reactant_side) else 0
+    reference_arc = float(arc[k_ref])
+    thermal_wavelength = 2.0 * np.pi / np.sqrt(2.0 / beta)
+    absorb_lo = reference_arc - 0.25 * thermal_wavelength
+    box_lo = absorb_lo - 2.0 * thermal_wavelength
+    drop = float(options.get("product_drop_kt", 15.0)) / beta
+    top = float(energies[k_ts:].max()) if k_ts < len(energies) else float(energies.max())
+    product_side = np.flatnonzero((np.arange(len(arc)) > k_ts) & (energies < top - drop))
+    k_p = int(product_side[0]) if len(product_side) else len(arc) - 1
+    product_wavelength = 2.0 * np.pi / np.sqrt(2.0 * max(top - energies[-1], 1.0 / beta))
+    absorb_hi = float(arc[k_p])
+    box_hi = absorb_hi + 2.0 * product_wavelength
+    inside = (arc >= box_lo) & (arc <= box_hi)
     padding = options.get("padding")
     if padding is None:
         padding = 40.0
-    lo = plane.min(axis=0) - padding
-    hi = plane.max(axis=0) + padding
+    lo = plane[inside].min(axis=0) - padding
+    hi = plane[inside].max(axis=0) + padding
     spacing = options.get("spacing_2d")
-    floor_guess = float(np.max([np.interp(reference_arc, arc, energies),
-                                np.interp(arc[-1] - (fraction + 0.05) * product_length, arc, energies)]))
+    floor_guess = float(max(energies[k_ref], energies[-1]))
     if spacing is None:
-        emax = (floor_guess - energies.min()) + float(options["truncation_kt"]) / run.beta
-        spacing = 0.5 * np.pi / np.sqrt(2.0 * emax)
+        # Transfer axis: a third of the narrowest transverse width along the
+        # path (harmonic, in-plane); path axis: a quarter of the shortest de
+        # Broglie wavelength up to the truncation energy.
+        widths = []
+        for k in np.flatnonzero(inside)[::5]:
+            t = plane[min(k + 1, len(arc) - 1)] - plane[max(k - 1, 0)]
+            n = np.array([-t[1], t[0]]) / np.linalg.norm(t)
+            v = (n[0] * e0 + n[1] * e1)
+            dx = 1e-3 * v / sqrt_m
+            curvature = v @ ((run.gradient(path[k] + dx) - run.gradient(path[k] - dx)) / 2e-3 / sqrt_m)
+            if curvature > 0:
+                widths.append(1.0 / np.sqrt(2.0 * np.sqrt(curvature)))
+        sigma = float(min(widths)) if widths else 5.0
+        emax = (floor_guess - energies[inside].min()) + float(options["truncation_kt"]) / beta
+        spacing = [sigma / 3.0, max(sigma / 3.0, 0.5 * np.pi / np.sqrt(2.0 * emax))]
     spacing = np.broadcast_to(np.asarray(spacing, dtype=float), (2,))
     # One V_S for both halves of C_S: it is projected on a grid `refinement`
     # times finer than the quantum DVR grid.  The DVR uses every
@@ -342,7 +372,7 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
                              fine_model.values[::refinement, ::refinement], fine_model.masses, 0.0, "asymptotic",
                              float(reference_point[0]), provenance)
     tree = cKDTree(plane)
-    width_lo, width_hi = absorb_lo - arc[0], arc[-1] - absorb_hi
+    width_lo, width_hi = absorb_lo - box_lo, box_hi - absorb_hi
     strength = 30.0 * np.sqrt(2.0 / run.beta)
 
     def absorber(points):
@@ -361,7 +391,8 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
         return np.array([plane[k, 0], plane[k, 1]]), np.array([-t[1], t[0]])
 
     thresholds = []
-    for at in (reference_arc, arc[-1] - (fraction + 0.05) * product_length):
+    product_reference = min(absorb_hi + product_wavelength, float(arc[-1]))
+    for at in (reference_arc, product_reference):
         center, normal = tangent_normal(at)
         thresholds.append(_in_plane_threshold(rpmd_model, center, normal))
     floor = max(thresholds) - float(options["threshold_margin"]) / run.beta
@@ -373,7 +404,8 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
             "rpmd_grid_shape": list(rpmd_model.shape), "refinement": refinement,
             "curvature_normal_in_plane_overlap": candidate_overlap,
             "path_off_plane_max": float(residual.max()), "path_off_plane_rms": float(np.sqrt(np.mean(residual**2))),
-            "absorber_arc": [float(absorb_lo), float(absorb_hi)], "reactant_reference": float(reference_point[0]),
+            "absorber_arc": [float(absorb_lo), float(absorb_hi)], "box_arc": [float(box_lo), float(box_hi)],
+            "reference_arc": reference_arc, "reactant_reference": float(reference_point[0]),
             "channel_thresholds": thresholds, "energy_floor": floor, "truncation_energy": truncation}
     return model, quantum, info, rpmd_model
 
