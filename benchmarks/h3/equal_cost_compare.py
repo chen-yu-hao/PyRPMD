@@ -60,6 +60,8 @@ def read_case(directory, method):
         raise ValueError("PMF array shapes disagree")
     ui_x = np.asarray(ui["xi"], float).reshape(-1)
     ui_y = np.asarray(ui["free_energy"], float).reshape(-1)
+    ui_search = (ui_x >= 0.75) & (ui_x <= 1.08) & np.isfinite(ui_y)
+    ui_peak_xi = float(ui_x[np.flatnonzero(ui_search)[np.argmax(ui_y[ui_search])]]) if np.any(ui_search) else None
     ess = np.asarray(pmf.get("effective_samples_per_stream", []), float).reshape(-1)
     if not len(ess) or not np.all(np.isfinite(ess)):
         raise ValueError("missing valid per-stream ESS")
@@ -87,6 +89,7 @@ def read_case(directory, method):
         "directory": str(directory),
         "inputs_sha256": {"summary": _hash(summary_path), "pmf": _hash(pmf_path)},
         "xi_star": xi_star,
+        "UI_peak_xi_diagnostic": ui_peak_xi,
         "MBAR_barrier_kcal_mol": mbar,
         "UI_barrier_kcal_mol": ui_barrier,
         "MBAR_minus_UI_kcal_mol": mbar - ui_barrier,
@@ -112,6 +115,7 @@ def read_case(directory, method):
         "kappa_standard_error": summary.get("kappa_standard_error"),
         "recrossing_plateau_detected": bool(summary.get("plateau_detected", False)),
         "child_trajectories": summary.get("child_trajectories"),
+        "parent_configurations": summary.get("parent_configurations"),
         "rate_estimate_cm3_molecule_s": rate_estimate,
         "accepted_rate_cm3_molecule_s": rate_gated,
         "rate_standard_error_cm3_molecule_s": summary.get("rate_standard_error_cm3_s"),
@@ -137,6 +141,12 @@ def compare(fixed, adaptive):
         "same_target_pmf_integration_steps": FIXED_PMF_STEPS,
         "actual_fixed_pmf_steps": u1,
         "actual_adaptive_pmf_steps": u2,
+        "actual_child_trajectory_count_matched": (
+            a["child_trajectories"] == b["child_trajectories"] == 256
+        ),
+        "actual_parent_configuration_count_matched": (
+            a["parent_configurations"] == b["parent_configurations"] == 64
+        ),
         "adaptive_unspent_fraction": unspent / FIXED_PMF_STEPS,
         "planned_identical_recrossing_steps_per_method": PLANNED_RECROSSING_STEPS,
         "common_conditions": {
@@ -150,6 +160,10 @@ def compare(fixed, adaptive):
         "fixed96": a, "adaptive": b,
         "comparison": {
             "delta_xi_star_adaptive_minus_fixed": b["xi_star"] - a["xi_star"],
+            "delta_UI_peak_xi_adaptive_minus_fixed": (
+                b["UI_peak_xi_diagnostic"] - a["UI_peak_xi_diagnostic"]
+                if a["UI_peak_xi_diagnostic"] is not None and b["UI_peak_xi_diagnostic"] is not None else None
+            ),
             "delta_MBAR_barrier_kcal_mol": b["MBAR_barrier_kcal_mol"] - a["MBAR_barrier_kcal_mol"],
             "delta_UI_barrier_kcal_mol": b["UI_barrier_kcal_mol"] - a["UI_barrier_kcal_mol"],
             "delta_rate_estimate_cm3_molecule_s": (
@@ -219,7 +233,7 @@ def main():
         json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False) + "\n",
         encoding="utf-8",
     )
-    columns = ["method", "xi_star", "MBAR_barrier_kcal_mol", "UI_barrier_kcal_mol",
+    columns = ["method", "xi_star", "UI_peak_xi_diagnostic", "MBAR_barrier_kcal_mol", "UI_barrier_kcal_mol",
                "MBAR_minus_UI_kcal_mol", "overlap_connected", "minimum_stream_ESS",
                "median_stream_ESS", "kappa", "rate_estimate_cm3_molecule_s",
                "accepted_rate_cm3_molecule_s", "recrossing_plateau_detected"]
