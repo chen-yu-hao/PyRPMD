@@ -1,0 +1,85 @@
+{
+  "schema": "thermal-throughput-v1",
+  "complete": true,
+  "physical_converged": false,
+  "environment": {
+    "hostname": "cluster",
+    "platform": "Linux-5.14.0-611.49.1.el9_7.x86_64-x86_64-with-glibc2.34",
+    "python": "3.11.5 (main, Sep 11 2023, 13:54:46) [GCC 11.2.0]",
+    "numpy": "1.26.4",
+    "source": "/tmp/pyrpmd-t49",
+    "revision": "6451297588c088d68cb9525b31915dd51de82dcb",
+    "dirty": true,
+    "source_sha256": {
+      "native/thermal.hpp": "948329d9e076509ef50b2f5d22f69323b06cddb2f9824e915ec57104256dcfe2",
+      "native/thermal.cpp": "1a9f5f2b95b90e1bcba73aba968c375bfca91294ab33fa82001e95f58980a563",
+      "native/philox.h": "29150f4acad2006a646c110b915d6d5fefca4010c1ced64e7f84616aa2abd3d4",
+      "src/pyrpmd/native_ensemble.py": "e017538190a8ec15ab0ee3cf2869b3b38aa1a46b2d9eee62386673fd61e1840b",
+      "src/pyrpmd/propagation.py": "c562b78db27c6b03d31d1fe71235c4263f239fd5fb154c86e8f3920f9ff6060d",
+      "src/pyrpmd/block_propagation.py": "6cae3f8948f8ec17dbd658a1cef28e8e12b5571dc203044fce1bdf131f1f6e5d",
+      "src/pyrpmd/dynamics.py": "711080fdb159c06330bc8406a1a553d8d96091d31c4d6343383cf15f9f02746a",
+      "src/pyrpmd/engine.py": "9f5a08ee05128c7d45a27e4905e074fbfd45ca414497f71e198f56a02d0fb9bb",
+      "src/pyrpmd/potentials/_builtin_native.py": "92421385c3ebc4e39d2ff13c1af7f29592e049e938d82e87b0239bfd221c57fd"
+    },
+    "script_sha256": "99c4779d6ed60c92fa6164373accbd2d25380d3d9bedcc22b1cbade793101f26",
+    "compiler": "c++ (GCC) 11.3.1 20221121 (Red Hat 11.3.1-4)\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+    "build_flags": {
+      "CXXFLAGS": "-march=native -ffp-contract=off",
+      "CFLAGS": null,
+      "PYRPMD_NO_OPENMP": null
+    },
+    "cpu": "Intel(R) Xeon(R) Platinum 8176 CPU @ 2.10GHz",
+    "affinity": [
+      24,
+      25,
+      26,
+      27
+    ],
+    "thread_environment": {
+      "OMP_NUM_THREADS": "4",
+      "OMP_PROC_BIND": "true",
+      "OMP_PLACES": "cores",
+      "OPENBLAS_NUM_THREADS": "1"
+    }
+  },
+  "options": {
+    "baseline": false,
+    "atoms": [
+      4096
+    ],
+    "beads": [
+      32
+    ],
+    "thermostats": [
+      "pile-l"
+    ],
+    "rng": "philox-v1",
+    "api": "dynamics",
+    "seconds": 0.35,
+    "repeats": 7,
+    "block_steps": 64,
+    "profile": false,
+    "output": "docs/validation/thermal-kernel-performance-2026-11-04/candidate-philox-dynamics-4.json"
+  },
+  "measurements": [
+    {
+      "atoms": 4096,
+      "beads": 32,
+      "thermostat": "pile-l",
+      "rng": "philox-v1",
+      "api": "dynamics",
+      "status": "measured",
+      "steps_per_repeat": 64,
+      "seconds": [
+        0.883792482316494,
+        0.8713846001774073,
+        0.760990809649229,
+        0.7066099233925343,
+        0.7162619344890118,
+        0.7002994660288095,
+        0.7149437069892883
+      ],
+      "steps_per_second": 89.35278690421853
+    }
+  ]
+}

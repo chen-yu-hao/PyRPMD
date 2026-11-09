@@ -1,0 +1,7 @@
+....s.......................ssssssssssss.............  [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_dynamics.py:88: OpenMP extension not built
+SKIPPED [6] tests/test_integrators.py:161: compiled extension and C compiler required
+SKIPPED [3] tests/test_integrators.py:178: compiled extension and C compiler required
+SKIPPED [3] tests/test_integrators.py:199: compiled extension and C compiler required
+40 passed, 13 skipped, 18 subtests passed in 9.21s
