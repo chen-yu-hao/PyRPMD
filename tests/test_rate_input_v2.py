@@ -64,7 +64,7 @@ def test_research_template_checks_saddle_and_declared_channel_without_refining()
     (lambda d: d["umbrella"]["regions"][1].update(spacing=.03), "integer multiple"),
     (lambda d: d["umbrella"].update(centers=[0, .5, 1]), "exactly one"),
     (lambda d: d["umbrella"].update(stiffness=.16), "conflicting force"),
-    (lambda d: d["umbrella"].update(cvs=["other"]), "coordinate xi"),
+    (lambda d: d["umbrella"].update(cvs=["other"]), r"cvs must be \['xi'\]"),
     (lambda d: d.update(umbrella={"stop": 1.05, "force_constant": .00016}), "specify umbrella"),
     (lambda d: d["umbrella"]["regions"][1].update(force_constant=-.001), "positive"),
     (lambda d: d["umbrella"]["regions"][1].update(sampling={"production": "0.2 fs"}), "at least two"),
