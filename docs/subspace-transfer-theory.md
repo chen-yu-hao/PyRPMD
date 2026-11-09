@@ -122,8 +122,9 @@ $\Delta$.
 Curvature also changes the real-time dynamics near the barrier, and the 1D path model
 represents it only through the normal-cut zero-point energy. Neither cancels. Because a
 displacement coupling has no first-order term, the theorem above predicts
-$\Delta=O(h^2)$ for a valley displaced by $h$. The tests confirm this with a coefficient that
-does not depend on temperature or barrier symmetry: $\Delta=(0.144\pm0.006)(\kappa\rho)^2$.
+$\Delta=O(h^2)$ for a valley displaced by $h$. The tests confirm this. The coefficient is
+temperature independent for a symmetric barrier, $\Delta=(0.148\pm0.006)(\kappa\rho)^2$, and
+somewhat smaller for an asymmetric one, $(0.112\pm0.007)(\kappa\rho)^2$.
 So curvature × width measures the transfer error itself, not only the size of $G$.
 
 **Elasticity estimate.** Suppose the full system behaves near the barrier like a member $H_{\mathrm{eff}}$
@@ -197,8 +198,8 @@ $V_S$, and not from deep tunnelling.
 2. Converge $P$ for the stiffest environment mode, or divide the full RPMD rate by $B_P$:
    $P\gtrsim[(\sum_r u^3-\sum_\ddagger u^3)/(48\delta)]^{1/2}$.
 3. Curvature × width predicts the transfer error of a 1D path model:
-   $\Delta\approx0.144(\kappa\rho)^2$ on the tested models. That is 3.6% at the default threshold
-   $\kappa\rho=0.5$, and keeping $|\Delta|<5\%$ needs $\kappa\rho<0.59$. The coefficient comes from
+   $\Delta\approx(0.11\text{–}0.15)(\kappa\rho)^2$ on the tested models. That is 3–4% at the
+   default threshold $\kappa\rho=0.5$, and keeping $|\Delta|<5\%$ needs $\kappa\rho\lesssim0.6$. The coefficient comes from
    two model families and is not universal. The deciding test remains the nested sensitivity
    $\ln(C_{d+1}/C_d)$, a direct estimate of $\Delta$ for the smaller subspace.
 4. Errors of $V_S$ that act like a barrier change reach $C_S$ reduced by the elasticity
@@ -210,4 +211,18 @@ $V_S$, and not from deep tunnelling.
 
 ## Tests
 
-The model-family study is running; results follow in this section.
+All numbers are in
+[docs/validation/2026-11-09-subspace-transfer](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/2026-11-09-subspace-transfer/README.md).
+The study used 2D Eckart models with a transverse vibration and 1D path projections, at 600,
+300 and 200 K (1.45, 0.73 and 0.48 $T_c$), computed on GitHub Actions.
+
+| Statement | Test | Result |
+| --- | --- | --- |
+| Separable environment: $\Delta=0$ | 6 points, $h=0$ | all within 1.5σ of zero |
+| First-order theorem: the free-energy projection is first-order exact | $G_{\mathrm{QM}}$ of the frequency family | zero point +0.129 / +0.027 / +0.043, free energy −0.0001 / −0.006 / −0.001 |
+| Projection errors reach $C_S$ reduced by $\varepsilon$ | zero-point vs free-energy $C_S$; 1D barrier scaling | $\Delta$ differs by ≤ 0.02 although $k$ differs by up to 14%; $\lvert\varepsilon\rvert\le0.04$ |
+| Displacement coupling: $\Delta=O(h^2)$, no linear term | 18 curvature points | $\Delta=0.21h^2$ (symmetric), $0.16h^2$ (asymmetric) |
+| Elasticity estimate for curvature | $h=0.9$ bohr, 200 K | **fails**: predicts −0.08, measured +0.16 |
+| Small $\Delta$ for symmetric barriers below $T_c$ | curvature, 0.48 $T_c$ | **not borne out**: $\Delta$ the same as at 1.45 $T_c$ |
+| Finite-$P$ environment error is $\ln B_P$ | frequency family; $P$ = 8–48 | $\chi^2/n$ of $\Delta$: 5.1 → 0.77 after $\ln B_P$; quantitative for $\lvert\ln B_P\rvert\lesssim0.15$ |
+| Truncated DVR: walls ≥ 6 transverse quanta | separable and curved models, H + H₂, Cl + HBr | separable 2D = 1D to 4×10⁻⁶ at 0.07 Eh; H + H₂ rates in the earlier report 3–13% high at 0.04 Eh |

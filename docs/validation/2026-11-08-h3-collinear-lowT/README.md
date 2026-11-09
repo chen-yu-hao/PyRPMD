@@ -4,6 +4,14 @@ Date: 2026-11-08. Surface: BKMP2 (`benchmarks/h3`, build with `python benchmarks
 Scripts: `benchmarks/h3_subspace/` (`collinear.py` model, `run.py` driver, `campaign.txt` the runs
 below). Result records: `results/`.
 
+> **Correction (2026-11-09).** The exact rates below used DVR walls 0.04 Eh above the H₂
+> ground level. That is too low: the removed points confine the H₂ vibration (about six quanta,
+> 0.12 Eh, are needed). Walls at 0.16 Eh lower the exact rates by 3.1, 7.8, 12.9, 13.4 and 5.0% at
+> 600, 400, 300, 200 and 150 K. With those points retained, spacing 2.0 is 3–6% low at 200–150 K;
+> a spacing ladder is in
+> [docs/validation/2026-11-09-subspace-transfer](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/2026-11-09-subspace-transfer/README.md).
+> The RPMD rates are unaffected; the ratios k_RPMD/k_QM below are therefore low by up to ~15%.
+
 ## Why this test
 
 The Cl + HBr test (docs/validation/2026-11-08-clhbr-subspace) ran at 300 K, above that
