@@ -492,6 +492,34 @@ def _iterative_rate(model, operators, eps, beta, shift, *, cutoff, flux_states, 
     }
 
 
+def _truncation_threshold(model, truncation_energy):
+    if callable(truncation_energy):
+        values = np.asarray(truncation_energy(model.grid_points().reshape(-1, model.dimension)), dtype=float)
+    else:
+        values = np.asarray(truncation_energy, dtype=float)
+    threshold = np.broadcast_to(values.reshape(model.shape) if values.size == np.prod(model.shape) else values,
+                                model.shape)
+    if not np.isfinite(threshold).all():
+        raise ValueError("truncation_energy must be finite")
+    return np.asarray(threshold, dtype=float)
+
+
+def _truncation_margin(potential, threshold):
+    """Smallest (threshold - transverse-line floor) over axis-0 lines that keep points."""
+    if potential.ndim == 1:
+        return {"truncation_margin": float(np.min(threshold - potential.min()))}
+    axes = tuple(range(1, potential.ndim))
+    floor_index = potential.reshape(potential.shape[0], -1).argmin(axis=1)
+    floors = potential.reshape(potential.shape[0], -1)[np.arange(potential.shape[0]), floor_index]
+    at_floor = threshold.reshape(threshold.shape[0], -1)[np.arange(threshold.shape[0]), floor_index]
+    kept = np.any(potential <= threshold, axis=axes)
+    margins = (at_floor - floors)[kept]
+    if not margins.size:
+        return {"truncation_margin": None}
+    worst = int(np.flatnonzero(kept)[np.argmin(margins)])
+    return {"truncation_margin": float(margins.min()), "truncation_margin_line": worst}
+
+
 def exact_quantum_rate(
     model: SubspaceModel,
     beta: float,
@@ -512,7 +540,7 @@ def exact_quantum_rate(
     absorber: Any = None,
     normalization: str = "default",
     energy_floor: float | None = None,
-    truncation_energy: float | None = None,
+    truncation_energy: Any = None,
 ) -> QuantumRateResult:
     """Exact thermal rate constant of ``model`` at inverse temperature ``beta``.
 
@@ -546,6 +574,16 @@ def exact_quantum_rate(
         absorber reflection errors times an enormous Boltzmann weight.
     ``truncation_energy``
         energy-truncated DVR: grid points with ``V`` above it are removed.
+        A number is one global threshold; an array of the grid shape, or a
+        callable ``threshold(points[N, d])``, gives one threshold per point.
+        The removed points act as hard walls that confine the transverse
+        vibration; the rate converges only once the threshold lies about six
+        quanta of the stiffest transverse mode above the valley floor
+        everywhere along the channel, ridge included (walls at ~5
+        ground-state widths).  The diagnostics report ``truncation_margin``:
+        the smallest threshold minus transverse-line floor over all axis-0
+        lines that keep points, in energy units -- compare it with
+        ``6 hbar omega``.
     """
     if not isinstance(model, SubspaceModel):
         raise TypeError("model must be a SubspaceModel")
@@ -576,8 +614,11 @@ def exact_quantum_rate(
     if normalization not in ("default", "slice"):
         raise ValueError("normalization must be 'default' or 'slice'")
     keep = None
+    margin_info = {}
     if truncation_energy is not None:
-        keep = np.flatnonzero(operators.potential.ravel() <= float(truncation_energy))
+        threshold = _truncation_threshold(model, truncation_energy)
+        keep = np.flatnonzero(operators.potential.ravel() <= threshold.ravel())
+        margin_info = _truncation_margin(operators.potential, threshold)
     retained = operators.size if keep is None else len(keep)
     if method == "auto":
         method = "sylvester" if retained <= dense_limit else "flux_eigenstates"
@@ -608,6 +649,7 @@ def exact_quantum_rate(
         )
     if not np.isfinite(flux) or not np.isfinite(partition) or partition <= 0:
         raise FloatingPointError("exact quantum rate produced a non-finite flux or partition function")
+    info.update(margin_info)
     info.update({
         "energy_shift": shift,
         "cap_width": width if absorber is None else None,

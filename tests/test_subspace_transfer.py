@@ -94,3 +94,35 @@ def test_harmonic_bead_factor_limits_and_application():
     applied = apply_subspace_correction(1.0, correction, bead_factor=0.5, standard_error=0.1)
     assert applied["corrected_rate"] == pytest.approx(4.0)
     assert applied["bead_factor"] == 0.5
+
+
+def _separable_model():
+    from pyrpmd.analysis import model_from_function
+
+    def v(points):
+        s, y = points[..., 0], points[..., 1]
+        return 0.0156 / np.cosh(s / 0.66) ** 2 + 0.5 * MASS * 0.01**2 * y**2
+
+    return model_from_function(v, [np.linspace(-6.0, 6.0, 61), np.linspace(-1.2, 1.2, 15)], masses=[MASS, MASS],
+                               dividing_surface=0.0, reactant_reference=-3.0)
+
+
+def test_per_point_truncation_matches_global_and_reports_margin():
+    from pyrpmd.analysis import exact_quantum_rate
+
+    model = _separable_model()
+    beta = 1.0 / (3.166811563e-6 * 600.0)
+    global_result = exact_quantum_rate(model, beta, method="sylvester", truncation_energy=0.08)
+    array_result = exact_quantum_rate(model, beta, method="sylvester",
+                                      truncation_energy=np.full(model.shape, 0.08))
+    callable_result = exact_quantum_rate(model, beta, method="sylvester",
+                                         truncation_energy=lambda points: np.full(len(points), 0.08))
+    assert array_result.rate == pytest.approx(global_result.rate, rel=1e-12)
+    assert callable_result.rate == pytest.approx(global_result.rate, rel=1e-12)
+    # The barrier line has the highest floor, so it carries the smallest margin.
+    assert global_result.diagnostics["truncation_margin"] == pytest.approx(0.08 - 0.0156, abs=1e-3)
+    untruncated = exact_quantum_rate(model, beta, method="sylvester")
+    # Six quanta of the transverse mode (0.06 Eh) above the ridge: converged.  Three quanta: not.
+    assert global_result.rate == pytest.approx(untruncated.rate, rel=2e-4)
+    tight = exact_quantum_rate(model, beta, method="sylvester", truncation_energy=0.0156 + 0.03)
+    assert 1e-3 < 1 - tight.rate / untruncated.rate < 2e-2

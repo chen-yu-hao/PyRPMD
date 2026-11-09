@@ -41,7 +41,8 @@ DEFAULTS = {
              "smoothing": 1.5},
     "subspace": {"dimension": "auto", "threshold": 0.5, "environment": "adiabatic"},
     "quantum": {"spacing_1d": None, "spacing_2d": None, "refinement": 3, "absorber_fraction": 0.2,
-                "threshold_margin": 1.0, "truncation_kt": 30.0, "padding": None, "dense_limit": 8000,
+                "threshold_margin": 1.0, "truncation_kt": 30.0, "truncation_min": 0.0, "padding": None,
+                "dense_limit": 8000,
                 "reference_kt": 0.3, "product_drop_kt": 15.0},
     "rpmd": {"nbeads": None, "windows": 48, "walkers": 32, "burn_in": 200, "sweeps": 400,
              "trajectories": 512, "seed": 0},
@@ -212,6 +213,16 @@ def _dividing_arc(run, path, arc):
     return float(arc[k - 1] + w * (arc[k] - arc[k - 1])), xi
 
 
+def _truncation_offset(options, beta):
+    """Truncation energy above the energy floor: max(truncation_kt / beta, truncation_min).
+
+    The removed DVR points are hard walls; the rate converges once the margin above
+    the valley floor is about six quanta of the stiffest transverse mode, which
+    ``truncation_min`` (Eh) enforces independently of temperature.
+    """
+    return max(float(options["truncation_kt"]) / beta, float(options.get("truncation_min", 0.0) or 0.0))
+
+
 def path_model(run: RateRun, path, options: Mapping[str, Any]):
     """1D vibrationally adiabatic model on the arc length of the assembled path."""
     masses = run.cartesian_masses
@@ -351,7 +362,7 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
             if curvature > 0:
                 widths.append(1.0 / np.sqrt(2.0 * np.sqrt(curvature)))
         sigma = float(min(widths)) if widths else 5.0
-        emax = (floor_guess - energies[inside].min()) + float(options["truncation_kt"]) / beta
+        emax = (floor_guess - energies[inside].min()) + _truncation_offset(options, beta)
         spacing = [sigma / 3.0, max(sigma / 3.0, 0.5 * np.pi / np.sqrt(2.0 * emax))]
     spacing = np.broadcast_to(np.asarray(spacing, dtype=float), (2,))
     # One V_S for both halves of C_S: it is projected on a grid `refinement`
@@ -363,7 +374,7 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
     fine = spacing / refinement
     counts = [int(np.ceil((hi[i] - lo[i]) / spacing[i])) * refinement + 1 for i in range(2)]
     axes = [lo[i] + fine[i] * np.arange(counts[i]) for i in range(2)]
-    skip = (floor_guess + 2.0 * float(options["truncation_kt"]) / run.beta + 0.05)
+    skip = (floor_guess + 2.0 * _truncation_offset(options, run.beta) + 0.05)
     environment = options.get("environment", "adiabatic")
     fine_model = project_linear_subspace(run.energy, run.gradient, ts, masses, np.column_stack([e0, e1]), axes,
                                          environment=environment, dividing_surface=0.0, rigid_body=True,
@@ -401,7 +412,7 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
         center, normal = tangent_normal(at)
         thresholds.append(_in_plane_threshold(rpmd_model, center, normal))
     floor = max(thresholds) - float(options["threshold_margin"]) / run.beta
-    truncation = floor + float(options["truncation_kt"]) / run.beta
+    truncation = floor + _truncation_offset(options, run.beta)
     quantum = {"absorber": absorber, "normalization": "slice", "energy_floor": floor,
                "truncation_energy": truncation, "dense_limit": int(options["dense_limit"])}
     retained = int(np.sum(model.values <= truncation))
