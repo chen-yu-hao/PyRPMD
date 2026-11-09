@@ -17,7 +17,7 @@ truncation_min = 0.10        # walls 0.10 Eh above the floor (collinear H+H2 at 
 threshold_margin = 1.0
 reference_kt = 0.3
 product_drop_kt = 15.0
-dense_limit = 11000
+dense_limit = 11500         # 11165 retained points at 0.10 Eh (~10 GB with the lean dense route)
 
 [rpmd]
 walkers = 32
