@@ -1,0 +1,29 @@
+# Subspace quantum correction of the 3D H + H2 (BKMP2) RPMD rate at 200 K:
+#   pyrpmd subspace-correct benchmarks/h3_subspace/correct_200K.toml
+# Source: rate_200K.inp (P = 128, output.centroid_path = true).
+
+[source]
+rate_run = "runs/h3-200K-P128"
+
+[subspace]
+dimension = "auto"
+threshold = 0.5
+environment = "adiabatic"   # bend and H2 stretch: beta hbar omega >= 6 at 200 K
+
+[quantum]
+refinement = 3
+truncation_kt = 30.0
+truncation_min = 0.12        # ~6 quanta of the H2 stretch above the floor (truncated-DVR walls)
+threshold_margin = 1.0
+reference_kt = 0.3
+product_drop_kt = 15.0
+dense_limit = 11000
+
+[rpmd]
+walkers = 32
+sweeps = 800
+trajectories = 1024
+seed = 17
+
+[output]
+directory = "runs/h3-200K-P128/subspace"
