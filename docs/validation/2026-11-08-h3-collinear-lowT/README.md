@@ -5,12 +5,12 @@ Scripts: `benchmarks/h3_subspace/` (`collinear.py` model, `run.py` driver, `camp
 below). Result records: `results/`.
 
 > **Correction (2026-11-09).** The exact rates below used DVR walls 0.04 Eh above the H₂
-> ground level. That is too low: the removed points confine the H₂ vibration (about six quanta,
-> 0.12 Eh, are needed). Walls at 0.16 Eh lower the exact rates by 3.1, 7.8, 12.9, 13.4 and 5.0% at
-> 600, 400, 300, 200 and 150 K. With those points retained, spacing 2.0 is 3–6% low at 200–150 K;
-> a spacing ladder is in
-> [docs/validation/2026-11-09-subspace-transfer](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/2026-11-09-subspace-transfer/README.md).
-> The RPMD rates are unaffected; the ratios k_RPMD/k_QM below are therefore low by up to ~15%.
+> ground level, which confine the H₂ vibration (about six quanta, 0.12 Eh, are needed), and a
+> spacing checked only at that truncation. Converged values (walls 0.16 Eh, spacing 1.5;
+> [details](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/2026-11-09-subspace-transfer/README.md)):
+> k_QM = 6.681e−5, 5.408e−6, 5.131e−7, 7.685e−9, 2.870e−10 at 600, 400, 300, 200, 150 K
+> (−2.8, −7.3, −12.2, −12.3, −2.5%). k_RPMD/k_QM becomes 0.65, 0.70, 0.69, 0.65, 0.53
+> (0.67, 0.71, 0.72, 0.67, 0.58 after the harmonic bead correction). The RPMD rates are unchanged.
 
 ## Why this test
 
