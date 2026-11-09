@@ -17,19 +17,58 @@ recrossing trajectories remain part of the same rate calculation.
 reconstruction. UI and MBAR both use umbrella samples. A raw MetaD bias
 estimate or OPES KDE is not accepted as a rate PMF.
 
+## Umbrella sampling does not select the rate estimator
+
+For a UI rate, select the estimator only once:
+
+```toml
+[rate.pmf]
+method = "umbrella"
+estimator = "ui"
+
+[rate.pmf.analysis]
+bootstrap = 40
+```
+
+Do not add `analysis.method="mbar"` or `analysis.method="ui"` to select the
+rate PMF. New umbrella sampling stages do not inject an `analysis.method`.
+Historical explicit `"mbar"` settings remain accepted for compatibility and
+never override `rate.pmf.estimator`; existing saved stage inputs are read
+without rewriting them. The legacy `rate.pmf_method` selector remains supported.
+Generic `task="fes"` still uses its own `analysis.method="mbar"` contract.
+
+The umbrella sampler produces resumable streams. Rate analysis then performs
+the selected estimate and its paired-endpoint bootstrap. UI still uses one
+MBAR fit for the existing overlap and empirical-support diagnostics; that fit
+is not the UI PMF estimator and does not run a separate FES bootstrap. MBAR
+rates reuse their selected fit for those diagnostics instead of solving a
+preliminary production FES first. Adaptive pilots continue to evaluate overlap
+when choosing windows; only their frozen, independent production streams enter
+the final rate analysis.
+
+`umbrella/fes.h5`, the canonical `umbrella/fes.*` files and
+`umbrella/summary.json` remain available, now written by rate analysis. They
+contain samples and point-estimate MBAR diagnostics, **not a second uncertainty
+estimate**: their bootstrap count is zero and their errors are unavailable.
+The metadata records `analysis_owner="rate"` and the selected `rate_estimator`.
+Use `rate_pmf.*` for the selected UI/MBAR curve and barrier uncertainty. Resume
+and fixed-window production extension use the same split; sampling clocks,
+checkpoint identities, flux measure and overlap rejection are unchanged.
+
 ## Start with a complete example
 
-The three examples use the existing analytic teaching PES and TS:
+The four example variants use the existing analytic teaching PES and TS:
 
 ```bash
 pyrpmd validate examples/rate/pmf_umbrella.inp --check-pes
+pyrpmd validate examples/rate/pmf_umbrella_mbar.inp --check-pes
 pyrpmd validate examples/rate/pmf_metadynamics.inp --check-pes
 pyrpmd validate examples/rate/pmf_opes.inp --check-pes
 
 pyrpmd run examples/rate/pmf_umbrella.inp --output runs/rate-umbrella
 ```
 
-Select either of the other input files in the same `run` command to exercise
+Select any of the other input files in the same `run` command to exercise
 that method. These are short input/workflow pilots, not a physical H + H2
 benchmark or a convergence prescription. In particular, a short enhanced
 sampling run can leave the reactant reference or barrier unsupported; that

@@ -18,7 +18,7 @@ from ..input import rate_pmf_options, rate_pmf_stage
 from ..io import fingerprint as _fingerprint
 from ..parallel import root_call, run_tasks
 from ..validation import checked_integer
-from .fes import run_fes
+from .fes import sample_umbrellas
 from .rate_analysis import _aggregate
 from .rate_constraints import (
     _normal,
@@ -57,11 +57,6 @@ def run_rate(config, system, output, executor=None):
     pmf_options = rate_pmf_options(config)
     stage = rate_pmf_stage(config, system)
     sampling_config = stage if stage is not None else config
-    if pmf_options["source"] is None and pmf_options["method"] == "mbar":
-        sampling_config = copy.deepcopy(sampling_config)
-        # The rate backend performs the one paired endpoint bootstrap. The
-        # intermediate FES only saves samples, overlap and a preliminary curve.
-        sampling_config["analysis"]["bootstrap"] = 0
     if config.get("output", {}).get("centroid_path") and sampling_config is not config:
         # Analysis-only switch (excluded from stream fingerprints): accumulate
         # aligned ring-polymer centroid moments in every umbrella window.
@@ -74,8 +69,8 @@ def run_rate(config, system, output, executor=None):
     if pmf_options["source"] is None:
         sampler = pmf_options.get("sampler", "umbrella")
         if sampler == "umbrella":
-            sampled = run_fes(sampling_config, system, Path(output) / "umbrella",
-                              executor=executor, return_data=True)
+            sampled = sample_umbrellas(sampling_config, system, Path(output) / "umbrella",
+                                       executor=executor)
         else:
             from ..analysis.fes_result import FESResult
             from .metadynamics import run_metadynamics

@@ -225,7 +225,7 @@ def test_worker_restores_local_plugin_imports_after_root_preparation_broadcast(
         raise ReachedWorkerDispatch()
 
     monkeypatch.setattr(rate_extend, "root_call", broadcast_only)
-    monkeypatch.setattr(fes, "run_fes", sample)
+    monkeypatch.setattr(fes, "sample_umbrellas", sample)
     previous_modules = set(sys.modules)
     try:
         with pytest.raises(ReachedWorkerDispatch):
@@ -509,7 +509,9 @@ def test_missing_committed_generation_artifact_is_not_rebuilt_or_replaced_by_old
 
 
 def test_new_unsupported_pmf_withholds_previous_rate_and_launches_no_children(saved_run, baseline, tmp_path):
-    reconstruct = fes.reconstruct_fes
+    from pyrpmd.analysis import fes as rate_analysis
+
+    reconstruct = rate_analysis.reconstruct_fes
 
     def disconnected_analysis(*args, **kwargs):
         data = reconstruct(*args, **kwargs)
@@ -521,7 +523,7 @@ def test_new_unsupported_pmf_withholds_previous_rate_and_launches_no_children(sa
 
     before = immutable_original(saved_run)
     with (
-        patch.object(fes, "reconstruct_fes", side_effect=disconnected_analysis),
+        patch.object(rate_analysis, "reconstruct_fes", side_effect=disconnected_analysis),
         patch.object(rate, "_parent_task", side_effect=AssertionError("sampled unsupported surface")),
         patch.object(rate, "_child_task", side_effect=AssertionError("launched unsupported children")),
     ):
