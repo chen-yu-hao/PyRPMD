@@ -10,7 +10,9 @@ on:
     branches:
       - 'claude/subspace-transfer-theory'
     paths:
-      - 'benchmarks/subspace_theory/**'
+      - 'benchmarks/subspace_theory/transfer.py'
+      - 'benchmarks/subspace_theory/plan.py'
+      - 'benchmarks/subspace_theory/aggregate.py'
       - '.github/workflows/subspace-transfer.yml'
 
 permissions:

@@ -166,6 +166,12 @@ a few percent. Two checks decide:
 - `nested_subspace_sensitivity([C_1D, C_2D, ...])` — the change of `ln C_S` when a coordinate
   is added. It is the final verdict and costs one larger quantum calculation.
 
+[Subspace transfer theory](subspace-transfer-theory.md) derives why: static environment effects
+(zero-point energy, imaginary-time corner cutting), which curvature × width measures, cancel from
+the transfer error; what remains is the environment's influence on RPMD's dynamical error. It
+also gives the first-order-exact `environment="free_energy"` projection and the finite-bead
+factor `harmonic_bead_factor` for environment modes.
+
 ## Numerical parameters to converge
 
 | Parameter | Where | Symptom when too small |

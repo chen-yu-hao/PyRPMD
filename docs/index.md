@@ -144,6 +144,7 @@ Low-temperature cross-checks <low-temperature>
 Quantum statistics <quantum-statistics>
 Quantum correction <quantum-correction>
 Subspace rate correction <subspace-correction>
+Subspace transfer theory <subspace-transfer-theory>
 Tier 2 coverage <tier2-methods>
 PA-CMD and property spectra <tier2-spectroscopy>
 Main-engine path-integral actions <tier2-path-integral>
