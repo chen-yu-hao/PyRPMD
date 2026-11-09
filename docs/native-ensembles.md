@@ -78,7 +78,7 @@ potential and convergence studies.
 | `piglet` | Per-mode GLE with supplied calibrated matrices and provenance; NVT or isotropic BZP NPT with a canonical centroid |
 | `trpmd` | Internal-mode PILE with exactly zero centroid friction; `pile_scale`; NVT only |
 | `ffl` | Fast-forward Langevin **rescale variant**: preserve direction, update speed; `gamma` |
-| `nhc` | Global Nosé–Hoover chain with three-stage Suzuki–Yoshida composition; `tau` (alias `tdamp`), `chain_length`, `substeps` |
+| `nhc` | Global Nosé–Hoover chain with three-stage Suzuki–Yoshida composition; `tau` (alias `tdamp`), `chain_length`, `substeps`. One global bath: biased for PIMD with P>1 ([details](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md#thermostat-choice)) |
 
 Defaults of the numeric API are in atomic units, not physical recommendations.
 NHC uses a symmetric bath/2–deterministic-map–bath/2 split, with the same chain
