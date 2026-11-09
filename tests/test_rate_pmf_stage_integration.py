@@ -52,10 +52,10 @@ def test_explicit_reaction_prepares_the_selected_independent_sampler(method):
 def test_regional_operation_controls_use_pmf_clock_and_preserve_parent_clock(nested, thermostat):
     spec = research_spec()
     spec.data["native"] = False
-    spec.data["rate"]["pmf"] = {
+    spec.data["rate"]["pmf"].update({
         "method": "umbrella",
         "dynamics": {"timestep": "0.2 fs", "integrator": "normal-mode-bab"},
-    }
+    })
     if thermostat == "pile-l":
         spec.data["umbrella"]["sampling"]["thermostat"] = {
             "type": "pile-l", "gamma_centroid": "0.02 fs^-1",
