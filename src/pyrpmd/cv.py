@@ -721,6 +721,28 @@ class RPMDrateCoordinate(CollectiveVariable):
     def dividing_surface(self, xi):
         return RateSurface(self, float(xi))
 
+    def branch(self, q):
+        """Report the centroid's branch of xi=s0/(s0-s1).
+
+        Umbrella sampling assumes the regular branch s0-s1>0, where xi grows
+        monotonically from reactants through the TS. Beyond the singular
+        surface s0=s1 (far along the product channel) xi jumps to -inf and
+        then returns toward ~1/3; an umbrella centered past the TS then no
+        longer restrains the geometry. Values there are not on the same
+        reaction coordinate and must not enter a rate PMF.
+        """
+        ring = np.asarray(q, float)
+        centroid = ring.mean(axis=0) if ring.ndim == 3 else ring
+        s0, s1 = _rate_surfaces(self, centroid, 0)
+        denominator = s0 - s1
+        regular = bool(denominator > 1e-10)
+        return {
+            "s0": float(s0), "s1": float(s1), "denominator": float(denominator),
+            "xi": float(s0 / denominator) if abs(denominator) > 1e-10 else None,
+            "branch": "regular" if regular else "beyond_singular_surface",
+            "regular": regular,
+        }
+
 
 class RateSurface(CollectiveVariable):
     units = ("bohr",)

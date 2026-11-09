@@ -20,7 +20,7 @@ from ..propagation import loop_options
 from ..units import parse_quantity
 from .common import (_atomic_npz, _fingerprint, _dimension, checked_integer,
                      fingerprint_matches, resolve_cvs)
-from .biased_sampling import SamplingRuntime, run_biased_sampling, dispatch_replicas
+from .biased_sampling import SamplingRuntime, run_biased_sampling, dispatch_replicas, failure_writer
 from ..analysis.fes_result import FESResult, write_fes_result, estimate_fes_uncertainty
 from .sampling import (fes_sampler, checkpoint_cv_config, read_operator_checkpoint,
                        validate_andersen_schedule)
@@ -268,6 +268,14 @@ def _read_stream(config, system, output, replica, cv, options):
                 "checkpoint": str(checkpoint), "complete": elapsed == options["neq"] + options["nprod"]}
 
 
+def _opes_bias_summary(bias):
+    state = bias.state_dict()
+    steps = state.get("steps", [])
+    return {"kind": "opes", "method": state.get("method"), "kernel_count": len(state.get("centers", [])),
+            "last_kernel_step": steps[-1] if len(steps) else None, "log_z": state.get("log_z"),
+            "barrier": state.get("barrier"), "bias_factor": state.get("bias_factor")}
+
+
 def _sample_replica(task):
     config, system, output, replica = task["config"], task["system"], task["output"], task["replica"]
     cv, _, options = resolve_opes(config, system)
@@ -334,7 +342,12 @@ def _sample_replica(task):
                             update=update, sampler=sampler, save=save,
                             active_bias=lambda elapsed, current: total_bias(current),
                             energy_bias=total_bias,
-                            fallback_reason="OPES probability updates require the Python workflow")
+                            fallback_reason="OPES probability updates require the Python workflow",
+                            failure=failure_writer(
+                                Path(output) / "failures" / f"opes_{replica:04d}.json",
+                                dynamics, cv, identity={"method": "opes", "replica": replica},
+                                neq=options["neq"], nprod=options["nprod"], checkpoint=checkpoint,
+                                bias_state=lambda: _opes_bias_summary(update.bias)))
         return _read_stream(config, system, output, replica, cv, options)
     finally:
         if hasattr(provider, "close"):

@@ -66,7 +66,8 @@ _SECTIONS = {
         "cvs coordinate grid centers centers_au regions windows force_constant force_matrix kappa stiffness stiffness_au start stop count sampling analysis".split()
     ),
     "rate": set(
-        "recrossing pmf_points pmf_method pmf_search_range dividing_surface compare_ui pmf_source pmf".split()
+        "recrossing pmf_points pmf_method pmf_search_range dividing_surface compare_ui pmf_source pmf "
+        "pmf_min_weight_ess pmf_min_endpoint_ess pmf_max_window_displacement".split()
     ),
     "recrossing": set(
         "parent_replicas parent_samples equilibration equilibration_steps parent_interval parent_interval_steps child_pairs child_pairs_per_parent child_steps child_time dividing_surface plateau_fraction plateau_tolerance bootstrap constraint_tolerance child_batch_pairs dynamics friction_scale integrator parent children analysis parent_thermostat".split()

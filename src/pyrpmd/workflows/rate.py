@@ -46,6 +46,39 @@ from .rate_recrossing import _child_task, _child_tasks, _dispatch_children, _par
 from .sampling import validate_andersen_schedule
 
 
+def _record_sampling_failure(output, directory, sampler, error):
+    """Mark the rate PMF incomplete when any biased history failed."""
+    from ..io import write_report_json
+    from .biased_sampling import history_failures
+
+    failures = history_failures(directory)
+    if not failures:
+        return []
+    write_report_json(Path(output) / "rate_pmf.json", {
+        "schema_version": 2,
+        "sampler": sampler,
+        "ready": False,
+        "status": "sampling_incomplete",
+        "failure_reason": "biased_history_failed",
+        "curve_role": None,
+        "free_energy_barrier_hartree": None,
+        "k_qtst_au": None,
+        "k_qtst_cm3_s": None,
+        "error": {"type": type(error).__name__, "message": str(error)},
+        "failed_histories": failures,
+        "partial_history_policy": (
+            "A failed history makes the method incomplete. Completed histories "
+            "are not selected or combined into a PMF unless a formally specified, "
+            "unbiased restart/replacement protocol exists."
+        ),
+        "warnings": [
+            "One or more biased histories failed; inspect each failure record "
+            "(state, minimum pair distance, CV, bias state, propagation counters, checkpoint).",
+        ],
+    })
+    return failures
+
+
 def run_rate(config, system, output, executor=None):
     from . import validate_bond_constraint_workflow
     validate_bond_constraint_workflow(system, "rate")
@@ -68,18 +101,31 @@ def run_rate(config, system, output, executor=None):
     sampled = None
     if pmf_options["source"] is None:
         sampler = pmf_options.get("sampler", "umbrella")
-        if sampler == "umbrella":
-            sampled = sample_umbrellas(sampling_config, system, Path(output) / "umbrella",
-                                       executor=executor)
-        else:
-            from ..analysis.fes_result import FESResult
-            from .metadynamics import run_metadynamics
-            from .opes import run_opes
+        directory = Path(output) / ("umbrella" if sampler == "umbrella" else "pmf")
+        try:
+            if sampler == "umbrella":
+                sampled = sample_umbrellas(sampling_config, system, directory,
+                                           executor=executor)
+            else:
+                from ..analysis.fes_result import FESResult
+                from .metadynamics import run_metadynamics
+                from .opes import run_opes
 
-            worker = {"metadynamics": run_metadynamics, "opes": run_opes}[sampler]
-            sampled = worker(sampling_config, system, Path(output) / "pmf",
-                             executor=executor, return_data=True)
-            sampled["rate_surface"] = root_call(FESResult.read, Path(output) / "pmf")
+                worker = {"metadynamics": run_metadynamics, "opes": run_opes}[sampler]
+                sampled = worker(sampling_config, system, directory,
+                                 executor=executor, return_data=True)
+                sampled["rate_surface"] = root_call(FESResult.read, directory)
+        except Exception as error:
+            failures = root_call(_record_sampling_failure, str(output), str(directory),
+                                 sampler, error)
+            if failures:
+                raise RuntimeError(
+                    f"{sampler} PMF sampling is incomplete: {len(failures)} history/histories "
+                    f"failed ({type(error).__name__}: {error}). Completed histories are not "
+                    f"combined into a PMF and no rate is reported. See "
+                    f"{Path(output) / 'rate_pmf.json'} and {directory / 'failures'}."
+                ) from error
+            raise
     pmf, parent_tasks = root_call(
         _pmf_and_parent_tasks, sampled, config, system, str(output), options
     )

@@ -29,7 +29,7 @@ from ..trajectory import TrajectoryStream, _descriptor, _walk_reverse, materiali
 from ..trajectory_batch import task_provider, trajectory_batch_size
 from ..units import parse_quantity
 from .sampling import AndersenSchedule, fes_sampler, validate_andersen_schedule
-from .biased_sampling import SamplingRuntime, run_biased_sampling, dispatch_tasks
+from .biased_sampling import SamplingRuntime, run_biased_sampling, dispatch_tasks, failure_writer
 from .common import (
     _atomic_npz, _fingerprint, _dimension, checked_integer, write_json, jsonable,
     fingerprint_matches,
@@ -640,6 +640,17 @@ def _sample_window(task):
             runtime, dynamics, cv, bias, neq=neq, nprod=nprod, interval=interval,
             checkpoint_steps=checkpoint_steps, sampling=sampling, sampler=sampler,
             save=save, initial_save=False,
+            failure=failure_writer(
+                checkpoint.parent.parent / "failures" / (checkpoint.stem + ".json"),
+                dynamics, cv,
+                identity={"method": "umbrella", "window": int(window), "replica": int(replica),
+                          "center": np.asarray(center, float).tolist(),
+                          "stiffness_hartree": np.asarray(stiffness, float).tolist(),
+                          **({"window_id": task["window_id"]} if "window_id" in task else {})},
+                neq=neq, nprod=nprod, checkpoint=checkpoint,
+                bias_state=lambda: {"kind": "fixed_umbrella",
+                                    "center": np.asarray(center, float).tolist(),
+                                    "stiffness_hartree": np.asarray(stiffness, float).tolist()}),
         )
         state, elapsed = runtime.state, runtime.elapsed
         if descriptor is not None:

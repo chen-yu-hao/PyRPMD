@@ -33,7 +33,8 @@ from .common import (_atomic_npz, _fingerprint, _dimension, checked_integer,
                      fingerprint_matches, resolve_cvs)
 from .sampling import (fes_sampler, legacy_metadynamics_sampling, middle_sampling_method,
                        read_operator_checkpoint, validate_andersen_schedule, AndersenSchedule)
-from .biased_sampling import SamplingRuntime, run_biased_sampling, dispatch_replicas, dispatch_tasks
+from .biased_sampling import (SamplingRuntime, run_biased_sampling, dispatch_replicas, dispatch_tasks,
+                              failure_writer)
 from ..analysis.fes_result import FESResult, write_fes_result
 
 
@@ -638,6 +639,12 @@ def _read_stream(config, system, output, replica, cv, options):
     return result
 
 
+def _metadynamics_bias_summary(bias):
+    hills = bias.hills
+    return {"kind": "metadynamics", "hill_count": int(bias.hill_count),
+            "last_hill": hills[-1] if len(hills) else None}
+
+
 def _sample_replica(task):
     config, system, output, replica = task["config"], task["system"], task["output"], task["replica"]
     cv, _, options = resolve_metadynamics(config, system)
@@ -731,6 +738,11 @@ def _sample_replica(task):
                             checkpoint_steps=config.get("output", {}).get("checkpoint_steps", 1000),
                             update=update, sampler=sampler,
                             save=None if shared else save, stop=task.get("stop"),
+                            failure=None if shared else failure_writer(
+                                Path(output) / "failures" / f"metadynamics_{replica:04d}.json",
+                                dynamics, cv, identity={"method": "metadynamics", "replica": replica},
+                                neq=options["neq"], nprod=options["nprod"], checkpoint=checkpoint,
+                                bias_state=lambda: _metadynamics_bias_summary(update.bias)),
                             active_bias=lambda elapsed, current: total_bias(
                                 current, elapsed >= options["neq"] or config["metadynamics"].get("walls_during_equilibration", True)),
                             energy_bias=total_bias,
