@@ -74,6 +74,12 @@ plateau_fraction = 0.25
 plateau_tolerance = 0.1
 bootstrap = 100
 
+[parallel]
+backend = "process"
+trajectory_workers = 4
+bead_workers = 1
+threads_per_rank = 1
+
 [output]
 directory = "runs/h3-equal-budget-fixed96"
 checkpoint_interval = "50 fs"
