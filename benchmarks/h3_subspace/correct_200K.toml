@@ -13,7 +13,7 @@ environment = "adiabatic"   # bend and H2 stretch: beta hbar omega >= 6 at 200 K
 [quantum]
 refinement = 3
 truncation_kt = 30.0
-truncation_min = 0.12        # ~6 quanta of the H2 stretch above the floor (truncated-DVR walls)
+truncation_min = 0.10        # walls 0.10 Eh above the floor (collinear H+H2 at 200 K: ~1% from the 0.16 Eh limit)
 threshold_margin = 1.0
 reference_kt = 0.3
 product_drop_kt = 15.0
@@ -27,3 +27,4 @@ seed = 17
 
 [output]
 directory = "runs/h3-200K-P128-b20/subspace"
+reuse = true
