@@ -118,3 +118,26 @@ def test_online_joint_step_rolls_back_on_callback_failure():
     assert np.array_equal(runner.positions, initial_q)
     assert np.array_equal(runner.momenta, initial_p)
     assert np.array_equal(runner.wavefunction, initial_psi)
+
+
+def test_online_joint_ring_polymer_uses_standard_rpmd_forces_and_conserves_energy():
+    """P > 1: unscaled physical force per bead, full centroid force, conserved H_P."""
+    grid = np.linspace(-7.0, 7.0, 128, endpoint=False)
+    psi = gaussian(grid, center=0.2, width=0.8)
+    omega_bath, coupling = 0.8, 0.1
+    q0 = np.array([[0.3], [0.5], [0.1], [-0.2]])
+    runner = OnlineQuantumRPMD(
+        grid, 1.0, 2.0, 0.002, q0, np.zeros_like(q0), [1.5],
+        lambda x, q: 0.5 * x**2 + coupling * q[0] * x,
+        quantum_gradient=lambda x, q: np.full((1, len(x)), coupling * x),
+        bath_force=lambda q: -1.5 * omega_bath**2 * q,
+        bath_potential=lambda q: 0.75 * omega_bath**2 * float(q[0] ** 2),
+        wavefunction=psi,
+    )
+    force, qforce = runner._forces(runner.positions, runner.wavefunction)
+    spring = runner._spring_force(runner.positions)
+    expected = spring - 1.5 * omega_bath**2 * q0 + qforce[None, :]
+    assert np.allclose(force, expected)
+    result = runner.propagate(2000, sample_stride=200)
+    drift = np.max(np.abs(result.total_energy - result.total_energy[0]))
+    assert drift < 2e-5 * max(1.0, abs(result.total_energy[0]))

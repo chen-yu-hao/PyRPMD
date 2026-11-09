@@ -200,7 +200,9 @@ def _read_window_checkpoint(task, cv, *, production_steps=None, materialize=Fals
             if not operator_state.get("sampling"):
                 raise ValueError("umbrella checkpoint is missing thermostat auxiliary state")
         result = {"state": state, "rng": rng, "elapsed": elapsed, "propagation": propagation,
-                  "operator_state": operator_state}
+                  "operator_state": operator_state,
+                  "centroid_moments": {key: np.array(saved[key]) for key in saved.files
+                                       if key.startswith("centroid_path_")} or None}
         collision_clock = AndersenSchedule(
             checked_integer(sampling.get("andersen_interval", 10), "sampling.andersen_interval"),
             validate_andersen_schedule(config, "fes"),
@@ -525,6 +527,14 @@ def _sample_window(task):
         saved_elapsed = None
         descriptor = None
         store_operators = sampler.operator_checkpoint
+        accumulator = _centroid_accumulator(config, system, cv)
+        if accumulator is not None and saved is not None:
+            if saved.get("centroid_moments"):
+                accumulator.restore(saved["centroid_moments"])
+            elif saved["elapsed"] > neq:
+                # Samples recorded before accumulation was switched on are
+                # missing; the window is marked incomplete in the path file.
+                accumulator.restored_incomplete = True
         if saved is not None:
             state = saved["state"]
             dynamics.rng.bit_generator.state = saved["rng"]
@@ -578,7 +588,8 @@ def _sample_window(task):
 
         runtime = SamplingRuntime(state, elapsed, values=values, energies=energies,
                                   collision_clock=collision_clock,
-                                  operator_checkpoint=store_operators)
+                                  operator_checkpoint=store_operators,
+                                  centroid_accumulator=accumulator)
 
         def save(current):
             nonlocal saved_elapsed, descriptor
@@ -600,6 +611,8 @@ def _sample_window(task):
             )
             if "window_id" in task:
                 payload.update(window_id=task["window_id"], center=center, stiffness=stiffness)
+            if accumulator is not None:
+                payload.update(accumulator.to_arrays())
             arrays = {"values": np.asarray(values).reshape(-1, cv.dimension),
                       "energies": np.asarray(energies)}
             if writer is not None:
@@ -651,7 +664,23 @@ def _sample_window(task):
             "checkpoint": str(checkpoint),
             "native": dynamics.native,
             "propagation": dict(dynamics.propagation_stats),
+            # Windows resumed from checkpoints that predate accumulation have
+            # fewer moments than samples; the path writer marks them incomplete.
+            "centroid_moments": accumulator.to_arrays() if accumulator is not None else None,
         }
+
+
+def _centroid_accumulator(config, system, cv):
+    """Accumulator for ``output.centroid_path`` on a scalar RPMDrate coordinate."""
+    if not config.get("output", {}).get("centroid_path"):
+        return None
+    if cv.dimension != 1 or not isinstance(cv.cvs[0], RPMDrateCoordinate):
+        return None
+    if getattr(system, "fixed_atoms", ()) or any(getattr(system, "pbc", ())):
+        return None
+    from ..analysis.centroid_path import CentroidAccumulator
+
+    return CentroidAccumulator(system.masses, system.geometry, cv.cvs[0].permutations)
 
 
 def _write_fes(output, data, streams, cv, config, _postprocess=None):

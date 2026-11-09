@@ -38,6 +38,9 @@ class SamplingRuntime:
     # R10 execution-contract marker. A missing marker means a legacy
     # checkpoint and must retain the scalar history path byte-for-byte.
     native_path_contract: int = 0
+    # Optional pyrpmd.analysis.centroid_path.CentroidAccumulator. It sees the
+    # bead positions of every recorded production sample (fixed bias only).
+    centroid_accumulator: object | None = None
 
 
 def dispatch_replicas(config, system, output, worker, executor=None, *, task_fields=None):
@@ -77,13 +80,20 @@ def _fixed_step(runtime, dynamics, cv, bias, *, neq, total, interval,
                         checkpoint_steps - runtime.elapsed % checkpoint_steps)
             production = runtime.elapsed + np.arange(1, count + 1) - neq
             observe = (production > 0) & (production % interval == 0)
+            accumulator = runtime.centroid_accumulator
             block = dynamics.propagate_block(
                 state, count, bias=bias, cv=cv, observe=observe,
                 check_energy=True, raise_on_error=False,
+                **({"record_states": True} if accumulator is not None else {}),
             )
             runtime.elapsed += block.completed
             runtime.values.extend(block.values.copy())
             runtime.energies.extend(block.energies.tolist())
+            if accumulator is not None:
+                if block.q is None or len(block.q) != len(block.values):
+                    raise RuntimeError("centroid path accumulation needs the recorded ring states")
+                for q, value in zip(block.q, block.values):
+                    accumulator.add(q, float(np.asarray(value).reshape(-1)[0]))
             if block.error is not None:
                 raise PropagationError(block)
         else:
@@ -115,6 +125,8 @@ def _fixed_step(runtime, dynamics, cv, bias, *, neq, total, interval,
             if record:
                 runtime.values.append(value.copy())
                 runtime.energies.append(energy)
+                if runtime.centroid_accumulator is not None:
+                    runtime.centroid_accumulator.add(state.q, float(value[0]))
             runtime.elapsed += 1
             if (dynamics.propagation_stats["python_steps"] == previous_stats["python_steps"]
                     and dynamics.propagation_stats["native_steps"] == previous_stats["native_steps"]):

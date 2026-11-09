@@ -118,8 +118,11 @@ full-subspace algebraic limit. The reproducibility record is stored in
 `OnlineQuantumRPMD` provides the online version of the small-system reference
 workflow. At every time step it propagates an RPMD ring polymer and a
 normalized one-dimensional wavefunction on the same clock. The quantum
-potential is evaluated at the ring-polymer centroid, and its Ehrenfest force is
-distributed equally over the beads:
+potential is evaluated at the ring-polymer centroid. The ring polymer uses the
+standard RPMD Hamiltonian sampled at `beta/P` (full physical force on every
+bead), and the centroid-coupled quantum energy enters it once per bead, so every
+bead receives the full Ehrenfest force `-<dV_q/dq_c>`; `total_energy` is the
+conserved `H_P` including `P*<H_q>`:
 
 ```python
 from pyrpmd.analysis import OnlineQuantumRPMD
@@ -197,8 +200,12 @@ corrected = hybrid_flux_side_correction(time, rpmd_full, rpmd_sub, quantum_sub)
 
 `flux_side_rate` keeps the reactant population explicit, resamples complete
 replicas rather than time frames, and records plateau diagnostics. The
-correction transfers either an additive rate defect or a regularized inverse
-defect. It has the same algebraic limits as the response workflow: zero defect
+correction transfers an additive rate defect, a regularized inverse defect, or
+(`mode="ratio"`) a multiplicative defect `k_full * k_Q,sub / k_RP,sub`. Prefer the
+ratio for rates: it is invariant to a prefactor shared by the two subspace
+rates, whereas the additive form assumes the subspace model and the full system
+have the same absolute rate. For thermal rate constants with an exact 1-3D
+subspace calculation, see [Subspace rate correction](subspace-correction.md). It has the same algebraic limits as the response workflow: zero defect
 returns the full RPMD curve, and passing the full system in all three inputs
 returns the quantum curve exactly. These are identities of the estimator, not
 proofs of physical exactness.

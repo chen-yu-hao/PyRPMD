@@ -23,6 +23,7 @@ from dataclasses import dataclass
 from typing import Iterable, Optional
 
 import numpy as np
+from scipy.integrate import trapezoid as _trapezoid
 from scipy.optimize import least_squares
 
 
@@ -109,8 +110,9 @@ def spectral_density_from_kubo(
     dt = np.diff(t)
     if frequencies is None:
         # A direct quadrature has no FFT-grid requirement.  The Nyquist limit
-        # is still a useful upper bound for a sampled trajectory.
-        nyquist = 0.5 / np.min(dt)
+        # is still a useful upper bound for a sampled trajectory.  The
+        # transform uses angular frequency, cos(w t), so the limit is pi/dt.
+        nyquist = np.pi / np.min(dt)
         nfreq = max(2, int(pad_factor) * (t.size - 1) + 1)
         freq = np.linspace(0.0, nyquist, nfreq)
     else:
@@ -118,11 +120,11 @@ def spectral_density_from_kubo(
         if freq.ndim != 1 or np.any(~np.isfinite(freq)) or np.any(freq < 0):
             raise ValueError("frequencies must be a finite one-dimensional nonnegative array")
     w = _window_values(t.size, window)
-    # np.trapezoid is unavailable in older NumPy versions used by some PyRPMD
-    # environments, while np.trapz remains widely supported.
+    # scipy.integrate.trapezoid works on every supported NumPy; np.trapz was
+    # removed in NumPy 2.4 and np.trapezoid is missing before NumPy 2.0.
     integrand = c * w
     phase = np.cos(np.outer(freq, t))
-    integral = np.trapz(phase * integrand[None, :], t, axis=1)
+    integral = _trapezoid(phase * integrand[None, :], t, axis=1)
     J = beta * freq * integral
     # Only an explicitly requested zero-frequency sample is fixed to zero.
     # A user-supplied grid may legitimately start at a small positive omega;
@@ -201,8 +203,8 @@ def correlation_from_spectral_density(
     coth[~nz] = 0.0
     cos_part = np.cos(np.outer(t, omega))
     sin_part = np.sin(np.outer(t, omega))
-    real = np.trapz(cos_part * (J * coth)[None, :], omega, axis=1) / np.pi
-    imag = -np.trapz(sin_part * J[None, :], omega, axis=1) / np.pi
+    real = _trapezoid(cos_part * (J * coth)[None, :], omega, axis=1) / np.pi
+    imag = -_trapezoid(sin_part * J[None, :], omega, axis=1) / np.pi
     return real + 1j * imag
 
 
@@ -271,7 +273,7 @@ def harmonic_bath_spectral_density(
     # the grid is finite and the mode lies close to a boundary.
     for Om, weight in zip(modes, weights):
         g = np.exp(-0.5 * ((omega - Om) / sigma) ** 2)
-        norm = np.trapz(g, omega) if omega.size > 1 else g[0]
+        norm = _trapezoid(g, omega) if omega.size > 1 else g[0]
         if norm > 0:
             out += weight * g / norm
     return out

@@ -87,7 +87,7 @@ class JointPropagationResult:
     ``positions`` and ``momenta`` have shape ``[frame, bead, bath_coordinate]``;
     ``wavefunctions`` has shape ``[frame, grid]`` and uses the convention
     ``dx*sum(abs(psi)**2)=1``.  ``quantum_force`` is the force on the centroid
-    bath coordinate before it is distributed equally over the beads.  The
+    bath coordinate; every bead receives this full force (see ``_forces``).  The
     energy fields are diagnostics for the mixed propagation and are not
     proofs of convergence.
     """
@@ -157,8 +157,8 @@ class OnlineQuantumRPMD:
         used to provide the Ehrenfest force to the RPMD beads.
     bath_force:
         Optional callable returning ``-dV_bath/dq`` for each bead, with the
-        same shape as ``positions``.  It is divided by ``P`` internally,
-        consistent with the standard RPMD Hamiltonian.
+        same shape as ``positions``.  It is applied to each bead unscaled,
+        as in the standard RPMD Hamiltonian sampled at ``beta/P``.
     bath_potential:
         Optional callable returning the physical bath potential for one bead.
         It is used for an energy diagnostic only.
@@ -247,7 +247,8 @@ class OnlineQuantumRPMD:
             "quantum_coordinate_count": 1,
             "environment_beads": self.nbeads,
             "centroid_coupling": True,
-            "quantum_force_distribution": "equal_over_beads",
+            "quantum_force_distribution": "full_centroid_force_on_every_bead",
+            "ring_polymer_convention": "H_P = sum_j [p^2/2m + V(q_j)] + springs, beta_P = beta/P",
             "quantum_gradient_source": "analytic" if quantum_gradient is not None else "finite_difference",
             "beta": float(self.beta),
             "dt": float(self.dt),
@@ -314,10 +315,13 @@ class OnlineQuantumRPMD:
     def _forces(self, positions: np.ndarray, psi: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         centroid = np.mean(positions, axis=0)
         qforce = self._quantum_force(psi, centroid)
-        # H_P has (1/P) sum_j V_bath(q_j), hence physical and quantum forces
-        # are divided by P when combined with the spring force.
-        force = self._spring_force(positions) + self._bath_force(positions) / self.nbeads
-        force += qforce[None, :] / self.nbeads
+        # Standard RPMD Hamiltonian sampled at beta_P = beta/P:
+        # H_P = sum_j [p_j^2/2m + V_bath(q_j)] + springs(omega_P = P/beta).
+        # Each bead feels the full physical force.  The quantum energy depends
+        # on the centroid and enters H_P as P*<V_Q(centroid)>, so each bead
+        # also receives the full centroid force -<dV_Q/dq_c>.
+        force = self._spring_force(positions) + self._bath_force(positions)
+        force += qforce[None, :]
         return force, qforce
 
     def _propagate_quantum(self, psi: np.ndarray, centroid: np.ndarray) -> np.ndarray:
@@ -348,7 +352,7 @@ class OnlineQuantumRPMD:
         if self.bath_potential is None:
             physical = 0.0
         else:
-            physical = float(np.mean([self.bath_potential(np.array(row, dtype=float, copy=True)) for row in self.positions]))
+            physical = float(np.sum([self.bath_potential(np.array(row, dtype=float, copy=True)) for row in self.positions]))
             if not np.isfinite(physical):
                 raise ValueError("bath_potential returned a non-finite value")
         return float(kinetic + spring + physical)
@@ -402,7 +406,9 @@ class OnlineQuantumRPMD:
         xmomentum.append(float(pm))
         qenergy.append(energy)
         qforce.append(qf)
-        total.append(self._bath_energy() + energy)
+        # Conserved ring-polymer energy: the centroid-coupled quantum energy
+        # appears once per bead in H_P.
+        total.append(self._bath_energy() + self.nbeads * energy)
         norms.append(self._norm(self.wavefunction))
 
     def propagate(self, steps: int, *, sample_stride: int = 1) -> JointPropagationResult:
