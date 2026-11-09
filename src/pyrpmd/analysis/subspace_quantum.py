@@ -260,23 +260,39 @@ def _dense_rate(model, operators, eps, beta, shift, *, keep=None, energy_floor=N
     half = np.exp(-0.5 * beta * (energies - shift))
     if energy_floor is not None:
         half = np.where(energies >= energy_floor, half, 0.0)
-    boltzmann_half = (vectors * half[None, :]) @ vectors.T
     product = operators.product.ravel()[keep]
-    commutator = hamiltonian * product[None, :] - product[:, None] * hamiltonian
-    flux_operator = 1j * commutator
-    thermal_flux = boltzmann_half @ flux_operator @ boltzmann_half
-    absorbing = hamiltonian - 1j * np.diag(np.broadcast_to(eps, operators.shape).ravel()[keep])
-    triangular, unitary = schur(absorbing, output="complex")
-    rhs = 1j * (unitary.conj().T @ flux_operator @ unitary)
+    # The flux operator is F = i K with the real commutator K = [H, h], so the
+    # thermal flux operator is F_beta = i B K B with B = exp(-beta H / 2).
+    # Working with real K and B K B, and freeing each matrix once used, keeps
+    # the peak at four complex N x N arrays (the Schur pair, the right-hand
+    # side and the solution) instead of about eight.
+    commutator = hamiltonian * product[None, :]
+    commutator -= product[:, None] * hamiltonian
+    boltzmann_half = (vectors * half[None, :]) @ vectors.T
+    thermal_real = boltzmann_half @ commutator @ boltzmann_half
+    del boltzmann_half
+    absorbing = hamiltonian.astype(complex)
+    del hamiltonian
+    absorbing[np.diag_indices_from(absorbing)] -= 1j * np.broadcast_to(eps, operators.shape).ravel()[keep]
+    triangular, unitary = schur(absorbing, output="complex", overwrite_a=True)
+    del absorbing
+    # Right-hand side i U^+ F U = -U^+ K U.
+    rhs = unitary.conj().T @ commutator
+    del commutator
+    rhs = rhs @ unitary
+    rhs *= -1.0
     solution, scale, info = ztrsyl(triangular, triangular, rhs, trana="C", tranb="N", isgn=-1)
+    del rhs, triangular
     if info < 0:
         raise RuntimeError(f"ztrsyl failed with info={info}")
-    solution = solution / scale
-    projected = unitary.conj().T @ thermal_flux @ unitary
-    flux = float(np.real(np.sum(projected * solution.T)))
+    solution /= scale
+    projected = unitary.conj().T @ thermal_real
+    projected = projected @ unitary
+    flux = float(np.real(1j * np.einsum("ij,ji->", projected, solution)))
+    del projected, solution, unitary
     # Tr[F_beta h] vanishes for an exact thermal flux operator; a nonzero value
     # measures how well the grid represents the dividing surface.
-    side_check = float(np.real(np.trace(thermal_flux * product[None, :])))
+    side_check = float(np.real(1j * np.sum(np.diag(thermal_real) * product)))
     if normalization == "slice":
         partition, info_q = _slice_density(model, operators, keep, energies, vectors, beta, shift)
     else:
@@ -492,6 +508,46 @@ def _iterative_rate(model, operators, eps, beta, shift, *, cutoff, flux_states, 
     }
 
 
+def _truncation_threshold(model, truncation_energy):
+    if callable(truncation_energy):
+        values = np.asarray(truncation_energy(model.grid_points().reshape(-1, model.dimension)), dtype=float)
+    else:
+        values = np.asarray(truncation_energy, dtype=float)
+    threshold = np.broadcast_to(values.reshape(model.shape) if values.size == np.prod(model.shape) else values,
+                                model.shape)
+    if not np.isfinite(threshold).all():
+        raise ValueError("truncation_energy must be finite")
+    return np.asarray(threshold, dtype=float)
+
+
+def _truncation_margin(model, potential, threshold):
+    """Threshold minus transverse-line floor at the reference and dividing-surface lines.
+
+    ``truncation_margin`` is the smaller of the two (the lines that set the
+    reactant normalization and the flux); ``truncation_margin_minimum`` is the
+    smallest over all axis-0 lines that keep points, which also picks up box
+    edges and is informative only for simple valleys.
+    """
+    if potential.ndim == 1:
+        value = float(np.min(threshold - potential.min()))
+        return {"truncation_margin": value, "truncation_margin_minimum": value}
+    flat_v = potential.reshape(potential.shape[0], -1)
+    flat_t = threshold.reshape(threshold.shape[0], -1)
+    floor_index = flat_v.argmin(axis=1)
+    rows = np.arange(potential.shape[0])
+    margins = flat_t[rows, floor_index] - flat_v[rows, floor_index]
+    kept = np.any(flat_v <= flat_t, axis=1)
+    axis0 = model.axes[0]
+    reference = int(np.argmin(abs(axis0 - model.reactant_reference)))
+    surface = int(np.argmin(abs(axis0 - model.dividing_surface)))
+    return {
+        "truncation_margin": float(min(margins[reference], margins[surface])),
+        "truncation_margin_reference": float(margins[reference]),
+        "truncation_margin_dividing_surface": float(margins[surface]),
+        "truncation_margin_minimum": float(margins[kept].min()) if kept.any() else None,
+    }
+
+
 def exact_quantum_rate(
     model: SubspaceModel,
     beta: float,
@@ -512,7 +568,7 @@ def exact_quantum_rate(
     absorber: Any = None,
     normalization: str = "default",
     energy_floor: float | None = None,
-    truncation_energy: float | None = None,
+    truncation_energy: Any = None,
 ) -> QuantumRateResult:
     """Exact thermal rate constant of ``model`` at inverse temperature ``beta``.
 
@@ -546,6 +602,16 @@ def exact_quantum_rate(
         absorber reflection errors times an enormous Boltzmann weight.
     ``truncation_energy``
         energy-truncated DVR: grid points with ``V`` above it are removed.
+        A number is one global threshold; an array of the grid shape, or a
+        callable ``threshold(points[N, d])``, gives one threshold per point.
+        The removed points act as hard walls that confine the transverse
+        vibration; the rate converges only once the threshold lies about six
+        quanta of the stiffest transverse mode above the valley floor
+        everywhere along the channel, ridge included (walls at ~5
+        ground-state widths).  The diagnostics report ``truncation_margin``:
+        threshold minus transverse-line floor at the reactant reference and
+        dividing-surface lines (the smaller), in energy units -- compare it
+        with ``6 hbar omega`` of the stiffest transverse mode.
     """
     if not isinstance(model, SubspaceModel):
         raise TypeError("model must be a SubspaceModel")
@@ -576,8 +642,11 @@ def exact_quantum_rate(
     if normalization not in ("default", "slice"):
         raise ValueError("normalization must be 'default' or 'slice'")
     keep = None
+    margin_info = {}
     if truncation_energy is not None:
-        keep = np.flatnonzero(operators.potential.ravel() <= float(truncation_energy))
+        threshold = _truncation_threshold(model, truncation_energy)
+        keep = np.flatnonzero(operators.potential.ravel() <= threshold.ravel())
+        margin_info = _truncation_margin(model, operators.potential, threshold)
     retained = operators.size if keep is None else len(keep)
     if method == "auto":
         method = "sylvester" if retained <= dense_limit else "flux_eigenstates"
@@ -608,6 +677,7 @@ def exact_quantum_rate(
         )
     if not np.isfinite(flux) or not np.isfinite(partition) or partition <= 0:
         raise FloatingPointError("exact quantum rate produced a non-finite flux or partition function")
+    info.update(margin_info)
     info.update({
         "energy_shift": shift,
         "cap_width": width if absorber is None else None,

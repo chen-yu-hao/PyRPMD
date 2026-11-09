@@ -36,7 +36,7 @@ include_patterns = [
     "rate-input-v2.md",
     "rpmdrate-import.md",
     "rate_precision.md",
-    "quantum-statistics.md", "quantum-correction.md", "subspace-correction.md", "performance-dynamics.md", "batched-dynamics.md",
+    "quantum-statistics.md", "quantum-correction.md", "subspace-correction.md", "subspace-transfer-theory.md", "performance-dynamics.md", "batched-dynamics.md",
     "batched-ml-potentials.md",
     "t19-performance.md",
     "tempering.md",

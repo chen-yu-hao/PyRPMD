@@ -368,6 +368,39 @@ def _bath_zero_point(k: np.ndarray) -> tuple[float, float]:
     return 0.5 * float(np.sum(np.sqrt(np.maximum(eigenvalues, 0.0)))), float(eigenvalues.min()) if eigenvalues.size else np.inf
 
 
+def _bath_free_energy(k: np.ndarray, beta: float) -> tuple[float, float]:
+    """Harmonic quantum free energy ``sum_k ln(2 sinh(beta w_k / 2)) / beta`` of the complement.
+
+    It reduces to the zero-point energy when ``beta w_k >> 1``.  Its first-order
+    response to a change of the complement Hessian is the thermal average of
+    that change, which is what makes the projected ``C_S`` transfer to first
+    order in the environment coupling (docs/subspace-transfer-theory.md).
+    Non-positive curvatures are dropped, as for the zero-point energy.
+    """
+    eigenvalues = np.linalg.eigvalsh(k) if k.size else np.zeros(0)
+    omega = np.sqrt(eigenvalues[eigenvalues > 0])
+    x = beta * omega
+    # ln(2 sinh(x/2)) = x/2 + ln(1 - exp(-x)), stable for large x.
+    value = float(np.sum(0.5 * omega + np.log(-np.expm1(-x)) / beta))
+    return value, float(eigenvalues.min()) if eigenvalues.size else np.inf
+
+
+def _environment_term(k, environment, beta):
+    if environment == "free_energy":
+        return _bath_free_energy(k, beta)
+    return _bath_zero_point(k)
+
+
+def _check_environment(environment, beta, allowed):
+    if environment not in allowed:
+        raise ValueError(f"environment must be one of {allowed}")
+    if environment == "free_energy":
+        if beta is None or not np.isfinite(float(beta)) or float(beta) <= 0:
+            raise ValueError("environment='free_energy' needs a positive beta")
+        return float(beta)
+    return None
+
+
 def project_linear_subspace(
     potential: Callable[[np.ndarray], float],
     gradient: Callable[[np.ndarray], np.ndarray],
@@ -387,6 +420,7 @@ def project_linear_subspace(
     rigid_body: bool = False,
     skip_above: float | None = None,
     wall_energy: float | None = None,
+    beta: float | None = None,
 ) -> SubspaceModel:
     """Project a full Cartesian Hamiltonian onto a 1-3D mass-weighted subspace.
 
@@ -400,6 +434,14 @@ def project_linear_subspace(
     ``"adiabatic"`` (default)
         relaxed energy plus ``sum_k omega_k(s) / 2`` from the complement
         Hessian at the relaxed point, i.e. a vibrationally adiabatic model.
+    ``"free_energy"``
+        relaxed energy plus the harmonic quantum free energy
+        ``sum_k ln(2 sinh(beta omega_k(s) / 2)) / beta`` of the complement at
+        inverse temperature ``beta`` (required).  It equals ``"adiabatic"``
+        when every ``beta omega_k >> 1`` and, unlike it, gets the thermal
+        average of the coupling right at first order, so ``C_S`` transfers to
+        first order also when complement modes are thermally excited.  The
+        model then belongs to that temperature only.
 
     ``potential(x)`` and ``gradient(x)`` act on one Cartesian vector.  The
     complement Hessian is taken from ``hessian(x)`` when supplied, otherwise
@@ -414,8 +456,7 @@ def project_linear_subspace(
     evaluations (e.g. overlapping atoms outside the PES domain); the count is
     recorded.
     """
-    if environment not in ("frozen", "relaxed", "adiabatic"):
-        raise ValueError("environment must be 'frozen', 'relaxed' or 'adiabatic'")
+    beta = _check_environment(environment, beta, ("frozen", "relaxed", "adiabatic", "free_energy"))
     if not callable(potential) or not callable(gradient):
         raise TypeError("potential and gradient must be callable")
     from scipy.optimize import minimize
@@ -480,10 +521,10 @@ def project_linear_subspace(
             max_gradient = max(max_gradient, float(np.linalg.norm(result.jac)))
         x = cartesian(s, y if environment != "frozen" else np.zeros_like(y))
         values[index] = float(potential(x))
-        if environment == "adiabatic" and w.shape[1]:
+        if environment in ("adiabatic", "free_energy") and w.shape[1]:
             local = _vibrational_complement(x, u, sqrt_m, True) if rigid_body else w
             k = _complement_hessian(x, local, sqrt_m, gradient, hessian, finite_difference_step)
-            zpe[index], lowest = _bath_zero_point(k)
+            zpe[index], lowest = _environment_term(k, environment, beta)
             min_curvature = min(min_curvature, lowest)
             unstable += int(lowest < 0)
     if not np.isfinite(values).all():
@@ -502,6 +543,7 @@ def project_linear_subspace(
         "unstable_complement_points": int(unstable),
         "minimum_complement_curvature": None if not np.isfinite(min_curvature) else min_curvature,
         "zero_point_range": [float(zpe.min()), float(zpe.max())],
+        "beta": beta,
     }
     return SubspaceModel(grids, values + zpe, np.ones(d), dividing_surface, reactant,
                          reactant_reference, info)
@@ -551,6 +593,7 @@ def project_path_subspace(
     reactant_reference: float | None = None,
     finite_difference_step: float = 1e-3,
     rigid_body: bool = False,
+    beta: float | None = None,
 ) -> SubspaceModel:
     """One-dimensional vibrationally adiabatic model along a curved path.
 
@@ -558,15 +601,15 @@ def project_path_subspace(
     ring-polymer mean path).  It is splined in mass-weighted space and
     re-parametrized by arc length ``xi``, so the model mass is one.
     ``V_S(xi) = V(x(xi)) + sum_k omega_k(xi) / 2`` with frequencies from the
-    Hessian projected onto the normal plane (``environment='adiabatic'``), or
-    ``V(x(xi))`` alone (``'frozen'``).  Curvature coupling is neglected; check
+    Hessian projected onto the normal plane (``environment='adiabatic'``),
+    the harmonic quantum free energy of those modes at ``beta``
+    (``'free_energy'``), or ``V(x(xi))`` alone (``'frozen'``).  Curvature coupling is neglected; check
     :func:`curvature_width_criterion` before trusting a one-dimensional ``S``.
     ``axis`` is the arc-length grid and must lie within the path.
     ``rigid_body`` removes overall translations and rotations from the
     normal plane (molecules in 3D Cartesian coordinates).
     """
-    if environment not in ("frozen", "adiabatic"):
-        raise ValueError("environment must be 'frozen' or 'adiabatic' for a path model")
+    beta = _check_environment(environment, beta, ("frozen", "adiabatic", "free_energy"))
     points = np.asarray(path, dtype=float)
     if points.ndim != 2 or points.shape[0] < 4 or not np.isfinite(points).all():
         raise ValueError("path must be a finite [points, coordinates] array with at least four points")
@@ -577,7 +620,7 @@ def project_path_subspace(
     grid = _axis(axis, "axis")
     if grid[0] < -1e-9 * arc[-1] or grid[-1] > arc[-1] * (1 + 1e-9):
         raise ValueError(f"axis must lie within the path arc length [0, {arc[-1]:.6g}]")
-    if environment == "adiabatic" and gradient is None and hessian is None:
+    if environment != "frozen" and gradient is None and hessian is None:
         raise ValueError("an adiabatic path model needs a gradient or a Hessian")
     lam = np.interp(grid, arc, fine)
     positions = spline(lam)
@@ -589,10 +632,10 @@ def project_path_subspace(
     for i, (u, tangent) in enumerate(zip(positions, tangents)):
         x = u / sqrt_m
         values[i] = float(potential(x))
-        if environment == "adiabatic" and n > 1:
+        if environment != "frozen" and n > 1:
             complement = _vibrational_complement(x, tangent, sqrt_m, rigid_body)
             k = _complement_hessian(x, complement, sqrt_m, gradient, hessian, finite_difference_step)
-            zpe[i], lowest = _bath_zero_point(k)
+            zpe[i], lowest = _environment_term(k, environment, beta)
             min_curvature = min(min_curvature, lowest)
             unstable += int(lowest < 0)
     xi, curvature = path_curvature(points, mass)
@@ -609,6 +652,7 @@ def project_path_subspace(
         "zero_point_range": [float(zpe.min()), float(zpe.max())],
         "cut": "normal plane in mass-weighted coordinates",
         "rigid_body_removed": bool(rigid_body),
+        "beta": beta,
     }
     return SubspaceModel((grid,), values + zpe, np.ones(1), dividing_surface, reactant,
                          reactant_reference, info)

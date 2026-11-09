@@ -159,6 +159,53 @@ def subspace_correction(
                               quantum, rpmd, diagnostics)
 
 
+def harmonic_bead_factor(dividing_frequencies: Any, reactant_frequencies: Any, beta: float, nbeads: int) -> dict:
+    """Finite-bead factor ``B_P = k_RPMD(P) / k_RPMD(P -> inf)`` of harmonic environment modes.
+
+    A P-bead ring polymer of a harmonic mode has the partition function
+    ``Z_P(u) = 1 / (2 sinh(P asinh(u / 2P)))`` with ``u = beta * omega``
+    (exact; ``P = 1`` is classical, ``P -> inf`` quantum).  For the real
+    vibrational frequencies at the dividing surface (reaction mode excluded)
+    and at the reactants (translations and rotations excluded), in atomic
+    units,
+
+        B_P = prod_dividing [Z_P / Z_inf] / prod_reactant [Z_P / Z_inf].
+
+    A subspace correction from an adiabatic projection puts the environment
+    zero-point energy into ``H_S`` exactly, so ``C_S`` at matched P does not
+    contain the environment's finite-P error; divide the full RPMD rate by
+    ``B_P`` before multiplying by ``C_S`` (``apply_subspace_correction(...,
+    bead_factor=B_P)``), or converge P.  See docs/subspace-transfer-theory.md.
+    """
+    beta = float(beta)
+    nbeads = int(nbeads)
+    if not np.isfinite(beta) or beta <= 0 or nbeads < 1:
+        raise ValueError("beta must be positive and nbeads at least one")
+
+    def log_ratio(frequencies):
+        omega = np.atleast_1d(np.asarray(frequencies, dtype=float))
+        if omega.size and (not np.isfinite(omega).all() or np.any(omega <= 0)):
+            raise ValueError("frequencies must be finite and positive (drop imaginary and zero modes)")
+        u = beta * omega
+        # ln(Z_P / Z_inf) = ln sinh(u/2) - ln sinh(P asinh(u / 2P)), via ln sinh(x) = x + ln(1 - e^{-2x}) - ln 2.
+        x_inf, x_p = 0.5 * u, nbeads * np.arcsinh(u / (2 * nbeads))
+        values = (x_inf + np.log(-np.expm1(-2 * x_inf))) - (x_p + np.log(-np.expm1(-2 * x_p)))
+        return values
+
+    dividing = log_ratio(dividing_frequencies)
+    reactant = log_ratio(reactant_frequencies)
+    log_factor = float(np.sum(dividing) - np.sum(reactant))
+    return {
+        "factor": float(np.exp(log_factor)),
+        "log_factor": log_factor,
+        "nbeads": nbeads,
+        "beta": beta,
+        "dividing_log_ratios": dividing.tolist(),
+        "reactant_log_ratios": reactant.tolist(),
+        "approximation": "harmonic environment modes, RPMD-TST level",
+    }
+
+
 def apply_subspace_correction(
     rate: float,
     correction: SubspaceCorrection,
@@ -166,22 +213,30 @@ def apply_subspace_correction(
     standard_error: float | None = None,
     beta: float | None = None,
     beta_rtol: float = 1e-6,
+    bead_factor: float | None = None,
 ) -> dict:
     """Multiply a full-dimensional RPMD rate by ``C_S``.
 
     Relative errors are combined in quadrature assuming the full RPMD run and
     the subspace calculation are statistically independent.  ``beta`` (when
-    given) must match the correction's temperature.
+    given) must match the correction's temperature.  ``bead_factor`` (from
+    :func:`harmonic_bead_factor`) divides the RPMD rate first, removing the
+    environment's finite-bead error that an adiabatic ``H_S`` does not carry.
     """
     if not isinstance(correction, SubspaceCorrection):
         raise TypeError("correction must be a SubspaceCorrection")
+    relative = None
     rate = float(rate)
     if not np.isfinite(rate) or rate < 0:
         raise ValueError("rate must be finite and nonnegative")
     if beta is not None and not np.isclose(float(beta), correction.beta, rtol=beta_rtol, atol=0):
         raise ValueError(f"correction beta {correction.beta:.12g} does not match the rate's beta {float(beta):.12g}")
-    corrected = rate * correction.factor
-    relative = None
+    bead = 1.0
+    if bead_factor is not None:
+        bead = float(bead_factor)
+        if not np.isfinite(bead) or bead <= 0:
+            raise ValueError("bead_factor must be finite and positive")
+    corrected = rate * correction.factor / bead
     if standard_error is not None:
         standard_error = float(standard_error)
         if not np.isfinite(standard_error) or standard_error < 0:
@@ -192,6 +247,7 @@ def apply_subspace_correction(
         "rpmd_rate_standard_error": standard_error,
         "correction_factor": correction.factor,
         "correction_log_standard_error": correction.log_standard_error,
+        "bead_factor": None if bead_factor is None else bead,
         "corrected_rate": corrected,
         "corrected_rate_standard_error": None if relative is None else corrected * relative,
         "corrected_relative_standard_error": relative,
@@ -344,6 +400,6 @@ def correct_rate_run(directory, correction, *, output=None, beta_rtol: float = 1
 
 
 __all__ = [
-    "SubspaceCorrection", "apply_subspace_correction", "correct_rate_run",
+    "SubspaceCorrection", "apply_subspace_correction", "correct_rate_run", "harmonic_bead_factor",
     "nested_subspace_sensitivity", "subspace_correction",
 ]

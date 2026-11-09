@@ -166,12 +166,19 @@ a few percent. Two checks decide:
 - `nested_subspace_sensitivity([C_1D, C_2D, ...])` — the change of `ln C_S` when a coordinate
   is added. It is the final verdict and costs one larger quantum calculation.
 
+[Subspace transfer theory](subspace-transfer-theory.md) derives why: static environment effects
+(zero-point energy, imaginary-time corner cutting), which curvature × width measures, cancel from
+the transfer error; what remains is the environment's influence on RPMD's dynamical error. It
+also gives the first-order-exact `environment="free_energy"` projection and the finite-bead
+factor `harmonic_bead_factor` for environment modes.
+
 ## Numerical parameters to converge
 
 | Parameter | Where | Symptom when too small |
 | --- | --- | --- |
 | Box length and absorbing-potential width/strength | `exact_quantum_rate(cap_width=, cap_strength=)` | Reflection from the absorber; at 200 K a 16 bohr Eckart box is 0.7% high, 32 bohr 0.06% |
 | Grid spacing | model axes | Rate drifts when refined |
+| Truncation energy (energy-truncated DVR) | `exact_quantum_rate(truncation_energy=)`, pipeline `truncation_kt` and `truncation_min` (Eh) | The removed points are hard walls. The rate converges only once the margin above the local valley floor exceeds about six quanta of the stiffest transverse mode (walls at ~5 ground-state widths). A separable 2D Eckart model (transverse 0.010 Eh) at 200 K is 12% low with 0.016 Eh above barrier + ZPE, 1% low at 0.03 Eh, and exact (1 − 4×10⁻⁶) at 0.07 Eh. The diagnostic `truncation_margin` reports the smallest margin. The 30 kT default is too small for stiff modes at low temperature: set `truncation_min` to about six quanta |
 | Propagation time and step | `max_time`, `dt` (iterative route) | `relative_extrapolation_spread` large |
 | TI windows | `ring_polymer_rate(windows=)` | `ti_quadrature_log_error` comparable to the statistical error |
 | Beads | `nbeads` | `C_S` should correct the same finite-`P` estimator as the full run |

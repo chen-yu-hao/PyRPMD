@@ -39,9 +39,10 @@ DEFAULTS = {
     "source": {"rate_run": None},
     "path": {"step": 10.0, "max_steps": 600, "spread_factor": 2.0, "asymptote_tolerance": 1e-6,
              "smoothing": 1.5},
-    "subspace": {"dimension": "auto", "threshold": 0.5},
+    "subspace": {"dimension": "auto", "threshold": 0.5, "environment": "adiabatic"},
     "quantum": {"spacing_1d": None, "spacing_2d": None, "refinement": 3, "absorber_fraction": 0.2,
-                "threshold_margin": 1.0, "truncation_kt": 30.0, "padding": None, "dense_limit": 8000,
+                "threshold_margin": 1.0, "truncation_kt": 30.0, "truncation_min": 0.0, "padding": None,
+                "dense_limit": 8000,
                 "reference_kt": 0.3, "product_drop_kt": 15.0},
     "rpmd": {"nbeads": None, "windows": 48, "walkers": 32, "burn_in": 200, "sweeps": 400,
              "trajectories": 512, "seed": 0},
@@ -212,6 +213,16 @@ def _dividing_arc(run, path, arc):
     return float(arc[k - 1] + w * (arc[k] - arc[k - 1])), xi
 
 
+def _truncation_offset(options, beta):
+    """Truncation energy above the energy floor: max(truncation_kt / beta, truncation_min).
+
+    The removed DVR points are hard walls; the rate converges once the margin above
+    the valley floor is about six quanta of the stiffest transverse mode, which
+    ``truncation_min`` (Eh) enforces independently of temperature.
+    """
+    return max(float(options["truncation_kt"]) / beta, float(options.get("truncation_min", 0.0) or 0.0))
+
+
 def path_model(run: RateRun, path, options: Mapping[str, Any]):
     """1D vibrationally adiabatic model on the arc length of the assembled path."""
     masses = run.cartesian_masses
@@ -225,8 +236,10 @@ def path_model(run: RateRun, path, options: Mapping[str, Any]):
     rate_surface, _ = _dividing_arc(run, path, arc)
     # Bennett--Chandler needs a dividing surface the dynamics must cross: use
     # the barrier top of V_S (the quantum rate does not depend on it).
-    model = project_path_subspace(run.energy, run.gradient, path, masses, axis, environment="adiabatic",
-                                  dividing_surface=None, rigid_body=True)
+    environment = options.get("environment", "adiabatic")
+    model = project_path_subspace(run.energy, run.gradient, path, masses, axis, environment=environment,
+                                  dividing_surface=None, rigid_body=True,
+                                  beta=run.beta if environment == "free_energy" else None)
     surface = model.dividing_surface
     fraction = float(options["absorber_fraction"])
     length = axis[-1] - axis[0]
@@ -349,7 +362,7 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
             if curvature > 0:
                 widths.append(1.0 / np.sqrt(2.0 * np.sqrt(curvature)))
         sigma = float(min(widths)) if widths else 5.0
-        emax = (floor_guess - energies[inside].min()) + float(options["truncation_kt"]) / beta
+        emax = (floor_guess - energies[inside].min()) + _truncation_offset(options, beta)
         spacing = [sigma / 3.0, max(sigma / 3.0, 0.5 * np.pi / np.sqrt(2.0 * emax))]
     spacing = np.broadcast_to(np.asarray(spacing, dtype=float), (2,))
     # One V_S for both halves of C_S: it is projected on a grid `refinement`
@@ -361,10 +374,12 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
     fine = spacing / refinement
     counts = [int(np.ceil((hi[i] - lo[i]) / spacing[i])) * refinement + 1 for i in range(2)]
     axes = [lo[i] + fine[i] * np.arange(counts[i]) for i in range(2)]
-    skip = (floor_guess + 2.0 * float(options["truncation_kt"]) / run.beta + 0.05)
+    skip = (floor_guess + 2.0 * _truncation_offset(options, run.beta) + 0.05)
+    environment = options.get("environment", "adiabatic")
     fine_model = project_linear_subspace(run.energy, run.gradient, ts, masses, np.column_stack([e0, e1]), axes,
-                                         environment="adiabatic", dividing_surface=0.0, rigid_body=True,
-                                         skip_above=skip, wall_energy=skip + 1.0)
+                                         environment=environment, dividing_surface=0.0, rigid_body=True,
+                                         skip_above=skip, wall_energy=skip + 1.0,
+                                         beta=run.beta if environment == "free_energy" else None)
     reference_point = np.array([np.interp(reference_arc, arc, plane[:, 0]), np.interp(reference_arc, arc, plane[:, 1])])
     provenance = dict(fine_model.provenance, plane_basis=[e0.tolist(), e1.tolist()], refinement=refinement)
     rpmd_model = type(fine_model)(fine_model.axes, fine_model.values, fine_model.masses, 0.0, "asymptotic",
@@ -397,7 +412,7 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
         center, normal = tangent_normal(at)
         thresholds.append(_in_plane_threshold(rpmd_model, center, normal))
     floor = max(thresholds) - float(options["threshold_margin"]) / run.beta
-    truncation = floor + float(options["truncation_kt"]) / run.beta
+    truncation = floor + _truncation_offset(options, run.beta)
     quantum = {"absorber": absorber, "normalization": "slice", "energy_floor": floor,
                "truncation_energy": truncation, "dense_limit": int(options["dense_limit"])}
     retained = int(np.sum(model.values <= truncation))
@@ -477,7 +492,8 @@ def run_subspace_pipeline(specification) -> dict:
                     models[d] = previous.get(str(d), {"reused": True})
                     dimensions.remove(d)
     if 1 in dimensions:
-        model1, quantum1, info1 = path_model(run, path, options["quantum"])
+        environment = {"environment": options["subspace"].get("environment", "adiabatic")}
+        model1, quantum1, info1 = path_model(run, path, {**options["quantum"], **environment})
         corrections[1] = subspace_correction(model1, run.beta, nbeads, quantum_options=quantum1,
                                              rpmd_options=rpmd_options)
         corrections[1].write(out_dir / "C_S_1d.json")
@@ -488,7 +504,8 @@ def run_subspace_pipeline(specification) -> dict:
             candidate = np.asarray(sampled_cw["candidate_direction"])
         if candidate is None:
             candidate = np.asarray(static_cw["candidate_direction"])
-        model2, quantum2, info2, rpmd_model2 = plane_model(run, path, candidate, options["quantum"])
+        environment = {"environment": options["subspace"].get("environment", "adiabatic")}
+        model2, quantum2, info2, rpmd_model2 = plane_model(run, path, candidate, {**options["quantum"], **environment})
         corrections[2] = subspace_correction(model2, run.beta, nbeads, quantum_options=quantum2,
                                              rpmd_options=rpmd_options, rpmd_model=rpmd_model2)
         corrections[2].write(out_dir / "C_S_2d.json")

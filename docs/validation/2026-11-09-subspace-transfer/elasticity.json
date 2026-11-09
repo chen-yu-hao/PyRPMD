@@ -1,0 +1,294 @@
+{
+ "points": [
+  {
+   "scale": 0.8,
+   "barrier": "symmetric",
+   "temperature": 600.0,
+   "nbeads": 16,
+   "k_qm": 4.790887489626698e-05,
+   "k_rpmd": 4.29439749872851e-05,
+   "log_standard_error": 0.006809471344063698,
+   "C": 1.1156134221494842,
+   "kappa": 0.9989841583356575,
+   "grid_max": 16.0
+  },
+  {
+   "scale": 1.0,
+   "barrier": "symmetric",
+   "temperature": 600.0,
+   "nbeads": 16,
+   "k_qm": 1.0948059612888748e-05,
+   "k_rpmd": 9.829695658419293e-06,
+   "log_standard_error": 0.009536759537515064,
+   "C": 1.1137740163411427,
+   "kappa": 0.999065223908034,
+   "grid_max": 16.0
+  },
+  {
+   "scale": 1.25,
+   "barrier": "symmetric",
+   "temperature": 600.0,
+   "nbeads": 16,
+   "k_qm": 1.7530054026389753e-06,
+   "k_rpmd": 1.5489670100801658e-06,
+   "log_standard_error": 0.010302884881400933,
+   "C": 1.1317254604074811,
+   "kappa": 0.9984749768511418,
+   "grid_max": 16.0
+  },
+  {
+   "scale": 0.8,
+   "barrier": "symmetric",
+   "temperature": 300.0,
+   "nbeads": 24,
+   "k_qm": 3.698586814080777e-07,
+   "k_rpmd": 2.745482527004372e-07,
+   "log_standard_error": 0.010564329614052459,
+   "C": 1.347153652482483,
+   "kappa": 0.9899988518268968,
+   "grid_max": 16.0
+  },
+  {
+   "scale": 1.0,
+   "barrier": "symmetric",
+   "temperature": 300.0,
+   "nbeads": 24,
+   "k_qm": 3.4929231671571904e-08,
+   "k_rpmd": 2.4987670244969253e-08,
+   "log_standard_error": 0.012860902225246352,
+   "C": 1.397858677065109,
+   "kappa": 0.9829487032716545,
+   "grid_max": 16.0
+  },
+  {
+   "scale": 1.25,
+   "barrier": "symmetric",
+   "temperature": 300.0,
+   "nbeads": 24,
+   "k_qm": 2.2306415188688663e-09,
+   "k_rpmd": 1.5165768344507897e-09,
+   "log_standard_error": 0.01712171217379852,
+   "C": 1.4708397676908118,
+   "kappa": 0.9772356946628239,
+   "grid_max": 16.0
+  },
+  {
+   "scale": 0.8,
+   "barrier": "symmetric",
+   "temperature": 200.0,
+   "nbeads": 32,
+   "k_qm": 1.8448253395596357e-08,
+   "k_rpmd": 1.0938555620491013e-08,
+   "log_standard_error": 0.014762074585024237,
+   "C": 1.6865346793170346,
+   "kappa": 0.9652286620190319,
+   "grid_max": 16.0
+  },
+  {
+   "scale": 1.0,
+   "barrier": "symmetric",
+   "temperature": 200.0,
+   "nbeads": 32,
+   "k_qm": 1.4636927587293826e-09,
+   "k_rpmd": 7.883753206613371e-10,
+   "log_standard_error": 0.01774929949333936,
+   "C": 1.8565938333807155,
+   "kappa": 0.9409725855825275,
+   "grid_max": 16.0
+  },
+  {
+   "scale": 1.25,
+   "barrier": "symmetric",
+   "temperature": 200.0,
+   "nbeads": 32,
+   "k_qm": 8.578504121438478e-11,
+   "k_rpmd": 4.175147910681898e-11,
+   "log_standard_error": 0.02396460879144094,
+   "C": 2.054658734242881,
+   "kappa": 0.9166991253887166,
+   "grid_max": 16.0
+  },
+  {
+   "scale": 0.8,
+   "barrier": "asymmetric",
+   "temperature": 600.0,
+   "nbeads": 16,
+   "k_qm": 0.0002749441956391987,
+   "k_rpmd": 0.0002555397371629131,
+   "log_standard_error": 0.012220264480810424,
+   "C": 1.0759351899306162,
+   "kappa": 0.9901162772935665,
+   "grid_max": 16.0
+  },
+  {
+   "scale": 1.0,
+   "barrier": "asymmetric",
+   "temperature": 600.0,
+   "nbeads": 16,
+   "k_qm": 6.515997650865808e-05,
+   "k_rpmd": 6.035250446954957e-05,
+   "log_standard_error": 0.013108890557687002,
+   "C": 1.0796565458444907,
+   "kappa": 0.9903750938522837,
+   "grid_max": 16.0
+  },
+  {
+   "scale": 1.25,
+   "barrier": "asymmetric",
+   "temperature": 600.0,
+   "nbeads": 16,
+   "k_qm": 1.073397993438897e-05,
+   "k_rpmd": 9.66672382009136e-06,
+   "log_standard_error": 0.011509110485561531,
+   "C": 1.110405152165351,
+   "kappa": 0.9893978154616574,
+   "grid_max": 16.0
+  },
+  {
+   "scale": 0.8,
+   "barrier": "asymmetric",
+   "temperature": 300.0,
+   "nbeads": 24,
+   "k_qm": 9.9662262314367e-06,
+   "k_rpmd": 8.291807287268364e-06,
+   "log_standard_error": 0.01770599304231949,
+   "C": 1.2019365484698756,
+   "kappa": 0.8661071580297838,
+   "grid_max": 16.0
+  },
+  {
+   "scale": 1.0,
+   "barrier": "asymmetric",
+   "temperature": 300.0,
+   "nbeads": 24,
+   "k_qm": 9.903068036217754e-07,
+   "k_rpmd": 7.675456557870578e-07,
+   "log_standard_error": 0.017559616496396868,
+   "C": 1.2902252734481228,
+   "kappa": 0.8391051151750518,
+   "grid_max": 16.0
+  },
+  {
+   "scale": 1.25,
+   "barrier": "asymmetric",
+   "temperature": 300.0,
+   "nbeads": 24,
+   "k_qm": 6.492326851034689e-08,
+   "k_rpmd": 5.055715452082707e-08,
+   "log_standard_error": 0.019612193600857777,
+   "C": 1.284155904850256,
+   "kappa": 0.8286473892604411,
+   "grid_max": 16.0
+  },
+  {
+   "scale": 0.8,
+   "barrier": "asymmetric",
+   "temperature": 200.0,
+   "nbeads": 32,
+   "k_qm": 1.4456051397790423e-06,
+   "k_rpmd": 1.224772261027512e-06,
+   "log_standard_error": 0.029852763033028855,
+   "C": 1.1803052581924613,
+   "kappa": 0.5185899067485713,
+   "grid_max": 16.0
+  },
+  {
+   "scale": 1.0,
+   "barrier": "asymmetric",
+   "temperature": 200.0,
+   "nbeads": 32,
+   "k_qm": 1.1645814428292735e-07,
+   "k_rpmd": 8.850822747611873e-08,
+   "log_standard_error": 0.03515711881506503,
+   "C": 1.3157889114246475,
+   "kappa": 0.45888829504863793,
+   "grid_max": 16.0
+  },
+  {
+   "scale": 1.25,
+   "barrier": "asymmetric",
+   "temperature": 200.0,
+   "nbeads": 32,
+   "k_qm": 6.851485057858757e-09,
+   "k_rpmd": 5.049998007525248e-09,
+   "log_standard_error": 0.04105359313068625,
+   "C": 1.3567302497246583,
+   "kappa": 0.4174017544786833,
+   "grid_max": 16.0
+  }
+ ],
+ "summary": [
+  {
+   "barrier": "symmetric",
+   "temperature": 600.0,
+   "elasticity": -0.003916848379311529,
+   "elasticity_standard_error": 0.003687486846218365,
+   "C": [
+    1.1156134221494842,
+    1.1137740163411427,
+    1.1317254604074811
+   ],
+   "ln_k_span": 3.3079690790529597
+  },
+  {
+   "barrier": "symmetric",
+   "temperature": 300.0,
+   "elasticity": -0.016982600065878962,
+   "elasticity_standard_error": 0.003829100046944828,
+   "C": [
+    1.347153652482483,
+    1.397858677065109,
+    1.4708397676908118
+   ],
+   "ln_k_span": 5.110831769815611
+  },
+  {
+   "barrier": "symmetric",
+   "temperature": 200.0,
+   "elasticity": -0.03692813024309436,
+   "elasticity_standard_error": 0.005078544880014367,
+   "C": [
+    1.6865346793170346,
+    1.8565938333807155,
+    2.054658734242881
+   ],
+   "ln_k_span": 5.370880331608731
+  },
+  {
+   "barrier": "asymmetric",
+   "temperature": 600.0,
+   "elasticity": -0.010046349957717382,
+   "elasticity_standard_error": 0.005153902790362199,
+   "C": [
+    1.0759351899306162,
+    1.0796565458444907,
+    1.110405152165351
+   ],
+   "ln_k_span": 3.2431537477240173
+  },
+  {
+   "barrier": "asymmetric",
+   "temperature": 300.0,
+   "elasticity": -0.013257405502377861,
+   "elasticity_standard_error": 0.005248682958055863,
+   "C": [
+    1.2019365484698756,
+    1.2902252734481228,
+    1.284155904850256
+   ],
+   "ln_k_span": 5.033751190789653
+  },
+  {
+   "barrier": "asymmetric",
+   "temperature": 200.0,
+   "elasticity": -0.027421898836084833,
+   "elasticity_standard_error": 0.00938178757340607,
+   "C": [
+    1.1803052581924613,
+    1.3157889114246475,
+    1.3567302497246583
+   ],
+   "ln_k_span": 5.3518178691910805
+  }
+ ]
+}

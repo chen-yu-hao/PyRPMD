@@ -4,6 +4,14 @@ Date: 2026-11-08. Surface: BKMP2 (`benchmarks/h3`, build with `python benchmarks
 Scripts: `benchmarks/h3_subspace/` (`collinear.py` model, `run.py` driver, `campaign.txt` the runs
 below). Result records: `results/`.
 
+> **Correction (2026-11-09).** The exact rates below used DVR walls 0.04 Eh above the H₂
+> ground level. That is too low: the removed points confine the H₂ vibration (about six quanta,
+> 0.12 Eh, are needed). Walls at 0.16 Eh lower the exact rates by 3.1, 7.8, 12.9, 13.4 and 5.0% at
+> 600, 400, 300, 200 and 150 K. With those points retained, spacing 2.0 is 3–6% low at 200–150 K;
+> a spacing ladder is in
+> [docs/validation/2026-11-09-subspace-transfer](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/2026-11-09-subspace-transfer/README.md).
+> The RPMD rates are unaffected; the ratios k_RPMD/k_QM below are therefore low by up to ~15%.
+
 ## Why this test
 
 The Cl + HBr test (docs/validation/2026-11-08-clhbr-subspace) ran at 300 K, above that
@@ -66,12 +74,27 @@ basis. That route was not shipped.
 | 150 | | | 128 | 1.52e−10 | 9% | 2.48e−10 | 0.612 ± 0.032 |
 | 100 | 0.29 | 60 | 64 | 2.14e−12 | 10% | 3.92e−12 | 0.546 ± 0.031 |
 
-P ≈ βħω is not enough. For a harmonic reactant H₂ mode and TS stretch, the exact RPMD bead
-error of the QTST rate is 0.65 / 0.89 / 0.97 at 200 K for P = 32 / 64 / 128, 0.76 at 150 K for
-P = 64, and 0.42 at 100 K for P = 64. The observed QTST ratios agree: P32/P64 is 0.65 at
-200 K and 0.86 at 300 K, against 0.73 and 0.90 predicted. The 100 K RPMD value at P = 64 is
-therefore ~2× low, and P ≈ 256 would be needed. The bead number used below is the first one
-at which the harmonic estimate is within 5%: P ≥ 2βħω(H₂).
+P ≈ βħω is not enough. For harmonic environment modes the finite-bead factor
+B_P = k_RPMD(P)/k_RPMD(∞) has a closed form (`pyrpmd.analysis.harmonic_bead_factor`,
+derivation in [subspace transfer theory](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/subspace-transfer-theory.md)).
+With the BKMP2 harmonic frequencies, 4404 cm⁻¹ (H₂) and 2055 cm⁻¹ (TS symmetric stretch),
+B_P is 0.59 / 0.87 / 0.97 at 200 K for P = 32 / 64 / 128, 0.72 at 150 K for P = 64, and 0.35 at
+100 K for P = 64. Dividing by B_P collapses the bead series:
+
+| T (K) | P | B_P | QTST raw → corrected | k_RPMD raw → corrected |
+| ---: | ---: | ---: | --- | --- |
+| 600 | 16 / 32 | 0.922 / 0.979 | 5.78 / 5.93 → 6.27 / 6.05 e−5 | 4.41 / 4.35 → 4.79 / 4.45 e−5 |
+| 400 | 32 / 64 | 0.932 / 0.982 | 4.46 / 5.01 → 4.78 / 5.10 e−6 | 2.97 / 3.78 → 3.19 / 3.85 e−6 |
+| 300 | 32 / 64 | 0.849 / 0.958 | 4.08 / 4.77 → 4.81 / 4.98 e−7 | 2.71 / 3.56 → 3.19 / 3.71 e−7 |
+| 200 | 32 / 64 / 128 | 0.594 / 0.868 / 0.965 | 4.52 / 6.92 / 7.20 → 7.60 / 7.97 / 7.47 e−9 | 2.92 / 4.80 / 4.99 → 4.90 / 5.53 / 5.17 e−9 |
+| 150 | 64 / 128 | 0.721 / 0.919 | 2.13 / 2.48 → 2.96 / 2.71 e−10 | 1.30 / 1.52 → 1.81 / 1.66 e−10 |
+
+The corrected QTST values agree within their 4–5% errors. The corrected rates at 300 and
+400 K still differ by 14–20%: P = 32 has a lower κ (0.66 vs 0.75), which the static factor
+cannot remove. The required bead number grows as (βħω)^{3/2}:
+P ≳ [(Σ_r u³ − Σ_‡ u³)/(48δ)]^{1/2} for |ln B_P| < δ, so P ≈ 110 at 200 K and P ≈ 300 at 100 K
+for 5%. An earlier version of this report stated P ≥ 2βħω; that is not sufficient (B_P = 0.87 at
+200 K, P = 64).
 
 ## Result
 
@@ -83,6 +106,9 @@ at which the harmonic estimate is within 5%: P ≥ 2βħω(H₂).
 | 200 | 0.58 | 128 | 8.77e−9 (±2%) | 4.99e−9 ± 9% | 0.57 ± 0.05 |
 | 150 | 0.43 | 128 | 2.94e−10 (±7%) | 1.52e−10 ± 9% | 0.52 ± 0.06 |
 | 100 | 0.29 | — | not converged | (2.1e−12 at P = 64, bead-unconverged) | — |
+
+Divided by B_P of the bead number used, the ratios are 0.65, 0.66, 0.63, 0.59 and 0.56 at 600,
+400, 300, 200 and 150 K.
 
 RPMD underestimates the exact collinear rate at every temperature. The ratio is flat
 (0.61–0.65) from 600 K to 300 K, above and just below T_c, and then falls to 0.57 at

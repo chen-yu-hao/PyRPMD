@@ -1,0 +1,95 @@
+name: Subspace transfer-error study
+
+# Exact 2D quantum and RPMD rates versus 1D projected subspace corrections on
+# Eckart model families (benchmarks/subspace_theory, docs/subspace-transfer-theory.md).
+# Read-only: every point is an artifact and the aggregate table is printed in the log.
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'claude/subspace-transfer-theory'
+    paths:
+      - 'benchmarks/subspace_theory/transfer.py'
+      - 'benchmarks/subspace_theory/plan.py'
+      - 'benchmarks/subspace_theory/aggregate.py'
+      - '.github/workflows/subspace-transfer.yml'
+
+permissions:
+  contents: read
+
+env:
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONUNBUFFERED: '1'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      points: ${{ steps.plan.outputs.points }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - id: plan
+        run: echo "points=$(python benchmarks/subspace_theory/plan.py)" >> "$GITHUB_OUTPUT"
+
+  point:
+    needs: plan
+    name: ${{ matrix.point.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        point: ${{ fromJSON(needs.plan.outputs.points) }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e . threadpoolctl
+      - name: Run point
+        run: |
+          BEADS=""
+          if [ "${{ matrix.point.beads }}" != "0" ]; then BEADS="--beads ${{ matrix.point.beads }}"; fi
+          python benchmarks/subspace_theory/transfer.py \
+            --family ${{ matrix.point.family }} --parameter ${{ matrix.point.parameter }} \
+            --barrier ${{ matrix.point.barrier }} --temperature ${{ matrix.point.temperature }} \
+            --seed ${{ matrix.point.seed }} $BEADS --workers 4 --truncation-offset ${{ matrix.point.truncation }} \
+            --output "point-${{ matrix.point.name }}.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: point-${{ matrix.point.name }}
+          path: point-${{ matrix.point.name }}.json
+
+  aggregate:
+    needs: point
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: point-*
+          merge-multiple: true
+          path: points
+      - run: python benchmarks/subspace_theory/aggregate.py 'points/*.json' --output subspace-transfer.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: subspace-transfer
+          path: subspace-transfer.json
