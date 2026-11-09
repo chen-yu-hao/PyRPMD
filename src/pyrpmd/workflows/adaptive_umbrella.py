@@ -43,7 +43,7 @@ NORMALIZED_OVERLAP_METRIC = "normalized_mbar_cosine"
 
 
 ADAPTIVE_FIELDS = {"enabled", "pilot_steps", "pilot_equilibration_steps", "max_rounds",
-                   "max_windows", "max_pilot_steps", "target_overlap", "min_effective_samples", "min_spacing",
+                   "max_windows", "max_pilot_steps", "total_integration_steps", "target_overlap", "min_effective_samples", "min_spacing",
                    "coverage_bins", "coverage_ranges", "min_bin_effective_samples", "target_coverage"}
 
 
@@ -68,6 +68,10 @@ def adaptive_options(config):
     options["max_pilot_steps"] = checked_integer(
         table.get("max_pilot_steps", 16 * options["pilot_steps"]),
         "adaptive_umbrella.max_pilot_steps", options["pilot_steps"])
+    if "total_integration_steps" in table:
+        options["total_integration_steps"] = checked_integer(
+            table["total_integration_steps"], "adaptive_umbrella.total_integration_steps", 1,
+        )
     for key, default in (("target_overlap", 0.03), ("min_effective_samples", 20.0),
                          ("min_spacing", 1e-6), ("min_bin_effective_samples", 5.0),
                          ("target_coverage", 0.95)):
@@ -532,7 +536,56 @@ def _production_diagnostic(result, plan, periods):
     return report
 
 
-def _annotate(result, plan, output, production_steps=None, *, periods=None):
+def equal_cost_production_budget(config, plan):
+    """Resolve the frozen production length from an MD-step budget.
+
+    All pilot equilibration and pilot production trajectories are charged.
+    A uniform saved-sample stride can leave an explicitly reported remainder.
+    Parent/child trajectories are outside this umbrella-only budget.
+    """
+    target = plan["options"].get("total_integration_steps")
+    if target is None:
+        return None
+    if plan["status"] != "frozen":
+        raise ValueError("equal-cost allocation requires a frozen adaptive plan")
+    replicas = checked_integer(config["sampling"].get("replicas", 1), "sampling.replicas")
+    eq = checked_integer(config["sampling"]["equilibration_steps"],
+                         "sampling.equilibration_steps", 0)
+    stride = checked_integer(config["sampling"].get("interval_steps",
+                                config["sampling"].get("sample_interval", 1)),
+                             "sampling.interval_steps")
+    pilot_steps = sum(
+        len(record["centers"]) * replicas *
+        (int(record["pilot"]["equilibration_steps"]) + int(record["pilot"]["production_steps"]))
+        for record in plan["rounds"]
+    )
+    streams = len(plan["centers"]) * replicas
+    if streams == 0:
+        raise ValueError("frozen adaptive plan has no production streams")
+    available = target - pilot_steps - streams * eq
+    per_stream = (available // streams // stride) * stride
+    if per_stream < 2 * stride:
+        raise ValueError(
+            "adaptive_umbrella.total_integration_steps exhausted by pilot and "
+            "equilibration; require at least two saved production observations per stream"
+        )
+    used = pilot_steps + streams * (eq + per_stream)
+    remainder = target - used
+    if remainder > max(1, target // 1000):
+        raise ValueError("unspendable umbrella budget exceeds 0.1%; change the target")
+    return {
+        "target_integration_steps": int(target),
+        "pilot_integration_steps": int(pilot_steps),
+        "frozen_streams": int(streams),
+        "equilibration_steps_per_stream": int(eq),
+        "production_steps_per_stream": int(per_stream),
+        "used_integration_steps": int(used),
+        "unspent_integration_steps": int(remainder),
+        "scope": "adaptive pilots plus frozen umbrella equilibration and production; no recrossing",
+    }
+
+
+def _annotate(result, plan, output, production_steps=None, *, periods=None, budget=None):
     summary = result["summary"]
     production = _production_diagnostic(result, plan, periods)
     # Independent production can mix worse than an accepted pilot. Recheck
@@ -554,6 +607,8 @@ def _annotate(result, plan, output, production_steps=None, *, periods=None):
         "production_steps_per_stream": production_steps,
         "target_note": "target_met is a compatibility alias for pilot_target_met; production_target_met independently checks frozen-production overlap/ESS and optional coverage. Neither certifies equilibration or physical convergence.",
     }
+    if budget is not None:
+        summary["adaptive_umbrella"]["integration_budget"] = budget
     if "coverage" in plan["rounds"][-1]:
         summary["adaptive_umbrella"]["coverage"] = plan["rounds"][-1]["coverage"]
         summary["adaptive_umbrella"]["coverage_scope"] = "discarded_adaptation_pilots"
@@ -627,8 +682,11 @@ def sample_adaptive_umbrellas(config, system, output, executor=None):
         plan = root_call(_record_round, plan, streams, config, system, str(output), cv, options, pilot)
     root_call(_require_frozen, plan, str(output))
     frozen = _stage_config(config, plan["centers"], plan["stiffness"], plan["production_seed"])
+    budget = equal_cost_production_budget(config, plan)
+    if budget is not None:
+        frozen["sampling"]["production_steps"] = budget["production_steps_per_stream"]
     postprocess = partial(_annotate, plan=plan, output=str(output), periods=cv.periods,
-                          production_steps=frozen["sampling"]["production_steps"])
+                          production_steps=frozen["sampling"]["production_steps"], budget=budget)
     return sample_umbrellas(frozen, system, output, executor=executor,
                             _postprocess=postprocess)
 
@@ -653,7 +711,10 @@ def reanalyze_adaptive_fes(config, system, output, return_data=False):
     plan = root_call(_open_plan, config, system, str(output), centers, stiffness, options, False)
     root_call(_require_frozen, plan, str(output))
     frozen = _stage_config(config, plan["centers"], plan["stiffness"], plan["production_seed"])
+    budget = equal_cost_production_budget(config, plan)
+    if budget is not None:
+        frozen["sampling"]["production_steps"] = budget["production_steps_per_stream"]
     postprocess = partial(_annotate, plan=plan, output=str(output), periods=cv.periods,
-                          production_steps=frozen["sampling"]["production_steps"])
+                          production_steps=frozen["sampling"]["production_steps"], budget=budget)
     return reanalyze_fes(frozen, system, output, return_data=return_data,
                         _postprocess=postprocess)
