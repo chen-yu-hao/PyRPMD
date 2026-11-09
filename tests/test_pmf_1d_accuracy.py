@@ -288,9 +288,16 @@ def test_unresolved_constant_stream_has_unavailable_uncertainty():
 
 
 def test_three_point_pmf_does_not_report_a_resolved_error_bar():
+    # Each endpoint bin holds a single frame (Kish ESS 1): the default rate
+    # gate rejects it. Disable the weight gates to test uncertainty alone.
+    gated = mbar_rate_pmf([[0.5, 1.5, 2.5]], [1.5], 1e-12, 1.0,
+                          bins=[0, 1, 2, 3], reference=0.5, xi_star=2.5,
+                          bootstrap=0, min_count=1)
+    assert gated["status"] == "endpoint_weight_ess_collapse"
     result = mbar_rate_pmf([[0.5, 1.5, 2.5]], [1.5], 1e-12, 1.0,
                            bins=[0, 1, 2, 3], reference=0.5, xi_star=2.5,
-                           bootstrap=20, min_count=1, seed=55)
+                           bootstrap=20, min_count=1, seed=55, min_weight_ess=None,
+                           min_endpoint_ess=None)
     assert result["ready"]
     assert result["bootstrap"]["block_plan"]["status"] == "unavailable"
     assert result["barrier_standard_error_hartree"] is None

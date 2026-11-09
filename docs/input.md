@@ -346,7 +346,7 @@ Omitting `dividing_surface` or using `"auto"` selects the peak automatically;
 bin centers; the entire interval from reference point to dividing surface must have
 continuous support. Every endpoint must lie within the histogram bin *centers*; with
 explicit `analysis.ranges` this is checked during input preflight and is never clipped.
-`rate.pmf_min_weight_ess` (default 10), `rate.pmf_min_endpoint_ess` (default 2) and
+`rate.pmf_min_weight_ess` (default 2), `rate.pmf_min_endpoint_ess` (default 2) and
 `rate.pmf_max_window_displacement` (default 20 bias widths) are hard rate gates; see
 [support, weight and stream gates](rate-pmf-selection.md#support-weight-and-stream-gates).
 Bootstrap keeps the chosen surface fixed and excludes uncertainty

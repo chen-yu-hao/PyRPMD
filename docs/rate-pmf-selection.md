@@ -272,13 +272,17 @@ gated:
 
 | Gate | Default | Option (`[rate]`) | Failure status |
 | --- | --- | --- | --- |
-| Global Kish weight ESS | ≥ 10 | `pmf_min_weight_ess` | `weight_ess_collapse` |
+| Global Kish weight ESS (collapse alarm) | ≥ 2 | `pmf_min_weight_ess` | `weight_ess_collapse` |
 | Reference/dividing-surface bin ESS | ≥ 2 | `pmf_min_endpoint_ess` | `endpoint_weight_ess_collapse` |
 | Stream mean within N bias widths `1/sqrt(beta K)` of its center | N = 20 | `pmf_max_window_displacement` | `umbrella_stream_anomaly` |
 | Final centroid on the regular branch `s0-s1>0` of RPMDrate ξ | always | — | `umbrella_stream_anomaly` |
 | Adaptive umbrella: frozen-production overlap, per-window ESS and coverage | adaptive targets | `[adaptive_umbrella]` | `adaptive_production_targets_not_met` |
 
-Set a gate to `"off"` only for a deliberate diagnostic. A failed gate gives
+The global ESS of unbiased umbrella weights is small even for healthy data,
+because edge-window weights grow like `exp(beta K (xi-c)^2/2)`; its floor only
+rejects collapse onto one or two frames. The endpoint-bin ESS measures the
+support that enters the barrier. Set a gate to `"off"` only for a deliberate
+diagnostic. A failed gate gives
 `ready=false`, `status="unsupported_pmf"`, `curve_role="diagnostic_only"`,
 `k_qtst=null` and no recrossing; any would-be barrier appears only as
 `diagnostic_free_energy_barrier_hartree`. `rate_pmf.npz` carries

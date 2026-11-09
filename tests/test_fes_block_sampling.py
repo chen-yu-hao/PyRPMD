@@ -440,7 +440,13 @@ def test_python_failed_observation_is_rolled_back_before_saving_samples(tmp_path
         with pytest.raises(RuntimeError, match="injected observation failure"):
             fes._sample_window(task)
     saved = _saved(task)
-    assert len(calls) == 3 and int(saved["elapsed"]) == int(saved["step"]) == 18
+    # The fourth call is the failure artifact's centroid CV at the restored,
+    # last committed state; it is not an observation and is never saved.
+    assert len(calls) == 4 and int(saved["elapsed"]) == int(saved["step"]) == 18
+    failure = json.loads((Path(task["output"]) / "failures"
+                          / (fes._window_checkpoint(task).stem + ".json")).read_text())
+    assert failure["error"]["message"] == "injected observation failure"
+    assert failure["state"]["elapsed_steps"] == 18 and failure["state"]["recorded_samples"] == 2
     assert saved["values"].shape == (2, 2)
     reference = _reference_window(task, stop=18)
     for name in ("q", "p", "values", "energies"):

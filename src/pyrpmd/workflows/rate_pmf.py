@@ -41,9 +41,11 @@ def _stream_state_checks(streams, coordinate):
         if q is None:
             continue
         record = {"stream": index, "center": float(np.asarray(stream["center"]).reshape(-1)[0])}
-        for key in ("window", "window_id", "replica"):
+        for key in ("window", "replica"):
             if key in stream:
                 record[key] = int(stream[key])
+        if "window_id" in stream:
+            record["window_id"] = str(stream["window_id"])
         try:
             branch = coordinate.branch(q)
         except (ValueError, FloatingPointError) as error:

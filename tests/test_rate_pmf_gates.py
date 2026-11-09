@@ -164,7 +164,7 @@ def test_ess_collapse_rejects_the_rate_but_keeps_a_diagnostic_curve():
     assert result["free_energy_barrier_hartree"] is None
     assert np.isfinite(result["diagnostic_free_energy_barrier_hartree"])
     gate = {g["name"]: g for g in result["gates"]}["global_weight_ess"]
-    assert gate["passed"] is False and gate["minimum"] == 10.0
+    assert gate["passed"] is False and gate["minimum"] == 2.0
     # A healthy fit of the same data passes all gates.
     healthy = mbar_rate_pmf(samples, centers, kappa, BETA, bins=60, ranges=[-0.1, 1.2],
                             xi_star=1.0, bootstrap=0, min_count=1)

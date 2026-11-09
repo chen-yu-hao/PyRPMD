@@ -243,13 +243,15 @@ log 权重跨度。log 域运算只能恢复**诊断**曲线，最终速率仍�
 
 | 门槛 | 默认 | `[rate]` 选项 | 失败状态 |
 | --- | --- | --- | --- |
-| 全局 Kish 权重 ESS | ≥ 10 | `pmf_min_weight_ess` | `weight_ess_collapse` |
+| 全局 Kish 权重 ESS（坍缩报警） | ≥ 2 | `pmf_min_weight_ess` | `weight_ess_collapse` |
 | 参考点/分割面 bin 的 ESS | ≥ 2 | `pmf_min_endpoint_ess` | `endpoint_weight_ess_collapse` |
 | 流均值距中心不超过 N 个偏置宽度 `1/sqrt(beta K)` | N = 20 | `pmf_max_window_displacement` | `umbrella_stream_anomaly` |
 | 末态质心位于 RPMDrate ξ 的正常分支 `s0-s1>0` | 始终 | — | `umbrella_stream_anomaly` |
 | 自适应伞形：冻结生产的重叠、每窗 ESS 与覆盖 | 自适应目标 | `[adaptive_umbrella]` | `adaptive_production_targets_not_met` |
 
-仅在有意做诊断时把门槛设为 `"off"`。任一门槛失败时：`ready=false`、
+即使数据健康，无偏伞形权重的全局 ESS 也很小：边缘窗口的权重按
+`exp(beta K (xi-c)^2/2)` 增长，因此该下限只用于拒绝坍缩到一两帧的情形；
+端点 bin 的 ESS 才衡量进入势垒的支撑。仅在有意做诊断时把门槛设为 `"off"`。任一门槛失败时：`ready=false`、
 `status="unsupported_pmf"`、`curve_role="diagnostic_only"`、`k_qtst=null`，
 不启动 recrossing；潜在势垒只写入 `diagnostic_free_energy_barrier_hartree`。
 `rate_pmf.npz` 含 `diagnostic_only=true` 与 `log_density`，`gates` 列出全部检查。

@@ -19,8 +19,12 @@ HARTREE_TO_KCAL_MOL = 627.509474
 
 # Defaults for the hard rate gates. A Kish effective sample size near one
 # means that a single frame owns the reweighted ensemble; no binning or
-# log-domain arithmetic can turn such a sample into a rate PMF.
-DEFAULT_MIN_WEIGHT_ESS = 10.0
+# log-domain arithmetic can turn such a sample into a rate PMF. The global
+# ESS of unbiased umbrella weights is intrinsically small: in an edge window
+# the weights grow like exp(beta*K*(xi-c)^2/2), whose variance diverges, so
+# the floor only rejects collapse. The endpoint-bin ESS measures the support
+# that actually enters the barrier.
+DEFAULT_MIN_WEIGHT_ESS = 2.0
 DEFAULT_MIN_ENDPOINT_ESS = 2.0
 # A harmonic window of reduced stiffness beta*K has a bias-only width
 # sigma=1/sqrt(beta*K). A mean displaced by 20 sigma carries a reduced bias of
