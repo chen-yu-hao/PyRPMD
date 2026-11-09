@@ -502,7 +502,7 @@ the report records their SHA256 values and exact replay results.
 
 ### PR #115 follow-up: tile-local scratch and compact observations
 
-The follow-up [validation record](validation/pr115-thermal-refactor/README.md)
+The follow-up [validation record](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/pr115-thermal-refactor/README.md)
 checks a tile-local thermal path without changing the default RNG, checkpoint
 format, or floating-point map. The common `Dynamics.propagate()` fast path now
 requests only its public position/energy records; energy checks still run on
