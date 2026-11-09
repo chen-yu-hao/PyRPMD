@@ -1,5 +1,18 @@
 # RPMD rate inputs
 
+## Physical BKMP2 H + H₂ exchange
+
+For a **real BKMP2 H + H₂ rate calculation**, use
+[`bkmp2_pilot.inp`](bkmp2_pilot.inp) for a functional smoke test or
+[`bkmp2_production.inp`](bkmp2_production.inp) for a production-scale starting
+input. [`BKMP2_README.md`](BKMP2_README.md) gives the compiler, pinned PES
+source, pre-run numerical verification, command sequence, and **mandatory
+convergence** checks. Both inputs use the existing validated physical BKMP2
+implementation in `benchmarks/h3/pes.py`, with two equivalent exchange
+channels and explicit H masses; neither automatically certifies a converged rate.
+
+## Analytic teaching and workflow regression inputs
+
 Start a rate study with [`research.inp`](research.inp). It explicitly declares the reactant
 fragments, product partition and forming/breaking bonds, then independently requests a TS
 validation and a downhill channel check. Its regional table gives 16 entrance windows and
