@@ -28,6 +28,10 @@ class MBARResult:
     converged: bool
     residual: float
     diagnostics: dict | None = None
+    # Normalized natural-log target weights. ``weights`` underflows to zero
+    # for frames far below the dominant weight; histogram estimators that
+    # must not silently lose such mass accumulate in this log domain.
+    log_weights: np.ndarray | None = None
 
 
 def _reweighting_signature(reduced_potentials, counts, overlap_threshold):
@@ -282,7 +286,8 @@ def solve_mbar(
     _, logd, residual = equations(f)
     unique_weights = np.exp(f[:, None] - u - logd[None]).T
     logw = -target - logd
-    weights = np.exp(logw - logsumexp(logw))
+    logw = logw - logsumexp(logw)
+    weights = np.exp(logw)
     gram = unique_weights.T @ unique_weights
     overlap = gram[state_map[:, None], state_map[None, :]] * original_counts[None, :]
     graph = np.maximum(overlap, overlap.T) > overlap_threshold
@@ -309,4 +314,5 @@ def solve_mbar(
             "polish_iterations": polish_iterations,
             "warm_start": initial_free_energies is not None,
         },
+        logw,
     )

@@ -31,6 +31,60 @@ stride 只控制核验成本，不宣称已去除时间相关性；不用 PyMBAR
 缺失中间 bin、断连、仅一次有效 bootstrap、重复状态和旧算法等价性。
 这些测试分别检查统计估计、失败处理和非线性方程，不证明真实体系遍历性。
 
+## 支撑、权重与窗口门槛
+
+直方图 PMF 只在 bin **中心**有定义。`analysis.ranges=[[-0.1,1.1]]`、`bins=240`
+时最后一个中心是 1.0975，而不是 1.1。输入预检会拒绝落在
+`[first_center, last_center]` 之外的参考点 ξ=0、`rate.dividing_surface` 或
+`rate.pmf_search_range` 端点，同时报告 edge/center 范围和需要的边界，
+绝不把 1.1 静默截断为 1.0975。端点恰在中心或内部 edge 上可以接受。
+省略 `analysis.ranges`（按数据决定 bin）时，在分析阶段给出同样的分类。
+
+`rate_pmf.json` 保存解析后的分箱与支撑：`support.histogram`
+（edges、centers、首末中心、宽度）、`support.search_endpoints`
+（`on_center`、`between_centers`、`outside_histogram_centers` 或 `masked`，
+含相邻 bin 和被屏蔽区间）、`support.reference_endpoint` 与
+`support.dividing_surface_endpoint`。
+
+MBAR 速率直方图由归一化 log 权重以 log-sum-exp 累积 bin 质量，
+极小但非零的权重不再因下溢变成屏蔽/NaN。`weight_diagnostics` 报告全局
+Kish ESS、每条流的 ESS 与权重占比、端点 bin ESS、最大归一化权重和
+log 权重跨度。log 域运算只能恢复**诊断**曲线，最终速率仍受门槛约束：
+
+| 门槛 | 默认 | `[rate]` 选项 | 失败状态 |
+| --- | --- | --- | --- |
+| 全局 Kish 权重 ESS（坍缩报警） | ≥ 2 | `pmf_min_weight_ess` | `weight_ess_collapse` |
+| 参考点/分割面 bin 的 ESS | ≥ 2 | `pmf_min_endpoint_ess` | `endpoint_weight_ess_collapse` |
+| 流均值距中心不超过 N 个偏置宽度 `1/sqrt(beta K)` | N = 20 | `pmf_max_window_displacement` | `umbrella_stream_anomaly` |
+| 末态质心位于 RPMDrate ξ 的正常分支 `s0-s1>0` | 始终 | — | `umbrella_stream_anomaly` |
+| 自适应伞形：冻结生产的重叠、每窗 ESS 与覆盖 | 自适应目标 | `[adaptive_umbrella]` | `adaptive_production_targets_not_met` |
+
+即使数据健康，无偏伞形权重的全局 ESS 也很小：边缘窗口的权重按
+`exp(beta K (xi-c)^2/2)` 增长，因此该下限只用于拒绝坍缩到一两帧的情形；
+端点 bin 的 ESS 才衡量进入势垒的支撑。仅在有意做诊断时把门槛设为 `"off"`。任一门槛失败时：`ready=false`、
+`status="unsupported_pmf"`、`curve_role="diagnostic_only"`、`k_qtst=null`，
+不启动 recrossing；潜在势垒只写入 `diagnostic_free_energy_barrier_hartree`。
+`rate_pmf.npz` 含 `diagnostic_only=true` 与 `log_density`，`gates` 列出全部检查。
+
+偏离中心或位于错误分支的流还会写出 `umbrella_stream_anomalies.json`
+（中心、刚度、均值、宽度、以 σ 计的偏移、均值处偏置能 kcal/mol、
+由末态质心重算的 ξ、s0、s1 与分支，以及检查清单）。越过奇异面
+`s0=s1` 后，RPMDrate ξ 跳到 −∞，再沿产物通道回升到约 1/3；因此中心为
+ξ=1.1 的窗口可能报告 ξ≈0.4–0.7、偏置能巨大而回复力很弱。
+继续该流不是收敛手段。
+
+自适应 pilot 只负责选择窗口。即使所有 pilot 目标都满足，速率仍要求
+冻结生产满足 `target_overlap`、`min_effective_samples` 及声明的覆盖。
+
+### 失败的偏置 history
+
+伞形窗口、WT-MetaD 与 OPES history 在传播或 PES 失败时（BKMP2 中任一
+原子对距离小于 0.2 bohr）写出 `failures/<history>.json`，记录错误、最后一个
+已提交状态的 step/time/时钟、步长、珠子与质心最小原子对距离、质心 CV、
+最后记录的 CV、偏置状态（hills 或 kernels）、native/Python 传播计数和
+checkpoint。此时 `rate_pmf.json` 以 `status="sampling_incomplete"` 列出全部失败
+history，运行抛出错误；不会挑选已完成的 history 拼接 PMF。
+
 ## 预先固定的四组计算
 
 以下参数在读取本轮结果之前确定，完整机器可读计划由

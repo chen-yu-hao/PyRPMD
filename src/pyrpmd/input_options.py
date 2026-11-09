@@ -200,6 +200,43 @@ def rate_pmf_options(config):
         raise InputError(
             "analysis.overlap_threshold must lie strictly between zero and one"
         )
+    from .analysis.rate_support import (
+        DEFAULT_MAX_CENTER_DISPLACEMENT_SIGMA, DEFAULT_MIN_ENDPOINT_ESS,
+        DEFAULT_MIN_WEIGHT_ESS, preflight_message, uniform_edges,
+    )
+
+    def gate(name, default):
+        value = rate.get(name, default)
+        if value is None or (isinstance(value, str) and value == "off"):
+            return None
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            raise InputError(f"rate.{name} must be a positive number or 'off'")
+        value = float(value)
+        if not math.isfinite(value) or value <= 0:
+            raise InputError(f"rate.{name} must be a positive number or 'off'")
+        return value
+
+    gates = {
+        "min_weight_ess": gate("pmf_min_weight_ess", DEFAULT_MIN_WEIGHT_ESS),
+        "min_endpoint_ess": gate("pmf_min_endpoint_ess", DEFAULT_MIN_ENDPOINT_ESS),
+        "max_center_displacement_sigma": gate(
+            "pmf_max_window_displacement", DEFAULT_MAX_CENTER_DISPLACEMENT_SIGMA),
+    }
+    if method == "mbar" and ranges is not None:
+        # Histogram PMFs exist only at bin centers. Reject an endpoint beyond
+        # the center range before any sampling instead of clipping it later.
+        edges = uniform_edges(bins, ranges)
+        option = f"analysis.ranges=[{ranges[0]:g}, {ranges[1]:g}] with analysis.bins={bins}"
+        points = [("rate PMF reference xi", 0.0)]
+        if search_range is not None and xi_star is None:
+            points += [("rate.pmf_search_range lower endpoint", search_range[0]),
+                       ("rate.pmf_search_range upper endpoint", search_range[1])]
+        if xi_star is not None:
+            points.append(("rate.dividing_surface", xi_star))
+        for name, point in points:
+            message = preflight_message(name, point, edges, option=option)
+            if message:
+                raise InputError(message)
     return {
         "method": method,
         "sampler": sampler if source is None or spec is not None else "external",
@@ -213,6 +250,7 @@ def rate_pmf_options(config):
         "bootstrap": nboot,
         "min_count": _integer(analysis.get("min_count", 1), "analysis.min_count"),
         "overlap_threshold": threshold,
+        **gates,
         "analysis_seed": _integer(
             analysis.get("seed", config.get("seed", 0)), "analysis.seed", 0
         ),

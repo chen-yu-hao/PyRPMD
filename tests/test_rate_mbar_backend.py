@@ -241,9 +241,18 @@ class RateMBARIntegrationTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "changed scientific settings"):
                 run_resolved(changed, self.system, output=self.output, resume=True)
 
-    def test_masked_or_missing_endpoint_withholds_rate_and_children(self):
+    def test_endpoint_outside_histogram_centers_is_rejected_before_analysis(self):
         config = copy.deepcopy(self.prepared)
         config["analysis"].update(ranges=[[-0.3, 0.8]], bootstrap=0)
+        with tempfile.TemporaryDirectory() as output:
+            with self.assertRaisesRegex(InputError, "histogram bin center.*never clipped"):
+                _pmf_and_parent_tasks(
+                    self.sampled(), config, self.system, output, self.options
+                )
+
+    def test_masked_or_missing_endpoint_withholds_rate_and_children(self):
+        config = copy.deepcopy(self.prepared)
+        config["analysis"].update(bootstrap=0, min_count=10**9)
         with tempfile.TemporaryDirectory() as output:
             pmf, tasks = _pmf_and_parent_tasks(
                 self.sampled(), config, self.system, output, self.options
@@ -256,6 +265,96 @@ class RateMBARIntegrationTests(unittest.TestCase):
             self.assertEqual(tasks, [])
             result = _aggregate([], pmf, config, output, self.options)
             self.assertEqual(result["status"], "unsupported_pmf")
+            self.assertIsNone(result["rate_estimate_cm3_s"])
+            self.assertFalse((Path(output) / "recrossing.npz").exists())
+
+    def test_every_checkpoint_recomputes_its_recorded_centroid_xi_and_bias(self):
+        coordinate = rate_coordinate(self.prepared, self.system)
+        checkpoints = sorted((self.output / "umbrella/checkpoints").glob("window_*.npz"))
+        self.assertEqual(len(checkpoints), len(self.streams))
+        for stream in self.streams:
+            path = (self.output / "umbrella/checkpoints"
+                    / f"window_{stream['window']:05d}_replica_{stream['replica']:04d}.npz")
+            with np.load(path, allow_pickle=False) as saved:
+                q = np.asarray(saved["q"])
+                if "center" in saved.files:
+                    np.testing.assert_array_equal(saved["center"], stream["center"])
+                    np.testing.assert_array_equal(saved["stiffness"], stream["stiffness"])
+            # Production ends on a sample step: the last recorded CV is the
+            # centroid xi of the checkpointed final ring, in the same branch.
+            self.assertAlmostEqual(
+                float(coordinate.value(q)[0]), float(stream["samples"][-1, 0]), places=12)
+            branch = coordinate.branch(q)
+            self.assertEqual(branch["branch"], "regular")
+            self.assertAlmostEqual(branch["xi"], float(stream["samples"][-1, 0]), places=12)
+        pmf = self.result["pmf"]
+        self.assertTrue(all(check["passed"] for check in pmf["stream_state_checks"]))
+        self.assertEqual(pmf["window_anomalies"], [])
+        self.assertTrue(all(gate["passed"] for gate in pmf["gates"]))
+        self.assertEqual(pmf["curve_role"], "rate")
+        histogram = pmf["support"]["histogram"]
+        self.assertEqual(histogram["bins"], 24)
+        self.assertAlmostEqual(histogram["last_center"], 1.3 - 1.6 / 48)
+        self.assertGreater(pmf["weight_diagnostics"]["global_kish_ess"], 10)
+
+    def test_displaced_umbrella_stream_withholds_rate_and_writes_artifact(self):
+        sampled = self.sampled()
+        streams = [dict(stream) for stream in sampled["streams"]]
+        last = streams[-1]
+        last["samples"] = last["samples"] - 0.6
+        sampled["streams"] = streams
+        config = copy.deepcopy(self.prepared)
+        config["analysis"]["bootstrap"] = 0
+        # The pilot fixture uses a weak beta*K~50 umbrella (sigma~0.14), so
+        # this 0.6 shift is ~4 sigma; tighten the default 20-sigma gate.
+        config["rate"]["pmf_max_window_displacement"] = 3.0
+        with tempfile.TemporaryDirectory() as output:
+            pmf, tasks = _pmf_and_parent_tasks(
+                sampled, config, self.system, output, self.options,
+            )
+            self.assertFalse(pmf["ready"])
+            self.assertEqual(pmf["status"], "unsupported_pmf")
+            self.assertEqual(pmf["failure_reason"], "umbrella_stream_anomaly")
+            self.assertEqual(pmf["curve_role"], "diagnostic_only")
+            self.assertIsNone(pmf["k_qtst_cm3_s"])
+            self.assertEqual(tasks, [])
+            artifact = json.loads((Path(output) / "umbrella_stream_anomalies.json").read_text())
+            self.assertEqual([a["stream"] for a in artifact["displaced_streams"]],
+                             [len(streams) - 1])
+            self.assertFalse(artifact["rate_reported"])
+            self.assertTrue(artifact["checks"])
+            with np.load(Path(output) / "rate_pmf.npz", allow_pickle=False) as saved:
+                self.assertFalse(bool(saved["ready"]))
+                self.assertTrue(bool(saved["diagnostic_only"]))
+
+    def test_adaptive_pilot_pass_production_fail_does_not_start_recrossing(self):
+        sampled = self.sampled()
+        sampled["summary"]["adaptive_umbrella"] = {
+            "pilot_target_met": True, "target_met": True, "production_target_met": False,
+            "production_spanning_overlap": 0.0178,
+            "production_overlap_connected_at_target": False,
+            "production_effective_samples_target_met": True,
+            "production_effective_samples_per_window": [30.0] * len(self.streams),
+            "production_analysis_overlap_connected": True,
+        }
+        config = copy.deepcopy(self.prepared)
+        config["analysis"]["bootstrap"] = 0
+        with tempfile.TemporaryDirectory() as output:
+            pmf, tasks = _pmf_and_parent_tasks(
+                sampled, config, self.system, output, self.options,
+            )
+            self.assertFalse(pmf["ready"])
+            self.assertEqual(pmf["status"], "unsupported_pmf")
+            self.assertEqual(pmf["failure_reason"], "adaptive_production_targets_not_met")
+            self.assertIsNone(pmf["free_energy_barrier_hartree"])
+            self.assertIsNotNone(pmf["diagnostic_free_energy_barrier_hartree"])
+            self.assertIsNone(pmf["k_qtst_cm3_s"])
+            self.assertEqual(tasks, [])
+            gate = {g["name"]: g for g in pmf["gates"]}["adaptive_frozen_production"]
+            self.assertFalse(gate["passed"])
+            self.assertTrue(gate["pilot_target_met"])
+            self.assertEqual(gate["spanning_overlap"], 0.0178)
+            result = _aggregate([], pmf, config, output, self.options)
             self.assertIsNone(result["rate_estimate_cm3_s"])
             self.assertFalse((Path(output) / "recrossing.npz").exists())
 

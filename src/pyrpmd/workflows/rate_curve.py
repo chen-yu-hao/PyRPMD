@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import numpy as np
 
+from ..analysis.rate_support import classify_point, masked_runs
+
 
 def estimate_fes_curve(result, options, *, uncertainty_reason, warnings=(),
                        unsupported_status="unsupported_pmf", strict_search=False):
@@ -21,8 +23,12 @@ def estimate_fes_curve(result, options, *, uncertainty_reason, warnings=(),
     curve = np.asarray(result.free_energy, float)
     mask = np.asarray(result.mask, bool) | ~np.isfinite(curve)
     search = options["search_range"] or [0.0, float(grid[-1])]
-    if options["search_range"] is not None and (search[0] < grid[0] or search[1] > grid[-1]):
-        raise ValueError("rate.pmf_search_range extends beyond the PMF grid")
+    if options["search_range"] is not None and (search[0] < grid[0] - 1e-12
+                                                or search[1] > grid[-1] + 1e-12):
+        raise ValueError(
+            f"rate.pmf_search_range [{search[0]:.10g}, {search[1]:.10g}] extends beyond the "
+            f"PMF grid points [{grid[0]:.10g}, {grid[-1]:.10g}]; endpoints are never clipped. "
+            "Extend the FES analysis ranges or narrow the search range.")
     searched = (grid >= search[0]) & (grid <= search[1])
     eligible = searched & ~mask
     xi = options["xi_star"]
@@ -79,5 +85,15 @@ def estimate_fes_curve(result, options, *, uncertainty_reason, warnings=(),
         "warnings": messages,
         "support": {"search_range": search, "reference": reference is not None,
                     "dividing_surface": surface is not None,
-                    "complete_search_range": search_supported},
+                    "complete_search_range": search_supported,
+                    "reference_endpoint": classify_point(grid, mask, 0.0),
+                    "dividing_surface_endpoint": (classify_point(grid, mask, xi)
+                                                  if xi is not None else None),
+                    "search_endpoints": {
+                        "lower": classify_point(grid, mask, search[0]),
+                        "upper": classify_point(grid, mask, search[1]),
+                        "masked_intervals": masked_runs(grid, mask, *search),
+                    },
+                    "grid": {"points": int(len(grid)), "first": float(grid[0]),
+                             "last": float(grid[-1])}},
     }

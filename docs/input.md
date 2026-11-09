@@ -344,7 +344,12 @@ and block status. More bootstrap draws do not replace more independent productio
 Omitting `dividing_surface` or using `"auto"` selects the peak automatically;
 `rate.pmf_search_range=[0.8,1.1]` restricts the search. MBAR uses supported, unsmoothed
 bin centers; the entire interval from reference point to dividing surface must have
-continuous support. Bootstrap keeps the chosen surface fixed and excludes uncertainty
+continuous support. Every endpoint must lie within the histogram bin *centers*; with
+explicit `analysis.ranges` this is checked during input preflight and is never clipped.
+`rate.pmf_min_weight_ess` (default 2), `rate.pmf_min_endpoint_ess` (default 2) and
+`rate.pmf_max_window_displacement` (default 20 bias widths) are hard rate gates; see
+[support, weight and stream gates](rate-pmf-selection.md#support-weight-and-stream-gates).
+Bootstrap keeps the chosen surface fixed and excludes uncertainty
 in automatic peak selection. Legacy `recrossing.dividing_surface` remains available;
 inconsistent values specified in both places raise an error. Parent/child checkpoints
 cannot be reused after changing the PMF method or dividing surface.
