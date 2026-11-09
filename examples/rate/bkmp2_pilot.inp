@@ -1,0 +1,72 @@
+# Short but physically defined BKMP2 H + H2 workflow smoke test.
+# Not sufficient to quote a converged reaction rate.
+task = "rate"
+preset = "pilot"
+temperature = "1500 K"
+beads = 16
+seed = 721062
+
+[system]
+symbols = ["H", "H", "H"]
+masses_amu = [1.00782503223, 1.00782503223, 1.00782503223]
+geometry_unit = "bohr"
+geometry = [[-1.7570000251, 0.0, 0.0], [0.0, 0.0, 0.0], [1.7570000251, 0.0, 0.0]]
+charge = 0
+multiplicity = 2
+
+[potential]
+provider = "python"
+factory = "../../benchmarks/h3/pes.py:build"
+
+[dynamics]
+integrator = "cayley-bcb"
+timestep = "0.1 fs"
+native = "required"
+
+[sampling]
+thermostat = "andersen"
+equilibration = "50 fs"
+production = "200 fs"
+interval = "0.5 fs"
+andersen_interval = 20
+replicas = 2
+
+[reaction]
+fragments = [[0], [1, 2]]
+forming_bonds = [[0, 1]]
+breaking_bonds = [[1, 2]]
+equivalent_paths = [[0, 2, 1]]
+rinf = "10 bohr"
+electronic_weight = 1.0
+symmetry_factor = 1.0
+
+[umbrella]
+start = -0.05
+stop = 1.10
+count = 47
+kappa = "1.900086938 hartree"
+
+[analysis]
+bins = 100
+ranges = [[-0.30, 1.40]]
+bootstrap = 20
+min_count = 5
+
+[rate]
+pmf_method = "mbar"
+# Omit dividing_surface: choose xi* from the supported PMF maximum.
+
+[recrossing]
+parent_replicas = 2
+parent_samples = 8
+equilibration = "50 fs"
+parent_interval = "5 fs"
+child_pairs = 2
+child_time = "30 fs"
+plateau_fraction = 0.25
+plateau_tolerance = 0.1
+bootstrap = 30
+
+[output]
+directory = "runs/bkmp2-pilot"
+checkpoint_interval = "20 fs"
