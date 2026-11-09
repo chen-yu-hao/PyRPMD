@@ -59,8 +59,7 @@ min_count = 5
 
 [rate]
 pmf_method = "mbar"
-# Must be independently checked against the converged PMF maximum.
-dividing_surface = 1.00925
+# Omit dividing_surface: choose xi* from the supported PMF maximum.
 
 [recrossing]
 parent_replicas = 4
