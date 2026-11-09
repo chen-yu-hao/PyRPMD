@@ -38,8 +38,9 @@ with the identical source bytes.
   A spring of 1.900086938 hartree is approximately 400 kBT at 1500 K for
   dimensionless xi; the polymer-bead factor is applied internally.
 - PMF uses MBAR; recrossing uses unbiased, unthermostatted paired RPMD children.
-  The selected fixed dividing surface xi*=1.00925 is a reference choice, not an
-  independent demonstration of optimum location for a different sample.
+  The dividing surface xi* is automatically selected from the maximum of the
+  supported MBAR PMF (discrete histogram bin center). Its location must be
+  checked for sensitivity to binning, sampling noise and PMF search support.
 - `bkmp2_pilot.inp` is a computational smoke test, **not** a publishable rate.
   `bkmp2_production.inp` increases P, reduces timestep, extends PMF and
   recrossing sampling, and increases independent chains/bootstrap; despite
@@ -55,7 +56,8 @@ with the identical source bytes.
    stable to statistical error. Do not combine different settings by resume.
 3. Check adjacent-window overlap connectivity, per-window ESS, window-by-window
    equilibration, block length and PMF/MBAR vs flux-weighted UI consistency.
-   Revisit width/stiffness if some windows have no overlap. Establish stability
+   Revisit width/stiffness if some windows have no overlap. The automatic
+   xi* is the largest supported PMF bin center, not a continuous optimum. Establish stability
    in sampling length and at independent random seeds.
 4. Check `Rinf=10` versus larger separation (e.g. 12 or 14 bohr) and PMF
    entrance normalization; verify the PMF maximum and xi* choice consistently.
