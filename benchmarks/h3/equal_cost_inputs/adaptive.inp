@@ -1,0 +1,92 @@
+# Real BKMP2 H + H2: matched-MD-step fixed vs adaptive RATE comparison.
+# Diagnostic campaign, not a physically converged rate. Run from repository root.
+# The adaptive total budget includes every pilot and frozen PMF trajectory.
+task = "rate"
+preset = "production"
+temperature = "1500 K"
+beads = 16
+seed = 721062
+
+[system]
+symbols = ["H", "H", "H"]
+masses_amu = [1.00782503223, 1.00782503223, 1.00782503223]
+geometry_unit = "bohr"
+geometry = [[-1.7570000251, 0.0, 0.0], [0.0, 0.0, 0.0], [1.7570000251, 0.0, 0.0]]
+charge = 0
+multiplicity = 2
+
+[potential]
+provider = "python"
+factory = "../pes.py:build"
+
+[dynamics]
+integrator = "cayley-bcb"
+timestep = "0.1 fs"
+native = "required"
+
+[sampling]
+thermostat = "andersen"
+equilibration = "300 fs"
+production = "1000 fs"
+interval = "0.5 fs"
+andersen_interval = 50
+replicas = 2
+
+[reaction]
+fragments = [[0], [1, 2]]
+forming_bonds = [[0, 1]]
+breaking_bonds = [[1, 2]]
+equivalent_paths = [[0, 2, 1]]
+rinf = "10 bohr"
+electronic_weight = 1.0
+symmetry_factor = 1.0
+
+[umbrella]
+# 96 fixed centers vs 6 initial adaptive centers across identical xi domain.
+start = -0.05
+stop = 1.10
+count = 6
+# K / (kBT) = 400 at 1500 K
+kappa = "1.900086938 hartree"
+
+[adaptive_umbrella]
+enabled = true
+pilot_steps = 1000
+pilot_equilibration_steps = 3000
+max_rounds = 8
+max_windows = 128
+max_pilot_steps = 16000
+target_overlap = 0.03
+min_effective_samples = 20.0
+# Same PMF MD step allowance as fixed 96 * 2 replicas * (3000 eq + 10000 prod).
+# After adaptation, leftover steps determine frozen production length.
+total_integration_steps = 2496000
+
+[analysis]
+bins = 120
+ranges = [[-0.15, 1.25]]
+bootstrap = 40
+min_count = 5
+
+[rate]
+pmf_method = "mbar"
+compare_ui = true
+pmf_points = 401
+# Both methods search this physically motivated barrier region; no fixed xi*.
+pmf_search_range = [0.75, 1.08]
+
+[recrossing]
+# Identical parent and child trajectory budget per PMF schedule.
+parent_replicas = 2
+parent_samples = 32
+equilibration = "200 fs"
+parent_interval = "10 fs"
+child_pairs = 2
+child_time = "80 fs"
+plateau_fraction = 0.25
+plateau_tolerance = 0.1
+bootstrap = 100
+
+[output]
+directory = "runs/h3-equal-budget-adaptive"
+checkpoint_interval = "50 fs"
