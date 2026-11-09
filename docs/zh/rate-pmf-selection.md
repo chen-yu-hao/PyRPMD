@@ -15,12 +15,45 @@
 `method` 表示采样方法或已有来源，`estimator` 表示重构方法。
 UI 和 MBAR 都使用伞形采样的数据。原始 MetaD 偏置估计和 OPES KDE 不能直接充当速率 PMF。
 
+## 伞形采样不再选择速率 PMF 估计器
+
+UI 速率只需在一处选择估计器：
+
+```toml
+[rate.pmf]
+method = "umbrella"
+estimator = "ui"
+
+[rate.pmf.analysis]
+bootstrap = 40
+```
+
+不要用 `analysis.method="mbar"` 或 `analysis.method="ui"` 选择速率 PMF。
+新建的伞形采样阶段不再注入 `analysis.method`。历史上显式填写的 `"mbar"`
+仍可读取，但不会覆盖 `rate.pmf.estimator`；已保存的阶段输入也不会被改写。
+旧的 `rate.pmf_method` 选择器继续支持。普通 `task="fes"` 的
+`analysis.method="mbar"` 接口不变。
+
+伞形采样器只产生可续算的样本流，随后由速率分析阶段执行所选估计器和端点配对
+bootstrap。UI 仍保留一次 MBAR 拟合来检查重叠和实际直方图支撑；这个拟合不是
+UI 的 PMF 估计器，也不再运行额外的 FES bootstrap。MBAR 速率直接复用其
+最终拟合生成诊断，不再先求解一遍生产阶段的预备 FES。自适应 pilot 仍需评估
+重叠以选择窗口，只有冻结后的独立生产样本进入最终速率分析。
+
+`umbrella/fes.h5`、标准 `umbrella/fes.*` 和 `umbrella/summary.json` 继续保留，
+改由速率分析阶段写出。这些文件保存样本和 MBAR 点估计诊断，**不是第二份误差
+估计**：bootstrap 次数为零，误差不可用。元数据记录 `analysis_owner="rate"`
+和所选 `rate_estimator`。所选 UI/MBAR 曲线及势垒误差应读取 `rate_pmf.*`。
+普通续算和固定窗口生产扩展采用相同的职责划分；采样时钟、checkpoint 标识、
+flux 测度以及重叠断连时拒绝速率的规则保持不变。
+
 ## 从完整示例开始
 
-三个示例使用项目已有的解析教学势能面和 TS：
+四个示例方案使用项目已有的解析教学势能面和 TS：
 
 ```bash
 pyrpmd validate examples/rate/pmf_umbrella.inp --check-pes
+pyrpmd validate examples/rate/pmf_umbrella_mbar.inp --check-pes
 pyrpmd validate examples/rate/pmf_metadynamics.inp --check-pes
 pyrpmd validate examples/rate/pmf_opes.inp --check-pes
 

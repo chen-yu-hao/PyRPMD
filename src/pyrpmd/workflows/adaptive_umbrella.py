@@ -597,13 +597,13 @@ def _require_frozen(plan, output):
                            summary["failure_reason"] + ". Inspect " + str(_plan_path(output)))
 
 
-def run_adaptive_fes(config, system, output, executor=None, return_data=False):
+def sample_adaptive_umbrellas(config, system, output, executor=None):
     """Adapt pilot windows, freeze, then start independent production samples."""
     from . import validate_bond_constraint_workflow
     validate_bond_constraint_workflow(system, "adaptive_fes")
     from .sampling import validate_andersen_schedule
     validate_andersen_schedule(config, "adaptive_umbrella")
-    from .fes import run_fes
+    from .fes import sample_umbrellas
     validate_adaptive_umbrella(config, system)
     options = adaptive_options(config)
     cv, specs, centers, stiffness = resolve_umbrellas(config, system)
@@ -629,8 +629,19 @@ def run_adaptive_fes(config, system, output, executor=None, return_data=False):
     frozen = _stage_config(config, plan["centers"], plan["stiffness"], plan["production_seed"])
     postprocess = partial(_annotate, plan=plan, output=str(output), periods=cv.periods,
                           production_steps=frozen["sampling"]["production_steps"])
-    return run_fes(frozen, system, output, executor=executor, return_data=return_data,
-                   _postprocess=postprocess)
+    return sample_umbrellas(frozen, system, output, executor=executor,
+                            _postprocess=postprocess)
+
+
+def run_adaptive_fes(config, system, output, executor=None, return_data=False):
+    """Compose adaptive sampling with the generic production FES estimator."""
+    from .fes import _analyze_streams
+
+    sampled = sample_adaptive_umbrellas(config, system, output, executor=executor)
+    return root_call(
+        _analyze_streams, sampled["streams"], sampled["sampling_config"], system,
+        sampled["output"], return_data, sampled["postprocess"],
+    )
 
 
 def reanalyze_adaptive_fes(config, system, output, return_data=False):

@@ -32,6 +32,12 @@ timestep = "0.1 fs"
 
 [rate]
 dividing_surface = 1.0
+pmf_points = 401
+
+# Select reconstruction at the rate boundary, independently of window sampling.
+[rate.pmf]
+method = "umbrella"
+estimator = "ui"
 
 [umbrella]
 coordinate = "xi"
@@ -66,9 +72,9 @@ scheme = "global_refresh"
 schedule = "fixed"
 refresh_every = "2 fs"
 
-[umbrella.analysis]
-estimator = "ui"
-integration_points = 401
+[rate.pmf.analysis]
+# Estimator is selected by [rate.pmf]; no generic analysis.method required.
+# The UI grid is controlled by rate.pmf_points in [rate].
 bins = 50
 bootstrap_replicates = 10
 
