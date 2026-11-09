@@ -31,12 +31,12 @@ jobs:
       fail-fast: false
       max-parallel: 12
       matrix:
+        # Run 1 (42575336118): truncation 0.07-0.16 Eh at spacing 2.0, converged to ~0.1%
+        # at 0.16 Eh, but spacing 1.75 changed the rate by +3% (200 K) and +6% (150 K).
+        # Run 2: spacing ladder at 0.10 Eh; the truncation step 0.10 -> 0.16 comes from run 1.
         temperature: [600, 400, 300, 200, 150]
-        truncation: [0.07, 0.10, 0.13, 0.16]
-        spacing: [2.0]
-        include:
-          - {temperature: 200, truncation: 0.13, spacing: 1.75}
-          - {temperature: 150, truncation: 0.13, spacing: 1.75}
+        truncation: [0.10]
+        spacing: [1.75, 1.5]
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v5
