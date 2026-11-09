@@ -117,8 +117,14 @@ environment follows statically. The $\omega_n^2$ term turns the $s$ springs into
 the valley, which is the arc-length metric that `project_path_subspace` uses. The
 $\omega_n^4/\omega^2$ term is the leading imaginary-time corner-cutting correction. All of these
 are static path-integral terms. They are sampled exactly by RPMD-TST and therefore cancel in
-$\Delta$. The curvature × width test $\kappa\rho$ measures exactly this static effect: large
-$\kappa\rho$ means $|G|$ is large, not that $\Delta$ is.
+$\Delta$.
+
+Curvature also changes the real-time dynamics near the barrier, and the 1D path model
+represents it only through the normal-cut zero-point energy. Neither cancels. Because a
+displacement coupling has no first-order term, the theorem above predicts
+$\Delta=O(h^2)$ for a valley displaced by $h$. The tests confirm this with a coefficient that
+does not depend on temperature or barrier symmetry: $\Delta=(0.144\pm0.006)(\kappa\rho)^2$.
+So curvature × width measures the transfer error itself, not only the size of $G$.
 
 **Elasticity estimate.** Suppose the full system behaves near the barrier like a member $H_{\mathrm{eff}}$
 of the same family of subspace models, with $k_{\mathrm{QM}}(H_{\mathrm{eff}})=k_{\mathrm{QM}}(H)$. Then
@@ -129,7 +135,11 @@ $$
 
 $C$ varies slowly where $k$ varies exponentially, so $|\varepsilon|\ll 1$ is expected. $\varepsilon$ can
 be measured on subspace models alone, for example by scaling the barrier
-(`benchmarks/subspace_theory/elasticity.py`).
+(`benchmarks/subspace_theory/elasticity.py`). For 1D Eckart barriers it is $-0.004$ to $-0.037$
+between 600 and 200 K. The estimate bounds errors of the projected potential that act like a
+change of the barrier, such as a thermal error of the zero-point projection. It does **not**
+describe curvature: for $h=0.9$ bohr at 200 K it predicts $\Delta=-0.08$, while the
+measured value is $+0.16$. Corner cutting is not a barrier-height change.
 
 ## Finite bead number
 
@@ -173,9 +183,11 @@ action and differs in the prefactor (Richardson and Althorpe, J. Chem. Phys. 131
 In that regime the identity above makes $\Delta$ a difference of prefactor errors,
 $\ln[A_{\mathrm{inst}}/A_{\mathrm{RP}}]_H-\ln[A_{\mathrm{inst}}/A_{\mathrm{RP}}]_{H_S}$. These errors depend on
 where the instanton sits relative to the dividing surface (its asymmetry), not on the environment
-frequencies. The expectation is a small $\Delta$ for symmetric barriers even with strong corner
-cutting, and a $\Delta$ that grows with corner cutting for asymmetric barriers, where the RPMD
-error itself is larger.
+frequencies. This suggests a small $\Delta$ for symmetric barriers even with strong corner
+cutting. **The tests do not bear this out.** The curvature transfer error is the same at 1.45,
+0.73 and 0.48 $T_c$ and for symmetric and asymmetric barriers. Most of it comes from the change
+of the 1D model's own RPMD error, $\ln C_S$, as its normal-cut zero-point energy reshapes
+$V_S$, and not from deep tunnelling.
 
 ## Practical criteria
 
@@ -184,11 +196,17 @@ error itself is larger.
    on $C_S$ is reduced by the elasticity.
 2. Converge $P$ for the stiffest environment mode, or divide the full RPMD rate by $B_P$:
    $P\gtrsim[(\sum_r u^3-\sum_\ddagger u^3)/(48\delta)]^{1/2}$.
-3. Curvature × width is a pre-screen for the static environment effect, which cancels from
-   $\Delta$. The deciding test is the nested sensitivity $\ln(C_{d+1}/C_d)$, a direct estimate of
-   $\Delta$ for the smaller subspace.
-4. $|\Delta|\approx|\varepsilon\,G|$: a subspace whose $C$ depends weakly on the barrier
-   ($|\varepsilon|$ small) transfers even when its absolute rate is poor.
+3. Curvature × width predicts the transfer error of a 1D path model:
+   $\Delta\approx0.144(\kappa\rho)^2$ on the tested models. That is 3.6% at the default threshold
+   $\kappa\rho=0.5$, and keeping $|\Delta|<5\%$ needs $\kappa\rho<0.59$. The coefficient comes from
+   two model families and is not universal. The deciding test remains the nested sensitivity
+   $\ln(C_{d+1}/C_d)$, a direct estimate of $\Delta$ for the smaller subspace.
+4. Errors of $V_S$ that act like a barrier change reach $C_S$ reduced by the elasticity
+   $|\varepsilon|\lesssim0.04$. A subspace with a poor absolute rate can still transfer, but only
+   if its error is of that kind.
+5. Converge the energy-truncated DVR. The walls must lie about six quanta of the stiffest
+   transverse mode above the valley floor, ridge included, which is far above 30 kT at low
+   temperature; check `truncation_margin` and set `truncation_min`.
 
 ## Tests
 
