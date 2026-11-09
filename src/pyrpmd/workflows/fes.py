@@ -920,16 +920,8 @@ def _write_window_plan(output, preview):
     write_json(path, preview)
 
 
-def run_fes(config, system, output, executor=None, return_data=False, *, _postprocess=None,
-            production_steps=None, checkpoint_output=None):
-    """Sample and reconstruct, optionally using an authorized extended budget.
-
-    ``production_steps`` is an internal total budget supplied by the extension
-    coordinator, not a replacement for the original scientific configuration.
-    ``checkpoint_output`` selects existing windows while aggregate products
-    are written under ``output``. Neither option applies to adaptive or
-    replica-exchange runs.
-    """
+def _validate_umbrella_sampling(config, system):
+    """Common sampler/operator checks for independent and exchange windows."""
     from . import validate_bond_constraint_workflow
     validate_bond_constraint_workflow(system, "fes")
     validate_andersen_schedule(config, "fes")
@@ -937,19 +929,33 @@ def run_fes(config, system, output, executor=None, return_data=False, *, _postpr
     batch_size = trajectory_batch_size(config)
     if batch_size > 1 and (config.get("replica_exchange") or config.get("adaptive_umbrella")):
         raise ValueError("trajectory batching currently requires independent fixed umbrella windows")
+
+
+def sample_umbrellas(config, system, output, executor=None, *, production_steps=None,
+                     checkpoint_output=None, _postprocess=None):
+    """Sample independent umbrella streams without reconstructing a FES.
+
+    The returned bundle carries the effective (possibly adaptively frozen)
+    production configuration and a deferred provenance hook. ``streams`` may
+    be a one-shot iterator on root and absent on other MPI ranks: consume it
+    inside ``root_call``. No production estimator or bootstrap runs here.
+    Adaptive pilots still diagnose overlap to choose and freeze their windows.
+
+    ``production_steps`` is an authorized total extension budget, not a change
+    to checkpoint identity. ``checkpoint_output`` selects the original stream
+    directory while analysis products are destined for ``output``.
+    """
+    _validate_umbrella_sampling(config, system)
     if config.get("replica_exchange"):
-        from .replica_exchange import exchange_options, run_replica_exchange_fes
+        from .replica_exchange import exchange_options
         if exchange_options(config, system)["enabled"]:
-            if production_steps is not None or checkpoint_output is not None:
-                raise ValueError("production extension requires independent fixed windows")
-            return run_replica_exchange_fes(config, system, output, executor=executor,
-                                            return_data=return_data)
+            raise ValueError("sample_umbrellas requires independent windows; use run_fes for REUS")
     if config.get("adaptive_umbrella"):
-        from .adaptive_umbrella import adaptive_options, run_adaptive_fes
+        from .adaptive_umbrella import adaptive_options, sample_adaptive_umbrellas
         if adaptive_options(config)["enabled"]:
             if production_steps is not None or checkpoint_output is not None:
                 raise ValueError("production extension requires independent fixed windows")
-            return run_adaptive_fes(config, system, output, executor=executor, return_data=return_data)
+            return sample_adaptive_umbrellas(config, system, output, executor=executor)
     config = copy.deepcopy(config)
     _, tasks = _make_tasks(config, system, output if checkpoint_output is None else checkpoint_output,
                           production_steps=production_steps)
@@ -957,8 +963,35 @@ def run_fes(config, system, output, executor=None, return_data=False, *, _postpr
         from .umbrella_plan import plan_preview
         root_call(_write_window_plan, output, plan_preview(config, system))
     streams = dispatch_tasks(_sample_window, tasks, config, executor, batch_trajectories=True)
+    # Leave one-shot executor iterators on the coordinator. The consuming
+    # analysis stage materializes them exactly once inside root_call; do not
+    # broadcast the complete trajectories merely to hand them to that stage.
+    return {"streams": streams, "sampling_config": config, "output": str(output),
+            "postprocess": _postprocess}
+
+
+def run_fes(config, system, output, executor=None, return_data=False, *, _postprocess=None,
+            production_steps=None, checkpoint_output=None):
+    """Compose umbrella sampling with the generic MBAR FES analysis.
+
+    Rate workflows use ``sample_umbrellas`` instead and own their UI/MBAR
+    estimates, diagnostics and uncertainty in the rate analysis stage.
+    """
+    if config.get("replica_exchange"):
+        _validate_umbrella_sampling(config, system)
+        from .replica_exchange import exchange_options, run_replica_exchange_fes
+        if exchange_options(config, system)["enabled"]:
+            if production_steps is not None or checkpoint_output is not None:
+                raise ValueError("production extension requires independent fixed windows")
+            return run_replica_exchange_fes(config, system, output, executor=executor,
+                                            return_data=return_data)
+    sampled = sample_umbrellas(
+        config, system, output, executor=executor, production_steps=production_steps,
+        checkpoint_output=checkpoint_output, _postprocess=_postprocess,
+    )
     return root_call(
-        _analyze_streams, streams, config, system, str(output), return_data, _postprocess
+        _analyze_streams, sampled["streams"], sampled["sampling_config"], system,
+        sampled["output"], return_data, sampled["postprocess"],
     )
 
 

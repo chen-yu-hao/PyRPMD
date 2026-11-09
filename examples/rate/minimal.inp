@@ -1,3 +1,5 @@
+# Deliberately omit [rate.pmf]: legacy umbrella sampling and UI estimation
+# remain the defaults; there is no analysis.method to configure.
 # Explicitly select the TS-inference convenience mode. For the research layout,
 # use research.inp and declare the entrance fragments and forming/breaking bonds.
 schema_version = 2
