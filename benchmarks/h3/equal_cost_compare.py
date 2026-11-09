@@ -118,7 +118,9 @@ def read_case(directory, method):
         "run_status": summary.get("status"),
         "reported_converged": bool(summary.get("converged", False)),
         "PMF_budget": budget,
-        "xi": xi.tolist(), "MBAR_pmf_hartree": np.where(mask, np.nan, energy).tolist(),
+        "xi": xi.tolist(), "MBAR_pmf_hartree": [
+            None if bool(hidden) else float(value) for hidden, value in zip(mask, energy)
+        ],
         "UI_xi": ui_x.tolist(), "UI_pmf_hartree": ui_y.tolist(),
     }
 
@@ -177,7 +179,7 @@ def render(result, output):
     fig, ax = plt.subplots(figsize=(9.4, 5.4))
     for method, label in (("fixed96", "Fixed 96"), ("adaptive", "Adaptive")):
         case = result[method]
-        ax.plot(case["xi"], np.array(case["MBAR_pmf_hartree"]) * HARTREE_TO_KCAL,
+        ax.plot(case["xi"], np.asarray(case["MBAR_pmf_hartree"], float) * HARTREE_TO_KCAL,
                 label=f"{label} MBAR")
         ax.plot(case["UI_xi"], np.array(case["UI_pmf_hartree"]) * HARTREE_TO_KCAL,
                 linestyle="--", label=f"{label} Gaussian UI")
