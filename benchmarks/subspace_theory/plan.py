@@ -21,14 +21,14 @@ def points():
         out.append({"family": "frequency", "parameter": 0.014, "barrier": "symmetric", "temperature": 200.0,
                     "beads": p, "seed": 100 + p})
     for item in out:
-        item["refine"] = 1.0
-    # Convergence of the exact 2D rate: 0.75x spacing, truncation 33 kT (same RPMD seeds).
-    for family, parameter, barrier, t in (("curvature", 0.9, "symmetric", 200.0), ("curvature", 0.9, "asymmetric", 600.0),
+        item["truncation"] = 0.07
+    # Truncation check of the exact 2D rate at 0.10 Eh (spacings 1.0 and 0.8 are in every point).
+    for family, parameter, barrier, t in (("curvature", 0.9, "symmetric", 200.0), ("curvature", 0.9, "asymmetric", 200.0),
                                          ("frequency", 0.0035, "symmetric", 600.0)):
         out.append({"family": family, "parameter": parameter, "barrier": barrier, "temperature": t,
-                    "beads": 0, "seed": 0, "refine": 0.75})
+                    "beads": 0, "seed": 0, "truncation": 0.10})
     for item in out:
-        item["name"] = "{family}-{parameter:g}-{barrier}-{temperature:g}K-P{beads}-r{refine:g}".format(**item)
+        item["name"] = "{family}-{parameter:g}-{barrier}-{temperature:g}K-P{beads}-t{truncation:g}".format(**item)
     return out
 
 

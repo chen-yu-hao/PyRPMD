@@ -114,7 +114,9 @@ def full_model(model, beta, spacing_s=0.1, sigma_fraction=2.3):
     sigma0 = np.sqrt(1.0 / (2.0 * MASS * w_min))
     sigma_th = sigma0 * np.sqrt(1.0 / np.tanh(0.5 * beta * w_min))
     c = model.centre(s_axis)[0]
-    lo, hi = float(c.min() - 7.0 * sigma_th), float(c.max() + 7.0 * sigma_th)
+    # The grid edge is a wall too: it must lie beyond the truncation energy.
+    extent = max(7.0 * sigma_th, np.sqrt(2.0 * truncation_offset(beta) / (MASS * w_min**2)) + 2.0 * sigma0)
+    lo, hi = float(c.min() - extent), float(c.max() + extent)
     y_axis = np.arange(lo, hi + 1e-9, sigma0 / sigma_fraction)
     top = model.frequencies()[2]
     return model_from_function(model, [s_axis, y_axis], gradient=model.gradient, masses=[MASS, MASS],
@@ -159,15 +161,23 @@ def curvature_width(model, beta):
     return float(product.max()), float(curvature.max())
 
 
-REFINE = {"spacing": 1.0, "truncation_kt": 25.0}
+# Energy-truncated DVR: points above (barrier + largest zero-point energy + offset) are
+# removed.  With the sinc-DVR's non-local kinetic matrix the rate converges slowly in the
+# offset: for the curvature model at 200 K it is 43% low at 0.016 Eh, 13% at 0.03 Eh and
+# within 0.5% from 0.05 Eh (docs/validation/2026-11-09-subspace-transfer).
+REFINE = {"ladder": [1.0, 0.8], "truncation_offset": 0.07, "spacing": 1.0}
+
+
+def truncation_offset(beta):
+    return max(REFINE["truncation_offset"], 30.0 / beta)
 
 
 def quantum_options(model, beta):
     w_reactant = model.omega(np.array(REFERENCE_S))[0]
     threshold = 0.5 * float(w_reactant)
-    return {"method": "sylvester", "dense_limit": 9000, "energy_floor": threshold - 1.0 / beta,
+    return {"method": "sylvester", "dense_limit": 11000, "energy_floor": threshold - 1.0 / beta,
             "truncation_energy": max(V0, 0.0) + 0.5 * float(model.omega(np.linspace(-S_RANGE, S_RANGE, 201))[0].max())
-            + REFINE["truncation_kt"] / beta}
+            + truncation_offset(beta)}
 
 
 def _limit_threads(count):
@@ -186,8 +196,22 @@ def _quantum(args, threads=1):
     model = Model(family, parameter, barrier)
     start = time.time()
     if kind == "2d":
-        sub = full_model(model, beta, spacing_s=0.1 * REFINE["spacing"], sigma_fraction=2.3 / REFINE["spacing"])
-        opts = quantum_options(model, beta)
+        # Spacing ladder: the finest grid is used, the others measure grid convergence.
+        ladder = []
+        for spacing in REFINE["ladder"]:
+            start = time.time()
+            sub = full_model(model, beta, spacing_s=0.1 * spacing, sigma_fraction=2.3 / spacing)
+            result = exact_quantum_rate(sub, beta, **quantum_options(model, beta))
+            ladder.append({"spacing": spacing, "rate": result.rate, "seconds": time.time() - start,
+                           "retained_points": result.diagnostics.get("retained_points"),
+                           "grid_points": result.diagnostics.get("grid_points"),
+                           "states_below_floor": result.diagnostics.get("states_below_floor")})
+            print(f"2D exact spacing {spacing:g}: k = {result.rate:.6e} "
+                  f"({ladder[-1]['retained_points']} points, {ladder[-1]['seconds']:.0f} s)", flush=True)
+        finest = min(ladder, key=lambda item: item["spacing"])
+        coarse = max(ladder, key=lambda item: item["spacing"])
+        return dict(finest, ladder=ladder, truncation_offset=truncation_offset(beta),
+                    grid_relative_change=float(finest["rate"] / coarse["rate"] - 1.0))
     else:
         sub = path_projection(model, beta, environment)[0]
         # Reactant threshold of this H_S (zero-point or free energy of the reactant vibration).
@@ -220,7 +244,7 @@ def run_point(family, parameter, barrier, temperature, *, nbeads=None, environme
     model = Model(family, parameter, barrier)
     nbeads = bead_number(model, beta) if nbeads is None else int(nbeads)
     sampling = dict(sampling or {})
-    tasks_q = [("2d", family, parameter, barrier, beta, None, dict(REFINE))] + [
+    tasks_q = [("2d", family, parameter, barrier, beta, None, json.loads(json.dumps(REFINE)))] + [
         ("1d", family, parameter, barrier, beta, e) for e in environments]
     tasks_r = [("2d", family, parameter, barrier, beta, None, nbeads, sampling, seed)] + [
         ("1d", family, parameter, barrier, beta, e, nbeads, sampling, seed + 1 + i) for i, e in enumerate(environments)]
@@ -281,12 +305,14 @@ def main(argv=None):
     p.add_argument("--trajectories", type=int, default=2048)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--workers", type=int, default=None)
-    p.add_argument("--refine", type=float, default=1.0,
-                   help="2D DVR spacing factor (<1 refines); truncation grows to 25 kT / refine")
+    p.add_argument("--ladder", type=float, nargs="+", default=[1.0, 0.8],
+                   help="2D DVR spacing factors; the finest is used, the spread is the grid check")
+    p.add_argument("--truncation-offset", type=float, default=0.07,
+                   help="truncation energy above barrier + zero-point energy (Eh; at least 30 kT)")
     p.add_argument("--output", required=True)
     args = p.parse_args(argv)
     start = time.time()
-    REFINE.update(spacing=args.refine, truncation_kt=25.0 / args.refine)
+    REFINE.update(ladder=list(args.ladder), truncation_offset=args.truncation_offset)
     sampling = {"windows": args.windows, "walkers": args.walkers, "sweeps": args.sweeps,
                 "trajectories": args.trajectories}
     record = run_point(args.family, args.parameter, args.barrier, args.temperature, nbeads=args.beads,

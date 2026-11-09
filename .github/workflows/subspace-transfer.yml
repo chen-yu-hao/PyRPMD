@@ -65,7 +65,7 @@ jobs:
           python benchmarks/subspace_theory/transfer.py \
             --family ${{ matrix.point.family }} --parameter ${{ matrix.point.parameter }} \
             --barrier ${{ matrix.point.barrier }} --temperature ${{ matrix.point.temperature }} \
-            --seed ${{ matrix.point.seed }} $BEADS --workers 4 --refine ${{ matrix.point.refine }} \
+            --seed ${{ matrix.point.seed }} $BEADS --workers 4 --truncation-offset ${{ matrix.point.truncation }} \
             --output "point-${{ matrix.point.name }}.json"
       - uses: actions/upload-artifact@v4
         with:
