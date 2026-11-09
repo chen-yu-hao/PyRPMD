@@ -94,7 +94,7 @@ the cumulative reaction probability vanishes below that threshold. Without it th
 1D rate changes by 10% and the 2D rate by orders of magnitude when the absorber changes.
 
 **Cl + HBr (BrHCl_LEPS1, 300 K)** is worked through in
-[docs/validation/2026-11-08-clhbr-subspace](validation/2026-11-08-clhbr-subspace/README.md):
+[docs/validation/2026-11-08-clhbr-subspace](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/2026-11-08-clhbr-subspace/README.md):
 curvature × width is 1–12 at the H-transfer corner, the 1D model develops a cusp there
 with the first, kinked path (normal cuts cross; with the corrected path C_S(1D) = 0.99), and
 in the collinear plane RPMD matches the exact rate within its statistical error
@@ -186,7 +186,7 @@ Ring polymers that leave the model grid sample an extrapolated spline; this is r
 a = 0.66 bohr, m = 1060) with a vibration that softens by 30% and shifts by 0.2 bohr at the
 barrier. The 1D subspace is projected from the 2D potential (relaxed vibration plus its
 zero-point energy). Results and settings:
-[docs/validation/2026-11-07-subspace-correction](validation/2026-11-07-subspace-correction/README.md).
+[docs/validation/2026-11-07-subspace-correction](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/2026-11-07-subspace-correction/README.md).
 
 Unit tests (`tests/test_subspace_correction.py`) check the exact solver against the analytic
 Eckart transmission, the iterative route against the dense route, a separable 2D rate against
