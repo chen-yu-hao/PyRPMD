@@ -39,7 +39,7 @@ DEFAULTS = {
     "source": {"rate_run": None},
     "path": {"step": 10.0, "max_steps": 600, "spread_factor": 2.0, "asymptote_tolerance": 1e-6,
              "smoothing": 1.5},
-    "subspace": {"dimension": "auto", "threshold": 0.5},
+    "subspace": {"dimension": "auto", "threshold": 0.5, "environment": "adiabatic"},
     "quantum": {"spacing_1d": None, "spacing_2d": None, "refinement": 3, "absorber_fraction": 0.2,
                 "threshold_margin": 1.0, "truncation_kt": 30.0, "padding": None, "dense_limit": 8000,
                 "reference_kt": 0.3, "product_drop_kt": 15.0},
@@ -225,8 +225,10 @@ def path_model(run: RateRun, path, options: Mapping[str, Any]):
     rate_surface, _ = _dividing_arc(run, path, arc)
     # Bennett--Chandler needs a dividing surface the dynamics must cross: use
     # the barrier top of V_S (the quantum rate does not depend on it).
-    model = project_path_subspace(run.energy, run.gradient, path, masses, axis, environment="adiabatic",
-                                  dividing_surface=None, rigid_body=True)
+    environment = options.get("environment", "adiabatic")
+    model = project_path_subspace(run.energy, run.gradient, path, masses, axis, environment=environment,
+                                  dividing_surface=None, rigid_body=True,
+                                  beta=run.beta if environment == "free_energy" else None)
     surface = model.dividing_surface
     fraction = float(options["absorber_fraction"])
     length = axis[-1] - axis[0]
@@ -362,9 +364,11 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
     counts = [int(np.ceil((hi[i] - lo[i]) / spacing[i])) * refinement + 1 for i in range(2)]
     axes = [lo[i] + fine[i] * np.arange(counts[i]) for i in range(2)]
     skip = (floor_guess + 2.0 * float(options["truncation_kt"]) / run.beta + 0.05)
+    environment = options.get("environment", "adiabatic")
     fine_model = project_linear_subspace(run.energy, run.gradient, ts, masses, np.column_stack([e0, e1]), axes,
-                                         environment="adiabatic", dividing_surface=0.0, rigid_body=True,
-                                         skip_above=skip, wall_energy=skip + 1.0)
+                                         environment=environment, dividing_surface=0.0, rigid_body=True,
+                                         skip_above=skip, wall_energy=skip + 1.0,
+                                         beta=run.beta if environment == "free_energy" else None)
     reference_point = np.array([np.interp(reference_arc, arc, plane[:, 0]), np.interp(reference_arc, arc, plane[:, 1])])
     provenance = dict(fine_model.provenance, plane_basis=[e0.tolist(), e1.tolist()], refinement=refinement)
     rpmd_model = type(fine_model)(fine_model.axes, fine_model.values, fine_model.masses, 0.0, "asymptotic",
@@ -477,7 +481,8 @@ def run_subspace_pipeline(specification) -> dict:
                     models[d] = previous.get(str(d), {"reused": True})
                     dimensions.remove(d)
     if 1 in dimensions:
-        model1, quantum1, info1 = path_model(run, path, options["quantum"])
+        environment = {"environment": options["subspace"].get("environment", "adiabatic")}
+        model1, quantum1, info1 = path_model(run, path, {**options["quantum"], **environment})
         corrections[1] = subspace_correction(model1, run.beta, nbeads, quantum_options=quantum1,
                                              rpmd_options=rpmd_options)
         corrections[1].write(out_dir / "C_S_1d.json")
@@ -488,7 +493,8 @@ def run_subspace_pipeline(specification) -> dict:
             candidate = np.asarray(sampled_cw["candidate_direction"])
         if candidate is None:
             candidate = np.asarray(static_cw["candidate_direction"])
-        model2, quantum2, info2, rpmd_model2 = plane_model(run, path, candidate, options["quantum"])
+        environment = {"environment": options["subspace"].get("environment", "adiabatic")}
+        model2, quantum2, info2, rpmd_model2 = plane_model(run, path, candidate, {**options["quantum"], **environment})
         corrections[2] = subspace_correction(model2, run.beta, nbeads, quantum_options=quantum2,
                                              rpmd_options=rpmd_options, rpmd_model=rpmd_model2)
         corrections[2].write(out_dir / "C_S_2d.json")

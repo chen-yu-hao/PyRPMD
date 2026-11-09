@@ -87,6 +87,7 @@ from .subspace_pipeline import run_subspace_pipeline
 from .subspace_correction import (
     SubspaceCorrection,
     apply_subspace_correction,
+    harmonic_bead_factor,
     correct_rate_run,
     nested_subspace_sensitivity,
     subspace_correction,
@@ -159,6 +160,7 @@ __all__ = [
     "ring_polymer_rate",
     "SubspaceCorrection",
     "apply_subspace_correction",
+    "harmonic_bead_factor",
     "correct_rate_run",
     "nested_subspace_sensitivity",
     "subspace_correction",
