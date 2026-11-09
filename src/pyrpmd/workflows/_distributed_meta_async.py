@@ -3,25 +3,19 @@ from __future__ import annotations
 
 import copy
 import json
-import os
 from pathlib import Path
-
 import numpy as np
+from ..bias import CompositeBias
+from ..checkpoint import atomic_savez
+from ..dynamics import Dynamics, State
+from ..potentials import make_potential
+from ..propagation import loop_options
+from ..units import parse_quantity
+from ..walker_exchange import AsyncWalkerStore, make_record
+from .common import _fingerprint
+from .metadynamics import resolve_metadynamics, resolve_walls
+from .shared_metadynamics import ASYNC_KIND, validate_shared
 from ..warm_start import initial_ring
-
-from . import _shared_metadynamics_serial as _serial
-for _name, _value in vars(_serial).items():
-    if not _name.startswith("__"):
-        globals()[_name] = _value
-
-from ..checkpoint import atomic_savez, load_checkpoint
-from ..shared_metadynamics import AsynchronousMetadynamicsBias
-from ..walker_exchange import (
-    AsyncWalkerStore, allgather_centers, ensure_manifest, make_record, mpi_world,
-    read_committed_records, validate_record)
-
-MPI_KIND = "PyRPMD.shared-metadynamics.mpi.v1"
-ASYNC_KIND = "PyRPMD.shared-metadynamics.async-walker.v1"
 
 from ._distributed_meta_async_io import (
     _async_identity, _async_path, _collect_async, _new_async_bias,
@@ -31,7 +25,7 @@ def _run_async(config, system, output, *, return_data=False):
     cv, _, options = resolve_metadynamics(config, system)
     checked = copy.deepcopy(config)
     checked["parallel"] = {}
-    walkers = _serial.validate_shared(checked, options)
+    walkers = validate_shared(checked, options)
     walker = _async_identity(config)
     checkpoint = _async_path(output, walker)
     restored = (_read_async_walker(config, system, output, walker, cv, options)
