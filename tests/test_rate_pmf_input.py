@@ -84,7 +84,7 @@ def test_pmf_uses_its_own_clock_and_operator_without_mutating_parent():
     assert stage["sampling"]["thermostat"] == "pile-l"
     assert fes_sampler(stage).integrator == "baoab"
     assert stage["analysis"] == {"bins": 24, "bootstrap": 0,
-                                 "ranges": [[-0.2, 1.2]], "method": "mbar", "measure": "rate_flux"}
+                                 "ranges": [[-0.2, 1.2]], "measure": "rate_flux"}
     assert rate_pmf_options(resolved)["bins"] == 24
     assert rate_pmf_options(resolved)["method"] == "mbar"
     # A caller's modifications must not change the persisted stage.

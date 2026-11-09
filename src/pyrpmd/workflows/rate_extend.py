@@ -168,7 +168,7 @@ def _prepare_extension(directory, target):
     if config.get("task") != "rate":
         raise InputError("Production-step extension supports only fixed-window gas-phase rate runs")
     _require_uniform_sampling(config)  # Repeat under the acquired run lock.
-    pmf_options = _extension_options(config)
+    _extension_options(config)
     if config.get("_base_directory") and config["_base_directory"] not in sys.path:
         sys.path.insert(0, config["_base_directory"])
     system = _read_identity(config, path)
@@ -192,8 +192,6 @@ def _prepare_extension(directory, target):
     cv, _, _, _ = fes.resolve_umbrellas(sampling_config, system)
     if cv.dimension != 1:
         raise InputError("Rate production extension currently requires one reaction coordinate")
-    if pmf_options["method"] == "mbar":
-        sampling_config["analysis"]["bootstrap"] = 0
     manifest = _json(path / "manifest.json")
     identity = {
         "format": EXTENSION_FORMAT,
@@ -399,9 +397,10 @@ def extend_rate(directory, *, production_steps):
             sys.path.insert(0, config["_base_directory"])
         generation = Path(prepared["generation"])
         root_call(write_json, generation / "preparation.json", prepared["preparation"])
-        sampled = fes.run_fes(prepared["sampling_config"], system, generation / "umbrella",
-                              return_data=True, production_steps=target,
-                              checkpoint_output=path / "umbrella")
+        sampled = fes.sample_umbrellas(
+            prepared["sampling_config"], system, generation / "umbrella",
+            production_steps=target, checkpoint_output=path / "umbrella",
+        )
         options = rate._recrossing_options(config)
         pmf, parent_tasks = root_call(rate._pmf_and_parent_tasks,
             sampled, config, system, str(generation), options)
