@@ -1,0 +1,21 @@
+quantum --temperature 600 --spacing 2.0
+quantum --temperature 400 --spacing 2.0
+quantum --temperature 300 --spacing 2.0
+quantum --temperature 200 --spacing 2.0
+quantum --temperature 150 --spacing 2.0
+quantum --temperature 100 --spacing 2.0
+quantum --temperature 100 --spacing 1.5
+quantum --temperature 100 --spacing 2.0 --absorber 0.5
+quantum --temperature 100 --spacing 2.0 --absorber 2.0
+rpmd --temperature 600 --beads 16
+rpmd --temperature 400 --beads 32
+rpmd --temperature 300 --beads 32
+rpmd --temperature 200 --beads 32
+rpmd --temperature 200 --beads 64
+rpmd --temperature 200 --beads 128
+rpmd --temperature 150 --beads 64
+rpmd --temperature 100 --beads 64
+rpmd --temperature 600 --beads 32
+rpmd --temperature 400 --beads 64
+rpmd --temperature 300 --beads 64
+rpmd --temperature 150 --beads 128
