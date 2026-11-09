@@ -1,0 +1,107 @@
+name: H3 BKMP2 equal-cost adaptive versus fixed rates
+
+on:
+  pull_request:
+    paths:
+      - 'benchmarks/h3/equal_cost_inputs/**'
+      - 'benchmarks/h3/equal_cost_compare.py'
+      - 'src/pyrpmd/workflows/adaptive_umbrella.py'
+      - 'src/pyrpmd/input_schema.py'
+      - 'tests/test_h3_equal_cost_campaign.py'
+      - '.github/workflows/h3-equal-cost-rate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  MPLBACKEND: Agg
+  PYTHONUNBUFFERED: '1'
+
+jobs:
+  preflight:
+    name: Build BKMP2, validate real PES and paired inputs
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update && sudo apt-get install -y gfortran
+      - run: python -m pip install -e '.[test]' matplotlib
+      - run: python -m pytest -q tests/test_h3_equal_cost_campaign.py
+      - run: python benchmarks/h3/build_pes.py
+      - run: python benchmarks/h3/pes.py --check --output pes-check.json
+      - run: pyrpmd validate benchmarks/h3/equal_cost_inputs/fixed96.inp --check-pes
+      - run: pyrpmd validate benchmarks/h3/equal_cost_inputs/adaptive.inp --check-pes
+      - uses: actions/upload-artifact@v7
+        with:
+          name: h3-equal-cost-preflight
+          path: pes-check.json
+          if-no-files-found: error
+          retention-days: 30
+
+  sampling:
+    name: Full BKMP2 rate - ${{ matrix.method }}
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        method: [fixed96, adaptive]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update && sudo apt-get install -y gfortran
+      - run: python -m pip install -e '.[test]' matplotlib
+      - run: python benchmarks/h3/build_pes.py
+      - name: Run physical MBAR/UI PMF with automatically selected xi* and recrossing
+        run: |
+          pyrpmd run benchmarks/h3/equal_cost_inputs/${{ matrix.method }}.inp \
+            --output validation/${{ matrix.method }}/run
+      - name: Preserve results even when scientific validation fails
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: h3-equal-${{ matrix.method }}
+          path: validation/${{ matrix.method }}/
+          if-no-files-found: warn
+          retention-days: 30
+
+  compare:
+    name: Compare xi*, MBAR/UI PMF, overlap, ESS, kappa and rates
+    needs: [preflight, sampling]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy matplotlib
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: h3-equal-*
+          path: collected/
+      - name: Paired, budget-audited comparison
+        run: |
+          python benchmarks/h3/equal_cost_compare.py \
+            --fixed collected/h3-equal-fixed96/run \
+            --adaptive collected/h3-equal-adaptive/run \
+            --output comparison/
+      - name: Attach comparison and plots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: h3-equal-cost-result
+          path: comparison/
+          if-no-files-found: warn
+          retention-days: 30
