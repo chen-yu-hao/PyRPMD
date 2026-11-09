@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "job": "../inputs/scan/T0200.inp",
+  "convergence": {
+    "beads": [
+      96,
+      192
+    ],
+    "timestep": [
+      "0.1 fs",
+      "0.05 fs"
+    ],
+    "separation": [
+      "10 bohr",
+      "20 bohr",
+      "30 bohr"
+    ]
+  },
+  "replicates": 3,
+  "design": "one_at_a_time",
+  "relative_tolerance": 0.05
+}

@@ -101,6 +101,7 @@
 - **低成本补充**（建议）：再加 2–3 个较高温度（如 600、1000 K），可用较少珠子（P = 32–64），给出 Arrhenius 图与 D + H₂ 动力学同位素效应（KIE）。
 - **图**：(a) PMF W(ξ)；(b) κ(t)；(c) k(T) 与原文/RPMDrate/精确量子（原文表）对比。
 - **入口**：`examples/rate/bkmp2_pilot.inp`、`bkmp2_production.inp`、`benchmarks/h3/`；`pyrpmd study` 做温度/同位素扫描。
+- **详细计划与输入**：[`benchmarks/h3/paper_validation/`](../benchmarks/h3/paper_validation/README.md)（PMF 方法对比、6 个温度、收敛 study、H/D KIE）。
 - **注意**：P256 动态收敛与 umbrella 精度门槛仍未通过，论文中照实写成“固定 P 下的复现”。
 
 ### C3. 环聚合物瞬子：速率与隧穿劈裂

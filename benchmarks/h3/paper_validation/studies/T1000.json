@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "job": "../inputs/scan/T1000.inp",
+  "convergence": {
+    "beads": [
+      16,
+      32
+    ],
+    "timestep": [
+      "0.1 fs",
+      "0.05 fs"
+    ],
+    "separation": [
+      "10 bohr",
+      "20 bohr",
+      "30 bohr"
+    ]
+  },
+  "replicates": 3,
+  "design": "one_at_a_time",
+  "relative_tolerance": 0.05,
+  "isotopologues": {
+    "H": [],
+    "D": [
+      {
+        "atom": 0,
+        "mass": "2.01410177812 amu"
+      },
+      {
+        "atom": 1,
+        "mass": "2.01410177812 amu"
+      },
+      {
+        "atom": 2,
+        "mass": "2.01410177812 amu"
+      }
+    ]
+  },
+  "kie_reference": "H"
+}
