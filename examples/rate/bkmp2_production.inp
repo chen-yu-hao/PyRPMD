@@ -23,7 +23,7 @@ factory = "../../benchmarks/h3/pes.py:build"
 
 [dynamics]
 integrator = "cayley-bcb"
-timestep = "0.05 fs"
+timestep = "0.1 fs"
 native = "required"
 
 [sampling]
