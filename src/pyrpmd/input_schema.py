@@ -88,7 +88,7 @@ _SECTIONS = {
     ),
     "barostat": set("method pressure time_constant friction mode tau gamma compressibility cell_mask reference_cell reference_cell_unit stress".split()),
     "adaptive_umbrella": set(
-        "enabled pilot_steps pilot_equilibration_steps max_rounds max_windows max_pilot_steps target_overlap min_effective_samples min_spacing coverage_bins coverage_ranges min_bin_effective_samples target_coverage".split()
+        "enabled pilot_steps pilot_equilibration_steps max_rounds max_windows max_pilot_steps total_integration_steps target_overlap min_effective_samples min_spacing coverage_bins coverage_ranges min_bin_effective_samples target_coverage".split()
     ),
     "diffusion": set(
         "atom_indices axes reference_atoms fit_range max_lag bootstrap seed block_length".split()
