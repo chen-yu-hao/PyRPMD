@@ -173,6 +173,28 @@ conclusion is unchanged, and convergence beyond the 2% level is not shown.
 **The dense route** keeps four instead of about eight complex N × N matrices (identical rates
 to 10⁻¹⁴), which is what made the 10 263-point Cl + HBr solve fit.
 
+## 3D H + H₂ at 200 K: RPMD and the corrected rate
+
+`benchmarks/h3_subspace/rate_200K.inp` (BKMP2, P = 128, 47 windows × 4 replicas × 5 ps,
+centroid-path accumulation) and `correct_200K.toml` (`pyrpmd subspace-correct`), run locally.
+
+| Quantity | Value |
+| --- | --- |
+| k_RPMD | 7.38e−19 ± 2.21e−19 cm³ molecule⁻¹ s⁻¹ (κ = 0.657 ± 0.019, ξ* = 1.005, ΔF‡ = 8.50 kcal/mol) |
+| curvature × width | 0.72 (sampled), 0.64 (static): 2D required |
+| C_S(1D) | 2.06 ± 0.04 |
+| C_S(2D), collinear plane + adiabatic bend | 2.66 ± 0.20 (k_QM/k_RPMD-TST = 1.76, κ = 0.66; 11 165 DVR points, walls 0.10 Eh) |
+| nested sensitivity ln(C_2D/C_1D) | +0.26 ± 0.09: changed, 2D applied |
+| k_RPMD × C_S(2D) | 1.97e−18 ± 0.61e−18 |
+| quantum dynamics reference (user-supplied) | 2.01e−18 |
+
+Ratios to the reference: RPMD 0.37, 1D-corrected 0.75, 2D-corrected 0.98. Caveats: the error is
+dominated by the 30% RPMD PMF uncertainty (20 bootstrap draws; MBAR over 2 × 10⁶ samples with 200
+draws exceeded 2 h single-threaded); 9.9% of the 2D ring-polymer potential evaluations fell outside
+the spline grid (clamped), which the pipeline flags; the 2D spacing was not refined and the walls are
+0.10 Eh (≈1% on collinear H + H₂); the bead factor of the full run (~0.97) is not applied. The
+reference was not checked for PES and symmetry-factor conventions.
+
 ## Limits
 
 - Two model families, one mass, one transverse frequency for the curvature family.
