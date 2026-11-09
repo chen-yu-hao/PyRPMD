@@ -62,6 +62,11 @@ def run_rate(config, system, output, executor=None):
         # The rate backend performs the one paired endpoint bootstrap. The
         # intermediate FES only saves samples, overlap and a preliminary curve.
         sampling_config["analysis"]["bootstrap"] = 0
+    if config.get("output", {}).get("centroid_path") and sampling_config is not config:
+        # Analysis-only switch (excluded from stream fingerprints): accumulate
+        # aligned ring-polymer centroid moments in every umbrella window.
+        sampling_config = copy.deepcopy(sampling_config)
+        sampling_config.setdefault("output", {})["centroid_path"] = True
     if stage is not None:
         from ..io import write_json
         root_call(write_json, Path(output) / "input" / "pmf-resolved.json", sampling_config)

@@ -17,7 +17,7 @@ metadynamics、PIMD、扩散、表面跃迁和电化学 PCET；积分器内核�
 - **结果经得起推敲。** 每次运行分别报告估计值、失败或未决轨迹以及诊断信息。重叠、回穿平台或能量守恒未通过检查时，PyRPMD
   不给出该数值，并说明原因。
 - **放心续跑。** 检查点保存完整 q/p、RNG 状态、偏置历史和科学指纹，原子写入并逐数组 SHA256 校验。续跑时可调整分块大小和
-  循环后端；改变科学设置会被拒绝。
+  循环后端；改变温度、珠子数、势能等科学设置需新建运行，可用 `--init-from` 从旧运行导入构型作为起点（[热启动](docs/zh/warm-start.md)）。
 - **接入你自己的势能。** Python、RPMDrate/f2py、版本化 C ABI `.so`、由 manifest 链接的普通 `.o`、ASE、Torch 或 i-PI socket。
 - **从笔记本到集群。** 轨迹/窗口进程池、常驻珠子 PES 进程池、MPI `G × B` 分组、OpenMP，以及多张 GPU 上每卡多条轨迹。
 - **对照已发表参考验证。** BKMP2 势能面上的 H + H₂、与 pyPCET 相差不超过 0.062% 的 PCET 速率，以及与解析积分和 PyMBAR
@@ -157,6 +157,8 @@ pyrpmd resume my-first-run/run
 ```bash
 # 用不同分块大小续跑；科学设置保持运行身份。
 pyrpmd resume runs/meta --loop-backend auto --block-steps 128
+# 改变科学设置：新建运行，从旧运行的构型热启动（可选导入元动力学偏置）。
+pyrpmd run high.inp --output runs/meta-high --init-from runs/meta --init-bias
 pyrpmd checkpoint runs/meta/checkpoints/metadynamics_0000.npz --require-integrity
 
 # 2 个轨迹组 × 每组 2 个珠子 PES rank。

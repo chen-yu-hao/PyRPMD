@@ -11,6 +11,7 @@ from ..parallel import make_task_potential
 from ..propagation import loop_options
 from ..walker_exchange import AsyncWalkerStore, make_record
 from .opes import resolve_opes, _distributed_fes_sampler as fes_sampler
+from ..warm_start import initial_ring
 
 MPI_KIND = "PyRPMD.shared-opes.mpi.v1"
 ASYNC_KIND = "PyRPMD.shared-opes.async-walker.v1"
@@ -39,7 +40,7 @@ def _run_async(config, system, output, *, return_data=False):
             threads=config.get("parallel", {}).get("threads_per_rank", 1),
             **loop_options(config))
         if restored is None:
-            state = State(np.repeat(system.geometry[None], config["beads"], axis=0),
+            state = State(initial_ring(config, system),
                           dynamics.sample_momenta())
             bias = _new_shared_bias(cv, options, config["beta"], walkers)
             elapsed = 0

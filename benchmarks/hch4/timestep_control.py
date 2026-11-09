@@ -38,8 +38,11 @@ def main():
                             native="required", threads=1, loop_backend="native")
         state = state0.copy()
         e0 = dynamics.energy(state) / beads
-        result = dynamics.propagate_block(state, round(20 / dt), backend="native")
-        energies = np.r_[e0, result.energies / beads]
+        steps = round(20 / dt)
+        # Only the per-step energy is needed: no centroid/state observations.
+        result = dynamics.propagate_block(state, steps, backend="native", observe=np.zeros(steps, bool),
+                                          record_step_energies=True)
+        energies = np.r_[e0, result.step_energies / beads]
         rows.append({"beads": beads, "dt_fs": dt, "duration_fs": 20,
                      "energy_span_per_bead_hartree": float(np.ptp(energies)),
                      "energy_end_minus_start_per_bead_hartree": float(energies[-1] - e0),

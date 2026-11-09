@@ -43,6 +43,8 @@ go straight to your task:
 | Thermal NRPMD, surface hopping, SOC, KC-/MV-RPMD, electronic friction | Python API; `diffusion` + `[electronic_friction]` | [Nonadiabatic dynamics](manual/nonadiabatic.md) |
 | Ab initio reference data, fitted PES, JaxPIP and native ONNX export | `python -m pyrpmd.pesgen`, Python API | [PES generation](manual/pes-generation.md), [JaxPIP](manual/jaxpip-generation.md) |
 | Higher-order equilibrium sampling and quantum estimators | Python API | [Quantum statistics](quantum-statistics.md) |
+| Exact quantum references and controlled RPMD response correction | Python API | [Quantum correction](quantum-correction.md) |
+| RPMD rate × exact 1–3D subspace quantum correction | Python API | [Subspace rate correction](subspace-correction.md) |
 | PA-CMD and relative IR/Raman/SFG spectra | `spectroscopy` | [Spectroscopy](tier2-spectroscopy.md) |
 | Suzuki–Chin, bosonic exchange and PIGS | `pimd` + `[path_integral]` | [Path-integral actions](tier2-path-integral.md) |
 | Condensed-phase SC energy/Cv/Cp/pressure, SC-NPT, PIGLET-NPT and RPC virial | SC workflow, native PIGLET or Python RPC | [Condensed-phase NQE validation](condensed-phase-nqe.md) |
@@ -140,6 +142,8 @@ Rate studies <rate-studies>
 Instantons <instanton>
 Low-temperature cross-checks <low-temperature>
 Quantum statistics <quantum-statistics>
+Quantum correction <quantum-correction>
+Subspace rate correction <subspace-correction>
 Tier 2 coverage <tier2-methods>
 PA-CMD and property spectra <tier2-spectroscopy>
 Main-engine path-integral actions <tier2-path-integral>

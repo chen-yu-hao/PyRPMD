@@ -84,3 +84,14 @@ orphan: true
 python -m pytest -q -m "not campaign"
 python -m pytest -q tests -k "materials or native_pimd or torch_materials or migrate"
 ```
+
+## 第五轮调整（2026-11-04）
+
+PR #93 已合并 `EngineRoute` 分派、预检和 checkpoint 存储。本卡续做的部分调整如下，优先于上文的冲突内容：
+
+- **只剩两项：** `pyrpmd migrate` 跨引擎迁移工具，以及三引擎确定性 NVE 等价测试（1000 步 `q,p` 一致）。
+- **能力矩阵移交 [T47](T47-method-registry.md)：** 引擎能力行由注册表建立并与 `EngineRoute` 交叉校验。
+  本卡不再单独生成能力矩阵。
+- **`native/thermal.hpp`、`native/thermal.cpp`、`native_ensemble.py` 移交 [T49](T49-thermal-kernel-performance.md)：**
+  本卡在 T49 合并后开始；如需修改这些文件，写进“需要协调”。
+- **波次：** 第五轮第 2 波（T49 之后）。T43 仍依赖本卡。

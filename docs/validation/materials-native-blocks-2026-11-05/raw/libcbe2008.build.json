@@ -1,0 +1,121 @@
+{
+  "schema": "pyrpmd.hch4.build.v1",
+  "created_utc": "2026-11-05T10:18:02.933737+00:00",
+  "source": {
+    "schema": "pyrpmd.hch4.source.v1",
+    "model": "CBE / PES-2008 as distributed with RPMDrate",
+    "reaction": "H + CH4 -> H2 + CH3",
+    "repository": "https://github.com/GreenGroup/RPMDrate",
+    "commit": "8c1828d2302aacf09a15faf5c7fc50a18d4c113e",
+    "potential_doi": "10.1063/1.3132223",
+    "rate_reference_doi": "10.1016/j.cpc.2012.10.017",
+    "rate_reference_location": "Section 4, reference 49 and Table 2",
+    "upstream_license_statement": "RPMDrate README.rst declares MIT; individual legacy PES files carry scientific references but no separate license statement. Source and binaries are not vendored here.",
+    "license_url": "https://github.com/GreenGroup/RPMDrate/blob/8c1828d2302aacf09a15faf5c7fc50a18d4c113e/README.rst",
+    "atomic_numbers": [
+      1,
+      6,
+      1,
+      1,
+      1,
+      1
+    ],
+    "incoming_atom_zero_based": 5,
+    "methane_hydrogens_zero_based": [
+      0,
+      2,
+      3,
+      4
+    ],
+    "upstream_interface": "q(3,6,P) in bohr; V(P) in upstream Hartree scale; dVdq(3,6,P) is a positive gradient",
+    "energy_zero": "Unshifted upstream expression with ANUZERO=0. The generic POTLIB printed claim of zero reactant energy is not true for this wrapper; compare energy differences.",
+    "legacy_constants": {
+      "bohr_to_angstrom": 0.52918,
+      "energy_100000_j_mol_to_hartree": 0.03812,
+      "gradient_100000_j_mol_per_angstrom_to_hartree_per_bohr": 0.0201723,
+      "kcal_mol_to_100000_j_mol": 0.04184,
+      "policy": "Preserve the exact upstream coefficients; report their finite precision and gradient/energy inconsistency. No fitted or silent unit correction."
+    },
+    "files": [
+      {
+        "name": "ch52008.f",
+        "compile": true,
+        "bytes": 57649,
+        "sha256": "1f63d9af46f9d44e2529eef956ffc648ceb6d67389e04f8a18ed6b70335770d9",
+        "git_blob_sha1": "d049cfa09753ba9a2dd770395383b51d7f60332a",
+        "url": "https://raw.githubusercontent.com/GreenGroup/RPMDrate/8c1828d2302aacf09a15faf5c7fc50a18d4c113e/examples/H%2BCH4/ch52008.f"
+      },
+      {
+        "name": "utility.f",
+        "compile": true,
+        "bytes": 59506,
+        "sha256": "3595d3909938008259b14f246ea05e34129869d6f1f4e5713f0216ab2ad2ebad",
+        "git_blob_sha1": "e06f52a9445d279e622090bef528652ec820d0b3",
+        "url": "https://raw.githubusercontent.com/GreenGroup/RPMDrate/8c1828d2302aacf09a15faf5c7fc50a18d4c113e/examples/H%2BCH4/utility.f"
+      },
+      {
+        "name": "ch52008.pyf",
+        "compile": false,
+        "bytes": 739,
+        "sha256": "2222e47340619f48f6b5337099663b125deec61b8061f7ee70d118162284934e",
+        "git_blob_sha1": "4679c225738ee11e8e494258ed6c3181669da14c",
+        "url": "https://raw.githubusercontent.com/GreenGroup/RPMDrate/8c1828d2302aacf09a15faf5c7fc50a18d4c113e/examples/H%2BCH4/ch52008.pyf"
+      },
+      {
+        "name": "Makefile",
+        "compile": false,
+        "bytes": 471,
+        "sha256": "efb9807e4368f8db22681d3128a2114a96dfb7edd440dcb4d7403327f0e5a09c",
+        "git_blob_sha1": "bf17469101487b151ed4223e95298aba73b21ef0",
+        "url": "https://raw.githubusercontent.com/GreenGroup/RPMDrate/8c1828d2302aacf09a15faf5c7fc50a18d4c113e/examples/H%2BCH4/Makefile"
+      },
+      {
+        "name": "input.py",
+        "compile": false,
+        "bytes": 1928,
+        "sha256": "eb1ad4f0ef3b9f190f36abf07ebec75c49e35153f2aae5d0070c5d497a6d2a44",
+        "git_blob_sha1": "be90de4c193868415cae121cc24da8ba36d9b0ae",
+        "url": "https://raw.githubusercontent.com/GreenGroup/RPMDrate/8c1828d2302aacf09a15faf5c7fc50a18d4c113e/examples/H%2BCH4/input.py"
+      }
+    ]
+  },
+  "source_files": {
+    "ch52008.f": {
+      "path": "/tmp/claude-0/-home-user-PyRPMD/11ebb923-4d4d-5a22-b9c2-baa1472b76ea/scratchpad/pes/ch52008.f",
+      "sha256": "1f63d9af46f9d44e2529eef956ffc648ceb6d67389e04f8a18ed6b70335770d9"
+    },
+    "utility.f": {
+      "path": "/tmp/claude-0/-home-user-PyRPMD/11ebb923-4d4d-5a22-b9c2-baa1472b76ea/scratchpad/pes/utility.f",
+      "sha256": "3595d3909938008259b14f246ea05e34129869d6f1f4e5713f0216ab2ad2ebad"
+    }
+  },
+  "wrapper_sha256": "872b7775bcdc986bb9ae8f0ccb1e211bcadbad8288acce137a473874951b5bf8",
+  "builder_sha256": "d9d7c4d851b7e2aa38d5483aee9c33bbd427f21889587efcdbe38447db540ced",
+  "library": "/tmp/claude-0/-home-user-PyRPMD/11ebb923-4d4d-5a22-b9c2-baa1472b76ea/scratchpad/pes/libcbe2008.so",
+  "library_sha256": "0ce12d20c85d45cc3d36c935ad6f7a5e24b967ca24ea6058bdc19e881ad101e9",
+  "compiler": "GNU Fortran (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+  "command": [
+    "gfortran",
+    "-O2",
+    "-fPIC",
+    "-shared",
+    "-std=legacy",
+    "-ffixed-line-length-72",
+    "/tmp/claude-0/-home-user-PyRPMD/11ebb923-4d4d-5a22-b9c2-baa1472b76ea/scratchpad/pes/ch52008.f",
+    "/tmp/claude-0/-home-user-PyRPMD/11ebb923-4d4d-5a22-b9c2-baa1472b76ea/scratchpad/pes/utility.f",
+    "/home/user/PyRPMD/benchmarks/hch4/wrapper.f90",
+    "-o",
+    "/tmp/claude-0/-home-user-PyRPMD/11ebb923-4d4d-5a22-b9c2-baa1472b76ea/scratchpad/pes/cbe-build-i20gtywo/libcbe2008.so"
+  ],
+  "flags": [
+    "-O2",
+    "-fPIC",
+    "-shared",
+    "-std=legacy",
+    "-ffixed-line-length-72"
+  ],
+  "compiler_stdout": "",
+  "compiler_stderr": "",
+  "platform": "Linux-6.18.44-fc-v236-x86_64-with-glibc2.39",
+  "scope": "Build only; run verify.py before interpreting energy/force results. No rates are computed."
+}

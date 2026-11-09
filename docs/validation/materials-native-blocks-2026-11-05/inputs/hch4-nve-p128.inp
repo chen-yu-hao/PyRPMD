@@ -1,0 +1,53 @@
+# Short CLI NVE execution probe; not a diffusion or rate measurement.
+task = "diffusion"
+preset = "pilot"
+temperature = "300 K"
+beads = 128
+seed = 20261137
+
+[system]
+symbols = ["H", "C", "H", "H", "H", "H"]
+masses_amu = [1.00782503207, 12.0, 1.00782503207, 1.00782503207, 1.00782503207, 1.00782503207]
+geometry = [[-4.68413503, -0.4382546, -0.07250839], [-5.04748906, 0.58950601, -0.0725084], [-4.68411607, 1.10337961, 0.81755453], [-4.58404767, 1.24489401, -1.20768359], [-6.13758906, 0.58951941, -0.07250839], [-4.29480419, 1.6187615, -1.94140095]]
+geometry_unit = "angstrom"
+charge = 0
+multiplicity = 2
+
+[potential]
+provider = "python"
+factory = "benchmarks.hch4.pes:build"
+params = {library = "<locally built pinned libcbe2008.so>"}
+units = {positions = "bohr", energy = "hartree"}
+derivative = "force"
+
+[dynamics]
+integrator = "cayley-bcb"
+timestep = "0.1 fs"
+native = "required"
+loop_backend = "native"
+block_steps = 256
+
+[sampling]
+# No equilibration; diffusion production has no thermostat.
+thermostat = "andersen"
+equilibration_steps = 0
+production_steps = 256
+sample_interval = 16
+andersen_interval = 1000
+replicas = 1
+
+[diffusion]
+atom_indices = [0, 2, 3, 4, 5]
+axes = [0, 1, 2]
+max_lag = 4
+bootstrap = 0
+
+[parallel]
+backend = "serial"
+trajectory_workers = 1
+threads_per_rank = 1
+
+[output]
+directory = "runs/p128"
+checkpoint_steps = 256
+trajectory_storage = "memory"

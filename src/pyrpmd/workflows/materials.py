@@ -15,14 +15,18 @@ from collections.abc import Mapping
 from pathlib import Path
 
 import numpy as np
+from ..warm_start import initial_ring
 
+from ..block_propagation import PropagationError
+from ..momentum_refresh import plan_refresh
+from ..sampling_block import propagate_sampling_block, _eligibility as _sampling_eligibility
 from ..checkpoint import atomic_savez, load_checkpoint
 from ..constants import FS_TO_AU
 from ..dynamics import Dynamics, State
 from ..parallel import make_task_potential, root_call
 from ..potentials.base import evaluate_checked
 from ..potentials.cache import StepEvaluationCache
-from ..propagation import loop_options
+from ..propagation import NativeUnavailableError, loop_options
 from ..trajectory import TrajectoryStream, _descriptor, _walk_reverse, materialize_stream
 from ..trajectory_batch import (
     make_trajectory_potential, map_trajectory_tasks, trajectory_batch_size,
@@ -30,6 +34,7 @@ from ..trajectory_batch import (
 from ..units import parse_quantity
 from .common import _fingerprint, checked_integer, write_json
 from .pimd import OBSERVABLE_NAMES, select_engine
+from .sampling import AndersenSchedule
 
 
 CHECKPOINT_KIND = "PyRPMD.materials.v1"
@@ -63,8 +68,14 @@ def resolve_materials(config, system):
     return select_engine(config).resolve(config, system)
 
 
-def _resolve_legacy_materials(config, system):
-    """Historical numerical controls, also reused by tensor schedule validation."""
+def _resolve_legacy_materials(config, system, *, handoff_frame=True):
+    """Historical numerical controls, also reused by tensor schedule validation.
+
+    ``handoff_frame`` states whether the engine saves the equilibration
+    endpoint as the first production frame.  The legacy engine does; the
+    native diffusion route records only steps after the handoff, so its
+    planned frame count is one smaller and lag/fit checks must use that.
+    """
     from ..electronic_friction import validate_electronic_friction
     friction_spec = validate_electronic_friction(config, system)
     if not np.any(system.mobile_mask):
@@ -172,7 +183,7 @@ def _resolve_legacy_materials(config, system):
         # These limits depend only on the declared recording schedule. Fail
         # before constructing a provider or allocating an output directory,
         # rather than discovering invalid analysis choices after production.
-        frames = options["nprod"] // options["interval"] + 1
+        frames = options["nprod"] // options["interval"] + (1 if handoff_frame else 0)
         max_lag = table.get("max_lag")
         if max_lag is None:
             max_lag = max(1, (frames - 1) // 4)
@@ -582,7 +593,7 @@ def _sample_replica(task):
                 last_saved = (elapsed, saved["frames"])
             del saved
         else:
-            q = np.repeat(system.geometry[None], config["beads"], axis=0)
+            q = initial_ring(config, system)
             if system.bond_constraints:
                 state = State(q, np.zeros_like(q))
                 sampling.initialize_constraints(state)
@@ -651,9 +662,242 @@ def _sample_replica(task):
                 raise
         save()
         total = options["neq"] + options["nprod"]
+        fused_production = None
+
+        def production_block():
+            """Advance unthermostatted NVE production to its next event.
+
+            A block never crosses a saved sample, a checkpoint or the end of
+            the run, and never exceeds dynamics.block_steps (nor the 4096-step
+            propagate_block limit). Energy is checked at the block's initial
+            state and after every step, as the single-step path did. A failed
+            step leaves the valid prefix committed, which is the state the
+            single-step loop would have saved. A failed observation discards
+            only the final step, again matching the single-step loop.
+            """
+            nonlocal state, elapsed
+            neq, interval, every = options["neq"], options["interval"], options["checkpoint_steps"]
+            count = min(production.block_steps, 4096, total - elapsed,
+                        interval - (elapsed - neq) % interval, every - elapsed % every)
+            start, start_elapsed = state.copy(), elapsed
+            old_stats = copy.deepcopy(production.propagation_stats)
+            try:
+                block = production.propagate_block(
+                    state, count, observe=np.zeros(count, dtype=bool), record_energy=False,
+                    check_energy=True, record_previous=True, raise_on_error=False)
+                if block.error is not None:
+                    # No observation lies inside a block: commit the prefix.
+                    elapsed += block.completed
+                    raise PropagationError(block)
+                prospective = elapsed + count
+                record = (prospective - neq) % interval == 0
+                try:
+                    with provider.step():
+                        observation = observe() if record else None
+                    if record:
+                        append_record(observation)
+                except BaseException:
+                    state.q[:], state.p[:] = block.previous_q, block.previous_p
+                    state.step, state.time = block.previous_step, block.previous_time
+                    production.propagation_stats = copy.deepcopy(old_stats)
+                    stats = production.propagation_stats
+                    stats[block.backend + "_steps"] += count - 1
+                    if block.fallback_reason:
+                        reasons = stats["fallback_reasons"]
+                        reasons[block.fallback_reason] = reasons.get(block.fallback_reason, 0) + count - 1
+                    elapsed += count - 1
+                    raise
+                elapsed = prospective
+            except BaseException:
+                # Nothing committed (including an asynchronous interrupt that
+                # lands between the native return and the commit above):
+                # restore one consistent block start.
+                if elapsed == start_elapsed:
+                    state = start
+                    production.propagation_stats = old_stats
+                raise
+
+        fused_sampling = None
+        fused_pile = None
+        andersen_schedule = AndersenSchedule(options["andersen_interval"], "fixed")
+
+        def _block_count():
+            neq, sample_interval = options["neq"], options["interval"]
+            checkpoint_steps = options["checkpoint_steps"]
+            total = options["neq"] + options["nprod"]
+            limits = [sampling.block_steps, 4096, total - elapsed,
+                      checkpoint_steps - (elapsed % checkpoint_steps)]
+            if options["thermostat"] == "andersen":
+                limits.append(andersen_schedule.steps_until_collision(elapsed))
+            if elapsed < neq:
+                distance = neq - elapsed
+                # The handoff endpoint is also the first saved production
+                # frame.  Keep the endpoint in this transaction, and observe
+                # it after the native block commits.  There are no earlier
+                # observation events inside an equilibration block.
+                limits.append(distance)
+            else:
+                distance = sample_interval - ((elapsed - neq) % sample_interval)
+                limits.append(distance)
+            return min(int(value) for value in limits if value > 0)
+
+        def _restore_refresh_prefix(plan, count):
+            rng.bit_generator.state = copy.deepcopy(plan.rng_state)
+            if plan.schedule_state is not None:
+                andersen_schedule.next_collision_step = int(plan.schedule_state)
+            for index in range(int(count)):
+                sampling.sample_momenta()
+                andersen_schedule.refreshed(plan.start_step + int(plan.offsets[index]), rng)
+
+        def sampling_block():
+            """Advance an Andersen block across all due refreshes."""
+            nonlocal state, elapsed
+            count = _block_count()
+            start, start_elapsed = state.copy(), elapsed
+            old_rng = copy.deepcopy(rng.bit_generator.state)
+            old_stats = copy.deepcopy(sampling.propagation_stats)
+            plan = plan_refresh(sampling, andersen_schedule, state.step, count)
+            try:
+                with provider.step():
+                    block = sampling.propagate_block(
+                        state, count, observe=np.zeros(count, dtype=bool),
+                        record_energy=False, check_energy=True,
+                        raise_on_error=False, refresh=plan,
+                    )
+                    if block.error is not None:
+                        elapsed += block.completed
+                        if not block.completed:
+                            state = start
+                            rng.bit_generator.state = old_rng
+                            sampling.propagation_stats = old_stats
+                        raise PropagationError(block)
+                    prospective = elapsed + block.completed
+                    record = (prospective >= options["neq"]
+                              and (prospective - options["neq"]) % options["interval"] == 0)
+                    try:
+                        observation = observe() if record else None
+                        if record:
+                            append_record(observation)
+                    except BaseException:
+                        if block.completed != 1:
+                            raise
+                        state = start
+                        elapsed = start_elapsed
+                        sampling.propagation_stats = copy.deepcopy(old_stats)
+                        _restore_refresh_prefix(plan, 0)
+                        raise
+                    elapsed = prospective
+            except BaseException:
+                # A failed refresh or first propagation step has no committed
+                # prefix and must restore the complete transaction, including
+                # the RNG state consumed by the refresh.
+                if elapsed == start_elapsed:
+                    state = start
+                    rng.bit_generator.state = old_rng
+                    sampling.propagation_stats = old_stats
+                raise
+
+        def pile_sampling_block():
+            """Advance a native PILE-L block to a record/checkpoint boundary."""
+            nonlocal state, elapsed
+            count = _block_count()
+            start, start_elapsed = state.copy(), elapsed
+            old_rng = copy.deepcopy(rng.bit_generator.state)
+            old_stats = copy.deepcopy(sampling.propagation_stats)
+            try:
+                with provider.step():
+                    block = propagate_sampling_block(
+                        sampling, state, count, thermostat="pile-l",
+                        method=options["sampling_method"],
+                        gamma_centroid=options["gamma_centroid"],
+                        observe=np.zeros(count, dtype=bool), record_energy=False,
+                        check_energy=True, raise_on_error=False,
+                    )
+                    if block.error is not None:
+                        elapsed += block.completed
+                        if not block.completed:
+                            state = start
+                            rng.bit_generator.state = old_rng
+                            sampling.propagation_stats = old_stats
+                        raise PropagationError(block)
+                    prospective = elapsed + block.completed
+                    record = (prospective >= options["neq"]
+                              and (prospective - options["neq"]) % options["interval"] == 0)
+                    if record:
+                        try:
+                            append_record(observe())
+                        except BaseException:
+                            state = start
+                            elapsed = start_elapsed
+                            rng.bit_generator.state = old_rng
+                            sampling.propagation_stats = old_stats
+                            raise
+                    elapsed = prospective
+            except BaseException:
+                if elapsed == start_elapsed:
+                    state = start
+                    rng.bit_generator.state = old_rng
+                    sampling.propagation_stats = old_stats
+                raise
+
         while elapsed < total:
             is_sampling = config["task"] == "pimd" or elapsed < options["neq"]
             dynamics = sampling if is_sampling else production
+            if is_sampling and options["thermostat"] == "andersen" and fused_sampling is None:
+                # NP1 supplies the historical NumPy refreshes as a pre-drawn
+                # plan for the deterministic native block.
+                try:
+                    fused_sampling = (
+                        piston is None and monitor is None and friction_provider is None
+                        and system.cell is None and not any(system.pbc)
+                        and type(sampling) is Dynamics and not sampling.plan.active
+                        and getattr(sampling.integrator._native, "BLOCK_ENERGY_CHECK_API", 0) >= 1
+                        and getattr(sampling.integrator._native, "MOMENTUM_REFRESH_API", 0) >= 1
+                        and sampling.can_fuse())
+                except NativeUnavailableError:
+                    fused_sampling = False
+            if is_sampling and options["thermostat"] == "pile-l" and fused_pile is None:
+                try:
+                    fused_pile = (
+                        piston is None and monitor is None and friction_provider is None
+                        and type(sampling) is Dynamics and not sampling.plan.active
+                        and _sampling_eligibility(sampling, None, None) is not None)
+                except (NativeUnavailableError, ValueError, TypeError):
+                    fused_pile = False
+            if is_sampling and ((options["thermostat"] == "andersen" and fused_sampling)
+                                or (options["thermostat"] == "pile-l" and fused_pile)):
+                try:
+                    (sampling_block if options["thermostat"] == "andersen" else pile_sampling_block)()
+                except BaseException:
+                    save()
+                    raise
+                if (config["task"] == "diffusion" and elapsed == options["neq"]
+                        and options["thermostat"] == "pile-l"):
+                    expected = {"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}.get(sampling.integrator_name)
+                    if options["sampling_method"] != expected:
+                        state.p[:] = sampling.sample_momenta()
+                if elapsed % options["checkpoint_steps"] == 0:
+                    save()
+                continue
+            if not is_sampling and fused_production is None:
+                # Only plain, unthermostatted Dynamics with a supported native
+                # block. Strict native mode raises here instead of falling back.
+                try:
+                    fused_production = (
+                        piston is None and monitor is None and type(production) is Dynamics
+                        and not production.plan.active and production.can_fuse())
+                except BaseException:
+                    save()
+                    raise
+            if not is_sampling and fused_production:
+                try:
+                    production_block()
+                except BaseException:
+                    save()
+                    raise
+                if elapsed % options["checkpoint_steps"] == 0:
+                    save()
+                continue
             old_state = state.copy()
             old_rng = copy.deepcopy(rng.bit_generator.state)
             old_stats = copy.deepcopy(dynamics.propagation_stats)

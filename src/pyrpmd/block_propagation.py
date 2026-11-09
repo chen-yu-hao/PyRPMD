@@ -7,11 +7,13 @@ including its requested observations, is transactional.
 """
 from dataclasses import dataclass
 import copy
+import json
 import numbers
 import numpy as np
 
 from . import cv as cv_module
-from .bias import UmbrellaBias, FluxMetricBias, CompositeBias
+from .bias import (UmbrellaBias, FluxMetricBias, CompositeBias, WallBias,
+                   MetadynamicsBias, GridMetadynamicsBias)
 from .potentials.native import descriptor_binding
 from .potentials._builtin_native import resolve_native_binding
 from .validation import checked_integer
@@ -45,6 +47,8 @@ class BlockResult:
     # Total ring energy of every completed step (not only observed ones),
     # when requested with record_step_energies=True.
     step_energies: np.ndarray | None = None
+    # Number of pre-drawn momentum refreshes that were committed.
+    refreshes_completed: int = 0
 
     @property
     def success(self):
@@ -66,13 +70,25 @@ def _pair(atoms, natoms):
     a, b = atoms
     if a == b or min(a, b) < 0 or max(a, b) >= natoms:
         raise ValueError("native CV atom indices are out of range")
-    weights = np.zeros(natoms)
+    weights = [0.0] * natoms
     weights[a], weights[b] = 1.0, -1.0
-    return weights.tolist()
+    return weights
 
 
-def cv_descriptor(cv, natoms):
-    """A value/derivative-preserving lowering; subclasses deliberately fall back."""
+def cv_descriptor(cv, natoms, memo=None):
+    """A value/derivative-preserving lowering; subclasses deliberately fall back.
+
+    ``memo`` shares one lowering of the same CV object among the consumers of
+    a single native plan (umbrella, flux metric and observation). The native
+    loop then recognizes them as one coordinate by identity.
+    """
+    if memo is not None:
+        key = (id(cv), natoms)
+        if key in memo:
+            return memo[key][1]
+        descriptor = cv_descriptor(cv, natoms)
+        memo[key] = (cv, descriptor)  # retain cv: its id stays unique
+        return descriptor
     from .propagation import _check_cv_methods
     _check_cv_methods(cv)
     tag = {"estimator": getattr(cv, "estimator", "centroid")}
@@ -106,32 +122,85 @@ def cv_descriptor(cv, natoms):
     raise NotNative(f"CV {type(cv).__name__} requires the Python path")
 
 
-def cv_descriptors(cv, natoms):
+def cv_descriptors(cv, natoms, memo=None):
     if cv is None:
         return []
     if type(cv) is cv_module.CVStack:
         from .propagation import _check_cv_methods
         _check_cv_methods(cv)
-        return [cv_descriptor(c, natoms) for c in cv.cvs]
-    return [cv_descriptor(cv, natoms)]
+        return [cv_descriptor(c, natoms, memo) for c in cv.cvs]
+    return [cv_descriptor(cv, natoms, memo)]
 
 
-def bias_descriptors(bias, dynamics):
+def bias_descriptors(bias, dynamics, memo=None):
     if bias is None:
         return []
     from .propagation import _check_bias_methods
     _check_bias_methods(bias)
     if type(bias) is CompositeBias:
-        return [d for part in bias.biases for d in bias_descriptors(part, dynamics)]
+        return [d for part in bias.biases for d in bias_descriptors(part, dynamics, memo)]
     if type(bias) is UmbrellaBias:
-        return [{"kind": "umbrella", "cvs": cv_descriptors(bias.cv, len(dynamics.masses)),
+        return [{"kind": "umbrella", "cvs": cv_descriptors(bias.cv, len(dynamics.masses), memo),
                  "center": bias.center.tolist(), "stiffness": bias.stiffness.ravel().tolist(),
                  "periods": [0.0 if p is None else float(p) for p in bias.cv.periods]}]
     if type(bias) is FluxMetricBias:
         if bias.beta != dynamics.beta or not np.array_equal(bias.masses, dynamics.masses):
             raise NotNative("flux metric masses/beta differ from the integrator")
-        return [{"kind": "flux", "cvs": [cv_descriptor(bias.cv, len(dynamics.masses))]}]
+        return [{"kind": "flux", "cvs": [cv_descriptor(bias.cv, len(dynamics.masses), memo)]}]
+    history_api = getattr(getattr(dynamics.integrator, "_native", None),
+                          "NATIVE_HISTORY_BIAS_API", 0)
+    if type(bias) is WallBias:
+        if history_api < 1:
+            raise NotNative("installed native extension lacks history-bias support; rebuild it")
+        descriptor = dict(bias.native_descriptor())
+        descriptor["cvs"] = cv_descriptors(bias.cv, len(dynamics.masses), memo)
+        return [descriptor]
+    if type(bias) is GridMetadynamicsBias:
+        if history_api < 1:
+            raise NotNative("installed native extension lacks history-bias support; rebuild it")
+        descriptor = dict(bias.native_descriptor())
+        descriptor["cvs"] = cv_descriptors(bias.cv, len(dynamics.masses), memo)
+        return [descriptor]
+    if type(bias) is MetadynamicsBias:
+        if history_api < 1:
+            raise NotNative("installed native extension lacks history-bias support; rebuild it")
+        descriptor = dict(bias.native_descriptor())
+        descriptor["cvs"] = cv_descriptors(bias.cv, len(dynamics.masses), memo)
+        return [descriptor]
     raise NotNative(f"bias {type(bias).__name__} requires the Python path")
+
+
+def _check_bias_snapshot(bias, descriptors):
+    """Reject a history bias that changed while its native block was running."""
+    if bias is None:
+        if descriptors:
+            raise RuntimeError("native bias snapshot has no corresponding bias")
+        return
+    index = 0
+
+    def visit(current):
+        nonlocal index
+        if type(current) is CompositeBias:
+            for part in current.biases:
+                visit(part)
+            return
+        if index >= len(descriptors):
+            raise RuntimeError("native bias snapshot is incomplete")
+        descriptor = descriptors[index]
+        index += 1
+        if type(current) in (MetadynamicsBias, GridMetadynamicsBias):
+            if descriptor.get("hill_count") != current.hill_count:
+                raise RuntimeError("native bias snapshot expired during block")
+            if type(current) is GridMetadynamicsBias:
+                current_metadata = json.dumps(current.grid_state()["metadata"],
+                                              sort_keys=True, separators=(",", ":"),
+                                              allow_nan=False)
+                if descriptor.get("grid_metadata") != current_metadata:
+                    raise RuntimeError("native grid bias snapshot expired during block")
+
+    visit(bias)
+    if index != len(descriptors):
+        raise RuntimeError("native bias snapshot has extra descriptors")
 
 
 def _native_plan(dynamics, bias, cv, constraint, fragment_data, tolerance, record_energy, clock):
@@ -155,8 +224,9 @@ def _native_plan(dynamics, bias, cv, constraint, fragment_data, tolerance, recor
     for indices, masses, total, reference in fragment_data:
         weights = np.zeros(len(dynamics.masses));weights[indices] = masses
         fragments.append({"weights": weights.tolist(), "reference": reference.tolist()})
-    return binding, {"beta": dynamics.beta, "time": clock, "cvs": cv_descriptors(cv, len(dynamics.masses)),
-                     "biases": bias_descriptors(bias, dynamics), "constraint": native_constraint,
+    memo = {}
+    return binding, {"beta": dynamics.beta, "time": clock, "cvs": cv_descriptors(cv, len(dynamics.masses), memo),
+                     "biases": bias_descriptors(bias, dynamics, memo), "constraint": native_constraint,
                      "constraint_tolerance": tolerance, "fragments": fragments, "record_energy": record_energy,
                      **fixed_descriptor(dynamics)}
 
@@ -178,6 +248,66 @@ def native_outcome_supported(dynamics):
     except (NotNative, NativeUnavailableError):
         return False
     return True
+
+
+def _refresh_inputs(refresh, steps, dynamics=None, *, projection=None):
+    """Normalize a RefreshPlan or a low-level refresh mapping."""
+    if refresh is None:
+        return None, None, None
+    plan = refresh if hasattr(refresh, "as_options") else None
+    if plan is not None:
+        if not hasattr(plan, "commit") or not hasattr(plan, "steps"):
+            raise TypeError("refresh plan must provide steps, as_options and commit")
+        if steps > int(plan.steps):
+            steps = int(plan.steps)
+        selected = plan.projection if projection is None else projection
+        options = plan.as_options(selected)
+    elif isinstance(refresh, dict):
+        options = dict(refresh)
+        if projection is not None:
+            options["projection"] = projection
+    else:
+        raise TypeError("refresh must be a RefreshPlan or mapping")
+    selected = options.get("projection", "none")
+    if selected not in ("none", "centroid_constraint", "fragments"):
+        raise ValueError("refresh projection must be none, centroid_constraint or fragments")
+    raw_offsets = np.asarray(options.get("offsets"))
+    raw_momenta = np.asarray(options.get("momenta"))
+    if raw_offsets.dtype != np.dtype(np.int64) or raw_momenta.dtype != np.dtype(np.float64):
+        raise ValueError("refresh offsets must be int64 and momenta must be float64")
+    offsets = raw_offsets
+    momenta = raw_momenta
+    expected_shape = None if dynamics is None else tuple(dynamics.integrator.shape)
+    if (offsets.ndim != 1 or momenta.ndim != 4 or momenta.shape[0] != offsets.size
+            or (expected_shape is not None and tuple(momenta.shape[1:]) != expected_shape)):
+        raise ValueError("refresh requires offsets [R] and momenta [R,P,N,3]")
+    if offsets.size and (np.any(offsets < 0) or np.any(offsets[1:] <= offsets[:-1])
+                         or int(offsets[-1]) >= steps):
+        raise ValueError("refresh offsets must be strictly increasing and lie in the block")
+    if momenta.size and not np.isfinite(momenta).all():
+        raise ValueError("refresh momenta must be finite")
+    options["offsets"] = np.ascontiguousarray(offsets, dtype=np.int64)
+    options["momenta"] = np.ascontiguousarray(momenta, dtype=np.float64)
+    options["projection"] = selected
+    return plan, options, steps
+
+
+def _apply_python_refresh(dynamics, state, momentum, projection, constraint, fragment_data):
+    """Apply one pre-drawn refresh using the historical Python projections."""
+    if projection == "none":
+        state.p[:] = momentum
+    elif projection == "centroid_constraint":
+        if constraint is None:
+            raise ValueError("centroid_constraint refresh requires a constraint CV")
+        from .workflows.rate_constraints import project_momenta
+        state.p[:] = momentum
+        project_momenta(state.p, state.q, constraint, dynamics.masses)
+    elif projection == "fragments":
+        if not fragment_data:
+            raise ValueError("fragments refresh requires fragment_data")
+        state.p[:] = momentum
+        dynamics._project_fragments(state.q, state.p, fragment_data)
+    dynamics._project_fixed(state.q, state.p)
 
 
 def _outcome_options(outcome, state, steps):
@@ -346,6 +476,11 @@ def _fast_python_step_supported(dynamics, bias, constraint, fragment_data, compo
             or not _original_methods(dynamics, _BLOCK_DYNAMICS_METHODS)
             or not _original_methods(dynamics.integrator, _BLOCK_INTEGRATOR_METHODS)):
         return False
+    return _stateless_provider(dynamics)
+
+
+def _stateless_provider(dynamics):
+    """Whether repeated PES calls at identical coordinates are interchangeable."""
     metadata = getattr(dynamics.potential, "metadata", None)
     metadata = metadata if isinstance(metadata, dict) else {}
     capabilities = metadata.get("capabilities", {})
@@ -472,7 +607,7 @@ def _composed_native_prefix(dynamics, state, steps, mask, record_energy,
                             check_energy, diagnostics, backend, raise_on_error):
     """Use the persistent native operator executor with per-step transactions."""
     component = dynamics._composition
-    operators = dynamics.operator_state_dict()
+    operators = dynamics._operator_rollback_token()
     initial_step, initial_time = state.step, state.time
     try:
         engine = component._prepare_native(state, backend=backend)
@@ -486,12 +621,12 @@ def _composed_native_prefix(dynamics, state, steps, mask, record_energy,
             allowed, observe=mask[:allowed], record_energy=record_energy,
             check_energy=check_energy,
             energy_parts=bool(diagnostics.get("energy_parts")),
-            ring_radii=bool(diagnostics.get("ring_radii")))
+            ring_radii=bool(diagnostics.get("ring_radii")), _outer_transaction=True)
         completed = native["completed"]
         error = native["error"]
         if completed == allowed and allowed < steps and error is None:
             error = "FloatingPointError: nonfinite integration clock"
-        accepted = engine.state()
+        accepted = engine._physical_state()
         component._native_state = accepted
         columns, samples = native["columns"], native["samples"]
         selected = mask[:completed].astype(bool)
@@ -512,7 +647,7 @@ def _composed_native_prefix(dynamics, state, steps, mask, record_energy,
                              np.empty((int(selected.sum()), 0)), None, None, error,
                              diagnostics=arrays or None)
     except BaseException:
-        dynamics.load_operator_state_dict(operators)
+        dynamics._restore_operator_rollback_token(operators)
         raise
     if completed:
         state.q[:], state.p[:] = accepted["q"], accepted["p"]
@@ -521,7 +656,7 @@ def _composed_native_prefix(dynamics, state, steps, mask, record_energy,
             dynamics.cell = accepted["cell"].copy()
     elif error:
         # An unsuccessful first step cannot select/seed a new bath.
-        dynamics.load_operator_state_dict(operators)
+        dynamics._restore_operator_rollback_token(operators)
     dynamics.last_step_backend = used
     dynamics.propagation_stats[used + "_steps"] += completed
     if reason:
@@ -535,8 +670,9 @@ def _composed_native_prefix(dynamics, state, steps, mask, record_energy,
 def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=None,
                     constraint_tolerance=1e-10, fragment_data=(), observe=None,
                     record_energy=True, record_states=False, backend=None, raise_on_error=True,
-                    outcome=None, record_previous=False, reuse_forces=False,
-                    check_energy=False, diagnostics=None, record_step_energies=False):
+                    outcome=None, record_previous=False, reuse_forces=None,
+                    check_energy=False, diagnostics=None, record_step_energies=False,
+                    refresh=None):
     """Advance at most 4096 selected-integrator steps, observing in step order.
 
     ``observe`` is a length-steps boolean mask (default: all steps). A failure
@@ -553,9 +689,15 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
     Unsupported backends reject this option before mutating the state.
     ``record_previous`` retains only the state before the final accepted step
     of a successful block, allowing a Python classifier to reject that step.
-    ``reuse_forces`` opts into block-local force reuse for ordinary native
-    dynamics without bias, constraint or fragment projection. Other cases keep
-    the reference PES evaluation schedule. No cache survives a block.
+    ``reuse_forces`` controls block-local force reuse: each step starts from
+    the previous step's endpoint PES/bias force at the same coordinates, i.e.
+    one PES call per step instead of two. The results are identical for a
+    deterministic provider. ``None`` (default) enables it unless the provider
+    declares itself stateful, history- or time-dependent; ``False`` restores
+    the two-call reference schedule. The native loop reuses forces with or
+    without its pure umbrella/flux biases, centroid RATTLE and fixed atoms;
+    fragment projection, which moves q after the force call, re-evaluates.
+    No cache survives a block.
     ``check_energy`` validates the initial and every candidate step's total
     ring energy, including unobserved steps. Observations reuse that energy.
     Its default is False, preserving the original PES evaluation schedule.
@@ -582,6 +724,10 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
     Blocks must end at thermostat/Python-classifier/checkpoint boundaries.
     Legacy sampling RNG remains in Python at those boundaries; configured
     native baths carry their own checkpointed stream inside the executor.
+    ``refresh`` accepts a :class:`pyrpmd.momentum_refresh.RefreshPlan` (or its
+    low-level mapping) and installs pre-drawn Andersen momenta at the supplied
+    offsets before the corresponding steps.  The plan's RNG replay callback is
+    committed only for the successful refresh prefix reported by the block.
     """
     if getattr(dynamics, "_stochastic_propagation", False):
         raise ValueError("stochastic dynamics require step() or transactional propagate(), not propagate_block()")
@@ -591,9 +737,27 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
     if isinstance(steps, (bool, np.bool_)) or not isinstance(steps, (int, np.integer)) or not 0 <= steps <= 4096:
         raise ValueError("steps must be an integer in [0, 4096]")
     steps = int(steps)
+    requested_steps = steps
     backend = backend or getattr(dynamics, "loop_backend", "auto")
     if backend not in ("auto", "native", "python"):
         raise ValueError("loop backend must be auto, native or python")
+    refresh_plan, refresh_options, planned_steps = _refresh_inputs(refresh, steps, dynamics)
+    if refresh_plan is not None and refresh_plan.start_step != state.step:
+        raise ValueError("refresh plan start_step must match state.step")
+    if planned_steps is not None:
+        steps = int(planned_steps)
+    if refresh_options is not None:
+        projection = refresh_options["projection"]
+        if projection == "centroid_constraint" and constraint is None:
+            raise ValueError("centroid_constraint refresh requires a constraint CV")
+        if projection == "fragments" and not fragment_data:
+            raise ValueError("fragments refresh requires fragment_data")
+        if composed:
+            raise RuntimeError("momentum refresh is incompatible with composed operators")
+        if outcome is not None or record_previous:
+            raise RuntimeError("momentum refresh is incompatible with outcome/rollback descriptors")
+    if reuse_forces is None:
+        reuse_forces = _stateless_provider(dynamics)
     if not isinstance(record_previous, (bool, np.bool_)) or not isinstance(reuse_forces, (bool, np.bool_)):
         raise ValueError("record_previous and reuse_forces must be boolean")
     if not isinstance(check_energy, (bool, np.bool_)):
@@ -621,6 +785,8 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
         mask = np.ones(steps, dtype=np.uint8)
     else:
         values = np.asarray(observe)
+        if refresh_plan is not None and values.shape == (requested_steps,) and steps != requested_steps:
+            values = values[:steps]
         if values.shape != (steps,) or values.dtype.kind not in "bui" or np.any((values != 0) & (values != 1)):
             raise ValueError("observe must be a boolean/binary mask with length steps")
         mask = np.array(values, dtype=np.uint8, order="C", copy=True)
@@ -664,6 +830,10 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
             if record_step_energies and getattr(dynamics.integrator._native, "BLOCK_STEP_ENERGIES_API", 0) < 1:
                 binding = None
                 raise NotNative("installed native extension lacks per-step energy records; rebuild it")
+            if refresh_options is not None and getattr(
+                    dynamics.integrator._native, "MOMENTUM_REFRESH_API", 0) < 1:
+                binding = None
+                raise NotNative("installed native extension lacks momentum refresh support; rebuild it")
         except (NotNative, NativeUnavailableError) as exc:
             reason = str(exc)
             if backend == "native":
@@ -672,6 +842,7 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
     if outcome_spec is not None and selected != "native":
         raise RuntimeError("native outcomes require a supported native loop: " + (reason or "Python backend selected"))
     completed = written = 0;error = None
+    refreshes_completed = 0
     step_energies = np.full(steps, np.nan) if record_step_energies else None
     metadata = {}
     previous_time = None
@@ -693,12 +864,23 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
             options["diagnostics"] = diagnostic_arrays
         if step_energies is not None:
             options["step_energies"] = step_energies
+        if refresh_options is not None:
+            options["refresh"] = refresh_options
         with binding.acquire() as descriptor, dynamics.integrator._lock:
-            native_result = dynamics.integrator._native.advance(
-                dynamics.integrator._context, descriptor, state.q, state.p, options, mask, records, snapshots)
+            try:
+                native_result = dynamics.integrator._native.advance(
+                    dynamics.integrator._context, descriptor, state.q, state.p, options, mask, records, snapshots)
+            except BaseException:
+                if refresh_plan is not None:
+                    refresh_plan.commit(0)
+                raise
+        _check_bias_snapshot(bias, options["biases"])
         completed, written, clock, message = native_result[:4]
         if len(native_result) == 5:
             metadata = native_result[4]
+        refreshes_completed = int(metadata.get("refreshes_completed", 0)) if refresh_options is not None else 0
+        if refresh_plan is not None:
+            refresh_plan.commit(refreshes_completed)
         state.step += completed;state.time = clock;error = message or None
         previous_time = metadata.get("previous_time")
     elif steps:
@@ -707,15 +889,25 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
         reuse = fast and bool(reuse_forces)
         force = np.empty_like(state.q) if fast else None
         force_valid = False
+        refresh_index = 0
         # Reused transaction buffers: a failed step restores exactly this state.
         backup_q = np.empty_like(state.q);backup_p = np.empty_like(state.p)
         backup_step = backup_time = None
         for i in range(steps):
+            refreshed_this_step = False
             np.copyto(backup_q, state.q);np.copyto(backup_p, state.p)
             backup_step, backup_time = state.step, state.time
-            operators = dynamics.operator_state_dict() if composed else None
+            operators = dynamics._operator_rollback_token() if composed else None
             previous_stats = copy.deepcopy(dynamics.propagation_stats) if composed else None
             try:
+                if (refresh_options is not None and refresh_index < len(refresh_options["offsets"])
+                        and int(refresh_options["offsets"][refresh_index]) == i):
+                    _apply_python_refresh(
+                        dynamics, state, refresh_options["momenta"][refresh_index],
+                        refresh_options["projection"], constraint, fragment_data)
+                    if refresh_options["projection"] == "fragments":
+                        force_valid = False
+                    refreshed_this_step = True
                 if check_energy and i == 0:
                     initial_energy = dynamics.energy(state, bias)
                     if not np.isfinite(initial_energy):
@@ -776,13 +968,18 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
             except Exception as exc:
                 force_valid = False
                 if operators is not None:
-                    dynamics.load_operator_state_dict(operators)
+                    dynamics._restore_operator_rollback_token(operators)
                     dynamics.propagation_stats = previous_stats
                 state.q[:] = backup_q;state.p[:] = backup_p
                 state.step, state.time = backup_step, backup_time
                 error = f"{type(exc).__name__}: {exc}"
                 break
             completed += 1;written += int(mask[i])
+            if refreshed_this_step:
+                refresh_index += 1
+                refreshes_completed += 1
+        if refresh_plan is not None:
+            refresh_plan.commit(refreshes_completed)
         if previous_state is not None and completed and error is None:
             previous_state[0] = backup_q;previous_state[1] = backup_p
             previous_time = backup_time
@@ -796,7 +993,8 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
                           outcome=None if outcome_spec is None else _outcome_result(outcome_spec, metadata),
                           diagnostics={name: values[:written] for name, values in diagnostic_arrays.items()}
                           if diagnostic_arrays else None,
-                          step_energies=None if step_energies is None else step_energies[:completed])
+                          step_energies=None if step_energies is None else step_energies[:completed],
+                          refreshes_completed=refreshes_completed)
     if previous_time is not None:
         result.previous_q, result.previous_p = previous_state
         result.previous_step = start_step + completed - 1

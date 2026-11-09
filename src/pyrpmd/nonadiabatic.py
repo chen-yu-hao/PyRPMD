@@ -240,3 +240,29 @@ class NRPMDDynamics:
         matrix[:, index, index] = 0
         return float(np.max(np.abs(matrix)))
 
+
+# Keep the historical implementation available as the base for the unified
+# adapter while defining the public class in this module.  Existing private
+# helpers therefore remain importable from their historical location.
+_LegacyNRPMDDynamics = NRPMDDynamics
+from .nrpmd_auxiliary import (  # noqa: E402
+    NRPMD_COMPATIBILITY,
+    NRPMDAuxiliaryOperator,
+    _NRPMDAdapterMixin,
+)
+
+
+class NRPMDDynamics(_NRPMDAdapterMixin, _LegacyNRPMDDynamics):
+    """NRPMD adapter using the auxiliary propagation core."""
+
+    pass
+
+__all__ = [
+    "DiabaticResult",
+    "validate_diabatic_result",
+    "DiagonalPotential",
+    "NRPMDState",
+    "NRPMDAuxiliaryOperator",
+    "NRPMDDynamics",
+    "NRPMD_COMPATIBILITY",
+]

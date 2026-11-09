@@ -7,6 +7,7 @@ from collections.abc import Mapping
 from pathlib import Path
 
 import numpy as np
+from ..warm_start import initial_ring
 
 from ..checkpoint import load_checkpoint
 from ..bias import CompositeBias, FluxMetricBias
@@ -293,7 +294,7 @@ def _sample_replica(task):
         samples, clocks, biases, energies = [], [], [], []
         elapsed = 0
         if saved is None:
-            state = State(np.repeat(system.geometry[None], config["beads"], axis=0), dynamics.sample_momenta())
+            state = State(initial_ring(config, system), dynamics.sample_momenta())
         else:
             state, elapsed = saved["state"], saved["elapsed"]
             if "operator_state" in saved:

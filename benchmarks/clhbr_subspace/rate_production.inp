@@ -1,0 +1,71 @@
+# Cl + HBr -> HCl + Br on BrHCl_LEPS1: RPMD rate with ring-polymer centroid
+# path accumulation for the subspace quantum correction (longer sampling).
+# Build the PES first: python benchmarks/brhcl/build_pes.py
+task = "rate"
+preset = "production"
+temperature = "300 K"
+beads = 16
+seed = 3011
+
+[system]
+transition_state = "ts.xyz"
+
+[potential]
+provider = "python"
+factory = "../brhcl/pes.py:build"
+
+[dynamics]
+integrator = "cayley-bcb"
+timestep = "0.25 fs"
+
+[sampling]
+thermostat = "andersen"
+andersen_interval = 40
+
+[reaction]
+fragments = [[2], [0, 1]]
+forming_bonds = [[1, 2]]
+breaking_bonds = [[0, 1]]
+rinf = "6 angstrom"
+
+[rate]
+dividing_surface = 1.0
+
+[rate.pmf]
+method = "umbrella"
+estimator = "ui"
+
+[rate.pmf.sampling]
+thermostat = "andersen"
+andersen_interval = 40
+equilibration = "100 fs"
+production = "4000 fs"
+interval = "2.5 fs"
+replicas = 1
+
+[rate.pmf.umbrella]
+start = -0.05
+stop = 1.45
+count = 61
+kappa = "0.32 hartree"
+
+[rate.pmf.analysis]
+bins = 120
+bootstrap = 10
+
+[recrossing]
+parent_replicas = 2
+parent_samples = 64
+equilibration = "50 fs"
+parent_interval = "25 fs"
+child_pairs = 16
+child_time = "1000 fs"
+bootstrap = 200
+
+[output]
+directory = "../../runs/clhbr-300K-production"
+checkpoint_interval = "50 fs"
+centroid_path = true
+
+[parallel]
+workers = 4

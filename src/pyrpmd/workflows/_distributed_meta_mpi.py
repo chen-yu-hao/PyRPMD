@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import numpy as np
 from ..bias import CompositeBias
+from ..warm_start import initial_ring
 from ..checkpoint import atomic_savez, load_checkpoint
 from ..dynamics import Dynamics, State
 from ..potentials import make_potential
@@ -124,7 +125,7 @@ def _run_mpi(config, system, output, *, return_data=False):
             fixed_atoms=system.fixed_atoms, fixed_positions=system.geometry,
             **loop_options(config))
         if restored is None:
-            state = State(np.repeat(system.geometry[None], config["beads"], axis=0),
+            state = State(initial_ring(config, system),
                           dynamics.sample_momenta())
             bias, elapsed = _bias(cv, config, options), 0
             saved = {"samples": [], "sample_steps": [], "sample_bias": [],
@@ -271,3 +272,5 @@ def reanalyze_mpi(config, system, output, cv, options, *, return_data=False):
         Path(output) / "checkpoints" / "shared_metadynamics_mpi.npz")
     write_json(Path(output) / "summary.json", summary)
     return result
+
+

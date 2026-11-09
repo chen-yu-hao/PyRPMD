@@ -29,6 +29,13 @@ from ..system import System
 
 _KIND = "PyRPMD.nonadiabatic_trajectory.v1"
 _HISTORY = ("density", "energy", "norm", "centroid_q", "centroid_p")
+_OPERATOR_KIND = "pyrpmd.nrpmd_auxiliary_state.v2"
+_OPERATOR_VERSION = 2
+
+
+def _operator_path(path):
+    path = Path(path)
+    return path.with_name(path.stem + ".operator.npz")
 
 
 def _driver(config, system, potential, rng):
@@ -100,6 +107,24 @@ def _save(path, config, identity, index, state, rng, history):
         arrays.update(coefficients=state.coefficients,
                       active_surface=np.asarray(state.active_surface))
     atomic_savez(path, kind=_KIND, **arrays)
+    if isinstance(state, NRPMDState):
+        operator_metadata = {
+            "format": _OPERATOR_KIND,
+            "version": _OPERATOR_VERSION,
+            "physics_fingerprint": identity,
+            "trajectory": int(index),
+            "method": "nrpmd",
+            "step": int(state.step),
+            "rng_in_primary_checkpoint": True,
+        }
+        atomic_savez(
+            _operator_path(path),
+            kind=_OPERATOR_KIND,
+            metadata=np.asarray(json.dumps(jsonable(operator_metadata), sort_keys=True,
+                                           allow_nan=False)),
+            mapping_q=state.mapping_q,
+            mapping_p=state.mapping_p,
+        )
 
 
 def _load(path, config, identity, index, dynamics, rng):
@@ -223,6 +248,43 @@ def _load(path, config, identity, index, dynamics, rng):
     except (ValueError, TypeError, KeyError) as error:
         raise CheckpointError("invalid nonadiabatic random generator checkpoint") from error
     rng.bit_generator.state = copy.deepcopy(restored_rng.bit_generator.state)
+    if config["method"] == "nrpmd":
+        operator_path = _operator_path(path)
+        if operator_path.exists():
+            with load_checkpoint(operator_path, expected_kind=_OPERATOR_KIND,
+                                 require_integrity=True) as saved:
+                operator_data = {key: saved[key] for key in saved.files}
+            if set(operator_data) != {"metadata", "mapping_q", "mapping_p"}:
+                raise CheckpointError("NRPMD auxiliary checkpoint payload inventory mismatch")
+            raw_operator_metadata = operator_data["metadata"]
+            if raw_operator_metadata.shape != () or raw_operator_metadata.dtype.kind != "U":
+                raise CheckpointError("invalid NRPMD auxiliary checkpoint metadata")
+            operator_metadata = json.loads(str(raw_operator_metadata.item()))
+            expected_keys = {
+                "format", "version", "physics_fingerprint", "trajectory", "method",
+                "step", "rng_in_primary_checkpoint",
+            }
+            if (set(operator_metadata) != expected_keys
+                    or operator_metadata["format"] != _OPERATOR_KIND
+                    or operator_metadata["version"] != _OPERATOR_VERSION
+                    or operator_metadata["physics_fingerprint"] != identity
+                    or type(operator_metadata["trajectory"]) is not int
+                    or operator_metadata["trajectory"] != index
+                    or operator_metadata["method"] != "nrpmd"
+                    or type(operator_metadata["step"]) is not int
+                    or operator_metadata["rng_in_primary_checkpoint"] is not True):
+                raise CheckpointError("NRPMD auxiliary checkpoint identity mismatch")
+            if operator_metadata["step"] > state.step:
+                raise CheckpointError("NRPMD auxiliary checkpoint is ahead of primary checkpoint")
+            if operator_metadata["step"] < state.step:
+                return state, history
+            for name in ("mapping_q", "mapping_p"):
+                value = operator_data[name]
+                actual = getattr(state, name)
+                if (value.dtype.kind != "f" or value.dtype.itemsize != 8
+                        or value.shape != actual.shape or not np.isfinite(value).all()
+                        or not np.array_equal(value, actual)):
+                    raise CheckpointError(f"NRPMD auxiliary checkpoint mismatch for {name}")
     return state, history
 
 

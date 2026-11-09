@@ -114,7 +114,7 @@ def _check_extension_provenance(directory):
     )
 
 
-def _initialize_output(config, system, output, resume=False):
+def _initialize_output(config, system, output, resume=False, initialized_from=None):
     from .propagation import scientific_config
 
     path = Path(output)
@@ -186,6 +186,13 @@ def _initialize_output(config, system, output, resume=False):
             "time": "atomic",
         },
     }
+    if config.get("warm_start"):
+        # Provenance only: the imported configuration itself is part of the
+        # resolved input and therefore of this run's own physics fingerprint.
+        manifest["initialized_from"] = {
+            **config["warm_start"]["initialized_from"],
+            **({"run": str(initialized_from)} if initialized_from is not None else {}),
+        }
     if config["task"] == "pcet":
         manifest["model_schema"] = "pyrpmd.pcet-model"
         manifest["checkpoint_schema"] = "pyrpmd.pcet-case"
@@ -203,17 +210,38 @@ def _initialize_output(config, system, output, resume=False):
         shutil.copy2(source, path / "input" / ("original" + source.suffix))
 
 
-def run(job, *, output=None, resume=False):
-    """Execute a JobSpec, mapping, .inp or .py file and return the root summary."""
+def run(job, *, output=None, resume=False, init_from=None, init_index=None, init_bias=False):
+    """Execute a JobSpec, mapping, .inp or .py file and return the root summary.
+
+    ``init_from`` warm-starts a *new* run from a configuration saved by an
+    earlier run (a run directory or one of its checkpoint files). The new run
+    keeps its own scientific settings and fingerprint; see
+    :mod:`pyrpmd.warm_start`. ``init_index`` selects one configuration from a
+    checkpoint holding several, and ``init_bias=True`` additionally imports
+    the parent's metadynamics hills as an initial bias.
+    """
     spec = _spec(job)
     if output is not None:
         spec = spec.with_overrides(output=output)
     config, system = spec.resolve()
-    return run_resolved(config, system, output=output, resume=resume)
+    return run_resolved(config, system, output=output, resume=resume, init_from=init_from,
+                        init_index=init_index, init_bias=init_bias)
 
 
-def run_resolved(config, system, *, output=None, resume=False):
+def run_resolved(config, system, *, output=None, resume=False, init_from=None, init_index=None,
+                 init_bias=False):
     config = normalize_fes_task(copy.deepcopy(config))
+    parent_run = None
+    if init_from is None and (init_index is not None or init_bias):
+        raise InputError("init_index and init_bias require init_from")
+    if init_from is not None:
+        if resume:
+            raise InputError("A warm start creates a new run; it cannot be combined with resume. "
+                             "Resume the warm-started run without init_from.")
+        from . import warm_start
+
+        config, parent_run = warm_start.prepare(config, system, init_from, index=init_index,
+                                                import_bias_history=init_bias)
     from .workflows import validate_bond_constraint_workflow
     from .workflows.sampling import validate_andersen_schedule
 
@@ -261,7 +289,9 @@ def run_resolved(config, system, *, output=None, resume=False):
         from .workflows.path_sampling import resolve_path_sampling
 
         root_call(resolve_path_sampling, config, system)
-    root_call(_initialize_output, config, system, target, resume)
+    if (parent_run is not None and Path(parent_run).resolve() == Path(target).resolve()):
+        raise InputError("A warm start needs a new output directory, not the parent run directory")
+    root_call(_initialize_output, config, system, target, resume, parent_run)
     if config["task"] == "path_sampling":
         from .workflows.path_sampling import run_path_sampling
 
@@ -329,6 +359,10 @@ def run_resolved(config, system, *, output=None, resume=False):
             "preset": config.get("preset", "pilot"),
             "input_warnings": config.get("_warnings", []),
         }
+        if config.get("warm_start"):
+            from .warm_start import report
+
+            result["warm_start"] = report(config)
         write_json(Path(target) / "results" / "summary.json", result)
     return result
 

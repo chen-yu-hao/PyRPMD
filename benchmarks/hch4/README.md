@@ -42,7 +42,21 @@ result = potential.evaluate(q)  # q has shape [batch, 6, 3], in bohr
 The atom order is **H, C, H, H, H, H**. The last atom is the incoming H; the
 other four H atoms are equivalent methane hydrogens. The adapter returns the
 unmodified upstream energy and **forces = −dV/dq**, with no bead scaling.
-Its canonical-path lock serializes the legacy `COMMON` blocks. Initialization
+The batch entry point admits all frames in one pass and passes the whole
+ring to upstream `get_potential(q, 6, P, ...)` in a single call, writing
+energies and gradients directly into the output arrays; only a batch that
+contains rejected frames is compacted first. Its results are bit-identical to
+per-frame calls. Admission is one test per atom pair: a nonfinite coordinate
+makes every squared distance of its atom NaN or infinite, so
+`0.04 < d² <= huge` covers both finiteness and the pair guard. Only a frame
+that fails it (or lies within rounding of the guard) repeats the original
+per-frame finite/distance classification. The force negation and output
+finiteness test share one pass. The wrapper does not `USE IEEE_ARITHMETIC`,
+whose procedures make gfortran save and restore the floating-point
+environment on every call; finiteness is `abs(x) <= huge(x)`. Statuses,
+energies and forces are bit-identical to the previous wrapper, including
+rejected and nonfinite frames. Rebuild an existing library after updating:
+its receipt records the wrapper hash. Its canonical-path lock serializes the legacy `COMMON` blocks. Initialization
 runs once per loaded library: calling upstream `PREPOT` twice would rescale
 parameters twice. Separate Python objects therefore share the initialized
 library without reinitializing it. A 0.2 bohr pair-distance rejection prevents

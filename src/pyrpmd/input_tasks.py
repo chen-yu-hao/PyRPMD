@@ -39,6 +39,14 @@ def validate_input_preflight(d):
                 table["native"] = bool(value)
             elif value is not None and not (isinstance(value, str) and value == "required"):
                 raise InputError(f"{label} must be a boolean, None or 'required'")
+    sampling = d.get("sampling", {})
+    parameters = sampling.get("thermostat_params", {})
+    if "rng" in parameters:
+        rng = parameters["rng"]
+        if not isinstance(rng, str) or rng not in ("mt19937_64", "philox-v1"):
+            raise InputError("sampling.thermostat_params.rng must be mt19937_64 or philox-v1")
+        if sampling.get("engine") != "native":
+            raise InputError("sampling.thermostat_params.rng requires sampling.engine='native'")
 
 
 def validate_task_sections(d):
@@ -57,8 +65,8 @@ def validate_task_sections(d):
     if engine != "torch" and any(key in d.get("sampling", {}) for key in ("device", "normal_mode_layout")):
         raise InputError("sampling.device/normal_mode_layout require sampling.engine='torch'")
     native_pimd = engine == "native"
-    if native_pimd and task != "pimd":
-        raise InputError("sampling.engine='native' currently requires task='pimd'")
+    if native_pimd and task not in ("pimd", "diffusion"):
+        raise InputError("sampling.engine='native' requires task='pimd' or task='diffusion'")
     if "diffusion" in d and task != "diffusion":
         raise InputError("[diffusion] requires task='diffusion'")
     if "electronic_friction" in d and task != "diffusion":
@@ -168,7 +176,22 @@ def validate_task_sections(d):
     return materials, native_pimd, source_pmf
 
 
-def resolve_reaction(d, system):
+def evaluate_reaction_electronic(reaction, temperature, system=None):
+    """Evaluate ``reaction.electronic`` at one temperature (kelvin).
+
+    Reactant entries are checked against ``reaction.fragments`` or, when the
+    reaction table defines none (as for dRPMD), the resolved system fragments.
+    """
+    from .electronic_partition import ElectronicModel
+
+    fragments = reaction.get("fragments", reaction.get("reactant_fragments"))
+    if not fragments and system is not None:
+        fragments = getattr(system, "fragments", None)
+    count = len(fragments) if isinstance(fragments, (list, tuple)) and fragments else None
+    return ElectronicModel.from_mapping(reaction["electronic"], reactant_count=count).evaluate(temperature)
+
+
+def resolve_reaction(d, system, temperature=None):
     reaction = deepcopy(d.get("reaction", {}))
     if d["task"] == "rate":
         from .workflows.prepare import preparation_options
@@ -177,6 +200,17 @@ def resolve_reaction(d, system):
             preparation_options(reaction)
         except (ValueError, TypeError) as error:
             raise InputError(str(error)) from error
+    if "electronic" in reaction:
+        if "electronic_weight" in reaction:
+            raise InputError("Give either reaction.electronic_weight or [reaction.electronic], not both")
+        if temperature is None:
+            raise InputError("[reaction.electronic] needs a thermal temperature; state-selected ensembles have none")
+        try:
+            evaluated = evaluate_reaction_electronic(reaction, temperature, system)
+        except (ValueError, TypeError, OverflowError) as error:
+            raise InputError(f"reaction.electronic: {error}") from error
+        reaction["electronic_weight"] = evaluated["electronic_weight"]
+        reaction["electronic_weight_model"] = evaluated
     ew = float(reaction.get("electronic_weight", 1.0))
     if not math.isfinite(ew) or ew < 0:
         raise InputError("electronic_weight must be finite and nonnegative")

@@ -184,7 +184,7 @@ def test_force_cache_invalidates_between_blocks_and_after_python_edit(native_lib
 
 
 @pytest.mark.parametrize("kind", ["bias", "fragments", "constraint"])
-def test_force_cache_keeps_reference_schedule_for_projected_or_biased_steps(native_library, kind):
+def test_force_cache_reuses_pure_bias_and_constraint_but_not_fragment_projection(native_library, kind):
     from pyrpmd.workflows.rate import project_positions, project_momenta
 
     pes = CompiledPotential(native_library)
@@ -202,10 +202,13 @@ def test_force_cache_keeps_reference_schedule_for_projected_or_biased_steps(nati
         project_momenta(current.p, current.q, surface, dyn.masses)
         options["constraint"] = surface
     reference = current.copy()
-    dyn.propagate_block(reference, 5, backend="native", **options)
+    dyn.propagate_block(reference, 5, backend="native", reuse_forces=False, **options)
     pes.lib.reset(-1, 0)
     dyn.propagate_block(current, 5, backend="native", reuse_forces=True, **options)
-    assert pes.lib.get_calls() == (15 if kind == "fragments" else 10)
+    # Pure native biases and centroid RATTLE leave the endpoint q unchanged,
+    # so L steps take L+1 calls; fragment projection keeps the reference
+    # schedule plus its energy re-evaluation.
+    assert pes.lib.get_calls() == (15 if kind == "fragments" else 6)
     np.testing.assert_array_equal(current.q, reference.q)
     np.testing.assert_array_equal(current.p, reference.p)
 

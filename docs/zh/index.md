@@ -36,6 +36,8 @@ PyRPMD 用一个 Python 或 TOML 输入运行环聚合物分子动力学。它�
 | 温度、同位素与数值收敛扫描 | `pyrpmd study` | [速率研究英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-studies.md) |
 | Instanton 路径与一维低温速率 | Python API | [Instanton 英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/instanton.md) |
 | 高阶平衡采样与量子估计量 | Python API | [量子统计英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/quantum-statistics.md) |
+| 精确量子参照与受控 RPMD 响应修正 | Python API | [量子修正英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/quantum-correction.md) |
+| RPMD 速率 × 1–3 维子空间精确量子修正 | Python API | [子空间速率修正英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/subspace-correction.md) |
 | PA-CMD、Raman/SFG、主引擎 SC/玻色交换/PIGS、非绝热及 ML 扩展 | 输入工作流 / Python API | [Tier 2 覆盖范围与限制](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/tier2-methods.md) |
 | 多维瞬子速率、劈裂及 TST/Wigner/Eckart 对照 | Python API / 缓存 Hessian CLI | [低温对照（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/low-temperature.md) |
 | 热 NRPMD、表面跳跃、SOC、KC-/MV-RPMD、电子摩擦 | Python API；`diffusion` + `[electronic_friction]` | [非绝热动力学](manual/nonadiabatic.md) |
@@ -108,6 +110,7 @@ JaxPIP 拟合与原生执行 <manual/jaxpip-generation>
 自动分析与出图 <manual/analysis-reports>
 示例索引 <manual/examples>
 副本交换伞形采样 <replica-exchange>
+热启动 <warm-start>
 ```
 
 ```{toctree}

@@ -35,8 +35,17 @@ def parser():
     p.add_argument("--version", action="version", version=f"PyRPMD {__version__}")
     p.add_argument("--debug", action="store_true", help="Show a traceback when a command fails")
     commands = p.add_subparsers(dest="command", required=True)
+    importer = commands.add_parser("import-rpmdrate", help="Convert a trusted RPMDrate rate input without loading its PES")
+    importer.add_argument("input", help="Trusted RPMDrate Python input")
+    importer.add_argument("--temperature", type=float, required=True, help="Temperature in kelvin")
+    importer.add_argument("--beads", type=int, required=True)
+    importer.add_argument("--pes-module", help="Path to the PES module to use after conversion")
+    importer.add_argument("--output", required=True, help="New or empty output directory")
+    importer.add_argument("--allow-unmapped", action="store_true", help="Write input with explicitly reported replacements")
     from .workflows.instanton import register_parser
     register_parser(commands)
+    from .workflows.vtst import register_parser as register_vtst_parser
+    register_vtst_parser(commands)
     from .workflows.precision import register_parser as register_precision_parser
     register_precision_parser(commands)
     starter = commands.add_parser("init", help="Create a self-contained harmonic tutorial in a new or empty directory")
@@ -45,6 +54,15 @@ def parser():
     _input_options(r)
     r.add_argument("--output")
     r.add_argument("--resume", action="store_true")
+    r.add_argument("--init-from", metavar="RUN_OR_CHECKPOINT",
+                   help="Warm-start this new run from a configuration saved by an earlier run "
+                        "(its directory, or one checkpoint file). Settings, fingerprint and output "
+                        "stay new; momenta are resampled and equilibration is required")
+    r.add_argument("--init-index", type=int, metavar="INT",
+                   help="Select one configuration from a checkpoint holding several (replicas/windows)")
+    r.add_argument("--init-bias", action="store_true",
+                   help="Also import the parent's metadynamics hills as an initial bias "
+                        "(identical CVs; well-tempered rescaling)")
     _report_shortcut_options(r)
     v = commands.add_parser(
         "validate", help="Resolve input, units, system and resources"
@@ -123,6 +141,11 @@ def parser():
     rate.add_argument("--output", help="New result JSON (default: DIRECTORY/rate_postprocess.json)")
     rate.add_argument("--bootstrap", type=int, default=200)
     rate.add_argument("--seed", type=int, default=0)
+    subspace = commands.add_parser(
+        "subspace-correct",
+        help="Correct a saved RPMD rate with an exact 1-2D subspace quantum calculation",
+    )
+    subspace.add_argument("input", help="TOML/JSON file with source.rate_run and optional path/subspace/quantum/rpmd settings")
     na_rate = commands.add_parser("nonadiabatic-rate", help="Run a signed thermal NRPMD population-rate workflow")
     na_rate.add_argument("input", help="TOML/JSON thermal NRPMD rate specification")
     na_rate.add_argument("--output", required=True, help="New run directory")
@@ -336,11 +359,21 @@ def main(argv=None):
     try:
         if hasattr(args, "_instanton_handler"):
             return args._instanton_handler(args)
+        if hasattr(args, "_vtst_handler"):
+            return args._vtst_handler(args)
         if hasattr(args, "_precision_handler"):
             return args._precision_handler(args)
         if args.command in ("run", "analyze") and not args.report and (args.report_output or args.report_overwrite or args.report_style):
             raise InputError("--report-output, --report-overwrite and --report-style require --report")
-        if args.command == "init":
+        if args.command == "import-rpmdrate":
+            from .rpmdrate_import import import_rpmdrate
+
+            result = import_rpmdrate(args.input, temperature=args.temperature, beads=args.beads,
+                                     pes_module=args.pes_module, output=args.output,
+                                     allow_unmapped=args.allow_unmapped)
+            _print({"output": result["output"], "unmapped": result["unmapped"],
+                    "physical_converged": False})
+        elif args.command == "init":
             from .parallel import root_call
             from .scaffold import init_project
 
@@ -348,7 +381,8 @@ def main(argv=None):
         elif args.command == "run":
             from .runner import run
 
-            result = run(_job(args), resume=args.resume)
+            result = run(_job(args), resume=args.resume, init_from=args.init_from,
+                         init_index=args.init_index, init_bias=args.init_bias)
             if result is not None:
                 result = _report_after_result(args, result, result["output"])
             if result is not None:
@@ -506,6 +540,24 @@ def main(argv=None):
             )
             if result is not None:
                 _print(_rate_postprocess_summary(result))
+        elif args.command == "subspace-correct":
+            from .analysis.subspace_pipeline import run_subspace_pipeline
+            from .parallel import root_call
+
+            report = root_call(run_subspace_pipeline, args.input)
+            if report is not None:
+                corrected = report["corrected_rate"]
+                unit = "s_inv" if corrected.get("task") == "surface_rate" else "cm3_s"
+                _print({
+                    "rate_run": report["rate_run"],
+                    "curvature_width_max": report["curvature_width_path"]["maximum"],
+                    "dimensions_computed": report["dimensions_computed"],
+                    "correction_factors": {d: c["factor"] for d, c in report["corrections"].items()},
+                    "applied_dimension": report["applied_dimension"],
+                    "rpmd_rate_" + unit: corrected.get("rpmd_rate_estimate_" + unit),
+                    "corrected_rate_" + unit: corrected.get("corrected_rate_estimate_" + unit),
+                    "physical_converged": False,
+                })
         elif args.command == "project":
             from .analysis.projection import project_run
             from .parallel import root_call

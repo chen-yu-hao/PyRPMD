@@ -1,0 +1,34 @@
+PR #114 review import audit, before removing the two unused legacy modules.
+$ grep -rn --include=*.py _nonadiabatic_legacy src tests examples benchmarks
+(no matches)
+exit status: 1
+
+$ grep -rn --include=*.py nrpmd_auxiliary src tests examples benchmarks
+src/pyrpmd/nonadiabatic.py:248:from .nrpmd_auxiliary import (  # noqa: E402
+src/pyrpmd/workflows/nonadiabatic.py:32:_OPERATOR_KIND = "pyrpmd.nrpmd_auxiliary_state.v2"
+tests/test_auxiliary_operators.py:204:def test_nrpmd_auxiliary_core_is_bitwise_legacy_equivalent_for_10000_steps():
+exit status: 0
+
+After the review fix, historical helpers remain available in nonadiabatic.py.
+$ grep -rn --include=*.py -E nonadiabatic import.*(_positive_integer|_mint) src tests examples benchmarks
+src/pyrpmd/adaptive_nrpmd.py:26:from .nonadiabatic import _positive_integer
+src/pyrpmd/adiabatic.py:16:from .nonadiabatic import DiabaticResult, NRPMDState, _mint, _positive_integer
+src/pyrpmd/advanced_surface_hopping.py:18:from .nonadiabatic import _positive_integer, validate_diabatic_result
+src/pyrpmd/iesh.py:25:from .nonadiabatic import DiabaticResult, _positive_integer, validate_diabatic_result
+src/pyrpmd/kc_rpmd.py:18:from .nonadiabatic import _positive_integer
+src/pyrpmd/mash.py:24:from .nonadiabatic import _positive_integer, validate_diabatic_result
+src/pyrpmd/mv_rpmd.py:18:from .nonadiabatic import NRPMDState, _positive_integer
+src/pyrpmd/rp_iesh.py:25:from .nonadiabatic import _positive_integer
+src/pyrpmd/rp_mash.py:16:from .nonadiabatic import _positive_integer, validate_diabatic_result
+src/pyrpmd/spin_mapping.py:14:from .nonadiabatic import _positive_integer, validate_diabatic_result
+src/pyrpmd/surface_hopping.py:16:from .nonadiabatic import _positive_integer, validate_diabatic_result
+src/pyrpmd/workflows/nonadiabatic_rate.py:23:from ..nonadiabatic import _positive_integer
+src/pyrpmd/nrpmd_auxiliary.py:108:        from .nonadiabatic import _mint
+tests/test_nrpmd_contraction.py:7:from pyrpmd.nonadiabatic import DiabaticResult, NRPMDState, _mint
+benchmarks/efficiency/audit_optimization.py:330:    from pyrpmd.nonadiabatic import DiabaticResult, NRPMDState, _mint
+
+All tracked file types at pre-review commit 1b7b14945ab97d371eb3d31163474960ab0789b6 (including .inp examples):
+$ git grep -n -E _nonadiabatic_legacy|nrpmd_auxiliary 1b7b14945ab97d371eb3d31163474960ab0789b6 -- src tests examples benchmarks
+1b7b14945ab97d371eb3d31163474960ab0789b6:src/pyrpmd/nonadiabatic.py:248:from .nrpmd_auxiliary import (  # noqa: E402
+1b7b14945ab97d371eb3d31163474960ab0789b6:src/pyrpmd/workflows/nonadiabatic.py:32:_OPERATOR_KIND = "pyrpmd.nrpmd_auxiliary_state.v2"
+1b7b14945ab97d371eb3d31163474960ab0789b6:tests/test_auxiliary_operators.py:204:def test_nrpmd_auxiliary_core_is_bitwise_legacy_equivalent_for_10000_steps():

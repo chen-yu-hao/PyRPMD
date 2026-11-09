@@ -286,9 +286,19 @@ def _child_task(task):
             if child_dynamics == "rpmd" and dyn.can_fuse(observe=surface):
                 completed = 0
                 while completed < nsteps:
-                    count = min(dyn.block_steps, nsteps-completed)
-                    block = dyn.propagate(state, count, observe=surface,
-                                          sample_interval=1, record_centroids=False)
+                    count = min(dyn.block_steps, 4096, nsteps-completed)
+                    # Keep the complete observation and energy transaction in
+                    # the block engine.  ``propagate`` used to return here at
+                    # every block while evaluating two PES endpoints per
+                    # step; the block path reuses the previous endpoint force
+                    # and therefore needs only one initial plus one endpoint
+                    # PES batch per block.  ``check_energy`` preserves the
+                    # old per-step finite-energy failure visibility even
+                    # though energies themselves are not part of the result.
+                    block = dyn.propagate_block(
+                        state, count, cv=surface, check_energy=True,
+                        record_energy=False, reuse_forces=True,
+                    )
                     numerator[completed:completed+count] += weight*(block.values[:, 0] > 0)
                     completed += count
             else:

@@ -91,7 +91,40 @@ multiple sampling events in one native call.
 ring energy of every accepted step, taken from that step's endpoint PES call and
 independent of the observation mask. dRPMD uses it to monitor energy drift at
 every step while observing centroids and diagnostics only for saved frames.
+`sampling_block.h` adds `advance_sampling` for PILE-L and TRPMD. Python draws
+the real-mode noise one step at a time and supplies the scaled buffer; the
+native loop performs both physical kicks, reuses `sample_free`, and commits
+only a valid prefix when a PES or observation fails. The
+`SAMPLING_BLOCK_API` marker guards this entry point. Unsupported bead counts,
+custom providers, and Python callbacks retain the one-step sampler.
 It commits each accepted step and returns a valid prefix on numerical failure;
 `run_block` retains its whole-block transaction contract. Both implementations
 share the existing immutable Cayley context and the provider's lifetime lock.
 See [the segmented API contract](../docs/block-propagation.md).
+
+`advance` and `advance_sampling` double-buffer the state between the caller's
+q/p arrays and one private array: each step reads the accepted half, writes the
+other and swaps pointers on acceptance, so neither the block start nor each step
+copies the ring. `Cayley::propagate` and `sample_free` accept a separate
+position input for that purpose, and the cyclic Cayley solve sweeps complete
+bead rows (vectorized across Cartesian coordinates, without integer modulo).
+A `BiasStack` evaluates each distinct centroid umbrella/flux/observed coordinate
+once per force call and applies the centroid bias forces in one pass over the
+force rows. `run_block` also reuses endpoint forces when Python passes
+`reuse_forces`. All of these keep each element's floating-point operations and
+their order, so results are bit-identical to the previous kernels.
+
+`advance` also accepts a pre-drawn `refresh` descriptor.  Its strictly
+increasing step offsets and `[R,P,N,3]` float64 momenta are supplied by Python;
+the GIL-free loop installs each momentum before its step and reports the
+successful `refreshes_completed` prefix.  `none`, centroid-constraint and
+fragment projections reuse the corresponding native projection mathematics.
+The `MOMENTUM_REFRESH_API` marker lets older extensions reject this descriptor
+before mutating state.
+
+History-bias descriptors are available on the tagged `advance` path when
+`NATIVE_HISTORY_BIAS_API` is present. Frozen wall, direct-hill metadynamics and
+`tensor_hermite_v1` grid snapshots are evaluated in C++ with the full ring CV
+Jacobian; `CompositeBias` is lowered as a sequence of descriptors. The Python
+side validates the history version after each block, so subclasses and changed
+histories retain the compatibility path.

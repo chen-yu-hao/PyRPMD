@@ -4,6 +4,13 @@ orphan: true
 
 # 独立 agent 任务卡（第四轮：对标评审后续）
 
+> **第五轮（2026-11-04）：** 新卡 T47–T52、规则 G16–G19、被退回卡片的重做条件与新的分工见
+> [第五轮任务卡](round-5.md)。第五轮第 1 波只做整合、性能和接入，不开始新的方法卡。
+
+> **C32 验证战役（2026-11-06）：** 在一台 32 核机器上用 8 个 agent、60 小时完成的按工作流测试计划
+> （车道 L0–L7、规则 C1–C14、启动器 `tools/campaign_launch.py`）见 [campaign-c32/README.md](campaign-c32/README.md)。
+> 战役只测试冻结的提交，不修改 `src/`、`native/`。
+
 更新日期：2026-11-03。基线：`main@ceee59c`（第三轮集成 #91）。
 
 本目录把 2026-11-03 对标评审（PyRPMD 与 i-PI、NQCDynamics.jl、RPMDrate/Caracal、
@@ -14,6 +21,9 @@ SHARC/Newton-X、LAMMPS/CP2K/Tinker-HP、PLUMED/infretis、TorchSim 的比较）
 
 **用法：** 交给 agent 时，同时提供本页（通用规则）和对应的卡片文件。agent 必须先完整阅读
 两者再动手。
+
+> "原生路径替换"专项任务卡（NP0–NP8，让整条轨迹尽量留在 C++）见
+> [native-path/README.md](native-path/README.md)，同样遵守本页的 G1–G15。
 
 ## 通用执行规则
 

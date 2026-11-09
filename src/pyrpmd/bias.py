@@ -184,6 +184,18 @@ class WallBias:
         return (len(q) * self.kappa * delta**2,
                 -2.0 * len(q) * self.kappa * delta * result.jacobian[0])
 
+    def native_descriptor(self):
+        """Return a detached descriptor for one fixed wall potential."""
+        return {
+            "kind": "wall",
+            "kappa": float(self.kappa),
+            "has_lower": self.lower is not None,
+            "lower": 0.0 if self.lower is None else float(self.lower),
+            "has_upper": self.upper is not None,
+            "upper": 0.0 if self.upper is None else float(self.upper),
+            "version": 0,
+        }
+
 
 class MetadynamicsBias:
     """History-dependent standard or well-tempered metadynamics in CV space.
@@ -196,7 +208,9 @@ class MetadynamicsBias:
     A periodic dimension uses a wrapped Gaussian (a sum over images), not a
     minimum-image Gaussian with a discontinuous force at half a period.
     Depositions are explicit events; evaluating forces never changes history.
-    This class deliberately has no frozen native-bias descriptor.
+    ``native_descriptor`` returns a frozen snapshot with a ``hill_count``
+    version. The native path rejects the block if the history changes while
+    that snapshot is in use.
 
     Change history through ``deposit`` or ``truncate_history``. ``hills``
     returns a serializable snapshot, so editing its records cannot invalidate
@@ -208,7 +222,7 @@ class MetadynamicsBias:
     _shared_clocks = False
 
     def __init__(self, cv, sigma, height, beta, *, mode="well_tempered",
-                 bias_factor=None, hills=None):
+                 bias_factor=None, hills=None, initial_hills=None):
         self.cv = cv
         self.sigma = np.atleast_1d(np.asarray(sigma, float)).copy()
         if self.sigma.shape != (cv.dimension,) or not np.isfinite(self.sigma).all() or np.any(self.sigma <= 0):
@@ -235,8 +249,38 @@ class MetadynamicsBias:
         self._hills = []
         self._centers = np.empty((16, cv.dimension))
         self._heights = np.empty(16)
+        self._set_initial_hills(initial_hills)
         for hill in ([] if hills is None else hills):
             self._append(hill)
+
+    def _set_initial_hills(self, initial_hills):
+        """Static imported hills: part of V, never part of this run's history.
+
+        A warm start can seed a run with the scaled hills of a parent run.
+        They contribute to energies, forces and the well-tempered height
+        factor exactly like deposited hills, but ``hills``/``hill_count``
+        report only hills deposited by this run.
+        """
+        records = [] if initial_hills is None else list(initial_hills)
+        centers = np.empty((len(records), self.cv.dimension))
+        heights = np.empty(len(records))
+        for i, hill in enumerate(records):
+            center = np.asarray(hill["center"], float)
+            height = float(hill["height"])
+            if center.shape != (self.cv.dimension,) or not np.isfinite(center).all():
+                raise ValueError("invalid initial metadynamics hill center")
+            if not np.isfinite(height) or height < 0:
+                raise ValueError("invalid initial metadynamics hill height")
+            centers[i], heights[i] = center, height
+        centers.flags.writeable = False
+        heights.flags.writeable = False
+        self._initial_centers, self._initial_heights = centers, heights
+
+    @property
+    def initial_hills(self):
+        """Detached imported initial-bias hills (centers and heights only)."""
+        return [{"center": c.tolist(), "height": float(h)}
+                for c, h in zip(self._initial_centers, self._initial_heights)]
 
     @property
     def hills(self):
@@ -246,6 +290,21 @@ class MetadynamicsBias:
     @property
     def hill_count(self):
         return len(self._hills)
+
+    def native_descriptor(self):
+        """Return an immutable, detached snapshot of the current hill history."""
+        centers, heights = self._history_arrays()
+        return {
+            "kind": "hills",
+            "hill_count": int(self.hill_count),
+            "centers": tuple(tuple(float(x) for x in row) for row in centers),
+            "heights": tuple(float(x) for x in heights),
+            "sigma": tuple(float(x) for x in self.sigma),
+            "periods": tuple(0.0 if period is None else float(period)
+                             for period in self.cv.periods),
+            "mode": self.mode,
+            "bias_factor": None if self.bias_factor is None else float(self.bias_factor),
+        }
 
     @staticmethod
     def _kernel(delta, sigma, period, *, gradient=True):
@@ -278,13 +337,18 @@ class MetadynamicsBias:
     def _history_arrays(self):
         # Numeric buffers grow at deposition; live slices exclude rolled-back
         # hills without rebuilding history dictionaries during force calls.
-        return self._centers[:self.hill_count], self._heights[:self.hill_count]
+        centers, heights = self._centers[:self.hill_count], self._heights[:self.hill_count]
+        initial = getattr(self, "_initial_heights", None)
+        if initial is not None and len(initial):
+            return (np.concatenate([self._initial_centers, centers]),
+                    np.concatenate([initial, heights]))
+        return centers, heights
 
     def _evaluate(self, values, *, gradient):
         values = np.asarray(values, float)
         if values.ndim < 1 or values.shape[-1] != self.cv.dimension or not np.isfinite(values).all():
             raise ValueError("metadynamics values must be finite [...,D]")
-        if not self._hills:
+        if not self._hills and not len(getattr(self, "_initial_heights", ())):
             return np.zeros(values.shape[:-1]), np.zeros_like(values) if gradient else None
         centers, heights = self._history_arrays()
         delta = values[..., None, :] - centers
@@ -496,6 +560,23 @@ class GridMetadynamicsBias(MetadynamicsBias):
         """Read-only values and history-bound metadata for an atomic checkpoint."""
         return {"values": self._grid, "metadata": self._grid_metadata()}
 
+    def native_descriptor(self):
+        """Return a detached, versioned snapshot of the Hermite grid."""
+        state = self.grid_state()
+        return {
+            "kind": "grid",
+            "hill_count": int(self.hill_count),
+            "grid_algorithm": self.grid_algorithm,
+            "grid_ranges": tuple(tuple(float(x) for x in row) for row in self.grid_ranges),
+            "grid_bins": tuple(int(x) for x in self.grid_bins),
+            "grid_nodes": tuple(len(axis) for axis in self.grid_axes),
+            "periods": tuple(0.0 if period is None else float(period)
+                             for period in self.cv.periods),
+            "values": tuple(float(x) for x in np.asarray(state["values"], dtype=float).ravel()),
+            "grid_metadata": json.dumps(state["metadata"], sort_keys=True,
+                                         separators=(",", ":"), allow_nan=False),
+        }
+
     def _coordinates(self, values):
         values = np.asarray(values, dtype=float)
         if values.ndim < 1 or values.shape[-1] != self.cv.dimension or not np.isfinite(values).all():
@@ -595,3 +676,13 @@ class GridMetadynamicsBias(MetadynamicsBias):
             restored += self._hill_values(hill)
         restored.flags.writeable = False
         self._grid = restored
+
+
+# Keep the native-dispatch guard aware of every exact built-in bias.  Subclasses
+# remain deliberately absent: their descriptors are rejected by the lowering
+# functions and therefore retain the Python compatibility path.
+_BUILTIN_BIAS_METHODS.update({
+    WallBias: WallBias.energy_force,
+    MetadynamicsBias: MetadynamicsBias.energy_force,
+    GridMetadynamicsBias: GridMetadynamicsBias.energy_force,
+})

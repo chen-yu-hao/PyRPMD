@@ -84,3 +84,30 @@ ASE `SocketClient` 理论上都可以为 PyRPMD 提供从头算力。
 python -m pytest -q tests -k "ipi or socket"
 python -m pytest -q -m "not campaign"
 ```
+
+## 第五轮增补（2026-11-04）：解析 `extras`
+
+本节扩充本卡范围，优先于上文的“不做”与“文件所有权”中与之冲突的内容。消费端见 [T50](T50-ab-initio-property-spectra.md)。
+
+**背景。** `src/pyrpmd/potentials/socket.py:90` 在读取 `GETFORCE` 回复时执行
+`self.recv(extra, deadline)` 并丢弃内容。i-PI 3 的驱动在 `extras` 中以 JSON 返回偶极、
+Born 有效电荷、电子摩擦张量等附加量（参见 i-PI 的 `ipi/pes/dummy.py`）。丢弃它意味着从头算 IR 光谱
+和基于从头算摩擦张量的 EF-RPMD 都无法经 socket 实现。注意 ASE `SocketClient` 只发送一个占位字节，不发送偶极。
+
+**追加要做：**
+
+1. 解析 `extras`：空串或占位字节视为“无附加量”；合法 JSON 对象按键保存；非 JSON 的非空内容按原始字节保存，
+   并记录一次警告，不报错。大小上限沿用现有的 16 MiB 检查。
+2. 在 `potentials/base.py` 的 `PESResult` 中追加可选字段 `extras`（长度为 B 的元组，元素为字典或 `None`），
+   默认 `None`。`validate_result` 只检查长度，不解释内容；已有字段、校验和所有现有提供者的行为保持不变。
+3. socket 服务端按输入顺序把每个珠子的 `extras` 放进 `PESResult.extras`；客户端重新分派（见上文稳健性要求）时，
+   采用最终成功那次计算的 `extras`。
+4. 不解释任何物理键名与单位，这些由消费端（T50）负责。
+
+**追加验收：**
+
+- 用可控的假客户端发送 JSON、空串、占位字节、非 JSON 内容和超限大小，分别得到预期结果或明确错误。
+- `pip install ipi` 可用时，用 `i-pi-py_driver` 返回 JSON `extras` 的驱动端到端测试；不可用时跳过。
+- 所有现有提供者返回的 `PESResult.extras` 为 `None`，已有测试与 run identity 不变。
+
+**追加共享注册点：** `potentials/base.py`（只追加 `PESResult.extras` 可选字段）。

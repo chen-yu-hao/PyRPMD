@@ -155,8 +155,11 @@ def run(library):
                            native="required", threads=1, loop_backend="native")
             state = nve_start.copy()
             e0 = dyn.energy(state) / beads
-            result = dyn.propagate_block(state, round(20 / dt_fs), backend="native")
-            energies = np.r_[e0, result.energies / beads]
+            steps = round(20 / dt_fs)
+            # Only the per-step energy is needed: no centroid/state observations.
+            result = dyn.propagate_block(state, steps, backend="native", observe=np.zeros(steps, bool),
+                                         record_step_energies=True)
+            energies = np.r_[e0, result.step_energies / beads]
             span = float(np.ptp(energies))
             spans.append(span)
             report["nve_checks"].append({"beads": beads, "dt_fs": dt_fs, "duration_fs": 20,

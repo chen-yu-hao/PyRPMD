@@ -1,0 +1,106 @@
+{
+  "model": {
+    "mass": 1060.0,
+    "V0": 0.015618462065842584,
+    "a": 0.66,
+    "omega0": 0.01,
+    "soften": 0.3,
+    "shift": 0.2,
+    "s_axis": [
+      -8.0,
+      8.0,
+      201
+    ],
+    "y_axis": [
+      -1.4,
+      1.6,
+      31
+    ]
+  },
+  "subspace": {
+    "dimension": 1,
+    "shape": [
+      201
+    ],
+    "bounds": [
+      [
+        -260.4611295375953,
+        260.4611295375953
+      ]
+    ],
+    "masses": [
+      1.0
+    ],
+    "dividing_surface": 0.0,
+    "reactant": "asymptotic",
+    "reactant_reference": -130.23056476879765,
+    "potential_minimum": 0.005000000001673002,
+    "potential_source": "cubic spline of the grid",
+    "construction": {
+      "kind": "linear_projection",
+      "environment": "adiabatic",
+      "full_dimension": 2,
+      "complement_dimension": 1,
+      "basis_mass_weighted": [
+        [
+          1.0
+        ],
+        [
+          -0.0
+        ]
+      ],
+      "relaxation_failures": 0,
+      "max_relaxed_gradient": 9.890891895276113e-08,
+      "unstable_complement_points": 0,
+      "minimum_complement_curvature": 4.900000000001952e-05,
+      "zero_point_range": [
+        0.003500000000000697,
+        0.004999999999822254
+      ]
+    }
+  },
+  "rows": [
+    {
+      "temperature_K": 300.0,
+      "beads": 16,
+      "exact_2d": 3.076750194139014e-09,
+      "rpmd_2d": 2.185362066413596e-09,
+      "rpmd_2d_relative_error": 0.0076836099472273045,
+      "C_S_1d": 1.368861085066158,
+      "C_S_log_error": 0.019961052168576805,
+      "corrected": 2.991457089493336e-09,
+      "corrected_relative_error": 0.0213888163650487,
+      "rpmd_over_exact": 0.7102825801641459,
+      "corrected_over_exact": 0.9722781833870832,
+      "required_C": 1.407890363535173,
+      "exact_method": "flux_eigenstates",
+      "exact_extrapolation_spread": 0.000279281143832527,
+      "seconds": {
+        "exact_2d": 14.465768575668335,
+        "rpmd_2d": 89.12019658088684,
+        "correction_1d": 82.35159707069397
+      }
+    },
+    {
+      "temperature_K": 200.0,
+      "beads": 24,
+      "exact_2d": 1.3117015821276194e-10,
+      "rpmd_2d": 7.134494400462846e-11,
+      "rpmd_2d_relative_error": 0.01183680647869052,
+      "C_S_1d": 1.7525858084067594,
+      "C_S_log_error": 0.022262156590393645,
+      "corrected": 1.2503813636408675e-10,
+      "corrected_relative_error": 0.025213361609852367,
+      "rpmd_over_exact": 0.543911397048899,
+      "corrected_over_exact": 0.9532513954985945,
+      "required_C": 1.8385347419188158,
+      "exact_method": "flux_eigenstates",
+      "exact_extrapolation_spread": 0.0029849085183244954,
+      "seconds": {
+        "exact_2d": 126.80793929100037,
+        "rpmd_2d": 184.56880474090576,
+        "correction_1d": 126.8707275390625
+      }
+    }
+  ]
+}

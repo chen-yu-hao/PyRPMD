@@ -1,0 +1,115 @@
+{
+  "schema": "pyrpmd.campaign-plan.v1",
+  "campaign": "c32",
+  "description": "32-core, 60-hour multi-agent validation campaign over the PyRPMD workflows. See README.md in this directory.",
+  "machine": {
+    "logical_cpus": 32,
+    "assumption": "32 physical cores, one logical CPU id per core (SMT siblings excluded); remap cpus before T0 if lscpu -e differs",
+    "min_memory_gib": 64,
+    "min_scratch_gib": 300
+  },
+  "timeline_hours": {
+    "phase0_end": 4,
+    "production_deadline": 50,
+    "campaign_end": 60
+  },
+  "lanes": [
+    {
+      "id": "L0",
+      "title": "Gate, frozen environment and cross-workflow robustness",
+      "card": "L0-gate-robustness.md",
+      "cpus": [0, 1],
+      "phase0_all_cpus": true,
+      "core_hours": 92,
+      "planned_core_hours": 60,
+      "pilot_fraction": 0.1,
+      "branch": "agent/c32-l0-gate",
+      "record": "docs/validation/c32-l0-gate-<date>/",
+      "cross_review": "L6"
+    },
+    {
+      "id": "L1",
+      "title": "Gas-phase rate chain: H + H2 on BKMP2",
+      "card": "L1-rate-h3.md",
+      "cpus": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+      "core_hours": 460,
+      "planned_core_hours": 400,
+      "pilot_fraction": 0.1,
+      "branch": "agent/c32-l1-rate",
+      "record": "docs/validation/c32-l1-rate-<date>/",
+      "cross_review": "L2"
+    },
+    {
+      "id": "L2",
+      "title": "Direct collisions, state-selected scattering and cross-route rates",
+      "card": "L2-collision-cross-route.md",
+      "cpus": [12, 13, 14, 15],
+      "core_hours": 184,
+      "planned_core_hours": 150,
+      "pilot_fraction": 0.1,
+      "branch": "agent/c32-l2-collision",
+      "record": "docs/validation/c32-l2-collision-<date>/",
+      "cross_review": "L1"
+    },
+    {
+      "id": "L3",
+      "title": "Free energies and enhanced sampling",
+      "card": "L3-fes-enhanced-sampling.md",
+      "cpus": [16, 17, 18, 19],
+      "core_hours": 184,
+      "planned_core_hours": 150,
+      "pilot_fraction": 0.1,
+      "branch": "agent/c32-l3-fes",
+      "record": "docs/validation/c32-l3-fes-<date>/",
+      "cross_review": "L7"
+    },
+    {
+      "id": "L4",
+      "title": "Equilibrium PIMD, quantum statistics and condensed-phase estimators",
+      "card": "L4-pimd-equilibrium.md",
+      "cpus": [20, 21, 22, 23],
+      "core_hours": 184,
+      "planned_core_hours": 150,
+      "pilot_fraction": 0.1,
+      "branch": "agent/c32-l4-pimd",
+      "record": "docs/validation/c32-l4-pimd-<date>/",
+      "cross_review": "L5"
+    },
+    {
+      "id": "L5",
+      "title": "Materials, surfaces and transport",
+      "card": "L5-materials-transport.md",
+      "cpus": [24, 25, 26],
+      "core_hours": 138,
+      "planned_core_hours": 110,
+      "pilot_fraction": 0.1,
+      "branch": "agent/c32-l5-materials",
+      "record": "docs/validation/c32-l5-materials-<date>/",
+      "cross_review": "L4"
+    },
+    {
+      "id": "L6",
+      "title": "Nonadiabatic dynamics and thermal nonadiabatic rates",
+      "card": "L6-nonadiabatic.md",
+      "cpus": [27, 28, 29],
+      "core_hours": 138,
+      "planned_core_hours": 110,
+      "pilot_fraction": 0.1,
+      "branch": "agent/c32-l6-nonadiabatic",
+      "record": "docs/validation/c32-l6-nonadiabatic-<date>/",
+      "cross_review": "L0"
+    },
+    {
+      "id": "L7",
+      "title": "Tunnelling, path sampling and PCET",
+      "card": "L7-tunnelling-paths-pcet.md",
+      "cpus": [30, 31],
+      "core_hours": 92,
+      "planned_core_hours": 70,
+      "pilot_fraction": 0.1,
+      "branch": "agent/c32-l7-tunnelling",
+      "record": "docs/validation/c32-l7-tunnelling-<date>/",
+      "cross_review": "L3"
+    }
+  ]
+}

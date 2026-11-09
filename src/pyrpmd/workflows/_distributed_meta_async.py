@@ -15,6 +15,7 @@ from ..walker_exchange import AsyncWalkerStore, make_record
 from .common import _fingerprint
 from .metadynamics import resolve_metadynamics, resolve_walls
 from .shared_metadynamics import ASYNC_KIND, validate_shared
+from ..warm_start import initial_ring
 
 from ._distributed_meta_async_io import (
     _async_identity, _async_path, _collect_async, _new_async_bias,
@@ -40,7 +41,7 @@ def _run_async(config, system, output, *, return_data=False):
             fixed_atoms=system.fixed_atoms, fixed_positions=system.geometry,
             **loop_options(config))
         if restored is None:
-            state = State(np.repeat(system.geometry[None], config["beads"], axis=0),
+            state = State(initial_ring(config, system),
                           dynamics.sample_momenta())
             bias, elapsed = _new_async_bias(cv, config, options), 0
             saved = {"samples": [], "sample_steps": [], "sample_bias": [],

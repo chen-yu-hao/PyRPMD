@@ -1,0 +1,1308 @@
+{
+  "schema": "thermal-throughput-v1",
+  "complete": true,
+  "physical_converged": false,
+  "environment": {
+    "hostname": "cluster",
+    "platform": "Linux-5.14.0-611.49.1.el9_7.x86_64-x86_64-with-glibc2.34",
+    "python": "3.11.5 (main, Sep 11 2023, 13:54:46) [GCC 11.2.0]",
+    "numpy": "1.26.4",
+    "source": "/tmp/pyrpmd-t49-baseline",
+    "revision": "801953dc9e2ca620f36069eb4551c41c529c432a",
+    "dirty": false,
+    "source_sha256": {
+      "native/thermal.hpp": "eee8e07e71463b2a8585499a19af306358cbf32727c4e48a3e64c84335ddd56d",
+      "native/thermal.cpp": "e711c74c27860a4b275fd284ce8d0224d4640e722266b4167c297fcfc68d6d13",
+      "src/pyrpmd/native_ensemble.py": "c5d6010d90ffbbd08fb0982c48b125333f3907c9938aa0a0074c3964e19ee536",
+      "src/pyrpmd/propagation.py": "1a0c97481dc3096dcc117ae3d5abd7bc1fdb090b0f909ffb21553aaf03194bf8",
+      "src/pyrpmd/block_propagation.py": "60a7415af0658618cd1f25d4e3ad6c17a1340fad394ee44f82ad85616fb510f1",
+      "src/pyrpmd/dynamics.py": "80f20623acd16d27bc1bca2f50ed11f177c8a50964a902cd12efd96d7c2a9f94",
+      "src/pyrpmd/engine.py": "4633478abbf1b69b6867adeec0a21563f4d3d379e057fe5d7def8cf06ab869ea",
+      "src/pyrpmd/potentials/_builtin_native.py": "cfc625c8d2fc9557be45b9e290055b3b9882a1f678b10912273db27e029a7b24"
+    },
+    "script_sha256": "5c2e1cbd89a01cc34db30b2640646668b112763ea6b710671be2b33e7ed879b8",
+    "compiler": "c++ (GCC) 11.3.1 20221121 (Red Hat 11.3.1-4)\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+    "build_flags": {
+      "CXXFLAGS": null,
+      "CFLAGS": null,
+      "PYRPMD_NO_OPENMP": null
+    },
+    "cpu": "Intel(R) Xeon(R) Platinum 8176 CPU @ 2.10GHz",
+    "affinity": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111
+    ],
+    "thread_environment": {
+      "OMP_NUM_THREADS": null,
+      "OMP_PROC_BIND": null,
+      "OMP_PLACES": null,
+      "OPENBLAS_NUM_THREADS": "1"
+    }
+  },
+  "options": {
+    "baseline": true,
+    "atoms": null,
+    "beads": null,
+    "thermostats": null,
+    "rng": "mt19937_64",
+    "api": "dynamics",
+    "threads": 1,
+    "seconds": 0.35,
+    "repeats": 7,
+    "block_steps": 64,
+    "profile": true,
+    "output": "docs/validation/thermal-kernel-performance-2026-11-05/baseline-dynamics.json"
+  },
+  "measurements": [
+    {
+      "atoms": 3,
+      "beads": 1,
+      "thermostat": "none",
+      "rng": null,
+      "api": "dynamics",
+      "status": "measured",
+      "steps_per_repeat": 74880,
+      "seconds": [
+        0.2596901152282953,
+        0.26142718084156513,
+        0.26669660583138466,
+        0.2870898600667715,
+        0.28054195269942284,
+        0.3018599972128868,
+        0.31507841497659683
+      ],
+      "steps_per_second": 266911.9512411309
+    },
+    {
+      "atoms": 3,
+      "beads": 1,
+      "thermostat": "pile-l",
+      "rng": "mt19937_64",
+      "api": "dynamics",
+      "status": "measured",
+      "steps_per_repeat": 13312,
+      "seconds": [
+        0.25722979195415974,
+        0.24631221033632755,
+        0.23729298636317253,
+        0.22085906378924847,
+        0.20699487999081612,
+        0.22186340391635895,
+        0.2174836676567793
+      ],
+      "steps_per_second": 60000.882367326056,
+      "short_call_profile": {
+        "steps_per_call": 2,
+        "calls": 7,
+        "total_seconds": 0.011496967999999996,
+        "native_seconds": 0.00011432400000000001,
+        "outside_native_seconds": 0.011382643999999996,
+        "outside_over_native": 99.56478079843248,
+        "functions": [
+          {
+            "name": "/tmp/pyrpmd-t49/benchmarks/efficiency/thermal_throughput.py:69:<lambda>",
+            "calls": 7,
+            "self_seconds": 1.2957000000000001e-05,
+            "cumulative_seconds": 0.011507673000000001
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/dynamics.py:495:propagate",
+            "calls": 7,
+            "self_seconds": 8.068800000000001e-05,
+            "cumulative_seconds": 0.011494716
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/propagation.py:216:propagate",
+            "calls": 7,
+            "self_seconds": 0.000112928,
+            "cumulative_seconds": 0.011394955
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/propagation.py:242:_propagate",
+            "calls": 7,
+            "self_seconds": 9.3937e-05,
+            "cumulative_seconds": 0.008229301000000001
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/propagation.py:336:_propagate_composed",
+            "calls": 7,
+            "self_seconds": 0.000791426,
+            "cumulative_seconds": 0.0077755160000000005
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/native_ensemble.py:748:state",
+            "calls": 21,
+            "self_seconds": 0.00036626700000000004,
+            "cumulative_seconds": 0.003715943
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/dynamics.py:404:operator_state_dict",
+            "calls": 7,
+            "self_seconds": 0.000122387,
+            "cumulative_seconds": 0.002547166
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/native_ensemble.py:810:_state_digest",
+            "calls": 21,
+            "self_seconds": 0.0005574190000000001,
+            "cumulative_seconds": 0.0021997450000000003
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:556:_prepare_native",
+            "calls": 7,
+            "self_seconds": 0.000118522,
+            "cumulative_seconds": 0.0019163740000000002
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:365:snapshot",
+            "calls": 7,
+            "self_seconds": 4.3006e-05,
+            "cumulative_seconds": 0.001475245
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/native_ensemble.py:529:run_prefix",
+            "calls": 7,
+            "self_seconds": 0.00020222100000000001,
+            "cumulative_seconds": 0.0012873000000000001
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:534:_has_native_binding",
+            "calls": 7,
+            "self_seconds": 0.000128942,
+            "cumulative_seconds": 0.001210506
+          },
+          {
+            "name": "~:0:<built-in method pyrpmd._thermal.state>",
+            "calls": 28,
+            "self_seconds": 0.0010614350000000001,
+            "cumulative_seconds": 0.0010614350000000001
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/native_ensemble.py:574:_run",
+            "calls": 7,
+            "self_seconds": 0.000160705,
+            "cumulative_seconds": 0.0009150730000000001
+          },
+          {
+            "name": "/home/lyl/anaconda3/lib/python3.11/json/__init__.py:183:dumps",
+            "calls": 21,
+            "self_seconds": 7.7248e-05,
+            "cumulative_seconds": 0.000819521
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/potentials/_builtin_native.py:29:resolve_native_binding",
+            "calls": 7,
+            "self_seconds": 3.7294e-05,
+            "cumulative_seconds": 0.000814996
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/potentials/builtin.py:9:native_binding",
+            "calls": 7,
+            "self_seconds": 2.9641000000000003e-05,
+            "cumulative_seconds": 0.0007646710000000001
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/potentials/_builtin_native.py:95:builtin_binding",
+            "calls": 7,
+            "self_seconds": 0.000151513,
+            "cumulative_seconds": 0.0007308690000000001
+          },
+          {
+            "name": "/home/lyl/anaconda3/lib/python3.11/json/encoder.py:183:encode",
+            "calls": 21,
+            "self_seconds": 6.115600000000001e-05,
+            "cumulative_seconds": 0.0007208690000000001
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:48:_json",
+            "calls": 350,
+            "self_seconds": 0.00036341700000000005,
+            "cumulative_seconds": 0.0006660850000000001
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:54:<dictcomp>",
+            "calls": 77,
+            "self_seconds": 0.00013306800000000002,
+            "cumulative_seconds": 0.000646711
+          },
+          {
+            "name": "/home/lyl/anaconda3/lib/python3.11/json/encoder.py:205:iterencode",
+            "calls": 21,
+            "self_seconds": 0.000642041,
+            "cumulative_seconds": 0.000642041
+          },
+          {
+            "name": "/home/lyl/anaconda3/lib/python3.11/copy.py:128:deepcopy",
+            "calls": 231,
+            "self_seconds": 0.000319035,
+            "cumulative_seconds": 0.000633696
+          },
+          {
+            "name": "/home/lyl/anaconda3/lib/python3.11/copy.py:227:_deepcopy_dict",
+            "calls": 42,
+            "self_seconds": 0.000128033,
+            "cumulative_seconds": 0.000526662
+          },
+          {
+            "name": "~:0:<method 'update' of '_hashlib.HASH' objects>",
+            "calls": 525,
+            "self_seconds": 0.000512007,
+            "cumulative_seconds": 0.000512007
+          },
+          {
+            "name": "/home/lyl/anaconda3/lib/python3.11/json/__init__.py:299:loads",
+            "calls": 63,
+            "self_seconds": 0.00010843800000000001,
+            "cumulative_seconds": 0.00048198200000000005
+          },
+          {
+            "name": "~:0:<built-in method builtins.isinstance>",
+            "calls": 1652,
+            "self_seconds": 0.000259404,
+            "cumulative_seconds": 0.00042911500000000004
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/potentials/_builtin_native.py:52:_parameters",
+            "calls": 7,
+            "self_seconds": 7.7493e-05,
+            "cumulative_seconds": 0.000354077
+          },
+          {
+            "name": "/home/lyl/anaconda3/lib/python3.11/json/decoder.py:332:decode",
+            "calls": 63,
+            "self_seconds": 0.00017313000000000002,
+            "cumulative_seconds": 0.000343295
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/validation.py:18:checked_integer",
+            "calls": 56,
+            "self_seconds": 0.000154962,
+            "cumulative_seconds": 0.00033002000000000004
+          }
+        ]
+      }
+    },
+    {
+      "atoms": 3,
+      "beads": 32,
+      "thermostat": "none",
+      "rng": null,
+      "api": "dynamics",
+      "status": "measured",
+      "steps_per_repeat": 19264,
+      "seconds": [
+        0.32566906698048115,
+        0.3261748757213354,
+        0.3306924421340227,
+        0.32990043982863426,
+        0.30462042801082134,
+        0.3092283196747303,
+        0.3010964374989271
+      ],
+      "steps_per_second": 59152.07169846002
+    },
+    {
+      "atoms": 3,
+      "beads": 32,
+      "thermostat": "pile-l",
+      "rng": "mt19937_64",
+      "api": "dynamics",
+      "status": "measured",
+      "steps_per_repeat": 5696,
+      "seconds": [
+        0.38913723826408386,
+        0.39893109537661076,
+        0.4068767800927162,
+        0.4425099417567253,
+        0.4040880296379328,
+        0.4128304347395897,
+        0.4048899095505476
+      ],
+      "steps_per_second": 14068.021616846185,
+      "short_call_profile": {
+        "steps_per_call": 2,
+        "calls": 7,
+        "total_seconds": 0.014659379999999993,
+        "native_seconds": 0.00084402,
+        "outside_native_seconds": 0.013815359999999992,
+        "outside_over_native": 16.36852207293665,
+        "functions": [
+          {
+            "name": "/tmp/pyrpmd-t49/benchmarks/efficiency/thermal_throughput.py:69:<lambda>",
+            "calls": 7,
+            "self_seconds": 8.092e-06,
+            "cumulative_seconds": 0.014665246000000002
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/dynamics.py:495:propagate",
+            "calls": 7,
+            "self_seconds": 0.00032327800000000003,
+            "cumulative_seconds": 0.014657154
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/propagation.py:216:propagate",
+            "calls": 7,
+            "self_seconds": 9.808500000000001e-05,
+            "cumulative_seconds": 0.014313005
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/propagation.py:242:_propagate",
+            "calls": 7,
+            "self_seconds": 7.820900000000001e-05,
+            "cumulative_seconds": 0.010203579
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/propagation.py:336:_propagate_composed",
+            "calls": 7,
+            "self_seconds": 0.0008145030000000001,
+            "cumulative_seconds": 0.009731741
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/native_ensemble.py:748:state",
+            "calls": 21,
+            "self_seconds": 0.00039186900000000004,
+            "cumulative_seconds": 0.005070105
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/dynamics.py:404:operator_state_dict",
+            "calls": 7,
+            "self_seconds": 0.00011560200000000001,
+            "cumulative_seconds": 0.003500036
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/native_ensemble.py:810:_state_digest",
+            "calls": 21,
+            "self_seconds": 0.000636774,
+            "cumulative_seconds": 0.0032708290000000003
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/native_ensemble.py:529:run_prefix",
+            "calls": 7,
+            "self_seconds": 0.00019391700000000002,
+            "cumulative_seconds": 0.002080504
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:556:_prepare_native",
+            "calls": 7,
+            "self_seconds": 9.676e-05,
+            "cumulative_seconds": 0.0019520860000000002
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:365:snapshot",
+            "calls": 7,
+            "self_seconds": 3.7531000000000004e-05,
+            "cumulative_seconds": 0.001858994
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/native_ensemble.py:574:_run",
+            "calls": 7,
+            "self_seconds": 0.000164344,
+            "cumulative_seconds": 0.001686774
+          },
+          {
+            "name": "~:0:<built-in method pyrpmd._thermal.state>",
+            "calls": 28,
+            "self_seconds": 0.001263012,
+            "cumulative_seconds": 0.001263012
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:48:_json",
+            "calls": 350,
+            "self_seconds": 0.00040273,
+            "cumulative_seconds": 0.001232645
+          },
+          {
+            "name": "~:0:<method 'update' of '_hashlib.HASH' objects>",
+            "calls": 525,
+            "self_seconds": 0.001213464,
+            "cumulative_seconds": 0.001213464
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:54:<dictcomp>",
+            "calls": 77,
+            "self_seconds": 0.00015366000000000002,
+            "cumulative_seconds": 0.001211779
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:534:_has_native_binding",
+            "calls": 7,
+            "self_seconds": 0.00012361700000000002,
+            "cumulative_seconds": 0.0011958650000000002
+          },
+          {
+            "name": "/home/lyl/anaconda3/lib/python3.11/json/__init__.py:183:dumps",
+            "calls": 21,
+            "self_seconds": 7.9714e-05,
+            "cumulative_seconds": 0.0010135670000000002
+          },
+          {
+            "name": "/home/lyl/anaconda3/lib/python3.11/json/encoder.py:183:encode",
+            "calls": 21,
+            "self_seconds": 7.037200000000001e-05,
+            "cumulative_seconds": 0.0009094600000000001
+          },
+          {
+            "name": "~:0:<built-in method pyrpmd._thermal.run_prefix>",
+            "calls": 7,
+            "self_seconds": 0.00084402,
+            "cumulative_seconds": 0.00084402
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/potentials/_builtin_native.py:29:resolve_native_binding",
+            "calls": 7,
+            "self_seconds": 4.1471e-05,
+            "cumulative_seconds": 0.0008392740000000001
+          },
+          {
+            "name": "/home/lyl/anaconda3/lib/python3.11/json/encoder.py:205:iterencode",
+            "calls": 21,
+            "self_seconds": 0.0008175960000000001,
+            "cumulative_seconds": 0.0008175960000000001
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/potentials/builtin.py:9:native_binding",
+            "calls": 7,
+            "self_seconds": 2.3601e-05,
+            "cumulative_seconds": 0.000783075
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/potentials/_builtin_native.py:95:builtin_binding",
+            "calls": 7,
+            "self_seconds": 0.00013930300000000002,
+            "cumulative_seconds": 0.0007550730000000001
+          },
+          {
+            "name": "/home/lyl/anaconda3/lib/python3.11/copy.py:128:deepcopy",
+            "calls": 231,
+            "self_seconds": 0.000337971,
+            "cumulative_seconds": 0.0006816620000000001
+          },
+          {
+            "name": "/home/lyl/anaconda3/lib/python3.11/copy.py:227:_deepcopy_dict",
+            "calls": 42,
+            "self_seconds": 0.000141654,
+            "cumulative_seconds": 0.000579714
+          },
+          {
+            "name": "~:0:<method 'tolist' of 'numpy.ndarray' objects>",
+            "calls": 77,
+            "self_seconds": 0.000540655,
+            "cumulative_seconds": 0.000540655
+          },
+          {
+            "name": "/home/lyl/anaconda3/lib/python3.11/json/__init__.py:299:loads",
+            "calls": 63,
+            "self_seconds": 0.000108325,
+            "cumulative_seconds": 0.000489584
+          },
+          {
+            "name": "~:0:<built-in method builtins.isinstance>",
+            "calls": 1652,
+            "self_seconds": 0.000274102,
+            "cumulative_seconds": 0.00045522600000000004
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/potentials/_builtin_native.py:52:_parameters",
+            "calls": 7,
+            "self_seconds": 8.780700000000001e-05,
+            "cumulative_seconds": 0.000376277
+          }
+        ]
+      }
+    },
+    {
+      "atoms": 64,
+      "beads": 32,
+      "thermostat": "none",
+      "rng": null,
+      "api": "dynamics",
+      "status": "measured",
+      "steps_per_repeat": 1152,
+      "seconds": [
+        0.34156459197402,
+        0.3320908285677433,
+        0.3333244677633047,
+        0.3032426182180643,
+        0.30349758081138134,
+        0.300281323492527,
+        0.3056823406368494
+      ],
+      "steps_per_second": 3768.618094195294
+    },
+    {
+      "atoms": 64,
+      "beads": 32,
+      "thermostat": "pile-l",
+      "rng": "mt19937_64",
+      "api": "dynamics",
+      "status": "measured",
+      "steps_per_repeat": 384,
+      "seconds": [
+        0.41637739539146423,
+        0.44029862247407436,
+        0.4661888312548399,
+        0.42719189263880253,
+        0.406949907541275,
+        0.41015493124723434,
+        0.4246140457689762
+      ],
+      "steps_per_second": 904.350677577271,
+      "short_call_profile": {
+        "steps_per_call": 2,
+        "calls": 7,
+        "total_seconds": 0.060299048999999987,
+        "native_seconds": 0.016456336000000002,
+        "outside_native_seconds": 0.043842712999999985,
+        "outside_over_native": 2.664184360358222,
+        "functions": [
+          {
+            "name": "/tmp/pyrpmd-t49/benchmarks/efficiency/thermal_throughput.py:69:<lambda>",
+            "calls": 7,
+            "self_seconds": 1.0382e-05,
+            "cumulative_seconds": 0.060304792
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/dynamics.py:495:propagate",
+            "calls": 7,
+            "self_seconds": 0.002895149,
+            "cumulative_seconds": 0.06029441000000001
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/propagation.py:216:propagate",
+            "calls": 7,
+            "self_seconds": 0.000133127,
+            "cumulative_seconds": 0.057382417000000005
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/propagation.py:242:_propagate",
+            "calls": 7,
+            "self_seconds": 0.000134608,
+            "cumulative_seconds": 0.033859505000000005
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/propagation.py:336:_propagate_composed",
+            "calls": 7,
+            "self_seconds": 0.0013225490000000001,
+            "cumulative_seconds": 0.033113517
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/dynamics.py:404:operator_state_dict",
+            "calls": 7,
+            "self_seconds": 0.00015152200000000002,
+            "cumulative_seconds": 0.022865464000000002
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/native_ensemble.py:529:run_prefix",
+            "calls": 7,
+            "self_seconds": 0.00021956500000000002,
+            "cumulative_seconds": 0.017901495
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:48:_json",
+            "calls": 777,
+            "self_seconds": 0.0007889640000000001,
+            "cumulative_seconds": 0.017706390000000002
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:54:<dictcomp>",
+            "calls": 77,
+            "self_seconds": 0.00016586000000000001,
+            "cumulative_seconds": 0.017667361
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/native_ensemble.py:574:_run",
+            "calls": 7,
+            "self_seconds": 0.00018876800000000002,
+            "cumulative_seconds": 0.017479483
+          },
+          {
+            "name": "~:0:<built-in method pyrpmd._thermal.run_prefix>",
+            "calls": 7,
+            "self_seconds": 0.016456336000000002,
+            "cumulative_seconds": 0.016456336000000002
+          },
+          {
+            "name": "~:0:<method 'tolist' of 'numpy.ndarray' objects>",
+            "calls": 77,
+            "self_seconds": 0.016410722000000003,
+            "cumulative_seconds": 0.016410722000000003
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/native_ensemble.py:748:state",
+            "calls": 21,
+            "self_seconds": 0.000426342,
+            "cumulative_seconds": 0.014055679000000001
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/native_ensemble.py:810:_state_digest",
+            "calls": 21,
+            "self_seconds": 0.000627947,
+            "cumulative_seconds": 0.011682891
+          },
+          {
+            "name": "~:0:<method 'update' of '_hashlib.HASH' objects>",
+            "calls": 525,
+            "self_seconds": 0.009670584000000001,
+            "cumulative_seconds": 0.009670584000000001
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:365:snapshot",
+            "calls": 7,
+            "self_seconds": 4.2179000000000004e-05,
+            "cumulative_seconds": 0.004735742
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:556:_prepare_native",
+            "calls": 7,
+            "self_seconds": 0.000105309,
+            "cumulative_seconds": 0.0025105450000000003
+          },
+          {
+            "name": "~:0:<built-in method pyrpmd._thermal.state>",
+            "calls": 28,
+            "self_seconds": 0.0016781460000000002,
+            "cumulative_seconds": 0.0016781460000000002
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:534:_has_native_binding",
+            "calls": 7,
+            "self_seconds": 0.00014010000000000002,
+            "cumulative_seconds": 0.0015904880000000001
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/potentials/_builtin_native.py:29:resolve_native_binding",
+            "calls": 7,
+            "self_seconds": 4.6769000000000006e-05,
+            "cumulative_seconds": 0.0011991740000000001
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/potentials/builtin.py:9:native_binding",
+            "calls": 7,
+            "self_seconds": 5.3366000000000004e-05,
+            "cumulative_seconds": 0.0011360440000000001
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/potentials/_builtin_native.py:95:builtin_binding",
+            "calls": 7,
+            "self_seconds": 0.00022220800000000002,
+            "cumulative_seconds": 0.0010770830000000002
+          },
+          {
+            "name": "/home/lyl/anaconda3/lib/python3.11/json/__init__.py:183:dumps",
+            "calls": 21,
+            "self_seconds": 8.405000000000001e-05,
+            "cumulative_seconds": 0.00089846
+          },
+          {
+            "name": "/home/lyl/anaconda3/lib/python3.11/json/encoder.py:183:encode",
+            "calls": 21,
+            "self_seconds": 6.9029e-05,
+            "cumulative_seconds": 0.000789264
+          },
+          {
+            "name": "/home/lyl/anaconda3/lib/python3.11/json/encoder.py:205:iterencode",
+            "calls": 21,
+            "self_seconds": 0.0006980420000000001,
+            "cumulative_seconds": 0.0006980420000000001
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:56:<listcomp>",
+            "calls": 14,
+            "self_seconds": 0.00010969300000000001,
+            "cumulative_seconds": 0.000675737
+          },
+          {
+            "name": "~:0:<built-in method builtins.isinstance>",
+            "calls": 3360,
+            "self_seconds": 0.00044327900000000004,
+            "cumulative_seconds": 0.000656718
+          },
+          {
+            "name": "/home/lyl/anaconda3/lib/python3.11/copy.py:128:deepcopy",
+            "calls": 231,
+            "self_seconds": 0.00032034,
+            "cumulative_seconds": 0.0006543390000000001
+          },
+          {
+            "name": "/home/lyl/anaconda3/lib/python3.11/json/__init__.py:299:loads",
+            "calls": 63,
+            "self_seconds": 0.00011552,
+            "cumulative_seconds": 0.000607316
+          },
+          {
+            "name": "/home/lyl/anaconda3/lib/python3.11/copy.py:227:_deepcopy_dict",
+            "calls": 42,
+            "self_seconds": 0.000136897,
+            "cumulative_seconds": 0.000549765
+          }
+        ]
+      }
+    },
+    {
+      "atoms": 512,
+      "beads": 32,
+      "thermostat": "none",
+      "rng": null,
+      "api": "dynamics",
+      "status": "measured",
+      "steps_per_repeat": 192,
+      "seconds": [
+        0.44630576483905315,
+        0.4357179179787636,
+        0.4246953520923853,
+        0.4050643611699343,
+        0.41677936539053917,
+        0.4347358010709286,
+        0.462939178571105
+      ],
+      "steps_per_second": 441.64754668703847
+    },
+    {
+      "atoms": 512,
+      "beads": 32,
+      "thermostat": "pile-l",
+      "rng": "mt19937_64",
+      "api": "dynamics",
+      "status": "measured",
+      "steps_per_repeat": 64,
+      "seconds": [
+        0.5504892747849226,
+        0.556820647791028,
+        0.5722901541739702,
+        0.5526059065014124,
+        0.5572358891367912,
+        0.5848783142864704,
+        0.5919613353908062
+      ],
+      "steps_per_second": 114.85261672420594,
+      "short_call_profile": {
+        "steps_per_call": 2,
+        "calls": 7,
+        "total_seconds": 0.4734016140000002,
+        "native_seconds": 0.137929721,
+        "outside_native_seconds": 0.3354718930000002,
+        "outside_over_native": 2.432194385429085,
+        "functions": [
+          {
+            "name": "/tmp/pyrpmd-t49/benchmarks/efficiency/thermal_throughput.py:69:<lambda>",
+            "calls": 7,
+            "self_seconds": 1.6061e-05,
+            "cumulative_seconds": 0.47340948800000004
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/dynamics.py:495:propagate",
+            "calls": 7,
+            "self_seconds": 0.029645469,
+            "cumulative_seconds": 0.47339342700000003
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/propagation.py:216:propagate",
+            "calls": 7,
+            "self_seconds": 0.000252978,
+            "cumulative_seconds": 0.443724581
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/dynamics.py:404:operator_state_dict",
+            "calls": 7,
+            "self_seconds": 0.000256772,
+            "cumulative_seconds": 0.221909518
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/propagation.py:242:_propagate",
+            "calls": 7,
+            "self_seconds": 0.000707912,
+            "cumulative_seconds": 0.22090989600000002
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/propagation.py:336:_propagate_composed",
+            "calls": 7,
+            "self_seconds": 0.0065219480000000005,
+            "cumulative_seconds": 0.218650373
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:48:_json",
+            "calls": 3913,
+            "self_seconds": 0.0035477520000000004,
+            "cumulative_seconds": 0.19434073100000002
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:54:<dictcomp>",
+            "calls": 77,
+            "self_seconds": 0.000268682,
+            "cumulative_seconds": 0.194310849
+          },
+          {
+            "name": "~:0:<method 'tolist' of 'numpy.ndarray' objects>",
+            "calls": 77,
+            "self_seconds": 0.18919856300000001,
+            "cumulative_seconds": 0.18919856300000001
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/native_ensemble.py:529:run_prefix",
+            "calls": 7,
+            "self_seconds": 0.000325464,
+            "cumulative_seconds": 0.142461066
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/native_ensemble.py:574:_run",
+            "calls": 7,
+            "self_seconds": 0.00026935,
+            "cumulative_seconds": 0.141840334
+          },
+          {
+            "name": "~:0:<built-in method pyrpmd._thermal.run_prefix>",
+            "calls": 7,
+            "self_seconds": 0.137929721,
+            "cumulative_seconds": 0.137929721
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/native_ensemble.py:748:state",
+            "calls": 21,
+            "self_seconds": 0.0005621290000000001,
+            "cumulative_seconds": 0.085943457
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/native_ensemble.py:810:_state_digest",
+            "calls": 21,
+            "self_seconds": 0.000951419,
+            "cumulative_seconds": 0.07762308600000001
+          },
+          {
+            "name": "~:0:<method 'update' of '_hashlib.HASH' objects>",
+            "calls": 525,
+            "self_seconds": 0.073650697,
+            "cumulative_seconds": 0.073650697
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:365:snapshot",
+            "calls": 7,
+            "self_seconds": 6.138400000000001e-05,
+            "cumulative_seconds": 0.026978027
+          },
+          {
+            "name": "~:0:<built-in method pyrpmd._thermal.state>",
+            "calls": 28,
+            "self_seconds": 0.008019052,
+            "cumulative_seconds": 0.008019052
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:556:_prepare_native",
+            "calls": 7,
+            "self_seconds": 0.000163794,
+            "cumulative_seconds": 0.0061172480000000005
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:56:<listcomp>",
+            "calls": 14,
+            "self_seconds": 0.000854508,
+            "cumulative_seconds": 0.005253932
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:534:_has_native_binding",
+            "calls": 7,
+            "self_seconds": 0.000200248,
+            "cumulative_seconds": 0.004309306000000001
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/potentials/_builtin_native.py:29:resolve_native_binding",
+            "calls": 7,
+            "self_seconds": 6.168e-05,
+            "cumulative_seconds": 0.003737689
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/potentials/builtin.py:9:native_binding",
+            "calls": 7,
+            "self_seconds": 0.00027428,
+            "cumulative_seconds": 0.0036543350000000003
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/potentials/_builtin_native.py:95:builtin_binding",
+            "calls": 7,
+            "self_seconds": 0.000492965,
+            "cumulative_seconds": 0.003374287
+          },
+          {
+            "name": "~:0:<method 'copy' of 'numpy.ndarray' objects>",
+            "calls": 168,
+            "self_seconds": 0.002485017,
+            "cumulative_seconds": 0.002485017
+          },
+          {
+            "name": "~:0:<built-in method builtins.isinstance>",
+            "calls": 15904,
+            "self_seconds": 0.00170147,
+            "cumulative_seconds": 0.001956527
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/dynamics.py:73:copy",
+            "calls": 7,
+            "self_seconds": 1.9275e-05,
+            "cumulative_seconds": 0.0017005680000000002
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/dynamics.py:57:__post_init__",
+            "calls": 7,
+            "self_seconds": 0.000433761,
+            "cumulative_seconds": 0.0016669200000000001
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/potentials/_builtin_native.py:52:_parameters",
+            "calls": 7,
+            "self_seconds": 0.000124196,
+            "cumulative_seconds": 0.001476888
+          },
+          {
+            "name": "~:0:<method 'tobytes' of 'numpy.ndarray' objects>",
+            "calls": 175,
+            "self_seconds": 0.001419305,
+            "cumulative_seconds": 0.001419305
+          },
+          {
+            "name": "~:0:<built-in method builtins.any>",
+            "calls": 49,
+            "self_seconds": 6.5382e-05,
+            "cumulative_seconds": 0.001344326
+          }
+        ]
+      }
+    },
+    {
+      "atoms": 4096,
+      "beads": 32,
+      "thermostat": "none",
+      "rng": null,
+      "api": "dynamics",
+      "status": "measured",
+      "steps_per_repeat": 64,
+      "seconds": [
+        1.1584057118743658,
+        1.2339477930217981,
+        1.1735336370766163,
+        1.203346299007535,
+        1.0900120344012976,
+        1.1336603853851557,
+        1.120783381164074
+      ],
+      "steps_per_second": 55.24834636428405
+    },
+    {
+      "atoms": 4096,
+      "beads": 32,
+      "thermostat": "pile-l",
+      "rng": "mt19937_64",
+      "api": "dynamics",
+      "status": "measured",
+      "steps_per_repeat": 64,
+      "seconds": [
+        4.927402704954147,
+        4.807594073936343,
+        4.7461556401103735,
+        4.750125631690025,
+        4.816551936790347,
+        4.807726399973035,
+        4.628761421889067
+      ],
+      "steps_per_second": 13.312272004611723,
+      "short_call_profile": {
+        "steps_per_call": 2,
+        "calls": 7,
+        "total_seconds": 4.550960005999997,
+        "native_seconds": 0.965014251,
+        "outside_native_seconds": 3.585945754999997,
+        "outside_over_native": 3.7159510870270007,
+        "functions": [
+          {
+            "name": "/tmp/pyrpmd-t49/benchmarks/efficiency/thermal_throughput.py:69:<lambda>",
+            "calls": 7,
+            "self_seconds": 2.2340000000000003e-05,
+            "cumulative_seconds": 4.550967734
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/dynamics.py:495:propagate",
+            "calls": 7,
+            "self_seconds": 0.253869604,
+            "cumulative_seconds": 4.550945394
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/propagation.py:216:propagate",
+            "calls": 7,
+            "self_seconds": 0.00031782800000000003,
+            "cumulative_seconds": 4.297049472
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/dynamics.py:404:operator_state_dict",
+            "calls": 7,
+            "self_seconds": 0.000422251,
+            "cumulative_seconds": 2.8123972750000004
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:48:_json",
+            "calls": 29001,
+            "self_seconds": 0.021518254,
+            "cumulative_seconds": 2.6067139260000003
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:54:<dictcomp>",
+            "calls": 77,
+            "self_seconds": 0.000371436,
+            "cumulative_seconds": 2.606680543
+          },
+          {
+            "name": "~:0:<method 'tolist' of 'numpy.ndarray' objects>",
+            "calls": 77,
+            "self_seconds": 2.5759557070000003,
+            "cumulative_seconds": 2.5759557070000003
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/propagation.py:242:_propagate",
+            "calls": 7,
+            "self_seconds": 0.000183164,
+            "cumulative_seconds": 1.4836962580000002
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/propagation.py:336:_propagate_composed",
+            "calls": 7,
+            "self_seconds": 0.044035085,
+            "cumulative_seconds": 1.4775145920000001
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/native_ensemble.py:529:run_prefix",
+            "calls": 7,
+            "self_seconds": 0.000351935,
+            "cumulative_seconds": 0.980844649
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/native_ensemble.py:574:_run",
+            "calls": 7,
+            "self_seconds": 0.000351902,
+            "cumulative_seconds": 0.9801771260000001
+          },
+          {
+            "name": "~:0:<built-in method pyrpmd._thermal.run_prefix>",
+            "calls": 7,
+            "self_seconds": 0.965014251,
+            "cumulative_seconds": 0.965014251
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/native_ensemble.py:748:state",
+            "calls": 21,
+            "self_seconds": 0.000814694,
+            "cumulative_seconds": 0.6076165050000001
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/native_ensemble.py:810:_state_digest",
+            "calls": 21,
+            "self_seconds": 0.001185911,
+            "cumulative_seconds": 0.530592939
+          },
+          {
+            "name": "~:0:<method 'update' of '_hashlib.HASH' objects>",
+            "calls": 525,
+            "self_seconds": 0.49278491700000004,
+            "cumulative_seconds": 0.49278491700000004
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:365:snapshot",
+            "calls": 7,
+            "self_seconds": 7.4075e-05,
+            "cumulative_seconds": 0.20496013500000002
+          },
+          {
+            "name": "~:0:<built-in method pyrpmd._thermal.state>",
+            "calls": 28,
+            "self_seconds": 0.052366631000000004,
+            "cumulative_seconds": 0.052366631000000004
+          },
+          {
+            "name": "~:0:<method 'copy' of 'numpy.ndarray' objects>",
+            "calls": 168,
+            "self_seconds": 0.037477718,
+            "cumulative_seconds": 0.037477718
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:56:<listcomp>",
+            "calls": 14,
+            "self_seconds": 0.005522657,
+            "cumulative_seconds": 0.035851938
+          },
+          {
+            "name": "~:0:<method 'tobytes' of 'numpy.ndarray' objects>",
+            "calls": 175,
+            "self_seconds": 0.034927623000000005,
+            "cumulative_seconds": 0.034927623000000005
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:556:_prepare_native",
+            "calls": 7,
+            "self_seconds": 0.000179304,
+            "cumulative_seconds": 0.026672154
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/engine.py:534:_has_native_binding",
+            "calls": 7,
+            "self_seconds": 0.00021409400000000001,
+            "cumulative_seconds": 0.018313948
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/potentials/_builtin_native.py:29:resolve_native_binding",
+            "calls": 7,
+            "self_seconds": 7.5078e-05,
+            "cumulative_seconds": 0.017645521
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/potentials/builtin.py:9:native_binding",
+            "calls": 7,
+            "self_seconds": 0.0018350740000000001,
+            "cumulative_seconds": 0.017552601
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/potentials/_builtin_native.py:95:builtin_binding",
+            "calls": 7,
+            "self_seconds": 0.002097713,
+            "cumulative_seconds": 0.015713114
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/dynamics.py:73:copy",
+            "calls": 7,
+            "self_seconds": 2.2296e-05,
+            "cumulative_seconds": 0.014154986000000001
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-baseline/src/pyrpmd/dynamics.py:57:__post_init__",
+            "calls": 7,
+            "self_seconds": 0.004805928,
+            "cumulative_seconds": 0.014116475000000002
+          },
+          {
+            "name": "~:0:<built-in method builtins.isinstance>",
+            "calls": 116256,
+            "self_seconds": 0.009774915,
+            "cumulative_seconds": 0.010050268000000001
+          },
+          {
+            "name": "~:0:<built-in method numpy.array>",
+            "calls": 49,
+            "self_seconds": 0.008538894,
+            "cumulative_seconds": 0.008538894
+          },
+          {
+            "name": "/tmp/pyrpmd-t49-venv/lib/python3.11/site-packages/numpy/core/numeric.py:2378:array_equal",
+            "calls": 14,
+            "self_seconds": 0.006984779000000001,
+            "cumulative_seconds": 0.007374018
+          }
+        ]
+      }
+    }
+  ]
+}

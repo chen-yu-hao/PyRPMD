@@ -1,0 +1,35 @@
+{
+ "pyrpmd": "<scratch>/before/src/pyrpmd/__init__.py",
+ "exit": 0,
+ "import_seconds": 0.4170981369999822,
+ "cli_seconds": 0.7774021690000268,
+ "propagate": {
+  "calls": 256,
+  "steps": 256,
+  "seconds": 0.057213696999610875,
+  "lengths": {
+   "1": 256
+  }
+ },
+ "propagate_block": {
+  "calls": 0,
+  "steps": 0,
+  "seconds": 0.0,
+  "lengths": {}
+ },
+ "run_block": {
+  "calls": 256,
+  "steps": 256,
+  "seconds": 0.04425806799969223,
+  "lengths": {
+   "1": 256
+  }
+ },
+ "advance": {
+  "calls": 0,
+  "steps": 0,
+  "seconds": 0.0,
+  "lengths": {}
+ },
+ "process_wall_seconds": 1.3098139762878418
+}

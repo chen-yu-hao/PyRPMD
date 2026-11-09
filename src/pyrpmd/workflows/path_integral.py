@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 import numpy as np
+from ..warm_start import initial_ring
 
 from ..checkpoint import atomic_savez, load_checkpoint
 from ..dynamics import Dynamics, State
@@ -188,7 +189,7 @@ def _action(config, system, provider):
     action = PIGSPotential(provider, system.masses, config["beads"],
         parse_quantity(table["projection_time"], "time"), GaussianTrialWavefunction(**trial))
     # Check that the trial broadcasts to the full molecular geometry.
-    action.evaluate(np.repeat(system.geometry[None], config["beads"], axis=0))
+    action.evaluate(initial_ring(config, system))
     return action
 
 
@@ -207,7 +208,7 @@ def run_path_integral(config, system, output):
                 native=config.get("native", config.get("dynamics", {}).get("native", True)),
                 threads=config.get("parallel", {}).get("threads_per_rank", 1),
                 **loop_options(config))
-            state = State(np.repeat(system.geometry[None], config["beads"], axis=0), dynamics.sample_momenta())
+            state = State(initial_ring(config, system), dynamics.sample_momenta())
             piston = _make_barostat(action, system, config["beads"], options["barostat"])
             positions, values, steps, cells, estimator_values = [], [], [], [], []
             elapsed = 0

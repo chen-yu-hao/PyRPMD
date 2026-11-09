@@ -1,0 +1,14 @@
+WARNING: The directory '/home/lyl/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Processing /tmp/pyrpmd-t49
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: PyRPMD
+  Building wheel for PyRPMD (pyproject.toml): started
+  Building wheel for PyRPMD (pyproject.toml): finished with status 'done'
+  Created wheel for PyRPMD: filename=pyrpmd-0.2.0-py3-none-any.whl size=1539619 sha256=1cf1912d9d80d8c60d7492c948e9b8f6d8c765d46077e81b338c00d41cfc169a
+  Stored in directory: /tmp/pip-ephem-wheel-cache-s5fde4mq/wheels/01/15/5a/d7439346ca9796b41ebe1ba1ec70ed0b664410fee4b9b07288
+Successfully built PyRPMD
+WARNING: The directory '/home/lyl/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Processing /tmp/t49-numpy-wheel/pyrpmd-0.2.0-py3-none-any.whl
+Installing collected packages: pyrpmd
+Successfully installed pyrpmd-0.2.0

@@ -166,10 +166,10 @@ class JobSpec:
                      else raw_system.get("bond_constraints", ()) if isinstance(raw_system, Mapping) else ())
         if raw_bonds and self.data.get("task") not in ("pimd", "diffusion"):
             raise InputError("bond constraints currently require task='pimd' or 'diffusion'")
-        if self.data.get("task") != "pimd" and (
+        if self.data.get("task") not in ("pimd", "diffusion") and (
             "barostat" in self.data or raw_sampling.get("engine") == "native"
         ):
-            raise InputError("native sampling/barostat controls currently require task='pimd'")
+            raise InputError("native sampling/barostat controls require task='pimd' or task='diffusion'")
         if "initial_ensemble" in self.data and self.data.get("task") != "drpmd":
             raise InputError("initial_ensemble requires task='drpmd'")
         if self.data.get("task") == "pcet":
@@ -251,7 +251,7 @@ class JobSpec:
         if "nonadiabatic" in d or potential.get("provider", potential.get("type")) == "diabatic_python":
             validate_nonadiabatic(d, potential=potential, parallel=parallel, system=system)
             runtime.notes.append("Experimental NRPMD: state-selected scattering, not electronic thermal-equilibrium RPMD rate; real-chemistry validation is pending")
-        reaction = resolve_reaction(d, system)
+        reaction = resolve_reaction(d, system, None if selected else runtime.temperature)
         collision, outcomes = resolve_collision(d, system, sys_spec, runtime, selected=selected)
         output = resolve_output(d, base, runtime.dt, selected=selected, original_task=original_task)
         if "store_configurations" in output and method != "metadynamics":

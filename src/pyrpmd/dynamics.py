@@ -414,6 +414,54 @@ class Dynamics:
                       "sampling": {key: component.snapshot()
                                    for key, component in self._sampling_compositions.items()}})
 
+    def _operator_rollback_token(self):
+        """Copy live operators without the public checkpoint's JSON conversion."""
+        from .native_ensemble import NativeEnsemble
+        components = [self._composition, *self._sampling_compositions.values()]
+        saved = []
+        for component in components:
+            # Retain the original helpers so failed lazy creation or backend
+            # switching is undone. Native physical caches are refreshed on restore.
+            attributes = vars(component).copy()
+            attributes["baths"] = component.baths.copy()
+            helpers = [*component.baths.values()]
+            if component.native_engine is not None:
+                helpers.append(component.native_engine)
+            states = [(helper, helper._rollback_token() if isinstance(helper, NativeEnsemble)
+                       else helper.state()) for helper in helpers]
+            barostat = component.plan.barostat_spec
+            piston = None if isinstance(barostat, dict) else (barostat, barostat.snapshot())
+            saved.append((component, attributes, states, piston))
+        return (copy.deepcopy(self.rng.bit_generator.state),
+                self._composition, self._sampling_compositions.copy(),
+                None if self.cell is None else self.cell.copy(), saved)
+
+    def _restore_operator_rollback_token(self, token):
+        """Restore a local transaction, including lazily created operators."""
+        from .native_ensemble import NativeEnsemble
+        rng, composition, sampling, cell, saved = token
+        for component, attributes, states, piston in saved:
+            for helper, state in states:
+                if isinstance(helper, NativeEnsemble):
+                    helper._restore_rollback_token(state)
+                else:
+                    helper.restore(state)
+            vars(component).update(attributes)
+            if component.native_engine is not None and component._native_state is not None:
+                # Physical cache arrays may have been reused by an accepted prefix.
+                # Rebuild them from the restored executor; no PES/RNG is consumed.
+                component._native_state = component.native_engine._physical_state()
+            if piston is not None:
+                piston[0].restore(piston[1])
+        self._composition = composition
+        self._sampling_compositions = sampling.copy()
+        self.cell = None if cell is None else cell.copy()
+        if cell is not None:
+            setter = getattr(self.potential, "set_cell", None)
+            if callable(setter):
+                setter(cell.copy())
+        self.rng.bit_generator.state = copy.deepcopy(rng)
+
     def load_operator_state_dict(self, data):
         """Restore all operators atomically, including lazily created baths."""
         from .engine import PropagationPlan, _Composition
@@ -602,6 +650,35 @@ class Dynamics:
         else:
             force = self._force(q, bias)
         self.integrator.kick(p, force, 0.5 * self.dt)
+
+    def _pile_coefficients(self, kernel, gamma_centroid, friction_scale):
+        """Return cached real-mode PILE/TRPMD coefficients.
+
+        The cache key and arithmetic are deliberately kept identical to the
+        historical inline calculation in :meth:`sample_step`.  Native
+        sampling blocks use this helper so that coefficient construction is a
+        shared, auditable part of the sampling contract.
+        """
+        P = self.nbeads
+        coefficient_key = (gamma_centroid, friction_scale)
+        if (self._cached_pile_coefficients is None
+                or self._cached_pile_coefficients[0] != coefficient_key):
+            frequencies = np.empty(P)
+            frequencies[0] = 0.
+            frequencies[1:1 + 2 * ((P - 1) // 2)] = np.repeat(
+                kernel._omega[1:(P + 1) // 2], 2)
+            if P % 2 == 0:
+                frequencies[-1] = kernel._omega[-1]
+            gamma = (2 * friction_scale) * frequencies
+            gamma[0] = gamma_centroid
+            decay = np.exp(-gamma * self.dt)
+            amplitude = np.sqrt(1 - decay * decay)
+            scale = np.sqrt(self.masses[None, :, None] * P / self.beta)
+            fixed = np.zeros(len(self.masses), dtype=np.uint8)
+            fixed[self._fixed_indices] = 1
+            self._cached_pile_coefficients = (coefficient_key, decay, amplitude, scale, fixed)
+        _, decay, amplitude, scale, fixed = self._cached_pile_coefficients
+        return decay, amplitude, scale, fixed
 
     def step(self, state, bias=None):
         if self.plan.active:
@@ -967,27 +1044,8 @@ class Dynamics:
                     for name, original in _PILE_DYNAMICS_METHODS.items())
         )
         if fused_sampler:
-            P = self.nbeads
-            # Immutable dynamics parameters are checked above. Only the
-            # caller-selected thermostat frictions can change between steps.
-            coefficient_key = (gamma_centroid, friction_scale)
-            if (self._cached_pile_coefficients is None
-                    or self._cached_pile_coefficients[0] != coefficient_key):
-                frequencies = np.empty(P)
-                frequencies[0] = 0.
-                frequencies[1:1 + 2 * ((P - 1) // 2)] = np.repeat(
-                    kernel._omega[1:(P + 1) // 2], 2)
-                if P % 2 == 0:
-                    frequencies[-1] = kernel._omega[-1]
-                gamma = (2 * friction_scale) * frequencies
-                gamma[0] = gamma_centroid
-                decay = np.exp(-gamma * self.dt)
-                amplitude = np.sqrt(1 - decay * decay)
-                scale = np.sqrt(self.masses[None, :, None] * P / self.beta)
-                fixed = np.zeros(len(self.masses), dtype=np.uint8)
-                fixed[self._fixed_indices] = 1
-                self._cached_pile_coefficients = (coefficient_key, decay, amplitude, scale, fixed)
-            _, decay, amplitude, scale, fixed = self._cached_pile_coefficients
+            decay, amplitude, scale, fixed = self._pile_coefficients(
+                kernel, gamma_centroid, friction_scale)
             try:
                 noise = self.rng.normal(size=p.shape) * scale
                 noise[:, self._fixed_indices, :] = 0.0
@@ -1063,7 +1121,8 @@ _PILE_INTEGRATOR_METHODS = {
     name: getattr(CayleyIntegrator, name) for name in ("_check", "half_step", "_fourier_step")
 }
 _PILE_DYNAMICS_METHODS = {
-    name: getattr(Dynamics, name) for name in ("_project_fixed", "_check_fixed")
+    name: getattr(Dynamics, name)
+    for name in ("_project_fixed", "_check_fixed", "_pile_coefficients")
 }
 
 # Capture these in the defining module, before a caller can patch a class and
