@@ -55,7 +55,7 @@ kappa = "0.2533449 hartree"
 [analysis]
 bins = 170
 ranges = [[-0.30, 1.40]]
-bootstrap = 200
+bootstrap = 20
 min_count = 5
 
 [rate]
@@ -74,7 +74,7 @@ plateau_tolerance = 0.05
 bootstrap = 300
 
 [output]
-directory = "runs/h3-200K-P128"
+directory = "runs/h3-200K-P128-b20"
 centroid_path = true
 checkpoint_interval = "50 fs"
 

@@ -3,7 +3,7 @@
 # Source: rate_200K.inp (P = 128, output.centroid_path = true).
 
 [source]
-rate_run = "runs/h3-200K-P128"
+rate_run = "runs/h3-200K-P128-b20"
 
 [subspace]
 dimension = "auto"
@@ -26,4 +26,4 @@ trajectories = 1024
 seed = 17
 
 [output]
-directory = "runs/h3-200K-P128/subspace"
+directory = "runs/h3-200K-P128-b20/subspace"
