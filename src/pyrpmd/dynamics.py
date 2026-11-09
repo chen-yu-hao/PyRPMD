@@ -414,6 +414,54 @@ class Dynamics:
                       "sampling": {key: component.snapshot()
                                    for key, component in self._sampling_compositions.items()}})
 
+    def _operator_rollback_token(self):
+        """Copy live operators without the public checkpoint's JSON conversion."""
+        from .native_ensemble import NativeEnsemble
+        components = [self._composition, *self._sampling_compositions.values()]
+        saved = []
+        for component in components:
+            # Retain the original helpers so failed lazy creation or backend
+            # switching is undone. Native physical caches are refreshed on restore.
+            attributes = vars(component).copy()
+            attributes["baths"] = component.baths.copy()
+            helpers = [*component.baths.values()]
+            if component.native_engine is not None:
+                helpers.append(component.native_engine)
+            states = [(helper, helper._rollback_token() if isinstance(helper, NativeEnsemble)
+                       else helper.state()) for helper in helpers]
+            barostat = component.plan.barostat_spec
+            piston = None if isinstance(barostat, dict) else (barostat, barostat.snapshot())
+            saved.append((component, attributes, states, piston))
+        return (copy.deepcopy(self.rng.bit_generator.state),
+                self._composition, self._sampling_compositions.copy(),
+                None if self.cell is None else self.cell.copy(), saved)
+
+    def _restore_operator_rollback_token(self, token):
+        """Restore a local transaction, including lazily created operators."""
+        from .native_ensemble import NativeEnsemble
+        rng, composition, sampling, cell, saved = token
+        for component, attributes, states, piston in saved:
+            for helper, state in states:
+                if isinstance(helper, NativeEnsemble):
+                    helper._restore_rollback_token(state)
+                else:
+                    helper.restore(state)
+            vars(component).update(attributes)
+            if component.native_engine is not None and component._native_state is not None:
+                # Physical cache arrays may have been reused by an accepted prefix.
+                # Rebuild them from the restored executor; no PES/RNG is consumed.
+                component._native_state = component.native_engine._physical_state()
+            if piston is not None:
+                piston[0].restore(piston[1])
+        self._composition = composition
+        self._sampling_compositions = sampling.copy()
+        self.cell = None if cell is None else cell.copy()
+        if cell is not None:
+            setter = getattr(self.potential, "set_cell", None)
+            if callable(setter):
+                setter(cell.copy())
+        self.rng.bit_generator.state = copy.deepcopy(rng)
+
     def load_operator_state_dict(self, data):
         """Restore all operators atomically, including lazily created baths."""
         from .engine import PropagationPlan, _Composition

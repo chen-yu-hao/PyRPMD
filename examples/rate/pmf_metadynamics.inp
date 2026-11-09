@@ -29,6 +29,7 @@ dividing_surface = 1.0
 
 [rate.pmf]
 method = "metadynamics"
+# The sampler only collects frozen-bias production; the rate stage reweights it.
 estimator = "reweighted_histogram"
 
 [rate.pmf.dynamics]
@@ -53,6 +54,7 @@ freeze_after_steps = 200
 freeze_equilibration_steps = 100
 
 [rate.pmf.analysis]
+# Histogram support controls only; do not add a generic FES analysis.method.
 bins = 40
 ranges = [[-0.15, 1.15]]
 bootstrap = 0

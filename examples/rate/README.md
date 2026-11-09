@@ -1,5 +1,18 @@
 # RPMD rate inputs
 
+## Physical BKMP2 H + H₂ exchange
+
+For a **real BKMP2 H + H₂ rate calculation**, use
+[`bkmp2_pilot.inp`](bkmp2_pilot.inp) for a functional smoke test or
+[`bkmp2_production.inp`](bkmp2_production.inp) for a production-scale starting
+input. [`BKMP2_README.md`](BKMP2_README.md) gives the compiler, pinned PES
+source, pre-run numerical verification, command sequence, and **mandatory
+convergence** checks. Both inputs use the existing validated physical BKMP2
+implementation in `benchmarks/h3/pes.py`, with two equivalent exchange
+channels and explicit H masses; neither automatically certifies a converged rate.
+
+## Analytic teaching and workflow regression inputs
+
 Start a rate study with [`research.inp`](research.inp). It explicitly declares the reactant
 fragments, product partition and forming/breaking bonds, then independently requests a TS
 validation and a downhill channel check. Its regional table gives 16 entrance windows and
@@ -46,18 +59,33 @@ estimates. The preparation report separates `saddle_valid`, `channel_consistent`
 
 Use `[rate.pmf]` to select a sampler and its compatible estimator, with PMF-specific
 `dynamics`, `sampling` and `analysis` tables. The root dynamics still control recrossing.
-The complete short pilots are:
+The umbrella sampler records and checkpoints trajectories; the **rate analysis**
+then selects `estimator="ui"` or `"mbar"` and performs its own paired-endpoint
+bootstrap. Do not configure a generic `analysis.method="mbar"` to request UI.
+UI retains MBAR overlap/connectivity checks without running a separate FES
+bootstrap. `umbrella/fes.*` exports are point-estimate diagnostics; the selected
+curve and uncertainty live in `rate_pmf.*`. The complete short pilots are:
 
 | Input | PMF route |
 | --- | --- |
-| [`pmf_umbrella.inp`](pmf_umbrella.inp) | Umbrella + MBAR, with PMF PILE-L and a separate timestep |
+| [`pmf_umbrella.inp`](pmf_umbrella.inp) | Umbrella + **UI** (Gaussian integration), with PMF PILE-L and a separate timestep |
+| [`pmf_umbrella_mbar.inp`](pmf_umbrella_mbar.inp) | Same umbrella setup with explicit **MBAR** rate estimation and optional UI comparison |
 | [`pmf_metadynamics.inp`](pmf_metadynamics.inp) | Well-tempered MetaD, followed by frozen-bias relaxation and reweighting |
 | [`pmf_opes.inp`](pmf_opes.inp) | OPES, followed by frozen-bias relaxation and reweighting |
 
 ```bash
+pyrpmd validate examples/rate/pmf_umbrella.inp --check-pes
+pyrpmd validate examples/rate/pmf_umbrella_mbar.inp --check-pes
 pyrpmd validate examples/rate/pmf_metadynamics.inp --check-pes
-pyrpmd run examples/rate/pmf_metadynamics.inp --output runs/rate-meta
+pyrpmd validate examples/rate/pmf_opes.inp --check-pes
+pyrpmd run examples/rate/pmf_umbrella.inp --output runs/rate-ui
 ```
+
+`minimal.inp` deliberately exercises the implicit umbrella + UI defaults.
+`research.inp` shows canonical `[rate.pmf]` estimator selection while retaining
+regional `[umbrella]` windows. MetaD and OPES use their frozen-bias
+`reweighted_histogram` rate estimator, not UI/MBAR. See
+[`pmf_umbrella_mbar.inp`](pmf_umbrella_mbar.inp) for a direct estimator comparison.
 
 See [PMF selection and phase budgets](../../docs/rate-pmf-selection.md) /
 [中文指南](../../docs/zh/rate-pmf-selection.md) for the compatibility table, external

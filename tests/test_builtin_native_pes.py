@@ -318,6 +318,50 @@ def test_binding_cache_is_stable_and_parameter_mutation_preserves_old_snapshot()
     np.testing.assert_array_equal(_call(second, q).energy, after.energy)
 
 
+def test_harmonic_cache_preserves_identity_across_equivalent_broadcast_shapes():
+    from pyrpmd.potentials._builtin_native import builtin_identity
+
+    potential = HarmonicPotential(k=.2, center=[.1, .2, .3])
+    binding = potential.native_binding(3)
+    identity = builtin_identity(potential, 3)
+    before = _call(binding, _coordinates())
+    potential.k = np.full((3, 3), .2)
+    potential.center = np.broadcast_to(potential.center, (3, 3)).copy()
+    assert potential.native_binding(3) is binding
+    assert builtin_identity(potential, 3) == identity
+    potential.center[:, 1] += .4
+    changed = potential.native_binding(3)
+    assert changed is not binding
+    assert builtin_identity(potential, 3) != identity
+    expected = potential.evaluate(_coordinates())
+    np.testing.assert_allclose(_call(changed, _coordinates()).forces, expected.forces)
+    np.testing.assert_array_equal(_call(binding, _coordinates()).energy, before.energy)
+
+
+@pytest.mark.parametrize("parameter", ["k", "center"])
+@pytest.mark.parametrize("invalid", ["nonfinite", "frame_dependent"])
+def test_warm_harmonic_cache_still_rejects_invalid_parameters(parameter, invalid):
+    potential = HarmonicPotential(k=1., center=1.)
+    binding = potential.native_binding(3)
+    before = _call(binding, _coordinates())
+    assert potential.native_binding(3) is binding
+    if invalid == "nonfinite":
+        getattr(potential, parameter)[...] = np.nan
+    else:
+        setattr(potential, parameter, np.ones((3, 1, 1)))
+    with pytest.raises(NativeUnavailableError, match="finite|frame"):
+        potential.native_binding(3)
+    np.testing.assert_array_equal(_call(binding, _coordinates()).energy, before.energy)
+
+
+def test_warm_harmonic_cache_does_not_bypass_provider_capabilities(monkeypatch):
+    potential = HarmonicPotential()
+    potential.native_binding(3)
+    monkeypatch.setattr(potential, "metadata", {**potential.metadata, "stateful": True})
+    with pytest.raises(NativeUnavailableError, match="stateless"):
+        potential.native_binding(3)
+
+
 @pytest.mark.parametrize("model", MODELS)
 @pytest.mark.parametrize("override", ["subclass", "instance", "class"])
 def test_builtin_binding_refuses_overridden_python_semantics(model, override, monkeypatch):

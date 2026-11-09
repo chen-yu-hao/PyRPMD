@@ -191,7 +191,7 @@ def test_rate_executes_from_saved_source_and_hashes_it_for_resume(tmp_path, monk
     config, system, result, directory = saved_source(tmp_path)
     from pyrpmd.workflows import rate, rate_recrossing
 
-    monkeypatch.setattr(rate, "run_fes", lambda *args, **kwargs: pytest.fail("external source must not resample umbrellas"))
+    monkeypatch.setattr(rate, "sample_umbrellas", lambda *args, **kwargs: pytest.fail("external source must not resample umbrellas"))
     child_task = rate._child_task
     executed_children = []
 

@@ -169,7 +169,7 @@ def test_rate_sampling_receives_refined_geometry(tmp_path):
     class SamplingReached(Exception):
         pass
 
-    with patch("pyrpmd.workflows.rate.run_fes", side_effect=SamplingReached) as sample:
+    with patch("pyrpmd.workflows.rate.sample_umbrellas", side_effect=SamplingReached) as sample:
         with pytest.raises(SamplingReached):
             run_rate(config, system, tmp_path)
 
@@ -228,7 +228,7 @@ def test_exhausted_neb_is_not_ready_and_does_not_run_refinement():
 def test_unconverged_search_stops_rate_before_sampling_and_saves_diagnostics(tmp_path, endpoints):
     controls = {"neb": {"max_steps": 1}} if endpoints else {"max_steps": 1, "max_step": 1e-5}
     config, system = JobSpec.from_mapping(_job(endpoints=endpoints, preparation=controls)).resolve()
-    with patch("pyrpmd.workflows.rate.run_fes") as sample:
+    with patch("pyrpmd.workflows.rate.sample_umbrellas") as sample:
         with pytest.raises(RuntimeError, match="Reaction preparation is not ready"):
             run_rate(config, system, tmp_path)
     sample.assert_not_called()

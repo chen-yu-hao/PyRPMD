@@ -199,9 +199,14 @@ def test_sample_step_rejects_conflicting_friction_before_state_changes(spec, fri
 
 
 @pytest.mark.parametrize("record_centroids", [False, True])
-def test_sparse_native_whole_block_bounds_dense_temporary_records(native_library, monkeypatch, record_centroids):
-    from pyrpmd import propagation
+@pytest.mark.parametrize("compact", [False, True])
+def test_sparse_native_whole_block_bounds_dense_temporary_records(native_library, monkeypatch, record_centroids, compact):
+    from pyrpmd import propagation, _thermal
     from pyrpmd.native_ensemble import NativeEnsemble, _COLUMNS
+    if compact and not getattr(_thermal, "COMMON_POSITION_OBSERVATIONS_API", 0):
+        pytest.skip("rebuilt thermal extension required for compact observations")
+    if not compact:
+        monkeypatch.setattr(_thermal, "COMMON_POSITION_OBSERVATIONS_API", 0, raising=False)
     args = (CompiledPotential(native_library), [1., 2., 3.], 3., 3, .01)
     dynamics = Dynamics(*args, thermostat="nhc", block_steps=65536)
     reference = Dynamics(*args, thermostat="nhc", block_steps=65536)
@@ -210,11 +215,19 @@ def test_sparse_native_whole_block_bounds_dense_temporary_records(native_library
     calls, original = [], NativeEnsemble.run_prefix
     # Use a three-frame budget to exercise the same bound without allocating
     # hundreds of megabytes. It must constrain internal, not public, records.
-    monkeypatch.setattr(propagation, "_COMPOSED_NATIVE_BUFFER_BYTES", 3 * (len(_COLUMNS) + 7*3) * 8)
+    # Compact blocks contain positions only (or no coordinate records), while
+    # the old-extension fallback retains the seven-values-per-atom layout.
+    coordinate_width = 3*3*record_centroids if compact else 7*3
+    row_bytes = (len(_COLUMNS) + coordinate_width) * 8
+    monkeypatch.setattr(propagation, "_COMPOSED_NATIVE_BUFFER_BYTES", 3 * row_bytes)
     def bounded(engine, steps, **options):
         calls.append(steps)
         assert steps <= 3
-        return original(engine, steps, **options)
+        assert options.get("_positions_only", False) == compact
+        assert options["record_centroids"] == (record_centroids if compact else True)
+        result = original(engine, steps, **options)
+        assert len(result["samples"]) * row_bytes <= propagation._COMPOSED_NATIVE_BUFFER_BYTES
+        return result
     monkeypatch.setattr(NativeEnsemble, "run_prefix", bounded)
     actual = dynamics.propagate(state, 8, sample_interval=8, record_centroids=record_centroids)
     assert calls == [3, 3, 2]

@@ -1,0 +1,596 @@
+{
+  "cases": [
+    {
+      "case": "andersen-p1-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "bf83a1b6629f8e41cf1fce2dafc760812e354f1d9774df70961c3693af9ac0ad"
+    },
+    {
+      "case": "andersen-p1-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "0c254527678901da1f4c2a25c86dc9286312e1b338a6f75295381f2e07e3fcb4"
+    },
+    {
+      "case": "langevin-p1-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "ac73b37751e2b73824335592e712c233a9c701d1abb8ae4b0949ef0704947099"
+    },
+    {
+      "case": "langevin-p1-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "09c47cf40755a393ce8b8cbbaa985cad33c7e9a128617c24b3f23e636ec1dca7"
+    },
+    {
+      "case": "pile-l-p1-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "5354c6273b906088c360b1d74990038511d7db0d2eb3cbf2e247ffe30b3c93d0"
+    },
+    {
+      "case": "pile-l-p1-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "b6eb54b96b359c8f0370dd163eb71fc71d20e90c46df51199997cef07dbd443c"
+    },
+    {
+      "case": "pile-g-p1-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "bb2b868de9d78cd016751d0b8c850d152bd550e663c6477d6652ca3b2ce33de4"
+    },
+    {
+      "case": "pile-g-p1-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "abecfa19f0f9f17a5c96a2cfd50f988134a1bbc0a1f74f7208e59faa65515bd5"
+    },
+    {
+      "case": "svr-p1-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "b69f23ba24bcfcf5ac58738d45eabdd782456991638389a7426ef22525d9e5c1"
+    },
+    {
+      "case": "svr-p1-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "261d3ef8f2d96881af1fa9fe6b250752bc2bf1c832cf3fc651d6cfc20f0bf712"
+    },
+    {
+      "case": "ffl-p1-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "0917f93065dfceaa3dd0b277b2715627ca29f350ede65ab2903b57b919743787"
+    },
+    {
+      "case": "ffl-p1-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "85f726272f20c57cdc4ec6f6526cfb89a9ddbc593e62dcb2f74820346f893e0d"
+    },
+    {
+      "case": "nhc-p1-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "9ecf31fa355473f1ea701c9110f424f6c13dae42f2e5f68a99828f526ebea844"
+    },
+    {
+      "case": "nhc-p1-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "b456f99e63e5bb6b3444dc1259b4f14e6455d07457fdb9d4dd94bc6d0b25de97"
+    },
+    {
+      "case": "trpmd-p1-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "b6804bb04e2016e9033ef29b11b75da3b610a39817c0d7c296c7696ea0bef556"
+    },
+    {
+      "case": "trpmd-p1-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "b4deaab132f741ad1a3f17b3e8fc3ce82b9eb8981f6c979bf9468625cc88ac2f"
+    },
+    {
+      "case": "gle-p1-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "6906f23fb6d132ef845d100751b432a71adadcec5adb411c95f10887291e995e"
+    },
+    {
+      "case": "gle-p1-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "d3fc040706b3f7ca33e4d4b55fb0d5168c4e25462df0761eb42837d283687256"
+    },
+    {
+      "case": "nm-gle-p1-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "e7814974c0bb11c79a25741f050440437ae740562a76b6ee152f7b90a27cc656"
+    },
+    {
+      "case": "nm-gle-p1-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "81e312b44fe818527d2390eaeb7dac21ae8c740a5d66bc1b1468bcb2713193d8"
+    },
+    {
+      "case": "nm-gle-g-p1-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "171ef46af2ff1409b6271b14ace86d6e7184d3606d2aa152bddc98e41d9308d5"
+    },
+    {
+      "case": "nm-gle-g-p1-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "c35a973640a0ddedfbd1d2192e4196d335fe72885694f6a1fc3e8b04aba0570d"
+    },
+    {
+      "case": "piglet-p1-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "fb0e593c37d3ab4e954414b975e41194e1a3aaf40c1d746881f8e45428094073"
+    },
+    {
+      "case": "piglet-p1-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "d64833656a5c54d633cdb69168bc38b580b29dccccc7e848467b20614b8604b5"
+    },
+    {
+      "case": "andersen-p7-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "8223fcf2da901c222be4c3878a62e778c42cd73208c3a4c77bf987ec1338df92"
+    },
+    {
+      "case": "andersen-p7-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "65b89471a377e5714e927b105eda06472c00966e24a50c100185824a29826825"
+    },
+    {
+      "case": "langevin-p7-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "c677e33a72ead6fe418f40f026c41c355e7cd9822789ef12ce061173798d4c42"
+    },
+    {
+      "case": "langevin-p7-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "ce015b6ebdfa07447cbc8f9ff996353dd02b985063b5c28b9da8542ab31defb0"
+    },
+    {
+      "case": "pile-l-p7-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "d85da5512a8af309b9396f6845ea2575e742516f3c672044245c4915c8b18a60"
+    },
+    {
+      "case": "pile-l-p7-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "4843688d9242db604c34c4bd92a862f463dd7c2ddd8c8ac449f59f5df27d996f"
+    },
+    {
+      "case": "pile-g-p7-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "4fbf5ad24fd83eb957bdea769ead7253ec80f270ffeae06389ee2e76e8e5abd6"
+    },
+    {
+      "case": "pile-g-p7-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "5f8050fb2079c9af058f68c1bb910c5d477e41bcdd83fb9bda18c05b41c1a290"
+    },
+    {
+      "case": "svr-p7-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "3d6cbff28064198059c86f525324890478e5bf57954c226c14aa99429b1a8eea"
+    },
+    {
+      "case": "svr-p7-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "73abfb7514fd1006e3cc8eb2f106857befba3d282607fd39f472fab5ac9b1a83"
+    },
+    {
+      "case": "ffl-p7-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "f7a28d6f7f515479f662a78c08a7fff4d7a9a89fcfcb853da7c7cc050027fa63"
+    },
+    {
+      "case": "ffl-p7-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "bab3e41baf5967616179beb981aa991c95032013ac7ac1dfacbe0c74c48fa9d7"
+    },
+    {
+      "case": "nhc-p7-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "e58117dd4d4ab75d760d391dcbe6081454e003b7e8832cb391c45230a77648d2"
+    },
+    {
+      "case": "nhc-p7-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "8deb93eb2e3e61b926b6a2a4e3f3b6d663b79ebc8289f3353fd94fe6b7cf3674"
+    },
+    {
+      "case": "trpmd-p7-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "360a22344d89110766dbfe341ffbd1681bedad0866d2186cb945f53d5667b09b"
+    },
+    {
+      "case": "trpmd-p7-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "d14ad0e9ed8b84e7b55770b4c31a2daa5fb3a3912c68fba7b125617cdcb9e104"
+    },
+    {
+      "case": "gle-p7-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "edb63dae3ab16ada2597db09662ac82646beea1d6b70c42bff6c6fafe141b179"
+    },
+    {
+      "case": "gle-p7-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "3b52d34d2e870fbbf2f3d6c46c43ead1c7e40641a61d013fd20da2e63a440c78"
+    },
+    {
+      "case": "nm-gle-p7-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "c908f01d503011e4468a2125952f84e123a540f4151a2c70b34eef3b6c6e16da"
+    },
+    {
+      "case": "nm-gle-p7-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "fd8abd0d03c5917bb860fe2864e932e02b17f8927fe86cef5ff454ac5c205774"
+    },
+    {
+      "case": "nm-gle-g-p7-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "0eeca2b7e5f345d45ba0de4965703bb7a3ce7ae373f87496cb47a085314f8c47"
+    },
+    {
+      "case": "nm-gle-g-p7-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "b1bb7fc6957dbdbf5cf4bccb3f7b88bbe1108ca66bd2905fe82808a93225e5f1"
+    },
+    {
+      "case": "piglet-p7-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "93b9d29d10b99928b04b748d7e98a331cf5a51b6363d38e602d6725f0083a681"
+    },
+    {
+      "case": "piglet-p7-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "fee8754eac77dde4787758896945da03a5469e1712bbd71186cb32e298cefe7c"
+    },
+    {
+      "case": "andersen-p32-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "958761ec3170c03e9d4218dc1865c20baa3151199cfa3449fa8b39ec055e334c"
+    },
+    {
+      "case": "andersen-p32-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "52d4d59c8546a93e34867682fd81f77563d1fec8d5084a815ba16532595937d2"
+    },
+    {
+      "case": "langevin-p32-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "743e212cb339a18aa1091d859448f7e53fe4be339d72065fa2affd0c70c80989"
+    },
+    {
+      "case": "langevin-p32-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "53f00fc4c2e2f1e430a0d6f0b0b7b77ce2265f4972ecf907a7e910386c1f36d8"
+    },
+    {
+      "case": "pile-l-p32-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "bc986fa3b926309e7e7daaa1826d8128c3c40b89f66a6c67435d8cbacddc937b"
+    },
+    {
+      "case": "pile-l-p32-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "7af8c1664f29a0946397a743545810597727d312787a4c80673a9bdd353a39ad"
+    },
+    {
+      "case": "pile-g-p32-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "9f34bf5e11f7ed8ed4e6a20eb20064053080b787366b349bf3149392f3baf57d"
+    },
+    {
+      "case": "pile-g-p32-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "7d74d15685783339800ee83ffe954bad0032ca58fd4d8eec49786c75d140b757"
+    },
+    {
+      "case": "svr-p32-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "569faa9f0ab6b95f99f668473c60c2fb5a018dd4c66b6ce39eca79a19afd8ba3"
+    },
+    {
+      "case": "svr-p32-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "8ef6a379d79800c97f811965dc832d913a36ca3616eb17aa1b14c2c6f5dde67f"
+    },
+    {
+      "case": "ffl-p32-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "8c541056cbc1ae4d3d6eb47291189d1b1b6ecaa1771fccaf960c10eee4807476"
+    },
+    {
+      "case": "ffl-p32-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "a68d1610bb58e756777e50a7e52096fb73354157a332410c45c677bc6854bfd8"
+    },
+    {
+      "case": "nhc-p32-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "77fad8186add8fcb0d0ebcda37ca3035202ef903fb0367cade1c7c13e480890a"
+    },
+    {
+      "case": "nhc-p32-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "e8cff67863b9561795742eacc9afef129cbe599b3637f9029c15f6ed89367286"
+    },
+    {
+      "case": "trpmd-p32-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "a8345c0dbfa35aec8953c2070b2e9911cfd908c21343919d218f03c0b785d93a"
+    },
+    {
+      "case": "trpmd-p32-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "9fb646e32021d9d658210732fb0754c2a6b06d0cd6e341198a73336abfbd9524"
+    },
+    {
+      "case": "gle-p32-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "c827f21404a4c044ebc25fd278bc4aa3d97af583808888692a58404618008352"
+    },
+    {
+      "case": "gle-p32-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "9c00b5ae97bd49f0f74cdff137f67e8137db57a9ed54d5af4edc8d829406ec97"
+    },
+    {
+      "case": "nm-gle-p32-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "a9946b1b77f71901899e6bf410549811b80085691a52377f998b9057d5d8692e"
+    },
+    {
+      "case": "nm-gle-p32-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "826fe132fffd91e042145c95c76309e519db90e6d5b03729e0ef4adc7f78d871"
+    },
+    {
+      "case": "nm-gle-g-p32-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "ac6ae76d07617cb0ba4af4aaf0d353d7d3acf5c1d43735f3e0e4d5a4aba8e74a"
+    },
+    {
+      "case": "nm-gle-g-p32-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "ad7e95f47a9f80fff93128f64535ab6786030e326b243aa8b489ba47cd903405"
+    },
+    {
+      "case": "piglet-p32-n3-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "5e5abbf9ef3490ef7074cc28d323674dcae955837843afbbf84329503c0655f8"
+    },
+    {
+      "case": "piglet-p32-n3-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "526e7407b763fa2f7985097b1aea4ded1d8f76dbb7e3b1b60a64603c20549011"
+    },
+    {
+      "case": "andersen-p32-n64-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "96daad2f3bfd48b21fcd574adaae56ec4b0de299aa71ddae23a762226cbfd306"
+    },
+    {
+      "case": "andersen-p32-n64-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "b50856e7f6491b2579adcc448f9ea97d72c6c33f277ffd2ff4ceae0dbb70f7b0"
+    },
+    {
+      "case": "langevin-p32-n64-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "0d2cb551c3d5590cc788dfade1e5c8d26499925c7050904e25c31a542d623e2b"
+    },
+    {
+      "case": "langevin-p32-n64-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "2b806f6b948380612e9f8e2e9d8fba9fd3f9a14fcf441822de63200869d40379"
+    },
+    {
+      "case": "pile-l-p32-n64-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "6c2e112c40eac0dbfe8088677be6abacd3af68df076dbb4b3c7ba2e69dca904b"
+    },
+    {
+      "case": "pile-l-p32-n64-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "047768d018383babeaf21a21288235dd522bc1242bca651c434770f38e89ed8d"
+    },
+    {
+      "case": "pile-g-p32-n64-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "3859e54e880d95c1e292d006fe8085157dc643c6ec877a21d2986201f64ff09a"
+    },
+    {
+      "case": "pile-g-p32-n64-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "f2db42bc1de1915dfa46be7454ddba1cb269e3519ddf5d873a5c737b276ab7e1"
+    },
+    {
+      "case": "svr-p32-n64-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "7c8ebc2faaf162bad4ab0e688f22d04fc04c195300aee3a5f441901948612e9d"
+    },
+    {
+      "case": "svr-p32-n64-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "174bd001f3a927513916bfceb7fa8b335d471f389ac547fcf301239d97cff28c"
+    },
+    {
+      "case": "ffl-p32-n64-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "b5bb63245e372ccc1b9bf27641fea441d10c95066711b956c9eddd78f82c23e2"
+    },
+    {
+      "case": "ffl-p32-n64-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "dc74d026a84982ab27d719440de7e018f930548edee26e33204c9e99159fde93"
+    },
+    {
+      "case": "nhc-p32-n64-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "4a3e7ab31d41028cccffba7f42cc5087e33559a25509e2b91cd017065216caa7"
+    },
+    {
+      "case": "nhc-p32-n64-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "503db41d17ab72b948a3020b7b589721bd4696b44935da2c42ef24a4c6cfb524"
+    },
+    {
+      "case": "trpmd-p32-n64-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "749036852918685e033fd7071e29bd4316d5bd3f8df93d27c5a6e4350d0cdd42"
+    },
+    {
+      "case": "trpmd-p32-n64-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "a9b85bccc415c23160b7c19ade31e06a6b93aa15a8f9d2deec2cf6807634f4a6"
+    },
+    {
+      "case": "gle-p32-n64-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "1d7f6a36cf984b15ca1774fa444c1f8d0a9ebe11267a3b269589585a232ff017"
+    },
+    {
+      "case": "gle-p32-n64-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "00d326ef694c2ff95fa12f898256e6238b517f6f23ad4be2e9cfe8059c891752"
+    },
+    {
+      "case": "nm-gle-p32-n64-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "6aa050f4a465ebfcff2130a015962d26272dd3386d96551ca6a30f7121073263"
+    },
+    {
+      "case": "nm-gle-p32-n64-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "37fedbd155df708b40057de02836a1abd92d3196482a70897937781508774f38"
+    },
+    {
+      "case": "nm-gle-g-p32-n64-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "1428ffa6e328bbe15902782d8bb13be07ab40eb56c29b9f93554451ef36c8c9c"
+    },
+    {
+      "case": "nm-gle-g-p32-n64-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "31dea68d6fea649645e1a97e4fdb9ad5e63e9a117ed5a23e8672f7b525ea8658"
+    },
+    {
+      "case": "piglet-p32-n64-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "8e5b8592c71b295bb93168fc4723ee1a2294f11d764c3fd8008f754b5d7e6d98"
+    },
+    {
+      "case": "piglet-p32-n64-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "4148185f36040eb4e0794e97f63bdbdc8e4872179d734ece4005709fefcd40ba"
+    },
+    {
+      "case": "pile-l-large-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "24b08ced8c59d69bc389390a01ac3c82bc830714b7ba0924c702ee3bda710038"
+    },
+    {
+      "case": "pile-l-large-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "cc977c32e1327ce35e234d86c1c731e0e56ce573b63c56e92bc93594efa0c4c9"
+    },
+    {
+      "case": "pile-g-large-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "9dea47bd45b6cf0a135926b3753298d1ba4da6615dd2e8ffdcf1519e346b36e0"
+    },
+    {
+      "case": "pile-g-large-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "f0c544c036f0868e34edaaf6114337bbec5288974fd86cb5930c2870f5644445"
+    },
+    {
+      "case": "nhc-large-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "c6da3c69b2b1f259a80202e841961a98e553a8de213683920ef014e1df965151"
+    },
+    {
+      "case": "nhc-large-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "e2d799a7f344a0b384bbdabdb616059c2ac4ca2d436df99828277a107e3917df"
+    },
+    {
+      "case": "gle-large-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "1eab17ed34cb524ebcc702341afbed43aa1f22b48aa7ce3b9faf5b8a1cf97271"
+    },
+    {
+      "case": "gle-large-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "9e0dfc1f00e55b67b00a3a3c7ce8bdcd130a1419c905685263c8783331eb3e77"
+    },
+    {
+      "case": "piglet-large-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "3ce2344941856b4370fcf12c397f788d8933f609aa7dad1416825dd8c5a70c01"
+    },
+    {
+      "case": "piglet-large-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "38ebc08f68bdf28ef3583314b68a852be80648fe9fd4c5cdf3d805813d2d3e3d"
+    },
+    {
+      "case": "bzp-large-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "d3262b99e4fba5e88c800a31ca02f539478930d35d846c6683d4ef1c604b4c39"
+    },
+    {
+      "case": "bzp-large-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "cbea77681db9e1df6ff49106bc2b4103afff7f98dba1c6919598f22408a442a0"
+    },
+    {
+      "case": "pile-l-bzp-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "02a90cd2770c5e8b61d8b28b85071a2e35baeabb7937375853171b5e08604049"
+    },
+    {
+      "case": "pile-l-bzp-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "6bb0f3adc87a85ebc39b8696e74baea4c9771bba5d615c4b0680e30e2af061ca"
+    },
+    {
+      "case": "middle-bzp-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "09ccdf5b33b18185d7ec4dba42c75e158869b2a7d4b801bf2cdd87f5a1cd8b70"
+    },
+    {
+      "case": "middle-bzp-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "8c604e4d9f7927c3e2851ce6b72efa3fc226a1e6b641b4556ce4cfe9bce185ce"
+    },
+    {
+      "case": "mttk-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "f5f2bcc46fa549e4ae10e512eba33be87415953e1ce246e8b844ef8c40d2a79e"
+    },
+    {
+      "case": "mttk-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "10feba51dd52855a4d86962ce87040c0f57c68296ef6e92f314c57821f852d70"
+    },
+    {
+      "case": "rgb-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "aeeff433b87eb288aab65fb0dd0fc3ff8ee14abe75c22de63c10a39ff90df4ed"
+    },
+    {
+      "case": "rgb-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "61bb3f977b6764ddef9501ebfff3c5f026e93def922738a31b96a979b8f1e7d0"
+    },
+    {
+      "case": "scr-cayley-bcb",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "4ae30ec65bb2e67d410bacdf00a53540d13c5159633a12abba6b3aac89e39fec"
+    },
+    {
+      "case": "scr-normal-mode-bab",
+      "bitwise_equal": true,
+      "checkpoint_sha256": "0ae4b5b6a3b0f2c111960c9cb4eb717e4aca1dc4db26c81a867450a85c5a5b28"
+    }
+  ],
+  "accepted": 118,
+  "expected": 118
+}

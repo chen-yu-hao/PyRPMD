@@ -401,7 +401,11 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options):
         if not streams:
             raise ValueError("Enhanced rate PMF did not return any completed sampling streams")
     else:
-        streams = sampled["streams"]
+        # Sampling deliberately returns no production FES. Materialize an
+        # external executor's one-shot iterator exactly once on the coordinator.
+        streams = sampled["streams"] = list(sampled["streams"])
+        if not streams:
+            raise ValueError("Rate PMF analysis requires at least one umbrella stream")
         centers = np.array([s["center"][0] for s in streams])
         samples = [s["samples"][:, 0] for s in streams]
         stiffness = np.array([s["stiffness"][0, 0] for s in streams])
@@ -429,9 +433,28 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options):
                 measure="rate_flux",
             )
         else:
+            if "sampling_config" in sampled or not sampled.get("data"):
+                from .rate_umbrella_analysis import ui_umbrella_diagnostics
+
+                sampled["data"] = ui_umbrella_diagnostics(streams, config, pmf_options)
             estimate = _ui_rate_pmf(
                 sampled, config, centers, samples, stiffness, pmf_options
             )
+        if "sampling_config" in sampled:
+            from .rate_umbrella_analysis import (
+                mbar_umbrella_diagnostics, write_rate_umbrella_diagnostics,
+            )
+
+            data = (
+                mbar_umbrella_diagnostics(estimate, streams, config["beta"], pmf_options["min_count"])
+                if method == "mbar" else sampled["data"]
+            )
+            write_rate_umbrella_diagnostics(
+                sampled, data, system, method, solver=estimate.get("solver"),
+            )
+        else:
+            # Historical Python callers may supply an already analyzed bundle.
+            sampled.setdefault("summary", {"warnings": []})
         if config.get("output", {}).get("centroid_path"):
             from ..analysis.centroid_path import write_centroid_path
 
@@ -511,15 +534,15 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options):
         "warnings": list(
             dict.fromkeys(sampled["summary"]["warnings"] + estimate["warnings"])
         ),
-        "intermediate_fes_bootstrap": (
-            0 if method in ("mbar", "source", "reweighted_histogram") else pmf_options["bootstrap"]
-        ),
+        "intermediate_fes_bootstrap": 0,
+        "analysis_owner": "rate",
         "intermediate_fes_purpose": (
             "Validated external FESResult; no intermediate umbrella sampling."
             if method == "source" else
             "Bias training and relaxation are discarded; only fixed-bias production enters the rate PMF."
             if method == "reweighted_histogram" else
-            "Saved umbrella samples, overlap and a preliminary histogram; the selected rate PMF backend owns barrier bootstrap."
+            "Rate-owned umbrella diagnostics and sample export; sampling does not reconstruct a FES. "
+            "Only the selected rate PMF estimator performs barrier bootstrap."
         ),
     }
     if "pmf" in config.get("rate", {}):

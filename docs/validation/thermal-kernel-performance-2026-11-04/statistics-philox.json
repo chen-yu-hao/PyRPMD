@@ -1,0 +1,72 @@
+{
+  "rng": "philox-v1",
+  "beads": 8,
+  "beta_au": 4.0,
+  "dt_au": 0.01,
+  "energies": {
+    "potential": {
+      "mean_per_dof": 0.25230248607861855,
+      "standard_error": 0.000616031967617812,
+      "finite_P_target_per_dof": 0.2519674536481259,
+      "accepted": true
+    },
+    "kinetic_centroid_virial": {
+      "mean_per_dof": 0.25211973393191184,
+      "standard_error": 0.00025407414707910434,
+      "finite_P_target_per_dof": 0.2519674536481259,
+      "accepted": true
+    }
+  },
+  "normal_modes": [
+    {
+      "mode": 0,
+      "temperature_ratio": 0.9752932675849276,
+      "ks_pvalue": 0.8258253610744187,
+      "accepted": true
+    },
+    {
+      "mode": 1,
+      "temperature_ratio": 1.003519026778456,
+      "ks_pvalue": 0.7197011616675182,
+      "accepted": true
+    },
+    {
+      "mode": 2,
+      "temperature_ratio": 0.9772056078255401,
+      "ks_pvalue": 0.6885265579608582,
+      "accepted": true
+    },
+    {
+      "mode": 3,
+      "temperature_ratio": 0.9958179237956934,
+      "ks_pvalue": 0.7331219103811244,
+      "accepted": true
+    },
+    {
+      "mode": 4,
+      "temperature_ratio": 0.9831221998697867,
+      "ks_pvalue": 0.7721851953823085,
+      "accepted": true
+    },
+    {
+      "mode": 5,
+      "temperature_ratio": 0.9795980467308413,
+      "ks_pvalue": 0.6962073310516363,
+      "accepted": true
+    },
+    {
+      "mode": 6,
+      "temperature_ratio": 1.0040875493675214,
+      "ks_pvalue": 0.003364464941382136,
+      "accepted": true
+    },
+    {
+      "mode": 7,
+      "temperature_ratio": 1.0292790650849755,
+      "ks_pvalue": 0.3134344691355333,
+      "accepted": true
+    }
+  ],
+  "accepted": true,
+  "physical_converged": false
+}

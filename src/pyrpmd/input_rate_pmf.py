@@ -200,6 +200,15 @@ def rate_pmf_analysis(config):
         raise InputError("analysis must be a table")
     spec = rate_pmf_spec(config)
     if spec is None:
+        # Legacy umbrella inputs used to reach this check in the generic FES
+        # analyzer, after sampling. Keep typo rejection when that analyzer is
+        # no longer part of the rate path; neither value selects the rate estimator.
+        if (config.get("rate", {}).get("pmf_source") is None
+                and base.get("method", "mbar") not in ("mbar", "umbrella_integration")):
+            raise InputError(
+                "Omit the legacy analysis.method setting; select the rate estimator "
+                "with rate.pmf.estimator or rate.pmf_method"
+            )
         return base
     analysis = _overlay(base, spec.get("analysis", {}), (_BOOTSTRAP,))
     if analysis.get("measure", "rate_flux") != "rate_flux":
@@ -243,10 +252,20 @@ def resolve_rate_pmf_stage(raw, resolved, system):
     if "timestep" in local_dynamics and "timestep" not in local_sampling:
         sampling.pop("timestep", None)
     analysis = deepcopy(rate_pmf_analysis(raw))
-    expected_analysis = "mbar" if method == "umbrella" else "reweighted_histogram"
-    if analysis.get("method", expected_analysis) != expected_analysis:
-        raise InputError(f"rate.pmf.analysis.method must be '{expected_analysis}'; select the rate estimator with rate.pmf.estimator")
-    analysis.update(method=expected_analysis, measure="rate_flux")
+    if method == "umbrella":
+        # Sampling does not select a FES estimator. Accept the historical
+        # explicit MBAR setting without letting it override the rate estimator.
+        legacy_method = analysis.pop("method", "mbar")
+        if legacy_method != "mbar":
+            raise InputError(
+                "Select the rate estimator with rate.pmf.estimator, not "
+                "rate.pmf.analysis.method; omit the legacy analysis.method setting"
+            )
+    else:
+        if analysis.get("method", "reweighted_histogram") != "reweighted_histogram":
+            raise InputError("rate.pmf.analysis.method must be 'reweighted_histogram'; select the rate estimator with rate.pmf.estimator")
+        analysis["method"] = "reweighted_histogram"
+    analysis["measure"] = "rate_flux"
     stage = {
         "task": "fes", "fes": {"method": method}, "schema_version": raw.get("schema_version", 1),
         "preset": resolved["preset"], "temperature": resolved["temperature_K"],

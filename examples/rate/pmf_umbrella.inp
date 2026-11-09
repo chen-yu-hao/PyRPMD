@@ -1,4 +1,5 @@
-# Input/workflow pilot on the analytic teaching PES; not converged H + H2 data.
+# Gaussian UI umbrella rate on an analytic teaching PES; not converged H + H2 data.
+# The umbrella stage samples; rate analysis owns UI fitting and bootstrap.
 # PMF: normal-mode + PILE-L at 0.2 fs. Recrossing: Cayley at 0.1 fs.
 task = "rate"
 preset = "pilot"
@@ -26,11 +27,10 @@ rinf = "5 angstrom"
 
 [rate]
 dividing_surface = 1.0
-compare_ui = true
 
 [rate.pmf]
 method = "umbrella"
-estimator = "mbar"
+estimator = "ui"
 
 [rate.pmf.dynamics]
 integrator = "normal-mode-bab"
@@ -51,6 +51,7 @@ count = 24
 kappa = "0.16 hartree"
 
 [rate.pmf.analysis]
+# Only rate analysis controls live here; do not add analysis.method = "mbar".
 bins = 40
 bootstrap = 10
 

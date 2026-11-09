@@ -49,7 +49,7 @@ if os.environ.get("PYRPMD_NO_NATIVE", "0") != "1":
             "pyrpmd._thermal",
             ["native/thermal.cpp"],
             language="c++",
-            depends=["native/thermal.hpp", "native/ring_fft.h", "native/include/pyrpmd/pes_api_v1.h", "native/include/pyrpmd/thermal_pes.h"],
+            depends=["native/thermal.hpp", "native/philox.h", "native/ring_fft.h", "native/include/pyrpmd/pes_api_v1.h", "native/include/pyrpmd/thermal_pes.h"],
             extra_compile_args=compile_args,
             extra_link_args=link_args,
         )
