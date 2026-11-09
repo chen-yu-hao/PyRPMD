@@ -1,0 +1,167 @@
+{
+ "source": "GitHub Actions run 42575336118 (h3-subspace-truncation.yml), aggregate job log",
+ "truncation": "Eh above the collinear H2 ground level",
+ "merged_report_truncation_0.04": {
+  "600": 6.8729e-05,
+  "400": 5.8319e-06,
+  "300": 5.846e-07,
+  "200": 8.765e-09,
+  "150": 2.942e-10
+ },
+ "points": [
+  {
+   "temperature": 600.0,
+   "spacing": 2.0,
+   "truncation": 0.07,
+   "k_qm": 6.80225e-05,
+   "retained_points": 4810
+  },
+  {
+   "temperature": 600.0,
+   "spacing": 2.0,
+   "truncation": 0.1,
+   "k_qm": 6.694497e-05,
+   "retained_points": 5896
+  },
+  {
+   "temperature": 600.0,
+   "spacing": 2.0,
+   "truncation": 0.13,
+   "k_qm": 6.664431e-05,
+   "retained_points": 7004
+  },
+  {
+   "temperature": 600.0,
+   "spacing": 2.0,
+   "truncation": 0.16,
+   "k_qm": 6.656437e-05,
+   "retained_points": 8079
+  },
+  {
+   "temperature": 400.0,
+   "spacing": 2.0,
+   "truncation": 0.07,
+   "k_qm": 5.536847e-06,
+   "retained_points": 4810
+  },
+  {
+   "temperature": 400.0,
+   "spacing": 2.0,
+   "truncation": 0.1,
+   "k_qm": 5.420084e-06,
+   "retained_points": 5896
+  },
+  {
+   "temperature": 400.0,
+   "spacing": 2.0,
+   "truncation": 0.13,
+   "k_qm": 5.386357e-06,
+   "retained_points": 7004
+  },
+  {
+   "temperature": 400.0,
+   "spacing": 2.0,
+   "truncation": 0.16,
+   "k_qm": 5.377402e-06,
+   "retained_points": 8079
+  },
+  {
+   "temperature": 300.0,
+   "spacing": 2.0,
+   "truncation": 0.07,
+   "k_qm": 5.267819e-07,
+   "retained_points": 4810
+  },
+  {
+   "temperature": 300.0,
+   "spacing": 2.0,
+   "truncation": 0.1,
+   "k_qm": 5.140031e-07,
+   "retained_points": 5896
+  },
+  {
+   "temperature": 300.0,
+   "spacing": 2.0,
+   "truncation": 0.13,
+   "k_qm": 5.101582e-07,
+   "retained_points": 7004
+  },
+  {
+   "temperature": 300.0,
+   "spacing": 2.0,
+   "truncation": 0.16,
+   "k_qm": 5.091554e-07,
+   "retained_points": 8079
+  },
+  {
+   "temperature": 200.0,
+   "spacing": 2.0,
+   "truncation": 0.07,
+   "k_qm": 7.869078e-09,
+   "retained_points": 4810
+  },
+  {
+   "temperature": 200.0,
+   "spacing": 2.0,
+   "truncation": 0.1,
+   "k_qm": 7.670301e-09,
+   "retained_points": 5896
+  },
+  {
+   "temperature": 200.0,
+   "spacing": 2.0,
+   "truncation": 0.13,
+   "k_qm": 7.605709e-09,
+   "retained_points": 7004
+  },
+  {
+   "temperature": 200.0,
+   "spacing": 2.0,
+   "truncation": 0.16,
+   "k_qm": 7.590256e-09,
+   "retained_points": 8079
+  },
+  {
+   "temperature": 200.0,
+   "spacing": 1.75,
+   "truncation": 0.13,
+   "k_qm": 7.847686e-09,
+   "retained_points": 9065
+  },
+  {
+   "temperature": 150.0,
+   "spacing": 2.0,
+   "truncation": 0.07,
+   "k_qm": 2.859984e-10,
+   "retained_points": 4810
+  },
+  {
+   "temperature": 150.0,
+   "spacing": 2.0,
+   "truncation": 0.1,
+   "k_qm": 2.815385e-10,
+   "retained_points": 5896
+  },
+  {
+   "temperature": 150.0,
+   "spacing": 2.0,
+   "truncation": 0.13,
+   "k_qm": 2.799406e-10,
+   "retained_points": 7004
+  },
+  {
+   "temperature": 150.0,
+   "spacing": 2.0,
+   "truncation": 0.16,
+   "k_qm": 2.796342e-10,
+   "retained_points": 8079
+  },
+  {
+   "temperature": 150.0,
+   "spacing": 1.75,
+   "truncation": 0.13,
+   "k_qm": 2.977672e-10,
+   "retained_points": 9065
+  }
+ ]
+}
