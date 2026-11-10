@@ -104,7 +104,7 @@ class RingPolymerRateResult:
 class _RingPolymer:
     """Vectorized ring polymers ``[batch, bead, dimension]`` in normal modes."""
 
-    def __init__(self, model: SubspaceModel, beta: float, nbeads: int):
+    def __init__(self, model: SubspaceModel, beta: float, nbeads: int, *, backend="numpy", threads=1):
         self.model = model
         self.beta = float(beta)
         self.p = int(nbeads)
@@ -114,6 +114,8 @@ class _RingPolymer:
         self.c = normal_mode_matrix(self.p)
         self.omega = free_ring_frequencies(self.p, self.beta)
         self.momentum_scale = np.sqrt(self.mass / self.beta_p)
+        from .subspace_native import make_backend
+        self.native, self.fallback_reason = make_backend(self, backend, threads)
 
     def beads(self, modes):
         return np.einsum("jk,bkd->bjd", self.c, modes)
@@ -122,6 +124,8 @@ class _RingPolymer:
         return np.einsum("jk,bjd->bkd", self.c, beads)
 
     def potential(self, modes):
+        if self.native is not None:
+            return self.native.potential(modes)
         energy, gradient = self.model.energy_and_gradient(self.beads(modes))
         if not np.isfinite(energy).all() or not np.isfinite(gradient).all():
             raise FloatingPointError("subspace potential returned non-finite values")
@@ -153,6 +157,22 @@ class _RingPolymer:
             force[:, 0, 0] = 0.0
         momenta = momenta + 0.5 * dt * force
         return modes, momenta, force, energy, gradient
+
+    def advance(self, state, dt, propagator, constrained, steps, *, side=None, surface=0.0):
+        if self.native is not None:
+            try:
+                return self.native.advance(state, dt, steps, constrained, side=side, surface=surface)
+            except FloatingPointError:
+                # Replay only the failed proposal on the reference loop, preserving
+                # its all-walkers rejection and diagnostic evaluation count.
+                pass
+        if side is not None:
+            side[0] = state[0][:, 0, 0] / np.sqrt(self.p) > surface
+        for step in range(steps):
+            state = self.step(state[0], state[1], state[2], dt, propagator, constrained)
+            if side is not None:
+                side[step + 1] = state[0][:, 0, 0] / np.sqrt(self.p) > surface
+        return state
 
     def sample_momenta(self, rng, batch, constrained):
         momenta = rng.normal(size=(batch, self.p, self.d)) * self.momentum_scale[None, None, :]
@@ -204,6 +224,9 @@ def ring_polymer_rate(
     plateau_fraction: float = 0.3,
     bootstrap: int = 400,
     seed: int = 0,
+    backend: str = "auto",
+    threads: int = 1,
+    block_steps: int = 256,
 ) -> RingPolymerRateResult:
     """RPMD rate of ``model`` by centroid TI and recrossing trajectories.
 
@@ -216,7 +239,20 @@ def ring_polymer_rate(
     start paired ``+p``/``-p`` RPMD trajectories of length ``md_time``.
     Default time steps follow the largest thermally accessible frequency of
     ``V_S``; free ring-polymer motion is integrated exactly.
+
+    ``backend='auto'`` uses the optional C++/OpenMP spline and fused time-step
+    kernels for static grid models, otherwise the NumPy reference. ``native``
+    requires that capability; ``numpy`` explicitly retains the reference.
+    ``threads`` parallelizes complete rings, never fragments of one ring.
+    RNG draw order, global burn-in adaptation, signed pairs and estimator
+    definitions are unchanged. ``block_steps`` bounds recrossing call duration.
     """
+    from time import perf_counter
+    started = perf_counter()
+    timing = {}
+    from .subspace_native import positive_integer
+    block_steps = positive_integer(block_steps, "block_steps")
+    threads = positive_integer(threads, "threads")
     if not isinstance(model, SubspaceModel):
         raise TypeError("model must be a SubspaceModel")
     beta = float(beta)
@@ -244,7 +280,7 @@ def ring_polymer_rate(
             raise ValueError("windows must be increasing, contain four points and end at the dividing surface")
         if model.reactant == "asymptotic" and not np.isclose(grid[0], model.reactant_reference):
             raise ValueError("asymptotic windows must start at reactant_reference")
-    ring = _RingPolymer(model, beta, int(nbeads))
+    ring = _RingPolymer(model, beta, int(nbeads), backend=backend, threads=threads)
     frequency = _thermal_frequency(model, beta)
     hmc_step = 0.3 / frequency if hmc_dt is None else float(hmc_dt)
     md_step = 0.1 / frequency if md_dt is None else float(md_dt)
@@ -279,8 +315,7 @@ def ring_polymer_rate(
         trial = (modes, momenta, force, energy, gradient)
         steps = max(1, int(round(leapfrog_steps * rng.uniform(0.5, 1.5))))
         try:
-            for _ in range(steps):
-                trial = ring.step(trial[0], trial[1], trial[2], hmc_step, propagator, True)
+            trial = ring.advance(trial, hmc_step, propagator, True, steps)
             new_modes, new_momenta, new_force, new_energy, new_gradient = trial
             delta = ring.kinetic(new_momenta) + ring.spring(new_modes) + new_energy - start_h
             accept = np.log(rng.uniform(size=batch)) < -ring.beta_p * np.nan_to_num(delta, nan=np.inf)
@@ -306,6 +341,8 @@ def ring_polymer_rate(
     mean_force = walker_means.mean(axis=1)
     mean_force_error = walker_means.std(axis=1, ddof=1) / np.sqrt(nwalk)
 
+    timing["hmc_seconds"] = perf_counter() - started
+    stage_start = perf_counter()
     # --- free energy and QTST with parametric bootstrap -----------------
     def qtst_log(force_profile, grid=grid):
         antiderivative = _integrate_profile(grid, force_profile)
@@ -332,6 +369,8 @@ def ring_polymer_rate(
         quadrature_error = float("nan")
     log_qtst_error = float(np.hypot(log_qtst_statistical, np.nan_to_num(quadrature_error)))
 
+    timing["qtst_seconds"] = perf_counter() - stage_start
+    stage_start = perf_counter()
     # --- dividing-surface configurations and recrossing ----------------
     first = (nw - 1) * nwalk
     surf_modes = modes[first:].copy()
@@ -344,8 +383,8 @@ def ring_polymer_rate(
         start_h = ring.kinetic(momenta) + ring.spring(surf_modes) + surf_energy
         trial = (surf_modes, momenta, surf_force, surf_energy, surf_gradient)
         try:
-            for _ in range(max(1, int(round(leapfrog_steps * rng.uniform(0.5, 1.5))))):
-                trial = ring.step(trial[0], trial[1], trial[2], hmc_step, propagator, True)
+            steps = max(1, int(round(leapfrog_steps * rng.uniform(0.5, 1.5))))
+            trial = ring.advance(trial, hmc_step, propagator, True, steps)
             delta = ring.kinetic(trial[1]) + ring.spring(trial[0]) + trial[3] - start_h
             accept = np.log(rng.uniform(size=nwalk)) < -ring.beta_p * np.nan_to_num(delta, nan=np.inf)
         except FloatingPointError:
@@ -356,6 +395,8 @@ def ring_polymer_rate(
         surf_energy = np.where(accept, trial[3], surf_energy)
         surf_gradient = np.where(accept[:, None, None], trial[4], surf_gradient)
         collected.append(surf_modes.copy())
+    timing["surface_sampling_seconds"] = perf_counter() - stage_start
+    stage_start = perf_counter()
     starts = np.concatenate(collected)[: int(trajectories)]
     ntraj = len(starts)
     momenta = ring.sample_momenta(rng, ntraj, False)
@@ -368,30 +409,44 @@ def ring_polymer_rate(
     initial_h = ring.kinetic(md_momenta) + ring.spring(md_modes) + md_energy
     side = np.empty((md_steps + 1, 2 * ntraj), dtype=bool)
     side[0] = md_modes[:, 0, 0] / np.sqrt(ring.p) > surface
-    for step in range(1, md_steps + 1):
-        md_modes, md_momenta, md_force, md_energy, _ = ring.step(
-            md_modes, md_momenta, md_force, md_step, md_propagator, False)
-        side[step] = md_modes[:, 0, 0] / np.sqrt(ring.p) > surface
+    state = (md_modes, md_momenta, md_force, md_energy, md_gradient)
+    for first_step in range(0, md_steps, block_steps):
+        count = min(block_steps, md_steps - first_step)
+        state = ring.advance(state, md_step, md_propagator, False, count,
+                             side=side[first_step:first_step + count + 1], surface=surface)
+    md_modes, md_momenta, md_force, md_energy, _ = state
     final_h = ring.kinetic(md_momenta) + ring.spring(md_modes) + md_energy
     energy_error = float(np.max(np.abs(final_h - initial_h)) * ring.beta_p)
-    forward, backward = side[:, :ntraj].astype(float), side[:, ntraj:].astype(float)
-    numerator = velocity[None, :] * (forward - backward)
+    timing["recrossing_seconds"] = perf_counter() - stage_start
+    stage_start = perf_counter()
+    # One float buffer, not separate forward/backward/difference temporaries.
+    numerator = np.subtract(side[:, :ntraj], side[:, ntraj:], dtype=float)
+    numerator *= velocity[None, :]
     denominator = float(np.sum(np.abs(velocity)))
     kappa = numerator.sum(axis=1) / denominator
     time = np.arange(md_steps + 1) * md_step
     tail = max(2, int(np.ceil(plateau_fraction * len(time))))
     plateau = float(kappa[-tail:].mean())
+    # Time averaging is linear: retain each pair's tail contribution before
+    # resampling. This avoids a [tail, trajectories] gather per bootstrap draw.
+    pair_tail = numerator[-tail:].mean(axis=0)
     boot = []
     for _ in range(int(bootstrap)):
         index = rng.integers(0, ntraj, size=ntraj)
-        boot.append(numerator[-tail:, index].sum(axis=1).mean() / np.sum(np.abs(velocity[index])))
+        boot.append(pair_tail[index].sum() / np.sum(np.abs(velocity[index])))
     kappa_error = float(np.std(boot, ddof=1)) if len(boot) > 1 else float("nan")
     plateau_drift = float(abs(kappa[-tail] - kappa[-1]))
 
     qtst = float(np.exp(log_qtst))
     rate = qtst * plateau
     relative = np.hypot(log_qtst_error, kappa_error / plateau if plateau > 0 else np.inf)
+    timing["analysis_seconds"] = perf_counter() - stage_start
+    timing["total_seconds"] = perf_counter() - started
     diagnostics = {
+        "timing": timing,
+        "execution": {"backend": "native" if ring.native is not None else "numpy",
+                      "threads": threads, "block_steps": block_steps,
+                      "fallback_reason": ring.fallback_reason, "rng": "numpy.default_rng"},
         "nbeads": int(nbeads),
         "windows": int(nw),
         "walkers_per_window": nwalk,

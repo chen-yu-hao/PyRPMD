@@ -79,3 +79,5 @@ include benchmarks/mixed_sampling_validation.py
 include benchmarks/paper_validation/dac_spin_statistical.py benchmarks/paper_validation/dac_p*_liu2024_reference.csv
 
 recursive-include examples/nonadiabatic/data *.csv
+
+include benchmarks/subspace_performance.py

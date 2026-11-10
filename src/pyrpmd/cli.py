@@ -542,10 +542,10 @@ def main(argv=None):
                 _print(_rate_postprocess_summary(result))
         elif args.command == "subspace-correct":
             from .analysis.subspace_pipeline import run_subspace_pipeline
-            from .parallel import root_call
+            from .parallel import is_root
 
-            report = root_call(run_subspace_pipeline, args.input)
-            if report is not None:
+            report = run_subspace_pipeline(args.input)
+            if is_root() and report is not None:
                 corrected = report["corrected_rate"]
                 unit = "s_inv" if corrected.get("task") == "surface_rate" else "cm3_s"
                 _print({

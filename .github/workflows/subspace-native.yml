@@ -7,9 +7,12 @@ on:
     paths:
       - 'native/subspace*'
       - 'src/pyrpmd/analysis/subspace*'
+      - 'src/pyrpmd/cli.py'
       - 'tests/test_subspace*'
+      - 'tests/mpi_subspace.py'
       - 'benchmarks/subspace_performance.py'
       - 'setup.py'
+      - 'native/CMakeLists.txt'
       - '.github/workflows/subspace-native.yml'
 
 permissions:
@@ -20,33 +23,19 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  source:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - name: Validate workflow policy
-        run: python tools/check_workflow_policy.py
-      - name: Archive exact tested source
-        run: |
-          git rev-parse HEAD > source-commit.txt
-          git archive --format=tar.gz HEAD -o subspace-source.tar.gz
-      - uses: actions/upload-artifact@v4
-        with:
-          name: subspace-source-${{ github.sha }}
-          path: |
-            subspace-source.tar.gz
-            source-commit.txt
-          retention-days: 7
   regression:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        no_openmp: ['0', '1']
     env:
+      PYRPMD_NO_OPENMP: ${{ matrix.no_openmp }}
       OPENBLAS_NUM_THREADS: '1'
       MKL_NUM_THREADS: '1'
       OMP_NUM_THREADS: '2'
+      OMP_WAIT_POLICY: PASSIVE
     steps:
       - uses: actions/checkout@v4
         with:
@@ -54,12 +43,49 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - run: python tools/check_workflow_policy.py
       - run: python -m pip install -e '.[test]'
-      - name: Subspace correction and transfer regression
-        run: python -m pytest -q tests/test_subspace_correction.py tests/test_subspace_transfer.py --junitxml=subspace-tests.xml
+      - name: Native, reference, cache, process and solver regression
+        run: |
+          python -m pytest -q tests/test_subspace_native.py tests/test_subspace_linalg.py tests/test_subspace_execution.py tests/test_subspace_correction.py tests/test_subspace_transfer.py tests/test_centroid_path.py tests/test_input_cli.py tests/test_cli_ux.py --junitxml=subspace-tests.xml
+      - name: Fixed-workload solver performance pilot
+        if: matrix.no_openmp == '0'
+        run: |
+          python benchmarks/subspace_performance.py --dimension 1 --threads 2 --repeats 3 --output performance-1d.json
+          python benchmarks/subspace_performance.py --dimension 2 --threads 2 --repeats 3 --output performance-2d.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: subspace-tests-${{ github.sha }}
-          path: subspace-tests.xml
+          name: subspace-tests-noomp-${{ matrix.no_openmp }}-${{ github.sha }}
+          path: |
+            subspace-tests.xml
+            performance-*.json
+          retention-days: 14
+  mpi:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      OMP_WAIT_POLICY: PASSIVE
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update && sudo apt-get install -y libopenmpi-dev openmpi-bin
+      - run: python -m pip install -e '.[test,mpi]'
+      - name: Static and dynamic collective task execution
+        run: |
+          set -o pipefail
+          timeout 180 mpiexec --oversubscribe -n 2 python tests/mpi_subspace.py --scheduling static | tee mpi-static.log
+          timeout 180 mpiexec --oversubscribe -n 3 python tests/mpi_subspace.py --scheduling dynamic | tee mpi-dynamic.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: subspace-mpi-${{ github.sha }}
+          path: mpi-*.log
           retention-days: 14
