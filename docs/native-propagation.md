@@ -146,6 +146,11 @@ Materials summaries retain their existing per-replica `propagation` list;
 and `fallback_reasons`. FES and rate summaries retain their `propagation`
 mapping with aggregate counts and stage details.
 
+`propagation_plan` describes the current invocation's requested configuration.
+On a completed resume, changing `--loop-backend` can therefore change this plan
+without advancing any trajectory. The saved propagation counters continue to
+report the work actually performed; they and the scientific identity are unchanged.
+
 | Task | Stage | Native when | Python fallback / first reason |
 | --- | --- | --- | --- |
 | `fes`, `rate`, `surface_rate` | fixed umbrella production | stateless native PES, centroid CV/bias descriptors (including `fractional`), and a supported sampling schedule | custom/stateful PES, unsupported CV or bias, composed operators, or thermostat scheduling |

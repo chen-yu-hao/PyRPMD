@@ -394,15 +394,18 @@ def main(argv=None):
             config, system = spec.resolve()
             from .runner import propagation_backend_plan, _append_backend_warnings
 
-            backend_plan = ([] if config.get("task") == "pcet"
-                            else propagation_backend_plan(config, system))
-            _append_backend_warnings(config, backend_plan)
             if args.check_pes:
                 from .runner import prepare
 
                 result = prepare(spec, numerical=True)
+                config = result["resolved"]
+                backend_plan = result["propagation_plan"]
             else:
                 from .parallel import execution_plan
+
+                backend_plan = ([] if config.get("task") == "pcet"
+                                else propagation_backend_plan(config, system))
+                _append_backend_warnings(config, backend_plan)
 
                 if config["task"] == "pcet":
                     from .workflows.pcet import prepare_pcet

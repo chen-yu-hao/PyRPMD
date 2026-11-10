@@ -41,11 +41,12 @@ def _planned_propagation_steps(config):
     return max(0, total)
 
 
-def propagation_backend_plan(config, system):
+def propagation_backend_plan(config, system, *, potential=None):
     """Describe the backend selected for each planned workflow stage.
 
     This constructs provider/CV descriptors but never evaluates a PES or
-    advances a state, making it safe for ``pyrpmd validate``.
+    advances a state, making it safe for ``pyrpmd validate``. An optional live
+    potential is borrowed from preparation and remains owned by its caller.
     """
     from .propagation import native_support_reason
 
@@ -63,8 +64,8 @@ def propagation_backend_plan(config, system):
     options = config.get("dynamics", {})
     if not isinstance(options, Mapping):
         options = {}
-    provider = None
-    provider_owned = isinstance(config.get("potential"), Mapping)
+    provider = potential
+    provider_owned = potential is None and isinstance(config.get("potential"), Mapping)
     dynamics = None
     base_reason = None
     base_backend = "native"
@@ -87,7 +88,7 @@ def propagation_backend_plan(config, system):
             provider = None
             dynamics = None
         else:
-            provider = make_potential(potential_spec, system)
+            provider = potential if potential is not None else make_potential(potential_spec, system)
             dynamics = Dynamics(
                 provider, system.masses, config["beta"], config["beads"], config["dt_au"],
                 native=config.get("native", options.get("native", True)),
@@ -124,7 +125,7 @@ def propagation_backend_plan(config, system):
             if stage_config is not config:
                 # Independent PMF stages own their integrator, clock, native
                 # switch and thermostat; use the same resolved stage as run_rate.
-                stages.extend(propagation_backend_plan(stage_config, system))
+                stages.extend(propagation_backend_plan(stage_config, system, potential=provider))
             elif not external:
                 cv, _, windows = resolve_window_plan(stage_config, system)
                 steps = sum(
@@ -930,16 +931,18 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
 def prepare(job, *, numerical=False):
     spec = _spec(job)
     config, system = spec.resolve()
-    backend_plan = [] if config.get("task") == "pcet" else propagation_backend_plan(config, system)
-    _append_backend_warnings(config, backend_plan)
+    backend_plan = []
     if config["task"] == "nonadiabatic":
         from .workflows.nonadiabatic import prepare_nonadiabatic
 
+        preparation = prepare_nonadiabatic(config, system, numerical=numerical)
+        backend_plan = propagation_backend_plan(config, system)
+        _append_backend_warnings(config, backend_plan)
         return {
             "task": "nonadiabatic", "resolved": config, "system": system.to_dict(),
             "diagnostics": config.get("_warnings", []), "ready": True,
             "propagation_plan": backend_plan,
-            "nonadiabatic_preparation": prepare_nonadiabatic(config, system, numerical=numerical),
+            "nonadiabatic_preparation": preparation,
         }
     if config["task"] == "pcet":
         from .workflows.pcet import prepare_pcet
@@ -1085,6 +1088,8 @@ def prepare(job, *, numerical=False):
 
         result["network_preparation"] = prepare_network(config, system, numerical=numerical)
         result["ready"] = result["network_preparation"].get("ready", False)
+        result["propagation_plan"] = propagation_backend_plan(config, system)
+        _append_backend_warnings(config, result["propagation_plan"])
         return result
     elif config["task"] == "spectroscopy":
         from .workflows.spectroscopy import prepare_spectroscopy
@@ -1232,6 +1237,7 @@ def prepare(job, *, numerical=False):
                                         **materials_options["barostat"])
                     q = np.repeat(x, config["beads"], axis=0)
                     result["pes_check"]["initial_configurational_pressure_au"] = piston.pressure(State(q, np.zeros_like(q)))
+            backend_plan = propagation_backend_plan(config, system, potential=provider)
         finally:
             close = getattr(provider, "close", None)
             if callable(close):
@@ -1247,4 +1253,8 @@ def prepare(job, *, numerical=False):
                 close = getattr(friction, "close", None)
                 if callable(close):
                     close()
+    if not numerical:
+        backend_plan = propagation_backend_plan(config, system)
+    result["propagation_plan"] = backend_plan
+    _append_backend_warnings(config, backend_plan)
     return result
