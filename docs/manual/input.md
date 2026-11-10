@@ -118,6 +118,7 @@ requirements.
 | `output.checkpoint_interval` | `10 fs` | |
 | `analysis.bins` | 40 for FES; 100 for the rate PMF | |
 | `analysis.bootstrap` | 20 | A short analysis budget, not a precision target; 0 for metadynamics and OPES; 1 is rejected |
+| `analysis.bootstrap_workers` | follows `parallel.trajectory_workers` | Overrides the MBAR bootstrap worker count; `1` forces serial execution, MPI keeps implicit bootstrap serial until rank semantics are defined, and the effective count is capped by an estimated memory budget |
 | `analysis.min_count` | 1 | Bins with fewer samples are masked |
 | `collision.trajectories` / `max_time` | 4 / `100 fs` | `drpmd` only |
 | `collision.sampling` / `bmax` | `thermal_flux` / `auto` = R0/4 | With `auto`, no thermal rate is reported |
