@@ -1,6 +1,7 @@
 """Regression coverage for issue #167 backend transparency and projections."""
 
 import numpy as np
+import pytest
 
 from pyrpmd.block_propagation import cv_descriptor as block_cv_descriptor
 from pyrpmd.cv_periodic import FractionalCoordinate
@@ -36,6 +37,7 @@ def test_summary_propagation_combines_nested_streams_without_mutating_records():
         "fallback_reasons": {"cv": 3, "pes": 1},
     }
     assert first["fallback_reasons"] == {"cv": 2}
+    assert _summary_propagation(result) == result
     assert combine_propagation_stats([]) == {
         "native_steps": 0, "python_steps": 0, "fallback_reasons": {},
     }
@@ -201,3 +203,20 @@ def test_surface_plan_uses_declared_surface_before_testing_native_support(monkey
     monkeypatch.setattr(surface, "surface_definition", definition)
     propagation_backend_plan(resolved, system)
     assert seen == [raw["surface"]["dividing_surface"]]
+
+
+@pytest.mark.parametrize("collection", [list, tuple])
+def test_summary_preserves_legacy_propagation_collection_and_totals(collection):
+    streams = collection([
+        {"sampling": {"native_steps": 7, "python_steps": 0}, "production": None},
+        {"sampling": {"native_steps": 0, "python_steps": 3,
+                      "fallback_reasons": {"provider": 3}}},
+    ])
+    source = {"propagation": streams}
+    result = _summary_propagation(source)
+    assert result["propagation"] is streams
+    assert "propagation_totals" not in source
+    assert "propagation_streams" not in result
+    assert result["propagation_totals"] == {
+        "native_steps": 7, "python_steps": 3, "fallback_reasons": {"provider": 3}}
+    assert _summary_propagation(result) == result

@@ -226,7 +226,7 @@ def _append_backend_warnings(config, plan):
 
 
 def _summary_propagation(result):
-    """Ensure every run summary has a public propagation accounting field."""
+    """Expose propagation totals while preserving each workflow's public shape."""
     if not isinstance(result, Mapping):
         return result
     existing = result.get("propagation")
@@ -240,8 +240,9 @@ def _summary_propagation(result):
             if {"native_steps", "python_steps"}.issubset(value):
                 records.append(value)
                 return  # This node already aggregates any nested stage details.
-            for child in value.values():
-                visit(child)
+            for key, child in value.items():
+                if key != "propagation_totals":
+                    visit(child)
         elif isinstance(value, (list, tuple)):
             for child in value:
                 visit(child)
@@ -254,7 +255,7 @@ def _summary_propagation(result):
         # available at the stable top level expected by result consumers.
         return {**result, "propagation": {**existing, **combined}}
     if isinstance(existing, (list, tuple)):
-        return {**result, "propagation": combined, "propagation_streams": list(existing)}
+        return {**result, "propagation_totals": combined}
     return {**result, "propagation": combined}
 
 

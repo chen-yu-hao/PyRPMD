@@ -141,6 +141,11 @@ the accepted work is recorded in `propagation` in the result summary.  The
 table describes the normal `loop_backend="auto"` decision; an explicit
 `loop_backend="python"` always selects the Python row.
 
+Materials summaries retain their existing per-replica `propagation` list;
+`propagation_totals` contains its aggregate `native_steps`, `python_steps`,
+and `fallback_reasons`. FES and rate summaries retain their `propagation`
+mapping with aggregate counts and stage details.
+
 | Task | Stage | Native when | Python fallback / first reason |
 | --- | --- | --- | --- |
 | `fes`, `rate`, `surface_rate` | fixed umbrella production | stateless native PES, centroid CV/bias descriptors (including `fractional`), and a supported sampling schedule | custom/stateful PES, unsupported CV or bias, composed operators, or thermostat scheduling |
