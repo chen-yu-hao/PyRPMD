@@ -114,12 +114,35 @@ class _RingPolymer:
         self.c = normal_mode_matrix(self.p)
         self.omega = free_ring_frequencies(self.p, self.beta)
         self.momentum_scale = np.sqrt(self.mass / self.beta_p)
+        self.variable_metric = model.metric is not None
 
     def beads(self, modes):
         return np.einsum("jk,bkd->bjd", self.c, modes)
 
     def modes(self, beads):
         return np.einsum("jk,bjd->bkd", self.c, beads)
+
+    def _coordinate_masses(self, beads):
+        """Coordinate mass tensor, including the optional path metric."""
+        masses = np.broadcast_to(self.mass, beads.shape).copy()
+        if self.variable_metric:
+            inverse = self.model.inverse_metric(beads)
+            masses[..., 0] = 1.0 / inverse
+        return masses
+
+    def _mass_gradient(self, beads):
+        """Finite-difference derivative of the coordinate mass tensor."""
+        derivative = np.zeros(beads.shape + (self.d,))
+        if not self.variable_metric:
+            return derivative
+        for axis in range(self.d):
+            step = 1e-5 * max(float(self.model.spacing[axis]), 1e-8)
+            delta = np.zeros(self.d)
+            delta[axis] = step
+            plus = self._coordinate_masses(beads + delta)
+            minus = self._coordinate_masses(beads - delta)
+            derivative[..., axis] = (plus - minus) / (2 * step)
+        return derivative
 
     def potential(self, modes):
         beads = self.beads(modes)
@@ -145,12 +168,28 @@ class _RingPolymer:
         return energy.sum(axis=1), gradient
 
     def spring(self, modes):
+        if self.variable_metric:
+            beads = self.beads(modes)
+            masses = self._coordinate_masses(beads)
+            difference = np.roll(beads, -1, axis=1) - beads
+            edge_mass = 0.5 * (masses + np.roll(masses, -1, axis=1))
+            return 0.5 / self.beta_p**2 * np.sum(edge_mass * difference**2, axis=(1, 2))
         return 0.5 * np.sum(self.mass[None, None, :] * (self.omega[None, :, None] * modes) ** 2, axis=(1, 2))
 
-    def kinetic(self, momenta):
+    def kinetic(self, momenta, modes=None):
+        if self.variable_metric:
+            if modes is None:
+                raise ValueError("variable-metric kinetic energy needs coordinate modes")
+            p_beads = self.beads(momenta)
+            masses = self._coordinate_masses(self.beads(modes))
+            return 0.5 * np.sum(p_beads**2 / masses, axis=(1, 2))
         return 0.5 * np.sum(momenta**2 / self.mass[None, None, :], axis=(1, 2))
 
     def free_propagator(self, dt):
+        if self.variable_metric:
+            # The spring frequencies are coordinate dependent; the metric
+            # branch uses bead-coordinate velocity Verlet instead.
+            return None
         w = self.omega[:, None] * np.ones((1, self.d))
         m = np.ones((self.p, 1)) * self.mass[None, :]
         cos = np.cos(w * dt)
@@ -160,7 +199,61 @@ class _RingPolymer:
         p_from_q = -m * w * sin
         return cos, q_from_p, p_from_q
 
+    def _variable_force(self, modes, momenta, constrained):
+        beads = self.beads(modes)
+        p_beads = self.beads(momenta)
+        _, gradient = self.potential(modes)
+        masses = self._coordinate_masses(beads)
+        dm = self._mass_gradient(beads)
+        difference = np.roll(beads, -1, axis=1) - beads
+        previous = beads - np.roll(beads, 1, axis=1)
+        edge = 0.5 * (masses + np.roll(masses, -1, axis=1))
+        previous_edge = 0.5 * (masses + np.roll(masses, 1, axis=1))
+        coefficient = 1.0 / self.beta_p**2
+        spring_gradient = coefficient * (previous_edge * previous - edge * difference)
+        spring_gradient += 0.25 * coefficient * np.sum(
+            dm * (previous**2 + difference**2)[..., :, None], axis=-2
+        )
+        kinetic_gradient = -0.5 * np.sum(
+            (p_beads**2)[..., :, None] * dm / (masses[..., :, None]**2), axis=-2
+        )
+        total = gradient + spring_gradient + kinetic_gradient
+        force = -total
+        if constrained:
+            force[..., 0] -= force[..., 0].mean(axis=1, keepdims=True)
+        return self.modes(force)
+
+    def _step_variable(self, modes, momenta, dt, constrained):
+        beads = self.beads(modes)
+        p_beads = self.beads(momenta)
+        fixed_centroid = beads[:, :, 0].mean(axis=1)
+        force = self._variable_force(modes, momenta, constrained)
+        p_beads += 0.5 * dt * self.beads(force)
+        masses = self._coordinate_masses(beads)
+        beads = beads + dt * p_beads / masses
+        if constrained:
+            beads[..., 0] += fixed_centroid[:, None] - beads[..., 0].mean(axis=1, keepdims=True)
+        modes = self.modes(beads)
+        if constrained:
+            modes[:, 0, 0] = fixed_centroid * np.sqrt(self.p)
+            p_modes = self.modes(p_beads)
+            p_modes[:, 0, 0] = 0.0
+        else:
+            p_modes = self.modes(p_beads)
+        force = self._variable_force(modes, p_modes, constrained)
+        p_beads += 0.5 * dt * self.beads(force)
+        if constrained:
+            p_beads[..., 0] -= p_beads[..., 0].mean(axis=1, keepdims=True)
+            p_modes = self.modes(p_beads)
+            p_modes[:, 0, 0] = 0.0
+        else:
+            p_modes = self.modes(p_beads)
+        energy, gradient = self.potential(modes)
+        return modes, p_modes, force, energy, gradient
+
     def step(self, modes, momenta, force, dt, propagator, constrained):
+        if self.variable_metric:
+            return self._step_variable(modes, momenta, dt, constrained)
         momenta = momenta + 0.5 * dt * force
         cos, q_from_p, p_from_q = propagator
         modes, momenta = cos * modes + q_from_p * momenta, p_from_q * modes + cos * momenta
@@ -171,7 +264,19 @@ class _RingPolymer:
         momenta = momenta + 0.5 * dt * force
         return modes, momenta, force, energy, gradient
 
-    def sample_momenta(self, rng, batch, constrained):
+    def sample_momenta(self, rng, batch, constrained, modes=None):
+        if self.variable_metric:
+            # The canonical momentum covariance is the coordinate mass divided
+            # by beta_P.  Transforming the bead momenta preserves orthogonality
+            # of the normal-mode representation used by the sampler.
+            if modes is None:
+                raise ValueError("variable-metric momentum sampling needs coordinate modes")
+            masses = self._coordinate_masses(self.beads(modes))
+            momenta = rng.normal(size=(batch, self.p, self.d)) * np.sqrt(masses / self.beta_p)
+            momenta = self.modes(momenta)
+            if constrained:
+                momenta[:, 0, 0] = 0.0
+            return momenta
         momenta = rng.normal(size=(batch, self.p, self.d)) * self.momentum_scale[None, None, :]
         if constrained:
             momenta[:, 0, 0] = 0.0
@@ -291,15 +396,15 @@ def ring_polymer_rate(
     samples = np.zeros(batch)
     sample_count = 0
     for sweep in range(int(burn_in) + int(sweeps)):
-        momenta = ring.sample_momenta(rng, batch, True)
-        start_h = ring.kinetic(momenta) + ring.spring(modes) + energy
+        momenta = ring.sample_momenta(rng, batch, True, modes)
+        start_h = ring.kinetic(momenta, modes) + ring.spring(modes) + energy
         trial = (modes, momenta, force, energy, gradient)
         steps = max(1, int(round(leapfrog_steps * rng.uniform(0.5, 1.5))))
         try:
             for _ in range(steps):
                 trial = ring.step(trial[0], trial[1], trial[2], hmc_step, propagator, True)
             new_modes, new_momenta, new_force, new_energy, new_gradient = trial
-            delta = ring.kinetic(new_momenta) + ring.spring(new_modes) + new_energy - start_h
+            delta = ring.kinetic(new_momenta, new_modes) + ring.spring(new_modes) + new_energy - start_h
             accept = np.log(rng.uniform(size=batch)) < -ring.beta_p * np.nan_to_num(delta, nan=np.inf)
         except FloatingPointError:
             # A non-finite trial (e.g. a step into a wall region) is rejected.
@@ -357,13 +462,13 @@ def ring_polymer_rate(
     surf_gradient = gradient[first:].copy()
     collected = []
     while sum(len(c) for c in collected) < trajectories:
-        momenta = ring.sample_momenta(rng, nwalk, True)
-        start_h = ring.kinetic(momenta) + ring.spring(surf_modes) + surf_energy
+        momenta = ring.sample_momenta(rng, nwalk, True, surf_modes)
+        start_h = ring.kinetic(momenta, surf_modes) + ring.spring(surf_modes) + surf_energy
         trial = (surf_modes, momenta, surf_force, surf_energy, surf_gradient)
         try:
             for _ in range(max(1, int(round(leapfrog_steps * rng.uniform(0.5, 1.5))))):
                 trial = ring.step(trial[0], trial[1], trial[2], hmc_step, propagator, True)
-            delta = ring.kinetic(trial[1]) + ring.spring(trial[0]) + trial[3] - start_h
+            delta = ring.kinetic(trial[1], trial[0]) + ring.spring(trial[0]) + trial[3] - start_h
             accept = np.log(rng.uniform(size=nwalk)) < -ring.beta_p * np.nan_to_num(delta, nan=np.inf)
         except FloatingPointError:
             trial = (surf_modes, momenta, surf_force, surf_energy, surf_gradient)
@@ -375,21 +480,26 @@ def ring_polymer_rate(
         collected.append(surf_modes.copy())
     starts = np.concatenate(collected)[: int(trajectories)]
     ntraj = len(starts)
-    momenta = ring.sample_momenta(rng, ntraj, False)
-    velocity = momenta[:, 0, 0] / (np.sqrt(ring.p) * model.masses[0])
+    momenta = ring.sample_momenta(rng, ntraj, False, starts)
+    if ring.variable_metric:
+        p_beads = ring.beads(momenta)
+        masses = ring._coordinate_masses(ring.beads(starts))
+        velocity = np.mean(p_beads[..., 0] / masses[..., 0], axis=1)
+    else:
+        velocity = momenta[:, 0, 0] / (np.sqrt(ring.p) * model.masses[0])
     md_modes = np.concatenate([starts, starts])
     md_momenta = np.concatenate([momenta, -momenta])
     md_energy, md_gradient = ring.potential(md_modes)
     md_force = -ring.modes(md_gradient)
     md_propagator = ring.free_propagator(md_step)
-    initial_h = ring.kinetic(md_momenta) + ring.spring(md_modes) + md_energy
+    initial_h = ring.kinetic(md_momenta, md_modes) + ring.spring(md_modes) + md_energy
     side = np.empty((md_steps + 1, 2 * ntraj), dtype=bool)
     side[0] = md_modes[:, 0, 0] / np.sqrt(ring.p) > surface
     for step in range(1, md_steps + 1):
         md_modes, md_momenta, md_force, md_energy, _ = ring.step(
             md_modes, md_momenta, md_force, md_step, md_propagator, False)
         side[step] = md_modes[:, 0, 0] / np.sqrt(ring.p) > surface
-    final_h = ring.kinetic(md_momenta) + ring.spring(md_modes) + md_energy
+    final_h = ring.kinetic(md_momenta, md_modes) + ring.spring(md_modes) + md_energy
     energy_error = float(np.max(np.abs(final_h - initial_h)) * ring.beta_p)
     forward, backward = side[:, :ntraj].astype(float), side[:, ntraj:].astype(float)
     numerator = velocity[None, :] * (forward - backward)

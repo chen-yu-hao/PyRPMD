@@ -96,7 +96,7 @@ def test_separable_channels_have_known_local_levels_and_no_couplings():
         [one.sigma], masses=1.0, dividing_surface=0.0, reactant_reference=-2.0,
     )
     reference_rate = exact_quantum_rate(one_d, beta, method="sylvester")
-    assert channel_rate.rate == pytest.approx(reference_rate.rate, rel=2e-11)
+    assert channel_rate.rate == pytest.approx(reference_rate.rate, rel=1e-12)
     assert channel_rate.diagnostics["normal_grid_points"] == 161
     assert channel_rate.diagnostics["truncation_margin"] > 2.0
 
@@ -141,6 +141,22 @@ def test_curvature_coupling_is_hermitian_and_assembly_is_deterministic():
     energy, gradient = ring.potential(np.zeros((3, 2, 2)))
     assert energy.shape == (3,)
     assert gradient.shape == (3, 2, 2)
+
+    modes = np.zeros((3, 2, 2))
+    modes[:, 0, 0] = np.array([-0.8, 0.0, 0.8])
+    modes[:, 1, 1] = np.array([0.2, -0.3, 0.1])
+    beads = ring.beads(modes)
+    coordinate_mass = np.ones_like(beads)
+    coordinate_mass[..., 0] = 1.0 / model.inverse_metric(beads)
+    difference = np.roll(beads, -1, axis=1) - beads
+    edge_mass = 0.5 * (coordinate_mass + np.roll(coordinate_mass, -1, axis=1))
+    expected_spring = 0.5 / ring.beta_p**2 * np.sum(edge_mass * difference**2, axis=(1, 2))
+    assert np.allclose(ring.spring(modes), expected_spring)
+    momenta = ring.sample_momenta(np.random.default_rng(4), 3, False, modes)
+    expected_kinetic = 0.5 * np.sum(ring.beads(momenta)**2 / coordinate_mass, axis=(1, 2))
+    assert np.allclose(ring.kinetic(momenta, modes), expected_kinetic)
+    stepped = ring.step(modes, momenta, np.zeros_like(modes), 1e-3, None, False)
+    assert all(np.isfinite(value).all() for value in stepped[:2])
 
 
 @pytest.mark.skipif(build_subspace_channels is None, reason="subspace_channels is not available")

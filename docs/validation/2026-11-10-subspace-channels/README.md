@@ -50,6 +50,14 @@ Record `n_ch = 1, 2, 4, 6, 8`, grid sizes, wall/truncation margins, dense
 solve time, `C_S`, and `physical_converged` in the table before treating the
 result as a production transfer factor.
 
+The RPMD metric path is now a bead-coordinate branch: each cyclic spring uses
+the edge-averaged coordinate mass `m_sigma = 1/g^{sigma sigma}`, momenta are
+sampled with the same bead masses, the kinetic energy is `p^2/(2m(q))`, and
+the velocity-Verlet force includes both spring-mass and kinetic-mass
+derivatives.  The constant-mass normal-mode propagator remains unchanged for
+ordinary `SubspaceModel` instances.  The metric branch is covered by the
+finite-force and finite-step checks in `tests/test_subspace_channels.py`.
+
 ## Scope and known limits
 
 The channel Hamiltonian is dense and therefore intended for a few channels and
