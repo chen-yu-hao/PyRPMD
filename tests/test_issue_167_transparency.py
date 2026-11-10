@@ -237,3 +237,44 @@ def test_backend_plan_borrows_provider_without_reconstructing_or_closing(monkeyp
     propagation_backend_plan(config, system, potential=provider)
     factory.assert_not_called()
     provider.close.assert_not_called()
+
+
+@pytest.mark.parametrize("filename, stage, steps", [
+    ("torch_pimd.inp", "propagation", 800),
+    ("torch_diffusion.inp", "production", 880),
+])
+def test_torch_materials_plan_is_unknown_without_provider_or_torch_import(monkeypatch, filename, stage, steps):
+    import builtins
+    import importlib
+    from pathlib import Path
+    from unittest.mock import Mock
+    from pyrpmd import dynamics, potentials
+    from pyrpmd.input import JobSpec
+    from pyrpmd.runner import propagation_backend_plan
+    from pyrpmd.workflows.materials import resolve_materials
+    from pyrpmd.workflows.pimd import select_engine
+
+    def guarded_import(original):
+        def check(name, *args, **kwargs):
+            if name == "torch" or name.startswith("torch."):
+                raise AssertionError("static backend planning imported Torch")
+            return original(name, *args, **kwargs)
+        return check
+    monkeypatch.setattr(builtins, "__import__", guarded_import(builtins.__import__))
+    monkeypatch.setattr(importlib, "import_module", guarded_import(importlib.import_module))
+    factory = Mock(side_effect=AssertionError("static tensor plan constructed a PES"))
+    constructor = Mock(side_effect=AssertionError("tensor plan constructed ordinary Dynamics"))
+    monkeypatch.setattr(potentials, "make_potential", factory)
+    monkeypatch.setattr(dynamics, "Dynamics", constructor)
+    example = Path(__file__).resolve().parents[1] / "examples/materials" / filename
+    config, system = JobSpec.from_file(example).resolve()
+    resolve_materials(config, system)
+    assert select_engine(config).runner == "run_torch_materials"
+    plan = propagation_backend_plan(config, system)
+    assert len(plan) == 1
+    assert plan[0]["stage"] == stage and plan[0]["planned_steps"] == steps
+    assert plan[0]["backend"] == "unknown"
+    assert "Torch tensor workflow" in plan[0]["reason"]
+    assert "runtime" in plan[0]["reason"]
+    factory.assert_not_called()
+    constructor.assert_not_called()
