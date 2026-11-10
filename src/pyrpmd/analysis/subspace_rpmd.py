@@ -122,7 +122,24 @@ class _RingPolymer:
         return np.einsum("jk,bjd->bkd", self.c, beads)
 
     def potential(self, modes):
-        energy, gradient = self.model.energy_and_gradient(self.beads(modes))
+        beads = self.beads(modes)
+        energy, gradient = self.model.energy_and_gradient(beads)
+        if self.model.metric is not None:
+            inverse_metric = self.model.inverse_metric(beads)
+            # ``energy`` is still resolved per bead here; the sum over beads
+            # is performed in the return statement below.  Add the metric
+            # Jacobian per bead so broadcasting also works for a batch of
+            # ring polymers.
+            energy = energy + 0.5 / self.beta_p * np.log(inverse_metric)
+            metric_gradient = np.empty_like(beads)
+            for axis in range(self.d):
+                step = 1e-5 * max(float(self.model.spacing[axis]), 1e-8)
+                delta = np.zeros(self.d)
+                delta[axis] = step
+                plus = self.model.inverse_metric(beads + delta)
+                minus = self.model.inverse_metric(beads - delta)
+                metric_gradient[..., axis] = 0.5 / self.beta_p * (np.log(plus) - np.log(minus)) / (2 * step)
+            gradient = gradient + metric_gradient
         if not np.isfinite(energy).all() or not np.isfinite(gradient).all():
             raise FloatingPointError("subspace potential returned non-finite values")
         return energy.sum(axis=1), gradient
@@ -403,6 +420,7 @@ def ring_polymer_rate(
         "md_time_step": float(md_step),
         "md_time": float(time[-1]),
         "max_energy_error_beta_p": energy_error,
+        "position_dependent_metric": bool(model.metric is not None),
         "plateau_fraction": float(plateau_fraction),
         "plateau_drift": plateau_drift,
         "thermal_frequency": frequency,
