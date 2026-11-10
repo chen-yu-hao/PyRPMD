@@ -594,6 +594,7 @@ def project_path_subspace(
     finite_difference_step: float = 1e-3,
     rigid_body: bool = False,
     beta: float | None = None,
+    provenance: Mapping[str, Any] | None = None,
 ) -> SubspaceModel:
     """One-dimensional vibrationally adiabatic model along a curved path.
 
@@ -629,6 +630,7 @@ def project_path_subspace(
     values = np.empty(len(grid))
     zpe = np.zeros(len(grid))
     unstable, min_curvature = 0, np.inf
+    unstable_indices = []
     for i, (u, tangent) in enumerate(zip(positions, tangents)):
         x = u / sqrt_m
         values[i] = float(potential(x))
@@ -637,7 +639,9 @@ def project_path_subspace(
             k = _complement_hessian(x, complement, sqrt_m, gradient, hessian, finite_difference_step)
             zpe[i], lowest = _environment_term(k, environment, beta)
             min_curvature = min(min_curvature, lowest)
-            unstable += int(lowest < 0)
+            if lowest <= 0:
+                unstable += 1
+                unstable_indices.append(int(i))
     xi, curvature = path_curvature(points, mass)
     if dividing_surface is None:
         dividing_surface = float(grid[np.argmax(values + zpe)])
@@ -648,12 +652,17 @@ def project_path_subspace(
         "path_length": float(arc[-1]),
         "max_path_curvature": float(np.max(curvature)),
         "unstable_complement_points": int(unstable),
+        "unstable_complement_indices": unstable_indices,
+        "unstable_complement_arc_lengths": [float(grid[i]) for i in unstable_indices],
+        "normal_hessian_positive": not bool(unstable),
         "minimum_complement_curvature": None if not np.isfinite(min_curvature) else min_curvature,
         "zero_point_range": [float(zpe.min()), float(zpe.max())],
         "cut": "normal plane in mass-weighted coordinates",
         "rigid_body_removed": bool(rigid_body),
         "beta": beta,
     }
+    if provenance:
+        info.update(dict(provenance))
     return SubspaceModel((grid,), values + zpe, np.ones(1), dividing_surface, reactant,
                          reactant_reference, info)
 
