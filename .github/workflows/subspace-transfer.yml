@@ -6,6 +6,14 @@ name: Subspace transfer-error study
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches:
+      - 'main'
+    paths:
+      - 'benchmarks/subspace_theory/transfer.py'
+      - 'benchmarks/subspace_theory/plan.py'
+      - 'benchmarks/subspace_theory/aggregate.py'
+      - '.github/workflows/subspace-transfer.yml'
   push:
     branches:
       - 'claude/subspace-transfer-theory'
