@@ -60,7 +60,7 @@ _SECTIONS = {
         "definition fragments product_fragments forming_bonds breaking_bonds electronic_weight electronic rinf Rinf equivalent_paths symmetry_factor preparation entry_side".split()
     ),
     "analysis": set(
-        "method measure flux_axis bins bootstrap_samples bootstrap_replicates bootstrap seed overlap_threshold ranges min_count max_grid_points".split()
+        "method measure flux_axis bins bootstrap_samples bootstrap_replicates bootstrap bootstrap_workers seed overlap_threshold ranges min_count max_grid_points".split()
     ),
     "umbrella": set(
         "cvs coordinate grid centers centers_au regions windows force_constant force_matrix kappa stiffness stiffness_au start stop count sampling analysis".split()
