@@ -277,7 +277,7 @@ def _summary_propagation(result):
 
     def visit(value):
         if isinstance(value, Mapping):
-            if {"native_steps", "python_steps", "fallback_reasons"}.issubset(value):
+            if {"native_steps", "python_steps"}.issubset(value):
                 records.append(value)
                 return  # aggregate counters already own their nested stage counts
             for child in value.values():

@@ -421,3 +421,7 @@ Position-dependent friction, off-diagonal tensors and custom overrides retain
 the Python path with a reported reason. `propagate_block` owns this optimized
 workflow path; generic `propagate` remains the Python reference. Missing
 measured counters are reported as null, never inferred as zero from a plan.
+
+Workflows with an existing per-stream `propagation` list keep that list and
+its block details. Their additive `propagation_totals` contains measured
+native/Python totals; workflows already using a mapping retain that mapping.

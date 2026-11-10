@@ -62,6 +62,14 @@ def test_missing_runtime_counts_are_unknown_not_zero():
     assert result["propagation"]["measurement_available"] is False
 
 
+def test_native_ensemble_list_keeps_block_details_and_aggregates_measured_steps():
+    streams = [{"native_steps": 420, "python_steps": 0, "native_blocks": 21}] * 2
+    result = _summary_propagation({"propagation": streams})
+    assert result["propagation"] == streams
+    assert result["propagation_totals"] == {
+        "native_steps": 840, "python_steps": 0, "fallback_reasons": {}}
+
+
 def test_aggregate_with_nested_details_is_counted_once():
     counts = {"native_steps": 5, "python_steps": 0, "fallback_reasons": {}}
     result = _summary_propagation({"streams": [{"propagation": {**counts, "details": counts}}]})
