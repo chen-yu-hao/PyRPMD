@@ -48,6 +48,9 @@ replicas = 2
 start = -0.05
 stop = 1.10
 count = 24
+# At 1000 K this has sigma_xi ~= 0.141, much wider than its ~0.05
+# center spacing. UI here is a workflow pilot, not a validated rate.
+# Check the UI/MBAR point comparison and converge window stiffness.
 kappa = "0.16 hartree"
 
 [rate.pmf.analysis]
