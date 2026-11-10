@@ -364,13 +364,12 @@ def _dense_rate(model, operators, eps, beta, shift, *, keep=None, energy_floor=N
     product = operators.product.ravel()[keep]
     eps_keep = np.broadcast_to(eps, operators.shape).ravel()[keep]
     if normalization == "slice":
-        energies, vectors = eigh(hamiltonian)
         flux, partition, info = _dense_rate_matrix(
             hamiltonian, eps_keep, product, beta, shift,
             partition=lambda e, v: _slice_density(model, operators, keep, e, v, beta, shift),
             energy_floor=energy_floor,
         )
-        partition, info_q = _slice_density(model, operators, keep, energies, vectors, beta, shift)
+        info_q = info["partition"]
     else:
         def matrix_partition(energies, vectors):
             full_vectors = vectors
@@ -692,6 +691,9 @@ def exact_quantum_rate(
     """
     if not isinstance(model, SubspaceModel):
         raise TypeError("model must be a SubspaceModel")
+    if model.metric is not None:
+        raise ValueError("tensor-product exact rates do not support a position-dependent metric; "
+                         "use the channel Hamiltonian interface")
     beta = float(beta)
     if not np.isfinite(beta) or beta <= 0:
         raise ValueError("beta must be positive")

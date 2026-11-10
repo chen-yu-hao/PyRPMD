@@ -15,7 +15,7 @@ from typing import Any, Callable, Mapping
 import numpy as np
 from scipy.linalg import eigh
 
-from .subspace_model import SubspaceModel, model_from_function, path_curvature
+from .subspace_model import SubspaceModel
 from .subspace_quantum import _dense_rate_matrix, absorbing_potential, sinc_dvr_kinetic
 
 
@@ -75,13 +75,13 @@ def _align_phases(states: np.ndarray) -> np.ndarray:
     aligned = np.array(states, dtype=complex, copy=True)
     for i in range(1, len(aligned)):
         overlap = aligned[i - 1].conj().T @ aligned[i]
-        if aligned.shape[-1] > 1 and np.min(np.abs(np.diag(overlap))) < 1e-7:
-            left, _, right = np.linalg.svd(overlap)
-            aligned[i] = aligned[i] @ (right.conj().T @ left.conj().T)
-        else:
-            phase = np.diag(overlap)
-            phase = np.where(np.abs(phase) > 1e-14, phase / np.abs(phase), 1.0)
-            aligned[i] *= phase.conj()[None, :]
+        # Only change phases: a general rotation would mix nondegenerate
+        # eigenstates while leaving their stored diagonal energies unchanged.
+        diagonal = np.diag(overlap)
+        phase = np.ones_like(diagonal)
+        nonzero = np.abs(diagonal) > 1e-14
+        phase[nonzero] = diagonal[nonzero] / np.abs(diagonal[nonzero])
+        aligned[i] *= phase.conj()[None, :]
     return aligned
 
 
@@ -158,37 +158,29 @@ class SubspaceChannels:
 
     def channel_model(self, *, reactant: str = "asymptotic") -> SubspaceModel:
         """Return the same ``V(sigma,Q)`` for the RPMD half."""
+        if not self.provenance.get("include_nonadiabatic", True):
+            raise ValueError("an uncoupled channel Hamiltonian has no matching full-potential RPMD model")
         sigma, q, values = self.sigma, self.q, self.potential_values
         kappa = self.curvature.copy()
 
-        from scipy.interpolate import RegularGridInterpolator
-        interpolant = RegularGridInterpolator((sigma, q), values, bounds_error=False, fill_value=None)
-
-        def energy(points):
-            points = np.asarray(points, dtype=float)
-            clipped = np.column_stack((np.clip(points[..., 0].reshape(-1), sigma[0], sigma[-1]),
-                                       np.clip(points[..., 1].reshape(-1), q[0], q[-1])))
-            return interpolant(clipped).reshape(points.shape[:-1])
-
         def metric(points):
             points = np.asarray(points, dtype=float)
-            s = np.clip(points[..., 0], sigma[0], sigma[-1])
-            normal = np.clip(points[..., 1], q[0], q[-1])
-            kap = np.interp(s, sigma, kappa)
-            return 1.0 / (1.0 + kap * normal) ** 2
+            kap = np.interp(points[..., 0], sigma, kappa)
+            scale = 1.0 + kap * points[..., 1]
+            if np.any(scale <= 0.0):
+                raise ValueError("point lies outside the nonsingular reaction-path coordinate domain")
+            return 1.0 / scale**2
 
         masses = [float(self.provenance.get("sigma_mass", 1.0)),
                   float(self.provenance.get("normal_mass", 1.0))]
         has_curvature_metric = bool(np.any(np.abs(kappa) > 0.0))
-        return model_from_function(
-            energy, (sigma, q), masses=masses,
+        return SubspaceModel(
+            (sigma, q), values, masses,
             dividing_surface=self.dividing_surface, reactant=reactant,
             reactant_reference=self.reactant_reference,
             provenance={**self.provenance, "kind": "adiabatic_channels_rpmd",
-                         "position_dependent_inverse_metric": has_curvature_metric},
-            # A zero-curvature channel model has a constant unit metric.  Keep
-            # it on the existing constant-mass RPMD path so the one-channel,
-            # zero-coupling limit is exactly the established 1D model.
+                         "position_dependent_inverse_metric": has_curvature_metric,
+                         "rpmd_supported": not has_curvature_metric},
             metric=metric if has_curvature_metric else None,
         )
 
@@ -213,6 +205,8 @@ class SubspaceChannels:
         eps = np.repeat(eps_sigma, self.n_channels)
         product = self.product_projector()
         ref = int(np.argmin(abs(self.sigma - self.reactant_reference)))
+        if not np.allclose(self.metric_couplings[ref], np.eye(self.n_channels), atol=1e-12, rtol=1e-12):
+            raise ValueError("exact channel rate requires a flat reactant reference for asymptotic normalization")
         shift = float(np.min(np.linalg.eigvalsh(self.hamiltonian)))
 
         def partition(energies, vectors):
@@ -292,6 +286,8 @@ def build_subspace_channels(
     if not isinstance(include_nonadiabatic, (bool, np.bool_)):
         raise ValueError("include_nonadiabatic must be boolean")
     if include_coupling is not None:
+        if not isinstance(include_coupling, (bool, np.bool_)):
+            raise ValueError("include_coupling must be boolean")
         include_nonadiabatic = bool(include_coupling)
     masses = np.asarray(masses, dtype=float)
     if masses.shape != (2,) or not np.isfinite(masses).all() or np.any(masses <= 0):
@@ -329,32 +325,38 @@ def build_subspace_channels(
     curvature_couplings = kappa[:, None, None] * q_operator
     metric_couplings = np.empty_like(curvature_couplings)
     for i, kap in enumerate(kappa):
-        denominator = (1.0 + kap * q) ** 2
-        if np.min(denominator) <= 1e-8:
-            raise ValueError("curvature makes the reaction-path metric singular on the Q grid")
+        scale = 1.0 + kap * q
+        # The coordinate chart must contain Q=0 without crossing its singular
+        # surface, including between grid points.
+        if np.min(scale) <= 1e-4:
+            raise ValueError("curvature makes the reaction-path metric singular on the Q domain")
+        denominator = scale**2
         metric_couplings[i] = states[i].conj().T @ ((1.0 / denominator)[:, None] * states[i])
         metric_couplings[i] = 0.5 * (metric_couplings[i] + metric_couplings[i].conj().T)
 
     if not include_nonadiabatic:
         derivative_couplings[...] = 0.0
         metric_couplings[...] = np.eye(n_channels)[None, :, :]
-    d0 = _derivative_matrix(sigma)
     n = n_channels
-    covariant = np.kron(d0, np.eye(n, dtype=complex)) + _block_diag(derivative_couplings)
-    metric = _block_diag(metric_couplings)
-    base = np.kron(sinc_dvr_kinetic(sigma, masses[0]), np.eye(n))
-    # The covariant reaction-coordinate kinetic term carries the same
-    # ``1/(2 m_sigma)`` prefactor as the uncoupled sinc-DVR kinetic matrix.
-    # Keeping this factor explicit matters for callers that build channels in
-    # a non-unit mass coordinate; the path adapter uses mass-weighted sigma
-    # and therefore takes ``m_sigma = 1``.
-    correction = 0.5 / masses[0] * (
-        covariant.conj().T @ metric @ covariant
-        - np.kron(d0.conj().T @ d0, np.eye(n))
-    )
-    hamiltonian = base + correction + _block_diag(
-        np.array([np.diag(e) for e in energies], complex)
-    )
+    kinetic_sigma = sinc_dvr_kinetic(sigma, masses[0])
+    if include_nonadiabatic:
+        # Project the SAME full-grid kinetic operator onto the local states.
+        # Projecting only the retained derivative couplings loses derivatives
+        # outside the retained subspace (including the Born-Huang diagonal).
+        # Overlap projection is gauge covariant and becomes a unitary basis
+        # change when all normal DVR states are retained.
+        kinetic = np.broadcast_to(kinetic_sigma[:, :, None],
+                                  (sigma.size, sigma.size, q.size)).copy()
+        if np.any(kappa):
+            d0 = _derivative_matrix(sigma)
+            inverse = (1.0 + kappa[:, None] * q[None, :])**-2
+            kinetic += np.einsum("ki,kq,kj->ijq", d0, inverse - 1.0, d0,
+                                 optimize=True) / (2.0 * masses[0])
+        hamiltonian = np.einsum("iqn,ijq,jqm->injm", states.conj(), kinetic, states,
+                                optimize=True).reshape(sigma.size * n, sigma.size * n)
+    else:
+        hamiltonian = np.kron(kinetic_sigma, np.eye(n)).astype(complex)
+    hamiltonian += _block_diag(np.array([np.diag(e) for e in energies], complex))
     hamiltonian = 0.5 * (hamiltonian + hamiltonian.conj().T)
     info = {
         "kind": "adiabatic_channels", "method": method,
@@ -362,6 +364,7 @@ def build_subspace_channels(
         "sigma_mass": float(masses[0]), "normal_mass": float(masses[1]),
         "n_channels": n_channels, "curvature_max": float(np.max(np.abs(kappa))),
         "phase_aligned": True, "metric": "(1+kappa*Q)^-2",
+        "kinetic_projection": "full normal-grid overlaps; flat-measure divergence form",
         "include_nonadiabatic": bool(include_nonadiabatic),
     }
     info.update(dict(provenance or {}))
@@ -419,7 +422,12 @@ def project_path_channels(potential: Callable, gradient: Any, path: Any, masses:
         normal_points = np.asarray(normal, dtype=float)
         if normal_points.shape != points.shape or not np.isfinite(normal_points).all():
             raise ValueError("normal must have the same shape as path")
-        normal_points /= np.linalg.norm(normal_points, axis=1)[:, None]
+        lengths = np.linalg.norm(normal_points, axis=1)
+        if np.any(lengths <= 1e-14):
+            raise ValueError("normal must contain nonzero vectors")
+        normal_points = normal_points / lengths[:, None]
+        if np.any(np.abs(np.sum(normal_points * tangent, axis=1)) > 1e-6):
+            raise ValueError("normal must be orthogonal to the path tangent")
     normal_sigma = np.column_stack([np.interp(sigma, chord, normal_points[:, j]) for j in range(points.shape[1])])
 
     def cut_potential(grid):
@@ -437,8 +445,11 @@ def project_path_channels(potential: Callable, gradient: Any, path: Any, masses:
         return value.reshape(grid.shape[:-1])
 
     if curvature is None:
-        _, curvature_samples = path_curvature(points, mass, samples=max(401, len(sigma)))
-        curvature = np.interp(sigma, np.linspace(chord[0], chord[-1], len(curvature_samples)), curvature_samples)
+        tangent_derivative = np.gradient(tangent, chord, axis=0, edge_order=2)
+        # r(s,Q)=r(s)+Q*n(s) has scale 1-Q*(dt/ds . n).  The
+        # public channel convention writes this as 1+kappa*Q.
+        signed_curvature = -np.sum(tangent_derivative * normal_points, axis=1)
+        curvature = np.interp(sigma, chord, signed_curvature)
     dividing_surface = kwargs.pop("dividing_surface", float(sigma[len(sigma) // 2]))
     reference = kwargs.pop("reactant_reference", None)
     return build_subspace_channels(cut_potential, sigma, q, n_channels=n_channels,

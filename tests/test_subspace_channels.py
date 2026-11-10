@@ -89,7 +89,7 @@ def test_separable_channels_have_known_local_levels_and_no_couplings():
     expected = sinc_dvr_kinetic(one.sigma, 1.0) + np.diag(_barrier(one.sigma) + 0.5 * OMEGA)
     assert np.allclose(np.asarray(one.hamiltonian), expected, atol=5e-7)
     uncoupled = build_subspace_channels(_separable, one.sigma, one.q, n_channels=1,
-                                        masses=(1.0, MASS_Q), curvature=0.15,
+                                        masses=(1.0, MASS_Q), curvature=0.05,
                                         include_nonadiabatic=False,
                                         dividing_surface=0.0, reactant_reference=-2.0)
     assert np.allclose(uncoupled.hamiltonian, expected, atol=5e-7)
@@ -129,8 +129,8 @@ def test_translated_oscillator_has_continuous_phases_and_antisymmetric_derivativ
 
 @pytest.mark.skipif(build_subspace_channels is None, reason="subspace_channels is not available")
 def test_curvature_coupling_is_hermitian_and_assembly_is_deterministic():
-    first = _make(_translated, n_channels=3, curvature=0.15)
-    second = _make(_translated, n_channels=3, curvature=0.15)
+    first = _make(_translated, n_channels=3, curvature=0.05)
+    second = _make(_translated, n_channels=3, curvature=0.05)
     assert np.allclose(first.hamiltonian, second.hamiltonian, atol=1e-12)
     coupling = np.asarray(first.curvature_couplings)
     assert coupling.shape[1:] == (3, 3)
@@ -139,34 +139,19 @@ def test_curvature_coupling_is_hermitian_and_assembly_is_deterministic():
     assert np.allclose(assembled, first.hamiltonian, atol=1e-12)
     model = first.channel_model()
     points = np.array([[0.0, -0.4], [0.0, 0.7]])
-    expected_metric = 1.0 / (1.0 + 0.15 * points[:, 1]) ** 2
+    expected_metric = 1.0 / (1.0 + 0.05 * points[:, 1]) ** 2
     assert np.allclose(model.inverse_metric(points), expected_metric)
     assert model.describe()["position_dependent_metric"]
-    # The metric Jacobian is evaluated per bead by the RPMD potential.  A
-    # direct small-batch call catches accidental reduction over beads before
-    # broadcasting the correction back onto the energy array.
-    from pyrpmd.analysis.subspace_rpmd import _RingPolymer
+    # Curved exact matrices are available, but a matching constrained
+    # variable-mass RPMD estimator has not been validated.
+    from pyrpmd.analysis.subspace_rpmd import ring_polymer_rate
 
-    ring = _RingPolymer(model, beta=20.0, nbeads=2)
-    energy, gradient = ring.potential(np.zeros((3, 2, 2)))
-    assert energy.shape == (3,)
-    assert gradient.shape == (3, 2, 2)
-
-    modes = np.zeros((3, 2, 2))
-    modes[:, 0, 0] = np.array([-0.8, 0.0, 0.8])
-    modes[:, 1, 1] = np.array([0.2, -0.3, 0.1])
-    beads = ring.beads(modes)
-    coordinate_mass = np.ones_like(beads)
-    coordinate_mass[..., 0] = 1.0 / model.inverse_metric(beads)
-    difference = np.roll(beads, -1, axis=1) - beads
-    edge_mass = 0.5 * (coordinate_mass + np.roll(coordinate_mass, -1, axis=1))
-    expected_spring = 0.5 / ring.beta_p**2 * np.sum(edge_mass * difference**2, axis=(1, 2))
-    assert np.allclose(ring.spring(modes), expected_spring)
-    momenta = ring.sample_momenta(np.random.default_rng(4), 3, False, modes)
-    expected_kinetic = 0.5 * np.sum(ring.beads(momenta)**2 / coordinate_mass, axis=(1, 2))
-    assert np.allclose(ring.kinetic(momenta, modes), expected_kinetic)
-    stepped = ring.step(modes, momenta, np.zeros_like(modes), 1e-3, None, False)
-    assert all(np.isfinite(value).all() for value in stepped[:2])
+    with pytest.raises(ValueError, match="position-dependent metric RPMD"):
+        ring_polymer_rate(model, beta=20.0, nbeads=2)
+    with pytest.raises(ValueError, match="position-dependent metric"):
+        exact_quantum_rate(model, beta=20.0)
+    with pytest.raises(ValueError, match="flat reactant reference"):
+        first.exact_rate(beta=20.0)
 
 
 @pytest.mark.skipif(build_subspace_channels is None, reason="subspace_channels is not available")
@@ -212,3 +197,90 @@ def test_dense_rate_matrix_refactor_matches_existing_wrapper(dimension):
         old_flux / old_partition, rel=1e-12, abs=1e-14,
     )
 
+
+
+def test_full_channel_basis_is_unitarily_equivalent_to_same_two_dimensional_dvr():
+    sigma = np.linspace(-3.0, 3.0, 9)
+    q = np.linspace(-4.0, 4.0, 10)
+    channels = build_subspace_channels(_translated, sigma, q, n_channels=len(q),
+                                      masses=(2.0, 1.3), reactant_reference=-1.5)
+    h_full = (np.kron(sinc_dvr_kinetic(sigma, 2.0), np.eye(len(q)))
+              + np.kron(np.eye(len(sigma)), sinc_dvr_kinetic(q, 1.3))
+              + np.diag(channels.potential_values.ravel()))
+    transform = np.zeros_like(h_full, dtype=complex)
+    for i, states in enumerate(channels.states):
+        transform[i*len(q):(i+1)*len(q), i*len(q):(i+1)*len(q)] = states
+    assert np.allclose(channels.hamiltonian, transform.conj().T @ h_full @ transform,
+                       atol=2e-12, rtol=2e-12)
+    assert np.allclose(np.linalg.eigvalsh(channels.hamiltonian), np.linalg.eigvalsh(h_full),
+                       atol=2e-12, rtol=2e-12)
+
+
+def test_truncated_channels_retain_out_of_subspace_derivative_contribution():
+    sigma = np.linspace(-3.0, 3.0, 17)
+    q = np.linspace(-8.0, 8.0, 65)
+    channels = build_subspace_channels(_translated, sigma, q, n_channels=1,
+                                      reactant_reference=-1.5)
+    uncoupled = sinc_dvr_kinetic(sigma, 1.0) + np.diag(channels.energies[:, 0])
+    # A varying ground-state basis has a positive derivative norm, even
+    # though its retained diagonal derivative coupling is exactly zero.
+    assert np.linalg.eigvalsh(channels.hamiltonian)[0] > np.linalg.eigvalsh(uncoupled)[0] + 1e-5
+
+
+def test_phase_alignment_never_mixes_nondegenerate_eigenstates():
+    from pyrpmd.analysis.subspace_channels import _align_phases
+
+    states = np.array([np.eye(2), np.array([[0.0, 1.0], [1.0, 0.0]])], dtype=complex)
+    aligned = _align_phases(states)
+    h = np.diag([2.0, 1.0])
+    assert np.allclose(h @ aligned[1], aligned[1] * np.array([1.0, 2.0]))
+
+
+def test_metric_singularity_between_grid_points_is_rejected():
+    sigma = np.linspace(-3.0, 3.0, 9)
+    q = np.linspace(-10.0, 10.0, 16)
+    assert not np.any(np.isclose(1.0 + 0.15 * q, 0.0))
+    with pytest.raises(ValueError, match="singular on the Q domain"):
+        build_subspace_channels(_separable, sigma, q, n_channels=2, curvature=0.15)
+
+
+def test_uncoupled_channels_do_not_advertise_matching_rpmd_potential():
+    sigma = np.linspace(-3.0, 3.0, 9)
+    q = np.linspace(-8.0, 8.0, 33)
+    channels = build_subspace_channels(_translated, sigma, q, n_channels=2,
+                                      include_nonadiabatic=False)
+    with pytest.raises(ValueError, match="no matching"):
+        channels.channel_model()
+    with pytest.raises(ValueError, match="include_coupling must be boolean"):
+        build_subspace_channels(_separable, sigma, q, include_coupling="false")
+
+
+def test_path_normal_and_metric_use_the_same_signed_curvature():
+    from pyrpmd.analysis.subspace_channels import project_path_channels
+
+    angle = np.linspace(-0.4, 0.4, 101)
+    path = 5.0 * np.column_stack((np.cos(angle), np.sin(angle)))
+    sigma = np.linspace(0.1, 3.9, 9)
+    q = np.linspace(-1.0, 1.0, 17)
+    channels = project_path_channels(lambda x: np.sum(x*x, axis=-1), None,
+                                     path, [1.0, 1.0], sigma, q_axis=q,
+                                     n_channels=2, reactant_reference=0.5)
+    # Frenet normal points towards the centre: positive Q shortens the arc.
+    assert np.allclose(channels.curvature, -0.2, atol=1e-5)
+    metric = channels.channel_model().inverse_metric(np.array([[2.0, 0.5]]))
+    assert metric[0] == pytest.approx(1.0 / 0.9**2, rel=2e-5)
+
+
+def test_zero_curvature_channel_model_retains_working_rpmd_rate():
+    from pyrpmd.analysis.subspace_rpmd import ring_polymer_rate
+
+    channels = build_subspace_channels(_separable, np.linspace(-3, 3, 17),
+                                      np.linspace(-8, 8, 65), n_channels=2,
+                                      reactant_reference=-1.5)
+    model = channels.channel_model()
+    assert model.metric is None
+    result = ring_polymer_rate(model, beta=5.0, nbeads=1, windows=4, walkers=2,
+                               burn_in=2, sweeps=2, leapfrog_steps=1, trajectories=4,
+                               md_time=0.2, md_dt=0.02, bootstrap=2)
+    assert np.isfinite(result.qtst_rate)
+    assert not result.diagnostics["physical_converged"]
