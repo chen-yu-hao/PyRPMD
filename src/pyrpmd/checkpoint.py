@@ -131,10 +131,11 @@ def _payload_format(archive, names, *, legacy=False):
         return None
     if not isinstance(payload_format, str) or not payload_format:
         raise CheckpointError("Checkpoint payload format must be a nonempty string")
-    # PyRPMD's current workflow payloads are v1. User-defined kinds own their
-    # own version policy and can be checked with expected_kind instead.
+    # Only dRPMD parent checkpoints have a known v2 payload; all other
+    # future PyRPMD workflow versions must still fail closed.
     match = re.search(r"\.v(\d+)$", payload_format) if payload_format.startswith("PyRPMD.") else None
-    if match and int(match.group(1)) != 1:
+    if (match and int(match.group(1)) != 1
+            and payload_format != "PyRPMD.drpmd.parent-checkpoint.v2"):
         label = "legacy payload" if legacy else "checkpoint payload"
         raise CheckpointError(f"Unsupported {label} format: {payload_format}")
     return payload_format

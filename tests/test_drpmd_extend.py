@@ -67,6 +67,9 @@ def assert_same_trajectory(first, second, trajectory_id=0):
 def test_extension_matches_one_continuous_trajectory_without_resampling(tmp_path, selected):
     config, system = configuration(tmp_path, selected=selected)
     original = run(config, system, tmp_path / "short")
+    saved = json.loads((tmp_path / "short/results/summary.json").read_text())
+    assert "records" not in saved
+    assert saved["trajectory_table"] == "results/trajectories.csv"
     immutable = frozen_files(tmp_path / "short")
     long_config = copy.deepcopy(config)
     long_config["collision"]["max_steps"] = 8
@@ -81,11 +84,14 @@ def test_extension_matches_one_continuous_trajectory_without_resampling(tmp_path
     assert result["effective_max_steps"] == 8
     assert result["extensions"]["requests"][-1]["status"] == "completed"
     assert result["counts"]["unresolved"] == 2
+    assert "records" not in json.loads((tmp_path / "short/results/summary.json").read_text())
     assert frozen_files(tmp_path / "short") == immutable
     for old, new, reference in zip(original["records"], result["records"], uninterrupted["records"]):
         assert new["steps"] == reference["steps"] == 8
         assert new["physics_hash"] == old["physics_hash"]
         assert new["launch"] == old["launch"]
+        if not selected:
+            assert new["parent_sample_step"] == old["parent_sample_step"]
         assert new["propagation"]["python_steps"] == 8
         assert new["initial_energy_per_bead"] == old["initial_energy_per_bead"]
         assert new["max_energy_drift_per_bead"] == reference["max_energy_drift_per_bead"]
