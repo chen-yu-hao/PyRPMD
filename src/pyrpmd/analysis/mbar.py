@@ -228,60 +228,14 @@ def solve_mbar(
         new -= new[0]
         return new, logd, float(np.max(np.abs(new - z)))
 
-    # A short initialization is followed by Newton; long fixed-point mixing
-    # across narrow umbrellas was the principal cost in the previous solver.
-    warm_steps = min(200 if method == "legacy" else 8, max_iterations)
-    for _ in range(warm_steps):
+    # Retained dense L-BFGS/fixed-point reference (method="legacy").
+    for _ in range(min(200, max_iterations)):
         new, _, residual = equations(f)
         if residual < tolerance:
             break
         f = new
-    newton_iterations = 0
-    fallback = method == "legacy"
-    if method == "auto" and k > 1:
-        for newton_iterations in range(1, min(80, max_iterations) + 1):
-            _, logd, residual = equations(f)
-            if residual < tolerance:
-                break
-            probabilities = np.exp(logn[:, None] + f[:, None] - u - logd)
-            totals = probabilities.sum(axis=1)
-            gradient = totals - counts
-            hessian = np.diag(totals) - probabilities @ probabilities.T
-            try:
-                step = np.linalg.solve(hessian[1:, 1:], gradient[1:])
-            except np.linalg.LinAlgError:
-                fallback = True
-                break
-            descent = float(gradient[1:] @ step)
-            if not np.isfinite(step).all() or not np.isfinite(descent) or descent <= 0:
-                fallback = True
-                break
-            value = float(logd.sum() - counts @ f)
-            alpha = min(1.0, 20.0 / max(float(np.max(np.abs(step))), 1e-30))
-            accepted = False
-            rounding = 16 * np.finfo(float).eps * max(1.0, abs(value))
-            for _ in range(24):
-                candidate = f.copy()
-                candidate[1:] -= alpha * step
-                _, candidate_logd, candidate_residual = equations(candidate)
-                candidate_value = float(candidate_logd.sum() - counts @ candidate)
-                armijo = candidate_value <= value - 1e-4 * alpha * descent
-                near_roundoff = (
-                    candidate_value <= value + rounding
-                    and candidate_residual < residual
-                )
-                if np.isfinite(candidate_value) and (armijo or near_roundoff):
-                    f = candidate
-                    accepted = True
-                    break
-                alpha *= 0.5
-            if not accepted:
-                fallback = True
-                break
-        if equations(f)[2] >= tolerance:
-            fallback = True
     lbfgs_iterations = 0
-    if k > 1 and fallback and equations(f)[2] >= tolerance:
+    if k > 1 and equations(f)[2] >= tolerance:
 
         def objective(x):
             z = np.concatenate(([0.0], x))
@@ -330,15 +284,11 @@ def solve_mbar(
         residual < tolerance,
         residual,
         {
-            "method": (
-                "single_state"
-                if k == 1
-                else ("lbfgs_fixed_point" if fallback else "damped_newton")
-            ),
+            "method": "single_state" if k == 1 else "lbfgs_fixed_point",
             "unique_states": k,
             "original_states": len(original_counts),
             "state_to_unique": state_map,
-            "newton_iterations": newton_iterations,
+            "newton_iterations": 0,
             "lbfgs_iterations": lbfgs_iterations,
             "polish_iterations": polish_iterations,
             "warm_start": initial_free_energies is not None,

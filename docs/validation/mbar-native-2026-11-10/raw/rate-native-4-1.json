@@ -1,0 +1,209 @@
+{
+  "backend": "native",
+  "threads": 4,
+  "states": 24,
+  "samples": 36000,
+  "bootstrap": 8,
+  "timed_scope": "complete rate PMF with paired UI bootstrap",
+  "wall_seconds": 1.3709698338061571,
+  "cpu_seconds": 3.6847113200000003,
+  "cpu_to_wall": 2.6876676854153057,
+  "peak_rss_kib": 102064,
+  "baseline_commit": "f410b97807d99d429ab1b63c6b1c7ff93b424b5c",
+  "python": "3.11.18 (main, Oct 26 2026, 11:35:17) [GCC 15.3.0]",
+  "numpy": "2.4.6",
+  "affinity": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "diagnostics": {
+    "method": "damped_newton",
+    "unique_states": 24,
+    "original_states": 24,
+    "state_to_unique": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "newton_iterations": 3,
+    "lbfgs_iterations": 0,
+    "polish_iterations": 0,
+    "backend": "native",
+    "threads_requested": 1,
+    "threads_used": 1,
+    "native_calls": 16,
+    "potential_storage": "harmonic_on_demand",
+    "state_weights_materialized": false,
+    "workspace_scaling": "O(N + threads*K*K); excludes requested N*K state_weights and caller input",
+    "warm_start": false,
+    "bootstrap_draws": [
+      {
+        "draw": 0,
+        "valid": true,
+        "reason": null,
+        "solver_residual": 3.8413716652030416e-14,
+        "solver_execution": {
+          "backend": "native",
+          "native_calls": 16,
+          "threads_used": 1,
+          "newton_iterations": 3,
+          "polish_iterations": 0
+        },
+        "reference_free_energy_hartree": 0.5909188804481447,
+        "surface_free_energy_hartree": 0.6623146317688275,
+        "barrier_hartree": 0.07139575132068288,
+        "ui_barrier_hartree": 0.027444854296097707
+      },
+      {
+        "draw": 1,
+        "valid": true,
+        "reason": null,
+        "solver_residual": 5.190292640122607e-14,
+        "solver_execution": {
+          "backend": "native",
+          "native_calls": 16,
+          "threads_used": 1,
+          "newton_iterations": 3,
+          "polish_iterations": 0
+        },
+        "reference_free_energy_hartree": 0.4588958830069767,
+        "surface_free_energy_hartree": 0.5709799421351631,
+        "barrier_hartree": 0.11208405912818642,
+        "ui_barrier_hartree": 0.04664893572623294
+      },
+      {
+        "draw": 2,
+        "valid": true,
+        "reason": null,
+        "solver_residual": 2.3447910280083306e-13,
+        "solver_execution": {
+          "backend": "native",
+          "native_calls": 16,
+          "threads_used": 1,
+          "newton_iterations": 3,
+          "polish_iterations": 0
+        },
+        "reference_free_energy_hartree": 0.5830446896016045,
+        "surface_free_energy_hartree": 0.6748492557804795,
+        "barrier_hartree": 0.091804566178875,
+        "ui_barrier_hartree": 0.07252690822437816
+      },
+      {
+        "draw": 3,
+        "valid": true,
+        "reason": null,
+        "solver_residual": 4.266031972122164e-14,
+        "solver_execution": {
+          "backend": "native",
+          "native_calls": 16,
+          "threads_used": 1,
+          "newton_iterations": 3,
+          "polish_iterations": 0
+        },
+        "reference_free_energy_hartree": 0.5250434863114174,
+        "surface_free_energy_hartree": 0.5955603561823021,
+        "barrier_hartree": 0.07051686987088468,
+        "ui_barrier_hartree": 0.04520534717940253
+      },
+      {
+        "draw": 4,
+        "valid": true,
+        "reason": null,
+        "solver_residual": 3.8968828164342995e-14,
+        "solver_execution": {
+          "backend": "native",
+          "native_calls": 16,
+          "threads_used": 1,
+          "newton_iterations": 3,
+          "polish_iterations": 0
+        },
+        "reference_free_energy_hartree": 0.5921838684678175,
+        "surface_free_energy_hartree": 0.6862484561276623,
+        "barrier_hartree": 0.09406458765984482,
+        "ui_barrier_hartree": 0.029390832001517764
+      },
+      {
+        "draw": 5,
+        "valid": true,
+        "reason": null,
+        "solver_residual": 3.4888758548845544e-14,
+        "solver_execution": {
+          "backend": "native",
+          "native_calls": 16,
+          "threads_used": 1,
+          "newton_iterations": 3,
+          "polish_iterations": 0
+        },
+        "reference_free_energy_hartree": 0.5866418776911506,
+        "surface_free_energy_hartree": 0.6552388940890315,
+        "barrier_hartree": 0.06859701639788085,
+        "ui_barrier_hartree": 0.03055374288274501
+      },
+      {
+        "draw": 6,
+        "valid": true,
+        "reason": null,
+        "solver_residual": 3.6415315207705135e-14,
+        "solver_execution": {
+          "backend": "native",
+          "native_calls": 16,
+          "threads_used": 1,
+          "newton_iterations": 3,
+          "polish_iterations": 0
+        },
+        "reference_free_energy_hartree": 0.5706092789160984,
+        "surface_free_energy_hartree": 0.574057855780448,
+        "barrier_hartree": 0.0034485768643496284,
+        "ui_barrier_hartree": -0.018106927669886058
+      },
+      {
+        "draw": 7,
+        "valid": true,
+        "reason": null,
+        "solver_residual": 5.112577028398846e-14,
+        "solver_execution": {
+          "backend": "native",
+          "native_calls": 16,
+          "threads_used": 1,
+          "newton_iterations": 3,
+          "polish_iterations": 0
+        },
+        "reference_free_energy_hartree": 0.6094206673571931,
+        "surface_free_energy_hartree": 0.7049613375082006,
+        "barrier_hartree": 0.09554067015100742,
+        "ui_barrier_hartree": -0.016095842778421188
+      }
+    ]
+  },
+  "gates": {
+    "ready": true,
+    "status": "ready",
+    "bootstrap_valid": 8,
+    "bootstrap_workers": 4,
+    "bootstrap_backend": "thread"
+  },
+  "loaded_extension": "/home/lyl/.codex/worktrees/mbar-parallel/PyRPMD/src/pyrpmd/_mbar.cpython-311-x86_64-linux-gnu.so"
+}

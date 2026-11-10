@@ -86,7 +86,7 @@ PyObject* reduce(PyObject*, PyObject* args) {
         for (Py_ssize_t j=0;j<periods.size();++j)
             if (!std::isfinite(periods.data()[j]) || periods.data()[j]<0)
                 throw std::invalid_argument("invalid MBAR period");
-        // Keep small fits serial. Each active thread owns only O(K^2) scratch.
+        // Never create more workers than samples; each owns only O(K^2) scratch.
         threads=std::min<int>(threads,static_cast<int>(std::min<Py_ssize_t>(n,1024)));
 #ifndef _OPENMP
         threads=1;

@@ -7,7 +7,6 @@ actual native thread/call counters and numerical arrays for independent gates.
 """
 from pathlib import Path
 import argparse
-import importlib.util
 import json
 import os
 import resource
@@ -89,7 +88,7 @@ def main():
             "samples":args.states*args.samples_per_state,"bootstrap":args.bootstrap,
             "timed_scope":"potential construction + complete solve" if not args.bootstrap else "complete rate PMF with paired UI bootstrap",
             "wall_seconds":wall,"cpu_seconds":cpu,"cpu_to_wall":cpu/wall,
-            "peak_rss_kib":resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
+            "peak_rss_kib":resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/(1024 if sys.platform=="darwin" else 1),
             "baseline_commit":args.baseline_ref,"python":sys.version,"numpy":np.__version__,
             "affinity":sorted(os.sched_getaffinity(0)) if hasattr(os,"sched_getaffinity") else None,
             "diagnostics":diagnostic,"gates":gate}
