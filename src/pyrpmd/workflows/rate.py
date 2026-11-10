@@ -80,7 +80,12 @@ def _record_sampling_failure(output, directory, sampler, error):
 
 
 def run_rate(config, system, output, executor=None):
+    from ..input_subspace import normalize_rate_subspace
+    from .rate_subspace import finish_rate
     from . import validate_bond_constraint_workflow
+
+    config = copy.deepcopy(config)
+    normalize_rate_subspace(config)
     validate_bond_constraint_workflow(system, "rate")
     validate_andersen_schedule(config, "rate")
     if any(system.pbc) or system.fixed_atoms:
@@ -137,9 +142,10 @@ def run_rate(config, system, output, executor=None):
             else run_tasks(function, tasks, config.get("parallel", {}))
         )
 
-    if not parent_tasks:
-        return root_call(_aggregate, [], pmf, config, str(output), options)
-    parents = dispatch(_parent_task, parent_tasks)
-    tasks = root_call(_child_tasks, parents, config, system, str(output), options, pmf)
-    children = _dispatch_children(tasks, config, dispatch, child_task=_child_task)
-    return root_call(_aggregate, children, pmf, config, str(output), options)
+    children = []
+    if parent_tasks:
+        parents = dispatch(_parent_task, parent_tasks)
+        tasks = root_call(_child_tasks, parents, config, system, str(output), options, pmf)
+        children = _dispatch_children(tasks, config, dispatch, child_task=_child_task)
+    result = root_call(_aggregate, children, pmf, config, str(output), options)
+    return root_call(finish_rate, config, str(output), result)

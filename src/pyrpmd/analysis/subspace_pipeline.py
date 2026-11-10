@@ -100,10 +100,13 @@ def load_rate_run(directory) -> RateRun:
     from ..workflows.rate_constraints import rate_coordinate
     from .rate_io import _root
 
-    root = _root(directory, "summary.json")
+    root = _root(directory, "input/resolved.json")
     config = json.loads((root / "input" / "resolved.json").read_text())
     system = System.from_dict(json.loads((root / "input" / "system.json").read_text()))
     preparation = json.loads((root / "preparation.json").read_text()) if (root / "preparation.json").is_file() else {}
+    from ..workflows.prepare import prepared_system
+
+    system = prepared_system(system, preparation)
     reaction = dict(config.get("reaction", {}))
     reaction.update(preparation.get("reaction", {}))
     for key in ("fragments", "forming_bonds", "breaking_bonds"):
@@ -431,8 +434,12 @@ def _rpmd_options(options, run):
     return rpmd, int(options.get("nbeads") or run.nbeads)
 
 
-def run_subspace_pipeline(specification) -> dict:
-    """Run the full correction from a mapping or a TOML/JSON file."""
+def run_subspace_pipeline(specification, *, apply=True, reuse_key=None) -> dict:
+    """Run from a mapping or TOML/JSON; ``apply=False`` writes factors only.
+
+    The native rate stage supplies a content-based ``reuse_key``. Standalone
+    callers retain their existing interface; no extra rate simulation is run.
+    """
     base = None
     if isinstance(specification, (str, Path)):
         path = Path(specification)
@@ -458,8 +465,18 @@ def run_subspace_pipeline(specification) -> dict:
     out_dir = Path(out_dir) if out_dir else run.root / "subspace"
     if base is not None and not out_dir.is_absolute():
         out_dir = base / out_dir
-    out_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        return _run_pipeline(run, out_dir, options, apply=apply, reuse_key=reuse_key)
+    finally:
+        close = getattr(run.provider, "close", None)
+        if callable(close):
+            close()
 
+
+def _run_pipeline(run, out_dir, options, *, apply, reuse_key):
+    from ..io import file_sha256, write_json
+
+    out_dir.mkdir(parents=True, exist_ok=True)
     mean, mask, path, path_info = build_path(run, options["path"])
     np.save(out_dir / "path.npy", path)
     threshold = float(options["subspace"]["threshold"])
@@ -478,19 +495,30 @@ def run_subspace_pipeline(specification) -> dict:
     rpmd_options, nbeads = _rpmd_options(options["rpmd"], run)
     corrections, models = {}, {}
     if options["output"].get("reuse"):
-        # Re-select and re-apply from saved C_S records (same temperature)
-        # without recomputing the subspace rates.
         previous = {}
-        if (out_dir / "subspace_pipeline.json").is_file():
-            previous = json.loads((out_dir / "subspace_pipeline.json").read_text()).get("models", {})
-        for d in list(dimensions):
+        report_path = out_dir / "subspace_pipeline.json"
+        if report_path.is_file():
+            try:
+                loaded = json.loads(report_path.read_text())
+                previous = loaded if isinstance(loaded, dict) else {}
+            except (OSError, ValueError):
+                pass  # A damaged report is not reusable evidence.
+        matched = reuse_key is None or previous.get("reuse_key") == reuse_key
+        for d in list(dimensions) if matched else []:
             record = out_dir / f"C_S_{d}d.json"
-            if record.is_file():
+            if not record.is_file():
+                continue
+            if reuse_key is not None and previous.get("correction_files", {}).get(record.name) != file_sha256(record):
+                continue
+            try:
                 saved = SubspaceCorrection.read(record)
-                if np.isclose(saved.beta, run.beta, rtol=1e-9, atol=0):
-                    corrections[d] = saved
-                    models[d] = previous.get(str(d), {"reused": True})
-                    dimensions.remove(d)
+            except (OSError, ValueError, KeyError, TypeError):
+                continue
+            if (saved.dimension == d and saved.nbeads == nbeads
+                    and np.isclose(saved.beta, run.beta, rtol=1e-9, atol=0)):
+                corrections[d] = saved
+                models[d] = previous.get("models", {}).get(str(d), {"reused": True})
+                dimensions.remove(d)
     if 1 in dimensions:
         environment = {"environment": options["subspace"].get("environment", "adiabatic")}
         model1, quantum1, info1 = path_model(run, path, {**options["quantum"], **environment})
@@ -519,20 +547,27 @@ def run_subspace_pipeline(specification) -> dict:
         # Undetermined nested step: fall back on curvature x width.
         chosen = verdict if verdict in corrections else max(corrections)
         reason = "nested sensitivity undetermined; curvature x width verdict"
-    corrected = correct_rate_run(run.root, corrections[chosen], output=out_dir / "rate_quantum_corrected.json")
+    corrected = (correct_rate_run(run.root, corrections[chosen], output=out_dir / "rate_quantum_corrected.json")
+                 if apply else None)
     report = {
         "schema": "pyrpmd.subspace_pipeline", "schema_version": 1,
         "rate_run": str(run.root), "beta": run.beta, "nbeads": nbeads, "xi_star": run.xi_star,
         "path": path_info, "curvature_width_sampled": sampled_cw, "curvature_width_path": static_cw,
         "recommended_dimension_from_curvature_width": verdict, "dimensions_computed": sorted(corrections),
-        "models": models, "corrections": {str(d): c.to_dict() for d, c in corrections.items()},
+        "models": models,
+        # Keep the saved quantum/RPMD curves when reusing a scalar correction
+        # object (SubspaceCorrection.read deliberately loads only its summary).
+        "corrections": {str(d): json.loads((out_dir / f"C_S_{d}d.json").read_text()) for d in corrections},
         "nested_sensitivity": sensitivity, "applied_dimension": int(chosen), "applied_dimension_reason": reason,
         "corrected_rate": corrected,
+        "mode": "apply" if apply else "factor_only",
+        "reuse_key": reuse_key,
+        "correction_files": {f"C_S_{d}d.json": file_sha256(out_dir / f"C_S_{d}d.json") for d in corrections},
         "options": {k: v for k, v in options.items()},
         "physical_converged": False,
     }
     report = _json_safe(report)
-    (out_dir / "subspace_pipeline.json").write_text(json.dumps(report, indent=2, default=str))
+    write_json(out_dir / "subspace_pipeline.json", report)
     return report
 
 
