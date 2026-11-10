@@ -93,6 +93,27 @@ The command then runs:
    `rate_quantum_corrected.json` is written next to the run. Every intermediate result is
    in `subspace_pipeline.json`.
 
+For the 2D plane, an optional transverse-channel basis reduces the quantum matrix:
+
+```toml
+[subspace]
+dimension = 2
+channels = 4
+
+[quantum]
+dense_limit = 1600
+```
+
+Omit `channels` to retain the full 2D DVR. The channel longitudinal coordinate is a
+fixed Cartesian axis of the same plane; curvature stays in its potential. The quantum
+matrix is `U† H_2D U`, while RPMD uses the original fine-grid Cartesian model.
+Increase `channels` until the rate stabilizes; retaining every local transverse state
+recovers the full DVR. Channel truncation error is separate from the reported RPMD
+statistical error. `dense_limit` must be a positive integer and strictly limits the
+active channel matrix size after energy truncation. Frenet arc-length models with a
+position-dependent metric remain unsupported. See the
+[same-Hamiltonian validation](validation/issues-151-170/issue158.md).
+
 **Exo- or endothermic reactions.** The box holds deep states of the lower channel whose net
 flux vanishes but whose Boltzmann weight is enormous (`exp(25)` for Cl + HBr at 300 K); any
 absorber reflection then swamps the reactive flux. Both models therefore restrict the

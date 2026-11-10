@@ -412,3 +412,36 @@ def test_channel_correction_accepts_fine_same_potential_and_rejects_changed_hami
                                 dividing_surface=0.,reactant_reference=-1.5)
     with pytest.raises(ValueError, match="potential differs"):
         channels.correction(5.,2,rpmd_model=wrong,rpmd_options=options)
+
+
+@pytest.mark.parametrize("limit", [0, -1, True, 2.5, "99", None, np.inf])
+def test_channel_dense_limit_requires_positive_integer(limit):
+    from pyrpmd.analysis.subspace_channels import channels_from_model
+
+    channels = channels_from_model(_cartesian_model(), n_channels=2)
+    with pytest.raises(ValueError, match="dense_limit must be a positive integer"):
+        channels.exact_rate(5., dense_limit=limit)
+
+
+def test_channel_dense_limit_is_strict_and_applies_after_energy_truncation(monkeypatch):
+    import pyrpmd.analysis.subspace_channels as channel_module
+
+    model = _cartesian_model()
+    channels = channel_module.channels_from_model(model, n_channels=9)
+    real_solver = channel_module._dense_rate_matrix
+    invoked = []
+
+    def solve(hamiltonian, *args, **kwargs):
+        invoked.append(len(hamiltonian))
+        return real_solver(hamiltonian, *args, **kwargs)
+
+    monkeypatch.setattr(channel_module, "_dense_rate_matrix", solve)
+    with pytest.raises(ValueError, match="size 99 exceeds dense_limit=98"):
+        channels.exact_rate(5., dense_limit=98)
+    assert invoked == []
+    truncated = channels.exact_rate(5., dense_limit=63, truncation_energy=.35)
+    assert truncated.diagnostics["active_channel_dimension"] == 63
+    assert invoked == [63]
+    with pytest.raises(ValueError, match="size 63 exceeds dense_limit=62"):
+        channels.exact_rate(5., dense_limit=62, truncation_energy=.35)
+    assert invoked == [63]

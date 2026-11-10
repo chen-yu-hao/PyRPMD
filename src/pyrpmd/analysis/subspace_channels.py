@@ -243,6 +243,10 @@ class SubspaceChannels:
              "channel_basis_complete": quantum.diagnostics["channel_basis_complete"],
              "channel_truncation_converged": quantum.diagnostics["channel_basis_complete"],
              "channel_truncation_error_in_standard_error": False,
+             "rpmd_log_standard_error": rpmd.log_rate_standard_error,
+             "rpmd_spline_outside_fraction": rpmd.diagnostics.get("spline_outside_fraction"),
+             "energy_truncation_present": bool(quantum.diagnostics.get("energy_truncation_present")),
+             "quantum_grid_and_domain_converged": False,
              "physical_converged": False},
         )
 
@@ -256,14 +260,17 @@ class SubspaceChannels:
             raise ValueError("channel rates currently require the dense Sylvester route")
         if normalization not in ("default", "slice"):
             raise ValueError("normalization must be 'default' or 'slice'")
+        if (isinstance(dense_limit, (bool, np.bool_))
+                or not isinstance(dense_limit, (int, np.integer)) or dense_limit < 1):
+            raise ValueError("dense_limit must be a positive integer")
         if truncation_energy is not None:
             truncated = channels_from_model(self.channel_model(), n_channels=self.n_channels,
                                              truncation_energy=truncation_energy)
             return truncated.exact_rate(beta, cap_width=cap_width, cap_strength=cap_strength,
                 cap_power=cap_power, energy_floor=energy_floor, absorber=absorber,
                 normalization=normalization, dense_limit=dense_limit, method=method)
-        if self.size > max(dense_limit, 6000):
-            raise ValueError("channel grid too large for the dense Sylvester route")
+        if self.size > dense_limit:
+            raise ValueError(f"channel matrix size {self.size} exceeds dense_limit={dense_limit}")
         beta = float(beta)
         if not np.isfinite(beta) or beta <= 0:
             raise ValueError("beta must be positive")
@@ -271,6 +278,8 @@ class SubspaceChannels:
         width = 0.2 * length if cap_width is None else float(cap_width)
         if not 0 < width < 0.5 * length:
             raise ValueError("cap_width must be positive and below half the sigma range")
+        if not self.sigma[0] + width < self.dividing_surface < self.sigma[-1] - width:
+            raise ValueError("the dividing surface must lie between the absorbing regions")
         sigma_mass = float(self.provenance.get("sigma_mass", 1.0))
         if not np.isfinite(sigma_mass) or sigma_mass <= 0:
             raise ValueError("channel sigma mass must be positive")
@@ -346,7 +355,11 @@ class SubspaceChannels:
                      "channel_basis_complete": bool(self.provenance.get("channel_basis_complete", self.n_channels == self.q.size)),
                      "channel_truncation_converged": bool(self.provenance.get("channel_basis_complete", self.n_channels == self.q.size)),
                      "channel_counts": self.channel_counts.tolist(),
-                     "active_channel_dimension": self.size})
+                     "active_channel_dimension": self.size,
+                     "energy_truncation_present": bool(self.provenance.get("energy_truncation_diagnostics")),
+                     "energy_shift": shift,
+                     "absorber": "axis-0 ends" if absorber is None else "projected Cartesian absorber",
+                     "units": "axis-0 length per time" if model.reactant == "asymptotic" else "per time"})
         info.update(self.provenance.get("energy_truncation_diagnostics", {}))
         return QuantumRateResult(beta, flux / partition_value, flux, partition_value,
                                  "sylvester", info)
@@ -397,7 +410,6 @@ def build_subspace_channels(
     if not sigma[0] <= reference < dividing_surface:
         raise ValueError("reactant_reference must lie on the reactant side")
 
-    values = _evaluate_potential(potential, sigma, q)
     kappa = _curvature_values(curvature, sigma)
     _path_jacobian(kappa, q)
     if np.any(kappa != 0):
@@ -406,6 +418,7 @@ def build_subspace_channels(
             "Hamiltonian and RPMD measure. Use channels_from_model with the "
             "original two-dimensional Cartesian potential instead."
         )
+    values = _evaluate_potential(potential, sigma, q)
     tq = sinc_dvr_kinetic(q, masses[1])
     retained = np.ones_like(values, dtype=bool) if retained_points is None else np.asarray(retained_points, dtype=bool)
     if retained.shape != values.shape or not np.any(retained):
@@ -576,6 +589,9 @@ def project_path_channels(potential: Callable, gradient: Any, path: Any, masses:
     if curvature is None:
         _, curvature_samples = path_curvature(points, mass, samples=max(401, len(sigma)))
         curvature = np.interp(sigma, np.linspace(chord[0], chord[-1], len(curvature_samples)), curvature_samples)
+    _, geometric_curvature = path_curvature(points, mass, samples=max(401, len(sigma)))
+    if np.max(np.abs(geometric_curvature)) > 1e-10:
+        raise NotImplementedError("Curved path embeddings require the original Cartesian plane; use channels_from_model")
     dividing_surface = kwargs.pop("dividing_surface", float(sigma[len(sigma) // 2]))
     reference = kwargs.pop("reactant_reference", None)
     return build_subspace_channels(cut_potential, sigma, q, n_channels=n_channels,
