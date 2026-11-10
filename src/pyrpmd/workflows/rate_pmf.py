@@ -24,6 +24,67 @@ from .rate_constraints import rate_coordinate
 FLUX_MEASURE = "delta(xi-x) * sqrt(grad(xi) M^-1 grad(xi)/(2*pi*beta))"
 
 
+def _stream_state_checks(streams, coordinate):
+    """Recompute xi from each stream's final ring and check its CV branch.
+
+    The final centroid of every umbrella stream is evaluated with the same
+    coordinate object used by the rate workflow. A stream on the far branch
+    of xi=s0/(s0-s1) is not a sample of the requested window.
+    """
+    from ..cv import RPMDrateCoordinate
+
+    if not isinstance(coordinate, RPMDrateCoordinate):
+        return []
+    checks = []
+    for index, stream in enumerate(streams):
+        q = stream.get("last_q")
+        if q is None:
+            continue
+        record = {"stream": index, "center": float(np.asarray(stream["center"]).reshape(-1)[0])}
+        for key in ("window", "replica"):
+            if key in stream:
+                record[key] = int(stream[key])
+        if "window_id" in stream:
+            record["window_id"] = str(stream["window_id"])
+        try:
+            branch = coordinate.branch(q)
+        except (ValueError, FloatingPointError) as error:
+            branch = {"branch": "unavailable", "regular": False, "error": str(error)}
+        record.update(final_centroid=branch)
+        samples = np.asarray(stream.get("samples", [])).reshape(-1)
+        if len(samples):
+            record["last_recorded_xi"] = float(samples[-1])
+            record["stream_mean_xi"] = float(samples.mean())
+        record["passed"] = bool(branch.get("regular"))
+        if not record["passed"]:
+            record["reason"] = ("rpmdrate_xi_beyond_singular_surface"
+                                if branch["branch"] == "beyond_singular_surface"
+                                else "final_centroid_xi_unavailable")
+        checks.append(record)
+    return checks
+
+
+def _adaptive_production_gate(summary):
+    """Pilot acceptance selects windows; only frozen production may pass."""
+    adaptive = summary.get("adaptive_umbrella")
+    if not adaptive or "production_target_met" not in adaptive:
+        return None
+    gate = {
+        "name": "adaptive_frozen_production",
+        "passed": bool(adaptive["production_target_met"]),
+        "pilot_target_met": bool(adaptive.get("pilot_target_met", adaptive.get("target_met"))),
+        "spanning_overlap": adaptive.get("production_spanning_overlap"),
+        "overlap_connected_at_target": adaptive.get("production_overlap_connected_at_target"),
+        "effective_samples_target_met": adaptive.get("production_effective_samples_target_met"),
+        "effective_samples_per_window": adaptive.get("production_effective_samples_per_window"),
+        "analysis_overlap_connected": adaptive.get("production_analysis_overlap_connected"),
+    }
+    coverage = adaptive.get("production_coverage")
+    if coverage is not None:
+        gate["coverage_target_met"] = bool(coverage.get("target_met"))
+    return gate
+
+
 def _prepare(config, system, output, return_system=False, *, _preparation=None, _write=True):
     rate_pmf_options(config)
     prepared = (prepare_rate(config, system, numerical=True)
@@ -334,9 +395,11 @@ def _save_pmf_arrays(output, estimate, method):
         ),
         "reference": 0.0,
         "ready": bool(estimate["ready"]),
+        "diagnostic_only": not bool(estimate["ready"]),
     }
     for key in (
         "derivative",
+        "log_density",
         "density",
         "raw_count",
         "edges",
@@ -365,6 +428,23 @@ def _save_pmf_arrays(output, estimate, method):
         header=",".join(names),
         comments="",
     )
+
+
+def _write_stream_anomalies(output, anomalies, branch_failures, config):
+    """Persist a structured failure artifact for inconsistent umbrella streams."""
+    from ..analysis.rate_support import ANOMALY_CHECKS
+
+    write_json(Path(output) / "umbrella_stream_anomalies.json", jsonable({
+        "schema_version": 1,
+        "status": "umbrella_stream_anomaly",
+        "temperature_beta_inverse_hartree": config["beta"],
+        "beads": config.get("beads"),
+        "displaced_streams": anomalies,
+        "cv_branch_failures": branch_failures,
+        "checks": ANOMALY_CHECKS,
+        "rate_reported": False,
+        "note": "These streams are excluded from any final rate; continuing them is not a convergence remedy.",
+    }))
 
 
 def _pmf_and_parent_tasks(sampled, config, system, output, options):
@@ -431,6 +511,9 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options):
                 compare_ui=pmf_options["compare_ui"],
                 ui_points=pmf_options["points"],
                 measure="rate_flux",
+                min_weight_ess=pmf_options.get("min_weight_ess"),
+                min_endpoint_ess=pmf_options.get("min_endpoint_ess"),
+                max_center_displacement_sigma=pmf_options.get("max_center_displacement_sigma"),
             )
         else:
             if "sampling_config" in sampled or not sampled.get("data"):
@@ -440,6 +523,17 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options):
             estimate = _ui_rate_pmf(
                 sampled, config, centers, samples, stiffness, pmf_options
             )
+            from ..analysis.rate_support import window_anomalies
+
+            anomalies = window_anomalies(
+                samples, centers, stiffness, config["beta"],
+                pmf_options.get("max_center_displacement_sigma"))
+            estimate["window_anomalies"] = anomalies
+            estimate["gates"] = [{
+                "name": "umbrella_stream_consistency", "passed": not anomalies,
+                "threshold_sigma": pmf_options.get("max_center_displacement_sigma"),
+                "anomalous_streams": [a["stream"] for a in anomalies],
+            }]
         if "sampling_config" in sampled:
             from .rate_umbrella_analysis import (
                 mbar_umbrella_diagnostics, write_rate_umbrella_diagnostics,
@@ -463,6 +557,35 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options):
                 permutations=rate_coordinate(config, system).permutations,
                 beta=config["beta"], nbeads=config["beads"],
             )
+    # Hard scientific gates that are independent of the estimator's own
+    # support. A failed gate keeps any curve strictly diagnostic.
+    gates = list(estimate.get("gates", []))
+    gate_reason = None
+    if method not in ("source", "reweighted_histogram"):
+        state_checks = _stream_state_checks(streams, rate_coordinate(config, system))
+        estimate["stream_state_checks"] = state_checks
+        failed = [c for c in state_checks if not c["passed"]]
+        gates.append({"name": "umbrella_cv_branch", "passed": not failed,
+                      "failed_streams": [c["stream"] for c in failed]})
+        if estimate.get("window_anomalies") or failed:
+            gate_reason = "umbrella_stream_anomaly"
+            _write_stream_anomalies(output, estimate.get("window_anomalies", []),
+                                    failed, config)
+        adaptive_gate = _adaptive_production_gate(sampled["summary"])
+        if adaptive_gate is not None:
+            gates.append(adaptive_gate)
+            if not adaptive_gate["passed"]:
+                gate_reason = gate_reason or "adaptive_production_targets_not_met"
+    if gate_reason and estimate["ready"]:
+        estimate["diagnostic_free_energy_barrier_hartree"] = estimate["free_energy_barrier_hartree"]
+        estimate["free_energy_barrier_hartree"] = None
+        estimate["ready"] = False
+        estimate["status"] = gate_reason
+        estimate["warnings"] = list(estimate["warnings"]) + [
+            "Rate PMF unavailable: " + gate_reason + "; the curve is diagnostic only and no recrossing is started."]
+    elif gate_reason and estimate["status"] in ("ready", None):
+        estimate["status"] = gate_reason
+    estimate["gates"] = gates
     _save_pmf_arrays(output, estimate, method)
     xi = estimate["xi_star"]
     barrier = estimate["free_energy_barrier_hartree"]
@@ -504,6 +627,7 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options):
         "ready": bool(estimate["ready"]),
         "status": status,
         "failure_reason": None if estimate["ready"] else source_status,
+        "curve_role": "rate" if estimate["ready"] else "diagnostic_only",
         "xi_star": xi,
         "reference": 0.0,
         "free_energy_barrier_hartree": barrier,
@@ -564,6 +688,11 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options):
         "barrier_uncertainty",
         "supported_draw_barrier_standard_error_hartree",
         "supported_draw_barrier_percentile_95_ci_hartree",
+        "diagnostic_free_energy_barrier_hartree",
+        "weight_diagnostics",
+        "window_anomalies",
+        "stream_state_checks",
+        "gates",
     ):
         if key in estimate:
             diagnostics[key] = estimate[key]

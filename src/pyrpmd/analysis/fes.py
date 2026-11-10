@@ -321,6 +321,13 @@ def reconstruct_fes(
     return result
 
 
+from .rate_support import (  # noqa: E402
+    DEFAULT_MAX_CENTER_DISPLACEMENT_SIGMA as _DEFAULT_MAX_CENTER_DISPLACEMENT_SIGMA,
+    DEFAULT_MIN_ENDPOINT_ESS as _DEFAULT_MIN_ENDPOINT_ESS,
+    DEFAULT_MIN_WEIGHT_ESS as _DEFAULT_MIN_WEIGHT_ESS,
+)
+
+
 def mbar_rate_pmf(
     samples,
     centers,
@@ -340,6 +347,9 @@ def mbar_rate_pmf(
     compare_ui=False,
     ui_points=401,
     solver_options=None,
+    min_weight_ess=_DEFAULT_MIN_WEIGHT_ESS,
+    min_endpoint_ess=_DEFAULT_MIN_ENDPOINT_ESS,
+    max_center_displacement_sigma=_DEFAULT_MAX_CENTER_DISPLACEMENT_SIGMA,
 ):
     # Resolve these hooks at call time: downstream diagnostics instrument the
     # historical analysis.fes entry points. No shared module state is changed.
@@ -349,7 +359,10 @@ def mbar_rate_pmf(
         search_range=search_range, bootstrap=bootstrap, seed=seed,
         min_count=min_count, overlap_threshold=overlap_threshold,
         measure=measure, compare_ui=compare_ui, ui_points=ui_points,
-        solver_options=solver_options, _solve_mbar=solve_mbar,
+        solver_options=solver_options, min_weight_ess=min_weight_ess,
+        min_endpoint_ess=min_endpoint_ess,
+        max_center_displacement_sigma=max_center_displacement_sigma,
+        _solve_mbar=solve_mbar,
         _resample=_block_resample, _integrate_ui=umbrella_integration,
     )
 

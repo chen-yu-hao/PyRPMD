@@ -10,6 +10,32 @@
 给出 PMF，受约束母链发射成对回穿轨迹得到透射系数。同一套 Python 或 TOML 输入驱动这些工作流，从气相速率、直接碰撞到自由能面、
 metadynamics、PIMD、扩散、表面跃迁和电化学 PCET；积分器内核为 C++17/OpenMP，并配有 NumPy 参考实现。
 
+## 动图直观理解原理
+
+每个动图在一个玩具模型上演示 PyRPMD 某个工作流背后的核心思想。
+
+<p align="center">
+  <img src="docs/_static/gifs/ring_polymer.gif" width="62%" alt="每个量子原子核被表示成一串由弹簧相连的珠子组成的环。在过渡态（星号）附近，环沿势垒拉伸。RPMD 正是借此计入隧穿和零点能。"><br>
+  <sub>每个量子原子核被表示成一串由弹簧相连的珠子组成的环。在过渡态（星号）附近，环沿势垒拉伸。RPMD 正是借此计入隧穿和零点能。</sub>
+</p>
+
+<table>
+<tr><th colspan="2">热速率（<code>rate</code>、<code>network</code>）</th></tr>
+<tr><td width="50%" align="center"><img src="docs/_static/gifs/umbrella_pmf.gif" width="100%" alt="沿反应坐标逐个布置伞窗口（上），各窗口直方图相互重叠（下），合并后得到 PMF。"><br><sub>沿反应坐标逐个布置伞窗口（上），各窗口直方图相互重叠（下），合并后得到 PMF。</sub></td><td width="50%" align="center"><img src="docs/_static/gifs/recrossing.gif" width="100%" alt="成对轨迹从分割面（虚线）出发，回穿使透射系数 κ(t) 下降并收敛到平台值。"><br><sub>成对轨迹从分割面（虚线）出发，回穿使透射系数 κ(t) 下降并收敛到平台值。</sub></td></tr>
+<tr><th colspan="2">直接碰撞与深隧穿（<code>drpmd</code>、瞬子）</th></tr>
+<tr><td width="50%" align="center"><img src="docs/_static/gifs/drpmd_collision.gif" width="100%" alt="dRPMD 直接碰撞 A + BC → AB + C：环聚合物原子靠近，交换化学键后分离。"><br><sub>dRPMD 直接碰撞 A + BC → AB + C：环聚合物原子靠近，交换化学键后分离。</sub></td><td width="50%" align="center"><img src="docs/_static/gifs/instanton.gif" width="100%" alt="环聚合物瞬子：温度降低时，珠子沿势垒铺开（上），闭合的虚时间轨道随之变宽（下）。"><br><sub>环聚合物瞬子：温度降低时，珠子沿势垒铺开（上），闭合的虚时间轨道随之变宽（下）。</sub></td></tr>
+<tr><th colspan="2">自由能面（<code>fes</code>：metadynamics、OPES、伞抽样）</th></tr>
+<tr><td width="50%" align="center"><img src="docs/_static/gifs/metadynamics.gif" width="100%" alt="Well-tempered metadynamics：沉积的高斯偏置（橙色）逐步填平势阱，直到行走者自由跨越。负偏置（下）收敛到真实自由能面。"><br><sub>Well-tempered metadynamics：沉积的高斯偏置（橙色）逐步填平势阱，直到行走者自由跨越。负偏置（下）收敛到真实自由能面。</sub></td><td width="50%" align="center"><img src="docs/_static/gifs/fes_2d.gif" width="100%" alt="二维增强采样：行走者在势面上探索（左），重构的自由能面逐个盆地被填出（右）。"><br><sub>二维增强采样：行走者在势面上探索（左），重构的自由能面逐个盆地被填出（右）。</sub></td></tr>
+<tr><th colspan="2">路径积分采样与材料（<code>pimd</code>、<code>diffusion</code>）</th></tr>
+<tr><td width="50%" align="center"><img src="docs/_static/gifs/pimd_nqe.gif" width="100%" alt="PIMD 核量子效应：温度计下降时，轻的 H 环明显膨胀，重的 O 环基本保持紧凑。"><br><sub>PIMD 核量子效应：温度计下降时，轻的 H 环明显膨胀，重的 O 环基本保持紧凑。</sub></td><td width="50%" align="center"><img src="docs/_static/gifs/diffusion.gif" width="100%" alt="材料扩散：环聚合物粒子在周期性主体的间隙位点之间跳跃，均方位移线性增长，由此得到扩散系数 D。"><br><sub>材料扩散：环聚合物粒子在周期性主体的间隙位点之间跳跃，均方位移线性增长，由此得到扩散系数 D。</sub></td></tr>
+<tr><th colspan="2">表面与电化学（<code>surface_rate</code>、<code>site_rate</code>、<code>pcet</code>）</th></tr>
+<tr><td width="50%" align="center"><img src="docs/_static/gifs/surface_rate.gif" width="100%" alt="表面逃逸：底层原子固定（斜线）。吸附物在位点间跳跃，初始盆地的存活概率按逃逸速率指数衰减。"><br><sub>表面逃逸：底层原子固定（斜线）。吸附物在位点间跳跃，初始盆地的存活概率按逃逸速率指数衰减。</sub></td><td width="50%" align="center"><img src="docs/_static/gifs/pcet.gif" width="100%" alt="电化学 PCET：电极电势使产物自由能曲线（橙）相对反应物（蓝）移动，H 与 D 的速率曲线反映同位素效应。"><br><sub>电化学 PCET：电极电势使产物自由能曲线（橙）相对反应物（蓝）移动，H 与 D 的速率曲线反映同位素效应。</sub></td></tr>
+<tr><th colspan="2">非绝热动力学与光谱（<code>nonadiabatic</code>、<code>spectroscopy</code>）</th></tr>
+<tr><td width="50%" align="center"><img src="docs/_static/gifs/nonadiabatic.gif" width="100%" alt="避免交叉处的非绝热动力学：上态上的轨迹群分到两个态，布居（右）随之趋于稳定。"><br><sub>避免交叉处的非绝热动力学：上态上的轨迹群分到两个态，布居（右）随之趋于稳定。</sub></td><td width="50%" align="center"><img src="docs/_static/gifs/spectroscopy.gif" width="100%" alt="TRPMD / PA-CMD 光谱：对振动分子的偶极关联函数（上）做傅里叶变换，关联时间越长，光谱（下）越尖锐。"><br><sub>TRPMD / PA-CMD 光谱：对振动分子的偶极关联函数（上）做傅里叶变换，关联时间越长，光谱（下）越尖锐。</sub></td></tr>
+</table>
+
+<sub>这些都是由小型玩具模拟驱动的无文字示意动图，并非 PyRPMD 的计算结果。可用 <code>python tools/make_readme_gifs.py</code> 重新生成（需要 matplotlib）。</sub>
+
 ## 为什么选择 PyRPMD
 
 - **一条命令，从 TS 到速率。** 不需要手工布置窗口或另写回穿脚本：一个输入把计算从结构带到速率，并给出不确定度。

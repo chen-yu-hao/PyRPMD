@@ -9,7 +9,7 @@ import numpy as np
 import pytest
 
 from pyrpmd.checkpoint import load_checkpoint
-from pyrpmd.input import InputError, JobSpec, rate_pmf_stage
+from pyrpmd.input import InputError, JobSpec, rate_pmf_options, rate_pmf_stage
 from pyrpmd.runner import extend_run, prepare, run_resolved
 from pyrpmd.workflows.rate_options import _parent_thermostat
 from pyrpmd.workflows.rate_plan import rate_pmf_plan
@@ -52,10 +52,10 @@ def test_explicit_reaction_prepares_the_selected_independent_sampler(method):
 def test_regional_operation_controls_use_pmf_clock_and_preserve_parent_clock(nested, thermostat):
     spec = research_spec()
     spec.data["native"] = False
-    spec.data["rate"]["pmf"] = {
+    spec.data["rate"]["pmf"].update({
         "method": "umbrella",
         "dynamics": {"timestep": "0.2 fs", "integrator": "normal-mode-bab"},
-    }
+    })
     if thermostat == "pile-l":
         spec.data["umbrella"]["sampling"]["thermostat"] = {
             "type": "pile-l", "gamma_centroid": "0.02 fs^-1",
@@ -73,7 +73,9 @@ def test_regional_operation_controls_use_pmf_clock_and_preserve_parent_clock(nes
     assert "start" not in stage["umbrella"] and "kappa" not in stage["umbrella"]
     assert resolved["rate"]["pmf"]["estimator"] == "ui"
     assert resolved["rate"]["pmf_points"] == 401
-    assert stage["analysis"]["bootstrap"] == 10
+    assert stage["analysis"]["bootstrap_replicates"] == 10
+    assert "bootstrap" not in stage["analysis"]
+    assert rate_pmf_options(resolved)["bootstrap"] == 10
     assert _parent_thermostat(resolved) == (20, "fixed")
     assert rate_pmf_plan(resolved)["recrossing"]["parent_thermostat"] == "andersen"
     assert stage["sampling"]["thermostat"] == thermostat
@@ -91,8 +93,13 @@ def test_regional_operation_controls_use_pmf_clock_and_preserve_parent_clock(nes
 ])
 def test_duplicate_nested_pmf_stage_declarations_are_rejected(field, value):
     spec = research_spec()
+    umbrella = spec.data.pop("umbrella")
+    if field == "analysis":
+        umbrella["analysis"] = {"bootstrap_replicates": 10}
+    elif field == "estimator":
+        umbrella["analysis"] = {"estimator": "ui"}
     spec.data["rate"]["pmf"] = {"method": "umbrella", field: value,
-                                 "umbrella": spec.data.pop("umbrella")}
+                                 "umbrella": umbrella}
     with pytest.raises(InputError, match="not both"):
         spec.resolve()
 

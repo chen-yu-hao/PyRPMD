@@ -247,6 +247,70 @@ uncertainty contract.
 wall. RPMDrate xi can be singular outside its reaction corridor, so global
 exploration and the stationary sampling domain need system-specific checks.
 
+## Support, weight and stream gates
+
+A histogram PMF exists only at bin **centers**. With `analysis.ranges=[[-0.1,1.1]]`
+and `bins=240`, the last center is 1.0975, not 1.1. Input preflight therefore
+rejects a reference (ξ=0), `rate.dividing_surface` or `rate.pmf_search_range`
+endpoint outside `[first_center, last_center]`, reports both ranges and the
+required edge, and never clips 1.1 to 1.0975. A search endpoint exactly on a
+center or on an interior edge is accepted. When `analysis.ranges` is omitted
+(data-dependent binning), the same classification is reported at analysis time.
+
+`rate_pmf.json` persists the resolved binning and support in
+`support.histogram` (edges, centers, first/last center, width),
+`support.search_endpoints` (`on_center`, `between_centers`,
+`outside_histogram_centers` or `masked`, with brackets and masked intervals),
+`support.reference_endpoint` and `support.dividing_surface_endpoint`.
+
+MBAR rate histograms accumulate bin mass with log-sum-exp from normalized log
+weights, so tiny nonzero weights no longer underflow into masked/NaN bins.
+`weight_diagnostics` reports the global Kish ESS, per-stream ESS and weight
+fraction, endpoint-bin ESS, the maximum normalized weight and the log-weight
+span. Log-domain arithmetic only recovers a **diagnostic** curve; the rate stays
+gated:
+
+| Gate | Default | Option (`[rate]`) | Failure status |
+| --- | --- | --- | --- |
+| Global Kish weight ESS (collapse alarm) | ≥ 2 | `pmf_min_weight_ess` | `weight_ess_collapse` |
+| Reference/dividing-surface bin ESS | ≥ 2 | `pmf_min_endpoint_ess` | `endpoint_weight_ess_collapse` |
+| Stream mean within N bias widths `1/sqrt(beta K)` of its center | N = 20 | `pmf_max_window_displacement` | `umbrella_stream_anomaly` |
+| Final centroid on the regular branch `s0-s1>0` of RPMDrate ξ | always | — | `umbrella_stream_anomaly` |
+| Adaptive umbrella: frozen-production overlap, per-window ESS and coverage | adaptive targets | `[adaptive_umbrella]` | `adaptive_production_targets_not_met` |
+
+The global ESS of unbiased umbrella weights is small even for healthy data,
+because edge-window weights grow like `exp(beta K (xi-c)^2/2)`; its floor only
+rejects collapse onto one or two frames. The endpoint-bin ESS measures the
+support that enters the barrier. Set a gate to `"off"` only for a deliberate
+diagnostic. A failed gate gives
+`ready=false`, `status="unsupported_pmf"`, `curve_role="diagnostic_only"`,
+`k_qtst=null` and no recrossing; any would-be barrier appears only as
+`diagnostic_free_energy_barrier_hartree`. `rate_pmf.npz` carries
+`diagnostic_only=true` and `log_density`. `gates` lists every check.
+
+A displaced or wrong-branch stream also writes `umbrella_stream_anomalies.json`
+(center, stiffness, mean, width, displacement in σ, bias at the mean in
+kcal/mol, recomputed final-centroid ξ, s0, s1 and branch, plus checks). Past
+the singular surface `s0=s1`, RPMDrate ξ jumps to −∞ and then returns toward
+~1/3 along the product channel, so a window centered at ξ=1.1 can report
+ξ≈0.4–0.7 with an enormous bias energy and a weak restoring force. Continuing
+such a stream is not a convergence remedy.
+
+Adaptive pilots only select windows. Even when every pilot target was met, the
+rate requires the frozen production to meet `target_overlap`,
+`min_effective_samples` and any declared coverage.
+
+### Failed biased histories
+
+Umbrella windows, WT-MetaD and OPES histories write
+`failures/<history>.json` when propagation or the PES fails (for BKMP2, any
+pair distance below 0.2 bohr). The record holds the error, the last committed
+step/time/elapsed clock, timestep, minimum bead and centroid pair distances,
+centroid CV, last recorded CV, bias state (hills or kernels), native/Python
+propagation counters and the saved checkpoint. `rate_pmf.json` is then written
+with `status="sampling_incomplete"` and all failed histories, and the run
+raises. Completed histories are never selected to form a PMF.
+
 ## Reuse an external PMF
 
 ```toml

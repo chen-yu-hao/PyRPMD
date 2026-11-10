@@ -232,7 +232,7 @@ def check_supported(config):
 
 
 def _metadynamics_parts(config, system, label):
-    from .workflows._metadynamics_base import resolve_metadynamics
+    from .workflows.metadynamics import resolve_metadynamics
 
     if _method(config) != "metadynamics":
         _fail(f"importing a bias requires metadynamics in the {label} run")

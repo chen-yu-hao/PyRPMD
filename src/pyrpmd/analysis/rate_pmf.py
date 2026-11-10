@@ -15,7 +15,30 @@ from .fes_statistics import (
     cv_statistical_inefficiency,
 )
 from .mbar import _identical_rows, solve_mbar
-from .umbrella import _histogram, umbrella_integration, umbrella_reduced_potentials
+from .rate_support import (
+    DEFAULT_MAX_CENTER_DISPLACEMENT_SIGMA,
+    DEFAULT_MIN_ENDPOINT_ESS,
+    DEFAULT_MIN_WEIGHT_ESS,
+    classify_point,
+    fit_log_weights,
+    histogram_report,
+    kish_ess,
+    log_histogram,
+    masked_runs,
+    weight_diagnostics,
+    window_anomalies,
+)
+from .umbrella import umbrella_integration, umbrella_reduced_potentials
+
+
+def _log_free_energy(x, fit, edges, beta, min_count):
+    """Absolute histogram free energy from log-domain weighted bin mass."""
+    _, log_density, count, mask = log_histogram(x, fit_log_weights(fit), edges, min_count)
+    absolute = np.full(len(count), np.nan)
+    absolute[~mask] = -log_density[~mask] / beta
+    with np.errstate(over="ignore", under="ignore"):
+        density = np.exp(log_density)
+    return absolute, density, log_density, count, mask
 
 
 def _rate_bracket(grid, mask, point, name):
@@ -125,6 +148,9 @@ def mbar_rate_pmf(
     compare_ui=False,
     ui_points=401,
     solver_options=None,
+    min_weight_ess=DEFAULT_MIN_WEIGHT_ESS,
+    min_endpoint_ess=DEFAULT_MIN_ENDPOINT_ESS,
+    max_center_displacement_sigma=DEFAULT_MAX_CENTER_DISPLACEMENT_SIGMA,
     _solve_mbar=solve_mbar,
     _resample=_block_resample,
     _integrate_ui=umbrella_integration,
@@ -139,7 +165,10 @@ def mbar_rate_pmf(
 
     Endpoints are linearly interpolated in log histogram density between
     neighboring supported bin centers. A masked gap anywhere between reference
-    and surface is rejected. With xi_star=None, select the unsmoothed maximum
+    and surface is rejected. Bin masses are accumulated from log weights, so
+    tiny but nonzero weights are never lost to underflow. The search range and
+    endpoints must lie within the histogram *centers*; they are never clipped
+    to the last center. With xi_star=None, select the unsmoothed maximum
     bin center in search_range (default [reference,max(centers)]), requiring the
     entire search interval to be supported. Each bootstrap keeps that surface
     fixed; its uncertainty is conditional on this selection, not peak-location
@@ -147,6 +176,13 @@ def mbar_rate_pmf(
     raises ValueError. Missing uncertainties remain None/NaN, never zero. If
     any bootstrap draw fails, primary errors are unavailable; surviving-draw
     errors are retained only under explicit supported_draw labels.
+
+    Hard rate gates are separate from support: a Kish weight ESS below
+    ``min_weight_ess`` (global) or ``min_endpoint_ess`` (reference and
+    dividing-surface bins), or a stream whose mean lies more than
+    ``max_center_displacement_sigma`` bias widths from its umbrella center,
+    returns ready=False. The supported curve and its would-be barrier remain
+    available as explicitly diagnostic values. Pass None to disable a gate.
 
     compare_ui adds a cheap Gaussian-UI calculation on the *same* bootstrap
     draws, exposing paired estimator differences without a second MBAR solve.
@@ -212,6 +248,12 @@ def mbar_rate_pmf(
         raise ValueError("bootstrap must be zero or >=2")
     if xi_star is not None and not np.isfinite(xi_star):
         raise ValueError("xi_star must be finite")
+    for value, name in ((min_weight_ess, "min_weight_ess"),
+                        (min_endpoint_ess, "min_endpoint_ess"),
+                        (max_center_displacement_sigma, "max_center_displacement_sigma")):
+        if value is not None and (isinstance(value, (bool, np.bool_))
+                                  or not np.isfinite(value) or value <= 0):
+            raise ValueError(name + " must be positive and finite, or None")
     options = dict(solver_options or {})
     if set(options) - {"tolerance", "max_iterations", "method"}:
         raise ValueError(
@@ -263,13 +305,13 @@ def mbar_rate_pmf(
     fit = _solve_mbar(u, fit_counts, overlap_threshold=overlap_threshold,
                      return_state_weights=False, **options)
     connected = len(np.unique(fit.components)) == 1
-    mass, density, count, free, mask = _histogram(
-        x[:, None], fit.weights, [edges], beta, min_count
+    absolute, density, log_density, count, mask = _log_free_energy(
+        x, fit, edges, beta, min_count
     )
-    absolute = np.full_like(free, np.nan)
-    absolute[~mask] = -np.log(density[~mask]) / beta
+    free = absolute.copy()
     warnings = []
     reason = None
+    search_endpoints = None
     if not fit.converged:
         reason = "mbar_not_converged"
     elif not connected:
@@ -288,6 +330,11 @@ def mbar_rate_pmf(
             raise ValueError("search_range must be one finite increasing interval")
         low, low_reason = _rate_bracket(grid, mask, auto_range[0], "search_lower")
         high, high_reason = _rate_bracket(grid, mask, auto_range[1], "search_upper")
+        search_endpoints = {
+            "lower": classify_point(grid, mask, auto_range[0]),
+            "upper": classify_point(grid, mask, auto_range[1]),
+            "masked_intervals": masked_runs(grid, mask, *auto_range),
+        }
         search_reason = low_reason or high_reason
         if search_reason is None and mask[low[0] : high[1] + 1].any():
             search_reason = "masked_search_interval"
@@ -310,14 +357,54 @@ def mbar_rate_pmf(
             grid, mask, reference, xi_star
         )
         reason = reason or endpoint_reason
-    ready = reason is None and xi_star is not None
-    barrier = None
+    supported = reason is None and xi_star is not None
+    log_weights = fit_log_weights(fit)
+    weights_report = weight_diagnostics(
+        log_weights, x, offsets, edges,
+        {"reference": None if reference_bracket is None else reference_bracket[:2],
+         "dividing_surface": None if surface_bracket is None else surface_bracket[:2]},
+    )
+    anomalies = window_anomalies(arrays, centers, stiffness, beta,
+                                 max_center_displacement_sigma)
+    endpoint_ess = [item["minimum_kish_ess"]
+                    for item in weights_report["endpoints"].values() if item is not None]
+    gates = [
+        {"name": "umbrella_stream_consistency",
+         "passed": not anomalies,
+         "threshold_sigma": max_center_displacement_sigma,
+         "anomalous_streams": [a["stream"] for a in anomalies]},
+        {"name": "global_weight_ess",
+         "passed": bool(min_weight_ess is None
+                        or weights_report["global_kish_ess"] >= min_weight_ess),
+         "value": weights_report["global_kish_ess"], "minimum": min_weight_ess},
+        {"name": "endpoint_weight_ess",
+         "passed": bool(min_endpoint_ess is None or not supported
+                        or min(endpoint_ess, default=0.0) >= min_endpoint_ess),
+         "value": min(endpoint_ess) if endpoint_ess else None,
+         "minimum": min_endpoint_ess, "evaluated": supported},
+    ]
+    gate_reason = None
+    if anomalies:
+        gate_reason = "umbrella_stream_anomaly"
+    elif not gates[1]["passed"]:
+        gate_reason = "weight_ess_collapse"
+    elif not gates[2]["passed"]:
+        gate_reason = "endpoint_weight_ess_collapse"
+    if anomalies or (gate_reason and fit.converged and connected):
+        # A displaced stream is a state failure and the likely root cause of
+        # any overlap, weight or support failure; weight gates are reported
+        # ahead of the support failures they usually produce.
+        reason = gate_reason
+    ready = supported and reason is None
+    barrier = diagnostic_barrier = None
     if reference_bracket is not None:
         free = absolute - _rate_value(absolute, reference_bracket)
-    if ready:
-        barrier = _rate_value(absolute, surface_bracket) - _rate_value(
+    if supported:
+        diagnostic_barrier = _rate_value(absolute, surface_bracket) - _rate_value(
             absolute, reference_bracket
         )
+    if ready:
+        barrier = diagnostic_barrier
     if not fit.converged or not connected:
         free[:] = np.nan
         mask[:] = True
@@ -351,16 +438,14 @@ def mbar_rate_pmf(
         items = []
         for index in sorted(set(bracket[:2])):
             selected = (x >= edges[index]) & (x < edges[index + 1])
-            w = fit.weights[selected]
+            lw = log_weights[selected]
             items.append(
                 {
                     "bin": index,
                     "center": float(grid[index]),
                     "raw_count": int(count[index]),
                     "density": float(density[index]),
-                    "weighted_effective_samples_without_time_correction": (
-                        float(w.sum() ** 2 / (w @ w)) if len(w) else 0.0
-                    ),
+                    "weighted_effective_samples_without_time_correction": kish_ess(lw),
                     "contributing_streams": sum(
                         bool(selected[start:stop].any())
                         for start, stop in zip(offsets[:-1], offsets[1:])
@@ -423,15 +508,13 @@ def mbar_rate_pmf(
                 elif len(np.unique(mb.components)) != 1:
                     record["reason"] = "disconnected_overlap"
                 else:
-                    _, db, _, _, maskb = _histogram(
-                        xb[:, None], mb.weights, [edges], beta, min_count
+                    ab, _, _, _, maskb = _log_free_energy(
+                        xb, mb, edges, beta, min_count
                     )
                     rb, sb, record["reason"] = _rate_support(
                         grid, maskb, reference, xi_star
                     )
                     if record["reason"] is None:
-                        ab = np.full_like(db, np.nan)
-                        ab[~maskb] = -np.log(db[~maskb]) / beta
                         rv, sv = _rate_value(ab, rb), _rate_value(ab, sb)
                         b = sv - rv
                         record.update(
@@ -519,6 +602,18 @@ def mbar_rate_pmf(
         failure_counts[failure["reason"]] = failure_counts.get(failure["reason"], 0) + 1
     if reason:
         warnings.append("Rate PMF unavailable: " + reason)
+    if anomalies:
+        warnings.append(
+            "Umbrella stream(s) " + ", ".join(str(a["stream"]) for a in anomalies)
+            + " have means far outside their umbrella centers; this is a CV/state/propagation "
+            "failure, not thermal fluctuation. No rate is reported."
+        )
+    if not gates[1]["passed"]:
+        warnings.append(
+            f"Reweighting collapsed: global Kish weight ESS "
+            f"{weights_report['global_kish_ess']:.3g} < {min_weight_ess:g}; "
+            "the log-domain curve is diagnostic only."
+        )
     if bootstrap and len(draws) < 2:
         warnings.append(
             "Fewer than two valid bootstrap draws; the barrier uncertainty is unavailable."
@@ -567,6 +662,7 @@ def mbar_rate_pmf(
         "xi_star": xi_star,
         "reference": float(reference),
         "free_energy_barrier_hartree": barrier,
+        "diagnostic_free_energy_barrier_hartree": None if ready else diagnostic_barrier,
         "barrier_standard_error_hartree": stats["standard_error_hartree"],
         "barrier_percentile_95_ci_hartree": stats["percentile_95_ci_hartree"],
         "barrier_uncertainty": uncertainty,
@@ -583,6 +679,7 @@ def mbar_rate_pmf(
         "mask": mask,
         "edges": edges,
         "density": density,
+        "log_density": log_density,
         "raw_count": count,
         "overlap_connected": connected,
         "overlap": fit.overlap,
@@ -591,13 +688,23 @@ def mbar_rate_pmf(
         "weights": fit.weights,
         "statistical_inefficiency": gs,
         "effective_samples_per_stream": counts / gs,
-        "weight_ess": float(1 / (fit.weights @ fit.weights)),
+        "weight_ess": weights_report["global_kish_ess"],
+        "weight_diagnostics": weights_report,
         "window_moments": moments,
+        "window_anomalies": anomalies,
+        "gates": gates,
         "support": {
             "reference": endpoint_details(reference_bracket),
             "dividing_surface": endpoint_details(surface_bracket),
+            "reference_endpoint": classify_point(grid, mask, reference),
+            "dividing_surface_endpoint": (
+                classify_point(grid, mask, xi_star) if xi_star is not None else None
+            ),
             "search_range": auto_range.tolist() if auto_range is not None else None,
-            "continuous_interval": ready,
+            "search_endpoints": search_endpoints,
+            "histogram": histogram_report(edges),
+            "histogram_accumulation": "log_sum_exp",
+            "continuous_interval": supported,
             "selection": selection,
             "smoothing": "none",
             "failure_reason": reason,

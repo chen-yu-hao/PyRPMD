@@ -1,0 +1,78 @@
+{
+  "_opes_serial.py": {
+    "destination": "opes.py",
+    "unchanged_definitions": [
+      "normalized_weights",
+      "OPESBias",
+      "OPESExploreBias"
+    ],
+    "changed_definitions": []
+  },
+  "_shared_metadynamics_serial.py": {
+    "destination": "shared_metadynamics.py",
+    "unchanged_definitions": [
+      "SharedMetadynamicsBias"
+    ],
+    "changed_definitions": []
+  },
+  "workflows/_metadynamics_base.py": {
+    "destination": "workflows/metadynamics.py",
+    "unchanged_definitions": [
+      "resolve_walls",
+      "_grid_options",
+      "validate_metadynamics",
+      "_new_bias",
+      "_MetadynamicsUpdate",
+      "_grid_payload",
+      "_hills_path",
+      "_write_hills",
+      "_checkpoint_path",
+      "_shared_checkpoint_path",
+      "_write_shared_checkpoint",
+      "_read_shared_checkpoint",
+      "_run_multiple_walkers",
+      "_analyze_shared",
+      "_read_stream",
+      "_sample_replica",
+      "_analyze",
+      "run_metadynamics",
+      "reanalyze_metadynamics"
+    ],
+    "changed_definitions": [
+      "resolve_metadynamics"
+    ]
+  },
+  "workflows/_opes_serial.py": {
+    "destination": "workflows/opes.py",
+    "unchanged_definitions": [
+      "_stream_fingerprint",
+      "validate_opes",
+      "_new_bias",
+      "_OPESUpdate",
+      "_checkpoint_path",
+      "_resume_initialization_schema",
+      "_checkpoint_clock",
+      "_read_stream",
+      "_sample_replica",
+      "_analyze"
+    ],
+    "changed_definitions": [
+      "resolve_opes",
+      "run_opes",
+      "reanalyze_opes"
+    ]
+  },
+  "workflows/_shared_metadynamics_serial.py": {
+    "destination": "workflows/shared_metadynamics.py",
+    "unchanged_definitions": [
+      "validate_shared",
+      "_bias",
+      "_read",
+      "_analyze"
+    ],
+    "changed_definitions": [
+      "run_shared_metadynamics",
+      "reanalyze_shared_metadynamics"
+    ]
+  }
+}
