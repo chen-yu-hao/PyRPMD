@@ -219,6 +219,9 @@ def ring_polymer_rate(
     """
     if not isinstance(model, SubspaceModel):
         raise TypeError("model must be a SubspaceModel")
+    if model.metric is not None:
+        raise ValueError("position-dependent metric RPMD rates are not implemented; "
+                         "curved channels require a validated constrained sampler and flux measure")
     beta = float(beta)
     if not np.isfinite(beta) or beta <= 0:
         raise ValueError("beta must be positive")
