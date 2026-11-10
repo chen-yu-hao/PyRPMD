@@ -511,6 +511,7 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options):
                 compare_ui=pmf_options["compare_ui"],
                 ui_points=pmf_options["points"],
                 measure="rate_flux",
+                bootstrap_workers=pmf_options.get("bootstrap_workers"),
                 min_weight_ess=pmf_options.get("min_weight_ess"),
                 min_endpoint_ess=pmf_options.get("min_endpoint_ess"),
                 max_center_displacement_sigma=pmf_options.get("max_center_displacement_sigma"),
