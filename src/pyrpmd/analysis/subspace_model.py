@@ -43,6 +43,7 @@ from typing import Any, Callable, Mapping, Sequence
 
 import numpy as np
 from scipy.linalg import null_space
+from scipy.special import logsumexp
 
 MAX_DIMENSION = 3
 _REACTANT_KINDS = ("asymptotic", "well")
@@ -579,6 +580,164 @@ def path_curvature(path: Any, masses: Any = 1.0, *, samples: int = 401) -> tuple
     return np.linspace(0.0, arc[-1], samples), curvature
 
 
+
+def _sinc_dvr_kinetic_1d(axis: np.ndarray) -> np.ndarray:
+    """Return the unit-mass Colbert--Miller sinc-DVR kinetic matrix.
+
+    The path coordinate and all normal coordinates are mass weighted, hence
+    every normal cut has unit mass.  Keeping this small helper here avoids an
+    import cycle with :mod:`subspace_quantum`, which uses the same matrix for
+    the full subspace Hamiltonian.
+    """
+    axis = np.asarray(axis, dtype=float)
+    n = axis.size
+    spacing = float(axis[1] - axis[0])
+    difference = np.arange(n)[:, None] - np.arange(n)[None, :]
+    with np.errstate(divide="ignore", invalid="ignore"):
+        matrix = 2.0 * np.where(difference % 2 == 0, 1.0, -1.0) / difference.astype(float) ** 2
+    matrix[np.diag_indices(n)] = np.pi**2 / 3.0
+    return matrix / (2.0 * spacing * spacing)
+
+
+def _normal_dvr_term(
+    potential: Callable[[np.ndarray], float],
+    x: np.ndarray,
+    direction: np.ndarray,
+    sqrt_m: np.ndarray,
+    base_energy: float,
+    frequency: float,
+    environment: str,
+    beta: float | None,
+    *,
+    points: int,
+    half_width: float | None,
+    spacing: float | None,
+) -> tuple[float, float]:
+    """Solve one mass-weighted normal cut with a finite sinc DVR.
+
+    ``direction`` is a unit vector in mass-weighted Cartesian coordinates and
+    ``q`` in the DVR is therefore converted back to Cartesian displacement as
+    ``q * direction / sqrt(m)``.  The returned term is relative to the path
+    energy, so adding all independent normal cuts to ``base_energy`` preserves
+    the same energy origin as the harmonic normal-cut model.  For an
+    adiabatic environment this is the lowest eigenvalue; for ``free_energy``
+    it is ``-beta**-1 log Tr exp(-beta H_cut)`` relative to the path energy.
+    """
+    frequency = float(max(frequency, 1.0e-8))
+    if half_width is None:
+        # Eight oscillator lengths place the hard walls far beyond the ground
+        # state (the harmonic-limit error is below 1e-8 with the default grid).
+        half_width = 8.0 / np.sqrt(frequency)
+    half_width = float(half_width)
+    if not np.isfinite(half_width) or half_width <= 0:
+        raise ValueError("dvr_half_width must be finite and positive")
+    if spacing is not None:
+        spacing = float(spacing)
+        if not np.isfinite(spacing) or spacing <= 0:
+            raise ValueError("dvr_spacing must be finite and positive")
+        count = int(np.ceil(2.0 * half_width / spacing)) + 1
+    else:
+        count = int(points)
+    if count < 8:
+        raise ValueError("dvr_points must be at least eight")
+    # An odd number keeps q=0 on the grid and gives a symmetric hard wall.
+    if count % 2 == 0:
+        count += 1
+    axis = np.linspace(-half_width, half_width, count)
+    cuts = x[None, :] + axis[:, None] * direction[None, :] / sqrt_m[None, :]
+    energies = np.asarray([float(potential(point)) for point in cuts], dtype=float)
+    if not np.isfinite(energies).all():
+        raise FloatingPointError("normal-cut DVR encountered a non-finite potential")
+    hamiltonian = _sinc_dvr_kinetic_1d(axis) + np.diag(energies)
+    spectrum = np.linalg.eigvalsh(hamiltonian)
+    relative = spectrum - float(base_energy)
+    if environment == "free_energy":
+        # All DVR states contribute to the one-dimensional quantum partition
+        # function; logsumexp avoids overflow at the low temperatures used by
+        # subspace-transfer calculations.
+        value = -float(logsumexp(-float(beta) * relative)) / float(beta)
+    else:
+        value = float(relative[0])
+    return value, float(spectrum[0])
+
+
+def _path_dvr_environment(
+    potential: Callable[[np.ndarray], float],
+    x: np.ndarray,
+    complement: np.ndarray,
+    sqrt_m: np.ndarray,
+    k: np.ndarray,
+    base_energy: float,
+    environment: str,
+    beta: float | None,
+    *,
+    points: int,
+    half_width: float | None,
+    spacing: float | None,
+) -> tuple[float, float, int]:
+    """Sum independent normal-mode DVR free energies at one path point."""
+    if complement.shape[1] == 0:
+        return 0.0, np.inf, 0
+    eigenvalues, eigenvectors = np.linalg.eigh(k)
+    # Diagonalizing the projected Hessian makes the independent normal cuts
+    # invariant to the arbitrary basis returned by null_space.
+    total = 0.0
+    lowest = float(np.min(eigenvalues))
+    unstable = int(np.count_nonzero(eigenvalues < 0.0))
+    for value, vector in zip(eigenvalues, eigenvectors.T):
+        direction = complement @ vector
+        term, cut_ground = _normal_dvr_term(
+            potential, x, direction, sqrt_m, base_energy,
+            # Harmonic ZPE drops non-positive modes.  A DVR cut still needs a
+            # finite box for such a mode; use a conservative 1e-4 Eh
+            # curvature scale for the box-size heuristic while retaining the
+            # actual anharmonic cut potential in the Hamiltonian.
+            np.sqrt(max(float(value), 1.0e-4)), environment, beta,
+            points=points, half_width=half_width, spacing=spacing,
+        )
+        total += term
+        lowest = min(lowest, float(value), float(cut_ground - base_energy))
+    return float(total), lowest, unstable
+
+
+def _rph_projected_hessian(
+    projected_hessian: np.ndarray,
+    complement: np.ndarray,
+    mass_gradient: np.ndarray,
+    curvature: np.ndarray,
+) -> tuple[np.ndarray, float]:
+    """Project the Miller--Handy--Adams reaction-path force constants.
+
+    Let ``q(xi)`` be the mass-weighted path, ``t = dq/dxi`` its unit
+    tangent, and ``kappa = dt/dxi`` its curvature vector.  In the local
+    normal frame ``N`` the MHA reaction-path expansion subtracts the
+    gradient--curvature connection from the Cartesian force-constant matrix,
+
+    ``K_RPH = P K P - (g_perp ⊗ kappa_perp + kappa_perp ⊗ g_perp)/2``,
+
+    where ``g_perp = P g``, ``P = N N.T`` and ``kappa_perp = P kappa``.
+    This is the symmetric form of the Miller--Handy--Adams
+    ``(n_hat . grad V) kappa`` correction; in codimension one it reduces to
+    ``K_RPH = K - (grad V . n_hat) kappa_n`` for the sole normal force
+    constant.  The subtraction removes the apparent transverse curvature
+    force generated by cutting a sloping path, while retaining the physical
+    normal Hessian.  All vectors are mass weighted (hbar = 1).
+
+    The returned scalar is the largest absolute correction in the normal
+    matrix and is recorded for diagnostics.  Symmetrising protects the
+    eigensolver from roundoff and from a non-orthogonal numerical frame.
+    """
+    if complement.size == 0:
+        return np.zeros((0, 0)), 0.0
+    normal_gradient = complement.T @ np.asarray(mass_gradient, dtype=float)
+    normal_curvature = complement.T @ np.asarray(curvature, dtype=float)
+    correction = 0.5 * (np.outer(normal_gradient, normal_curvature)
+                        + np.outer(normal_curvature, normal_gradient))
+    projected = np.asarray(projected_hessian, dtype=float) - correction
+    projected = 0.5 * (projected + projected.T)
+    return projected, float(np.max(np.abs(correction)))
+
+
 def project_path_subspace(
     potential: Callable[[np.ndarray], float],
     gradient: Callable[[np.ndarray], np.ndarray] | None,
@@ -594,6 +753,10 @@ def project_path_subspace(
     finite_difference_step: float = 1e-3,
     rigid_body: bool = False,
     beta: float | None = None,
+    zero_point: str = "harmonic",
+    dvr_points: int = 81,
+    dvr_half_width: float | None = None,
+    dvr_spacing: float | None = None,
 ) -> SubspaceModel:
     """One-dimensional vibrationally adiabatic model along a curved path.
 
@@ -603,13 +766,36 @@ def project_path_subspace(
     ``V_S(xi) = V(x(xi)) + sum_k omega_k(xi) / 2`` with frequencies from the
     Hessian projected onto the normal plane (``environment='adiabatic'``),
     the harmonic quantum free energy of those modes at ``beta``
-    (``'free_energy'``), or ``V(x(xi))`` alone (``'frozen'``).  Curvature coupling is neglected; check
-    :func:`curvature_width_criterion` before trusting a one-dimensional ``S``.
+    (``'free_energy'``), or ``V(x(xi))`` alone (``'frozen'``).  With
+    ``zero_point='rph'`` the normal force constants use the
+    Miller--Handy--Adams reaction-path Hessian, which removes the local
+    gradient--curvature connection before taking the harmonic term.  Check
+    :func:`curvature_width_criterion` before trusting a one-dimensional ``S``;
+    the RPH correction does not restore a transverse tunnelling coordinate.
     ``axis`` is the arc-length grid and must lie within the path.
     ``rigid_body`` removes overall translations and rotations from the
     normal plane (molecules in 3D Cartesian coordinates).
+    ``zero_point`` selects the transverse quantum term for an adiabatic or
+    free-energy environment: ``"harmonic"`` is the historical normal-cut
+    Hessian term, ``"rph"`` is the reaction-path projected Hessian term, and
+    ``"dvr"`` solves independent one-dimensional normal cuts with a sinc DVR.
+    The latter replaces ``hbar omega/2`` by the cut ground state (or by its
+    finite-temperature quantum free energy when ``environment="free_energy"``).
+    ``dvr_points``, ``dvr_half_width`` and ``dvr_spacing`` control the normal
+    cut grids; the half-width defaults to eight oscillator lengths.
     """
     beta = _check_environment(environment, beta, ("frozen", "adiabatic", "free_energy"))
+    if zero_point not in ("harmonic", "rph", "dvr"):
+        raise ValueError("zero_point must be one of ('harmonic', 'rph', 'dvr')")
+    if zero_point == "rph" and environment != "frozen" and gradient is None:
+        raise ValueError("zero_point='rph' needs a gradient for the gradient-curvature correction")
+    if int(dvr_points) != dvr_points or int(dvr_points) < 8:
+        raise ValueError("dvr_points must be an integer >= 8")
+    dvr_points = int(dvr_points)
+    if dvr_half_width is not None and (not np.isfinite(float(dvr_half_width)) or float(dvr_half_width) <= 0):
+        raise ValueError("dvr_half_width must be finite and positive")
+    if dvr_spacing is not None and (not np.isfinite(float(dvr_spacing)) or float(dvr_spacing) <= 0):
+        raise ValueError("dvr_spacing must be finite and positive")
     points = np.asarray(path, dtype=float)
     if points.ndim != 2 or points.shape[0] < 4 or not np.isfinite(points).all():
         raise ValueError("path must be a finite [points, coordinates] array with at least four points")
@@ -624,32 +810,66 @@ def project_path_subspace(
         raise ValueError("an adiabatic path model needs a gradient or a Hessian")
     lam = np.interp(grid, arc, fine)
     positions = spline(lam)
-    tangents = spline.derivative()(lam)
-    tangents /= np.linalg.norm(tangents, axis=1)[:, None]
+    first = spline.derivative()(lam)
+    second = spline.derivative(2)(lam)
+    speed = np.linalg.norm(first, axis=1)
+    tangents = first / speed[:, None]
+    # d t / d xi, with xi the mass-weighted arc length.  The projection
+    # removes the tangential component so this is a normal curvature vector.
+    curvature_vectors = (second - tangents * np.sum(tangents * second, axis=1)[:, None]) / speed[:, None] ** 2
+    # The cubic path spline has one-sided boundary conditions at the two end
+    # points.  A fourth-order one-sided extrapolation from interior curvature
+    # avoids a spurious endpoint force-curvature spike while leaving the
+    # supplied path geometry and all interior derivatives unchanged.
+    if len(curvature_vectors) > 4:
+        curvature_vectors[0] = (4.0 * curvature_vectors[1] - 6.0 * curvature_vectors[2]
+                                + 4.0 * curvature_vectors[3] - curvature_vectors[4])
+        curvature_vectors[-1] = (4.0 * curvature_vectors[-2] - 6.0 * curvature_vectors[-3]
+                                 + 4.0 * curvature_vectors[-4] - curvature_vectors[-5])
     values = np.empty(len(grid))
     zpe = np.zeros(len(grid))
     unstable, min_curvature = 0, np.inf
-    for i, (u, tangent) in enumerate(zip(positions, tangents)):
+    max_rph_correction = 0.0
+    for i, (u, tangent, curvature_vector) in enumerate(zip(positions, tangents, curvature_vectors)):
         x = u / sqrt_m
         values[i] = float(potential(x))
         if environment != "frozen" and n > 1:
             complement = _vibrational_complement(x, tangent, sqrt_m, rigid_body)
             k = _complement_hessian(x, complement, sqrt_m, gradient, hessian, finite_difference_step)
-            zpe[i], lowest = _environment_term(k, environment, beta)
+            if zero_point == "dvr":
+                zpe[i], lowest, dvr_unstable = _path_dvr_environment(
+                    potential, x, complement, sqrt_m, k, values[i], environment, beta,
+                    points=dvr_points, half_width=dvr_half_width, spacing=dvr_spacing,
+                )
+                unstable += int(dvr_unstable)
+            else:
+                if zero_point == "rph":
+                    # The gradient is Cartesian; convert it to the same
+                    # mass-weighted coordinates as the path curvature.
+                    mass_gradient = (np.asarray(gradient(x), dtype=float) / sqrt_m
+                                     if gradient is not None else np.zeros(n))
+                    k, correction = _rph_projected_hessian(k, complement, mass_gradient, curvature_vector)
+                    max_rph_correction = max(max_rph_correction, correction)
+                zpe[i], lowest = _environment_term(k, environment, beta)
+                unstable += int(lowest < 0)
             min_curvature = min(min_curvature, lowest)
-            unstable += int(lowest < 0)
     xi, curvature = path_curvature(points, mass)
     if dividing_surface is None:
         dividing_surface = float(grid[np.argmax(values + zpe)])
     info = {
         "kind": "path_projection",
         "environment": environment,
+        "zero_point": zero_point,
+        "dvr_points": dvr_points if zero_point == "dvr" else None,
+        "dvr_half_width": dvr_half_width if zero_point == "dvr" else None,
+        "dvr_spacing": dvr_spacing if zero_point == "dvr" else None,
         "full_dimension": n,
         "path_length": float(arc[-1]),
         "max_path_curvature": float(np.max(curvature)),
         "unstable_complement_points": int(unstable),
         "minimum_complement_curvature": None if not np.isfinite(min_curvature) else min_curvature,
         "zero_point_range": [float(zpe.min()), float(zpe.max())],
+        "rph_max_correction": float(max_rph_correction) if zero_point == "rph" else None,
         "cut": "normal plane in mass-weighted coordinates",
         "rigid_body_removed": bool(rigid_body),
         "beta": beta,

@@ -114,7 +114,14 @@ quantum rate converged to 2.5% in the grid. The corrected rate is RPMD × C_S(2D
    - `project_path_subspace(V, grad, path, masses, axis)` — a curved 1D path, for
      example the ring-polymer mean path from constrained-centroid sampling
      (`ring_polymer_mean_path`), with a normal-cut adiabatic bath and arc-length
-     coordinate.
+     coordinate.  `zero_point="harmonic"` retains the historical projected-Hessian
+     frequencies; `zero_point="rph"` uses the Miller--Handy--Adams projected Hessian
+     with its force--curvature connection removed; and `zero_point="dvr"` solves
+     independent sinc-DVR cuts along the local normal modes.  For
+     `environment="free_energy"`, the DVR option uses the thermal cut free energy
+     instead of the ground-state energy.  `dvr_points`, `dvr_half_width`, and
+     `dvr_spacing` are recorded in the model provenance so the normal-cut
+     convergence can be reported.
 2. **Exact quantum rate** `exact_quantum_rate(model, beta)`
    (`pyrpmd.analysis.subspace_quantum`). Thermal flux–flux formula with an absorbing
    potential on a sinc-DVR grid:

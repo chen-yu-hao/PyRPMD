@@ -9,10 +9,13 @@ on:
   push:
     branches:
       - 'claude/subspace-transfer-theory'
+      - 'issue-156-rph-dvr'
     paths:
       - 'benchmarks/subspace_theory/transfer.py'
       - 'benchmarks/subspace_theory/plan.py'
       - 'benchmarks/subspace_theory/aggregate.py'
+      - 'src/pyrpmd/analysis/subspace_model.py'
+      - 'src/pyrpmd/analysis/subspace_pipeline.py'
       - '.github/workflows/subspace-transfer.yml'
 
 permissions:
@@ -65,7 +68,7 @@ jobs:
           python benchmarks/subspace_theory/transfer.py \
             --family ${{ matrix.point.family }} --parameter ${{ matrix.point.parameter }} \
             --barrier ${{ matrix.point.barrier }} --temperature ${{ matrix.point.temperature }} \
-            --seed ${{ matrix.point.seed }} $BEADS --workers 4 --truncation-offset ${{ matrix.point.truncation }} \
+            --zero-point ${{ matrix.point.zero_point }} --seed ${{ matrix.point.seed }} $BEADS --workers 4 --truncation-offset ${{ matrix.point.truncation }} \
             --output "point-${{ matrix.point.name }}.json"
       - uses: actions/upload-artifact@v4
         with:
