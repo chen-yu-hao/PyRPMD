@@ -739,15 +739,21 @@ def project_path_subspace(
         mass_ratio[bad_frequency] = 1.0
         if np.max(np.abs(mass_ratio - 1.0), initial=0.0) < 1e-14:
             mass_ratio = np.ones_like(mass_ratio)
-        tau_raw = np.r_[0.0, np.cumsum(0.5 * (np.sqrt(mass_ratio[1:]) +
-                                                np.sqrt(mass_ratio[:-1])) * np.diff(grid))]
-        tau_grid = np.linspace(tau_raw[0], tau_raw[-1], len(grid))
-        total_values = np.interp(tau_grid, tau_raw, total_values)
-        transformed = True
-        dividing_surface = float(np.interp(dividing_surface, grid, tau_raw))
         if reactant_reference is None:
             reactant_reference = float(grid[0] + 0.25 * (grid[-1] - grid[0]))
-        reactant_reference = float(np.interp(reactant_reference, grid, tau_raw))
+        if not grid[0] <= reactant_reference < dividing_surface:
+            raise ValueError("reactant_reference must lie on the reactant side of the dividing surface")
+        # Keep the original origin and bypass interpolation for the identity
+        # transform.  In particular a straight path on a cropped arc grid must
+        # retain its axes, potential and reference coordinates bit for bit.
+        if np.any(mass_ratio != 1.0):
+            tau_raw = grid[0] + np.r_[0.0, np.cumsum(
+                0.5 * (np.sqrt(mass_ratio[1:]) + np.sqrt(mass_ratio[:-1])) * np.diff(grid))]
+            tau_grid = np.linspace(tau_raw[0], tau_raw[-1], len(grid))
+            total_values = np.interp(tau_grid, tau_raw, total_values)
+            dividing_surface = float(np.interp(dividing_surface, grid, tau_raw))
+            reactant_reference = float(np.interp(reactant_reference, grid, tau_raw))
+        transformed = True
     unstable_frequency_points = int(np.count_nonzero((curvature_values > 1e-12) &
                                                      (~np.isfinite(omega_perp) | (omega_perp <= 0.0)))) if n > 1 else 0
     info = {

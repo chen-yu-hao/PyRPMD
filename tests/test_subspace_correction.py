@@ -502,3 +502,35 @@ def test_sct_effective_mass_never_exceeds_path_mass():
     ratio = np.asarray(model.provenance["curvature_mass_ratio"])
     assert np.all(ratio <= 1.0 + 1e-12)
     assert model.provenance["effective_mass_capped_points"] > 0  # the cap is active here
+
+
+def test_straight_path_sct_preserves_nonzero_axis_origin_and_values():
+    omega = 0.2
+    path = np.column_stack([np.linspace(-4.0, 4.0, 17), np.zeros(17)])
+    axis = np.linspace(0.4, 7.6, 41)
+
+    def potential(x):
+        return np.exp(-x[0] ** 2) + 0.5 * omega**2 * x[1]**2
+
+    def gradient(x):
+        return np.array([-2.0 * x[0] * np.exp(-x[0]**2), omega**2 * x[1]])
+
+    plain = project_path_subspace(potential, gradient, path, [1.0, 1.0], axis,
+                                  dividing_surface=4.0, reactant_reference=1.2)
+    sct = project_path_subspace(potential, gradient, path, [1.0, 1.0], axis,
+                                dividing_surface=4.0, reactant_reference=1.2, curvature="small")
+    np.testing.assert_array_equal(sct.axes[0], plain.axes[0])
+    np.testing.assert_array_equal(sct.values, plain.values)
+    assert sct.dividing_surface == plain.dividing_surface
+    assert sct.reactant_reference == plain.reactant_reference
+
+
+@pytest.mark.parametrize("curvature", ["none", "small"])
+def test_sct_does_not_clamp_out_of_grid_reactant_reference(curvature):
+    path = np.column_stack([np.linspace(-4.0, 4.0, 17), np.zeros(17)])
+    axis = np.linspace(0.4, 7.6, 41)
+    with pytest.raises(ValueError, match="reactant_reference"):
+        project_path_subspace(lambda x: np.exp(-x[0] ** 2) + 0.02 * x[1]**2,
+                              lambda x: np.array([-2.0*x[0]*np.exp(-x[0]**2), 0.04*x[1]]),
+                              path, [1.0, 1.0], axis, dividing_surface=4.0,
+                              reactant_reference=-0.1, curvature=curvature)
