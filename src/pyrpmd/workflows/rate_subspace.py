@@ -40,7 +40,8 @@ def validate_saved_rate(config, system, directory):
     if stored.get("task") != "rate":
         raise InputError("The subspace stage requires a saved gas-phase rate run")
     stored_system = _read_identity(stored, root)
-    expected = fingerprint(scientific_config(stored), stored_system)
+    identity_config = stored if manifest.get("schema_version", 1) == 1 else scientific_config(stored)
+    expected = fingerprint(identity_config, stored_system)
     if manifest.get("physics_fingerprint") != expected:
         raise InputError("Saved rate inputs do not match the manifest physics fingerprint")
     # Do not weaken the generic restart contract for unrelated workflows.

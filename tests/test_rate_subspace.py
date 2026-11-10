@@ -419,3 +419,22 @@ def test_native_stage_forwards_path_curvature_and_zero_point(tmp_path, monkeypat
     assert calls[0]["subspace"]["dvr_points"] == 41
     assert calls[0]["subspace"]["dvr_half_width"] == 2.0
     assert calls[0]["path"] == {"source": "least_action", "least_action_points": 5}
+
+
+@pytest.mark.parametrize("tampered", [False, True])
+def test_stage_authenticates_legacy_manifest_without_migrating_source(tmp_path, tampered):
+    config, system, root = saved_run(tmp_path)
+    manifest_path = root / "manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest.update(schema_version=1, physics_fingerprint=fingerprint(config, system))
+    write_json(manifest_path, manifest)
+    before = manifest_path.read_bytes()
+    if tampered:
+        stored = deepcopy(config)
+        stored["beta"] *= 2
+        write_json(root / "input" / "resolved.json", stored)
+        with pytest.raises(InputError, match="Saved rate inputs"):
+            stage.validate_saved_rate(config, system, root)
+    else:
+        assert stage.validate_saved_rate(config, system, root) == root
+    assert manifest_path.read_bytes() == before
