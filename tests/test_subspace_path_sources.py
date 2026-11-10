@@ -301,3 +301,22 @@ def test_instanton_records_actual_even_seed_beads(monkeypatch):
         assert info["requested_bead_number"] == requested
         assert info["bead_number"] == actual
         assert info["folded_beads"] == len(folded) == actual // 2
+
+
+def test_path_source_provenance_survives_sct_projection():
+    radius, omega = 10.0, 0.2
+    theta = np.linspace(-1.0, 1.0, 101)
+    path = radius * np.column_stack([np.cos(theta), np.sin(theta)])
+    def potential(x):
+        return 0.5 * omega**2 * (np.linalg.norm(x) - radius)**2
+    def gradient(x):
+        r = np.linalg.norm(x)
+        return omega**2 * (r - radius) * x / r
+    model = project_path_subspace(potential, gradient, path, [1.0, 1.0],
+                                  np.linspace(0.0, 20.0, 81), dividing_surface=10.0,
+                                  curvature="small", provenance={"path_source": "least_action"})
+    assert model.provenance["path_source"] == "least_action"
+    assert model.provenance["curvature"] == "small"
+    assert model.provenance["tau_length"] < model.provenance["sigma_length"]
+    assert model.provenance["normal_hessian_positive"]
+    assert model.provenance["unstable_complement_indices"] == []
