@@ -46,3 +46,29 @@ jobs:
             run/fes.npz
             run/site_qtst.json
           if-no-files-found: error
+
+  exchange:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install .
+      - name: Compare fresh UI, MBAR and dRPMD rates
+        run: python examples/tutorials/exchange_rate/run_comparison.py --output exchange-comparison
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: exchange-rate-comparison
+          path: |
+            exchange-comparison/comparison.json
+            exchange-comparison/*/results/
+            exchange-comparison/*/input/
+            exchange-comparison/*/rate_pmf.json
+          if-no-files-found: error

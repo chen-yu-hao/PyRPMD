@@ -59,3 +59,11 @@ it never uses an IID interval as a parent-chain error estimate. A supplied BC
 run must have a non-null final rate and full PMF plus recrossing uncertainty.
 Acceptance is agreement within three combined standard errors. Insufficient
 sampling fails visibly; it never retries seeds or changes result files.
+
+The scheduled/manual tutorial workflow also runs fresh UI, MBAR and dRPMD
+calculations with `run_comparison.py --output NEW_DIRECTORY`. Each pair must
+agree within three combined marginal standard errors and both BC uncertainty
+gates must be available. UI and MBAR use the same input seeds but fresh output
+directories; their quadrature error comparison is explicitly not a paired
+bootstrap interval. This longer three-method campaign has been prepared for
+CI; the local short reactive result above does not stand in for its execution.
