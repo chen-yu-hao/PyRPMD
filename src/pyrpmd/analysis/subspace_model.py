@@ -789,9 +789,13 @@ def project_path_subspace(
         raise ValueError("zero_point must be one of ('harmonic', 'rph', 'dvr')")
     if zero_point == "rph" and environment != "frozen" and gradient is None:
         raise ValueError("zero_point='rph' needs a gradient for the gradient-curvature correction")
-    if int(dvr_points) != dvr_points or int(dvr_points) < 8:
+    try:
+        dvr_points_int = int(dvr_points)
+    except (TypeError, ValueError, OverflowError) as error:
+        raise ValueError("dvr_points must be an integer >= 8") from error
+    if dvr_points_int != dvr_points or dvr_points_int < 8:
         raise ValueError("dvr_points must be an integer >= 8")
-    dvr_points = int(dvr_points)
+    dvr_points = dvr_points_int
     if dvr_half_width is not None and (not np.isfinite(float(dvr_half_width)) or float(dvr_half_width) <= 0):
         raise ValueError("dvr_half_width must be finite and positive")
     if dvr_spacing is not None and (not np.isfinite(float(dvr_spacing)) or float(dvr_spacing) <= 0):
