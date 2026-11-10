@@ -394,7 +394,7 @@ their indices need not be 0 and 1. For a fully periodic cell, a wire or a finite
 `surface.normalization.area` with area units to identify the intended surface. This conversion
 does not account for coverage-dependent interactions or turn a local rate into a total turnover
 frequency. See the
-[surface normalization definition](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/surface-catalysis.md).
+[surface normalization definition](#surface-rate-surfaces-with-fixed-layers).
 
 Surface `fes` supports adaptive umbrellas; `surface_rate` uses fixed windows. To run a real ASE
 calculator, install ASE:
@@ -407,8 +407,8 @@ pyrpmd run examples/surface/ase_emt.py --output runs/manual-surface-emt
 
 This input runs a Cu adatom on Cu(111) with ASE EMT, exercising the calculator, a skewed cell and
 fixed layers. Models and sources are described in the
-[materials notes](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/materials.md) *(Chinese)*,
-the [surface notes](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/surface-catalysis.md) *(Chinese)*
+[materials notes](#tasks-and-boundary-conditions),
+the [surface notes](#surface-rate-surfaces-with-fixed-layers)
 and the [Ni–H materials pilot](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/materials/README.md).
 
 ## From a runnable slab to a research calculation
@@ -436,8 +436,7 @@ sequence for a new material:
    accuracy, finite-size effects and statistical/numerical convergence separately. A single directed
    first-order rate does not determine total escape, sticking, turnover frequency or conductivity.
 
-The [periodic-materials audit and TODO list](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/periodic-materials-audit.md)
-records implementation findings, open-source comparisons and remaining validation work.
+Historical implementation audits are listed in the [development review archive](../development/review-history.md).
 
 ## Primary sources and reproduction tasks
 
