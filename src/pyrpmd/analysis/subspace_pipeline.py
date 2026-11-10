@@ -345,6 +345,11 @@ def _instanton_core(run, core, options):
         details.update({"fallback": "centroid", "fallback_reason": "temperature_at_or_above_crossover"})
         return core, details
     beads = int(options.get("instanton_beads") or run.nbeads or 16)
+    # Keep the requested ring size explicit in the persisted diagnostics.  A
+    # folded half-ring is what the path builder consumes, but the full bead
+    # number is the quantity needed to reproduce an optimizer run and to
+    # interpret the physical mode count.
+    details["bead_number"] = beads
     seed = _instanton_seed_from_core(core, beads)
     try:
         result = optimize_instanton(run.provider, run.system.masses, temperature, seed,
@@ -360,6 +365,7 @@ def _instanton_core(run, core, options):
         return core, details
     details.update({"converged": bool(result.converged), "gradient_max": float(result.gradient_max),
                     "negative_modes": int(result.negative_modes),
+                    "physical_negative_modes": int(result.negative_modes),
                     "physical_converged": False})
     if not result.converged:
         details.update({"fallback": "centroid", "fallback_reason": "optimizer_not_converged",
