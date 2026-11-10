@@ -174,6 +174,11 @@ def rate_pmf_options(config):
     )
     if nboot == 1:
         raise InputError("analysis.bootstrap must be zero or at least 2")
+    bootstrap_workers = analysis.get("bootstrap_workers")
+    if bootstrap_workers is not None:
+        bootstrap_workers = _integer(
+            bootstrap_workers, "analysis.bootstrap_workers", 1
+        )
     bins = analysis.get("bins", 100)
     if isinstance(bins, (list, tuple, np.ndarray)):
         if len(bins) != 1:
@@ -248,6 +253,7 @@ def rate_pmf_options(config):
         "bins": bins,
         "ranges": ranges,
         "bootstrap": nboot,
+        "bootstrap_workers": bootstrap_workers,
         "min_count": _integer(analysis.get("min_count", 1), "analysis.min_count"),
         "overlap_threshold": threshold,
         **gates,
