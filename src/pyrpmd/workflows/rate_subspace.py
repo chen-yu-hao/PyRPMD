@@ -15,7 +15,7 @@ import numpy as np
 
 from ..input_schema import InputError
 from ..input_subspace import rate_subspace_options
-from ..io import file_sha256, fingerprint, fingerprint_payload, referenced_files, write_json
+from ..io import fingerprint, referenced_files, write_json
 from ..propagation import scientific_config
 
 
@@ -55,22 +55,9 @@ def validate_saved_rate(config, system, directory):
 
 
 def _source_identity(root, options):
-    """Bind cached factors to samples, geometry, PES files and numerical settings."""
-    from .. import __version__
+    from ..analysis.subspace_pipeline import pipeline_identity
 
-    names = ("input/resolved.json", "input/system.json", "preparation.json", "centroid_path.npz", "rate_pmf.json")
-    files = {name: file_sha256(root / name) for name in names if (root / name).is_file()}
-    saved = json.loads((root / "input" / "resolved.json").read_text())
-    numerical = {k: v for k, v in options.items() if k not in {"enabled", "mode", "reuse"}}
-    # Hash the implementations too: a source checkout can change without a
-    # version bump, and its old numerical result must not silently be reused.
-    analysis = Path(__file__).resolve().parents[1] / "analysis"
-    implementation = {p.name: file_sha256(p) for p in
-                      (analysis / name for name in ("subspace_pipeline.py", "subspace_model.py",
-                       "subspace_quantum.py", "subspace_rpmd.py", "subspace_correction.py", "centroid_path.py"))}
-    return fingerprint_payload({"schema": 1, "version": __version__, "files": files,
-                                "potential_files": referenced_files({"potential": saved["potential"]}),
-                                "options": numerical, "implementation": implementation})
+    return pipeline_identity(root, options)
 
 
 def _check_centroid_path(root, config):

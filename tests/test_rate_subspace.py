@@ -359,3 +359,25 @@ def test_modified_inp_correction_settings_can_resume_without_rewriting_manifest(
     changed["beta"] *= 2
     with pytest.raises(InputError, match="scientific settings"):
         _initialize_output(changed, system, root, resume=True)
+
+
+def test_standalone_reuse_identity_tracks_path_and_source(tmp_path, monkeypatch):
+    from pyrpmd.analysis import subspace_pipeline as pipe
+
+    config, _, root = saved_run(tmp_path)
+    closed, identities = [], []
+    fake_run = SimpleNamespace(root=root, provider=SimpleNamespace(close=lambda: closed.append(True)))
+    monkeypatch.setattr(pipe, "load_rate_run", lambda *a: fake_run)
+    monkeypatch.setattr(pipe, "_run_pipeline", lambda *a, **k: identities.append(k["reuse_key"]) or {})
+    request = {"source": {"rate_run": str(root)}, "output": {"reuse": True}}
+    pipe.run_subspace_pipeline(request, apply=False)
+    pipe.run_subspace_pipeline(request, apply=False)
+    assert identities[0] == identities[1]
+    request["path"] = {"smoothing": 0.2}
+    pipe.run_subspace_pipeline(request, apply=False)
+    assert identities[-1] != identities[0]
+    request.pop("path")
+    (root / "centroid_path.npz").write_bytes(b"new samples")
+    pipe.run_subspace_pipeline(request, apply=False)
+    assert identities[-1] != identities[0]
+    assert len(closed) == 4

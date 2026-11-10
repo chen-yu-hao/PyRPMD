@@ -434,11 +434,32 @@ def _rpmd_options(options, run):
     return rpmd, int(options.get("nbeads") or run.nbeads)
 
 
+def pipeline_identity(root, options):
+    """Bind cached factors to samples, geometry, PES files and numerical settings."""
+    from .. import __version__
+    from ..io import file_sha256, fingerprint_payload, referenced_files
+
+    names = ("input/resolved.json", "input/system.json", "preparation.json", "centroid_path.npz", "rate_pmf.json")
+    files = {name: file_sha256(root / name) for name in names if (root / name).is_file()}
+    saved = json.loads((root / "input" / "resolved.json").read_text())
+    numerical = {k: v for k, v in options.items() if k not in {"enabled", "mode", "reuse"}}
+    # Hash the implementations too: a source checkout can change without a
+    # version bump, and its old numerical result must not silently be reused.
+    analysis = Path(__file__).resolve().parent
+    implementation = {p.name: file_sha256(p) for p in
+                      (analysis / name for name in ("subspace_pipeline.py", "subspace_model.py",
+                       "subspace_quantum.py", "subspace_rpmd.py", "subspace_correction.py", "centroid_path.py"))}
+    return fingerprint_payload({"schema": 1, "version": __version__, "files": files,
+                                "potential_files": referenced_files({"potential": saved["potential"]}),
+                                "options": numerical, "implementation": implementation})
+
+
+
 def run_subspace_pipeline(specification, *, apply=True, reuse_key=None) -> dict:
     """Run from a mapping or TOML/JSON; ``apply=False`` writes factors only.
 
-    The native rate stage supplies a content-based ``reuse_key``. Standalone
-    callers retain their existing interface; no extra rate simulation is run.
+    Cached factors are tied to source data, numerical settings and solver
+    implementations for native and standalone callers alike.
     """
     base = None
     if isinstance(specification, (str, Path)):
@@ -466,6 +487,8 @@ def run_subspace_pipeline(specification, *, apply=True, reuse_key=None) -> dict:
     if base is not None and not out_dir.is_absolute():
         out_dir = base / out_dir
     try:
+        if reuse_key is None:
+            reuse_key = pipeline_identity(run.root, options)
         return _run_pipeline(run, out_dir, options, apply=apply, reuse_key=reuse_key)
     finally:
         close = getattr(run.provider, "close", None)
