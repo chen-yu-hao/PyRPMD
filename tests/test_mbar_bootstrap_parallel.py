@@ -7,6 +7,7 @@ import numpy as np
 
 from pyrpmd.analysis.fes import mbar_rate_pmf
 from pyrpmd.analysis import rate_pmf as rate_pmf_module
+from pyrpmd.input import rate_pmf_options
 
 
 class MBARBootstrapParallelTests(unittest.TestCase):
@@ -160,6 +161,54 @@ class MBARBootstrapParallelTests(unittest.TestCase):
         for workers in (0, -1, True, 1.5):
             with self.subTest(workers=workers), self.assertRaises(ValueError):
                 mbar_rate_pmf(self.samples, bootstrap_workers=workers, **self.options)
+
+    def test_config_worker_source_precedence(self):
+        parallel = rate_pmf_options(
+            {
+                "rate": {"pmf_method": "mbar"},
+                "analysis": {"bootstrap": 4},
+                "parallel": {"trajectory_workers": 3},
+            }
+        )
+        self.assertEqual(parallel["bootstrap_workers"], 3)
+        self.assertEqual(parallel["bootstrap_workers_source"], "parallel")
+        self.assertEqual(parallel["bootstrap_total_cores"], 3)
+
+        explicit = rate_pmf_options(
+            {
+                "rate": {"pmf_method": "mbar"},
+                "analysis": {"bootstrap": 4, "bootstrap_workers": 1},
+                "parallel": {"trajectory_workers": 3},
+            }
+        )
+        self.assertEqual(explicit["bootstrap_workers"], 1)
+        self.assertEqual(explicit["bootstrap_workers_source"], "analysis")
+
+        mpi = rate_pmf_options(
+            {
+                "rate": {"pmf_method": "mbar"},
+                "analysis": {"bootstrap": 4},
+                "parallel": {"backend": "mpi", "trajectory_workers": 3},
+            }
+        )
+        self.assertEqual(mpi["bootstrap_workers"], 1)
+        self.assertEqual(mpi["bootstrap_workers_source"], "default")
+
+    def test_worker_count_is_truncated_by_bootstrap_draws(self):
+        with patch.object(
+            rate_pmf_module, "_available_memory_bytes", return_value=10**12
+        ):
+            result = mbar_rate_pmf(
+                self.samples,
+                bootstrap=2,
+                bootstrap_workers=4,
+                bootstrap_workers_source="parallel",
+                **{key: value for key, value in self.options.items() if key != "bootstrap"},
+            )
+        self.assertEqual(result["bootstrap"]["workers_requested"], 4)
+        self.assertEqual(result["bootstrap"]["workers"], 2)
+        self.assertEqual(result["bootstrap"]["workers_source"], "parallel")
+        self.assertFalse(result["bootstrap"]["memory_capped"])
 
 
 if __name__ == "__main__":
