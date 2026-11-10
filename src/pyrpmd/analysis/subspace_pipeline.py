@@ -54,7 +54,9 @@ DEFAULTS = {
     "path": {"source": "centroid", "step": 10.0, "max_steps": 600, "spread_factor": 2.0,
              "asymptote_tolerance": 1e-6, "smoothing": 1.5,
              "least_action_points": 9},
-    "subspace": {"dimension": "auto", "threshold": 0.5, "environment": "adiabatic", "curvature": "none"},
+    "subspace": {"dimension": "auto", "threshold": 0.5, "environment": "adiabatic", "curvature": "none",
+                 "zero_point": "harmonic", "dvr_points": 81, "dvr_half_width": None,
+                 "dvr_spacing": None},
     "quantum": {"spacing_1d": None, "spacing_2d": None, "refinement": 3, "absorber_fraction": 0.2,
                 "threshold_margin": 1.0, "truncation_kt": 30.0, "truncation_min": 0.0, "padding": None,
                 "dense_limit": 8000,
@@ -490,11 +492,17 @@ def path_model(run: RateRun, path, options: Mapping[str, Any], *, path_source: s
     # Bennett--Chandler needs a dividing surface the dynamics must cross: use
     # the barrier top of V_S (the quantum rate does not depend on it).
     environment = options.get("environment", "adiabatic")
-    model = project_path_subspace(run.energy, run.gradient, path, masses, axis, environment=environment,
-                                  dividing_surface=None, rigid_body=True,
-                                  beta=run.beta if environment == "free_energy" else None,
-                                  curvature=options.get("curvature", "none"),
-                                  provenance={"path_source": str(path_source)})
+    model = project_path_subspace(
+        run.energy, run.gradient, path, masses, axis, environment=environment,
+        dividing_surface=None, rigid_body=True,
+        beta=run.beta if environment == "free_energy" else None,
+        curvature=options.get("curvature", "none"),
+        provenance={"path_source": str(path_source)},
+        zero_point=options.get("zero_point", "harmonic"),
+        dvr_points=options.get("dvr_points", 81),
+        dvr_half_width=options.get("dvr_half_width"),
+        dvr_spacing=options.get("dvr_spacing"),
+    )
     surface = model.dividing_surface
     fraction = float(options["absorber_fraction"])
     model_axis = model.axes[0]
@@ -512,6 +520,43 @@ def path_model(run: RateRun, path, options: Mapping[str, Any], *, path_source: s
             "reactant_reference": reference, "channel_thresholds": thresholds, "energy_floor": floor,
             "model_construction": dict(model.provenance)}
     return model, quantum, info
+
+
+def _saved_model_matches_options(saved: SubspaceCorrection, dimension: int,
+                                 subspace_options: Mapping[str, Any]) -> bool:
+    """Guard ``output.reuse`` against silently reusing a different H_S.
+
+    The correction record stores :meth:`SubspaceModel.describe`, including the
+    path construction provenance.  A selector change (harmonic/RPH/DVR), or a
+    DVR grid change, changes H_S and therefore invalidates an old C_S record.
+    Older records predate ``zero_point`` and are treated as historical
+    harmonic projections for backwards compatibility.
+    """
+    construction = dict(saved.model.get("construction", {}))
+    if int(saved.dimension) != int(dimension):
+        return False
+    if dimension == 1:
+        expected_environment = subspace_options.get("environment", "adiabatic")
+        if construction.get("environment", "adiabatic") != expected_environment:
+            return False
+        expected_zero_point = subspace_options.get("zero_point", "harmonic")
+        if construction.get("zero_point", "harmonic") != expected_zero_point:
+            return False
+        if expected_zero_point in ("rph", "dvr") and construction.get("zero_point_definition") != "linear-normal-cuts-v2":
+            return False
+        if expected_zero_point == "dvr":
+            if construction.get("dvr_points") != subspace_options.get("dvr_points", 81):
+                return False
+            for key in ("dvr_half_width", "dvr_spacing"):
+                old, new = construction.get(key), subspace_options.get(key)
+                if old is None or new is None:
+                    if old is not None or new is not None:
+                        return False
+                elif not np.isclose(float(old), float(new), rtol=0.0, atol=1e-14):
+                    return False
+    elif construction.get("environment", "adiabatic") != subspace_options.get("environment", "adiabatic"):
+        return False
+    return True
 
 
 def _in_plane_threshold(model, center, direction, *, window=0.05):
@@ -744,13 +789,14 @@ def run_subspace_pipeline(specification) -> dict:
             record = out_dir / f"C_S_{d}d.json"
             if record.is_file():
                 saved = SubspaceCorrection.read(record)
-                if np.isclose(saved.beta, run.beta, rtol=1e-9, atol=0):
+                if (np.isclose(saved.beta, run.beta, rtol=1e-9, atol=0)
+                        and _saved_model_matches_options(saved, d, options["subspace"])):
                     corrections[d] = saved
                     models[d] = previous.get(str(d), {"reused": True})
                     dimensions.remove(d)
     if 1 in dimensions:
-        environment = {"environment": options["subspace"].get("environment", "adiabatic"),
-                       "curvature": options["subspace"].get("curvature", "none")}
+        environment = {k: options["subspace"].get(k) for k in
+                       ("environment", "curvature", "zero_point", "dvr_points", "dvr_half_width", "dvr_spacing")}
         model1, quantum1, info1 = path_model(
             run, path, {**options["quantum"], **environment},
             path_source=path_info.get("source", "centroid"),

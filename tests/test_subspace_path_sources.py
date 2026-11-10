@@ -3,6 +3,7 @@
 from types import SimpleNamespace
 
 import numpy as np
+import pytest
 
 from pyrpmd.constants import KB_AU
 import pyrpmd.analysis.subspace_pipeline as pipeline
@@ -303,7 +304,8 @@ def test_instanton_records_actual_even_seed_beads(monkeypatch):
         assert info["folded_beads"] == len(folded) == actual // 2
 
 
-def test_path_source_provenance_survives_sct_projection():
+@pytest.mark.parametrize("zero_point", ["harmonic", "rph", "dvr"])
+def test_path_source_provenance_survives_sct_projection(zero_point):
     radius, omega = 10.0, 0.2
     theta = np.linspace(-1.0, 1.0, 101)
     path = radius * np.column_stack([np.cos(theta), np.sin(theta)])
@@ -314,9 +316,11 @@ def test_path_source_provenance_survives_sct_projection():
         return omega**2 * (r - radius) * x / r
     model = project_path_subspace(potential, gradient, path, [1.0, 1.0],
                                   np.linspace(0.0, 20.0, 81), dividing_surface=10.0,
-                                  curvature="small", provenance={"path_source": "least_action"})
+                                  curvature="small", zero_point=zero_point, dvr_half_width=8.0,
+                                  provenance={"path_source": "least_action"})
     assert model.provenance["path_source"] == "least_action"
     assert model.provenance["curvature"] == "small"
+    assert model.provenance["zero_point"] == zero_point
     assert model.provenance["tau_length"] < model.provenance["sigma_length"]
     assert model.provenance["normal_hessian_positive"]
     assert model.provenance["unstable_complement_indices"] == []
