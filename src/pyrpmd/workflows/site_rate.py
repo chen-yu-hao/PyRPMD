@@ -13,6 +13,7 @@ one explicit local interval, even when the physical potential is periodic.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 import copy
 import json
 from pathlib import Path
@@ -32,11 +33,18 @@ from ..cv import Cartesian
 from ..cv_periodic import FractionalCoordinate, LinearProjection
 from ..dynamics import Dynamics, State
 from ..parallel import root_call, run_tasks, task_potential
-from ..propagation import loop_options
+from ..propagation import combine_propagation_stats, loop_options
 from ..trajectory_batch import map_trajectory_tasks, task_provider, trajectory_batch_size
 from ..units import parse_quantity, unit_factor
 from .fes import resolve_umbrellas, run_fes
 from .common import _dimension, _fingerprint, checked_integer, jsonable, write_json
+
+
+def _pmf_propagation_streams(pmf):
+    value = pmf.get("propagation", [])
+    if isinstance(value, Mapping):
+        value = value.get("streams", [])
+    return list(value) if isinstance(value, (list, tuple)) else []
 
 from .rate import (
     _recrossing_dynamics,
@@ -756,6 +764,11 @@ def _aggregate(children, pmf, config, output, parent_propagation=()):
         "rate_percentile_95_ci_s": None, "kappa": None, "pmf": public_pmf,
         "k_qtst_s": pmf["k_qtst_s"], "warnings": warnings,
         "propagation": {
+            **combine_propagation_stats(
+                _pmf_propagation_streams(pmf)
+                + list(parent_propagation)
+                + [dict(c.get("propagation", {})) for c in children
+                   if isinstance(c, dict) and c.get("propagation") is not None]),
             "pmf": pmf.get("propagation", []),
             "parents": [dict(item) for item in parent_propagation],
             "children": [dict(c.get("propagation", {})) for c in children

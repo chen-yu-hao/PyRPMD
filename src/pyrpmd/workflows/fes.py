@@ -16,7 +16,7 @@ from pathlib import Path
 import numpy as np
 from ..warm_start import initial_ring
 
-from pyrpmd.propagation import loop_options
+from pyrpmd.propagation import combine_propagation_stats, loop_options
 
 from ..analysis.fes import reconstruct_fes
 from ..analysis.fes_result import FESResult, write_fes_result
@@ -775,7 +775,11 @@ def _write_fes(output, data, streams, cv, config, _postprocess=None):
         # Keep per-window counters in the public summary.  The checkpoints
         # already carry this data, but hiding it there made a large FES look
         # indistinguishable from a Python fallback.
-        "propagation": [dict(s.get("propagation", {})) for s in streams],
+        "propagation": {
+            **combine_propagation_stats(
+                [dict(s.get("propagation", {})) for s in streams]),
+            "streams": [dict(s.get("propagation", {})) for s in streams],
+        },
         "samples": sum(len(s["samples"]) for s in streams),
         "overlap_connected": data["connected"],
         "overlap_components": data["components"],

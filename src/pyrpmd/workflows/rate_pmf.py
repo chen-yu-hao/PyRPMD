@@ -15,6 +15,7 @@ from ..analysis.fes import (
 )
 from ..constants import AU_RATE_TO_CM3_S
 from ..input import rate_pmf_options, rate_pmf_stage
+from ..propagation import combine_propagation_stats
 from .prepare import prepare_rate, prepared_system
 from ..checkpoint import atomic_savez as _atomic_npz
 from ..io import write_report_json as write_json, report_jsonable as jsonable
@@ -668,8 +669,13 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options):
             "Rate-owned umbrella diagnostics and sample export; sampling does not reconstruct a FES. "
             "Only the selected rate PMF estimator performs barrier bootstrap."
         ),
-        "propagation": [dict(s.get("propagation", {})) for s in streams
-                         if isinstance(s, dict) and s.get("propagation") is not None],
+        "propagation": {
+            **combine_propagation_stats(
+                [dict(s.get("propagation", {})) for s in streams
+                 if isinstance(s, dict) and s.get("propagation") is not None]),
+            "streams": [dict(s.get("propagation", {})) for s in streams
+                        if isinstance(s, dict) and s.get("propagation") is not None],
+        },
     }
     if "pmf" in config.get("rate", {}):
         from .rate_plan import rate_pmf_plan

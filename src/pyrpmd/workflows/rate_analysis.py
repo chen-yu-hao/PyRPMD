@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from pathlib import Path
 
 import numpy as np
@@ -10,7 +11,15 @@ from ..analysis.recrossing import summarize_recrossing
 from ..constants import ATOMIC_TIME_S
 from ..checkpoint import atomic_savez as _atomic_npz
 from ..io import write_report_json as write_json
+from ..propagation import combine_propagation_stats
 from .rate_options import _recrossing_dynamics
+
+
+def _pmf_propagation_streams(pmf):
+    value = pmf.get("propagation", [])
+    if isinstance(value, Mapping):
+        value = value.get("streams", [])
+    return list(value) if isinstance(value, (list, tuple)) else []
 
 
 def _aggregate(children, pmf, config, output, options):
@@ -36,6 +45,9 @@ def _aggregate(children, pmf, config, output, options):
             "kappa": None,
             "pmf": {k: v for k, v in pmf.items() if k not in private_pmf},
             "propagation": {
+                **combine_propagation_stats(
+                    _pmf_propagation_streams(pmf)
+                    + list(pmf.get("propagation_parents", []))),
                 "pmf": pmf.get("propagation", []),
                 "parents": pmf.get("propagation_parents", []),
                 "children": [],
@@ -248,6 +260,11 @@ def _aggregate(children, pmf, config, output, options):
         "energy_diagnostic_child_pairs": len(endpoint_errors),
         "pmf": public_pmf,
         "propagation": {
+            **combine_propagation_stats(
+                _pmf_propagation_streams(pmf)
+                + list(pmf.get("propagation_parents", []))
+                + [dict(c.get("propagation", {})) for c in children
+                   if isinstance(c, dict) and c.get("propagation") is not None]),
             "pmf": pmf.get("propagation", []),
             "parents": pmf.get("propagation_parents", []),
             "children": [dict(c.get("propagation", {})) for c in children
