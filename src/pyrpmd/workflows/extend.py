@@ -25,6 +25,7 @@ from ..parallel import execution_plan, make_task_potential, root_call, run_tasks
 from ..propagation import loop_options, scientific_config
 from ..units import time_steps
 from . import drpmd
+from .drpmd_records import ParentRecordLedger, load_parent_checkpoint, matches_parent_allocation
 
 
 _FORMAT = "PyRPMD.drpmd.extensions.v1"
@@ -139,6 +140,23 @@ def _prepare_extension(directory, max_time):
         allocations[parent_id] = list(range(start, start + count))
         start += count
     owners = {trajectory_id: parent for parent, ids in allocations.items() for trajectory_id in ids}
+    if not cached and not config.get("initial_ensemble"):
+        # New summaries omit records. Recover parent-only metadata (such as
+        # parent_sample_step) from the committed parent record journals.
+        for parent_id, ids in allocations.items():
+            checkpoint = path / "checkpoints" / f"parent-{parent_id:06d}.npz"
+            if not checkpoint.is_file():
+                raise InputError("The original run has no parent checkpoint; resume it first")
+            metadata, _ = load_parent_checkpoint(checkpoint)
+            if (metadata.get("physics_hash") != physics_hash
+                    or metadata.get("parent_id") != parent_id
+                    or not matches_parent_allocation(metadata, ids)):
+                raise InputError("Parent checkpoint identity conflicts with the original run")
+            for record in ParentRecordLedger(checkpoint).restore(metadata):
+                trajectory_id = record.get("trajectory_id")
+                if trajectory_id not in ids or trajectory_id in cached:
+                    raise InputError("Parent record ledger has conflicting trajectory IDs")
+                cached[trajectory_id] = record
     for trajectory_id in range(n):
         file = path / "trajectories" / f"trajectory-{trajectory_id:08d}.json"
         if not file.is_file():
@@ -294,7 +312,8 @@ def _finish_extension(prepared, results):
         "original_max_steps": ledger["original_max_steps"],
         "effective_max_steps": request["max_steps"], "extensions": ledger,
     })
-    write_json(path / "results" / "summary.json", summary)
+    write_json(path / "results" / "summary.json",
+               {key: value for key, value in summary.items() if key != "records"})
     return summary
 
 
