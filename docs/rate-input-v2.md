@@ -84,7 +84,7 @@ resolved; the dynamics does not divide the force constant by temperature.
 | `force_constant = "0.16 hartree"` | Fixed 0.16 hartree, independent of T |
 | Legacy `stiffness = 0.16` or `kappa = 0.16` | Fixed 0.16 atomic stiffness units, unchanged |
 
-Thus the new teaching template uses `0.00016` at 1000 K to retain the old
+The historical teaching template used `0.00016` at 1000 K to retain the old
 0.16-hartree spring. Copying RPMDrate's coefficient `0.1` would instead give
 100 hartree at 1000 K; it is not an equivalent conversion. The omitted rate
 default retains its old physical strength, `50 k_B T`, rather than silently
@@ -96,6 +96,27 @@ coefficients in `force_matrix` follow the same atomic-stiffness-per-kelvin rule.
 The existing scalar/diagonal/full `stiffness` forms remain available for multi-CV
 FES. The program applies the ring-polymer factor P internally; do not multiply
 the input by the bead count.
+
+**Check the width as well as the spacing.** For the dimensionless rate coordinate
+the harmonic thermal width is
+`sigma_xi = sqrt(k_B T / k) = sqrt(k_B / a)` when using a bare
+`force_constant = a` (`k_B = 3.16681156e-6 hartree/K`). Thus the example
+`a=0.00016` has `sigma_xi ≈ 0.141` and the barrier-region
+`a=0.00032` has `sigma_xi ≈ 0.0995`, versus spacings of 0.05 and
+0.01. These broad windows can violate Gaussian UI's assumption even with
+adequate overlap and a small bootstrap error. As a narrower starting point,
+tenfold stiffer `a=0.0016`/`0.0032` gives widths ≈0.0445/0.0315;
+use correspondingly closer, overlapping windows (for example 0.02/0.01
+spacing), then check convergence. RPMDrate's `a=0.1` is much stiffer
+(`sigma_xi ≈ 0.00563`) and requires much closer centers.
+
+`pyrpmd prepare` reports `thermal_sigma_xi` and
+`nearest_center_spacing_xi` for every planned one-dimensional rate umbrella
+window under `umbrella_preparation.window_plan`. The UI workflow additionally
+compares its barrier to the already computed MBAR histogram point estimate,
+emitting an explicit warning for a significant difference or an unsupported
+comparison (see [PMF selection](rate-pmf-selection.md)). Width, spacing and
+that comparison are diagnostics, not proof of physical convergence.
 
 ## Regional and explicit windows
 
@@ -237,3 +258,13 @@ existing resume rules. Keep historical runs on their stored schema and inputs.
 When manually converting old inputs, convert an old physical spring to `k/T`,
 and copy a shared old Andersen clock to both new stage tables if the aim is to
 preserve its old behavior. Do not edit an existing run's saved input in place.
+
+### Updated default window width
+
+New implicit rate umbrella plans use `beta*kappa=500`, giving
+`sigma_xi=1/sqrt(500)=0.04472`. UI remains the estimator default. The explicit
+research examples now use `force_constant=0.0016` (entrance) and `0.0032`
+(barrier), with 0.02/0.01 spacing, matching the narrow-window teaching check
+in issue #170. Existing explicit spring settings and resolved checkpoints
+retain their values. Window narrowing reduces the Gaussian-model error; it
+does not replace sampling or estimator comparisons.

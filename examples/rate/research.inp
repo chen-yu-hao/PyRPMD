@@ -42,14 +42,16 @@ estimator = "ui"
 [umbrella]
 coordinate = "xi"
 # Bare force_constant means k/T in atomic stiffness units per kelvin ("1/T").
-# Here k = 0.00016 * 1000 = 0.16 hartree, preserving the teaching pilot strength.
-force_constant = 0.00016
+# Here k = 0.0016 * 1000 = 1.6 hartree.
+# Thermal sigma_xi ~= 0.0445 (entrance) and 0.0315 (barrier).
+# Sampling budgets below remain short; inspect UI/MBAR agreement before use.
+force_constant = 0.0016
 
 [[umbrella.regions]]
 id = "entrance"
 start = 0.0
 stop = 0.8
-spacing = 0.05
+spacing = 0.02
 include_endpoints = "left"
 
 [[umbrella.regions]]
@@ -58,7 +60,7 @@ start = 0.8
 stop = 1.05
 spacing = 0.01
 include_endpoints = "both"
-force_constant = 0.00032
+force_constant = 0.0032
 
 [umbrella.sampling]
 equilibration = "5 fs"

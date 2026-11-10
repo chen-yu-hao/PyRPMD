@@ -344,7 +344,7 @@ def rate_pmf_stage(config, system):
         if not any(key in umbrella for key in selectors):
             umbrella.update(start=-0.05, stop=1.05, count=23)
         if not any(key in umbrella for key in ("stiffness", "stiffness_au", "kappa", "force_constant", "force_matrix")):
-            umbrella["kappa"] = 50.0 / stage["beta"]
+            umbrella["kappa"] = 500.0 / stage["beta"]
         umbrella["cvs"] = ["xi"]
     else:
         stage[spec["method"]]["cvs"] = ["xi"]
