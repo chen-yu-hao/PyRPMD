@@ -202,6 +202,7 @@ class SubspaceModel:
     provenance: Mapping[str, Any] = field(default_factory=dict)
     function: Callable[[np.ndarray], np.ndarray] | None = None
     gradient: Callable[[np.ndarray], np.ndarray] | None = None
+    metric: Callable[[np.ndarray], np.ndarray] | np.ndarray | None = None
 
     def __post_init__(self):
         axes = tuple(_axis(a, f"axes[{i}]") for i, a in enumerate(self.axes))
@@ -229,6 +230,12 @@ class SubspaceModel:
             value = getattr(self, name)
             if value is not None and not callable(value):
                 raise TypeError(f"{name} must be callable or None")
+        metric = self.metric
+        if metric is not None and not callable(metric):
+            metric = np.asarray(metric, dtype=float)
+            if metric.shape != shape or not np.isfinite(metric).all() or np.any(metric <= 0):
+                raise ValueError("metric must be a positive finite grid or callable")
+            metric.flags.writeable = False
         object.__setattr__(self, "axes", axes)
         object.__setattr__(self, "values", values)
         object.__setattr__(self, "masses", masses)
@@ -236,6 +243,7 @@ class SubspaceModel:
         object.__setattr__(self, "reactant_reference", reference)
         object.__setattr__(self, "provenance", dict(self.provenance))
         object.__setattr__(self, "_interpolant", None)
+        object.__setattr__(self, "metric", metric)
 
     @property
     def dimension(self) -> int:
@@ -282,6 +290,22 @@ class SubspaceModel:
                 gradient[..., axis] = (self.function(points + shift) - self.function(points - shift)) / (2 * step)
         return value, gradient
 
+    def inverse_metric(self, points: np.ndarray) -> np.ndarray:
+        """Return an optional position-dependent inverse metric factor."""
+        points = np.asarray(points, dtype=float)
+        if self.metric is None:
+            return np.ones(points.shape[:-1], dtype=float)
+        if callable(self.metric):
+            value = np.asarray(self.metric(points), dtype=float)
+        else:
+            from scipy.interpolate import RegularGridInterpolator
+            interpolant = RegularGridInterpolator(self.axes, self.metric,
+                                                   bounds_error=False, fill_value=None)
+            value = interpolant(points.reshape(-1, self.dimension)).reshape(points.shape[:-1])
+        if value.shape != points.shape[:-1] or not np.isfinite(value).all() or np.any(value <= 0):
+            raise ValueError("inverse metric returned invalid values")
+        return value
+
     def describe(self) -> dict:
         """JSON-safe summary of the Hamiltonian, without the grid values."""
         return {
@@ -294,6 +318,7 @@ class SubspaceModel:
             "reactant_reference": self.reactant_reference,
             "potential_minimum": float(self.values.min()),
             "potential_source": "callable" if self.function is not None else "cubic spline of the grid",
+            "position_dependent_metric": self.metric is not None,
             "construction": dict(self.provenance),
         }
 
@@ -308,6 +333,7 @@ def model_from_function(
     reactant: str = "asymptotic",
     reactant_reference: float | None = None,
     provenance: Mapping[str, Any] | None = None,
+    metric: Callable[[np.ndarray], np.ndarray] | np.ndarray | None = None,
 ) -> SubspaceModel:
     """Wrap a vectorized 1-3D potential ``V(points[..., d])`` as a model."""
     if not callable(potential):
@@ -318,7 +344,7 @@ def model_from_function(
     info = {"kind": "function"}
     info.update(dict(provenance or {}))
     return SubspaceModel(grids, values, masses, dividing_surface, reactant, reactant_reference,
-                         info, potential, gradient)
+                         info, potential, gradient, metric)
 
 
 def _orthonormal_basis(basis: Any, size: int) -> np.ndarray:

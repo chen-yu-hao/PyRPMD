@@ -55,7 +55,8 @@ DEFAULTS = {
              "asymptote_tolerance": 1e-6, "smoothing": 1.5,
              "least_action_points": 9},
     "subspace": {"dimension": "auto", "threshold": 0.5, "environment": "adiabatic", "curvature": "none",
-                 "zero_point": "harmonic", "dvr_points": 81, "dvr_half_width": None, "dvr_spacing": None},
+                 "zero_point": "harmonic", "dvr_points": 81, "dvr_half_width": None, "dvr_spacing": None,
+                 "channels": None},
     "quantum": {"spacing_1d": None, "spacing_2d": None, "refinement": 3, "absorber_fraction": 0.2,
                 "threshold_margin": 1.0, "truncation_kt": 30.0, "truncation_min": 0.0, "padding": None,
                 "dense_limit": 8000,
@@ -790,8 +791,17 @@ def run_subspace_pipeline(specification) -> dict:
             candidate = np.asarray(static_cw["candidate_direction"])
         environment = {"environment": options["subspace"].get("environment", "adiabatic")}
         model2, quantum2, info2, rpmd_model2 = plane_model(run, path, candidate, {**options["quantum"], **environment})
-        corrections[2] = subspace_correction(model2, run.beta, nbeads, quantum_options=quantum2,
-                                             rpmd_options=rpmd_options, rpmd_model=rpmd_model2)
+        channels = options["subspace"].get("channels")
+        if channels is None:
+            corrections[2] = subspace_correction(model2, run.beta, nbeads, quantum_options=quantum2,
+                                                 rpmd_options=rpmd_options, rpmd_model=rpmd_model2)
+        else:
+            from .subspace_channels import channels_from_model
+
+            projection = channels_from_model(model2, n_channels=channels)
+            corrections[2] = projection.correction(run.beta, nbeads, quantum_options=quantum2,
+                                                   rpmd_options=rpmd_options, rpmd_model=rpmd_model2)
+            info2["channels"] = projection.describe()
         corrections[2] = replace(corrections[2], diagnostics={
             **corrections[2].diagnostics, "pipeline_identity": identity})
         corrections[2].write(out_dir / "C_S_2d.json")

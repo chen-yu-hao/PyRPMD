@@ -32,6 +32,7 @@ from typing import Any, Mapping
 import numpy as np
 
 from .subspace_model import SubspaceModel
+from .subspace_metric import constant_metric_model
 
 
 def normal_mode_matrix(nbeads: int) -> np.ndarray:
@@ -105,6 +106,7 @@ class _RingPolymer:
     """Vectorized ring polymers ``[batch, bead, dimension]`` in normal modes."""
 
     def __init__(self, model: SubspaceModel, beta: float, nbeads: int):
+        model = constant_metric_model(model)
         self.model = model
         self.beta = float(beta)
         self.p = int(nbeads)
@@ -219,6 +221,7 @@ def ring_polymer_rate(
     """
     if not isinstance(model, SubspaceModel):
         raise TypeError("model must be a SubspaceModel")
+    model = constant_metric_model(model)
     beta = float(beta)
     if not np.isfinite(beta) or beta <= 0:
         raise ValueError("beta must be positive")
