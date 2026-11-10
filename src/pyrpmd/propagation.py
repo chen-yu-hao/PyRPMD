@@ -9,6 +9,7 @@ from __future__ import annotations
 import copy
 from contextlib import contextmanager
 from dataclasses import dataclass
+from collections.abc import Mapping
 
 import numpy as np
 
@@ -18,6 +19,40 @@ from .potentials._builtin_native import resolve_native_binding
 
 class NativeUnavailableError(RuntimeError):
     """Requested native semantics cannot be provided without Python callbacks."""
+
+
+def empty_propagation_stats():
+    """Return the JSON shape used for propagation accounting.
+
+    Keeping construction in one place lets workflow summaries expose an
+    explicit zero-count record even when a stage completed without advancing
+    a trajectory (for example, a disconnected PMF).
+    """
+    return {"native_steps": 0, "python_steps": 0, "fallback_reasons": {}}
+
+
+def combine_propagation_stats(records):
+    """Combine per-stream propagation counters without mutating inputs."""
+    result = empty_propagation_stats()
+    for record in records or ():
+        if not isinstance(record, Mapping):
+            continue
+        for key in ("native_steps", "python_steps"):
+            value = record.get(key, 0)
+            if isinstance(value, (int, float, np.integer, np.floating)):
+                result[key] += int(value)
+        if "untracked_steps" in record:
+            value = record.get("untracked_steps")
+            if isinstance(value, (int, float, np.integer, np.floating)):
+                result["untracked_steps"] = result.get("untracked_steps", 0) + int(value)
+        reasons = record.get("fallback_reasons", {})
+        if isinstance(reasons, Mapping):
+            for reason, count in reasons.items():
+                if isinstance(reason, str) and isinstance(count, (int, float, np.integer, np.floating)):
+                    result["fallback_reasons"][reason] = (
+                        result["fallback_reasons"].get(reason, 0) + int(count)
+                    )
+    return result
 
 
 @dataclass
@@ -147,6 +182,7 @@ def cv_descriptor(cv, n):
         RateSurface,
         RPMDrateCoordinate,
     )
+    from .cv_periodic import FractionalCoordinate, LinearProjection
     if getattr(cv, "estimator", None) != "centroid":
         raise NativeUnavailableError("native CV path requires centroid estimator")
     if any(p is not None for p in cv.periods):
@@ -166,6 +202,32 @@ def cv_descriptor(cv, n):
             raise ValueError("Cartesian atom index out of range")
         g = np.zeros((n, 3)); g[cv.atom, cv.axis] = 1.
         primitive = _primitive(n, linear=g)
+    elif t in (LinearProjection, FractionalCoordinate):
+        # Both projection classes are affine functions of the Cartesian
+        # centroid for a fixed cell.  Lower their constant coefficient and
+        # full Cartesian gradient directly into the native primitive rather
+        # than routing through Python CV evaluation.  Restricting this to the
+        # exact built-in types keeps subclass/override semantics conservative.
+        from .cv import CollectiveVariable, _AffineCoordinate
+        overridden = any(name in getattr(cv, "__dict__", {}) for name in (
+            "value", "value_and_jacobian", "centroid_value_gradient",
+            "centroid_value_gradient_hessian", "centroid_value_gradient_hvp",
+            "_affine_gradient"))
+        inherited = {
+            "value": CollectiveVariable.value,
+            "value_and_jacobian": CollectiveVariable.value_and_jacobian,
+            "centroid_value_gradient": _AffineCoordinate.centroid_value_gradient,
+            "centroid_value_gradient_hessian": _AffineCoordinate.centroid_value_gradient_hessian,
+            "centroid_value_gradient_hvp": _AffineCoordinate.centroid_value_gradient_hvp,
+            "_affine_gradient": LinearProjection._affine_gradient,
+        }
+        overridden = overridden or any(getattr(type(cv), name, None) is not original
+                                       for name, original in inherited.items())
+        if overridden:
+            raise NativeUnavailableError("overridden projection methods require Python")
+        if getattr(type(cv), "_affine_gradient", None) is not LinearProjection._affine_gradient:
+            raise NativeUnavailableError("overridden projection methods require Python")
+        primitive = _primitive(n, constant=-float(cv.origin), linear=cv._affine_gradient())
     elif t in (RPMDrateCoordinate, RateSurface):
         c = cv.coordinate if t is RateSurface else cv
         if type(c) is not RPMDrateCoordinate or type(c.com) is not COMDistance:
@@ -488,6 +550,40 @@ def native_supported(dynamics, *, bias=None, observe=None):
             raise
         return False
     return True
+
+
+def native_support_reason(dynamics, *, bias=None, observe=None):
+    """Return the first reason a dynamics object cannot use fused native steps.
+
+    This is deliberately a read-only companion to :func:`native_supported`
+    for validation and diagnostics.  It does not evaluate a PES or mutate a
+    dynamics object.  ``None`` means the requested combination is native
+    capable; an explicit Python backend reports its selection as a reason.
+    """
+    if dynamics.loop_backend == "python":
+        return "explicit Python loop backend"
+    try:
+        if getattr(dynamics, "plan", None) is not None and dynamics.plan.active:
+            component = dynamics._composition
+            component.validate_binding()
+            if (observe is not None or not dynamics.native
+                    or not component._can_native(bias, ()) or not component._has_native_binding()):
+                raise NativeUnavailableError("requested operators/observations require Python scheduling")
+            return None
+        _check_dynamics_methods(dynamics)
+        if dynamics.integrator._native is None or not hasattr(dynamics.integrator._native, "run_block"):
+            raise NativeUnavailableError(dynamics.integrator.native_fallback_reason or "fused extension unavailable or native=False")
+        factory = getattr(dynamics.potential, "native_binding", None)
+        if factory is None:
+            raise NativeUnavailableError("PES has no explicit stateless native binding")
+        _atomic_binding(resolve_native_binding(dynamics.potential, len(dynamics.masses)))
+        n = len(dynamics.masses)
+        _biases(bias, n, dynamics.masses)
+        if observe is not None:
+            _cvs(observe, n)
+    except NativeUnavailableError as exc:
+        return str(exc)
+    return None
 
 
 def scientific_config(config):

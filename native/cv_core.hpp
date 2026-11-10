@@ -182,7 +182,14 @@ template<bool Numeric> struct Coordinate {
                 }
             } else {
                 simple=std::make_unique<Primitive>(n);
-                if(tag=="linear")simple->linear=vector(field(obj,"weights"),d);
+                if(tag=="linear"){
+                    simple->linear=vector(field(obj,"weights"),d);
+                    // Affine projection descriptors may carry a finite
+                    // constant offset (the historical Cartesian descriptor
+                    // omits it and therefore remains zero by default).
+                    if(auto* constant=PyDict_GetItemString(obj,"constant"))
+                        simple->constant=number(constant);
+                }
                 else if(tag=="norm" || tag=="difference") {
                     simple->norms.push_back({1.,vector(field(obj,"weights"),n)});
                     if(tag=="difference")simple->norms.push_back({-1.,vector(field(obj,"other"),n)});

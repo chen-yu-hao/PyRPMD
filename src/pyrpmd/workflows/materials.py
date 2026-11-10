@@ -137,7 +137,7 @@ def _resolve_legacy_materials(config, system, *, handoff_frame=True):
         raise ValueError("materials sampling.thermostat must be pile-l or andersen")
     if thermostat == "pile-l" and loop["integrator"] == "velocity-verlet":
         raise ValueError("PILE-L needs Cayley BCOCB or normal-mode BAOAB; Verlet uses Andersen")
-    if thermostat == "pile-l" and loop["loop_backend"] == "native":
+    if thermostat == "pile-l" and loop["loop_backend"] == "native" and friction_spec is None:
         raise ValueError("PILE-L sampling needs loop_backend='auto' or 'python'")
     expected_sampler = ({"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}[loop["integrator"]]
                         if thermostat == "pile-l" else loop["integrator"] + "-andersen")
@@ -665,7 +665,7 @@ def _sample_replica(task):
         fused_production = None
 
         def production_block():
-            """Advance unthermostatted NVE production to its next event.
+            """Advance NVE or native centroid-friction production to its next event.
 
             A block never crosses a saved sample, a checkpoint or the end of
             the run, and never exceeds dynamics.block_steps (nor the 4096-step
@@ -681,6 +681,7 @@ def _sample_replica(task):
                         interval - (elapsed - neq) % interval, every - elapsed % every)
             start, start_elapsed = state.copy(), elapsed
             old_stats = copy.deepcopy(production.propagation_stats)
+            old_rng = copy.deepcopy(rng.bit_generator.state) if friction_provider is not None else None
             try:
                 block = production.propagate_block(
                     state, count, observe=np.zeros(count, dtype=bool), record_energy=False,
@@ -699,6 +700,8 @@ def _sample_replica(task):
                 except BaseException:
                     state.q[:], state.p[:] = block.previous_q, block.previous_p
                     state.step, state.time = block.previous_step, block.previous_time
+                    if friction_provider is not None:
+                        rng.bit_generator.state = block.previous_rng_state
                     production.propagation_stats = copy.deepcopy(old_stats)
                     stats = production.propagation_stats
                     stats[block.backend + "_steps"] += count - 1
@@ -715,6 +718,8 @@ def _sample_replica(task):
                 if elapsed == start_elapsed:
                     state = start
                     production.propagation_stats = old_stats
+                    if old_rng is not None:
+                        rng.bit_generator.state = old_rng
                 raise
 
         fused_sampling = None
@@ -848,7 +853,7 @@ def _sample_replica(task):
                 # plan for the deterministic native block.
                 try:
                     fused_sampling = (
-                        piston is None and monitor is None and friction_provider is None
+                        piston is None and monitor is None
                         and system.cell is None and not any(system.pbc)
                         and type(sampling) is Dynamics and not sampling.plan.active
                         and getattr(sampling.integrator._native, "BLOCK_ENERGY_CHECK_API", 0) >= 1
@@ -859,7 +864,7 @@ def _sample_replica(task):
             if is_sampling and options["thermostat"] == "pile-l" and fused_pile is None:
                 try:
                     fused_pile = (
-                        piston is None and monitor is None and friction_provider is None
+                        piston is None and monitor is None
                         and type(sampling) is Dynamics and not sampling.plan.active
                         and _sampling_eligibility(sampling, None, None) is not None)
                 except (NativeUnavailableError, ValueError, TypeError):
@@ -880,11 +885,12 @@ def _sample_replica(task):
                     save()
                 continue
             if not is_sampling and fused_production is None:
-                # Only plain, unthermostatted Dynamics with a supported native
-                # block. Strict native mode raises here instead of falling back.
+                # Native NVE or constant diagonal centroid-friction blocks.
+                # Strict native mode raises here instead of falling back.
                 try:
                     fused_production = (
-                        piston is None and monitor is None and type(production) is Dynamics
+                        piston is None and monitor is None
+                        and (type(production) is Dynamics or friction_provider is not None)
                         and not production.plan.active and production.can_fuse())
                 except BaseException:
                     save()
