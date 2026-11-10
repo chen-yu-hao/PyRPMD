@@ -15,6 +15,32 @@ from gas-phase rates and direct collisions to free-energy surfaces, metadynamics
 surface hops and electrochemical PCET, on C++17/OpenMP integrator kernels with a NumPy reference
 implementation alongside.
 
+## How it works, in motion
+
+Each animation shows one idea behind a PyRPMD workflow on a toy model.
+
+<p align="center">
+  <img src="docs/_static/gifs/ring_polymer.gif" width="62%" alt="Each quantum nucleus is a ring of beads joined by springs. Near the transition state (star) the ring stretches across the barrier, which is how RPMD captures tunnelling and zero-point energy."><br>
+  <sub>Each quantum nucleus is a ring of beads joined by springs. Near the transition state (star) the ring stretches across the barrier, which is how RPMD captures tunnelling and zero-point energy.</sub>
+</p>
+
+<table>
+<tr><th colspan="2">Thermal rates (<code>rate</code>, <code>network</code>)</th></tr>
+<tr><td width="50%" align="center"><img src="docs/_static/gifs/umbrella_pmf.gif" width="100%" alt="Umbrella windows along the reaction coordinate (top) give overlapping histograms (bottom), which are combined into the PMF."><br><sub>Umbrella windows along the reaction coordinate (top) give overlapping histograms (bottom), which are combined into the PMF.</sub></td><td width="50%" align="center"><img src="docs/_static/gifs/recrossing.gif" width="100%" alt="Paired trajectories start on the dividing surface (dashed). Recrossings pull the transmission coefficient κ(t) down to its plateau."><br><sub>Paired trajectories start on the dividing surface (dashed). Recrossings pull the transmission coefficient κ(t) down to its plateau.</sub></td></tr>
+<tr><th colspan="2">Collisions and deep tunnelling (<code>drpmd</code>, instantons)</th></tr>
+<tr><td width="50%" align="center"><img src="docs/_static/gifs/drpmd_collision.gif" width="100%" alt="Direct dRPMD collision A + BC → AB + C: ring-polymer atoms approach, exchange a bond and fly apart."><br><sub>Direct dRPMD collision A + BC → AB + C: ring-polymer atoms approach, exchange a bond and fly apart.</sub></td><td width="50%" align="center"><img src="docs/_static/gifs/instanton.gif" width="100%" alt="Ring-polymer instanton: as the temperature drops, the beads spread along the barrier (top) and the closed imaginary-time orbit widens (bottom)."><br><sub>Ring-polymer instanton: as the temperature drops, the beads spread along the barrier (top) and the closed imaginary-time orbit widens (bottom).</sub></td></tr>
+<tr><th colspan="2">Free-energy surfaces (<code>fes</code>: metadynamics, OPES, umbrella)</th></tr>
+<tr><td width="50%" align="center"><img src="docs/_static/gifs/metadynamics.gif" width="100%" alt="Well-tempered metadynamics: deposited Gaussians (orange) fill the wells until the walker crosses freely. The negative bias (bottom) converges to the true FES."><br><sub>Well-tempered metadynamics: deposited Gaussians (orange) fill the wells until the walker crosses freely. The negative bias (bottom) converges to the true FES.</sub></td><td width="50%" align="center"><img src="docs/_static/gifs/fes_2d.gif" width="100%" alt="2D enhanced sampling: the walker explores the surface (left) while the reconstructed FES fills in basin by basin (right)."><br><sub>2D enhanced sampling: the walker explores the surface (left) while the reconstructed FES fills in basin by basin (right).</sub></td></tr>
+<tr><th colspan="2">Path-integral sampling and materials (<code>pimd</code>, <code>diffusion</code>)</th></tr>
+<tr><td width="50%" align="center"><img src="docs/_static/gifs/pimd_nqe.gif" width="100%" alt="PIMD nuclear quantum effects: as the thermometer falls, the light H rings swell while the heavy O ring stays compact."><br><sub>PIMD nuclear quantum effects: as the thermometer falls, the light H rings swell while the heavy O ring stays compact.</sub></td><td width="50%" align="center"><img src="docs/_static/gifs/diffusion.gif" width="100%" alt="Materials diffusion: ring-polymer particles hop between interstitial sites of a periodic host; the MSD grows linearly, giving D."><br><sub>Materials diffusion: ring-polymer particles hop between interstitial sites of a periodic host; the MSD grows linearly, giving D.</sub></td></tr>
+<tr><th colspan="2">Surfaces and electrochemistry (<code>surface_rate</code>, <code>site_rate</code>, <code>pcet</code>)</th></tr>
+<tr><td width="50%" align="center"><img src="docs/_static/gifs/surface_rate.gif" width="100%" alt="Surface escape on a slab with a fixed bottom layer (hatched). The basin survival probability decays exponentially at the escape rate."><br><sub>Surface escape on a slab with a fixed bottom layer (hatched). The basin survival probability decays exponentially at the escape rate.</sub></td><td width="50%" align="center"><img src="docs/_static/gifs/pcet.gif" width="100%" alt="Electrochemical PCET: the electrode potential shifts the product free-energy curves (orange) against the reactant (blue). The H and D rate curves show the KIE."><br><sub>Electrochemical PCET: the electrode potential shifts the product free-energy curves (orange) against the reactant (blue). The H and D rate curves show the KIE.</sub></td></tr>
+<tr><th colspan="2">Nonadiabatic dynamics and spectroscopy (<code>nonadiabatic</code>, <code>spectroscopy</code>)</th></tr>
+<tr><td width="50%" align="center"><img src="docs/_static/gifs/nonadiabatic.gif" width="100%" alt="Nonadiabatic dynamics at an avoided crossing: a swarm on the upper surface splits between the two states, and the populations (right) settle."><br><sub>Nonadiabatic dynamics at an avoided crossing: a swarm on the upper surface splits between the two states, and the populations (right) settle.</sub></td><td width="50%" align="center"><img src="docs/_static/gifs/spectroscopy.gif" width="100%" alt="TRPMD / PA-CMD spectroscopy: the vibrating molecule's dipole correlation function (top) is Fourier-transformed, and the spectrum (bottom) sharpens as it lengthens."><br><sub>TRPMD / PA-CMD spectroscopy: the vibrating molecule's dipole correlation function (top) is Fourier-transformed, and the spectrum (bottom) sharpens as it lengthens.</sub></td></tr>
+</table>
+
+<sub>These are text-free schematics driven by small toy simulations, not PyRPMD results. Regenerate them with <code>python tools/make_readme_gifs.py</code> (needs matplotlib).</sub>
+
 ## Why PyRPMD
 
 - **From TS to rate in one command.** No hand-staged windows or separate recrossing scripts: one
