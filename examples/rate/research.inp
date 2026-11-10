@@ -43,6 +43,9 @@ estimator = "ui"
 coordinate = "xi"
 # Bare force_constant means k/T in atomic stiffness units per kelvin ("1/T").
 # Here k = 0.00016 * 1000 = 0.16 hartree, preserving the teaching pilot strength.
+# Thermal sigma_xi ~= 0.141 (entrance) and 0.0995 (barrier): broad Gaussian UI
+# windows, NOT quantitative convergence settings. Use MBAR or narrower,
+# closely spaced windows for a physical rate (docs/rate-input-v2.md).
 force_constant = 0.00016
 
 [[umbrella.regions]]
