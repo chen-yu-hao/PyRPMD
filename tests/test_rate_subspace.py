@@ -438,3 +438,27 @@ def test_stage_authenticates_legacy_manifest_without_migrating_source(tmp_path, 
     else:
         assert stage.validate_saved_rate(config, system, root) == root
     assert manifest_path.read_bytes() == before
+
+
+
+def test_parent_counters_survive_enabled_postprocessing(tmp_path, monkeypatch):
+    from pyrpmd.workflows import rate
+
+    config, system, root = saved_run(tmp_path)
+    counters = {"native_steps": 12, "python_steps": 0, "fallback_reasons": {}}
+    monkeypatch.setattr(rate, "_prepare", lambda c, s, *a: (c, s))
+    monkeypatch.setattr(rate, "sample_umbrellas", lambda *a, **k: {})
+    monkeypatch.setattr(rate, "_pmf_and_parent_tasks", lambda *a: ({}, [object()]))
+    monkeypatch.setattr(rate, "run_tasks", lambda *a, **k: [{"propagation": counters}])
+    monkeypatch.setattr(rate, "_child_tasks", lambda *a: [])
+    monkeypatch.setattr(rate, "_dispatch_children", lambda *a, **k: [])
+
+    def aggregate(children, pmf, *args):
+        assert pmf["propagation_parents"] == [counters]
+        return {"task": "rate", "propagation": counters}
+
+    monkeypatch.setattr(rate, "_aggregate", aggregate)
+    monkeypatch.setattr(stage, "postprocess_rate_subspace", lambda *a, **k: {"status": "complete"})
+    result = rate.run_rate(config, system, root)
+    assert result["propagation"] == counters
+    assert result["subspace_correction"]["status"] == "complete"

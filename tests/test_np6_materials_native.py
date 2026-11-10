@@ -50,6 +50,12 @@ def test_native_diffusion_writes_legacy_fields_and_resumes_read_only(tmp_path):
     assert result["task"] == "diffusion"
     assert result["propagation"][0]["python_steps"] == 0
     assert result["propagation"][0]["native_blocks"] > 0
+    assert result["propagation_totals"] == {
+        "native_steps": 14, "python_steps": 0, "fallback_reasons": {}}
+    saved = json.loads((tmp_path / "run/results/summary.json").read_text())
+    assert isinstance(saved["propagation"], list)
+    assert saved["propagation"] == result["propagation"]
+    assert saved["propagation_totals"] == result["propagation_totals"]
     # Close the archive before resume: the completed-run reanalysis atomically
     # replaces trajectory.npz, which Windows refuses while a handle is open.
     with np.load(result["files"]["trajectories"][0], allow_pickle=False) as trajectory:
@@ -63,6 +69,7 @@ def test_native_diffusion_writes_legacy_fields_and_resumes_read_only(tmp_path):
     before = json.dumps(journal, sort_keys=True)
     resumed = resume_run(tmp_path / "run")
     assert resumed["propagation"] == result["propagation"]
+    assert resumed["propagation_totals"] == result["propagation_totals"]
     assert json.dumps(json.loads((tmp_path / "run" / "samples" / "native_pimd_0000" / "journal.json").read_text()),
                       sort_keys=True) == before
 

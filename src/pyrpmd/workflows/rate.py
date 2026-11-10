@@ -79,6 +79,10 @@ def _record_sampling_failure(output, directory, sampler, error):
     return failures
 
 
+def _parent_propagation(parents):
+    return [dict(p.get("propagation", {})) for p in parents]
+
+
 def run_rate(config, system, output, executor=None):
     from ..input_subspace import normalize_rate_subspace
     from .rate_subspace import finish_rate
@@ -145,6 +149,8 @@ def run_rate(config, system, output, executor=None):
     children = []
     if parent_tasks:
         parents = dispatch(_parent_task, parent_tasks)
+        # Keep parent counters separate from child recrossing counters.
+        pmf["propagation_parents"] = root_call(_parent_propagation, parents)
         tasks = root_call(_child_tasks, parents, config, system, str(output), options, pmf)
         children = _dispatch_children(tasks, config, dispatch, child_task=_child_task)
     result = root_call(_aggregate, children, pmf, config, str(output), options)

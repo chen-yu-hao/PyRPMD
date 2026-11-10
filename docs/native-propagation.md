@@ -134,6 +134,34 @@ observations and failure prefixes are bit-identical to the previous loop.
 
 ## Workflow/event semantics
 
+### Backend coverage by task and stage
+
+The resolved backend is recorded in `propagation_plan` during validation and
+the accepted work is recorded in `propagation` in the result summary.  The
+table describes the normal `loop_backend="auto"` decision; an explicit
+`loop_backend="python"` always selects the Python row.
+
+Materials summaries retain their existing per-replica `propagation` list;
+`propagation_totals` contains its aggregate `native_steps`, `python_steps`,
+and `fallback_reasons`. FES and rate summaries retain their `propagation`
+mapping with aggregate counts and stage details.
+
+| Task | Stage | Native when | Python fallback / first reason |
+| --- | --- | --- | --- |
+| `fes`, `rate`, `surface_rate` | fixed umbrella production | stateless native PES, centroid CV/bias descriptors (including `fractional`), and a supported sampling schedule | custom/stateful PES, unsupported CV or bias, composed operators, or thermostat scheduling |
+| `site_rate` | umbrella production | same fixed-bias conditions as FES | constrained parent and checkpointed child stages use Python RATTLE/trajectory scheduling |
+| `rate`, `surface_rate` | recrossing parent/child | exported native dividing-surface descriptors and a compatible PES | arbitrary classifiers, constraints, or unsupported providers |
+| `diffusion` | unthermostatted production | fixed-cell native PES with no barostat, monitor, or electronic friction | electronic friction uses Python OU centroid orchestration; other unsupported providers retain the one-step loop |
+| `diffusion`, `pimd` | equilibration/sampling | native PILE-L or Andersen block contract and supported stateless PES | barostat, constraints, active-learning monitor, unsupported ring, or provider callbacks |
+| `drpmd` | collision propagation | native outcome descriptor plus a compatible native PES | arbitrary Python classifier or missing native event descriptor |
+
+External provider bindings are reported as `unknown` until runtime, without
+loading plugins during static validation. Stage budgets count all declared
+umbrella replicas and both members of recrossing pairs. A known Python-only
+component produces a Python fallback reason.  This keeps the
+reported path aligned with the actual execution rather than with the fact that
+the free-ring substep itself may still be compiled.
+
 **dRPMD:** collision blocks use `propagate_block()`. The exact, unmodified
 `ConnectivityClassifier` with explicit channels and the benchmark's identity-aware
 `H3ExchangeClassifier` can export `native_outcome_descriptor()`. With a compatible

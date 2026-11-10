@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from pathlib import Path
 
 import numpy as np
@@ -10,7 +11,15 @@ from ..analysis.recrossing import summarize_recrossing
 from ..constants import ATOMIC_TIME_S
 from ..checkpoint import atomic_savez as _atomic_npz
 from ..io import write_report_json as write_json
+from ..propagation import combine_propagation_stats
 from .rate_options import _recrossing_dynamics
+
+
+def _pmf_propagation_streams(pmf):
+    value = pmf.get("propagation", [])
+    if isinstance(value, Mapping):
+        value = value.get("streams", [])
+    return list(value) if isinstance(value, (list, tuple)) else []
 
 
 def _aggregate(children, pmf, config, output, options):
@@ -20,7 +29,8 @@ def _aggregate(children, pmf, config, output, options):
     task_name = "surface_rate" if is_surface else "rate"
     unit_key = "s_inv" if is_surface else "cm3_s"
     qtst_key = "k_qtst_" + unit_key
-    private_pmf = ("pmf_bootstrap_barriers", "pmf_bootstrap_qtst")
+    private_pmf = ("pmf_bootstrap_barriers", "pmf_bootstrap_qtst",
+                   "propagation", "propagation_parents")
     if not children:
         pmf_status = pmf.get("status", "insufficient_overlap")
         result = {
@@ -34,6 +44,14 @@ def _aggregate(children, pmf, config, output, options):
             "rate_standard_error_" + unit_key: None,
             "kappa": None,
             "pmf": {k: v for k, v in pmf.items() if k not in private_pmf},
+            "propagation": {
+                **combine_propagation_stats(
+                    _pmf_propagation_streams(pmf)
+                    + list(pmf.get("propagation_parents", []))),
+                "pmf": pmf.get("propagation", []),
+                "parents": pmf.get("propagation_parents", []),
+                "children": [],
+            },
             "warnings": pmf["warnings"],
         }
         if is_surface:
@@ -241,6 +259,17 @@ def _aggregate(children, pmf, config, output, options):
         ),
         "energy_diagnostic_child_pairs": len(endpoint_errors),
         "pmf": public_pmf,
+        "propagation": {
+            **combine_propagation_stats(
+                _pmf_propagation_streams(pmf)
+                + list(pmf.get("propagation_parents", []))
+                + [dict(c.get("propagation", {})) for c in children
+                   if isinstance(c, dict) and c.get("propagation") is not None]),
+            "pmf": pmf.get("propagation", []),
+            "parents": pmf.get("propagation_parents", []),
+            "children": [dict(c.get("propagation", {})) for c in children
+                         if isinstance(c, dict) and c.get("propagation") is not None],
+        },
         "warnings": warnings,
         "converged": False,
         "convergence_note": (
