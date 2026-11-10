@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 import os
+import warnings as _warnings
 
 import numpy as np
 from threadpoolctl import threadpool_limits
@@ -49,27 +50,32 @@ def _ordered_thread_map(function, tasks, max_workers):
     pending = {}
     next_index = 0
     with ThreadPoolExecutor(max_workers=max_workers) as pool:
-        while len(pending) < max_workers:
-            try:
-                task = next(iterator)
-            except StopIteration:
-                break
-            pending[pool.submit(function, task)] = next_index
-            next_index += 1
-        while pending:
-            done, _ = wait(pending, return_when=FIRST_COMPLETED)
-            completed = sorted(done, key=pending.__getitem__)
-            for future in completed:
-                index = pending.pop(future)
-                while len(results) <= index:
-                    results.append(None)
-                results[index] = future.result()
+        try:
+            while len(pending) < max_workers:
                 try:
                     task = next(iterator)
                 except StopIteration:
-                    continue
+                    break
                 pending[pool.submit(function, task)] = next_index
                 next_index += 1
+            while pending:
+                done, _ = wait(pending, return_when=FIRST_COMPLETED)
+                completed = sorted(done, key=pending.__getitem__)
+                for future in completed:
+                    index = pending.pop(future)
+                    while len(results) <= index:
+                        results.append(None)
+                    results[index] = future.result()
+                    try:
+                        task = next(iterator)
+                    except StopIteration:
+                        continue
+                    pending[pool.submit(function, task)] = next_index
+                    next_index += 1
+        except BaseException:
+            for future in pending:
+                future.cancel()
+            raise
     return results
 
 
@@ -168,7 +174,12 @@ def _mbar_bootstrap_draw(task):
 
 
 def _resolve_bootstrap_workers(requested, bootstrap):
-    """Resolve the bounded worker count for independent bootstrap draws."""
+    """Validate and resolve the configured worker count.
+
+    ``None`` deliberately means one worker. Parallel dispatch is opt-in so
+    existing workflows keep their serial behavior unless they configure an
+    explicit worker count.
+    """
     if requested is not None:
         if (
             isinstance(requested, (bool, np.bool_))
@@ -176,13 +187,48 @@ def _resolve_bootstrap_workers(requested, bootstrap):
             or requested < 1
         ):
             raise ValueError("bootstrap_workers must be a positive integer or None")
-        return min(int(requested), int(bootstrap)) if bootstrap else 1
-    # Small jobs are faster and easier to debug in-process. The default still
-    # parallelizes the long production/post-processing runs that motivated this
-    # path (typically 20-200 MBAR draws) without creating one worker per draw.
-    if bootstrap < 16:
-        return 1
-    return min(int(bootstrap), max(1, min(4, os.cpu_count() or 1)))
+        return int(requested)
+    return 1
+
+
+def _available_memory_bytes():
+    """Return an approximate amount of currently available system memory."""
+    try:
+        page_size = int(os.sysconf("SC_PAGE_SIZE"))
+        available_pages = int(os.sysconf("SC_AVPHYS_PAGES"))
+        if page_size > 0 and available_pages > 0:
+            return page_size * available_pages
+    except (AttributeError, OSError, TypeError, ValueError):
+        pass
+    try:
+        with open("/proc/meminfo", encoding="ascii") as handle:
+            for line in handle:
+                if line.startswith("MemAvailable:"):
+                    return int(line.split()[1]) * 1024
+    except (OSError, ValueError, IndexError):
+        pass
+    return None
+
+
+def _cap_bootstrap_workers(requested, bootstrap, u_nbytes, available_memory=None):
+    """Apply a conservative memory cap to the configured worker count.
+
+    Fancy indexing ``u[:, indices]`` creates a per-draw copy. The estimate of
+    four copies of ``u`` also covers the Newton solver's temporary arrays.
+    Half of available memory is reserved for those copies and the rest of the
+    analysis process.
+    """
+    configured = min(int(requested), int(bootstrap)) if bootstrap else 1
+    if configured <= 1 or u_nbytes <= 0:
+        return configured
+    if available_memory is None:
+        available_memory = _available_memory_bytes()
+    if available_memory is None:
+        return configured
+    budget = max(1, int(available_memory) // 2)
+    per_draw = max(1, int(4 * u_nbytes))
+    memory_workers = max(1, budget // per_draw)
+    return min(configured, memory_workers)
 
 
 def _log_free_energy(x, fit, edges, beta, min_count):
@@ -341,12 +387,16 @@ def mbar_rate_pmf(
 
     compare_ui adds a cheap Gaussian-UI calculation on the *same* bootstrap
     draws, exposing paired estimator differences without a second MBAR solve.
-    ``bootstrap_workers`` bounds a shared-memory thread pool used for the
-    independent MBAR draws. ``None`` selects a conservative automatic count
-    for larger jobs; ``1`` keeps the serial implementation. The coordinator
-    still generates circular-block indices in the original seeded order, so
-    serial and parallel runs consume identical resamples. Numerical convergence
-    is not physical or sampling convergence.
+    ``bootstrap_workers`` bounds a thread pool used for the independent MBAR
+    draws. ``None`` (the default) and ``1`` keep the serial implementation;
+    an explicit value greater than one opts into parallel dispatch. The large
+    umbrella-potential array is shared read-only between threads, but each
+    draw's ``u[:, indices]`` fancy-index operation and solver temporaries are
+    copied. The requested worker count is therefore capped by a conservative
+    estimate of available memory. The coordinator still generates
+    circular-block indices in the original seeded order, so serial and
+    parallel runs consume identical resamples. Numerical convergence is not
+    physical or sampling convergence.
     """
     if measure != "rate_flux":
         raise ValueError("mbar_rate_pmf requires samples in the rate_flux measure")
@@ -406,7 +456,9 @@ def mbar_rate_pmf(
             raise ValueError(name + " must be an integer >= " + str(minimum))
     if bootstrap == 1:
         raise ValueError("bootstrap must be zero or >=2")
-    bootstrap_workers = _resolve_bootstrap_workers(bootstrap_workers, bootstrap)
+    workers_requested = _resolve_bootstrap_workers(bootstrap_workers, bootstrap)
+    bootstrap_workers = min(workers_requested, int(bootstrap)) if bootstrap else 1
+    warnings = []
     if xi_star is not None and not np.isfinite(xi_star):
         raise ValueError("xi_star must be finite")
     for value, name in ((min_weight_ess, "min_weight_ess"),
@@ -463,6 +515,27 @@ def mbar_rate_pmf(
         stiffness[representatives, None, None],
         beta,
     )
+    baseline_workers = bootstrap_workers
+    available_memory = (
+        _available_memory_bytes() if baseline_workers > 1 else None
+    )
+    bootstrap_workers = _cap_bootstrap_workers(
+        workers_requested,
+        bootstrap,
+        u.nbytes,
+        available_memory=available_memory,
+    )
+    if bootstrap_workers < baseline_workers and available_memory is not None:
+        per_draw = max(1, int(4 * u.nbytes))
+        reserved_memory = max(1, int(available_memory) // 2)
+        worker_warning = (
+            "MBAR bootstrap workers reduced from "
+            f"{baseline_workers} to {bootstrap_workers} by the estimated "
+            f"memory budget ({per_draw} bytes per draw; "
+            f"{reserved_memory} bytes reserved)."
+        )
+        warnings.append(worker_warning)
+        _warnings.warn(worker_warning, RuntimeWarning, stacklevel=2)
     fit = _solve_mbar(u, fit_counts, overlap_threshold=overlap_threshold,
                      return_state_weights=False, **options)
     connected = len(np.unique(fit.components)) == 1
@@ -470,7 +543,6 @@ def mbar_rate_pmf(
         x, fit, edges, beta, min_count
     )
     free = absolute.copy()
-    warnings = []
     reason = None
     search_endpoints = None
     if not fit.converged:
@@ -684,7 +756,8 @@ def mbar_rate_pmf(
         if bootstrap_workers == 1:
             results = [_mbar_bootstrap_draw(task) for task in tasks()]
         else:
-            with threadpool_limits(limits=1, user_api="blas"):
+            blas_threads = max(1, (os.cpu_count() or 1) // bootstrap_workers)
+            with threadpool_limits(limits=blas_threads, user_api="blas"):
                 results = _ordered_thread_map(
                     _mbar_bootstrap_draw, tasks(), bootstrap_workers
                 )
@@ -860,6 +933,7 @@ def mbar_rate_pmf(
         },
         "bootstrap": {
             "requested": int(bootstrap),
+            "workers_requested": int(workers_requested),
             "workers": int(bootstrap_workers),
             "backend": "thread" if bootstrap_workers > 1 else "serial",
             "attempted": len(records),
