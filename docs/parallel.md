@@ -199,10 +199,20 @@ a collision trajectory. Requested N is the total for the whole job: the first
 production thermostat is disabled.
 
 Parent RNG streams derive from the global seed and parent ID; collision sampling
-streams derive from the global trajectory ID. Checkpoints atomically save parent
-q/p, RNG, thermalization progress, pending child, child q/p, classification persistence
-and completion records. Completed trajectories are counted once after interruption;
-resuming a terminal checkpoint does not advance an extra step.
+streams derive from the global trajectory ID. Each `checkpoints/parent-*.npz`
+contains the parent q/p, RNG, thermalization progress, pending child, a compact
+trajectory allocation, and a committed record count plus digest. Completed
+trajectory records are appended to `checkpoints/parent-*.records.jsonl`; the
+checkpoint authenticates the committed prefix and discards any uncommitted tail
+after a crash. Existing v1 parent checkpoints with embedded records migrate on
+resume. Per-trajectory launches, classification persistence and propagation
+checkpoints remain separate. Completed trajectories are counted once after
+interruption; resuming a terminal checkpoint does not advance an extra step.
+
+The on-disk `results/summary.json` contains aggregate counts, rates and
+uncertainty intervals, not the full trajectory list. Complete metadata is in
+`results/trajectories.csv` (nested fields are JSON-encoded cells). The
+`run_drpmd` Python return value still includes `records` for compatibility.
 
 With explicit `sampling.parents`, CPU workers or MPI G/B layouts can change while
 preserving parent ownership and physical settings. If omitted, `parents` defaults to

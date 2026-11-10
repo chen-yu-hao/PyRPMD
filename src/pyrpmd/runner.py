@@ -647,7 +647,11 @@ def run_resolved(config, system, *, output=None, resume=False, init_from=None, i
             from .warm_start import report
 
             result["warm_start"] = report(config)
-        write_json(Path(target) / "results" / "summary.json", result)
+        # dRPMD returns records for API compatibility, but persists the full
+        # table separately so the run's summary stays bounded in size.
+        stored = ({key: value for key, value in result.items() if key != "records"}
+                  if config["task"] == "drpmd" else result)
+        write_json(Path(target) / "results" / "summary.json", stored)
     return result
 
 
