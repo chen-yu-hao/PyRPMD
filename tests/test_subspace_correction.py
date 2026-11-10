@@ -1,3 +1,4 @@
+from scipy.integrate import trapezoid
 """Exact 1-3D subspace rates, matched RPMD rates and the correction factor."""
 
 import json
@@ -454,7 +455,7 @@ def test_constant_curvature_sct_mass_and_arc_transform():
     assert model.provenance["effective_mass_ratio_mean"] == pytest.approx(expected, rel=3e-3)
     tau = np.asarray(model.provenance["curvature_tau"])
     sigma_used = np.asarray(model.provenance["curvature_sigma"])
-    assert tau[-1] - tau[0] == pytest.approx(np.trapz(np.sqrt(ratio), sigma_used), rel=1e-12)
+    assert tau[-1] - tau[0] == pytest.approx(trapezoid(np.sqrt(ratio), sigma_used), rel=1e-12)
     assert model.masses.tolist() == [1.0]
     assert model.provenance["coordinate_transform"] == "dτ=sqrt(mu_eff/mu)dσ"
 
@@ -480,3 +481,24 @@ def test_sct_reports_large_curvature_truncation_and_validates_option():
     with pytest.raises(ValueError, match="curvature"):
         project_path_subspace(potential, gradient, path, [1.0, 1.0],
                               np.linspace(0.0, 2.0, 41), environment="frozen", curvature="large")
+
+
+def test_sct_effective_mass_never_exceeds_path_mass():
+    """A steep d tbar/d sigma would give exp(...) > 1; SCT caps mu_eff at mu."""
+    from pyrpmd.analysis import project_path_subspace
+
+    def potential(x):
+        s, y = x
+        w = 0.05 + 0.2 / np.cosh(s / 0.4) ** 2
+        return 0.5 * w**2 * (y - 0.3 * np.tanh(s)) ** 2
+
+    def gradient(x):
+        h = 1e-5
+        return np.array([(potential(x + d) - potential(x - d)) / (2 * h) for d in np.eye(2) * h])
+
+    path = np.column_stack([np.linspace(-3, 3, 241), 0.3 * np.tanh(np.linspace(-3, 3, 241))])
+    model = project_path_subspace(potential, gradient, path, [1.0, 1.0], np.linspace(0.2, 6.0, 60),
+                                  curvature="small", dividing_surface=3.0, reactant_reference=1.0)
+    ratio = np.asarray(model.provenance["curvature_mass_ratio"])
+    assert np.all(ratio <= 1.0 + 1e-12)
+    assert model.provenance["effective_mass_capped_points"] > 0  # the cap is active here
