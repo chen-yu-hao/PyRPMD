@@ -152,3 +152,27 @@ def test_grouped_fes_parallel_bootstrap_matches_serial():
     for key in ("free_energy","standard_error","bootstrap_valid_per_bin"):
         np.testing.assert_array_equal(serial[key],parallel[key])
     assert serial["bootstrap_diagnostics"]==parallel["bootstrap_diagnostics"]
+
+
+def test_existing_process_executor_can_deserialize_bootstrap_tasks():
+    import subprocess
+    import sys
+    import textwrap
+    script=textwrap.dedent("""
+        import numpy as np
+        from pyrpmd.analysis.fes import mbar_rate_pmf
+        from pyrpmd.parallel import TaskExecutor
+        rng=np.random.default_rng(53)
+        centers=[.2,.5,.8]
+        samples=[rng.normal(c,.2,200) for c in centers]
+        options=dict(centers=centers,stiffness=8.,beta=1.,bins=np.linspace(-.5,1.5,12),
+                     reference=.2,xi_star=.8,bootstrap=4,seed=42,min_count=1,
+                     min_weight_ess=None,min_endpoint_ess=None,max_center_displacement_sigma=None)
+        serial=mbar_rate_pmf(samples,bootstrap_workers=1,**options)
+        executor=TaskExecutor({'backend':'process','trajectory_workers':2,'threads_per_rank':1})
+        result=mbar_rate_pmf(samples,bootstrap_workers=2,bootstrap_executor=executor,**options)
+        np.testing.assert_array_equal(serial['pmf_bootstrap_barriers'],result['pmf_bootstrap_barriers'])
+        assert serial['bootstrap']['draws']==result['bootstrap']['draws']
+        assert result['bootstrap']['backend']=='executor'
+    """)
+    subprocess.run([sys.executable,"-c",script],check=True,capture_output=True,text=True,timeout=60)

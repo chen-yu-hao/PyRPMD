@@ -634,7 +634,9 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options, executor=Non
                 ),
                 bootstrap_total_cores=pmf_options.get("bootstrap_total_cores"),
                 require_block_support=bool(config.get("rate", {}).get("auto")),
-                bootstrap_executor=executor,
+                # This function runs on root only. A collective MPI executor
+                # requires every rank to enter map(), unlike local pools.
+                bootstrap_executor=(executor if config.get("parallel", {}).get("backend") != "mpi" else None),
                 min_weight_ess=pmf_options.get("min_weight_ess"),
                 min_endpoint_ess=pmf_options.get("min_endpoint_ess"),
                 max_center_displacement_sigma=pmf_options.get("max_center_displacement_sigma"),

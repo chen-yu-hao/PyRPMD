@@ -36,7 +36,7 @@ from .rate_support import (
     weight_diagnostics,
     window_anomalies,
 )
-from .umbrella import umbrella_integration, umbrella_reduced_potentials
+from .umbrella import umbrella_integration
 
 
 def _ordered_thread_map(function, tasks, max_workers):
