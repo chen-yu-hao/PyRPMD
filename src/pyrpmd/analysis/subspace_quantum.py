@@ -48,7 +48,7 @@ from typing import Any, Mapping
 
 import numpy as np
 from scipy.linalg import eigh, schur
-from scipy.linalg.lapack import ztrsyl
+from .subspace_linalg import triangular_sylvester
 from scipy.special import ive
 
 from .subspace_model import SubspaceModel
@@ -253,7 +253,8 @@ def _slice_density(model, operators, keep, energies, vectors, beta, shift):
                   "reference_line": float(axis0[row]), "slice_points": int(on_line.sum())}
 
 
-def _dense_rate(model, operators, eps, beta, shift, *, keep=None, energy_floor=None, normalization="default"):
+def _dense_rate(model, operators, eps, beta, shift, *, keep=None, energy_floor=None,
+                normalization="default", sylvester_solver="auto", sylvester_block_size=64):
     keep = np.arange(operators.size) if keep is None else np.asarray(keep)
     hamiltonian = operators.dense_hamiltonian(keep if len(keep) < operators.size else None)
     energies, vectors = eigh(hamiltonian)
@@ -281,7 +282,8 @@ def _dense_rate(model, operators, eps, beta, shift, *, keep=None, energy_floor=N
     del commutator
     rhs = rhs @ unitary
     rhs *= -1.0
-    solution, scale, info = ztrsyl(triangular, triangular, rhs, trana="C", tranb="N", isgn=-1)
+    solution, scale, info, solve_diagnostics = triangular_sylvester(
+        triangular, rhs, solver=sylvester_solver, block_size=sylvester_block_size)
     del rhs, triangular
     if info < 0:
         raise RuntimeError(f"ztrsyl failed with info={info}")
@@ -307,6 +309,7 @@ def _dense_rate(model, operators, eps, beta, shift, *, keep=None, energy_floor=N
         "retained_points": int(len(keep)),
         "sylvester_scale": float(scale),
         "sylvester_info": int(info),
+        "sylvester_execution": solve_diagnostics,
         "flux_side_t0": side_check,
         "lowest_levels": (energies[:6]).tolist(),
         "energy_floor": energy_floor,
@@ -569,6 +572,9 @@ def exact_quantum_rate(
     normalization: str = "default",
     energy_floor: float | None = None,
     truncation_energy: Any = None,
+    sylvester_solver: str = "auto",
+    sylvester_block_size: int = 64,
+    max_memory_mb: float | None = None,
 ) -> QuantumRateResult:
     """Exact thermal rate constant of ``model`` at inverse temperature ``beta``.
 
@@ -613,6 +619,12 @@ def exact_quantum_rate(
         dividing-surface lines (the smaller), in energy units -- compare it
         with ``6 hbar omega`` of the stiffest transverse mode.
     """
+    from .subspace_native import positive_integer
+    sylvester_block_size = positive_integer(sylvester_block_size, "sylvester_block_size")
+    if sylvester_solver not in ("auto", "lapack", "blocked"):
+        raise ValueError("sylvester_solver must be auto, lapack or blocked")
+    if max_memory_mb is not None and (not np.isfinite(max_memory_mb) or max_memory_mb <= 0):
+        raise ValueError("max_memory_mb must be finite and positive")
     if not isinstance(model, SubspaceModel):
         raise TypeError("model must be a SubspaceModel")
     beta = float(beta)
@@ -636,7 +648,8 @@ def exact_quantum_rate(
     eps = eps_axis.reshape((-1,) + (1,) * (model.dimension - 1))
     shift = float(operators.potential.min())
     if absorber is not None:
-        eps = np.asarray(absorber(model.grid_points().reshape(-1, model.dimension)), dtype=float).reshape(model.shape)
+        raw_absorber = absorber(model.grid_points().reshape(-1, model.dimension)) if callable(absorber) else absorber
+        eps = np.asarray(raw_absorber, dtype=float).reshape(model.shape)
         if not np.isfinite(eps).all() or np.any(eps < 0):
             raise ValueError("absorber must return finite nonnegative values")
     if normalization not in ("default", "slice"):
@@ -653,8 +666,17 @@ def exact_quantum_rate(
     if method == "sylvester":
         if retained > max(dense_limit, 6000):
             raise ValueError("grid too large for the dense Sylvester route")
+        # Conservative working-array estimate, including blocked RHS/solution
+        # and real eigensystem arrays. Vendor LAPACK workspaces can add more.
+        estimated_memory_mb = 128.0 * retained * retained / (1024.0 ** 2)
+        if max_memory_mb is not None and estimated_memory_mb > max_memory_mb:
+            raise MemoryError(f"dense subspace working-array estimate {estimated_memory_mb:.1f} MiB "
+                              f"exceeds max_memory_mb={max_memory_mb}")
         flux, partition, info = _dense_rate(model, operators, eps, beta, shift, keep=keep,
-                                            energy_floor=energy_floor, normalization=normalization)
+                                            energy_floor=energy_floor, normalization=normalization,
+                                            sylvester_solver=sylvester_solver,
+                                            sylvester_block_size=sylvester_block_size)
+        info["working_array_estimate_mb"] = estimated_memory_mb
     else:
         if keep is not None or energy_floor is not None or normalization != "default":
             raise ValueError("truncation_energy, energy_floor and slice normalization need the dense route")
@@ -682,7 +704,7 @@ def exact_quantum_rate(
         "energy_shift": shift,
         "cap_width": width if absorber is None else None,
         "cap_strength": strength if absorber is None else None,
-        "absorber": "axis-0 ends" if absorber is None else "callable",
+        "absorber": "axis-0 ends" if absorber is None else ("callable" if callable(absorber) else "grid"),
         "cap_power": int(cap_power),
         "model": model.describe(),
         "units": "axis-0 length per time" if model.reactant == "asymptotic" else "per time",

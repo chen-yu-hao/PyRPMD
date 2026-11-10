@@ -124,6 +124,7 @@ def subspace_correction(
     quantum_options: Mapping[str, Any] | None = None,
     rpmd_options: Mapping[str, Any] | None = None,
     rpmd_model: SubspaceModel | None = None,
+    execution: Mapping[str, Any] | None = None,
 ) -> SubspaceCorrection:
     """Compute ``C_S = k_QM(H_S) / k_RPMD(H_S)`` for one temperature.
 
@@ -133,13 +134,43 @@ def subspace_correction(
     a finer grid for the ring-polymer spline; the quantum DVR uses ``model``,
     whose nodes must be a subset of it.
     """
-    quantum = exact_quantum_rate(model, beta, **dict(quantum_options or {}))
-    if rpmd_model is not None:
-        if (rpmd_model.dimension != model.dimension or rpmd_model.dividing_surface != model.dividing_surface
-                or rpmd_model.reactant_reference != model.reactant_reference):
-            raise ValueError("rpmd_model must describe the same subspace, surface and reference")
-    rpmd = ring_polymer_rate(rpmd_model if rpmd_model is not None else model, beta, nbeads,
-                             **dict(rpmd_options or {}))
+    target = _matched_rpmd_model(model, rpmd_model)
+    if execution is None:
+        quantum = exact_quantum_rate(model, beta, **dict(quantum_options or {}))
+        rpmd = ring_polymer_rate(target, beta, nbeads, **dict(rpmd_options or {}))
+    else:
+        from .subspace_execution import execute_rate_tasks
+        quantum, rpmd = execute_rate_tasks([{
+            "model": model, "rpmd_model": target, "beta": beta, "nbeads": nbeads,
+            "quantum_options": quantum_options, "rpmd_options": rpmd_options,
+        }], execution)[0]
+    return _assemble_correction(model, beta, nbeads, quantum, rpmd)
+
+
+def _matched_rpmd_model(model, rpmd_model):
+    if rpmd_model is None:
+        return model
+    if (rpmd_model.dimension != model.dimension or rpmd_model.dividing_surface != model.dividing_surface
+            or rpmd_model.reactant_reference != model.reactant_reference
+            or rpmd_model.reactant != model.reactant or not np.array_equal(rpmd_model.masses, model.masses)):
+        raise ValueError("rpmd_model must describe the same subspace, masses, surface and normalization")
+    if model.function is None and rpmd_model.function is None:
+        indices = []
+        for coarse, fine in zip(model.axes, rpmd_model.axes):
+            right = np.clip(np.searchsorted(fine, coarse), 0, len(fine) - 1)
+            left = np.maximum(right - 1, 0)
+            index = np.where(abs(fine[left] - coarse) < abs(fine[right] - coarse), left, right)
+            if not np.allclose(fine[index], coarse, rtol=0, atol=1e-10 * np.min(np.diff(fine))):
+                raise ValueError("quantum model axes must be a subset of rpmd_model axes")
+            indices.append(index)
+        if not np.allclose(rpmd_model.values[np.ix_(*indices)], model.values, rtol=1e-12, atol=1e-14):
+            raise ValueError("quantum and RPMD models must share the same potential values")
+    return rpmd_model
+
+
+def _assemble_correction(model, beta, nbeads, quantum, rpmd):
+    if not np.isclose(quantum.beta, beta, rtol=1e-12, atol=0) or not np.isclose(rpmd.beta, beta, rtol=1e-12, atol=0) or rpmd.nbeads != nbeads:
+        raise ValueError("subspace solver results do not match the requested beta and beads")
     if quantum.rate <= 0 or rpmd.rate <= 0:
         raise FloatingPointError("subspace rates must be positive to form a correction factor")
     quantum_spread = float(quantum.diagnostics.get("relative_extrapolation_spread", 0.0) or 0.0)

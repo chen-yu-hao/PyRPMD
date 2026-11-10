@@ -30,7 +30,7 @@ import numpy as np
 
 from .centroid_path import mean_path_from_rate_run, rigid_body_modes
 from .subspace_correction import (SubspaceCorrection, correct_rate_run, nested_subspace_sensitivity,
-                                  subspace_correction)
+                                  subspace_correction, _assemble_correction, _matched_rpmd_model)
 from .subspace_model import (_vibrational_complement, assemble_reaction_path, path_curvature,
                              project_linear_subspace, project_path_subspace, relaxed_path)
 from .subspace_quantum import _json_safe, sinc_dvr_kinetic
@@ -46,6 +46,7 @@ DEFAULTS = {
                 "reference_kt": 0.3, "product_drop_kt": 15.0},
     "rpmd": {"nbeads": None, "windows": 48, "walkers": 32, "burn_in": 200, "sweeps": 400,
              "trajectories": 512, "seed": 0},
+    "execution": {"backend": "serial", "workers": 1, "rpmd_threads": 1, "quantum_threads": 1},
     "output": {"directory": None, "reuse": False},
 }
 
@@ -431,8 +432,7 @@ def _rpmd_options(options, run):
     return rpmd, int(options.get("nbeads") or run.nbeads)
 
 
-def run_subspace_pipeline(specification) -> dict:
-    """Run the full correction from a mapping or a TOML/JSON file."""
+def _pipeline_options(specification):
     base = None
     if isinstance(specification, (str, Path)):
         path = Path(specification)
@@ -447,6 +447,14 @@ def run_subspace_pipeline(specification) -> dict:
     else:
         spec = dict(specification)
     options = _merge(DEFAULTS, spec)
+    from .subspace_execution import execution_options
+    options["execution"] = execution_options(options["execution"])
+    if not isinstance(options["output"].get("reuse"), bool):
+        raise ValueError("output.reuse must be boolean")
+    return options, base
+
+
+def _prepare_pipeline(options, base):
     source = options["source"].get("rate_run")
     if not source:
         raise ValueError("source.rate_run is required")
@@ -454,6 +462,16 @@ def run_subspace_pipeline(specification) -> dict:
     if base is not None and not source.is_absolute():
         source = base / source
     run = load_rate_run(source)
+    try:
+        return _prepare_models(run, options, base)
+    finally:
+        close = getattr(run.provider, "close", None)
+        if close is not None:
+            close()
+
+
+def _prepare_models(run, options, base):
+    from .subspace_execution import freeze_quantum_options, snapshot_model
     out_dir = options["output"].get("directory")
     out_dir = Path(out_dir) if out_dir else run.root / "subspace"
     if base is not None and not out_dir.is_absolute():
@@ -475,41 +493,49 @@ def run_subspace_pipeline(specification) -> dict:
     dimensions = [1, 2] if requested == "auto" and verdict == 2 else ([1] if requested == "auto" else
                                                                      ([int(requested)] if np.ndim(requested) == 0 else
                                                                       [int(d) for d in requested]))
+    if not dimensions or any(d not in (1, 2) for d in dimensions) or len(set(dimensions)) != len(dimensions):
+        raise ValueError("pipeline dimensions must be a nonempty subset of [1, 2]")
     rpmd_options, nbeads = _rpmd_options(options["rpmd"], run)
-    corrections, models = {}, {}
-    if options["output"].get("reuse"):
-        # Re-select and re-apply from saved C_S records (same temperature)
-        # without recomputing the subspace rates.
-        previous = {}
-        if (out_dir / "subspace_pipeline.json").is_file():
-            previous = json.loads((out_dir / "subspace_pipeline.json").read_text()).get("models", {})
-        for d in list(dimensions):
-            record = out_dir / f"C_S_{d}d.json"
-            if record.is_file():
-                saved = SubspaceCorrection.read(record)
-                if np.isclose(saved.beta, run.beta, rtol=1e-9, atol=0):
-                    corrections[d] = saved
-                    models[d] = previous.get(str(d), {"reused": True})
-                    dimensions.remove(d)
+    requests, models = [], {}
+    quantum_execution = {k: options["quantum"][k] for k in
+                         ("sylvester_solver", "sylvester_block_size", "max_memory_mb") if k in options["quantum"]}
+    environment = {"environment": options["subspace"].get("environment", "adiabatic")}
     if 1 in dimensions:
-        environment = {"environment": options["subspace"].get("environment", "adiabatic")}
-        model1, quantum1, info1 = path_model(run, path, {**options["quantum"], **environment})
-        corrections[1] = subspace_correction(model1, run.beta, nbeads, quantum_options=quantum1,
-                                             rpmd_options=rpmd_options)
-        corrections[1].write(out_dir / "C_S_1d.json")
-        models[1] = info1
+        model, quantum, info = path_model(run, path, {**options["quantum"], **environment})
+        requests.append({"model": snapshot_model(model), "beta": run.beta, "nbeads": nbeads,
+                         "quantum_options": {**freeze_quantum_options(model, quantum), **quantum_execution},
+                         "rpmd_options": rpmd_options})
+        models[1] = info
     if 2 in dimensions:
         candidate = None
         if isinstance(sampled_cw, dict) and "candidate_direction" in sampled_cw and sampled_max >= static_cw["maximum"]:
             candidate = np.asarray(sampled_cw["candidate_direction"])
         if candidate is None:
             candidate = np.asarray(static_cw["candidate_direction"])
-        environment = {"environment": options["subspace"].get("environment", "adiabatic")}
-        model2, quantum2, info2, rpmd_model2 = plane_model(run, path, candidate, {**options["quantum"], **environment})
-        corrections[2] = subspace_correction(model2, run.beta, nbeads, quantum_options=quantum2,
-                                             rpmd_options=rpmd_options, rpmd_model=rpmd_model2)
-        corrections[2].write(out_dir / "C_S_2d.json")
-        models[2] = info2
+        model, quantum, info, rpmd_model = plane_model(run, path, candidate, {**options["quantum"], **environment})
+        _matched_rpmd_model(model, rpmd_model)
+        requests.append({"model": snapshot_model(model), "rpmd_model": snapshot_model(rpmd_model),
+                         "beta": run.beta, "nbeads": nbeads,
+                         "quantum_options": {**freeze_quantum_options(model, quantum), **quantum_execution},
+                         "rpmd_options": rpmd_options})
+        models[2] = info
+    return {"requests": requests, "models": models, "options": options, "out_dir": str(out_dir),
+            "run_root": str(run.root), "beta": run.beta, "nbeads": nbeads, "xi_star": run.xi_star,
+            "path_info": path_info, "sampled_cw": sampled_cw, "static_cw": static_cw, "verdict": verdict}
+
+
+def _finish_pipeline(plan, results):
+    from ..io import atomic_write_text
+    options, models = plan["options"], plan["models"]
+    out_dir = Path(plan["out_dir"])
+    verdict, path_info = plan["verdict"], plan["path_info"]
+    sampled_cw, static_cw = plan["sampled_cw"], plan["static_cw"]
+    corrections = {}
+    for request, (quantum, rpmd) in zip(plan["requests"], results, strict=True):
+        model = request["model"]
+        correction = _assemble_correction(model, plan["beta"], plan["nbeads"], quantum, rpmd)
+        corrections[model.dimension] = correction
+        atomic_write_text(out_dir / f"C_S_{model.dimension}d.json", json.dumps(correction.to_dict(), indent=2))
     sensitivity = nested_subspace_sensitivity(list(corrections.values())) if len(corrections) > 1 else None
     if sensitivity is None:
         chosen, reason = max(corrections), "only dimension computed"
@@ -519,10 +545,10 @@ def run_subspace_pipeline(specification) -> dict:
         # Undetermined nested step: fall back on curvature x width.
         chosen = verdict if verdict in corrections else max(corrections)
         reason = "nested sensitivity undetermined; curvature x width verdict"
-    corrected = correct_rate_run(run.root, corrections[chosen], output=out_dir / "rate_quantum_corrected.json")
+    corrected = correct_rate_run(plan["run_root"], corrections[chosen], output=out_dir / "rate_quantum_corrected.json")
     report = {
         "schema": "pyrpmd.subspace_pipeline", "schema_version": 1,
-        "rate_run": str(run.root), "beta": run.beta, "nbeads": nbeads, "xi_star": run.xi_star,
+        "rate_run": plan["run_root"], "beta": plan["beta"], "nbeads": plan["nbeads"], "xi_star": plan["xi_star"],
         "path": path_info, "curvature_width_sampled": sampled_cw, "curvature_width_path": static_cw,
         "recommended_dimension_from_curvature_width": verdict, "dimensions_computed": sorted(corrections),
         "models": models, "corrections": {str(d): c.to_dict() for d, c in corrections.items()},
@@ -532,8 +558,33 @@ def run_subspace_pipeline(specification) -> dict:
         "physical_converged": False,
     }
     report = _json_safe(report)
-    (out_dir / "subspace_pipeline.json").write_text(json.dumps(report, indent=2, default=str))
+    atomic_write_text(out_dir / "subspace_pipeline.json", json.dumps(report, indent=2, default=str))
     return report
+
+
+def run_subspace_pipeline(specification) -> dict:
+    """Build models on root, distribute solver tasks, and publish on root only.
+
+    All ranks participate when execution.backend='mpi'; do not wrap this entry
+    point in root_call. Without MPI the serial/process API is unchanged.
+    """
+    from ..parallel.execution import _optional_world, root_call
+    from .subspace_execution import execute_rate_tasks
+    options, base = root_call(_pipeline_options, specification)
+    world = _optional_world()
+    backend = options["execution"]["backend"]
+    if world is not None and world.Get_size() > 1 and backend != "mpi":
+        raise ValueError("multi-rank subspace execution requires execution.backend='mpi'")
+    if backend == "mpi" and world is None:
+        raise ValueError("execution.backend='mpi' requires an MPI launch")
+    plan = root_call(_prepare_pipeline, options, base)
+    settings = dict(options["execution"])
+    settings.setdefault("cache_directory", None)
+    if settings["cache_directory"] is None:
+        settings["cache_directory"] = str(Path(plan["out_dir"]) / "solver-cache")
+    settings["reuse"] = settings["reuse"] or options["output"]["reuse"]
+    results = execute_rate_tasks(plan["requests"], settings)
+    return root_call(_finish_pipeline, plan, results)
 
 
 __all__ = ["RateRun", "build_path", "load_rate_run", "path_model", "plane_model", "run_subspace_pipeline"]

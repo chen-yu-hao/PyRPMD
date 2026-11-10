@@ -63,6 +63,13 @@ if os.environ.get("PYRPMD_NO_NATIVE", "0") != "1":
             extra_link_args=link_args,
         )
     )
+    extensions.append(
+        Extension(
+            "pyrpmd._subspace_native", ["native/subspace.cpp"], language="c++",
+            depends=["native/ring_fft.h"],
+            extra_compile_args=compile_args, extra_link_args=link_args,
+        )
+    )
 setup(
     ext_modules=extensions,
     license_files=["LICENSE", "THIRD_PARTY_NOTICES.md", "native/thermal-NOTICE.md",
@@ -72,4 +79,3 @@ setup(
         ("share/pyrpmd/examples", ["native/examples/harmonic_pes.c", "native/examples/periodic_cosine_pes.c"]),
     ],
 )
-
