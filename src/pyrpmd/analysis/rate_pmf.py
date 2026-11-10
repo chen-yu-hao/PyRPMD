@@ -6,7 +6,11 @@ It never changes the sampling measure or infers physical convergence.
 
 from __future__ import annotations
 
+from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
+import os
+
 import numpy as np
+from threadpoolctl import threadpool_limits
 
 from .fes_statistics import (
     CV_CORRELATION_OBSERVABLES,
@@ -29,6 +33,156 @@ from .rate_support import (
     window_anomalies,
 )
 from .umbrella import umbrella_integration, umbrella_reduced_potentials
+
+
+def _ordered_thread_map(function, tasks, max_workers):
+    """Run independent analysis tasks with bounded, input-ordered results.
+
+    ``Executor.map`` eagerly consumes its iterable. Bootstrap tasks can carry
+    large index arrays, so eager submission would retain every draw in memory.
+    Keep at most one task per worker in flight while still returning results in
+    draw order. This also lets the coordinator start consuming results before
+    all requested draws have been generated.
+    """
+    iterator = iter(tasks)
+    results = []
+    pending = {}
+    next_index = 0
+    with ThreadPoolExecutor(max_workers=max_workers) as pool:
+        while len(pending) < max_workers:
+            try:
+                task = next(iterator)
+            except StopIteration:
+                break
+            pending[pool.submit(function, task)] = next_index
+            next_index += 1
+        while pending:
+            done, _ = wait(pending, return_when=FIRST_COMPLETED)
+            completed = sorted(done, key=pending.__getitem__)
+            for future in completed:
+                index = pending.pop(future)
+                while len(results) <= index:
+                    results.append(None)
+                results[index] = future.result()
+                try:
+                    task = next(iterator)
+                except StopIteration:
+                    continue
+                pending[pool.submit(function, task)] = next_index
+                next_index += 1
+    return results
+
+
+def _mbar_bootstrap_draw(task):
+    """Evaluate one rate-PMF bootstrap draw.
+
+    The task is intentionally a module-level function so the hot loop has a
+    single implementation for serial and threaded execution. All large arrays
+    live in the shared context and are never copied between worker threads.
+    """
+    draw, indices, context = task
+    u = context["u"]
+    x = context["x"]
+    counts = context["fit_counts"]
+    record = {"draw": draw, "valid": False, "reason": None}
+    endpoints = barrier = curve = ui_barrier = None
+    ui_failure = None
+    try:
+        mb = context["solve_mbar"](
+            u[:, indices],
+            counts,
+            overlap_threshold=context["overlap_threshold"],
+            initial_free_energies=context["initial_free_energies"],
+            return_state_weights=False,
+            **context["solver_options"],
+        )
+        record["solver_residual"] = float(mb.residual)
+        if not mb.converged:
+            record["reason"] = "mbar_not_converged"
+        elif len(np.unique(mb.components)) != 1:
+            record["reason"] = "disconnected_overlap"
+        else:
+            xb = x[indices]
+            absolute, _, _, _, maskb = _log_free_energy(
+                xb,
+                mb,
+                context["edges"],
+                context["beta"],
+                context["min_count"],
+            )
+            rb, sb, record["reason"] = _rate_support(
+                context["grid"], maskb, context["reference"], context["xi_star"]
+            )
+            if record["reason"] is None:
+                rv, sv = _rate_value(absolute, rb), _rate_value(absolute, sb)
+                barrier = sv - rv
+                endpoints = [rv, sv]
+                curve = absolute - rv
+                record.update(
+                    valid=True,
+                    reference_free_energy_hartree=rv,
+                    surface_free_energy_hartree=sv,
+                    barrier_hartree=barrier,
+                )
+                if context["ui_ready"]:
+                    try:
+                        ui_curve, _ = context["integrate_ui"](
+                            [
+                                xb[start:stop]
+                                for start, stop in zip(
+                                    context["offsets"][:-1], context["offsets"][1:]
+                                )
+                            ],
+                            context["centers"],
+                            context["stiffness"],
+                            context["beta"],
+                            context["ui_grid"],
+                        )
+                        ui_barrier = float(
+                            np.interp(context["xi_star"], context["ui_grid"], ui_curve)
+                            - np.interp(context["reference"], context["ui_grid"], ui_curve)
+                        )
+                        record["ui_barrier_hartree"] = ui_barrier
+                    except (ValueError, FloatingPointError) as exc:
+                        ui_failure = {
+                            "draw": draw,
+                            "reason": "ui_fit_failed",
+                            "message": str(exc),
+                        }
+    except (FloatingPointError, np.linalg.LinAlgError, RuntimeError) as exc:
+        record["reason"] = "mbar_solver_error"
+        record["message"] = str(exc)
+    return {
+        "record": record,
+        "endpoints": endpoints,
+        "barrier": None if not record["valid"] else record["barrier_hartree"],
+        "curve": curve,
+        "ui_barrier": ui_barrier,
+        "ui_difference": (
+            None
+            if ui_barrier is None or not record["valid"]
+            else record["barrier_hartree"] - ui_barrier
+        ),
+        "ui_failure": ui_failure,
+    }
+
+
+def _resolve_bootstrap_workers(requested, bootstrap):
+    """Resolve the bounded worker count for independent bootstrap draws."""
+    if requested is not None:
+        if (
+            isinstance(requested, (bool, np.bool_))
+            or not isinstance(requested, (int, np.integer))
+            or requested < 1
+        ):
+            raise ValueError("bootstrap_workers must be a positive integer or None")
+        return min(int(requested), int(bootstrap)) if bootstrap else 1
+    # Small jobs are faster and easier to debug in-process. The default still
+    # parallelizes the long production/post-processing runs that motivated this
+    # path (typically 20-200 MBAR draws) without creating one worker per draw.
+    if bootstrap < 16:
+        return 1
+    return min(int(bootstrap), max(1, min(4, os.cpu_count() or 1)))
 
 
 def _log_free_energy(x, fit, edges, beta, min_count):
@@ -148,6 +302,7 @@ def mbar_rate_pmf(
     compare_ui=False,
     ui_points=401,
     solver_options=None,
+    bootstrap_workers=None,
     min_weight_ess=DEFAULT_MIN_WEIGHT_ESS,
     min_endpoint_ess=DEFAULT_MIN_ENDPOINT_ESS,
     max_center_displacement_sigma=DEFAULT_MAX_CENTER_DISPLACEMENT_SIGMA,
@@ -186,7 +341,12 @@ def mbar_rate_pmf(
 
     compare_ui adds a cheap Gaussian-UI calculation on the *same* bootstrap
     draws, exposing paired estimator differences without a second MBAR solve.
-    Numerical convergence is not physical or sampling convergence.
+    ``bootstrap_workers`` bounds a shared-memory thread pool used for the
+    independent MBAR draws. ``None`` selects a conservative automatic count
+    for larger jobs; ``1`` keeps the serial implementation. The coordinator
+    still generates circular-block indices in the original seeded order, so
+    serial and parallel runs consume identical resamples. Numerical convergence
+    is not physical or sampling convergence.
     """
     if measure != "rate_flux":
         raise ValueError("mbar_rate_pmf requires samples in the rate_flux measure")
@@ -246,6 +406,7 @@ def mbar_rate_pmf(
             raise ValueError(name + " must be an integer >= " + str(minimum))
     if bootstrap == 1:
         raise ValueError("bootstrap must be zero or >=2")
+    bootstrap_workers = _resolve_bootstrap_workers(bootstrap_workers, bootstrap)
     if xi_star is not None and not np.isfinite(xi_star):
         raise ValueError("xi_star must be finite")
     for value, name in ((min_weight_ess, "min_weight_ess"),
@@ -484,82 +645,62 @@ def mbar_rate_pmf(
     ui_draws, paired_mbar, differences, ui_failures = [], [], [], []
     rng = np.random.default_rng(seed)
     if ready:
-        for draw in range(int(bootstrap)):
-            indices = np.concatenate(
-                [
-                    _resample(np.arange(n), block, rng) + start
-                    for n, block, start in zip(counts, blocks, offsets[:-1])
-                ]
-            )
-            xb = x[indices]
-            record = {"draw": draw, "valid": False, "reason": None}
-            try:
-                mb = _solve_mbar(
-                    u[:, indices],
-                    fit_counts,
-                    overlap_threshold=overlap_threshold,
-                    initial_free_energies=fit.free_energies,
-                    return_state_weights=False,
-                    **options,
+        base_indices = [np.arange(n) for n in counts]
+        context = {
+            "u": u,
+            "x": x,
+            "fit_counts": fit_counts,
+            "overlap_threshold": overlap_threshold,
+            "initial_free_energies": fit.free_energies,
+            "solver_options": options,
+            "edges": edges,
+            "beta": beta,
+            "min_count": min_count,
+            "grid": grid,
+            "reference": reference,
+            "xi_star": xi_star,
+            "offsets": offsets,
+            "centers": centers,
+            "stiffness": stiffness,
+            "ui_ready": ui["ready"],
+            "ui_grid": ui_grid,
+            "solve_mbar": _solve_mbar,
+            "integrate_ui": _integrate_ui,
+        }
+
+        def tasks():
+            # Keep the existing single coordinator RNG stream and draw order.
+            # Only the expensive solve/histogram/UI work leaves the coordinator;
+            # at most one large index vector per worker is retained in memory.
+            for draw in range(int(bootstrap)):
+                indices = np.concatenate(
+                    [
+                        _resample(base, block, rng) + start
+                        for base, block, start in zip(base_indices, blocks, offsets[:-1])
+                    ]
                 )
-                record["solver_residual"] = float(mb.residual)
-                if not mb.converged:
-                    record["reason"] = "mbar_not_converged"
-                elif len(np.unique(mb.components)) != 1:
-                    record["reason"] = "disconnected_overlap"
-                else:
-                    ab, _, _, _, maskb = _log_free_energy(
-                        xb, mb, edges, beta, min_count
-                    )
-                    rb, sb, record["reason"] = _rate_support(
-                        grid, maskb, reference, xi_star
-                    )
-                    if record["reason"] is None:
-                        rv, sv = _rate_value(ab, rb), _rate_value(ab, sb)
-                        b = sv - rv
-                        record.update(
-                            valid=True,
-                            reference_free_energy_hartree=rv,
-                            surface_free_energy_hartree=sv,
-                            barrier_hartree=b,
-                        )
-                        endpoints.append([rv, sv])
-                        draws.append(b)
-                        curves.append(ab - rv)
-                        if ui["ready"]:
-                            try:
-                                ub, _ = _integrate_ui(
-                                    [
-                                        xb[start:stop]
-                                        for start, stop in zip(
-                                            offsets[:-1], offsets[1:]
-                                        )
-                                    ],
-                                    centers,
-                                    stiffness,
-                                    beta,
-                                    ui_grid,
-                                )
-                                uv = float(
-                                    np.interp(xi_star, ui_grid, ub)
-                                    - np.interp(reference, ui_grid, ub)
-                                )
-                                ui_draws.append(uv)
-                                paired_mbar.append(b)
-                                differences.append(b - uv)
-                                record["ui_barrier_hartree"] = uv
-                            except (ValueError, FloatingPointError) as exc:
-                                ui_failures.append(
-                                    {
-                                        "draw": draw,
-                                        "reason": "ui_fit_failed",
-                                        "message": str(exc),
-                                    }
-                                )
-            except (FloatingPointError, np.linalg.LinAlgError, RuntimeError) as exc:
-                record["reason"] = "mbar_solver_error"
-                record["message"] = str(exc)
+                yield draw, indices, context
+
+        if bootstrap_workers == 1:
+            results = [_mbar_bootstrap_draw(task) for task in tasks()]
+        else:
+            with threadpool_limits(limits=1, user_api="blas"):
+                results = _ordered_thread_map(
+                    _mbar_bootstrap_draw, tasks(), bootstrap_workers
+                )
+        for result in results:
+            record = result["record"]
             records.append(record)
+            if record["valid"]:
+                endpoints.append(result["endpoints"])
+                draws.append(result["barrier"])
+                curves.append(result["curve"])
+                if result["ui_barrier"] is not None:
+                    ui_draws.append(result["ui_barrier"])
+                    paired_mbar.append(result["barrier"])
+                    differences.append(result["ui_difference"])
+            if result["ui_failure"] is not None:
+                ui_failures.append(result["ui_failure"])
             if not record["valid"]:
                 failures.append(
                     {key: value for key, value in record.items() if key != "valid"}
@@ -719,6 +860,8 @@ def mbar_rate_pmf(
         },
         "bootstrap": {
             "requested": int(bootstrap),
+            "workers": int(bootstrap_workers),
+            "backend": "thread" if bootstrap_workers > 1 else "serial",
             "attempted": len(records),
             "valid": len(draws),
             "valid_fraction": len(draws) / bootstrap if bootstrap else None,
