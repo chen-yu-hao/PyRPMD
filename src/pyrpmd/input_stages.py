@@ -120,7 +120,7 @@ def _umbrella_analysis(d, raw):
     path = "umbrella.analysis"
     raw = _table(raw, path)
     _fields(raw, {"estimator", "integration_points", "bins", "ranges", "bootstrap_replicates",
-                  "seed", "min_count", "overlap_threshold", "max_grid_points"}, path)
+                  "bootstrap_workers", "seed", "min_count", "overlap_threshold", "max_grid_points"}, path)
     analysis = _table(d.get("analysis", {}), "analysis")
     rate = _table(d.get("rate", {}), "rate")
     if "estimator" in raw:
