@@ -353,6 +353,15 @@ def test_periodic_surface_rate_public_run_and_completed_resume(tmp_path):
     assert result["rate_estimate_s_inv"] > 0
     assert result["parent_configurations"] == 6
     assert result["child_pairs"] == 12
+    sampling, recrossing = job["sampling"], job["recrossing"]
+    expected_steps = (
+        len(job["umbrella"]["centers"]) * sampling["replicas"]
+        * (sampling["equilibration_steps"] + sampling["production_steps"])
+        + recrossing["parent_replicas"] * (recrossing["equilibration_steps"]
+          + recrossing["parent_samples"] * recrossing["parent_interval_steps"])
+        + 2 * result["child_pairs"] * recrossing["child_steps"])
+    assert result["propagation"]["python_steps"] == expected_steps
+    assert result["propagation"]["native_steps"] == 0
     assert result["rate_unit"] == "s^-1"
     assert not any("cm3" in key for key in result)
     assert result["converged"] is False

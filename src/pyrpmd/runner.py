@@ -56,6 +56,7 @@ def propagation_backend_plan(config, system):
     provider_owned = isinstance(config.get("potential"), Mapping)
     dynamics = None
     base_reason = None
+    base_backend = "native"
     try:
         from .potentials import make_potential
         from .dynamics import Dynamics
@@ -63,8 +64,15 @@ def propagation_backend_plan(config, system):
         kind = (potential_spec.get("provider", potential_spec.get("type", "builtin"))
                 if isinstance(potential_spec, Mapping) else None)
         cheap_kinds = {"builtin", "free", "harmonic", "morse_pair", "double_well", "periodic_cosine"}
-        if kind is not None and kind not in cheap_kinds:
-            base_reason = f"PES provider '{kind}' does not declare a built-in native binding"
+        if options.get("loop_backend") == "python" or not config.get("native", options.get("native", True)):
+            base_reason = "explicit Python loop backend or native=False"
+            base_backend = "python"
+        elif config.get("parallel", {}).get("bead_workers", 1) > 1:
+            base_reason = "distributed bead PES callbacks require Python scheduling"
+            base_backend = "python"
+        elif kind is not None and kind not in cheap_kinds:
+            base_reason = f"PES provider '{kind}' binding is checked at runtime"
+            base_backend = "unknown"
             provider = None
             dynamics = None
         else:
@@ -79,31 +87,45 @@ def propagation_backend_plan(config, system):
                    if key in options},
             )
             base_reason = native_support_reason(dynamics)
+            base_backend = "python" if base_reason else "native"
     except Exception as exc:
         base_reason = f"validation could not construct native plan: {exc}"
+        base_backend = "unknown"
 
     planned = _planned_propagation_steps(config)
     stages = []
 
-    def add(stage, reason=None):
+    def add(stage, reason=None, *, steps=planned, backend=None):
         selected = base_reason if reason is None else reason
-        stages.append({"stage": stage, "backend": "native" if selected is None else "python",
-                       "reason": selected, "planned_steps": planned})
+        selected_backend = base_backend if reason is None else "python"
+        stages.append({"stage": stage, "backend": backend or selected_backend,
+                       "reason": selected, "planned_steps": steps})
 
     task = config.get("task")
     if task in ("fes", "rate", "surface_rate", "site_rate"):
-        if dynamics is None:
-            add("umbrella")
-        else:
-            try:
-                from .workflows.fes import resolve_umbrellas
-                from .bias import UmbrellaBias
-                cv, _, centers, stiffness = resolve_umbrellas(config, system)
-                reason = native_support_reason(
-                    dynamics, bias=UmbrellaBias(cv, centers[0], stiffness), observe=cv)
-                add("umbrella", reason)
-            except Exception as exc:
-                add("umbrella", f"CV/bias plan unavailable: {exc}")
+        try:
+            from .input import rate_pmf_options, rate_pmf_stage
+            from .workflows.fes import resolve_window_plan
+            from .workflows.umbrella_plan import window_sampling
+            from .bias import UmbrellaBias
+            stage_config = (rate_pmf_stage(config, system) if task == "rate" else None) or config
+            external = task == "rate" and rate_pmf_options(config)["source"] is not None
+            if not external:
+                cv, _, windows = resolve_window_plan(stage_config, system)
+                steps = sum(
+                    (int(sampling.get("equilibration_steps", 0))
+                     + int(sampling.get("production_steps", 0)))
+                    * int(sampling.get("replicas", 1))
+                    for sampling in (window_sampling(stage_config, w) for w in windows)
+                )
+                reason = None
+                if dynamics is not None:
+                    reason = native_support_reason(
+                        dynamics, bias=UmbrellaBias(cv, windows[0].center, windows[0].stiffness),
+                        observe=cv)
+                add("umbrella", reason, steps=steps)
+        except Exception as exc:
+            add("umbrella", f"CV/bias plan unavailable: {exc}", backend="unknown")
     elif task == "diffusion" and config.get("electronic_friction") is not None:
         provider_kind = config.get("electronic_friction", {}).get("provider", "constant")
         add("production", (
@@ -114,12 +136,45 @@ def propagation_backend_plan(config, system):
     elif task != "diffusion":
         add("propagation")
 
-    if task in ("rate", "surface_rate"):
-        add("recrossing parent", "constrained parent sampling uses Python scheduling")
-        add("recrossing child", base_reason or "child trajectory uses Python-compatible callbacks")
-    elif task == "site_rate":
-        add("site parent", "centroid RATTLE parent sampling uses the Python loop")
-        add("site child", "checkpointed child classification uses the Python loop")
+    if task in ("rate", "surface_rate", "site_rate"):
+        from .workflows.rate_options import _recrossing_options, _recrossing_spec
+        recrossing = _recrossing_options(config)
+        parent_steps = recrossing["parent_replicas"] * (
+            recrossing["equilibration_steps"]
+            + recrossing["parent_samples"] * recrossing["parent_interval_steps"])
+        child_steps = (2 * recrossing["parent_replicas"] * recrossing["parent_samples"]
+                       * recrossing["child_pairs"] * recrossing["child_steps"])
+        if task == "site_rate":
+            add("site parent", "centroid RATTLE parent sampling uses the Python loop", steps=parent_steps)
+            add("site child", "checkpointed child classification uses the Python loop", steps=child_steps)
+        else:
+            parent_reason = child_reason = None
+            parent_backend = child_backend = base_backend
+            if dynamics is not None:
+                try:
+                    from .block_propagation import _native_plan, NotNative
+                    from .propagation import NativeUnavailableError
+                    from .workflows.rate_constraints import rate_coordinate
+                    surface = rate_coordinate(config, system).dividing_surface(1.0)
+                    child_reason = native_support_reason(dynamics, observe=surface)
+                    child_backend = "python" if child_reason else "native"
+                    if dynamics.loop_backend == "python":
+                        parent_reason = "explicit Python loop backend"
+                    else:
+                        try:
+                            _native_plan(dynamics, None, None, surface, (), 1e-10, False, 0.0)
+                        except (NotNative, NativeUnavailableError) as exc:
+                            parent_reason = str(exc)
+                    parent_backend = "python" if parent_reason else "native"
+                except Exception as exc:
+                    parent_reason = child_reason = f"rate surface plan unavailable: {exc}"
+                    parent_backend = child_backend = "unknown"
+            raw = _recrossing_spec(config)
+            if raw.get("dynamics", "rpmd") == "trpmd" or raw.get("child_batch_pairs", 1) > 1:
+                child_reason = "TRPMD or batched child propagation uses Python scheduling"
+                child_backend = "python"
+            add("recrossing parent", parent_reason, steps=parent_steps, backend=parent_backend)
+            add("recrossing child", child_reason, steps=child_steps, backend=child_backend)
     elif task == "diffusion" and config.get("electronic_friction") is None:
         add("production")
 
@@ -154,8 +209,9 @@ def _summary_propagation(result):
 
     def visit(value):
         if isinstance(value, Mapping):
-            if {"native_steps", "python_steps", "fallback_reasons"}.issubset(value):
+            if {"native_steps", "python_steps"}.issubset(value):
                 records.append(value)
+                return  # This node already aggregates any nested stage details.
             for child in value.values():
                 visit(child)
         elif isinstance(value, (list, tuple)):

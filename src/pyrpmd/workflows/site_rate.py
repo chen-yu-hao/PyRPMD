@@ -748,7 +748,8 @@ def _complete_surface_qtst(pmf, weights, beta):
     return pmf
 
 
-def _aggregate(children, pmf, config, output, parent_propagation=()):
+def _aggregate(children, pmf, config, output, parents=()):
+    parent_propagation = [dict(p.get("propagation", {})) for p in parents]
     options = _recrossing_options(config)
     general = pmf.get("metric_estimator") == "constrained_parent_inverse_sqrt"
     metric_weights = {}
@@ -931,4 +932,4 @@ def run_site_rate(config, system, output, executor=None):
     children = map_trajectory_tasks(_child_task, tasks, config, executor,
                                     batch_size=child_batch_size)
     return root_call(_aggregate, children, pmf, config, str(output),
-                     [p.get("propagation", {}) for p in parents])
+                     parents)

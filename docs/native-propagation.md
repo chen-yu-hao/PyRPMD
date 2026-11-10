@@ -150,8 +150,10 @@ table describes the normal `loop_backend="auto"` decision; an explicit
 | `diffusion`, `pimd` | equilibration/sampling | native PILE-L or Andersen block contract and supported stateless PES | barostat, constraints, active-learning monitor, unsupported ring, or provider callbacks |
 | `drpmd` | collision propagation | native outcome descriptor plus a compatible native PES | arbitrary Python classifier or missing native event descriptor |
 
-Native support is conservative: a stage is reported as Python as soon as one
-component cannot be represented without a Python callback.  This keeps the
+External provider bindings are reported as `unknown` until runtime, without
+loading plugins during static validation. Stage budgets count all declared
+umbrella replicas and both members of recrossing pairs. A known Python-only
+component produces a Python fallback reason.  This keeps the
 reported path aligned with the actual execution rather than with the fact that
 the free-ring substep itself may still be compiled.
 

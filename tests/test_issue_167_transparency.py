@@ -50,3 +50,106 @@ def test_large_python_backend_plan_adds_one_actionable_warning():
     assert len(config["_warnings"]) == 1
     assert "1,000,001" in config["_warnings"][0]
     assert "fractional" in config["_warnings"][0]
+
+
+def test_summary_counts_collision_records_and_does_not_recount_nested_totals():
+    collision = {"native_steps": 7, "python_steps": 2}
+    nested = {"native_steps": 3, "python_steps": 1, "fallback_reasons": {"cv": 1},
+              "streams": [{"native_steps": 3, "python_steps": 1, "fallback_reasons": {"cv": 1}}]}
+    result = _summary_propagation({"records": [{"propagation": collision}],
+                                   "stages": [{"propagation": nested}]})
+    assert result["propagation"] == {
+        "native_steps": 10, "python_steps": 3, "fallback_reasons": {"cv": 1}}
+
+
+def _plan_input():
+    system = System(("H", "H", "H"), [2., 2., 2.],
+                    [[-1.5, 0., 0.], [0., 0., 0.], [1.5, 0., 0.]], ((0,), (1, 2)))
+    config = {
+        "task": "rate", "beta": 3., "beads": 4, "dt_au": .02,
+        "potential": {"provider": "free"},
+        "sampling": {"equilibration_steps": 10, "production_steps": 100, "replicas": 2},
+        "cvs": [{"kind": "cartesian", "atom": 0, "axis": 0}],
+        "umbrella": {"centers": [-1., 0., 1.], "stiffness": 2.},
+        "reaction": {"fragments": [[0], [1, 2]], "forming_bonds": [[0, 1]],
+                     "breaking_bonds": [[1, 2]], "rinf": 10.},
+        "recrossing": {"parent_replicas": 2, "parent_samples": 3, "equilibration_steps": 5,
+                       "parent_interval_steps": 7, "child_pairs": 4, "child_steps": 11},
+    }
+    return config, system
+
+
+def test_backend_plan_preserves_native_rate_stages_and_separate_budgets():
+    import pytest
+    from pyrpmd.dynamics import native_capabilities
+    from pyrpmd.runner import propagation_backend_plan
+    if not native_capabilities()["available"]:
+        pytest.skip("native build required")
+    config, system = _plan_input()
+    plan = {item["stage"]: item for item in propagation_backend_plan(config, system)}
+    assert plan["umbrella"]["planned_steps"] == 3 * 2 * 110
+    assert plan["recrossing parent"]["planned_steps"] == 2 * (5 + 3 * 7)
+    assert plan["recrossing child"]["planned_steps"] == 2 * 2 * 3 * 4 * 11
+    assert plan["recrossing parent"]["backend"] == "native"
+    assert plan["recrossing child"]["backend"] == "native"
+
+
+def test_external_binding_is_unknown_without_loading_provider(monkeypatch):
+    from pyrpmd.runner import propagation_backend_plan
+    from pyrpmd import potentials
+    config, system = _plan_input()
+    config["potential"] = {"provider": "c_abi", "library": "not-loaded.so"}
+    monkeypatch.setattr(potentials, "make_potential", lambda *a: (_ for _ in ()).throw(AssertionError("loaded PES")))
+    plan = propagation_backend_plan(config, system)
+    assert {item["backend"] for item in plan} == {"unknown"}
+    config["dynamics"] = {"loop_backend": "python"}
+    assert {item["backend"] for item in propagation_backend_plan(config, system)} == {"python"}
+
+
+def test_rate_nonroot_does_not_iterate_root_only_parent_results(monkeypatch, tmp_path):
+    from pyrpmd.workflows import rate
+    config, system = _plan_input()
+    sentinel = object()
+    seen = []
+    def root_call(function, *args, **kwargs):
+        seen.append(function.__name__)
+        if function is rate._prepare:
+            return config, system
+        if function is rate._pmf_and_parent_tasks:
+            return {}, [object()]
+        if function is rate._parent_propagation:
+            assert args == (None,)
+            return []
+        if function is rate._child_tasks:
+            return []
+        if function is rate._aggregate:
+            return sentinel
+        raise AssertionError(function)
+    monkeypatch.setattr(rate, "root_call", root_call)
+    monkeypatch.setattr(rate, "sample_umbrellas", lambda *a, **kw: None)
+    monkeypatch.setattr(rate, "run_tasks", lambda *a, **kw: None)
+    monkeypatch.setattr(rate, "_dispatch_children", lambda *a, **kw: None)
+    assert rate.run_rate(config, system, tmp_path) is sentinel
+    assert "_parent_propagation" in seen
+
+
+def test_site_nonroot_passes_root_only_parents_without_iteration(monkeypatch, tmp_path):
+    from pyrpmd.workflows import site_rate as site
+    config, system = _plan_input()
+    config["task"] = "site_rate"
+    sentinel = object()
+    def root_call(function, *args, **kwargs):
+        if function is site.validate_site_rate:
+            return None
+        if function is site._estimate_pmf:
+            return {}, []
+        if function is site._child_tasks:
+            return []
+        if function is site._aggregate:
+            assert args[-1] is None
+            return sentinel
+        raise AssertionError(function)
+    monkeypatch.setattr(site, "root_call", root_call)
+    monkeypatch.setattr(site, "run_fes", lambda *a, **kw: None)
+    monkeypatch.setattr(site, "map_trajectory_tasks", lambda *a, **kw: None)
+    assert site.run_site_rate(config, system, tmp_path) is sentinel

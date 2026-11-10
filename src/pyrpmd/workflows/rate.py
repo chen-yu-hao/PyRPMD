@@ -79,6 +79,10 @@ def _record_sampling_failure(output, directory, sampler, error):
     return failures
 
 
+def _parent_propagation(parents):
+    return [dict(p.get("propagation", {})) for p in parents]
+
+
 def run_rate(config, system, output, executor=None):
     from . import validate_bond_constraint_workflow
     validate_bond_constraint_workflow(system, "rate")
@@ -142,7 +146,7 @@ def run_rate(config, system, output, executor=None):
     parents = dispatch(_parent_task, parent_tasks)
     # Parent counters are a separate stage from child recrossing counters;
     # retain them in the PMF bundle so the final summary can expose both.
-    pmf["propagation_parents"] = [dict(p.get("propagation", {})) for p in parents]
+    pmf["propagation_parents"] = root_call(_parent_propagation, parents)
     tasks = root_call(_child_tasks, parents, config, system, str(output), options, pmf)
     children = _dispatch_children(tasks, config, dispatch, child_task=_child_task)
     return root_call(_aggregate, children, pmf, config, str(output), options)
