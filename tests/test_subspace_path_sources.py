@@ -98,11 +98,11 @@ def test_build_path_sources_record_selection_and_bead_rms(monkeypatch):
 
     assert centroid_info["source"] == "centroid"
     assert weighted_info["source"] == "bead_weighted"
-    assert weighted_info["bead_weighted"]["bead_rms_range"] == [0.5, 0.5]
-    # The largest bead mode is the y direction, so the weighted path leaves
-    # the centroid by exactly one bead RMS in mass-weighted coordinates.
+    # The fixture's y mode is entirely translation/rotation of a diatom.
+    # It must not be interpreted as transverse vibrational corner cutting.
+    assert max(weighted_info["bead_weighted"]["bead_rms_range"]) < 1e-12
     displacement = (weighted - centroid).reshape(len(weighted), -1)
-    assert np.max(np.linalg.norm(displacement, axis=1)) == 0.5
+    assert np.max(np.linalg.norm(displacement, axis=1)) < 1e-12
     assert least_info["source"] == "least_action"
     assert len(least_info["least_action"]["scan"]) == 5
     assert 0.0 <= least_info["least_action"]["selected_alpha"] <= 1.0
@@ -234,8 +234,32 @@ def test_high_temperature_sources_keep_comparable_path_diagnostics(monkeypatch):
     assert least_info["source"] == "least_action"
     assert np.isfinite(weighted_action)
     assert least_info["least_action"]["selected_action_hbar"] <= centroid_action + 1e-12
-    assert not np.allclose(weighted, centroid)
+    np.testing.assert_allclose(weighted, centroid, atol=1e-12)
     assert not np.allclose(least, centroid)
+
+
+def test_bead_rms_uses_projected_covariance_before_diagonalization():
+    x = np.linspace(-1., 1., 7)
+    core = np.stack([x, .2*x*x, np.zeros_like(x)], axis=-1)[:, None, :]
+    direction = np.array([np.sqrt(1. - 1e-4), .01, 0.])
+    covariance = 100. * np.outer(direction, direction)
+    mean = SimpleNamespace(xi=np.arange(7.), mean_centroid=core,
+                           bead_covariance=np.repeat(covariance[None], 7, axis=0))
+    shifted, _ = pipeline._bead_weighted_core(mean, np.ones(7, bool), np.ones(1))
+    # At the central point, P Sigma P has variance .01 in the y direction;
+    # renormalizing the old eigenvector would incorrectly give a shift of 10.
+    np.testing.assert_allclose(shifted[3, 0] - core[3, 0], [0., .1, 0.], atol=1e-12)
+
+
+def test_instanton_fallback_preserves_full_centroid_smoothing(monkeypatch):
+    monkeypatch.setattr(pipeline, "mean_path_from_rate_run", lambda root: _MeanPath())
+    monkeypatch.setattr(pipeline, "assemble_reaction_path",
+                        lambda core, *a, **kw: (np.asarray(core), {}))
+    monkeypatch.setattr(pipeline, "crossover_temperature", lambda *a: 100.)
+    centroid = pipeline.build_path(_Run(), {"source": "centroid", "smoothing": 1.5})[2]
+    fallback = pipeline.build_path(_Run(), {"source": "instanton", "smoothing": 1.5})
+    assert fallback[3]["instanton"]["fallback"] == "centroid"
+    np.testing.assert_array_equal(fallback[2], centroid)
 
 
 def test_path_projection_records_unstable_normal_hessian():

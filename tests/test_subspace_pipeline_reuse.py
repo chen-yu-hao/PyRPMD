@@ -20,7 +20,7 @@ def setup_pipeline(tmp_path, monkeypatch):
     monkeypatch.setattr(pipeline, 'load_rate_run', lambda _: run)
     monkeypatch.setattr(pipeline, 'build_path', lambda *args: (mean, None, path, {}))
     monkeypatch.setattr(pipeline, '_static_curvature_width', lambda *args: {'maximum': 0.})
-    monkeypatch.setattr(pipeline, 'path_model', lambda *args: (None, {}, {}))
+    monkeypatch.setattr(pipeline, 'path_model', lambda *args, **kwargs: (None, {}, {}))
     computed = []
     def correction(model, beta, nbeads, **kwargs):
         computed.append((beta, nbeads))
