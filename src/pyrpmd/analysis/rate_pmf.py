@@ -349,6 +349,8 @@ def mbar_rate_pmf(
     ui_points=401,
     solver_options=None,
     bootstrap_workers=None,
+    bootstrap_workers_source="default",
+    bootstrap_total_cores=None,
     min_weight_ess=DEFAULT_MIN_WEIGHT_ESS,
     min_endpoint_ess=DEFAULT_MIN_ENDPOINT_ESS,
     max_center_displacement_sigma=DEFAULT_MAX_CENTER_DISPLACEMENT_SIGMA,
@@ -388,8 +390,10 @@ def mbar_rate_pmf(
     compare_ui adds a cheap Gaussian-UI calculation on the *same* bootstrap
     draws, exposing paired estimator differences without a second MBAR solve.
     ``bootstrap_workers`` bounds a thread pool used for the independent MBAR
-    draws. ``None`` (the default) and ``1`` keep the serial implementation;
-    an explicit value greater than one opts into parallel dispatch. The large
+    draws. The analysis API treats ``None`` (the default) and ``1`` as serial;
+    the workflow resolves an omitted input setting from
+    ``parallel.trajectory_workers`` before calling this function. An explicit
+    value greater than one opts into parallel dispatch. The large
     umbrella-potential array is shared read-only between threads, but each
     draw's ``u[:, indices]`` fancy-index operation and solver temporaries are
     copied. The requested worker count is therefore capped by a conservative
@@ -457,7 +461,22 @@ def mbar_rate_pmf(
     if bootstrap == 1:
         raise ValueError("bootstrap must be zero or >=2")
     workers_requested = _resolve_bootstrap_workers(bootstrap_workers, bootstrap)
+    if bootstrap_total_cores is None:
+        total_cores = max(1, os.cpu_count() or 1)
+    elif (
+        isinstance(bootstrap_total_cores, (bool, np.bool_))
+        or not isinstance(bootstrap_total_cores, (int, np.integer))
+        or bootstrap_total_cores < 1
+    ):
+        raise ValueError("bootstrap_total_cores must be a positive integer or None")
+    else:
+        total_cores = int(bootstrap_total_cores)
+    if bootstrap_workers_source not in {"analysis", "parallel", "default", "mpi"}:
+        raise ValueError(
+            "bootstrap_workers_source must be analysis, parallel, default, or mpi"
+        )
     bootstrap_workers = min(workers_requested, int(bootstrap)) if bootstrap else 1
+    memory_capped = False
     warnings = []
     if xi_star is not None and not np.isfinite(xi_star):
         raise ValueError("xi_star must be finite")
@@ -525,6 +544,7 @@ def mbar_rate_pmf(
         u.nbytes,
         available_memory=available_memory,
     )
+    memory_capped = bootstrap_workers < baseline_workers and available_memory is not None
     if bootstrap_workers < baseline_workers and available_memory is not None:
         per_draw = max(1, int(4 * u.nbytes))
         reserved_memory = max(1, int(available_memory) // 2)
@@ -756,7 +776,7 @@ def mbar_rate_pmf(
         if bootstrap_workers == 1:
             results = [_mbar_bootstrap_draw(task) for task in tasks()]
         else:
-            blas_threads = max(1, (os.cpu_count() or 1) // bootstrap_workers)
+            blas_threads = max(1, total_cores // bootstrap_workers)
             with threadpool_limits(limits=blas_threads, user_api="blas"):
                 results = _ordered_thread_map(
                     _mbar_bootstrap_draw, tasks(), bootstrap_workers
@@ -935,6 +955,8 @@ def mbar_rate_pmf(
             "requested": int(bootstrap),
             "workers_requested": int(workers_requested),
             "workers": int(bootstrap_workers),
+            "workers_source": bootstrap_workers_source,
+            "memory_capped": bool(memory_capped),
             "backend": "thread" if bootstrap_workers > 1 else "serial",
             "attempted": len(records),
             "valid": len(draws),
