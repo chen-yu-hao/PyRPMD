@@ -253,66 +253,142 @@ def _slice_density(model, operators, keep, energies, vectors, beta, shift):
                   "reference_line": float(axis0[row]), "slice_points": int(on_line.sum())}
 
 
-def _dense_rate(model, operators, eps, beta, shift, *, keep=None, energy_floor=None, normalization="default"):
-    keep = np.arange(operators.size) if keep is None else np.asarray(keep)
-    hamiltonian = operators.dense_hamiltonian(keep if len(keep) < operators.size else None)
+def _dense_rate_matrix(
+    hamiltonian,
+    eps,
+    product,
+    beta,
+    shift=0.0,
+    *,
+    partition=None,
+    reactant_weights=None,
+    energy_floor=None,
+):
+    """Evaluate the dense Sylvester flux for a general matrix Hamiltonian.
+
+    ``hamiltonian`` is the finite-dimensional Hermitian ``H_0`` matrix,
+    ``product`` is the diagonal of the product-side projector, and ``eps``
+    is the diagonal absorbing potential.  The matrix need not come from a
+    tensor-product DVR; this is the interface used by the adiabatic-channel
+    solver.  ``partition`` may be a number or a callable receiving
+    ``(energies, eigenvectors)``.  If it is omitted, ``reactant_weights``
+    supplies the diagonal reactant population factors, which is the exact
+    finite-grid normalization used by the original route.
+    """
+    hamiltonian = np.asarray(hamiltonian)
+    if hamiltonian.ndim != 2 or hamiltonian.shape[0] != hamiltonian.shape[1]:
+        raise ValueError("hamiltonian must be a square matrix")
+    if not np.isfinite(hamiltonian).all() or not np.allclose(
+        hamiltonian, hamiltonian.conj().T, atol=1e-11, rtol=1e-10
+    ):
+        raise ValueError("hamiltonian must be finite and Hermitian")
+    n = hamiltonian.shape[0]
+    product = np.asarray(product, dtype=float).reshape(-1)
+    eps = np.asarray(eps, dtype=float).reshape(-1)
+    if product.size != n or eps.size != n:
+        raise ValueError("product and eps must have one value per Hamiltonian state")
+    if not np.isfinite(product).all() or not np.isfinite(eps).all() or np.any(eps < 0):
+        raise ValueError("product and eps must be finite; eps must be nonnegative")
+    beta = float(beta)
+    if not np.isfinite(beta) or beta <= 0:
+        raise ValueError("beta must be positive")
+    shift = float(shift)
     energies, vectors = eigh(hamiltonian)
     half = np.exp(-0.5 * beta * (energies - shift))
     if energy_floor is not None:
+        energy_floor = float(energy_floor)
+        if not np.isfinite(energy_floor):
+            raise ValueError("energy_floor must be finite")
         half = np.where(energies >= energy_floor, half, 0.0)
-    product = operators.product.ravel()[keep]
-    # The flux operator is F = i K with the real commutator K = [H, h], so the
-    # thermal flux operator is F_beta = i B K B with B = exp(-beta H / 2).
-    # Working with real K and B K B, and freeing each matrix once used, keeps
-    # the peak at four complex N x N arrays (the Schur pair, the right-hand
-    # side and the solution) instead of about eight.
+    # K = [H, h] is real antisymmetric for the real Hamiltonians used by the
+    # DVR and channel constructions.  The formula below also accepts a
+    # complex Hermitian matrix and uses the Hermitian commutator convention.
     commutator = hamiltonian * product[None, :]
     commutator -= product[:, None] * hamiltonian
-    boltzmann_half = (vectors * half[None, :]) @ vectors.T
+    boltzmann_half = (vectors * half[None, :]) @ vectors.conj().T
     thermal_real = boltzmann_half @ commutator @ boltzmann_half
     del boltzmann_half
-    absorbing = hamiltonian.astype(complex)
-    del hamiltonian
-    absorbing[np.diag_indices_from(absorbing)] -= 1j * np.broadcast_to(eps, operators.shape).ravel()[keep]
+    absorbing = np.asarray(hamiltonian, dtype=complex).copy()
+    absorbing[np.diag_indices_from(absorbing)] -= 1j * eps
     triangular, unitary = schur(absorbing, output="complex", overwrite_a=True)
     del absorbing
-    # Right-hand side i U^+ F U = -U^+ K U.
-    rhs = unitary.conj().T @ commutator
-    del commutator
-    rhs = rhs @ unitary
+    # Right-hand side i U^+ F U = -U^+ K U, with F=iK.
+    rhs = unitary.conj().T @ commutator @ unitary
     rhs *= -1.0
     solution, scale, info = ztrsyl(triangular, triangular, rhs, trana="C", tranb="N", isgn=-1)
     del rhs, triangular
     if info < 0:
         raise RuntimeError(f"ztrsyl failed with info={info}")
     solution /= scale
-    projected = unitary.conj().T @ thermal_real
-    projected = projected @ unitary
+    projected = unitary.conj().T @ thermal_real @ unitary
     flux = float(np.real(1j * np.einsum("ij,ji->", projected, solution)))
-    del projected, solution, unitary
-    # Tr[F_beta h] vanishes for an exact thermal flux operator; a nonzero value
-    # measures how well the grid represents the dividing surface.
     side_check = float(np.real(1j * np.sum(np.diag(thermal_real) * product)))
-    if normalization == "slice":
-        partition, info_q = _slice_density(model, operators, keep, energies, vectors, beta, shift)
+    del projected, solution, unitary, thermal_real
+    if partition is None:
+        if reactant_weights is None:
+            raise ValueError("partition or reactant_weights is required")
+        weights = np.asarray(reactant_weights, dtype=float).reshape(-1)
+        if weights.size != n or not np.isfinite(weights).all() or np.any(weights < 0):
+            raise ValueError("reactant_weights must be finite and nonnegative")
+        populations = np.sum(vectors.conj() * vectors * weights[:, None], axis=0).real
+        value = float(np.sum(np.exp(-beta * (energies - shift)) * populations))
+        partition_info = {"normalization": "reactant weights in matrix basis", "states": int(n)}
+    elif callable(partition):
+        value = partition(energies, vectors)
+        if isinstance(value, tuple):
+            value, partition_info = value
+        else:
+            partition_info = {"normalization": "caller supplied matrix partition"}
+        value = float(value)
     else:
-        full_vectors = vectors
-        if len(keep) < operators.size:
-            full_vectors = np.zeros((operators.size, vectors.shape[1]))
-            full_vectors[keep] = vectors
-        partition, info_q = _reactant_partition(model, beta, shift, energies=energies, vectors=full_vectors,
-                                                operators=operators)
-    return flux, partition, {
-        "grid_points": operators.size,
-        "retained_points": int(len(keep)),
+        value = float(partition)
+        partition_info = {"normalization": "caller supplied matrix partition"}
+    if not np.isfinite(value) or value <= 0:
+        raise FloatingPointError("matrix partition must be finite and positive")
+    return flux, value, {
+        "grid_points": int(n),
+        "retained_points": int(n),
         "sylvester_scale": float(scale),
         "sylvester_info": int(info),
         "flux_side_t0": side_check,
-        "lowest_levels": (energies[:6]).tolist(),
+        "lowest_levels": energies[:6].tolist(),
         "energy_floor": energy_floor,
         "states_below_floor": int(np.sum(energies < energy_floor)) if energy_floor is not None else 0,
-        "partition": info_q,
+        "partition": partition_info,
     }
+
+
+def _dense_rate(model, operators, eps, beta, shift, *, keep=None, energy_floor=None, normalization="default"):
+    keep = np.arange(operators.size) if keep is None else np.asarray(keep)
+    hamiltonian = operators.dense_hamiltonian(keep if len(keep) < operators.size else None)
+    product = operators.product.ravel()[keep]
+    eps_keep = np.broadcast_to(eps, operators.shape).ravel()[keep]
+    if normalization == "slice":
+        flux, partition, info = _dense_rate_matrix(
+            hamiltonian, eps_keep, product, beta, shift,
+            partition=lambda e, v: _slice_density(model, operators, keep, e, v, beta, shift),
+            energy_floor=energy_floor,
+        )
+        info_q = info["partition"]
+    else:
+        def matrix_partition(energies, vectors):
+            full_vectors = vectors
+            if len(keep) < operators.size:
+                full_vectors = np.zeros((operators.size, vectors.shape[1]))
+                full_vectors[keep] = vectors
+            return _reactant_partition(model, beta, shift, energies=energies, vectors=full_vectors,
+                                       operators=operators)
+        flux, partition, info = _dense_rate_matrix(
+            hamiltonian, eps_keep, product, beta, shift,
+            partition=matrix_partition, energy_floor=energy_floor,
+        )
+        info_q = info.pop("partition", {})
+    if normalization == "slice":
+        info_q = info.pop("partition", info_q)
+    info["partition"] = info_q
+    info["grid_points"] = operators.size
+    info["retained_points"] = int(len(keep))
+    return flux, partition, info
 
 
 class _Chebyshev:
@@ -615,6 +691,9 @@ def exact_quantum_rate(
     """
     if not isinstance(model, SubspaceModel):
         raise TypeError("model must be a SubspaceModel")
+    if model.metric is not None:
+        raise ValueError("tensor-product exact rates do not support a position-dependent metric; "
+                         "use the channel Hamiltonian interface")
     beta = float(beta)
     if not np.isfinite(beta) or beta <= 0:
         raise ValueError("beta must be positive")
@@ -690,4 +769,7 @@ def exact_quantum_rate(
     return QuantumRateResult(beta, float(flux / partition), float(flux), float(partition), method, info)
 
 
-__all__ = ["QuantumRateResult", "absorbing_potential", "exact_quantum_rate", "sinc_dvr_kinetic"]
+dense_rate_matrix = _dense_rate_matrix
+
+__all__ = ["QuantumRateResult", "absorbing_potential", "exact_quantum_rate", "sinc_dvr_kinetic",
+           "dense_rate_matrix", "_dense_rate_matrix"]

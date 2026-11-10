@@ -3,6 +3,7 @@ name: Subspace transfer-error study
 # Exact 2D quantum and RPMD rates versus 1D projected subspace corrections on
 # Eckart model families (benchmarks/subspace_theory, docs/subspace-transfer-theory.md).
 # Read-only: every point is an artifact and the aggregate table is printed in the log.
+# The channel branch can run the same baseline matrix for comparison.
 
 on:
   workflow_dispatch:
@@ -20,6 +21,7 @@ on:
       - 'issue-157-path-source'
       - 'issue-155-curvature'
       - 'issue-156-rph-dvr'
+      - 'codex/subspace-channels-158'
     paths:
       - 'benchmarks/subspace_theory/transfer.py'
       - 'benchmarks/subspace_theory/plan.py'
