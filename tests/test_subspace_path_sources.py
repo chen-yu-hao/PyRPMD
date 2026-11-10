@@ -4,8 +4,11 @@ from types import SimpleNamespace
 
 import numpy as np
 
+from pyrpmd.constants import KB_AU
 import pyrpmd.analysis.subspace_pipeline as pipeline
 from pyrpmd.analysis.subspace_model import project_path_subspace
+from pyrpmd.instanton import crossover_temperature
+from pyrpmd.potentials.base import PESResult
 
 
 class _MeanPath:
@@ -49,6 +52,35 @@ class _Run:
         return 2.0 * np.asarray(x, dtype=float).ravel()
 
 
+class _EckartPotential:
+    """Small analytic barrier used for a real below-crossover pipeline run."""
+
+    def __init__(self, height=0.01, inverse_width=0.5):
+        self.height = float(height)
+        self.inverse_width = float(inverse_width)
+
+    def evaluate(self, q):
+        x = np.asarray(q, dtype=float)[:, 0, 0]
+        t = np.tanh(self.inverse_width * x)
+        energy = self.height * (1.0 - t * t)
+        forces = np.zeros_like(q, dtype=float)
+        forces[:, 0, 0] = (self.inverse_width * (1.0 - t * t)
+                           * (2.0 * self.height * t))
+        return PESResult(energy, forces)
+
+
+class _InstantonRun:
+    def __init__(self, temperature, nbeads=32):
+        self.provider = _EckartPotential()
+        self.system = SimpleNamespace(
+            masses=np.array([1822.0]),
+            geometry=np.zeros((1, 3)),
+        )
+        self.beta = 1.0 / (KB_AU * float(temperature))
+        self.nbeads = int(nbeads)
+        self.cartesian_masses = np.repeat(self.system.masses, 3)
+
+
 def test_build_path_sources_record_selection_and_bead_rms(monkeypatch):
     monkeypatch.setattr(pipeline, "mean_path_from_rate_run", lambda root: _MeanPath())
     monkeypatch.setattr(
@@ -87,6 +119,123 @@ def test_instanton_falls_back_at_or_above_crossover(monkeypatch):
     result, info = pipeline._instanton_core(_Run(), core, {})
     assert np.array_equal(result, core)
     assert info["fallback_reason"] == "temperature_at_or_above_crossover"
+
+
+def test_instanton_records_converged_orbit_below_crossover(monkeypatch):
+    """A below-crossover orbit reports optimizer and physical-mode diagnostics."""
+    run = _Run()
+    core = _MeanPath().mean_centroid
+
+    # _Run.beta=1 is a high-temperature atomic-unit value, so make the
+    # synthetic crossover much higher than the resulting temperature.  This
+    # exercises the optimizer branch without requiring a PES or a long solve.
+    monkeypatch.setattr(pipeline, "crossover_temperature", lambda *args, **kwargs: 1.0e9)
+    orbit = np.zeros((8, 2, 3), dtype=float)
+    orbit[:, 0, 0] = [-1.0, -0.5, 0.0, 0.5, 0.5, 0.0, -0.5, -1.0]
+    orbit[:, 1, 0] = orbit[:, 0, 0] + 1.0
+    fake_result = SimpleNamespace(
+        converged=True,
+        gradient_max=1.0e-10,
+        negative_modes=1,
+        path_bohr=orbit,
+        message="converged",
+    )
+    calls = {}
+
+    def fake_optimizer(*args, **kwargs):
+        calls["temperature"] = args[2]
+        calls["seed_shape"] = np.asarray(args[3]).shape
+        calls["max_iterations"] = kwargs["max_iterations"]
+        return fake_result
+
+    monkeypatch.setattr(pipeline, "optimize_instanton", fake_optimizer)
+    folded, info = pipeline._instanton_core(run, core, {"instanton_max_iterations": 17})
+
+    assert calls["seed_shape"] == (8, 2, 3)
+    assert calls["max_iterations"] == 17
+    assert calls["temperature"] < 1.0e9
+    assert folded.shape == (4, 2, 3)
+    assert info["converged"] is True
+    assert info["gradient_max"] == 1.0e-10
+    assert info["negative_modes"] == 1
+    assert info["physical_negative_modes"] == 1
+    assert info["bead_number"] == 8
+    assert info["folded_beads"] == 4
+    assert info["fallback"] is None
+    assert info["physical_converged"] is False
+
+
+def test_instanton_runs_real_below_crossover_orbit_and_records_diagnostics():
+    """The pipeline must exercise a real optimizer below ``T_c``.
+
+    The analytic Eckart barrier keeps this integration test independent of the
+    restored BKMP2 data while still checking the production optimizer branch,
+    its physical negative-mode count, and the full/folded bead convention.
+    """
+    potential = _EckartPotential()
+    masses = np.array([1822.0])
+    transition_state = np.zeros((1, 3))
+    crossover = crossover_temperature(potential, transition_state, masses)
+    run = _InstantonRun(0.5 * crossover, nbeads=32)
+    core = np.zeros((7, 1, 3), dtype=float)
+    core[:, 0, 0] = np.linspace(-2.0, 2.0, len(core))
+
+    folded, info = pipeline._instanton_core(
+        run,
+        core,
+        {"instanton_max_iterations": 200},
+    )
+
+    assert info["temperature_kelvin"] < info["crossover_temperature_kelvin"]
+    assert info["converged"] is True
+    assert info["gradient_max"] < 1e-8
+    assert info["negative_modes"] == 1
+    assert info["physical_negative_modes"] == 1
+    assert info["bead_number"] == 32
+    assert info["folded_beads"] == 16
+    assert info["fallback"] is None
+    assert info["physical_converged"] is False
+    assert folded.shape == (16, 1, 3)
+    assert np.ptp(folded[:, 0, 0]) > 1.0
+
+
+def test_high_temperature_sources_keep_comparable_path_diagnostics(monkeypatch):
+    """At the 600 K validation point, sources remain comparable and explicit.
+
+    ``least_action`` includes the centroid member (alpha=0), so its selected
+    WKB action cannot be worse than the centroid baseline.  ``bead_weighted``
+    is intentionally distinct, but must still produce finite diagnostics.  The
+    expensive full curvature-family Delta matrix remains a campaign check.
+    """
+    monkeypatch.setattr(
+        pipeline,
+        "assemble_reaction_path",
+        lambda core, *args, **kwargs: (np.asarray(core), {"assembled": True}),
+    )
+    run = _Run()
+    run.beta = 1.0 / (KB_AU * 600.0)
+    mean = _MeanPath()
+    monkeypatch.setattr(pipeline, "mean_path_from_rate_run", lambda root: mean)
+
+    _, _, centroid, centroid_info = pipeline.build_path(
+        run, {"source": "centroid", "smoothing": None}
+    )
+    _, _, weighted, weighted_info = pipeline.build_path(
+        run, {"source": "bead_weighted", "smoothing": None}
+    )
+    _, _, least, least_info = pipeline.build_path(
+        run, {"source": "least_action", "smoothing": None, "least_action_points": 9}
+    )
+
+    centroid_action = pipeline._wkb_action(centroid, run)[0]
+    weighted_action = pipeline._wkb_action(weighted, run)[0]
+    assert centroid_info["source"] == "centroid"
+    assert weighted_info["source"] == "bead_weighted"
+    assert least_info["source"] == "least_action"
+    assert np.isfinite(weighted_action)
+    assert least_info["least_action"]["selected_action_hbar"] <= centroid_action + 1e-12
+    assert not np.allclose(weighted, centroid)
+    assert not np.allclose(least, centroid)
 
 
 def test_path_projection_records_unstable_normal_hessian():
