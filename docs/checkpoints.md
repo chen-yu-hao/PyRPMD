@@ -99,7 +99,7 @@ envelope for unchanged legacy trajectory files.
 
 | Workflow | Authoritative restart state |
 | --- | --- |
-| dRPMD | Continuous parent-chain q/p/RNG and emission clock; launch records; accepted child prefix, classifier/history state and completed results |
+| dRPMD | Compact parent q/p/RNG and emission clock, plus the committed count/digest of an append-only parent JSONL record ledger; individual launch/propagation checkpoints and results |
 | Fixed umbrella / rate PMF | Per-window q/p/RNG, elapsed clock and observations; completed samples support reanalysis without propagation |
 | Rate recrossing | Constrained parent state and snapshots; paired child state/results, selected surface and PMF identity |
 | Adaptive umbrella | Checksummed `adaptive-plan.json`, committed pilot round and its checkpoints; frozen production uses separate seeds and ordinary window checkpoints |
