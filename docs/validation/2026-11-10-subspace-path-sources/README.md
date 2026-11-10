@@ -94,6 +94,17 @@ reference:
 | User-supplied QD reference | `2.01e-18 cm^3 molecule^-1 s^-1` |
 | `ln(C_S(2D)/C_S(1D))` | `+0.26 +/- 0.09` |
 
+The numerical before/after table is intentionally explicit about what has and
+has not been run in this checkout:
+
+| Path source | Before (`C_S(1D)`) | After (`C_S(1D)`) | Interpretation |
+| --- | ---: | ---: | --- |
+| `centroid` | `2.06 +/- 0.04` | `2.06 +/- 0.04` expected regression | Historical baseline |
+| `bead_weighted` | Not available | Pending restored-run calculation | Compare with the 2D reference after DVR convergence |
+| `instanton` | Not available | Pending restored-run calculation | At `T >= T_c`, report the centroid fallback value |
+| `least_action` | Not available | Pending restored-run calculation | Retain the complete alpha scan and selected action |
+| 2D reference | `2.66 +/- 0.20` | `2.66 +/- 0.20` | Existing comparison target |
+
 The new path sources are intended to reduce the one-dimensional deficit toward
 the 2D correction. A new `C_S(1D)` value for `bead_weighted`, `instanton`, or
 `least_action` must be generated from the restored
