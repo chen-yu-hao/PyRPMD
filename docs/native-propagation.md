@@ -138,8 +138,8 @@ observations and failure prefixes are bit-identical to the previous loop.
 
 The resolved backend is recorded in `propagation_plan` during validation and
 the accepted work is recorded in `propagation` in the result summary.  The
-table describes the normal `loop_backend="auto"` decision; an explicit
-`loop_backend="python"` always selects the Python row.
+table describes the normal `loop_backend="auto"` decision. For workflows using
+`Dynamics`, an explicit `loop_backend="python"` selects the Python row.
 
 Materials summaries retain their existing per-replica `propagation` list;
 `propagation_totals` contains its aggregate `native_steps`, `python_steps`,
@@ -158,6 +158,7 @@ report the work actually performed; they and the scientific identity are unchang
 | `rate`, `surface_rate` | recrossing parent/child | exported native dividing-surface descriptors and a compatible PES | arbitrary classifiers, constraints, or unsupported providers |
 | `diffusion` | unthermostatted production | fixed-cell native PES with no barostat, monitor, or electronic friction | electronic friction uses Python OU centroid orchestration; other unsupported providers retain the one-step loop |
 | `diffusion`, `pimd` | equilibration/sampling | native PILE-L or Andersen block contract and supported stateless PES | barostat, constraints, active-learning monitor, unsupported ring, or provider callbacks |
+| `diffusion`, `pimd` with `sampling.engine="torch"` | tensor workflow | Tensor execution is independent of ordinary C++ `Dynamics` bindings | `unknown`; device and tensor execution backend are confirmed at runtime |
 | `drpmd` | collision propagation | native outcome descriptor plus a compatible native PES | arbitrary Python classifier or missing native event descriptor |
 
 External provider bindings are reported as `unknown` until runtime, without

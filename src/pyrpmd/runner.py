@@ -48,6 +48,15 @@ def propagation_backend_plan(config, system, *, potential=None):
     advances a state, making it safe for ``pyrpmd validate``. An optional live
     potential is borrowed from preparation and remains owned by its caller.
     """
+    if (config.get("task") in ("pimd", "diffusion")
+            and config.get("sampling", {}).get("engine") == "torch"):
+        return [{
+            "stage": "production" if config["task"] == "diffusion" else "propagation",
+            "backend": "unknown",
+            "reason": "Torch tensor workflow; device and execution backend are confirmed at runtime",
+            "planned_steps": _planned_propagation_steps(config),
+        }]
+
     from .propagation import native_support_reason
 
     if config.get("task") == "rate":
