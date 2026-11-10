@@ -408,3 +408,75 @@ def test_rigid_body_complement_keeps_only_vibrations():
     assert model.provenance["complement_dimension"] == 2
     expected = 0.5 * float(np.sum(np.sqrt(np.sort(vib)[:2])))
     assert model.values[4] == pytest.approx(expected, rel=1e-3)
+
+
+def test_straight_path_sct_is_bitwise_identical_to_uncoupled_model():
+    """A zero-curvature path must not acquire a coordinate-dependent mass."""
+    omega = 0.02
+
+    def potential(x):
+        return float(eckart(np.array([x[0]])) + 0.5 * MASS * omega**2 * x[1] ** 2)
+
+    def gradient(x):
+        return np.array([eckart_gradient(np.array([x[0]]))[0], MASS * omega**2 * x[1]])
+
+    path = np.column_stack([np.linspace(-4.0, 4.0, 17), np.zeros(17)])
+    axis = np.linspace(0.0, 8.0 * np.sqrt(MASS), 41)
+    plain = project_path_subspace(potential, gradient, path, [MASS, MASS], axis)
+    sct = project_path_subspace(potential, gradient, path, [MASS, MASS], axis, curvature="small")
+    assert np.array_equal(plain.axes[0], sct.axes[0])
+    assert np.array_equal(plain.values, sct.values)
+    assert sct.provenance["effective_mass_ratio_min"] == pytest.approx(1.0)
+    assert sct.provenance["curvature_truncated_fraction"] == 0.0
+
+
+def test_constant_curvature_sct_mass_and_arc_transform():
+    """A circular valley has the analytic SCT mass at every arc point."""
+    radius, omega = 10.0, 0.2
+    theta = np.linspace(-1.0, 1.0, 101)
+    path = radius * np.column_stack([np.cos(theta), np.sin(theta)])
+
+    def potential(x):
+        return 0.5 * omega**2 * (np.hypot(x[0], x[1]) - radius) ** 2
+
+    def gradient(x):
+        r = np.hypot(x[0], x[1])
+        return omega**2 * (r - radius) * np.asarray(x) / r
+
+    sigma = np.linspace(0.0, 2.0 * radius, 81)
+    model = project_path_subspace(potential, gradient, path, [1.0, 1.0], sigma,
+                                  environment="frozen", curvature="small",
+                                  dividing_surface=radius)
+    a = 1.0 / (radius * np.sqrt(omega))
+    expected = np.exp(-2.0 * a - a * a)
+    ratio = np.asarray(model.provenance["curvature_mass_ratio"])
+    assert np.allclose(ratio[4:-4], expected, rtol=3e-3, atol=3e-4)
+    assert model.provenance["effective_mass_ratio_mean"] == pytest.approx(expected, rel=3e-3)
+    tau = np.asarray(model.provenance["curvature_tau"])
+    sigma_used = np.asarray(model.provenance["curvature_sigma"])
+    assert tau[-1] - tau[0] == pytest.approx(np.trapz(np.sqrt(ratio), sigma_used), rel=1e-12)
+    assert model.masses.tolist() == [1.0]
+    assert model.provenance["coordinate_transform"] == "dτ=sqrt(mu_eff/mu)dσ"
+
+
+def test_sct_reports_large_curvature_truncation_and_validates_option():
+    radius, omega = 1.0, 0.2
+    theta = np.linspace(-1.0, 1.0, 81)
+    path = radius * np.column_stack([np.cos(theta), np.sin(theta)])
+
+    def potential(x):
+        return 0.5 * omega**2 * (np.hypot(x[0], x[1]) - radius) ** 2
+
+    def gradient(x):
+        r = np.hypot(x[0], x[1])
+        return omega**2 * (r - radius) * np.asarray(x) / r
+
+    with pytest.warns(RuntimeWarning, match="clipped abar"):
+        model = project_path_subspace(potential, gradient, path, [1.0, 1.0],
+                                      np.linspace(0.0, 2.0, 41), environment="frozen",
+                                      curvature="small", dividing_surface=1.0)
+    assert model.provenance["max_abar"] > 1.0
+    assert model.provenance["curvature_truncated_fraction"] > 0.5
+    with pytest.raises(ValueError, match="curvature"):
+        project_path_subspace(potential, gradient, path, [1.0, 1.0],
+                              np.linspace(0.0, 2.0, 41), environment="frozen", curvature="large")

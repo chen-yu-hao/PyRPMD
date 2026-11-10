@@ -1,0 +1,31 @@
+# One-dimensional SCT curvature-mass recomputation for the saved H + H2 run.
+# Restore the raw run from data/subspace-runs-2026-11 first, then run:
+#   pyrpmd subspace-correct benchmarks/h3_subspace/correct_200K_curvature.toml
+
+[source]
+rate_run = "runs/h3-200K-P128-b20"
+
+[subspace]
+dimension = 1
+threshold = 0.5
+environment = "adiabatic"
+curvature = "small"
+
+[quantum]
+refinement = 3
+truncation_kt = 30.0
+truncation_min = 0.10        # at least six stiff transverse quanta above the valley floor
+threshold_margin = 1.0
+reference_kt = 0.3
+product_drop_kt = 15.0
+dense_limit = 11500
+
+[rpmd]
+walkers = 32
+sweeps = 800
+trajectories = 1024
+seed = 17
+
+[output]
+directory = "runs/h3-200K-P128-b20/subspace-sct-1d"
+reuse = false

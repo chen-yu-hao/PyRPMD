@@ -1,6 +1,6 @@
 # Subspace transfer error on 2D Eckart model families
 
-Date: 2026-11-09. Theory: [docs/subspace-transfer-theory.md](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/subspace-transfer-theory.md).
+Date: 2026-11-09. Follow-up SCT curvature-mass validation: [2026-11-10-subspace-curvature](../2026-11-10-subspace-curvature/README.md). Theory: [docs/subspace-transfer-theory.md](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/subspace-transfer-theory.md).
 Scripts: `benchmarks/subspace_theory/` (`transfer.py` one point, `plan.py` the matrix,
 `aggregate.py` the table, `elasticity.py` the 1D elasticity). Computed on GitHub Actions:
 `.github/workflows/subspace-transfer.yml` (run 42573202493) and

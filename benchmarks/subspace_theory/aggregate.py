@@ -14,12 +14,14 @@ def main(argv=None):
     args = p.parse_args(argv)
     files = sorted({f for pattern in args.inputs for f in glob.glob(pattern)})
     records = [json.load(open(f)) for f in files]
-    records.sort(key=lambda r: (r["family"], r["barrier"], r["parameter"], -r["temperature"], r["nbeads"],
+    records.sort(key=lambda r: (r["family"], r["barrier"], r["parameter"], -r["temperature"],
+                                r.get("curvature_mass", "none"), r["nbeads"],
                                 r.get("quantum_grid", {}).get("truncation_offset", 0.0)))
     rows = []
     for r in records:
         row = {k: r[k] for k in ("family", "barrier", "parameter", "temperature", "nbeads", "curvature_width_max",
                                  "beta_omega_reactant", "environment_bead_factor", "C_full", "wall_seconds")}
+        row["curvature_mass"] = r.get("curvature_mass", "none")
         row["refine"] = r.get("quantum_grid", {}).get("truncation_offset", 0.0)
         row["grid_change"] = r["full"]["quantum"].get("grid_relative_change")
         row["k_qm_full"] = r["full"]["quantum"]["rate"]
@@ -31,11 +33,11 @@ def main(argv=None):
         rows.append(row)
     with open(args.output, "w") as handle:
         json.dump({"rows": rows, "records": records}, handle, indent=1, default=float)
-    head = ("family", "barrier", "par", "T", "P", "trunc", "k_QM(2D)", "grid", "k*rho", "C_full", "C_S(zpe)", "Delta(zpe)", "+-",
+    head = ("family", "barrier", "par", "T", "P", "mass", "trunc", "k_QM(2D)", "grid", "k*rho", "C_full", "C_S(zpe)", "Delta(zpe)", "+-",
             "Delta(fe)", "G_QM", "G_RP", "B_P")
     print("TABLE " + " | ".join(head))
     for row in rows:
-        values = (row["family"], row["barrier"], f"{row['parameter']:g}", f"{row['temperature']:g}", row["nbeads"],
+        values = (row["family"], row["barrier"], f"{row['parameter']:g}", f"{row['temperature']:g}", row["nbeads"], row["curvature_mass"],
                   f"{row['refine']:g}", f"{row['k_qm_full']:.5e}", f"{(row['grid_change'] or 0):+.3f}",
                   f"{row['curvature_width_max']:.2f}", f"{row['C_full']:.3f}", f"{row.get('adiabatic.C_S', np.nan):.3f}",
                   f"{row.get('adiabatic.delta', np.nan):+.3f}", f"{row.get('adiabatic.delta_standard_error', np.nan):.3f}",
