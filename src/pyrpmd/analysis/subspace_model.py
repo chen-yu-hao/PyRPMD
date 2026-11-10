@@ -960,7 +960,7 @@ def project_path_subspace(
         "dvr_points": dvr_points if zero_point == "dvr" else None,
         "dvr_half_width": dvr_half_width if zero_point == "dvr" else None,
         "dvr_spacing": dvr_spacing if zero_point == "dvr" else None,
-        "maximum_rph_force_constant_correction": max_rph_correction,
+        "rph_max_correction": max_rph_correction,
         "full_dimension": n,
         "path_length": float(arc[-1]),
         "max_path_curvature": float(np.max(path_kappa)),

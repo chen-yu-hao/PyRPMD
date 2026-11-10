@@ -83,6 +83,21 @@ def test_straight_path_zero_point_options_are_consistent(zero_point):
     assert np.allclose(model.values, expected, atol=1e-6)
 
 
+@pytest.mark.parametrize("omega", [1e-4, 1e-6])
+def test_default_dvr_box_resolves_soft_positive_mode(monkeypatch, omega):
+    monkeypatch.setitem(globals(), "OMEGA", omega)
+    model = _straight_path_model(zero_point="dvr")
+    np.testing.assert_allclose(model.values, .5 * omega, rtol=1e-7, atol=1e-13)
+
+
+@pytest.mark.parametrize("zero_point", ["harmonic", "rph", "dvr"])
+def test_zero_point_and_sct_selectors_compose_on_straight_path(zero_point):
+    reference = _straight_path_model(zero_point=zero_point)
+    actual = _straight_path_model(zero_point=zero_point, curvature="small")
+    np.testing.assert_allclose(actual.values, reference.values, atol=1e-12)
+    assert actual.provenance["effective_mass_ratio_min"] == 1.
+
+
 def test_harmonic_normal_cut_dvr_matches_harmonic_zpe_to_one_part_per_million():
     harmonic = _straight_path_model(zero_point="harmonic")
     dvr = _straight_path_model(zero_point="dvr")
