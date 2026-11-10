@@ -1,0 +1,72 @@
+{
+ "source": "runs 42575336118 (truncation, dx 2.0) and 42599202874 (dx 1.75/1.5 at 0.10 Eh)",
+ "method": "k(dx 1.5, 0.10 Eh) x k(dx 2.0, 0.16)/k(dx 2.0, 0.10); grid uncertainty = half the 1.75->1.5 change",
+ "spacing_ladder_0.10": {
+  "1.75": {
+   "600": 6.757052e-05,
+   "400": 5.49817e-06,
+   "300": 5.241261e-07,
+   "200": 7.913902e-09,
+   "150": 2.998219e-10
+  },
+  "1.5": {
+   "600": 6.71919e-05,
+   "400": 5.450882e-06,
+   "300": 5.179933e-07,
+   "200": 7.766129e-09,
+   "150": 2.889277e-10
+  }
+ },
+ "rows": [
+  {
+   "temperature": 600,
+   "k_qm": 6.680989613712576e-05,
+   "grid_rel_uncertainty": 0.002817452698911661,
+   "old_report": 6.8729e-05,
+   "k_rpmd": 4.352e-05,
+   "bead_factor": 0.979,
+   "ratio": 0.651400503761841,
+   "ratio_bead_corrected": 0.6653733439855373
+  },
+  {
+   "temperature": 400,
+   "k_qm": 5.407957472349874e-06,
+   "grid_rel_uncertainty": 0.004337646641405927,
+   "old_report": 5.8319e-06,
+   "k_rpmd": 3.776e-06,
+   "bead_factor": 0.982,
+   "ratio": 0.6982303428431449,
+   "ratio_bead_corrected": 0.711028862365728
+  },
+  {
+   "temperature": 300,
+   "k_qm": 5.131079673621035e-07,
+   "grid_rel_uncertainty": 0.005919767688114893,
+   "old_report": 5.846e-07,
+   "k_rpmd": 3.556e-07,
+   "bead_factor": 0.958,
+   "ratio": 0.6930315306311563,
+   "ratio_bead_corrected": 0.7234149589051736
+  },
+  {
+   "temperature": 200,
+   "k_qm": 7.685083967242484e-09,
+   "grid_rel_uncertainty": 0.009513941887908453,
+   "old_report": 8.765e-09,
+   "k_rpmd": 4.986e-09,
+   "bead_factor": 0.965,
+   "ratio": 0.648789267788449,
+   "ratio_bead_corrected": 0.6723204847548695
+  },
+  {
+   "temperature": 150,
+   "k_qm": 2.8697342014445627e-10,
+   "grid_rel_uncertainty": 0.018852813350883277,
+   "old_report": 2.942e-10,
+   "k_rpmd": 1.521e-10,
+   "bead_factor": 0.919,
+   "ratio": 0.5300142428641514,
+   "ratio_bead_corrected": 0.576729317588848
+  }
+ ]
+}
