@@ -127,7 +127,7 @@ def run_rate(config, system, output, executor=None):
                 ) from error
             raise
     pmf, parent_tasks = root_call(
-        _pmf_and_parent_tasks, sampled, config, system, str(output), options
+        _pmf_and_parent_tasks, sampled, config, system, str(output), options, executor
     )
 
     def dispatch(function, tasks):

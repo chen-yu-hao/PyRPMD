@@ -38,6 +38,15 @@ def _reweighting_signature(reduced_potentials, counts, overlap_threshold):
     """Bind reusable target weights to the exact ordered bias problem."""
     digest = hashlib.sha256()
     for value, dtype in ((reduced_potentials, np.float64), (counts, np.int64)):
+        from .mbar_problem import ReducedPotentials
+        if isinstance(value, ReducedPotentials):
+            digest.update(str(value.shape).encode("ascii"))
+            for row in range(value.shape[0]):
+                selected = value.select(rows=[row])
+                for start in range(0, value.shape[1], 4096):
+                    array = np.ascontiguousarray(selected.block(start, min(start+4096, value.shape[1])))
+                    digest.update(memoryview(array).cast("B"))
+            continue
         array = np.ascontiguousarray(value, dtype=dtype)
         digest.update(str(array.shape).encode("ascii"))
         digest.update(memoryview(array).cast("B"))
@@ -121,6 +130,8 @@ def solve_mbar(
     combine_identical_states=True,
     method="auto",
     return_state_weights=True,
+    backend="auto",
+    threads=1,
 ):
     """Return MBAR target weights, state overlap and identifiability diagnostics.
 
@@ -129,18 +140,20 @@ def solve_mbar(
     physical Hamiltonian from every sampling/target reduced potential. Exact
     duplicate rows are combined internally, then all state-shaped outputs are
     expanded to the original order. Time streams are never combined here.
-    ``return_state_weights=False`` omits the expanded [N,K] state-weight array
-    and returns ``state_weights=None``. Target weights, overlap, free energies
-    and diagnostics are unchanged; unique-state weights are still computed
-    internally for overlap. The default preserves the full public result.
+    ``return_state_weights=False`` streams the overlap accumulation and omits
+    every [N,K] state-weight array. ``backend='auto'`` uses the optional native
+    C++ kernel, releasing the GIL, or bounded NumPy blocks when unavailable.
+    ``threads`` controls one native solve and is capped by CPU affinity.
+    The default preserves the full public state-weight result when requested.
 
-    ``auto`` uses a gauge-constrained damped Newton solve, with the original
-    L-BFGS/fixed-point procedure as fallback. ``legacy`` is retained for
+    ``method='auto'`` uses a gauge-constrained damped Newton solve, with the original
+    L-BFGS/fixed-point procedure as fallback. ``method='legacy'`` is retained for
     independent numerical comparisons. Both require the same final fixed-point
     residual, regardless of optimizer termination. A warm start changes only
     convergence speed, not the reduced potentials or target distribution.
     """
-    u = np.asarray(u_kn, float)
+    from .mbar_problem import ReducedPotentials
+    u = u_kn if isinstance(u_kn, ReducedPotentials) else np.asarray(u_kn, float)
     raw_counts = np.asarray(counts)
     if raw_counts.dtype.kind not in "iuf" or not np.isfinite(raw_counts).all():
         raise ValueError("MBAR counts must be finite positive integers")
@@ -154,7 +167,11 @@ def solve_mbar(
         or not np.array_equal(counts, raw_counts)
     ):
         raise ValueError("MBAR requires u[K,N], positive counts[K] summing to N")
-    if not np.isfinite(u).all():
+    if isinstance(u, ReducedPotentials):
+        finite = all(np.isfinite(a).all() for a in (u.values,u.centers,u.stiffness,u.periods))
+    else:
+        finite = all(np.isfinite(row).all() for row in u)
+    if not finite:
         raise ValueError("MBAR energies must be finite")
     target = np.zeros(u.shape[1]) if target_u is None else np.asarray(target_u, float)
     if target.shape != (u.shape[1],) or not np.isfinite(target).all():
@@ -168,6 +185,9 @@ def solve_mbar(
         or not np.isfinite(overlap_threshold)
         or overlap_threshold < 0
         or method not in ("auto", "legacy")
+        or backend not in ("auto", "native", "numpy")
+        or isinstance(threads, (bool, np.bool_))
+        or not isinstance(threads, (int, np.integer)) or threads < 1
     ):
         raise ValueError("invalid MBAR solver options")
     original_counts = counts
@@ -178,6 +198,15 @@ def solve_mbar(
     )
     if initial.shape != counts.shape or not np.isfinite(initial).all():
         raise ValueError("initial_free_energies must be finite [K]")
+    if method != "legacy":
+        from .mbar_streaming import solve
+        result = solve(u, counts, np.ascontiguousarray(target), initial, tolerance=tolerance,
+                       max_iterations=max_iterations, overlap_threshold=overlap_threshold,
+                       combine_identical_states=combine_identical_states,
+                       return_state_weights=return_state_weights, backend=backend, threads=int(threads))
+        result.diagnostics["warm_start"] = initial_free_energies is not None
+        return result
+    u = np.asarray(u)
     if combine_identical_states:
         representatives, state_map = _identical_rows(u)
     else:

@@ -7,6 +7,8 @@ It never changes the sampling measure or infers physical convergence.
 from __future__ import annotations
 
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
+import copy
+from itertools import islice
 import os
 import warnings as _warnings
 
@@ -20,6 +22,7 @@ from .fes_statistics import (
     cv_statistical_inefficiency,
 )
 from .mbar import _identical_rows, solve_mbar
+from .mbar_problem import umbrella_problem
 from .rate_support import (
     DEFAULT_MAX_CENTER_DISPLACEMENT_SIGMA,
     DEFAULT_MIN_ENDPOINT_ESS,
@@ -87,6 +90,13 @@ def _mbar_bootstrap_draw(task):
     live in the shared context and are never copied between worker threads.
     """
     draw, indices, context = task
+    if isinstance(indices, dict):
+        rng = np.random.Generator(getattr(np.random, indices["bit_generator"])())
+        rng.bit_generator.state = indices
+        indices = np.concatenate([
+            context["resample"](np.arange(n), block, rng) + start
+            for n, block, start in zip(context["counts"], context["blocks"], context["offsets"][:-1])
+        ])
     u = context["u"]
     x = context["x"]
     counts = context["fit_counts"]
@@ -103,6 +113,10 @@ def _mbar_bootstrap_draw(task):
             **context["solver_options"],
         )
         record["solver_residual"] = float(mb.residual)
+        execution = getattr(mb, "diagnostics", None) or {}
+        record["solver_execution"] = {key: execution[key] for key in (
+            "backend", "native_calls", "threads_used", "newton_iterations", "polish_iterations"
+        ) if key in execution}
         if not mb.converged:
             record["reason"] = "mbar_not_converged"
         elif len(np.unique(mb.components)) != 1:
@@ -213,8 +227,8 @@ def _available_memory_bytes():
 def _cap_bootstrap_workers(requested, bootstrap, u_nbytes, available_memory=None):
     """Apply a conservative memory cap to the configured worker count.
 
-    Fancy indexing ``u[:, indices]`` creates a per-draw copy. The estimate of
-    four copies of ``u`` also covers the Newton solver's temporary arrays.
+    The supplied size estimates per-draw vectors and solver scratch. A lazy
+    umbrella problem never materializes a K-by-N potential matrix.
     Half of available memory is reserved for those copies and the rest of the
     analysis process.
     """
@@ -351,6 +365,7 @@ def mbar_rate_pmf(
     bootstrap_workers=None,
     bootstrap_workers_source="default",
     bootstrap_total_cores=None,
+    bootstrap_executor=None,
     min_weight_ess=DEFAULT_MIN_WEIGHT_ESS,
     min_endpoint_ess=DEFAULT_MIN_ENDPOINT_ESS,
     max_center_displacement_sigma=DEFAULT_MAX_CENTER_DISPLACEMENT_SIGMA,
@@ -393,11 +408,12 @@ def mbar_rate_pmf(
     draws. The analysis API treats ``None`` (the default) and ``1`` as serial;
     the workflow resolves an omitted input setting from
     ``parallel.trajectory_workers`` before calling this function. An explicit
-    value greater than one opts into parallel dispatch. The large
-    umbrella-potential array is shared read-only between threads, but each
-    draw's ``u[:, indices]`` fancy-index operation and solver temporaries are
-    copied. The requested worker count is therefore capped by a conservative
-    estimate of available memory. The coordinator still generates
+    value greater than one opts into parallel dispatch. Umbrella parameters
+    and samples are shared between threads; each draw retains only indices,
+    target weights and bounded solver workspace. With ``bootstrap_executor``,
+    reuse an existing trajectory pool instead of starting local threads.
+    CPU affinity and a conservative memory estimate bound local workers;
+    an external executor owns its worker placement. The coordinator generates
     circular-block indices in the original seeded order, so serial and
     parallel runs consume identical resamples. Numerical convergence is not
     physical or sampling convergence.
@@ -487,9 +503,9 @@ def mbar_rate_pmf(
                                   or not np.isfinite(value) or value <= 0):
             raise ValueError(name + " must be positive and finite, or None")
     options = dict(solver_options or {})
-    if set(options) - {"tolerance", "max_iterations", "method"}:
+    if set(options) - {"tolerance", "max_iterations", "method", "backend", "threads"}:
         raise ValueError(
-            "solver_options supports tolerance, max_iterations, and method"
+            "solver_options supports tolerance, max_iterations, method, backend and threads"
         )
     counts = np.asarray([len(a) for a in arrays])
     offsets = np.concatenate(([0], np.cumsum(counts)))
@@ -528,7 +544,7 @@ def mbar_rate_pmf(
     grid = 0.5 * (edges[1:] + edges[:-1])
     representatives, state_map = _identical_rows(np.column_stack((centers, stiffness)))
     fit_counts = np.bincount(state_map, weights=counts).astype(int)
-    u = umbrella_reduced_potentials(
+    u = umbrella_problem(
         x[:, None],
         centers[representatives, None],
         stiffness[representatives, None, None],
@@ -556,6 +572,9 @@ def mbar_rate_pmf(
         )
         warnings.append(worker_warning)
         _warnings.warn(worker_warning, RuntimeWarning, stacklevel=2)
+    if bootstrap_executor is None:
+        affinity_cores = len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else os.cpu_count() or 1
+        bootstrap_workers = min(bootstrap_workers, total_cores, affinity_cores)
     fit = _solve_mbar(u, fit_counts, overlap_threshold=overlap_threshold,
                      return_state_weights=False, **options)
     connected = len(np.unique(fit.components)) == 1
@@ -744,7 +763,8 @@ def mbar_rate_pmf(
             "fit_counts": fit_counts,
             "overlap_threshold": overlap_threshold,
             "initial_free_energies": fit.free_energies,
-            "solver_options": options,
+            "solver_options": {**options, "threads": min(options.get("threads", 1),
+                                                          max(1, total_cores // bootstrap_workers))},
             "edges": edges,
             "beta": beta,
             "min_count": min_count,
@@ -758,22 +778,34 @@ def mbar_rate_pmf(
             "ui_grid": ui_grid,
             "solve_mbar": _solve_mbar,
             "integrate_ui": _integrate_ui,
+            "resample": _resample,
+            "counts": counts,
+            "blocks": blocks,
         }
 
-        def tasks():
+        def tasks(compact=False):
             # Keep the existing single coordinator RNG stream and draw order.
             # Only the expensive solve/histogram/UI work leaves the coordinator;
             # at most one large index vector per worker is retained in memory.
             for draw in range(int(bootstrap)):
+                state = copy.deepcopy(rng.bit_generator.state) if compact else None
                 indices = np.concatenate(
                     [
                         _resample(base, block, rng) + start
                         for base, block, start in zip(base_indices, blocks, offsets[:-1])
                     ]
                 )
-                yield draw, indices, context
+                yield draw, state if compact else indices, context
 
-        if bootstrap_workers == 1:
+        if bootstrap_executor is not None and bootstrap_workers > 1:
+            # Reuse already allocated trajectory workers, including a managed
+            # pool whose coordinator is pinned to just one CPU. Submit bounded
+            # batches of RNG states; do not retain bootstrap*N sample indices.
+            iterator = tasks(compact=True)
+            results = []
+            while batch := list(islice(iterator, bootstrap_workers)):
+                results.extend(bootstrap_executor.map(_mbar_bootstrap_draw, batch))
+        elif bootstrap_workers == 1:
             results = [_mbar_bootstrap_draw(task) for task in tasks()]
         else:
             blas_threads = max(1, total_cores // bootstrap_workers)
@@ -957,7 +989,7 @@ def mbar_rate_pmf(
             "workers": int(bootstrap_workers),
             "workers_source": bootstrap_workers_source,
             "memory_capped": bool(memory_capped),
-            "backend": "thread" if bootstrap_workers > 1 else "serial",
+            "backend": ("executor" if bootstrap_executor is not None else "thread") if bootstrap_workers > 1 else "serial",
             "attempted": len(records),
             "valid": len(draws),
             "valid_fraction": len(draws) / bootstrap if bootstrap else None,

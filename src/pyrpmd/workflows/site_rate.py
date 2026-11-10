@@ -23,8 +23,8 @@ from ..analysis.fes import (
     _block_resample,
     _histogram,
     solve_mbar,
-    umbrella_reduced_potentials,
 )
+from ..analysis.mbar_problem import umbrella_problem
 from ..analysis.recrossing import summarize_recrossing
 from ..checkpoint import atomic_savez, load_checkpoint
 from ..constants import ATOMIC_TIME_S
@@ -402,7 +402,7 @@ def _estimate_pmf(sampled, config, system, output):
             int(config.get("analysis", {}).get("seed", config.get("seed", 0))), 1201]))
         analysis = config.get("analysis", {})
         values = np.concatenate(arrays)
-        reduced = umbrella_reduced_potentials(values, centers, stiffness, config["beta"], periods=(None,))
+        reduced = umbrella_problem(values, centers, stiffness, config["beta"], periods=(None,))
         offsets = np.r_[0, np.cumsum(sizes)]
         for draw in range(count):
             # The circular-block draw order is unchanged. Reusing columns of
