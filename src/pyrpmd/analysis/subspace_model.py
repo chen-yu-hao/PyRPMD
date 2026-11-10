@@ -611,8 +611,9 @@ def project_path_subspace(
     curvature normal has frequency ``omega_perp`` and width
     ``tbar = sqrt(hbar / omega_perp)``.  With ``abar = kappa * tbar`` the
     effective mass is ``mu_eff / mu = exp(-2*abar - abar**2 +
-    (d tbar / d sigma)**2)``.  ``abar`` is clipped to one outside the SCT
-    range of validity.  The coordinate is transformed with
+    (d tbar / d sigma)**2)``, capped at one as in SCT
+    (``mu_eff = mu * min(exp(...), 1)``).  ``abar`` is clipped to one outside
+    the SCT range of validity.  The coordinate is transformed with
     ``d tau = sqrt(mu_eff / mu) d sigma`` and the potential is resampled on a
     uniform ``tau`` grid, so the returned model still has unit mass.
     ``axis`` is the arc-length grid and must lie within the path.
@@ -702,6 +703,7 @@ def project_path_subspace(
     clipped_points = 0
     clipped_fraction = 0.0
     abar_max = 0.0
+    exponent_capped = 0
     tau_raw = grid.copy()
     if curvature == "small" and n > 1:
         # Use the public curvature diagnostic's arc interpolation to suppress
@@ -730,7 +732,9 @@ def project_path_subspace(
             )
         abar_used = np.minimum(abar, 1.0)
         exponent = -2.0 * abar_used - abar_used**2 + deriv_tbar**2
-        mass_ratio = np.exp(np.clip(exponent, -700.0, 700.0))
+        # SCT caps the effective mass at the path mass: mu_eff = mu * min(exp(...), 1).
+        exponent_capped = int(np.count_nonzero(exponent > 0.0))
+        mass_ratio = np.exp(np.minimum(np.clip(exponent, -700.0, 700.0), 0.0))
         bad_frequency = (curvature_values > 1e-12) & (~np.isfinite(omega_perp) | (omega_perp <= 0.0))
         mass_ratio[bad_frequency] = 1.0
         if np.max(np.abs(mass_ratio - 1.0), initial=0.0) < 1e-14:
@@ -772,6 +776,7 @@ def project_path_subspace(
             "max_abar": abar_max,
             "curvature_truncated_points": clipped_points,
             "curvature_truncated_fraction": clipped_fraction,
+            "effective_mass_capped_points": exponent_capped,
             "unstable_curvature_frequency_points": unstable_frequency_points,
             "curvature_normal_frequency_range": [
                 float(np.min(finite_omega)) if len(finite_omega) else None,
