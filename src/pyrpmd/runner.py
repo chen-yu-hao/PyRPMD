@@ -658,8 +658,19 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
 
 
 def prepare(job, *, numerical=False):
+    from .resources import resource_report
+
     spec = _spec(job)
     config, system = spec.resolve()
+    resources = resource_report(config)
+    result = _prepare(spec, numerical=numerical and resources["available"], _resolved=(config, system))
+    result.update(resources=resources, ready=bool(result.get("ready", True) and resources["available"]))
+    return result
+
+
+def _prepare(job, *, numerical=False, _resolved=None):
+    spec = _spec(job)
+    config, system = spec.resolve() if _resolved is None else _resolved
     if config["task"] == "nonadiabatic":
         from .workflows.nonadiabatic import prepare_nonadiabatic
 

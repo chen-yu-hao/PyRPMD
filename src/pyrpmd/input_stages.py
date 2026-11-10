@@ -39,7 +39,7 @@ def duration_steps(value, dt_au, *, path, allow_zero=False):
     try:
         return time_steps(value, dt_au, allow_zero=allow_zero)
     except (TypeError, ValueError) as error:
-        raise InputError(f"{path}: {error}") from error
+        raise InputError(f"{path}; dynamics.timestep = {dt_au:g} autime: {error}") from error
 
 
 def _thermostat_input(value, dt_au, path, *, parent=False):

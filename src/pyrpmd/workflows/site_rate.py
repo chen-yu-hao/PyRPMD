@@ -488,7 +488,7 @@ def _estimate_pmf(sampled, config, system, output):
 
 
 def _public_pmf(pmf):
-    return {key: value for key, value in pmf.items() if not key.startswith("_")}
+    return _rate_unit_aliases({key: value for key, value in pmf.items() if not key.startswith("_")})
 
 
 def _dynamics(config, system, provider, namespace, *identity):
@@ -738,6 +738,15 @@ def _complete_surface_qtst(pmf, weights, beta):
     return pmf
 
 
+def _rate_unit_aliases(result):
+    """Keep the original spelling for one release alongside explicit s^-1 keys."""
+    for key in ("rate_s", "rate_estimate_s", "rate_standard_error_s", "k_qtst_s",
+                "rate_percentile_95_ci_s", "conditional_rate_standard_error_s"):
+        if key in result:
+            result[key + "_inv"] = result[key]
+    return result
+
+
 def _aggregate(children, pmf, config, output):
     options = _recrossing_options(config)
     general = pmf.get("metric_estimator") == "constrained_parent_inverse_sqrt"
@@ -760,6 +769,7 @@ def _aggregate(children, pmf, config, output):
     if not children:
         if not pmf["ready"]:
             warnings.append("No recrossing trajectories were launched because the full basin/surface histogram is unsupported.")
+        _rate_unit_aliases(result)
         write_json(Path(output) / "summary.json", result)
         return result
     if not pmf["ready"]:
@@ -884,6 +894,7 @@ def _aggregate(children, pmf, config, output):
         "maximum_endpoint_energy_error_kbt": energy_error,
     })
     result["files"]["recrossing"] = str(Path(output) / "recrossing.csv")
+    _rate_unit_aliases(result)
     write_json(Path(output) / "summary.json", result)
     return result
 

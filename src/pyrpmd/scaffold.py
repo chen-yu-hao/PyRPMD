@@ -19,13 +19,20 @@ def _command_text(arguments, *, windows):
     return shlex.join(arguments)
 
 
-def init_project(directory):
-    """Write the small harmonic FES tutorial into a new or empty directory.
+def init_project(directory, task="fes"):
+    """Write one bundled workflow tutorial into a new or empty directory.
 
     The input is deliberately self-contained: no checkout, geometry file,
     downloaded potential or optional analysis backend is required. Existing
     files are never replaced.
     """
+    templates = {
+        "fes": ("quickstart.inp",), "pimd": ("pimd.inp",),
+        "rate": ("rate.inp", "toy_exchange.py", "ts.xyz"),
+        "drpmd": ("drpmd.inp", "reactant_a.xyz", "reactant_b.xyz"),
+    }
+    if task not in templates:
+        raise InputError("Starter task must be fes, pimd, rate or drpmd")
     requested = Path(directory).expanduser()
     if requested.is_symlink():
         raise InputError(f"Starter directory must not be a symbolic link: {requested}")
@@ -38,19 +45,23 @@ def init_project(directory):
                 f"Starter directory is not empty: {target}; choose a new or empty directory. "
                 "Existing files are never overwritten."
             )
-    template = files("pyrpmd").joinpath("templates", "quickstart.inp").read_text(encoding="utf-8")
+    resources = files("pyrpmd").joinpath("templates")
+    contents = {("quickstart.inp" if index == 0 else name): resources.joinpath(name).read_text(encoding="utf-8")
+                for index, name in enumerate(templates[task])}
     created_directory = not target.exists()
     target.mkdir(parents=True, exist_ok=True)
     input_path = target / "quickstart.inp"
-    created_input = False
+    created = []
     try:
         # Exclusive creation also protects against another init winning a race.
-        with input_path.open("x", encoding="utf-8", newline="\n") as stream:
-            created_input = True
-            stream.write(template)
+        for name, content in contents.items():
+            path = target / name
+            with path.open("x", encoding="utf-8", newline="\n") as stream:
+                created.append(path)
+                stream.write(content)
     except OSError:
-        if created_input:
-            input_path.unlink(missing_ok=True)
+        for path in created:
+            path.unlink(missing_ok=True)
         if created_directory:
             try:
                 target.rmdir()
@@ -70,8 +81,8 @@ def init_project(directory):
         "directory": str(target),
         "input": str(input_path),
         "output": str(output),
-        "task": "fes",
-        "purpose": "Short harmonic tutorial; not a converged scientific calculation",
+        "task": task,
+        "purpose": "Short workflow tutorial; not a converged scientific calculation",
         "next_steps_shell": "powershell" if os.name == "nt" else "posix",
         "next_steps": [_command_text(step, windows=os.name == "nt") for step in steps],
         "next_step_arguments": steps,

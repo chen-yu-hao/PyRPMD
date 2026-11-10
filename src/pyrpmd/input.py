@@ -130,6 +130,14 @@ class JobSpec:
         return JobSpec(d, self.base_directory, self.input_path)
 
     def resolve(self):
+        resolved, system = self._resolve()
+        from .input_diagnostics import input_diagnostics
+
+        notes = resolved.setdefault("_warnings", [])
+        notes.extend(note for note in input_diagnostics(self.data, resolved, system) if note not in notes)
+        return resolved, system
+
+    def _resolve(self):
         if self.data.get("task") == "path_sampling":
             from .path_sampling_input import resolve_path_sampling_job
 
