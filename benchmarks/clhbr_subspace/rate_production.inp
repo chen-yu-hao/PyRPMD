@@ -29,7 +29,7 @@ breaking_bonds = [[0, 1]]
 rinf = "6 angstrom"
 
 [rate]
-dividing_surface = 1.0
+# Use the PMF-selected xi* for constrained parents and recrossing.
 
 [rate.pmf]
 method = "umbrella"

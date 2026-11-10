@@ -25,6 +25,22 @@ CASES = [
 ]
 
 
+@pytest.mark.parametrize(
+    "path",
+    [
+        "examples/rate/research.inp",
+        "benchmarks/clhbr_subspace/rate.inp",
+        "benchmarks/clhbr_subspace/rate_production.inp",
+    ],
+)
+def test_research_and_subspace_rate_inputs_select_pmf_maximum(path):
+    """Do not pin the dividing surface at the nominal TS coordinate."""
+    raw = JobSpec.from_file(ROOT / path).data
+    assert "dividing_surface" not in raw.get("rate", {})
+    assert "dividing_surface" not in raw.get("recrossing", {})
+    assert rate_pmf_options(raw)["xi_star"] is None
+
+
 @pytest.mark.parametrize("filename,sampler,estimator", CASES)
 def test_rate_examples_validate_with_pes_and_select_one_estimator(filename, sampler, estimator):
     path = EXAMPLES / filename

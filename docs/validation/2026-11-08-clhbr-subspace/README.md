@@ -27,6 +27,11 @@ Br, H, Cl; build with `python benchmarks/brhcl/build_pes.py`). Temperature 300 K
 
 ## Full RPMD rate
 
+**Historical input note:** The results below used the original
+`rate_production.inp` with `dividing_surface = 1.0`. The current example omits
+that override so the PMF selects `xi*`. These historical numbers have not been
+recomputed with the corrected input.
+
 `rate_production.inp` (4 ps per window, 64 parents × 16 child pairs × 1 ps, native kernels,
 2 min 9 s on 4 cores): k_RPMD = 5.75 × 10⁻¹³ ± 3.32 × 10⁻¹³ cm³ molecule⁻¹ s⁻¹,
 κ = 0.201 ± 0.020, free-energy barrier 3.16 kcal/mol. The run is labelled
