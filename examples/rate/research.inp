@@ -31,7 +31,7 @@ integrator = "cayley-bcb"
 timestep = "0.1 fs"
 
 [rate]
-dividing_surface = 1.0
+# Select xi* from the supported PMF maximum rather than fixing xi=1.0.
 pmf_points = 401
 
 # Select reconstruction at the rate boundary, independently of window sampling.

@@ -19,6 +19,9 @@ validation and a downhill channel check. Its regional table gives 16 entrance wi
 26 barrier windows with different force constants. Umbrella sampling, constrained parents
 and recrossing children have separate settings.
 
+The example leaves `rate.dividing_surface` unset so the supported PMF maximum
+selects `xi*` for constrained parents and recrossing rather than fixing it to 1.0.
+
 ```bash
 pyrpmd validate examples/rate/research.inp --check-pes
 pyrpmd prepare examples/rate/research.inp --pilot --output preparation.json
