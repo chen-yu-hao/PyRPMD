@@ -390,6 +390,11 @@ def main(argv=None):
         elif args.command == "validate":
             spec = _job(args)
             config, system = spec.resolve()
+            from .runner import propagation_backend_plan, _append_backend_warnings
+
+            backend_plan = ([] if config.get("task") == "pcet"
+                            else propagation_backend_plan(config, system))
+            _append_backend_warnings(config, backend_plan)
             if args.check_pes:
                 from .runner import prepare
 
@@ -416,6 +421,8 @@ def main(argv=None):
                         "parallel": execution_plan(config["parallel"]).__dict__,
                         "warnings": config["_warnings"],
                     }
+            result["propagation_plan"] = backend_plan
+            result["warnings"] = config.get("_warnings", result.get("warnings", []))
             if config["task"] == "rate":
                 from .workflows.rate_plan import rate_pmf_plan
 

@@ -20,7 +20,8 @@ def _aggregate(children, pmf, config, output, options):
     task_name = "surface_rate" if is_surface else "rate"
     unit_key = "s_inv" if is_surface else "cm3_s"
     qtst_key = "k_qtst_" + unit_key
-    private_pmf = ("pmf_bootstrap_barriers", "pmf_bootstrap_qtst")
+    private_pmf = ("pmf_bootstrap_barriers", "pmf_bootstrap_qtst",
+                   "propagation", "propagation_parents")
     if not children:
         pmf_status = pmf.get("status", "insufficient_overlap")
         result = {
@@ -34,6 +35,11 @@ def _aggregate(children, pmf, config, output, options):
             "rate_standard_error_" + unit_key: None,
             "kappa": None,
             "pmf": {k: v for k, v in pmf.items() if k not in private_pmf},
+            "propagation": {
+                "pmf": pmf.get("propagation", []),
+                "parents": pmf.get("propagation_parents", []),
+                "children": [],
+            },
             "warnings": pmf["warnings"],
         }
         if is_surface:
@@ -241,6 +247,12 @@ def _aggregate(children, pmf, config, output, options):
         ),
         "energy_diagnostic_child_pairs": len(endpoint_errors),
         "pmf": public_pmf,
+        "propagation": {
+            "pmf": pmf.get("propagation", []),
+            "parents": pmf.get("propagation_parents", []),
+            "children": [dict(c.get("propagation", {})) for c in children
+                         if isinstance(c, dict) and c.get("propagation") is not None],
+        },
         "warnings": warnings,
         "converged": False,
         "convergence_note": (

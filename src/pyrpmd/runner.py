@@ -17,6 +17,154 @@ from .io import write_json, referenced_files, fingerprint, jsonable, _windows_dr
 from .system import System
 
 
+def _planned_propagation_steps(config):
+    """Conservatively estimate the declared propagation work budget."""
+    sampling = config.get("sampling", {})
+    total = 0
+    if isinstance(sampling, Mapping):
+        total += int(sampling.get("equilibration_steps", 0) or 0)
+        total += int(sampling.get("production_steps", 0) or 0)
+        total *= max(1, int(sampling.get("replicas", 1) or 1))
+    collision = config.get("collision", {})
+    if isinstance(collision, Mapping):
+        total += int(collision.get("max_steps", 0) or 0) * max(
+            1, int(collision.get("trajectories", 1) or 1))
+    recrossing = config.get("recrossing", {})
+    if isinstance(recrossing, Mapping):
+        parents = int(recrossing.get("parent_replicas", 1) or 1) * int(
+            recrossing.get("parent_samples", 1) or 1)
+        total += parents * int(recrossing.get("child_pairs", 1) or 1) * int(
+            recrossing.get("child_steps", 0) or 0)
+        total += int(recrossing.get("parent_replicas", 1) or 1) * int(
+            recrossing.get("parent_samples", 1) or 1) * int(
+            recrossing.get("parent_interval_steps", 0) or 0)
+    return max(0, total)
+
+
+def propagation_backend_plan(config, system):
+    """Describe the backend selected for each planned workflow stage.
+
+    This constructs provider/CV descriptors but never evaluates a PES or
+    advances a state, making it safe for ``pyrpmd validate``.
+    """
+    from .propagation import native_support_reason
+
+    options = config.get("dynamics", {})
+    if not isinstance(options, Mapping):
+        options = {}
+    provider = None
+    provider_owned = isinstance(config.get("potential"), Mapping)
+    dynamics = None
+    base_reason = None
+    try:
+        from .potentials import make_potential
+        from .dynamics import Dynamics
+        potential_spec = config["potential"]
+        kind = (potential_spec.get("provider", potential_spec.get("type", "builtin"))
+                if isinstance(potential_spec, Mapping) else None)
+        cheap_kinds = {"builtin", "free", "harmonic", "morse_pair", "double_well", "periodic_cosine"}
+        if kind is not None and kind not in cheap_kinds:
+            base_reason = f"PES provider '{kind}' does not declare a built-in native binding"
+            provider = None
+            dynamics = None
+        else:
+            provider = make_potential(potential_spec, system)
+            dynamics = Dynamics(
+                provider, system.masses, config["beta"], config["beads"], config["dt_au"],
+                native=config.get("native", options.get("native", True)),
+                threads=config.get("parallel", {}).get("threads_per_rank", 1),
+                fixed_atoms=getattr(system, "fixed_atoms", ()),
+                fixed_positions=system.geometry if getattr(system, "fixed_atoms", ()) else None,
+                **{key: options[key] for key in ("loop_backend", "block_steps", "integrator")
+                   if key in options},
+            )
+            base_reason = native_support_reason(dynamics)
+    except Exception as exc:
+        base_reason = f"validation could not construct native plan: {exc}"
+
+    planned = _planned_propagation_steps(config)
+    stages = []
+
+    def add(stage, reason=None):
+        selected = base_reason if reason is None else reason
+        stages.append({"stage": stage, "backend": "native" if selected is None else "python",
+                       "reason": selected, "planned_steps": planned})
+
+    task = config.get("task")
+    if task in ("fes", "rate", "surface_rate", "site_rate"):
+        if dynamics is None:
+            add("umbrella")
+        else:
+            try:
+                from .workflows.fes import resolve_umbrellas
+                from .bias import UmbrellaBias
+                cv, _, centers, stiffness = resolve_umbrellas(config, system)
+                reason = native_support_reason(
+                    dynamics, bias=UmbrellaBias(cv, centers[0], stiffness), observe=cv)
+                add("umbrella", reason)
+            except Exception as exc:
+                add("umbrella", f"CV/bias plan unavailable: {exc}")
+    elif task == "diffusion" and config.get("electronic_friction") is not None:
+        provider_kind = config.get("electronic_friction", {}).get("provider", "constant")
+        add("production", (
+            "constant electronic friction uses Python OU centroid orchestration"
+            if provider_kind == "constant" else
+            "electronic friction provider callbacks require the Python loop"
+        ))
+    elif task != "diffusion":
+        add("propagation")
+
+    if task in ("rate", "surface_rate"):
+        add("recrossing parent", "constrained parent sampling uses Python scheduling")
+        add("recrossing child", base_reason or "child trajectory uses Python-compatible callbacks")
+    elif task == "site_rate":
+        add("site parent", "centroid RATTLE parent sampling uses the Python loop")
+        add("site child", "checkpointed child classification uses the Python loop")
+    elif task == "diffusion" and config.get("electronic_friction") is None:
+        add("production")
+
+    if provider_owned and provider is not None:
+        close = getattr(provider, "close", None)
+        if callable(close):
+            close()
+    return stages
+
+
+def _append_backend_warnings(config, plan):
+    """Warn once when a large declared stage resolves to Python."""
+    warnings = config.setdefault("_warnings", [])
+    for item in plan:
+        if item.get("backend") == "python" and item.get("planned_steps", 0) > 1_000_000:
+            message = (f"{item['stage']}: Python propagation loop selected for "
+                       f"{item['planned_steps']:,} planned steps ({item.get('reason')}); "
+                       "this may be substantially slower than the native loop.")
+            if message not in warnings:
+                warnings.append(message)
+
+
+def _summary_propagation(result):
+    """Ensure every run summary has a public propagation accounting field."""
+    if not isinstance(result, Mapping):
+        return result
+    if "propagation" in result:
+        return result
+    records = []
+
+    def visit(value):
+        if isinstance(value, Mapping):
+            if {"native_steps", "python_steps", "fallback_reasons"}.issubset(value):
+                records.append(value)
+            for child in value.values():
+                visit(child)
+        elif isinstance(value, (list, tuple)):
+            for child in value:
+                visit(child)
+
+    visit(result)
+    from .propagation import combine_propagation_stats
+    return {**result, "propagation": combine_propagation_stats(records)}
+
+
 def _read_identity(config, directory):
     """Restore a molecular System or the explicit system-free PCET model."""
     path = Path(directory) / "input"
@@ -245,6 +393,9 @@ def run_resolved(config, system, *, output=None, resume=False, init_from=None, i
     from .workflows import validate_bond_constraint_workflow
     from .workflows.sampling import validate_andersen_schedule
 
+    backend_plan = [] if config.get("task") == "pcet" else propagation_backend_plan(config, system)
+    _append_backend_warnings(config, backend_plan)
+
     validate_bond_constraint_workflow(system, config.get("task"))
     validate_andersen_schedule(config, config.get("task"))
     if ((config.get("task") in ("pimd", "diffusion") and "path_integral" not in config)
@@ -351,6 +502,7 @@ def run_resolved(config, system, *, output=None, resume=False, init_from=None, i
     else:
         raise InputError("Unknown workflow")
     if is_root() and result is not None:
+        result = _summary_propagation(result)
         result = {
             **result,
             "software": "PyRPMD",
@@ -358,6 +510,7 @@ def run_resolved(config, system, *, output=None, resume=False, init_from=None, i
             "output": target,
             "preset": config.get("preset", "pilot"),
             "input_warnings": config.get("_warnings", []),
+            "propagation_plan": backend_plan,
         }
         if config.get("warm_start"):
             from .warm_start import report
@@ -656,12 +809,15 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
 def prepare(job, *, numerical=False):
     spec = _spec(job)
     config, system = spec.resolve()
+    backend_plan = [] if config.get("task") == "pcet" else propagation_backend_plan(config, system)
+    _append_backend_warnings(config, backend_plan)
     if config["task"] == "nonadiabatic":
         from .workflows.nonadiabatic import prepare_nonadiabatic
 
         return {
             "task": "nonadiabatic", "resolved": config, "system": system.to_dict(),
             "diagnostics": config.get("_warnings", []), "ready": True,
+            "propagation_plan": backend_plan,
             "nonadiabatic_preparation": prepare_nonadiabatic(config, system, numerical=numerical),
         }
     if config["task"] == "pcet":
@@ -670,6 +826,7 @@ def prepare(job, *, numerical=False):
         return {
             "task": "pcet", "resolved": config, "model": system.to_dict(),
             "diagnostics": config.get("_warnings", []),
+            "propagation_plan": backend_plan,
             "ready": True, "pcet_preparation": prepare_pcet(config, system, numerical=numerical),
         }
     result = {
@@ -677,6 +834,7 @@ def prepare(job, *, numerical=False):
         "resolved": config,
         "system": system.to_dict(),
         "diagnostics": config.get("_warnings", []),
+        "propagation_plan": backend_plan,
         "ready": True,
     }
     if config["task"] == "fes":

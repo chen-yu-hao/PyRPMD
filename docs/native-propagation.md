@@ -134,6 +134,27 @@ observations and failure prefixes are bit-identical to the previous loop.
 
 ## Workflow/event semantics
 
+### Backend coverage by task and stage
+
+The resolved backend is recorded in `propagation_plan` during validation and
+the accepted work is recorded in `propagation` in the result summary.  The
+table describes the normal `loop_backend="auto"` decision; an explicit
+`loop_backend="python"` always selects the Python row.
+
+| Task | Stage | Native when | Python fallback / first reason |
+| --- | --- | --- | --- |
+| `fes`, `rate`, `surface_rate` | fixed umbrella production | stateless native PES, centroid CV/bias descriptors (including `fractional`), and a supported sampling schedule | custom/stateful PES, unsupported CV or bias, composed operators, or thermostat scheduling |
+| `site_rate` | umbrella production | same fixed-bias conditions as FES | constrained parent and checkpointed child stages use Python RATTLE/trajectory scheduling |
+| `rate`, `surface_rate` | recrossing parent/child | exported native dividing-surface descriptors and a compatible PES | arbitrary classifiers, constraints, or unsupported providers |
+| `diffusion` | unthermostatted production | fixed-cell native PES with no barostat, monitor, or electronic friction | electronic friction uses Python OU centroid orchestration; other unsupported providers retain the one-step loop |
+| `diffusion`, `pimd` | equilibration/sampling | native PILE-L or Andersen block contract and supported stateless PES | barostat, constraints, active-learning monitor, unsupported ring, or provider callbacks |
+| `drpmd` | collision propagation | native outcome descriptor plus a compatible native PES | arbitrary Python classifier or missing native event descriptor |
+
+Native support is conservative: a stage is reported as Python as soon as one
+component cannot be represented without a Python callback.  This keeps the
+reported path aligned with the actual execution rather than with the fact that
+the free-ring substep itself may still be compiled.
+
 **dRPMD:** collision blocks use `propagate_block()`. The exact, unmodified
 `ConnectivityClassifier` with explicit channels and the benchmark's identity-aware
 `H3ExchangeClassifier` can export `native_outcome_descriptor()`. With a compatible

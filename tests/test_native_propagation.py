@@ -14,6 +14,7 @@ import pytest
 
 from pyrpmd.dynamics import Dynamics, State, native_capabilities
 from pyrpmd.cv import Distance, BondDifference, Cartesian, COMDistance, CVStack, RPMDrateCoordinate
+from pyrpmd.cv_periodic import FractionalCoordinate
 from pyrpmd.bias import UmbrellaBias, FluxMetricBias, CompositeBias
 from pyrpmd.potentials import HarmonicPotential, PythonPotential, CABIPotential
 from pyrpmd.potentials.native import NativePESBinding
@@ -121,6 +122,21 @@ def test_full_states_observations_and_independent_fft(native_library, beads):
         fft.step(c)
     np.testing.assert_allclose(a.q, c.q, atol=2e-11)
     np.testing.assert_allclose(a.p, c.p, atol=2e-10)
+    assert got.backend == "native"
+
+
+def test_fractional_coordinate_uses_native_linear_descriptor(native_library):
+    """A fixed-cell fractional CV is affine in Cartesian centroid coordinates."""
+    pes = CompiledPotential(native_library)
+    dyn = dynamics(pes)
+    cell = np.array([[5.0, 0.0, 0.0], [0.7, 6.0, 0.0], [0.2, 0.4, 7.0]])
+    cv = FractionalCoordinate(0, 0, cell, (True, True, True), dyn.masses, origin=.13)
+    initial = state(); a, b = initial.copy(), initial.copy()
+    got = dyn.propagate_block(a, 11, observe=cv, record_states=True, backend="native")
+    expected = dyn.propagate_block(b, 11, observe=cv, record_states=True, backend="python")
+    np.testing.assert_array_equal(got.q, expected.q)
+    np.testing.assert_array_equal(got.p, expected.p)
+    np.testing.assert_allclose(got.values, expected.values, atol=1e-13)
     assert got.backend == "native"
 
 

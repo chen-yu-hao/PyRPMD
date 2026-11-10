@@ -385,6 +385,8 @@ def _estimate_pmf(sampled, config, system, output):
     metric = 1.0 if general else metadata["mass_metric"]
     estimate = estimate_site_qtst(data, config["beta"], metric,
                                   metadata["basin"], metadata["dividing_surface"])
+    estimate["propagation"] = [dict(s.get("propagation", {})) for s in sampled.get("streams", [])
+                                if isinstance(s, dict) and s.get("propagation") is not None]
     estimate["preparation"] = metadata
     estimate["warnings"] = list(sampled["summary"].get("warnings", []))
     estimate["warnings"].append("QTST uses finite histogram bins; bin-size convergence has not been established.")
@@ -738,7 +740,7 @@ def _complete_surface_qtst(pmf, weights, beta):
     return pmf
 
 
-def _aggregate(children, pmf, config, output):
+def _aggregate(children, pmf, config, output, parent_propagation=()):
     options = _recrossing_options(config)
     general = pmf.get("metric_estimator") == "constrained_parent_inverse_sqrt"
     metric_weights = {}
@@ -753,6 +755,12 @@ def _aggregate(children, pmf, config, output):
         "rate_s": None, "rate_estimate_s": None, "rate_standard_error_s": None,
         "rate_percentile_95_ci_s": None, "kappa": None, "pmf": public_pmf,
         "k_qtst_s": pmf["k_qtst_s"], "warnings": warnings,
+        "propagation": {
+            "pmf": pmf.get("propagation", []),
+            "parents": [dict(item) for item in parent_propagation],
+            "children": [dict(c.get("propagation", {})) for c in children
+                          if isinstance(c, dict) and c.get("propagation") is not None],
+        },
         "convergence_note": "A finite-time plateau is not bead, timestep, cell-size or statistical convergence.",
         "files": {"pmf": str(Path(output) / "site_qtst.json"),
                   "histogram": str(Path(output) / "pmf" / "fes.csv")},
@@ -909,4 +917,5 @@ def run_site_rate(config, system, output, executor=None):
                            _recrossing_spec(config).get("child_batch_pairs", 1))
     children = map_trajectory_tasks(_child_task, tasks, config, executor,
                                     batch_size=child_batch_size)
-    return root_call(_aggregate, children, pmf, config, str(output))
+    return root_call(_aggregate, children, pmf, config, str(output),
+                     [p.get("propagation", {}) for p in parents])

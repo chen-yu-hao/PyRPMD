@@ -772,6 +772,10 @@ def _write_fes(output, data, streams, cv, config, _postprocess=None):
         "estimator": "mbar",
         "windows": len(set(s["window"] for s in streams)),
         "streams": len(streams),
+        # Keep per-window counters in the public summary.  The checkpoints
+        # already carry this data, but hiding it there made a large FES look
+        # indistinguishable from a Python fallback.
+        "propagation": [dict(s.get("propagation", {})) for s in streams],
         "samples": sum(len(s["samples"]) for s in streams),
         "overlap_connected": data["connected"],
         "overlap_components": data["components"],
