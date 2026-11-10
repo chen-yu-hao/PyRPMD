@@ -24,8 +24,8 @@ from .fes import (
     solve_mbar,
     cv_statistical_inefficiency,
     CV_CORRELATION_OBSERVABLES,
-    umbrella_reduced_potentials,
 )
+from .mbar_problem import umbrella_problem
 
 
 def surface_normalization(options, system):
@@ -379,7 +379,7 @@ def surface_rate_pmf(
         ):
             raise ValueError("bins must contain >=3 increasing finite edges")
     grid = 0.5 * (edges[:-1] + edges[1:])
-    u = umbrella_reduced_potentials(x, centers, stiffness, beta)
+    u = umbrella_problem(x, centers, stiffness, beta)
     if reweighting is None:
         fit = solve_mbar(u, counts, overlap_threshold=overlap_threshold,
                          return_state_weights=False)

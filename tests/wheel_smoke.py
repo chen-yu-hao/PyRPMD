@@ -12,7 +12,7 @@ import tempfile
 import numpy as np
 import h5py
 import pyrpmd
-from pyrpmd import _native, _thermal
+from pyrpmd import _native, _thermal, _mbar
 from pyrpmd.constants import BOHR_ANGSTROM
 from pyrpmd.dynamics import Dynamics, State, native_capabilities
 from pyrpmd.potentials import FreePotential, HarmonicPotential
@@ -27,11 +27,18 @@ def main():
     assert source not in Path(pyrpmd.__file__).resolve().parents, pyrpmd.__file__
     capabilities = native_capabilities()
     assert capabilities["available"], capabilities
-    for module in (_native, _thermal):
+    for module in (_native, _thermal, _mbar):
         assert Path(module.__file__).suffix in {".so", ".pyd"}, module.__file__
     if sys.platform.startswith("linux"):
         assert capabilities["openmp"], capabilities
     rng = np.random.default_rng(818)
+    from pyrpmd.analysis.mbar import solve_mbar
+    from pyrpmd.analysis.mbar_problem import umbrella_problem
+    x=rng.normal(size=(240,1))
+    problem=umbrella_problem(x,np.array([[-.5],[.5]]),[[1.]],1.)
+    fit=solve_mbar(problem,[120,120],backend="native",threads=2,return_state_weights=False)
+    assert fit.converged and fit.diagnostics["native_calls"]>0
+    np.testing.assert_allclose(fit.weights.sum(),1.,atol=1e-12)
     original = State(rng.normal(size=(4, 2, 3)), rng.normal(size=(4, 2, 3)))
     for scheme in ("cayley-bcb", "normal-mode-bab", "velocity-verlet"):
         reference, native = original.copy(), original.copy()

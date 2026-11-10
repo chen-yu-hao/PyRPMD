@@ -16,6 +16,58 @@ histogram MBAR 势垒 18.3085 kcal/mol。此前的 40 次配对重采样中，
 
 ## 数值实现与核验
 
+### 原生分块求解与并行分析
+
+`solve_mbar(..., backend="auto", threads=1)` 默认使用可选的 C++ 扩展
+`pyrpmd._mbar`；没有该扩展时，使用 NumPy 的分块实现。
+`backend="native"` 要求该扩展可用，`backend="numpy"` 显式选择分块参考实现。
+`method="legacy"` 保留原来的密集 SciPy 求解路径作为数值对照。
+原生内核在固定点方程、Newton 梯度/Hessian、目标 log 权重和 overlap
+累加期间释放 GIL，并支持 `threads>1` 的 OpenMP 样本并行。线程数受当前
+CPU affinity 限制；不会扩大调度器或用户给定的 CPU 范围。
+
+FES 和 rate 的 harmonic umbrella 路径按需计算 1D/2D/3D 约化势能，包含
+非均匀刚度、非对角刚度矩阵和周期 CV。bootstrap 使用原始样本的索引视图，
+不再创建 `u[:, indices]` 的完整副本。省略 state weights 时，原生求解的
+工作空间为 `O(N + threads*K²)`；输入已有的密集矩阵不复制，伞形路径也不
+创建 `K×N` 势能矩阵。显式请求 `return_state_weights=True` 时仍需保存
+API 要求的 `N×K` 输出。NumPy 回退路径使用最多 1024 帧的中间块。
+
+速率输入沿用已有的 `bootstrap_workers` 设置，例如：
+
+```toml
+[rate.pmf.analysis]
+bootstrap = 200
+bootstrap_workers = 8
+```
+
+省略时，普通 rate workflow 从 `parallel.trajectory_workers` 解析并行度；
+MPI 默认保持 root 上的串行分析。并发数还受可用内存估计约束。每个
+bootstrap draw 默认只用一个原生线程，避免嵌套并行过量使用核心。
+Python API 可通过 `solver_options={"threads": 4}` 控制单次求解，bootstrap
+内部会按总核心预算缩减每个 draw 的线程数。`reconstruct_fes` 同样支持
+`bootstrap_workers` 和 `solver_options`，保持交换 ladder 的同步重采样。
+
+`run_rate(..., executor=...)` 现在将同一个 executor 传递给 MBAR bootstrap。
+分析调用方也可以直接传 `bootstrap_executor`。这样已绑定单核的协调进程
+可以使用原有轨迹 worker，而不在该单核上再开一组本地线程。传输的任务只
+含原始数据引用和小型 RNG 状态；每次最多派发解析后的 worker 数量，子进程
+中重建相同 circular-block 索引。外部 executor 负责其 CPU 绑定和通信。
+
+并行前后保持同一 coordinator RNG 顺序、每个原始时间流的相关性分块、
+成对 UI/MBAR draw、失败 draw 顺序以及条件性误差语义。并行累加与旧版
+浮点求和次序不同，数值等价采用严格容差；同一内核单线程 draw 的串行/
+并行 bootstrap 使用完全相同的随机样本。求解器仍以原 MBAR 固定点残差
+判断收敛，保留断连、ESS、端点支撑和窗口异常门槛。
+
+`solver.details` 保存 `backend`、`threads_used`、`native_calls`、
+`potential_storage` 和 `state_weights_materialized`；bootstrap 的
+`draws[].solver_execution` 保存每个 draw 的原生运行证据。
+`bootstrap.backend` 区分 `serial`、`thread`、`executor`。
+执行 `benchmarks/efficiency/mbar_streaming.py` 可在固定 affinity、BLAS 设置和
+相同样本上，测量完整求解或完整 rate-PMF/bootstrap 的时间与峰值 RSS。
+这类性能测量不表示真实体系的物理收敛。
+
 求解器在固定自由能 gauge 后使用阻尼 Newton；完全相同的约化势能行
 可以精确合并，连续时间序列仍分别重采样。原求解器保留为 fallback
 和 `method="legacy"` 对照。最终验收使用原始固定点方程的残差。
