@@ -381,3 +381,41 @@ def test_standalone_reuse_identity_tracks_path_and_source(tmp_path, monkeypatch)
     pipe.run_subspace_pipeline(request, apply=False)
     assert identities[-1] != identities[0]
     assert len(closed) == 4
+
+
+@pytest.mark.parametrize("extra, message", [
+    ({"curvature": "large"}, "curvature"),
+    ({"zero_point": "quartic"}, "zero_point"),
+    ({"dvr_points": 7}, "dvr_points"),
+    ({"dvr_half_width": -1}, "dvr_half_width"),
+    ({"path": {"source": "unknown"}}, "source"),
+    ({"path": {"least_action_points": 1}}, "least_action_points"),
+    ({"path": {"instanton_beads": True}}, "instanton_beads"),
+])
+def test_projection_controls_reject_invalid_native_input(extra, message):
+    job = spec()
+    job.data["rate"]["subspace_correction"].update(extra)
+    with pytest.raises(InputError, match=message):
+        job.resolve()
+
+
+def test_native_stage_forwards_path_curvature_and_zero_point(tmp_path, monkeypatch):
+    config, _, root = saved_run(tmp_path)
+    config["rate"]["subspace_correction"].update(
+        curvature="small", zero_point="dvr", dvr_points=41, dvr_half_width=2.0,
+        path={"source": "least_action", "least_action_points": 5})
+    monkeypatch.setattr(stage, "_check_centroid_path", lambda *a: None)
+    calls = []
+
+    def pipeline(request, **kwargs):
+        calls.append(request)
+        return fake_report()
+
+    monkeypatch.setattr("pyrpmd.analysis.subspace_pipeline.run_subspace_pipeline", pipeline)
+    result = stage.postprocess_rate_subspace(config, root, strict=True)
+    assert result["status"] == "complete"
+    assert calls[0]["subspace"]["curvature"] == "small"
+    assert calls[0]["subspace"]["zero_point"] == "dvr"
+    assert calls[0]["subspace"]["dvr_points"] == 41
+    assert calls[0]["subspace"]["dvr_half_width"] == 2.0
+    assert calls[0]["path"] == {"source": "least_action", "least_action_points": 5}

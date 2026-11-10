@@ -313,3 +313,15 @@ module. `hybrid_flux_side_correction(..., mode="ratio")` and
 `adaptive_quantum.matched_rate_defect(..., mode="ratio")` apply the same multiplicative
 transfer to curves or plateau values computed elsewhere; their additive default is not
 invariant to the subspace model's absolute rate.
+
+
+The native `[rate.subspace_correction]` table also accepts the path-model
+selectors `curvature = "none" | "small"` and
+`zero_point = "harmonic" | "rph" | "dvr"`, plus `dvr_points`,
+`dvr_half_width` and `dvr_spacing`. Its `[rate.subspace_correction.path]`
+table accepts `source = "centroid" | "bead_weighted" | "instanton" |
+"least_action"` and the corresponding `least_action_points`, `instanton_beads`
+and `instanton_max_iterations` controls. `crossover_temperature`, when supplied
+as an instanton fallback, is in kelvin. These choices enter the factor-cache
+identity; changing them requires a new factor calculation. The standalone
+`subspace-correct` entry point uses the same content-based cache checks.

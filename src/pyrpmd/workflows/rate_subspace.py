@@ -98,7 +98,8 @@ def postprocess_rate_subspace(config, directory, *, strict=False):
         identity = _source_identity(root, options)
         specification = {
             "source": {"rate_run": str(root)},
-            "subspace": {k: options[k] for k in ("dimension", "threshold", "environment")},
+            "subspace": {k: options[k] for k in ("dimension", "threshold", "environment", "curvature",
+                         "zero_point", "dvr_points", "dvr_half_width", "dvr_spacing") if k in options},
             "path": options["path"], "quantum": options["quantum"], "rpmd": options["rpmd"],
             "output": {"directory": str(target), "reuse": options["reuse"]},
         }

@@ -9,8 +9,10 @@ from .input_schema import InputError, _integer, _unknown_fields
 from .validation import finite_real
 
 _SECTION = "rate.subspace_correction"
-_FIELDS = {"enabled", "mode", "dimension", "environment", "threshold", "reuse", "path", "quantum", "rpmd"}
-_PATH = {"step", "max_steps", "spread_factor", "asymptote_tolerance", "smoothing"}
+_FIELDS = {"enabled", "mode", "dimension", "environment", "threshold", "reuse", "path", "quantum", "rpmd",
+           "curvature", "zero_point", "dvr_points", "dvr_half_width", "dvr_spacing"}
+_PATH = {"source", "step", "max_steps", "spread_factor", "asymptote_tolerance", "smoothing",
+         "least_action_points", "instanton_beads", "instanton_max_iterations", "crossover_temperature"}
 _QUANTUM = {"spacing_1d", "spacing_2d", "refinement", "absorber_fraction", "threshold_margin",
             "truncation_kt", "truncation_min", "padding", "dense_limit", "reference_kt", "product_drop_kt"}
 _RPMD = {"windows", "walkers", "burn_in", "sweeps", "leapfrog_steps", "hmc_dt", "trajectories",
@@ -50,6 +52,8 @@ def rate_subspace_options(config):
     for key, default, choices in (
         ("mode", "apply", ("apply", "factor_only")),
         ("environment", "adiabatic", ("frozen", "adiabatic", "free_energy")),
+        ("curvature", "none", ("none", "small")),
+        ("zero_point", "harmonic", ("harmonic", "rph", "dvr")),
     ):
         value = options.setdefault(key, default)
         if not isinstance(value, str) or value not in choices:
@@ -64,14 +68,22 @@ def rate_subspace_options(config):
             raise InputError(f"{_SECTION}.dimension contains duplicate dimensions")
         options["dimension"] = sorted(dims) if isinstance(dimension, (list, tuple)) else dims[0]
     options["threshold"] = _real(options.get("threshold", 0.5), f"{_SECTION}.threshold")
-    minima = {"max_steps": 1, "refinement": 1, "dense_limit": 1, "windows": 4,
+    options["dvr_points"] = _integer(options.get("dvr_points", 81), f"{_SECTION}.dvr_points", 8)
+    for key in ("dvr_half_width", "dvr_spacing"):
+        if key in options:
+            options[key] = _real(options[key], f"{_SECTION}.{key}")
+    minima = {"max_steps": 1, "least_action_points": 2, "instanton_beads": 1,
+              "instanton_max_iterations": 1, "refinement": 1, "dense_limit": 1, "windows": 4,
               "walkers": 2, "burn_in": 0, "sweeps": 2, "leapfrog_steps": 1,
               "trajectories": 2, "bootstrap": 2, "seed": 0}
     for group, fields in (("path", _PATH), ("quantum", _QUANTUM), ("rpmd", _RPMD)):
         table = _table(options.get(group, {}), fields, f"{_SECTION}.{group}")
         for key, value in table.items():
             name = f"{_SECTION}.{group}.{key}"
-            if key in minima:
+            if key == "source":
+                if value not in ("centroid", "bead_weighted", "instanton", "least_action"):
+                    raise InputError(f"{name} must be centroid, bead_weighted, instanton or least_action")
+            elif key in minima:
                 table[key] = _integer(value, name, minima[key])
             elif key == "spacing_2d" and isinstance(value, (list, tuple)):
                 if len(value) != 2:

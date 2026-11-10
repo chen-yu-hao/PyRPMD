@@ -442,13 +442,15 @@ def pipeline_identity(root, options):
     names = ("input/resolved.json", "input/system.json", "preparation.json", "centroid_path.npz", "rate_pmf.json")
     files = {name: file_sha256(root / name) for name in names if (root / name).is_file()}
     saved = json.loads((root / "input" / "resolved.json").read_text())
-    numerical = {k: v for k, v in options.items() if k not in {"enabled", "mode", "reuse"}}
+    numerical = {k: v for k, v in options.items()
+                 if k not in {"enabled", "mode", "reuse", "output", "source"}}
     # Hash the implementations too: a source checkout can change without a
     # version bump, and its old numerical result must not silently be reused.
     analysis = Path(__file__).resolve().parent
     implementation = {p.name: file_sha256(p) for p in
                       (analysis / name for name in ("subspace_pipeline.py", "subspace_model.py",
                        "subspace_quantum.py", "subspace_rpmd.py", "subspace_correction.py", "centroid_path.py"))}
+    implementation["instanton.py"] = file_sha256(analysis.parent / "instanton.py")
     return fingerprint_payload({"schema": 1, "version": __version__, "files": files,
                                 "potential_files": referenced_files({"potential": saved["potential"]}),
                                 "options": numerical, "implementation": implementation})
