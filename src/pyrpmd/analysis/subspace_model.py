@@ -758,6 +758,7 @@ def project_path_subspace(
     dvr_points: int = 81,
     dvr_half_width: float | None = None,
     dvr_spacing: float | None = None,
+    provenance: Mapping[str, Any] | None = None,
 ) -> SubspaceModel:
     """One-dimensional vibrationally adiabatic model along a curved path.
 
@@ -835,6 +836,7 @@ def project_path_subspace(
     values = np.empty(len(grid))
     zpe = np.zeros(len(grid))
     unstable, min_curvature = 0, np.inf
+    unstable_indices = []
     curvature_values = np.zeros(len(grid))
     omega_perp = np.full(len(grid), np.nan)
     tbar = np.zeros(len(grid))
@@ -862,6 +864,8 @@ def project_path_subspace(
                 zpe[i], lowest = _environment_term(k, environment, beta)
                 unstable += int(lowest < 0)
             min_curvature = min(min_curvature, lowest)
+            if lowest <= 0:
+                unstable_indices.append(int(i))
         if curvature == "small" and n > 1:
             # Curvature vector dT/dsigma of the mass-weighted spline.
             first = spline.derivative()(lam[i])
@@ -897,6 +901,7 @@ def project_path_subspace(
                     omega_perp[i] = np.sqrt(float(np.min(positive)))
                     tbar[i] = np.sqrt(1.0 / omega_perp[i])
     xi, path_kappa = path_curvature(points, mass)
+    unstable = len(unstable_indices)
     if dividing_surface is None:
         dividing_surface = float(grid[np.argmax(values + zpe)])
     total_values = values + zpe
@@ -965,6 +970,9 @@ def project_path_subspace(
         "path_length": float(arc[-1]),
         "max_path_curvature": float(np.max(path_kappa)),
         "unstable_complement_points": int(unstable),
+        "unstable_complement_indices": unstable_indices,
+        "unstable_complement_arc_lengths": [float(grid[i]) for i in unstable_indices],
+        "normal_hessian_positive": not bool(unstable),
         "minimum_complement_curvature": None if not np.isfinite(min_curvature) else min_curvature,
         "zero_point_range": [float(zpe.min()), float(zpe.max())],
         "cut": "normal plane in mass-weighted coordinates",
@@ -998,6 +1006,8 @@ def project_path_subspace(
             "curvature_normal_frequency": omega_perp.tolist(),
             "arc_integral_preserved": float(tau_raw[-1] - tau_raw[0]),
         })
+    if provenance:
+        info.update(dict(provenance))
     return SubspaceModel((tau_grid,), total_values, np.ones(1), dividing_surface, reactant,
                          reactant_reference, info)
 

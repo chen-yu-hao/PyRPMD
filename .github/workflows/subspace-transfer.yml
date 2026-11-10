@@ -19,6 +19,7 @@ on:
       - 'claude/subspace-transfer-theory'
       - 'issue-155-curvature'
       - 'issue-156-rph-dvr'
+      - 'issue-157-path-source'
     paths:
       - 'benchmarks/subspace_theory/transfer.py'
       - 'benchmarks/subspace_theory/plan.py'

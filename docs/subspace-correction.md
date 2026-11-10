@@ -46,15 +46,23 @@ reaction path bends after the transition state.
 
 The command then runs:
 
-1. **Mean path.** Windows where the aligned centroids stay compact (spread at most twice
-   that near the transition state) are kept; near the reactant asymptote the fragments
-   rotate freely and a mean geometry has no meaning. `xbar(xi)` is fitted by local
-   quadratic regression in `xi` (window means carry transverse noise). For a linear
-   reference the mean path is built from mean bond lengths along the axis: the Kabsch
-   rotation about the axis is undetermined, and axial projections of librating light atoms
-   are shorter than the bonds.
-2. **Path to both asymptotes.** The sampled core is continued by steepest-descent path
-   following (minimum on a sphere around each point, forward hemisphere, rigid-body modes
+1. **Path source.** `[path] source = "centroid"` is the historical mean-centroid path.
+   `"bead_weighted"` shifts each locked-window centroid along the transverse principal
+   eigenvector of the bead covariance `Sigma(xi)` by its bead RMS `sqrt(lambda_max)`, with
+   the sign chosen from the local curvature. `"instanton"` uses the folded half-ring from
+   `pyrpmd.instanton.optimize_instanton` below the crossover temperature and records a
+   centroid fallback at or above `T_c` (or when the orbit fails to converge). `"least_action"`
+   scans a one-parameter interpolation between the sampled MEP and its endpoint chord and
+   selects the smallest one-dimensional WKB action. All sources retain their selection and
+   fallback diagnostics in `subspace_pipeline.json`.
+2. **Mean path and path to both asymptotes.** For the centroid source, windows where the
+   aligned centroids stay compact (spread at most twice that near the transition state) are
+   kept; near the reactant asymptote the fragments rotate freely and a mean geometry has no
+   meaning. `xbar(xi)` is fitted by local quadratic regression in `xi` (window means carry
+   transverse noise). For a linear reference the mean path is built from mean bond lengths
+   along the axis: the Kabsch rotation about the axis is undetermined, and axial projections
+   of librating light atoms are shorter than the bonds. Every selected core is then continued
+   by steepest-descent path following (minimum on a sphere around each point, forward hemisphere, rigid-body modes
    excluded; uphill segments use the hyperplane minimum), with step halving at sharp turns.
 3. **Curvature × width.** From `Sigma(xi)` along the sampled windows
    (`rho = sqrt(2 n^T Sigma n)` along the curvature normal) and, along the whole path, with
