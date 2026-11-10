@@ -9,7 +9,14 @@ sigma slices without requiring a benchmark PES.
 import numpy as np
 import pytest
 
-from pyrpmd.analysis.subspace_quantum import sinc_dvr_kinetic
+from pyrpmd.analysis.subspace_quantum import (
+    _GridOperators,
+    _dense_rate,
+    _dense_rate_matrix,
+    _reactant_partition,
+    absorbing_potential,
+    sinc_dvr_kinetic,
+)
 from pyrpmd.analysis.subspace_model import model_from_function
 from pyrpmd.analysis.subspace_quantum import exact_quantum_rate
 
@@ -170,4 +177,38 @@ def test_channel_count_and_grid_validation():
         build_subspace_channels(_separable, sigma, q, n_channels=0)
     with pytest.raises(ValueError, match="uniform"):
         build_subspace_channels(_separable, sigma[[0, 1, 2, 4] + list(range(5, 33))], q, n_channels=2)
+
+
+@pytest.mark.parametrize("dimension", [1, 2])
+def test_dense_rate_matrix_refactor_matches_existing_wrapper(dimension):
+    sigma = np.linspace(-3.0, 3.0, 17)
+    if dimension == 1:
+        model = model_from_function(
+            lambda points: _barrier(np.asarray(points)[..., 0]), [sigma], masses=1.0,
+            dividing_surface=0.0, reactant_reference=-1.5,
+        )
+    else:
+        q = np.linspace(-1.0, 1.0, 8)
+        model = model_from_function(
+            _separable, [sigma, q], masses=(1.0, 1.0),
+            dividing_surface=0.0, reactant_reference=-1.5,
+        )
+    beta = 5.0
+    operators = _GridOperators(model)
+    shift = float(operators.potential.min())
+    eps = absorbing_potential(sigma, width=0.6, strength=0.2)
+    eps_grid = eps if dimension == 1 else np.broadcast_to(eps[:, None], model.shape)
+    old_flux, old_partition, _ = _dense_rate(model, operators, eps_grid, beta, shift)
+    matrix_flux, matrix_partition, _ = _dense_rate_matrix(
+        operators.dense_hamiltonian(), eps_grid.ravel(),
+        operators.product.ravel(), beta, shift,
+        partition=lambda energies, vectors: _reactant_partition(
+            model, beta, shift, energies=energies, vectors=vectors, operators=operators,
+        ),
+    )
+    assert matrix_flux == pytest.approx(old_flux, rel=1e-12, abs=1e-14)
+    assert matrix_partition == pytest.approx(old_partition, rel=1e-12, abs=1e-14)
+    assert (matrix_flux / matrix_partition) == pytest.approx(
+        old_flux / old_partition, rel=1e-12, abs=1e-14,
+    )
 
