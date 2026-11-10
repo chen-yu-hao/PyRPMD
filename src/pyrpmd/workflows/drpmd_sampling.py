@@ -341,6 +341,11 @@ def _parent_task(task, services):
         config.get("output", {}).get("checkpoint_steps", 1000), "checkpoint_steps"
     )
     thermal_seconds = 0.0
+    # Public workflow allocations are contiguous; retain arbitrary legacy task
+    # allocations without rewriting their IDs as a different contiguous range.
+    allocation = ({"trajectory_start": ids[0], "trajectory_count": len(ids)}
+                  if ids == list(range(ids[0], ids[0] + len(ids)))
+                  else {"trajectory_ids": ids})
 
     def save_parent():
         services.save_arrays(
@@ -349,8 +354,7 @@ def _parent_task(task, services):
                 "format": PARENT_KIND,
                 "physics_hash": physics_hash,
                 "parent_id": parent_id,
-                "trajectory_start": ids[0],
-                "trajectory_count": len(ids),
+                **allocation,
                 "step": parent.step,
                 "time": parent.time,
                 "rng": _rng_state(dynamics),

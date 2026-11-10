@@ -109,3 +109,51 @@ def test_parent_checkpoint_size_independent_of_record_history(tmp_path):
     assert ledger.count == 5000
     assert ledger.digest != EMPTY_DIGEST
     assert len(ledger.restore(metadata)) == 5000
+
+
+def test_crash_after_append_replays_committed_child_without_resampling(tmp_path, monkeypatch):
+    options, reference, _ = _short_run(tmp_path / "reference")
+    directory = tmp_path / "interrupted"
+    save = drpmd._atomic_npz
+    def crash_before_parent_commit(path, metadata, **arrays):
+        if metadata.get("format") == PARENT_KIND and metadata["record_count"] == 1:
+            raise KeyboardInterrupt("after append, before checkpoint commit")
+        save(path, metadata, **arrays)
+    with monkeypatch.context() as patch:
+        patch.setattr(drpmd, "_atomic_npz", crash_before_parent_commit)
+        with pytest.raises(KeyboardInterrupt, match="after append"):
+            drpmd.run_drpmd(options, system(), directory)
+    checkpoint = directory / "checkpoints/parent-000000.npz"
+    metadata, _ = drpmd._load_npz(checkpoint)
+    assert metadata["record_count"] == 0
+    assert len(ParentRecordLedger(checkpoint).path.read_text().splitlines()) == 1
+    options["resume"] = True
+    recovered = drpmd.run_drpmd(options, system(), directory)
+    for actual, expected in zip(recovered["records"], reference["records"]):
+        assert {k: v for k, v in actual.items() if k != "wall_seconds"} == {
+            k: v for k, v in expected.items() if k != "wall_seconds"}
+    assert recovered["parent_thermal_steps"] == reference["parent_thermal_steps"]
+    left = tmp_path / "reference/checkpoints/parent-000000.npz"
+    left_meta, left_arrays = drpmd._load_npz(left)
+    right_meta, right_arrays = drpmd._load_npz(checkpoint)
+    # Ledger digests include the intentionally measured trajectory wall times.
+    assert {k: v for k, v in right_meta.items() if k != "record_digest"} == {
+        k: v for k, v in left_meta.items() if k != "record_digest"}
+    for key in left_arrays:
+        np.testing.assert_array_equal(right_arrays[key], left_arrays[key])
+
+
+def test_noncontiguous_parent_allocation_is_not_reinterpreted_as_a_range(tmp_path):
+    from pyrpmd.workflows.drpmd_records import matches_parent_allocation
+    options = config()
+    task = {"config": options, "system": system(), "parent_id": 0,
+            "trajectory_ids": [0, 2, 5], "physics_hash": "allocation-test",
+            "output": str(tmp_path), "sample_only": True}
+    first = drpmd._parent_task(task)
+    checkpoint = tmp_path / "checkpoints/parent-000000.npz"
+    metadata, _ = drpmd._load_npz(checkpoint)
+    assert matches_parent_allocation(metadata, [0, 2, 5])
+    assert not matches_parent_allocation(metadata, [0, 1, 2])
+    options["resume"] = True
+    second = drpmd._parent_task(task)
+    assert second["thermal_steps"] == first["thermal_steps"]

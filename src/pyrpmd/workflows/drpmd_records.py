@@ -29,8 +29,9 @@ def load_parent_checkpoint(path):
 
 
 def matches_parent_allocation(metadata, ids):
-    if metadata["format"] == LEGACY_PARENT_KIND:
-        return metadata.get("trajectory_ids") == ids
+    if metadata["format"] == LEGACY_PARENT_KIND or "trajectory_ids" in metadata:
+        return ("trajectory_start" not in metadata and "trajectory_count" not in metadata
+                and metadata.get("trajectory_ids") == ids)
     start, count = metadata.get("trajectory_start"), metadata.get("trajectory_count")
     return (type(start) is int and type(count) is int
             and count == len(ids) and ids == list(range(start, start + count)))

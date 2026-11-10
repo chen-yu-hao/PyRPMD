@@ -8,6 +8,7 @@ This script is used by package CI as well as local release verification.
 from __future__ import annotations
 
 import argparse
+import csv
 import importlib
 import importlib.metadata
 import json
@@ -297,7 +298,10 @@ def main():
         resolved = json.loads((directory / "input" / "resolved.json").read_text())
         if resolved["dynamics"]["integrator"] != scheme or resolved["sampling"]["integrator"] != scheme + "-andersen":
             raise AssertionError(f"dRPMD {scheme} did not retain its selected sampling/production method")
-        records = summary["records"]
+        with (directory / summary["trajectory_table"]).open(newline="", encoding="utf-8") as stream:
+            records = list(csv.DictReader(stream))
+        for record in records:
+            record["propagation"] = json.loads(record["propagation"])
         if len(records) != 2 or summary["parent_thermal_steps"] != {"0": 8}:
             raise AssertionError(f"dRPMD {scheme} did not execute the actual parent/child workflow")
         if any(r["status"] == "failed" or
