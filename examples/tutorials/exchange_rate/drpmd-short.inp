@@ -1,0 +1,55 @@
+# Short workflow demonstration; too few events for quantitative comparison.
+task = "drpmd"
+preset = "pilot"
+temperature = "1500 K"
+beads = 4
+seed = 170166
+
+[system]
+symbols = ["D", "H", "H"]
+geometry = [[-9.0, 0.0, 0.0], [-0.6, 0.0, 0.0], [0.6, 0.0, 0.0]]
+geometry_unit = "bohr"
+fragments = [[0], [1, 2]]
+multiplicity = 2
+
+[potential]
+provider = "cabi"
+library = "build/libexchange.so"
+
+[dynamics]
+integrator = "cayley-bcb"
+timestep = "0.1 fs"
+loop_backend = "native"
+block_steps = 256
+
+[sampling]
+thermostat = "andersen"
+parents = 8
+equilibration_steps = 10000  # 1 ps per independent parent chain
+interval_steps = 200        # 20 fs between sampled collisions
+andersen_interval = 20
+
+[collision]
+trajectories = 256
+sampling = "thermal_flux"   # E ~ Gamma(2,kBT), not Maxwell energy sampling
+impact_sampling = "uniform_area"
+orientation = "isotropic"
+bmax = "4.5 bohr"
+max_time = "500 fs"
+
+[outcomes]
+bond_cutoffs = {"D-H" = "2.5 bohr", "H-H" = "2.5 bohr"}
+channels = {"DH+H" = ["DH", "H"]}
+exit_distance = "9 bohr"
+check_interval = 10
+persistence_steps = 20
+
+[parallel]
+backend = "serial"
+trajectory_workers = 1
+threads_per_rank = 1
+
+[output]
+directory = "runs/drpmd-short"
+checkpoint_steps = 2000
+trajectory_stride = 5000

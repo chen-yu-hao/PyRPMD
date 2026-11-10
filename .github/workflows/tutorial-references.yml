@@ -1,0 +1,48 @@
+name: Analytic tutorial references
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  tutorial:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        name: [harmonic_pimd, periodic_site_rate, double_well_metad, free_diffusion, harmonic_spectroscopy]
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install .
+      - name: Run fixed tutorial input
+        run: |
+          mkdir -p evidence
+          /usr/bin/time -f '%e' -o evidence/wall-seconds.txt \
+            python -m pyrpmd run examples/tutorials/${{ matrix.name }}/input.inp \
+            --output run > evidence/run.log 2>&1
+      - name: Compare with analytic reference
+        run: python examples/tutorials/${{ matrix.name }}/compare.py run | tee evidence/comparison.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tutorial-${{ matrix.name }}
+          path: |
+            evidence/
+            run/results/
+            run/summary.json
+            run/input/
+            run/fes.npz
+            run/site_qtst.json
+          if-no-files-found: error
