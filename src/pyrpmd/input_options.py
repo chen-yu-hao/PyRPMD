@@ -179,6 +179,26 @@ def rate_pmf_options(config):
         bootstrap_workers = _integer(
             bootstrap_workers, "analysis.bootstrap_workers", 1
         )
+    from .parallel import execution_plan
+    try:
+        parallel_plan = execution_plan(config.get("parallel", {}))
+    except ValueError as error:
+        raise InputError(str(error)) from error
+    if bootstrap_workers is not None:
+        bootstrap_workers_source = "analysis"
+    elif parallel_plan.backend == "mpi":
+        # Bootstrap runs on the MPI root. Until trajectory_workers has an
+        # unambiguous per-rank/global meaning, leave the implicit path serial.
+        bootstrap_workers = 1
+        bootstrap_workers_source = "default"
+    else:
+        bootstrap_workers = parallel_plan.trajectory_workers
+        bootstrap_workers_source = (
+            "parallel" if bootstrap_workers > 1 else "default"
+        )
+    bootstrap_total_cores = max(
+        1, parallel_plan.trajectory_workers * parallel_plan.threads
+    )
     bins = analysis.get("bins", 100)
     if isinstance(bins, (list, tuple, np.ndarray)):
         if len(bins) != 1:
@@ -254,6 +274,8 @@ def rate_pmf_options(config):
         "ranges": ranges,
         "bootstrap": nboot,
         "bootstrap_workers": bootstrap_workers,
+        "bootstrap_workers_source": bootstrap_workers_source,
+        "bootstrap_total_cores": bootstrap_total_cores,
         "min_count": _integer(analysis.get("min_count", 1), "analysis.min_count"),
         "overlap_threshold": threshold,
         **gates,
