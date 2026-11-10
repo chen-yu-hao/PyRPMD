@@ -25,7 +25,7 @@ default); it takes the cut ground level, or the cut thermal free energy for
 
 ## Unit and analytic checks
 
-The new `tests/test_subspace_model_zero_point.py` has seven tests. A straight
+The new `tests/test_subspace_model_zero_point.py` has nine tests. A straight
 separable harmonic tube gives the same (V_S) for all three choices. The DVR
 normal-cut zero-point term agrees with \(\hbar\omega/2\) to below (10^{-6})
 (the direct check is (2.8\times10^{-16}) in the local run). A circular
@@ -93,6 +93,38 @@ controls (`dvr_points`, `dvr_half_width`, `dvr_spacing`) in model provenance.
 The harmonic analytic test was repeated with 81 points and eight oscillator
 lengths; changing the cut grid is a required check before a rate is called
 converged.
+
+The cut-grid check is executable as
+`python -m pytest tests/test_subspace_model_zero_point.py -k dvr_cut_grid_refinement_is_stable`.
+It uses the separable harmonic tube from the unit tests (mass 1060, transverse
+frequency 0.010, 41 path cuts) and compares the full projected energy curve for
+three grids:
+
+| `dvr_points` | `dvr_half_width` | `zero_point_range` (Eh) |
+| ---: | ---: | ---: |
+| 41 | 80.0 | 0.0050000000000000 |
+| 81 | 80.0 | 0.0050000000000000 |
+| 81 | 100.0 | 0.0050000000000000 |
+
+Increasing the point count changes the curve by at most `2.44e-16` Eh, and
+widening the box changes it by at most `1.99e-16` Eh (the coarse-to-widened
+comparison is `4.43e-16` Eh). These values are the normal-cut projection
+diagnostic only; they do not establish convergence of a transfer rate.
+
+The same check at the symmetric curvature-family point `h = 0.9` (the barrier
+top, using a nine-point local arc window) gives a nontrivial normal-cut range
+and the same grid stability:
+
+| `dvr_points` | `dvr_half_width` | `zero_point_range` (Eh) | max curve change (Eh) |
+| ---: | ---: | ---: | ---: |
+| 41 | 80.0 | `[0.0050000000000001, 0.0057836292234997]` | — |
+| 81 | 80.0 | `[0.0050000000000000, 0.0057836292235030]` | `3.31e-15` vs 41 points |
+| 81 | 100.0 | `[0.0050000000000001, 0.0057836292234984]` | `4.58e-15` vs 80.0 half-width |
+
+The executable regression is
+`python -m pytest tests/test_subspace_model_zero_point.py -k curvature_point_dvr`.
+It compares all nine local projected energies, rather than only the barrier
+value, and records the selected grid parameters in model provenance.
 
 ## H + H₂, 200 K
 
