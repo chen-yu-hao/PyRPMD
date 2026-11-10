@@ -1,0 +1,46 @@
+{
+  "reaction_definition": "explicit",
+  "ts_action": "legacy",
+  "saddle_valid": null,
+  "channel_consistent": null,
+  "refinement_performed": false,
+  "ready": true,
+  "reaction": {
+    "fragments": [
+      [
+        0
+      ],
+      [
+        1,
+        2
+      ]
+    ],
+    "forming_bonds": [
+      [
+        0,
+        1
+      ]
+    ],
+    "breaking_bonds": [
+      [
+        1,
+        2
+      ]
+    ],
+    "equivalent_paths": [
+      [
+        0,
+        2,
+        1
+      ]
+    ],
+    "rinf": 10.0,
+    "electronic_weight": 1.0,
+    "symmetry_factor": 1.0,
+    "rinf_au": 10.0
+  },
+  "diagnostics": [
+    "explicit reaction definition (legacy unchecked TS)"
+  ],
+  "candidates": []
+}
