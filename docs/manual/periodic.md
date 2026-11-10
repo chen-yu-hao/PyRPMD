@@ -394,7 +394,7 @@ their indices need not be 0 and 1. For a fully periodic cell, a wire or a finite
 `surface.normalization.area` with area units to identify the intended surface. This conversion
 does not account for coverage-dependent interactions or turn a local rate into a total turnover
 frequency. See the
-[surface normalization definition](#surface-rate-surfaces-with-fixed-layers).
+[surface normalization definition](#surface_rate-surfaces-with-fixed-layers).
 
 Surface `fes` supports adaptive umbrellas; `surface_rate` uses fixed windows. To run a real ASE
 calculator, install ASE:
@@ -408,7 +408,7 @@ pyrpmd run examples/surface/ase_emt.py --output runs/manual-surface-emt
 This input runs a Cu adatom on Cu(111) with ASE EMT, exercising the calculator, a skewed cell and
 fixed layers. Models and sources are described in the
 [materials notes](#tasks-and-boundary-conditions),
-the [surface notes](#surface-rate-surfaces-with-fixed-layers)
+the [surface notes](#surface_rate-surfaces-with-fixed-layers)
 and the [Ni–H materials pilot](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/materials/README.md).
 
 ## From a runnable slab to a research calculation

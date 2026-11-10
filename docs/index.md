@@ -98,7 +98,6 @@ Quickstart <manual/quickstart>
 Input <manual/input>
 Science <manual/science>
 Converging a result <convergence>
-Analytic tutorials <manual/examples>
 ```
 
 ```{toctree}

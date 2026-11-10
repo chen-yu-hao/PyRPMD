@@ -18,129 +18,237 @@ from .system import System
 from .stability import classify_stability
 
 
-def _planned_propagation_steps(config):
-    """Conservatively estimate the declared propagation work budget."""
+def _planned_propagation_steps(config, system=None):
+    """Return per-stage step budgets, retaining unknown adaptive work as None.
+
+    Window counts and local clocks come from the same resolver as execution.
+    Recrossing children count both signs of every momentum pair. These are
+    requested budgets; early termination and failed gates can reduce actual work.
+    """
+    task = config.get("task")
     sampling = config.get("sampling", {})
-    total = 0
-    if isinstance(sampling, Mapping):
-        total += int(sampling.get("equilibration_steps", 0) or 0)
-        total += int(sampling.get("production_steps", 0) or 0)
-        total *= max(1, int(sampling.get("replicas", 1) or 1))
-    collision = config.get("collision", {})
-    if isinstance(collision, Mapping):
-        total += int(collision.get("max_steps", 0) or 0) * max(
-            1, int(collision.get("trajectories", 1) or 1))
-    recrossing = config.get("recrossing", {})
-    if isinstance(recrossing, Mapping):
-        parents = int(recrossing.get("parent_replicas", 1) or 1) * int(
-            recrossing.get("parent_samples", 1) or 1)
-        total += parents * int(recrossing.get("child_pairs", 1) or 1) * int(
-            recrossing.get("child_steps", 0) or 0)
-        total += int(recrossing.get("parent_replicas", 1) or 1) * int(
-            recrossing.get("parent_samples", 1) or 1) * int(
-            recrossing.get("parent_interval_steps", 0) or 0)
-    return max(0, total)
+    budgets = {}
+
+    def sampling_steps(table, phases=("equilibration_steps", "production_steps")):
+        try:
+            return int(table.get("replicas", 1)) * sum(int(table[key]) for key in phases)
+        except (KeyError, TypeError, ValueError):
+            return None
+
+    if task in ("fes", "metadynamics", "opes", "rate", "surface_rate", "site_rate"):
+        method = fes_method(config) if task in ("fes", "metadynamics", "opes") else "umbrella"
+        if method != "umbrella":
+            budgets[method] = sampling_steps(sampling)
+        else:
+            budgets["umbrella"] = None
+            try:
+                selected = config
+                if task == "rate":
+                    from .workflows.rate_pmf import configure_rate_umbrella
+                    from .input import rate_pmf_stage
+                    configured = configure_rate_umbrella(config, system, config["reaction"])
+                    selected = rate_pmf_stage(configured, system) or configured
+                adaptive = selected.get("adaptive_umbrella", {})
+                if not adaptive.get("enabled", bool(adaptive)):
+                    from .workflows.fes import resolve_window_plan
+                    from .workflows.umbrella_plan import window_sampling
+                    _, _, windows = resolve_window_plan(selected, system)
+                    counts = [sampling_steps(window_sampling(selected, window)) for window in windows]
+                    if all(count is not None for count in counts):
+                        budgets["umbrella"] = sum(counts)
+            except (KeyError, TypeError, ValueError, AttributeError):
+                pass
+    elif task == "diffusion":
+        budgets["sampling"] = sampling_steps(sampling, ("equilibration_steps",))
+        budgets["production"] = sampling_steps(sampling, ("production_steps",))
+    elif task == "pimd":
+        budgets["sampling"] = sampling_steps(sampling)
+    elif task == "spectroscopy":
+        budgets["propagation"] = sampling_steps(sampling)
+    if config.get("task") not in ("rate", "surface_rate", "site_rate"):
+        return budgets
+    prefix = "site" if config["task"] == "site_rate" else "recrossing"
+    budgets[prefix + " parent"] = budgets[prefix + " child"] = None
+    try:
+        from .workflows.rate_options import _recrossing_options
+        options = _recrossing_options(config)
+        chains = options["parent_replicas"]
+        parents = chains * options["parent_samples"]
+        budgets[prefix + " parent"] = chains * (options["equilibration_steps"]
+                                    + options["parent_samples"] * options["parent_interval_steps"])
+        budgets[prefix + " child"] = parents * options["child_pairs"] * 2 * options["child_steps"]
+    except (KeyError, TypeError, ValueError):
+        pass
+    return budgets
 
 
 def propagation_backend_plan(config, system):
-    """Describe the backend selected for each planned workflow stage.
+    """Report known stage loop backends without evaluating or loading external PESs.
 
-    This constructs provider/CV descriptors but never evaluates a PES or
-    advances a state, making it safe for ``pyrpmd validate``.
+    Deferred providers and runtime-dependent stage choices remain ``unknown``.
+    Native math inside a Python scheduler is not reported as a native step loop.
     """
-    from .propagation import native_support_reason
+    from .propagation import NativeUnavailableError, native_support_reason
+    from .dynamics import Dynamics
 
     options = config.get("dynamics", {})
-    if not isinstance(options, Mapping):
-        options = {}
-    provider = None
+    provider = dynamics = None
     provider_owned = isinstance(config.get("potential"), Mapping)
-    dynamics = None
-    base_reason = None
+    explicit_python = (options.get("loop_backend") == "python"
+                       or config.get("native", options.get("native", True)) is False)
+    base_backend = "python" if explicit_python else "unknown"
+    base_reason = ("explicit Python loop backend" if options.get("loop_backend") == "python"
+                   else "native=False" if explicit_python else "PES native binding has not been inspected")
+    kwargs = dict(native=config.get("native", options.get("native", True)),
+                  threads=config.get("parallel", {}).get("threads_per_rank", 1),
+                  fixed_atoms=getattr(system, "fixed_atoms", ()),
+                  fixed_positions=system.geometry if getattr(system, "fixed_atoms", ()) else None,
+                  **{key: options[key] for key in ("loop_backend", "block_steps", "integrator") if key in options})
     try:
         from .potentials import make_potential
-        from .dynamics import Dynamics
-        potential_spec = config["potential"]
+        potential_spec = config.get("potential")
         kind = (potential_spec.get("provider", potential_spec.get("type", "builtin"))
                 if isinstance(potential_spec, Mapping) else None)
-        cheap_kinds = {"builtin", "free", "harmonic", "morse_pair", "double_well", "periodic_cosine"}
-        if kind is not None and kind not in cheap_kinds:
-            base_reason = f"PES provider '{kind}' does not declare a built-in native binding"
-            provider = None
-            dynamics = None
-        else:
+        cheap = {"builtin", "free", "harmonic", "morse_pair", "double_well", "periodic_cosine"}
+        if isinstance(potential_spec, Mapping) and kind not in cheap:
+            if not explicit_python:
+                base_reason = f"PES provider '{kind}' binding is deferred to execution; static backend is unknown"
+        elif potential_spec is not None:
             provider = make_potential(potential_spec, system)
-            dynamics = Dynamics(
-                provider, system.masses, config["beta"], config["beads"], config["dt_au"],
-                native=config.get("native", options.get("native", True)),
-                threads=config.get("parallel", {}).get("threads_per_rank", 1),
-                fixed_atoms=getattr(system, "fixed_atoms", ()),
-                fixed_positions=system.geometry if getattr(system, "fixed_atoms", ()) else None,
-                **{key: options[key] for key in ("loop_backend", "block_steps", "integrator")
-                   if key in options},
-            )
+            dynamics = Dynamics(provider, system.masses, config["beta"], config["beads"], config["dt_au"], **kwargs)
             base_reason = native_support_reason(dynamics)
-    except Exception as exc:
-        base_reason = f"validation could not construct native plan: {exc}"
+            base_backend = "native" if base_reason is None else "python"
+    except Exception as error:
+        if not explicit_python:
+            base_backend, base_reason = "unknown", f"native plan could not be inspected: {error}"
 
-    planned = _planned_propagation_steps(config)
     stages = []
+    planned = _planned_propagation_steps(config, system)
 
-    def add(stage, reason=None):
-        selected = base_reason if reason is None else reason
-        stages.append({"stage": stage, "backend": "native" if selected is None else "python",
-                       "reason": selected, "planned_steps": planned})
+    def add(stage, backend=None, reason=None):
+        stages.append({"stage": stage, "backend": base_backend if backend is None else backend,
+                       "reason": base_reason if backend is None else reason, "planned_steps": planned.get(stage)})
+
+    def checked(stage, reason):
+        add(stage, "native" if reason is None else "python", reason)
 
     task = config.get("task")
-    if task in ("fes", "rate", "surface_rate", "site_rate"):
-        if dynamics is None:
+    method = fes_method(config) if task in ("fes", "metadynamics", "opes") else None
+    if task in ("fes", "metadynamics", "opes") and method != "umbrella":
+        add(method, "python" if explicit_python else "unknown",
+            base_reason if explicit_python else "history updates and runtime bias descriptors select native blocks during execution")
+    elif task in ("fes", "rate", "surface_rate", "site_rate"):
+        if dynamics is None or explicit_python:
             add("umbrella")
         else:
             try:
                 from .workflows.fes import resolve_umbrellas
                 from .bias import UmbrellaBias
-                cv, _, centers, stiffness = resolve_umbrellas(config, system)
-                reason = native_support_reason(
-                    dynamics, bias=UmbrellaBias(cv, centers[0], stiffness), observe=cv)
-                add("umbrella", reason)
-            except Exception as exc:
-                add("umbrella", f"CV/bias plan unavailable: {exc}")
+                sampling_config = config
+                if task == "rate":
+                    from .workflows.rate_pmf import configure_rate_umbrella
+                    from .input import rate_pmf_stage
+                    configured = configure_rate_umbrella(config, system, config["reaction"])
+                    sampling_config = rate_pmf_stage(configured, system) or configured
+                cv, _, centers, stiffness = resolve_umbrellas(sampling_config, system)
+                if np.ndim(stiffness) == 3:
+                    stiffness = stiffness[0]
+                stage_options = sampling_config.get("dynamics", {})
+                if (stage_options.get("loop_backend") == "python"
+                        or sampling_config.get("native", stage_options.get("native", True)) is False):
+                    add("umbrella", "python", "PMF stage explicitly selects Python propagation")
+                elif sampling_config.get("sampling", {}).get("thermostat", "andersen") != "andersen":
+                    add("umbrella", "unknown", "sampling operator eligibility is checked by the window scheduler")
+                else:
+                    checked("umbrella", native_support_reason(dynamics, bias=UmbrellaBias(cv, centers[0], stiffness), observe=cv))
+            except Exception as error:
+                add("umbrella", "unknown", f"CV/bias plan awaits resolved stage: {error}")
     elif task == "diffusion" and config.get("electronic_friction") is not None:
-        reason = base_reason
-        if dynamics is not None:
+        friction = None
+        if dynamics is None or explicit_python:
+            add("production")
+        elif config["electronic_friction"].get("provider", "constant") != "constant":
+            add("production", "python", "position-dependent electronic friction uses Python OU scheduling")
+        else:
             try:
                 from .electronic_friction import ElectronicFrictionDynamics, make_electronic_friction
                 from .friction_block import native_friction_plan
-
                 friction = make_electronic_friction(config, system)
-                driver = ElectronicFrictionDynamics(
-                    provider, system.masses, config["beta"], config["beads"], config["dt_au"], friction,
-                    native=config.get("native", options.get("native", True)),
-                    fixed_atoms=getattr(system, "fixed_atoms", ()),
-                    fixed_positions=system.geometry,
-                    **{key: options[key] for key in ("loop_backend", "block_steps", "integrator") if key in options},
-                )
+                driver = ElectronicFrictionDynamics(provider, system.masses, config["beta"], config["beads"],
+                                                      config["dt_au"], friction, **kwargs)
                 native_friction_plan(driver)
-                reason = None
+                add("production", "native")
+            except NativeUnavailableError as error:
+                add("production", "python", str(error))
             except Exception as error:
-                reason = str(error)
-        add("production", reason)
-    elif task != "diffusion":
-        add("propagation")
-
-    if task in ("rate", "surface_rate"):
-        add("recrossing parent", "constrained parent sampling uses Python scheduling")
-        add("recrossing child", base_reason or "child trajectory uses Python-compatible callbacks")
-    elif task == "site_rate":
-        add("site parent", "centroid RATTLE parent sampling uses the Python loop")
-        add("site child", "checkpointed child classification uses the Python loop")
-    elif task == "diffusion" and config.get("electronic_friction") is None:
+                add("production", "unknown", f"electronic-friction plan could not be inspected: {error}")
+            finally:
+                if callable(getattr(friction, "close", None)):
+                    friction.close()
+    elif task == "diffusion":
         add("production")
+    elif task in ("spectroscopy", "nonadiabatic", "plumed"):
+        add("propagation", "python", f"{task} uses a Python trajectory loop; native substeps are separate")
+    elif task == "pimd":
+        add("sampling", "python" if explicit_python else "unknown",
+            base_reason if explicit_python else "selected PIMD engine and bath determine runtime loop eligibility")
+    else:
+        add("propagation", "python" if explicit_python else "unknown",
+            base_reason if explicit_python else "workflow-specific propagation is determined at execution")
 
-    if provider_owned and provider is not None:
-        close = getattr(provider, "close", None)
-        if callable(close):
-            close()
+    if task == "diffusion":
+        thermostat = config.get("sampling", {}).get("thermostat", "pile-l")
+        if dynamics is None or explicit_python:
+            add("sampling")
+        elif thermostat == "pile-l":
+            try:
+                from .sampling_block import _eligibility
+                _eligibility(dynamics, None, None)
+                add("sampling", "native")
+            except NativeUnavailableError as error:
+                add("sampling", "python", str(error))
+            except Exception as error:
+                add("sampling", "unknown", f"sampling plan could not be inspected: {error}")
+        elif thermostat == "andersen" and system.cell is None:
+            add("sampling")
+        else:
+            add("sampling", "unknown", "sampling operator eligibility is selected by the materials scheduler")
+    if task in ("rate", "surface_rate"):
+        if dynamics is None or explicit_python:
+            add("recrossing parent")
+            add("recrossing child")
+        elif config.get("rate", {}).get("pmf_source") not in (None, "umbrella"):
+            add("recrossing parent", "unknown", "source PMF may wrap the parent Hamiltonian")
+            add("recrossing child", "unknown", "source PMF may wrap the child Hamiltonian")
+        else:
+            try:
+                from .workflows.rate_constraints import rate_coordinate
+                from .workflows.rate_options import _recrossing_dynamics
+                from .block_propagation import NotNative, _native_plan
+                surface = rate_coordinate(config, system).dividing_surface(1.)
+                try:
+                    _native_plan(dynamics, None, None, surface, (), 1e-10, False, 0.)
+                    add("recrossing parent", "native")
+                except (NativeUnavailableError, NotNative) as error:
+                    add("recrossing parent", "python", str(error))
+                child_method = _recrossing_dynamics(config)[0]
+                child_options = config.get("recrossing", config.get("rate", {}).get("recrossing", {}))
+                if child_options.get("child_batch_pairs", 1) > 1:
+                    add("recrossing child", "unknown", "batched child executor selects its own propagation backend")
+                elif child_method == "trpmd":
+                    add("recrossing child", "python", "TRPMD recrossing children use the Python step scheduler")
+                else:
+                    checked("recrossing child", native_support_reason(dynamics, observe=surface))
+            except Exception as error:
+                for stage in ("recrossing parent", "recrossing child"):
+                    if not any(item["stage"] == stage for item in stages):
+                        add(stage, "unknown", f"recrossing surface awaits resolved stage: {error}")
+    elif task == "site_rate":
+        add("site parent", "python", "site-rate parent uses the checkpointed Python RATTLE loop")
+        add("site child", "python", "site-rate child uses the checkpointed Python classification loop")
+
+    if provider_owned and callable(getattr(provider, "close", None)):
+        provider.close()
     return stages
 
 
@@ -148,7 +256,8 @@ def _append_backend_warnings(config, plan):
     """Warn once when a large declared stage resolves to Python."""
     warnings = config.setdefault("_warnings", [])
     for item in plan:
-        if item.get("backend") == "python" and item.get("planned_steps", 0) > 1_000_000:
+        if (item.get("backend") == "python" and item.get("planned_steps") is not None
+                and item["planned_steps"] > 1_000_000):
             message = (f"{item['stage']}: Python propagation loop selected for "
                        f"{item['planned_steps']:,} planned steps ({item.get('reason')}); "
                        "this may be substantially slower than the native loop.")
@@ -179,8 +288,9 @@ def _summary_propagation(result):
 
     visit(result)
     if not records:
-        return {**result, "propagation": {"native_steps": None, "python_steps": None,
-                                           "fallback_reasons": {}, "measurement_available": False}}
+        key = "propagation_totals" if existing is not None else "propagation"
+        return {**result, key: {"native_steps": None, "python_steps": None,
+                               "fallback_reasons": {}, "measurement_available": False}}
     from .propagation import combine_propagation_stats
     combined = combine_propagation_stats(records)
     if isinstance(existing, Mapping):
@@ -188,7 +298,7 @@ def _summary_propagation(result):
         # available at the stable top level expected by result consumers.
         return {**result, "propagation": {**existing, **combined}}
     if isinstance(existing, (list, tuple)):
-        return {**result, "propagation": combined, "propagation_streams": list(existing)}
+        return {**result, "propagation_totals": combined}
     return {**result, "propagation": combined}
 
 
@@ -420,9 +530,6 @@ def run_resolved(config, system, *, output=None, resume=False, init_from=None, i
     from .workflows import validate_bond_constraint_workflow
     from .workflows.sampling import validate_andersen_schedule
 
-    backend_plan = [] if config.get("task") == "pcet" else propagation_backend_plan(config, system)
-    _append_backend_warnings(config, backend_plan)
-
     validate_bond_constraint_workflow(system, config.get("task"))
     validate_andersen_schedule(config, config.get("task"))
     if ((config.get("task") in ("pimd", "diffusion") and "path_integral" not in config)
@@ -447,6 +554,10 @@ def run_resolved(config, system, *, output=None, resume=False, init_from=None, i
         from .input import validate_nonadiabatic
         validate_nonadiabatic(config, system=system)
     target = str(Path(output or config["output"]["directory"]).resolve())
+    previous_summary = None
+    summary_path = Path(target) / "results" / "summary.json"
+    if resume and summary_path.is_file():
+        previous_summary = json.loads(summary_path.read_text())
     config["output"]["directory"] = target
     config["resume"] = bool(resume)
     from .parallel import root_call, is_root
@@ -474,6 +585,8 @@ def run_resolved(config, system, *, output=None, resume=False, init_from=None, i
         root_call(resolve_path_sampling, config, system)
     if (parent_run is not None and Path(parent_run).resolve() == Path(target).resolve()):
         raise InputError("A warm start needs a new output directory, not the parent run directory")
+    backend_plan = [] if config.get("task") == "pcet" else propagation_backend_plan(config, system)
+    _append_backend_warnings(config, backend_plan)
     root_call(_initialize_output, config, system, target, resume, parent_run)
     if config["task"] == "path_sampling":
         from .workflows.path_sampling import run_path_sampling
@@ -535,6 +648,14 @@ def run_resolved(config, system, *, output=None, resume=False, init_from=None, i
         raise InputError("Unknown workflow")
     if is_root() and result is not None:
         result = _summary_propagation(result)
+        if previous_summary is not None:
+            before = previous_summary.get("propagation_totals", previous_summary.get("propagation", {}))
+            after = result.get("propagation_totals", result.get("propagation", {}))
+            if (isinstance(before, Mapping)
+                    and all(isinstance(before.get(key), int) for key in ("native_steps", "python_steps"))
+                    and before == after):
+                backend_plan = previous_summary.get("propagation_plan", backend_plan)
+                config["_warnings"] = previous_summary.get("input_warnings", config.get("_warnings", []))
         result = {
             **result,
             "software": "PyRPMD",
@@ -853,23 +974,22 @@ def prepare(job, *, numerical=False):
     config, system = spec.resolve()
     resources = resource_report(config)
     result = _prepare(spec, numerical=numerical and resources["available"], _resolved=(config, system))
+    backend_plan = [] if config.get("task") == "pcet" else propagation_backend_plan(config, system)
+    _append_backend_warnings(config, backend_plan)
     result.update(resources=resources, ready=bool(result.get("ready", True) and resources["available"]),
-                  stability=classify_stability(config))
+                  stability=classify_stability(config), propagation_plan=backend_plan)
     return result
 
 
 def _prepare(job, *, numerical=False, _resolved=None):
     spec = _spec(job)
     config, system = spec.resolve() if _resolved is None else _resolved
-    backend_plan = [] if config.get("task") == "pcet" else propagation_backend_plan(config, system)
-    _append_backend_warnings(config, backend_plan)
     if config["task"] == "nonadiabatic":
         from .workflows.nonadiabatic import prepare_nonadiabatic
 
         return {
             "task": "nonadiabatic", "resolved": config, "system": system.to_dict(),
             "diagnostics": config.get("_warnings", []), "ready": True,
-            "propagation_plan": backend_plan,
             "nonadiabatic_preparation": prepare_nonadiabatic(config, system, numerical=numerical),
         }
     if config["task"] == "pcet":
@@ -878,7 +998,6 @@ def _prepare(job, *, numerical=False, _resolved=None):
         return {
             "task": "pcet", "resolved": config, "model": system.to_dict(),
             "diagnostics": config.get("_warnings", []),
-            "propagation_plan": backend_plan,
             "ready": True, "pcet_preparation": prepare_pcet(config, system, numerical=numerical),
         }
     result = {
@@ -886,7 +1005,6 @@ def _prepare(job, *, numerical=False, _resolved=None):
         "resolved": config,
         "system": system.to_dict(),
         "diagnostics": config.get("_warnings", []),
-        "propagation_plan": backend_plan,
         "ready": True,
     }
     if config["task"] == "fes":
