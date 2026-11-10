@@ -15,6 +15,7 @@ from . import __version__
 from .input import JobSpec, InputError, fes_method, normalize_fes_task
 from .io import write_json, referenced_files, fingerprint, jsonable, _windows_drive_files
 from .system import System
+from .stability import classify_stability
 
 
 def _read_identity(config, directory):
@@ -273,6 +274,11 @@ def run_resolved(config, system, *, output=None, resume=False, init_from=None, i
     config["resume"] = bool(resume)
     from .parallel import root_call, is_root
 
+    maturity = classify_stability(config)
+    if is_root() and maturity["level"] == "research":
+        import warnings
+
+        warnings.warn(f"Research-level workflow: {maturity['scope']}", UserWarning, stacklevel=2)
     # Reject before initialization can migrate a legacy manifest bound by the ledger.
     if (resume and config["task"] == "rate"
             and (Path(target) / "results" / "extensions.json").is_file()):
@@ -358,6 +364,7 @@ def run_resolved(config, system, *, output=None, resume=False, init_from=None, i
             "output": target,
             "preset": config.get("preset", "pilot"),
             "input_warnings": config.get("_warnings", []),
+            "stability": classify_stability(config),
         }
         if config.get("warm_start"):
             from .warm_start import report
@@ -556,6 +563,7 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
             **result, "software": "PyRPMD", "version": __version__,
             "output": str(path), "preset": config.get("preset", "pilot"),
             "input_warnings": config.get("_warnings", []),
+            "stability": classify_stability(config),
         }
         root_call(write_json, path / "results" / "summary.json", result)
         return result
@@ -569,7 +577,7 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
         result = analyze_nonadiabatic(config, system, path)
         result.update(software="PyRPMD", version=__version__, output=str(path),
                       preset=config.get("preset", "pilot"),
-                      input_warnings=config.get("_warnings", []))
+                      input_warnings=config.get("_warnings", []), stability=classify_stability(config))
         write_json(path / "results" / "summary.json", result)
         return result
     if config["task"] not in ("fes", "metadynamics", "opes", "diffusion", "spectroscopy"):
@@ -614,6 +622,7 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
             **result, "software": "PyRPMD", "version": __version__,
             "output": str(path), "preset": config.get("preset", "pilot"),
             "input_warnings": config.get("_warnings", []),
+            "stability": classify_stability(config),
         }
         root_call(write_json, path / "results" / "summary.json", result)
         return result
@@ -652,6 +661,7 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
         "preset": config.get("preset", "pilot"),
         "analysis_settings": analysis,
         "input_warnings": config.get("_warnings", []),
+        "stability": classify_stability(config),
     }
     root_call(write_json, path / "results" / "summary.json", result)
     return result
@@ -664,7 +674,8 @@ def prepare(job, *, numerical=False):
     config, system = spec.resolve()
     resources = resource_report(config)
     result = _prepare(spec, numerical=numerical and resources["available"], _resolved=(config, system))
-    result.update(resources=resources, ready=bool(result.get("ready", True) and resources["available"]))
+    result.update(resources=resources, ready=bool(result.get("ready", True) and resources["available"]),
+                  stability=classify_stability(config))
     return result
 
 

@@ -1,0 +1,31 @@
+name: Campaign regression tests
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '41 3 * * 0'
+permissions:
+  contents: read
+concurrency:
+  group: campaign-tests-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  campaign:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -e '.[test]'
+      - run: python -m pytest -q -m campaign --junitxml=campaign-tests.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: campaign-test-results
+          path: campaign-tests.xml
+          if-no-files-found: error

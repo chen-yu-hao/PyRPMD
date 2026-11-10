@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "Cite this software and the method and potential papers relevant to your calculation. Record the exact release or Git commit."
+type: software
+title: PyRPMD
+authors:
+  - name: PyRPMD contributors
+repository-code: "https://github.com/chen-yu-hao/PyRPMD"
+url: "https://github.com/chen-yu-hao/PyRPMD"
+abstract: "Ring-polymer dynamics, reaction rates, equilibrium sampling and free-energy workflows with native kernels and a NumPy reference implementation."
+license:
+  - MIT
+  - Apache-2.0

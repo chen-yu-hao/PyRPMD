@@ -444,7 +444,10 @@ def main(argv=None):
                 from .resources import with_resources
 
                 result = with_resources(result, config)
+            from .stability import classify_stability
+
             result["input_warnings"] = config.get("_warnings", [])
+            result["stability"] = classify_stability(config)
             if config["task"] == "rate":
                 from .workflows.rate_plan import rate_pmf_plan
 
@@ -605,6 +608,7 @@ def main(argv=None):
             import importlib.metadata
             import platform
             from .dynamics import native_capabilities
+            from .stability import stability_registry
 
             dependencies = {}
             for distribution in ("numpy", "scipy", "h5py", "threadpoolctl", "mpi4py", "torch", "ase", "openmm", "lammps", "pymbar", "matplotlib"):
@@ -623,7 +627,8 @@ def main(argv=None):
                         "dependencies": dependencies,
                     },
                     "native": native_capabilities(),
-                    "workflows": ["rate", "drpmd", "fes", "network", "metadynamics", "opes", "pcet", "pimd", "diffusion", "site_rate", "surface_rate", "nonadiabatic", "spectroscopy", "plumed"],
+                    "workflows": list(stability_registry()["tasks"]),
+                    "stability": stability_registry(),
                     "materials": {
                         "cell": "fixed_or_isotropic_bzp",
                         "trajectory": "unwrapped_centroid",
