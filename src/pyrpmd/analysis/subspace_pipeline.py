@@ -230,20 +230,13 @@ def _bead_weighted_core(mean, mask, masses):
             eigenvalues.append(0.0)
             continue
         covariance = 0.5 * (covariance + covariance.T)
-        values, vectors = np.linalg.eigh(covariance)
-        order = np.argsort(values)[::-1]
-        selected = None
-        for candidate in order:
-            vector = vectors[:, candidate]
-            vector = vector - (vector @ tangent[k]) * tangent[k]
-            norm = np.linalg.norm(vector)
-            if norm > 1e-10:
-                selected = (vector / norm, max(float(values[candidate]), 0.0))
-                break
-        if selected is None:
-            selected = (vectors[:, order[0]], max(float(values[order[0]]), 0.0))
-            selected = (selected[0] / max(np.linalg.norm(selected[0]), 1e-300), selected[1])
-        vector, eigenvalue = selected
+        # Project the covariance before diagonalizing: projecting a full-space
+        # eigenvector but retaining its eigenvalue overcounts tangential spread
+        # and need not select the largest transverse mode.
+        projector = np.eye(len(tangent[k])) - np.outer(tangent[k], tangent[k])
+        transverse = projector @ covariance @ projector
+        values, vectors = np.linalg.eigh(0.5 * (transverse + transverse.T))
+        vector, eigenvalue = vectors[:, -1], max(float(values[-1]), 0.0)
         sign = float(np.sign(vector @ curvature[k]))
         if sign == 0.0:
             # A locally straight section has no curvature sign.  Keep the
@@ -351,8 +344,9 @@ def _instanton_core(run, core, options):
     # folded half-ring is what the path builder consumes, but the full bead
     # number is the quantity needed to reproduce an optimizer run and to
     # interpret the physical mode count.
-    details["bead_number"] = beads
     seed = _instanton_seed_from_core(core, beads)
+    details["requested_bead_number"] = beads
+    details["bead_number"] = int(len(seed))
     try:
         result = optimize_instanton(run.provider, run.system.masses, temperature, seed,
                                     transition_state=run.system.geometry,
@@ -420,10 +414,6 @@ def build_path(run: RateRun, options: Mapping[str, Any]):
         core, details = _instanton_core(run, core.reshape(len(core), -1, 3), options)
         core = np.asarray(core).reshape(len(core), -1)
         sampled["instanton"] = details
-    elif source == "least_action":
-        core, details = _least_action_core(core.reshape(len(core), -1, 3), run, options)
-        core = np.asarray(core).reshape(len(core), -1)
-        sampled["least_action"] = details
 
     smoothing = options.get("smoothing")
     if smoothing and len(core) >= 5 and source != "instanton":
@@ -446,6 +436,12 @@ def build_path(run: RateRun, options: Mapping[str, Any]):
         inner = (grid >= xi_core[0] + 0.5 * bandwidth) & (grid <= xi_core[-1] - 0.5 * bandwidth)
         core = fitted[inner] if inner.sum() >= 4 else fitted
         sampled["smoothing_bandwidth_xi"] = bandwidth
+    if source == "least_action":
+        # Optimize the same smoothed core used by the centroid source.  Any
+        # smoothing after the scan would change the selected action and path.
+        core, details = _least_action_core(core.reshape(len(core), -1, 3), run, options)
+        core = np.asarray(core).reshape(len(core), -1)
+        sampled["least_action"] = details
     path, info = assemble_reaction_path(
         core, run.energy, run.gradient, run.cartesian_masses, step=float(options.get("step", 10.0)),
         max_steps=int(options.get("max_steps", 600)), rigid_body=True,

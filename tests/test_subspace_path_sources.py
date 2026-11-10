@@ -98,11 +98,14 @@ def test_build_path_sources_record_selection_and_bead_rms(monkeypatch):
 
     assert centroid_info["source"] == "centroid"
     assert weighted_info["source"] == "bead_weighted"
-    assert weighted_info["bead_weighted"]["bead_rms_range"] == [0.5, 0.5]
-    # The largest bead mode is the y direction, so the weighted path leaves
-    # the centroid by exactly one bead RMS in mass-weighted coordinates.
+    assert weighted_info["bead_weighted"]["bead_rms_range"][1] == 0.5
+    # Only the transverse component of the y covariance contributes away
+    # from the central point, where the tangent is exactly along x.
     displacement = (weighted - centroid).reshape(len(weighted), -1)
-    assert np.max(np.linalg.norm(displacement, axis=1)) == 0.5
+    tangent, _ = pipeline._path_tangent_and_curvature(centroid, run.cartesian_masses)
+    expected_variance = 0.25 * (1.0 - tangent[:, 1] ** 2)
+    np.testing.assert_allclose(np.sum(displacement ** 2, axis=1), expected_variance)
+    np.testing.assert_allclose(np.sum(displacement * tangent, axis=1), 0.0, atol=1e-14)
     assert least_info["source"] == "least_action"
     assert len(least_info["least_action"]["scan"]) == 5
     assert 0.0 <= least_info["least_action"]["selected_alpha"] <= 1.0
@@ -255,3 +258,46 @@ def test_path_projection_records_unstable_normal_hessian():
     # The complete potential along the displaced path is retained in V_S;
     # only the non-positive normal zero-point contribution is dropped.
     assert np.isfinite(model.values).all()
+
+
+def test_bead_weighted_diagonalizes_transverse_covariance():
+    mean = _MeanPath()
+    mean._centroid[:, :, 1] = 0.0
+    tangent = np.array([1.0, 0.0, 0.0, 1.0, 0.0, 0.0]) / np.sqrt(2.0)
+    normal = np.array([0.0, 1.0, 0.0, 0.0, 0.0, 0.0])
+    other_normal = np.array([0.0, 0.0, 1.0, 0.0, 0.0, 0.0])
+    mixed = (10.0 * tangent + normal) / np.sqrt(101.0)
+    covariance = 100.0 * np.outer(mixed, mixed) + 4.0 * np.outer(other_normal, other_normal)
+    mean.bead_covariance[:] = covariance
+    shifted, info = pipeline._bead_weighted_core(mean, mean.locked(), [1.0, 1.0])
+    displacement = (shifted - mean.mean_centroid).reshape(len(mean.xi), -1)
+    np.testing.assert_allclose(displacement, np.tile(2.0 * other_normal, (len(mean.xi), 1)), atol=1e-12)
+    np.testing.assert_allclose(info["principal_variance_range"], [4.0, 4.0])
+
+
+def test_least_action_diagnostics_describe_smoothed_selected_path(monkeypatch):
+    mean = _MeanPath()
+    monkeypatch.setattr(pipeline, "mean_path_from_rate_run", lambda root: mean)
+    monkeypatch.setattr(pipeline, "assemble_reaction_path",
+                        lambda core, *args, **kwargs: (np.asarray(core), {}))
+    run = _Run()
+    _, _, centroid, _ = pipeline.build_path(run, {"source": "centroid", "smoothing": 1.5})
+    _, _, selected, info = pipeline.build_path(run, {"source": "least_action", "smoothing": 1.5})
+    scan = info["least_action"]
+    np.testing.assert_allclose(scan["scan"][0]["action_hbar"], pipeline._wkb_action(centroid, run)[0])
+    np.testing.assert_allclose(scan["selected_action_hbar"], pipeline._wkb_action(selected, run)[0])
+    assert scan["selected_action_hbar"] <= scan["scan"][0]["action_hbar"]
+
+
+def test_instanton_records_actual_even_seed_beads(monkeypatch):
+    monkeypatch.setattr(pipeline, "crossover_temperature", lambda *args: 1.0e9)
+    def optimizer(provider, masses, temperature, seed, **kwargs):
+        return SimpleNamespace(converged=True, gradient_max=0.0, negative_modes=1,
+                               path_bohr=seed, message="converged")
+    monkeypatch.setattr(pipeline, "optimize_instanton", optimizer)
+    for requested, actual in [(1, 8), (9, 10)]:
+        folded, info = pipeline._instanton_core(
+            _Run(), _MeanPath().mean_centroid, {"instanton_beads": requested})
+        assert info["requested_bead_number"] == requested
+        assert info["bead_number"] == actual
+        assert info["folded_beads"] == len(folded) == actual // 2
