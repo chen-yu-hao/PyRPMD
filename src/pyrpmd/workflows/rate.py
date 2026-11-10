@@ -84,6 +84,10 @@ def _parent_propagation(parents):
 
 
 def run_rate(config, system, output, executor=None):
+    if config.get("rate", {}).get("auto"):
+        from .auto_rate import run_auto_rate
+
+        return run_auto_rate(config, system, output, executor=executor)
     from ..input_subspace import normalize_rate_subspace
     from .rate_subspace import finish_rate
     from . import validate_bond_constraint_workflow

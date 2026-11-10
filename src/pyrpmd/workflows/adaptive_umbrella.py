@@ -3,8 +3,9 @@
 The algorithm refines the supplied 1D/2D/3D domain; it does not discover arbitrary
 unspecified basins. Missing overlap is repaired by midpoint insertion along
 the shortest gaps between overlap components. Pilot length grows only when
-effective sample size is insufficient, subject to an explicit cap. Stiffness is kept
-fixed. Every decision, seed and diagnostic is persisted before the next stage.
+effective sample size is insufficient, subject to an explicit cap. Optional
+pilot-only shared stiffness tuning balances centering and overlap; production
+always uses a fixed spring. Every decision, seed and diagnostic is persisted.
 An optional, explicitly bounded coverage grid also inserts windows into cells
 with insufficient local reweighting ESS: graph connectivity alone cannot
 guarantee coverage of a two-dimensional free-energy surface.
@@ -42,7 +43,7 @@ LEGACY_OVERLAP_METRIC = "mbar_symmetric_transition"
 NORMALIZED_OVERLAP_METRIC = "normalized_mbar_cosine"
 
 
-ADAPTIVE_FIELDS = {"enabled", "pilot_steps", "pilot_equilibration_steps", "max_rounds",
+ADAPTIVE_FIELDS = {"enabled", "adapt_stiffness", "pilot_steps", "pilot_equilibration_steps", "max_rounds",
                    "max_windows", "max_pilot_steps", "target_overlap", "min_effective_samples", "min_spacing",
                    "coverage_bins", "coverage_ranges", "min_bin_effective_samples", "target_coverage"}
 
@@ -57,7 +58,10 @@ def adaptive_options(config):
     enabled = table.get("enabled", bool(table))
     if not isinstance(enabled, bool):
         raise ValueError("adaptive_umbrella.enabled must be boolean")
-    options = {"enabled": enabled}
+    adapt_stiffness = table.get("adapt_stiffness", False)
+    if not isinstance(adapt_stiffness, bool):
+        raise ValueError("adaptive_umbrella.adapt_stiffness must be boolean")
+    options = {"enabled": enabled, "adapt_stiffness": adapt_stiffness}
     for key, default, minimum in (
         ("pilot_steps", 1000, 1),
         ("pilot_equilibration_steps", config.get("sampling", {}).get("equilibration_steps", 0), 0),
@@ -404,6 +408,11 @@ def extend_adaptive_budget(output, limits):
     plan["options"] = options
     last = plan["rounds"][-1]
     plan["centers"] = last["next_centers"]
+    if "stiffness_update" in last:
+        update = last["stiffness_update"]
+        plan["stiffness"] = update["next_stiffness"]
+        for key in ("stiffness_scale", "stiffness_floor_scale"):
+            plan[key] = update[key]
     if plan.get("schema_version", 1) >= 2:
         plan["next_pilot_steps"] = _next_pilot_steps(last["pilot"]["production_steps"], last, options)
     plan["status"] = "adapting"
@@ -448,10 +457,64 @@ def _next_pilot_steps(current, report, options):
     return min(options["max_pilot_steps"], 2 * current)
 
 
+def _stiffness_decision(streams, centers, stiffness, beta, periods, report, plan):
+    """Tune one spring from discarded pilots, using dimensionless distances.
+
+    A factor of two bounds each update, and the total scale stays within
+    [1/16, 16] of the initial spring. Once a spring fails centering, the next
+    stronger spring is a permanent floor: subsequent softening cannot cycle
+    back to that failed value. Window insertion still repairs remaining gaps.
+    """
+    centers, stiffness = np.asarray(centers), np.asarray(stiffness)
+    scale = plan.get("stiffness_scale", 1.)
+    floor = plan.get("stiffness_floor_scale", 1 / 16)
+    shifts, widths = [], []
+    for i, center in enumerate(centers):
+        neighbors = displacement(np.delete(centers, i, axis=0), center, periods)
+        if not len(neighbors):
+            continue
+        spacing = np.sqrt(np.min(beta * np.einsum("ni,ij,nj->n", neighbors, stiffness, neighbors)))
+        samples = np.concatenate([s["samples"] for s in streams if s["window"] == i])
+        delta = displacement(samples, center, periods)
+        mean = delta.mean(axis=0)
+        shifts.append(float(np.sqrt(beta * mean @ stiffness @ mean) / spacing))
+        centered = delta - mean
+        widths.append(float(np.sqrt(np.mean(beta * np.einsum(
+            "ni,ij,nj->n", centered, stiffness, centered))) / spacing))
+    enough = report["effective_samples_target_met"]
+    centered = not shifts or max(shifts) <= .5
+    next_scale, reason = scale, "centering_and_width_acceptable"
+    if not enough:
+        reason = "insufficient_pilot_effective_samples"
+    elif not centered:
+        next_scale = min(16., 2 * scale)
+        floor = max(floor, next_scale)
+        reason = "increase_for_center_displacement" if next_scale > scale else "stiffness_limit"
+    elif (widths and not report["overlap_connected_at_target"]
+          and max(widths) < .3 and max(shifts) < .25):
+        next_scale = max(floor, .5 * scale)
+        reason = "soften_narrow_disconnected_windows" if next_scale < scale else "centering_floor"
+    factor = next_scale / scale
+    return {"changed": factor != 1., "factor": factor, "reason": reason,
+            "centering_target_met": centered,
+            "displacement_per_spacing": shifts, "width_per_spacing": widths,
+            "next_stiffness": (stiffness * factor).tolist(),
+            "stiffness_scale": next_scale, "stiffness_floor_scale": floor}
+
+
 def _record_round(plan, streams, config, system, output, cv, options, pilot):
+    streams = list(streams)
     report = diagnose_and_refine(streams, np.asarray(plan["centers"]), np.asarray(plan["stiffness"]),
                                 config["beta"], cv.periods, options,
                                 overlap_metric=_plan_overlap_metric(plan))
+    stiffness_changed = False
+    if options.get("adapt_stiffness", False):
+        update = _stiffness_decision(streams, plan["centers"], plan["stiffness"],
+                                     config["beta"], cv.periods, report, plan)
+        report["stiffness_update"] = update
+        report["stiffness"] = copy.deepcopy(plan["stiffness"])
+        stiffness_changed = update["changed"]
+        report["target_met"] &= update["centering_target_met"] and not stiffness_changed
     round_index = plan["next_round"]
     decision = {"round": round_index, "seed": _seed(config, 1, round_index),
                 "centers": plan["centers"], "pilot": pilot, **report}
@@ -466,18 +529,27 @@ def _record_round(plan, streams, config, system, output, cv, options, pilot):
         plan["status"] = "incomplete"
         targets = "overlap/effective-sample" + ("/coverage" if "coverage" in report else "")
         plan["failure_reason"] = "max_rounds before " + targets + " targets"
-    elif not report["overlap_connected_at_target"] and not report["inserted"]:
+    elif ("stiffness_update" in report
+          and report["stiffness_update"]["reason"] == "stiffness_limit"):
+        plan["status"] = "incomplete"
+        plan["failure_reason"] = "stiffness_limit before centering target"
+    elif not report["overlap_connected_at_target"] and not report["inserted"] and not stiffness_changed:
         plan["status"] = "incomplete"
         plan["failure_reason"] = "no admissible midpoint: max_windows or min_spacing"
     elif (plan.get("schema_version", 1) >= 2
           and (not report["effective_samples_target_met"]
                or not report.get("coverage", {}).get("target_met", True))
-          and pilot["production_steps"] >= options["max_pilot_steps"] and not report["inserted"]):
+          and pilot["production_steps"] >= options["max_pilot_steps"]
+          and not report["inserted"] and not stiffness_changed):
         plan["status"] = "incomplete"
         target = ("effective-sample" if not report["effective_samples_target_met"] else "coverage")
         plan["failure_reason"] = "max_pilot_steps before " + target + " target"
     else:
         plan["centers"] = report["next_centers"]
+        if "stiffness_update" in report:
+            plan["stiffness"] = update["next_stiffness"]
+            for key in ("stiffness_scale", "stiffness_floor_scale"):
+                plan[key] = update[key]
     _save_plan(output, plan)
     write_json(Path(output) / "adaptation" / f"round_{round_index:03d}" / "diagnostics.json", decision)
     return plan
