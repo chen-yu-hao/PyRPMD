@@ -17,7 +17,7 @@ import tomllib
 
 from .system import System
 from .input_schema import (
-    InputError, _ROOT, _SECTIONS, _integer, _positive, _unknown_fields,
+    InputError, TASKS, _ROOT, _SECTIONS, _integer, _positive, _unknown_fields, _unknown_task,
 )
 from .input_options import validate_nonadiabatic, rate_pmf_options
 from .input_fes import fes_method, normalize_fes_task, _normalize_fes_input
@@ -139,6 +139,9 @@ class JobSpec:
         return resolved, system
 
     def _resolve(self):
+        task = self.data.get("task")
+        if not isinstance(task, str) or task not in TASKS:
+            raise _unknown_task(task)
         if self.data.get("task") == "path_sampling":
             from .path_sampling_input import resolve_path_sampling_job
 
@@ -228,7 +231,7 @@ class JobSpec:
         validate_input_preflight(d)
         task = d.get("task")
         if task not in ("rate", "drpmd", "fes", "metadynamics", "opes", "pimd", "diffusion", "site_rate", "surface_rate"):
-            raise InputError("task must be rate, drpmd, fes, metadynamics, opes, network, pcet, pimd, diffusion, site_rate or surface_rate")
+            raise _unknown_task(task)
         selected = "initial_ensemble" in d
         initial_ensemble = None
         base = Path(self.base_directory).resolve()

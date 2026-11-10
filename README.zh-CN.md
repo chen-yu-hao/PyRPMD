@@ -31,8 +31,9 @@ pyrpmd run first-run/quickstart.inp --output first-run/run
 pyrpmd analyze first-run/run
 ```
 
-starter 在谐振势上检查完整自由能流程，通常只需数秒，实际耗时以执行机器测量为准。
-要得到与解析参考对照的数值和统计误差，请继续运行下面的教程。
+starter 在几秒内算出谐振子的质心自由能，其精确解为 $F(x)=\tfrac12 kx^2$；
+[快速入门](docs/zh/manual/quickstart.md)给出了对比方法，结果与精确解相差约 0.1 $k_BT$。
+下面的教程对其他任务做同样的对照。
 使用 `pyrpmd resume first-run/run` 可恢复已有计算。
 
 ![势垒附近的环聚合物示意图](docs/_static/gifs/ring_polymer.gif)

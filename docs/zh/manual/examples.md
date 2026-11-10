@@ -12,7 +12,7 @@
 
 | 输入/程序 | 内容 | 耗时 | 章节 |
 | --- | --- | --- | --- |
-| `examples/manual/quickstart.inp` | 三个伞窗口、6 条采样流的一维谐势 FES | 约 2 s | [快速入门](quickstart.md) |
+| `examples/manual/quickstart.inp` | 五个伞窗口、10 条采样流的一维谐势 FES，可与精确解 $\tfrac12 kx^2$ 对比 | 约 4 s | [快速入门](quickstart.md) |
 | `examples/manual/low_level.py` | 使用 `Dynamics` / `State` 的 100 步程序 | <1 s | [API](api.md) |
 | `examples/fes/harmonic2d.inp` | 两个质心 CV、二维 MBAR 与 mask | 约 6 s | [气相与自由能](workflows.md) |
 | `examples/fes/replica_exchange_2d.inp` | PILE-L、副本交换伞形采样与同步 bootstrap | — | [副本交换](../replica-exchange.md) |

@@ -27,6 +27,28 @@ def _unknown_fields(unknown, allowed, section):
     return InputError(message)
 
 
+# Every ``task`` value accepted by ``pyrpmd run``. ``metadynamics`` and ``opes``
+# are deprecated aliases of task="fes" with the corresponding [fes] method.
+TASKS = (
+    "rate", "drpmd", "fes", "network", "pcet", "pimd", "diffusion", "site_rate",
+    "surface_rate", "nonadiabatic", "spectroscopy", "path_sampling", "plumed",
+    "metadynamics", "opes",
+)
+
+
+def _unknown_task(task):
+    """Describe a missing or misspelled task before any task-specific check runs."""
+    choices = ", ".join(TASKS[:-2])
+    if task is None:
+        return InputError(f"Input needs a top-level task; choose one of: {choices}")
+    message = f"Unknown task {task!r}; choose one of: {choices}"
+    if isinstance(task, str):
+        matches = get_close_matches(task.strip().lower().replace("-", "_"), TASKS, n=1, cutoff=0.6)
+        if matches:
+            message += f". Did you mean {matches[0]!r}?"
+    return InputError(message)
+
+
 _ROOT = set(
     "schema_version task preset temperature beads seed system potential dynamics sampling reaction preparation collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics opes abf eabf steered ves adaptive_umbrella pcet diffusion site_rate surface nonadiabatic replica_exchange tempering barostat electronic_friction initial_ensemble fes path_integral active_learning".split()
 )

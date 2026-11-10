@@ -33,10 +33,11 @@ pyrpmd run first-run/quickstart.inp --output first-run/run
 pyrpmd analyze first-run/run
 ```
 
-The starter exercises a harmonic free-energy workflow in seconds; its measured
-runtime depends on the machine. For an analytic value with a statistical
-comparison, continue with one of the tutorials below. Resume a saved run with
-`pyrpmd resume first-run/run`.
+The starter computes the centroid free energy of a harmonic oscillator in a few
+seconds. Its exact answer is $F(x)=\tfrac12 kx^2$, and the
+[Quickstart](docs/manual/quickstart.md) shows how to compare: the result agrees to
+about 0.1 $k_BT$. The tutorials below do the same for the other tasks. Resume a
+saved run with `pyrpmd resume first-run/run`.
 
 ![Schematic ring polymer near a barrier](docs/_static/gifs/ring_polymer.gif)
 

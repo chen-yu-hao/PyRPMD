@@ -382,12 +382,69 @@ def test_numpy_morse_atom_indices_have_portable_implicit_checkpoint(tmp_path):
     assert uninterrupted.operator_state_dict() == resumed.operator_state_dict()
 
 
-def test_cli_init_quickstart_uses_native_steps_and_resumes_with_same_identity(tmp_path, capsys):
+# The starter shipped before the tutorial was lengthened to a converged run.
+# Its run identity was captured from unmodified main 8cc402f, before built-ins
+# had native bindings, so this exact text stays pinned here.
+_LEGACY_QUICKSTART = """\
+# Short end-to-end tutorial, not a converged free-energy calculation.
+schema_version = 1
+task = "fes"
+preset = "pilot"
+temperature = "300 K"
+beads = 4
+seed = 20261030
+
+[system]
+symbols = ["H"]
+geometry = [[0.0, 0.0, 0.0]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "harmonic"
+params = {k = 0.002}
+
+[dynamics]
+integrator = "cayley-bcb"
+timestep = "0.1 fs"
+
+[sampling]
+equilibration_steps = 20
+production_steps = 100
+sample_interval = 5
+andersen_interval = 10
+replicas = 2
+
+[[cvs]]
+name = "x"
+kind = "cartesian"
+atom = 0
+axis = "x"
+estimator = "centroid"
+unit = "bohr"
+
+[umbrella]
+cvs = ["x"]
+centers = [-0.5, 0.0, 0.5]
+stiffness = "0.002 hartree/bohr^2"
+
+[analysis]
+bins = 12
+ranges = [[-2.0, 2.0]]
+bootstrap = 0
+min_count = 2
+
+[output]
+directory = "run"
+checkpoint_steps = 20
+"""
+
+
+def test_legacy_quickstart_uses_native_steps_and_resumes_with_same_identity(tmp_path, capsys):
     from pyrpmd.cli import main
 
-    assert main(["init", str(tmp_path / "starter")]) == 0
-    starter = json.loads(capsys.readouterr().out)
-    input_path = Path(starter["input"])
+    input_path = tmp_path / "starter" / "quickstart.inp"
+    input_path.parent.mkdir()
+    input_path.write_text(_LEGACY_QUICKSTART, encoding="utf-8", newline="\n")
     output = input_path.parent / "run"
     assert main(["run", str(input_path)]) == 0
     summary = json.loads(capsys.readouterr().out)
@@ -412,3 +469,30 @@ def test_cli_init_quickstart_uses_native_steps_and_resumes_with_same_identity(tm
     assert {k: v for k, v in resumed.items() if k != "propagation_plan"} == {
         k: v for k, v in summary.items() if k != "propagation_plan"}
     assert json.loads((output / "manifest.json").read_text())["physics_fingerprint"] == identity
+
+
+def test_cli_init_quickstart_reproduces_the_analytic_harmonic_free_energy(tmp_path, capsys):
+    """The tutorial claims F(x) = k x^2 / 2; keep that claim true."""
+    from pyrpmd.cli import main
+
+    assert main(["init", str(tmp_path / "starter")]) == 0
+    starter = json.loads(capsys.readouterr().out)
+    input_path = Path(starter["input"])
+    output = input_path.parent / "run"
+    assert main(["run", str(input_path)]) == 0
+    summary = json.loads(capsys.readouterr().out)
+    assert (summary["windows"], summary["streams"], summary["samples"]) == (5, 10, 20000)
+    assert summary["overlap_connected"] is True
+    assert summary["warnings"] == []
+    assert min(summary["effective_samples_per_stream"]) > 50
+    for path in sorted((output / "checkpoints").glob("*.npz")):
+        with load_checkpoint(path) as saved:
+            stats = json.loads(str(saved["propagation"]))
+        assert stats == {"native_steps": 51000, "python_steps": 0, "fallback_reasons": {}}
+    table = np.genfromtxt(output / "fes.csv", delimiter=",", names=True)
+    supported = table["masked"] == 0
+    assert supported.all()
+    exact = 0.5 * 0.002 * table["cv0_bohr"] ** 2
+    difference = table["free_energy_hartree"] - exact
+    difference -= difference.mean()  # the free energy has an arbitrary zero
+    assert np.max(np.abs(difference)) * summary["beta"] < 0.3

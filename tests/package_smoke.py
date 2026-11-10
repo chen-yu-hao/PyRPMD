@@ -215,7 +215,7 @@ def main():
     starter_run = starter / "run"
     starter_summary = json.loads(command(
         "init-analyze", [sys.executable, "-m", "pyrpmd", "analyze", str(starter_run)]))
-    for key, expected in (("task", "fes"), ("samples", 120), ("streams", 6), ("windows", 3)):
+    for key, expected in (("task", "fes"), ("samples", 20000), ("streams", 10), ("windows", 5)):
         if starter_summary.get(key) != expected:
             raise AssertionError(f"Installed starter has unexpected {key}: {starter_summary.get(key)!r}")
     command("init-resume", [sys.executable, "-m", "pyrpmd", "resume", str(starter_run)])
