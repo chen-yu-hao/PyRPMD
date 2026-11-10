@@ -146,7 +146,9 @@ def _summary_propagation(result):
     """Ensure every run summary has a public propagation accounting field."""
     if not isinstance(result, Mapping):
         return result
-    if "propagation" in result:
+    existing = result.get("propagation")
+    if (isinstance(existing, Mapping)
+            and {"native_steps", "python_steps", "fallback_reasons"}.issubset(existing)):
         return result
     records = []
 
@@ -162,7 +164,14 @@ def _summary_propagation(result):
 
     visit(result)
     from .propagation import combine_propagation_stats
-    return {**result, "propagation": combine_propagation_stats(records)}
+    combined = combine_propagation_stats(records)
+    if isinstance(existing, Mapping):
+        # Preserve stage-specific detail while making the aggregate counters
+        # available at the stable top level expected by result consumers.
+        return {**result, "propagation": {**existing, **combined}}
+    if isinstance(existing, (list, tuple)):
+        return {**result, "propagation": combined, "propagation_streams": list(existing)}
+    return {**result, "propagation": combined}
 
 
 def _read_identity(config, directory):
