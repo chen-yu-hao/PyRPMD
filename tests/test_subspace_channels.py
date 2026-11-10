@@ -99,6 +99,9 @@ def test_separable_channels_have_known_local_levels_and_no_couplings():
     assert channel_rate.rate == pytest.approx(reference_rate.rate, rel=1e-12)
     assert channel_rate.diagnostics["normal_grid_points"] == 161
     assert channel_rate.diagnostics["truncation_margin"] > 2.0
+    # A zero-curvature one-channel model keeps the established constant-mass
+    # RPMD path; the metric hook is unnecessary when g^{sigma sigma}=1.
+    assert one.channel_model().metric is None
 
 
 @pytest.mark.skipif(build_subspace_channels is None, reason="subspace_channels is not available")

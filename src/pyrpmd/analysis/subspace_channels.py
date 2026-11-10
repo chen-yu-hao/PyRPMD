@@ -179,13 +179,17 @@ class SubspaceChannels:
 
         masses = [float(self.provenance.get("sigma_mass", 1.0)),
                   float(self.provenance.get("normal_mass", 1.0))]
+        has_curvature_metric = bool(np.any(np.abs(kappa) > 0.0))
         return model_from_function(
             energy, (sigma, q), masses=masses,
             dividing_surface=self.dividing_surface, reactant=reactant,
             reactant_reference=self.reactant_reference,
             provenance={**self.provenance, "kind": "adiabatic_channels_rpmd",
-                         "position_dependent_inverse_metric": True},
-            metric=metric,
+                         "position_dependent_inverse_metric": has_curvature_metric},
+            # A zero-curvature channel model has a constant unit metric.  Keep
+            # it on the existing constant-mass RPMD path so the one-channel,
+            # zero-coupling limit is exactly the established 1D model.
+            metric=metric if has_curvature_metric else None,
         )
 
     rpmd_model = channel_model
