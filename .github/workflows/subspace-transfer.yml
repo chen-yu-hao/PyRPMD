@@ -9,6 +9,7 @@ on:
   push:
     branches:
       - 'claude/subspace-transfer-theory'
+      - 'issue-157-path-source'
     paths:
       - 'benchmarks/subspace_theory/transfer.py'
       - 'benchmarks/subspace_theory/plan.py'

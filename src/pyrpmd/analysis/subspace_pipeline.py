@@ -35,10 +35,25 @@ from .subspace_model import (_vibrational_complement, assemble_reaction_path, pa
                              project_linear_subspace, project_path_subspace, relaxed_path)
 from .subspace_quantum import _json_safe, sinc_dvr_kinetic
 
+
+def crossover_temperature(*args, **kwargs):
+    """Lazy instanton crossover helper, kept patchable for pipeline tests."""
+    from ..instanton import crossover_temperature as _crossover_temperature
+
+    return _crossover_temperature(*args, **kwargs)
+
+
+def optimize_instanton(*args, **kwargs):
+    """Lazy instanton optimizer helper, kept patchable for pipeline tests."""
+    from ..instanton import optimize_instanton as _optimize_instanton
+
+    return _optimize_instanton(*args, **kwargs)
+
 DEFAULTS = {
     "source": {"rate_run": None},
-    "path": {"step": 10.0, "max_steps": 600, "spread_factor": 2.0, "asymptote_tolerance": 1e-6,
-             "smoothing": 1.5},
+    "path": {"source": "centroid", "step": 10.0, "max_steps": 600, "spread_factor": 2.0,
+             "asymptote_tolerance": 1e-6, "smoothing": 1.5,
+             "least_action_points": 9},
     "subspace": {"dimension": "auto", "threshold": 0.5, "environment": "adiabatic"},
     "quantum": {"spacing_1d": None, "spacing_2d": None, "refinement": 3, "absorber_fraction": 0.2,
                 "threshold_margin": 1.0, "truncation_kt": 30.0, "truncation_min": 0.0, "padding": None,
@@ -159,24 +174,256 @@ def _static_curvature_width(run, path, threshold):
             "candidate_direction": normals[peak].tolist(), "width_source": "harmonic mode along the normal"}
 
 
+def _ordered_locked_indices(mean, mask):
+    """Return the original window indices in increasing reaction-coordinate order."""
+    order = np.argsort(np.asarray(mean.xi, dtype=float))
+    return order[np.asarray(mask, dtype=bool)[order]]
+
+
+def _path_tangent_and_curvature(points, masses):
+    """Finite-difference tangent and curvature vectors in mass-weighted space."""
+    points = np.asarray(points, dtype=float)
+    sqrt_m = np.sqrt(np.asarray(masses, dtype=float))
+    weighted = points * sqrt_m[None, :]
+    tangent = np.zeros_like(weighted)
+    curvature = np.zeros_like(weighted)
+    for i in range(len(points)):
+        if i == 0:
+            tangent[i] = weighted[1] - weighted[0]
+        elif i == len(points) - 1:
+            tangent[i] = weighted[-1] - weighted[-2]
+        else:
+            tangent[i] = weighted[i + 1] - weighted[i - 1]
+            curvature[i] = weighted[i + 1] - 2 * weighted[i] + weighted[i - 1]
+        norm = np.linalg.norm(tangent[i])
+        if norm > 0:
+            tangent[i] /= norm
+    for i in range(len(points)):
+        curvature[i] -= (curvature[i] @ tangent[i]) * tangent[i]
+    return tangent, curvature
+
+
+def _bead_weighted_core(mean, mask, masses):
+    """Shift each centroid towards the local corner using bead covariance.
+
+    ``bead_covariance`` is already mass weighted and is the covariance of
+    bead displacements about the centroid.  The displacement along its
+    largest transverse eigenvector is therefore the bead RMS
+    ``sqrt(lambda_max)`` in mass-weighted coordinates.  (The curvature-width
+    diagnostic uses a separate ``sqrt(2)`` quantum-width convention.)  The
+    arbitrary eigenvector sign is fixed by the local curvature vector, so the
+    shift points into the bend.
+    """
+    indices = _ordered_locked_indices(mean, mask)
+    if hasattr(mean, "mean_centroid"):
+        core = np.asarray(mean.mean_centroid[indices], dtype=float).copy()
+    else:
+        core = np.asarray(mean.path(mask), dtype=float).copy()
+    tangent, curvature = _path_tangent_and_curvature(core.reshape(len(core), -1),
+                                                     np.repeat(np.asarray(masses, dtype=float), 3))
+    sqrt_m = np.sqrt(np.repeat(np.asarray(masses, dtype=float), 3))
+    shifts = np.zeros((len(indices), core.shape[1] * core.shape[2]))
+    eigenvalues = []
+    for k, index in enumerate(indices):
+        covariance = np.asarray(mean.bead_covariance[index], dtype=float)
+        if covariance.shape != (core.shape[1] * core.shape[2],) * 2 or not np.isfinite(covariance).all():
+            eigenvalues.append(0.0)
+            continue
+        covariance = 0.5 * (covariance + covariance.T)
+        # Project the covariance before diagonalizing: projecting a full-space
+        # eigenvector but retaining its eigenvalue overcounts tangential spread
+        # and need not select the largest transverse mode.
+        projector = np.eye(len(tangent[k])) - np.outer(tangent[k], tangent[k])
+        transverse = projector @ covariance @ projector
+        values, vectors = np.linalg.eigh(0.5 * (transverse + transverse.T))
+        vector, eigenvalue = vectors[:, -1], max(float(values[-1]), 0.0)
+        sign = float(np.sign(vector @ curvature[k]))
+        if sign == 0.0:
+            # A locally straight section has no curvature sign.  Keep the
+            # orientation deterministic and continuous with the previous
+            # selected mode when possible.
+            if k and np.dot(vector, shifts[k - 1]) < 0:
+                sign = -1.0
+            else:
+                sign = 1.0
+        shifts[k] = sign * np.sqrt(eigenvalue) * vector
+        eigenvalues.append(eigenvalue)
+    shifted = (core.reshape(len(core), -1) * sqrt_m[None, :] + shifts) / sqrt_m[None, :]
+    return shifted.reshape(core.shape), {
+        "windows": int(len(indices)),
+        "principal_variance_range": [float(min(eigenvalues or [0.0])), float(max(eigenvalues or [0.0]))],
+        "bead_rms_range": [float(np.sqrt(min(eigenvalues or [0.0]))),
+                           float(np.sqrt(max(eigenvalues or [0.0])))],
+        "shift_max_mass_weighted": float(np.max(np.linalg.norm(shifts, axis=1))) if len(shifts) else 0.0,
+        "shift_convention": "sqrt(lambda_max) bead RMS along transverse principal mode; curvature sign",
+    }
+
+
+def _wkb_action(points, run, reference_energy=None):
+    """One-dimensional Euclidean WKB action along a Cartesian path."""
+    masses = run.cartesian_masses
+    weighted = np.asarray(points, dtype=float).reshape(len(points), -1) * np.sqrt(masses)[None, :]
+    arc = np.r_[0.0, np.cumsum(np.linalg.norm(np.diff(weighted, axis=0), axis=1))]
+    energies = np.asarray([run.energy(point) for point in np.asarray(points)], dtype=float)
+    if reference_energy is None:
+        reference_energy = float(min(energies[0], energies[-1]))
+    integrand = np.sqrt(2.0 * np.maximum(energies - float(reference_energy), 0.0))
+    from scipy.integrate import trapezoid
+
+    return float(trapezoid(integrand, arc)), energies, arc
+
+
+def _least_action_core(core, run, options):
+    """Scan a MEP-to-chord family and return the minimum-action member."""
+    core = np.asarray(core, dtype=float)
+    flat = core.reshape(len(core), -1)
+    chord = np.linspace(flat[0], flat[-1], len(flat)).reshape(core.shape)
+    count = max(2, int(options.get("least_action_points", 9)))
+    alphas = np.linspace(0.0, 1.0, count)
+    records = []
+    best = None
+    for alpha in alphas:
+        candidate = (1.0 - alpha) * core + alpha * chord
+        action, energies, arc = _wkb_action(candidate, run)
+        record = {"alpha": float(alpha), "action_hbar": float(action),
+                  "barrier": float(np.max(energies) - min(energies[0], energies[-1])),
+                  "arc_length": float(arc[-1])}
+        records.append(record)
+        if best is None or action < best[0]:
+            best = (action, candidate, record)
+    return best[1], {"criterion": "minimum one-dimensional WKB action",
+                     "selected_alpha": float(best[2]["alpha"]), "selected_action_hbar": float(best[0]),
+                     "scan": records}
+
+
+def _instanton_seed_from_core(core, nbeads):
+    """Create a noncollapsed link-reflected instanton seed from a path core."""
+    core = np.asarray(core, dtype=float)
+    p = max(8, int(nbeads))
+    if p % 2:
+        p += 1
+    half = p // 2
+    # Use the barrier-centred portion of the MEP; preserving endpoint
+    # separation gives the optimizer a noncollapsed orbit without guessing a
+    # transition-state normal mode.
+    # The energy is not available here; use the middle of the sampled core.
+    centre = len(core) // 2
+    span = min(len(core), max(4, half))
+    start = max(0, min(len(core) - span, centre - span // 2))
+    sample = core[start:start + span]
+    parameter = np.linspace(0.0, 1.0, len(sample))
+    target = np.linspace(0.0, 1.0, half)
+    folded_half = np.empty((half,) + sample.shape[1:])
+    for atom in range(sample.shape[1]):
+        for component in range(3):
+            folded_half[:, atom, component] = np.interp(target, parameter, sample[:, atom, component])
+    return np.concatenate([folded_half, folded_half[::-1]], axis=0)
+
+
+def _instanton_core(run, core, options):
+    """Optimize a thermal instanton, or return centroid core with diagnostics."""
+    from ..constants import KB_AU
+
+    temperature = 1.0 / (KB_AU * run.beta)
+    details = {"temperature_kelvin": float(temperature), "method": "instanton"}
+    try:
+        crossover = float(crossover_temperature(run.provider, run.system.geometry,
+                                                run.system.masses))
+        details["crossover_temperature_kelvin"] = crossover
+    except Exception as error:
+        details["crossover_temperature_error"] = str(error)
+        crossover = options.get("crossover_temperature")
+        if crossover is not None:
+            crossover = float(crossover)
+            details["crossover_temperature_kelvin"] = crossover
+    if crossover is not None and temperature >= crossover:
+        details.update({"fallback": "centroid", "fallback_reason": "temperature_at_or_above_crossover"})
+        return core, details
+    beads = int(options.get("instanton_beads") or run.nbeads or 16)
+    # Keep the requested ring size explicit in the persisted diagnostics.  A
+    # folded half-ring is what the path builder consumes, but the full bead
+    # number is the quantity needed to reproduce an optimizer run and to
+    # interpret the physical mode count.
+    seed = _instanton_seed_from_core(core, beads)
+    details["requested_bead_number"] = beads
+    details["bead_number"] = int(len(seed))
+    try:
+        result = optimize_instanton(run.provider, run.system.masses, temperature, seed,
+                                    transition_state=run.system.geometry,
+                                    max_iterations=int(options.get("instanton_max_iterations", 200)),
+                                    raise_on_failure=False)
+    except Exception as error:
+        message = str(error)
+        reason = ("temperature_at_or_above_crossover"
+                  if "temperature below crossover" in message.lower()
+                  else "optimizer_failure")
+        details.update({"fallback": "centroid", "fallback_reason": reason, "error": message})
+        return core, details
+    details.update({"converged": bool(result.converged), "gradient_max": float(result.gradient_max),
+                    "negative_modes": int(result.negative_modes),
+                    "physical_negative_modes": int(result.negative_modes),
+                    "physical_converged": False})
+    if not result.converged:
+        details.update({"fallback": "centroid", "fallback_reason": "optimizer_not_converged",
+                        "optimizer_message": str(result.message)})
+        return core, details
+    orbit = np.asarray(result.path_bohr, dtype=float)
+    folded = orbit[:len(orbit) // 2]
+    # Orient the folded chain from reactants to products to match assemble's
+    # continuation convention.
+    masses = run.cartesian_masses
+    if np.linalg.norm((folded[0] - core[0]).ravel() * np.sqrt(masses)) > \
+            np.linalg.norm((folded[-1] - core[0]).ravel() * np.sqrt(masses)):
+        folded = folded[::-1]
+    details.update({"folded_beads": int(len(folded)), "fallback": None,
+                    "core_source": "optimized folded half-ring"})
+    return folded, details
+
+
 def build_path(run: RateRun, options: Mapping[str, Any]):
-    """Ring-polymer mean path (orientation-locked windows) extended to both asymptotes."""
+    """Build and extend a reaction path selected by ``path.source``.
+
+    ``centroid`` preserves the historical mean-centroid path.  The other
+    sources only change the sampled core; all of them use the same
+    :func:`assemble_reaction_path` continuation and therefore the same
+    asymptotic reference geometry and potential.
+    """
+    options = dict(options or {})
+    source = str(options.get("source", "centroid")).lower()
+    allowed = {"centroid", "bead_weighted", "instanton", "least_action"}
+    if source not in allowed:
+        raise ValueError(f"path.source must be one of {sorted(allowed)}")
     mean = mean_path_from_rate_run(run.root)
-    mask = mean.locked(factor=float(options["spread_factor"]))
-    core = mean.path(mask).reshape(int(mask.sum()), -1)
+    mask = mean.locked(factor=float(options.get("spread_factor", 2.0)))
+    indices = _ordered_locked_indices(mean, mask)
+    centroids = np.asarray(mean.mean_centroid[indices] if hasattr(mean, "mean_centroid")
+                           else mean.path(mask), dtype=float)
+    core = centroids.reshape(int(mask.sum()), -1)
     xi_core = np.sort(mean.xi[mask])
-    sampled = {"windows": int(len(mean.xi)), "locked_windows": int(mask.sum()),
-               "locked_xi": [float(v) for v in np.sort(mean.xi[mask])],
+    sampled = {"source": source, "windows": int(len(mean.xi)), "locked_windows": int(mask.sum()),
+               "locked_xi": [float(v) for v in xi_core],
                "orientation_spread": mean.orientation_spread.tolist()}
     if len(core) < 2:
         raise ValueError("fewer than two orientation-locked windows; add umbrella windows near the transition state")
+
+    if source == "bead_weighted":
+        core, details = _bead_weighted_core(mean, mask, run.system.masses)
+        core = core.reshape(len(core), -1)
+        sampled["bead_weighted"] = details
+    elif source == "instanton":
+        core, details = _instanton_core(run, core.reshape(len(core), -1, 3), options)
+        core = np.asarray(core).reshape(len(core), -1)
+        sampled["instanton"] = details
+
     smoothing = options.get("smoothing")
-    if smoothing and len(core) >= 5:
+    if smoothing and len(core) >= 5 and source != "instanton":
         # Fit xbar(xi) against the sampling coordinate itself: window means
         # carry transverse noise, and a chord-length parametrization of noisy
         # points zig-zags.  Local quadratic regression in xi, evaluated on a
         # uniform xi grid, gives a smooth, monotonically parametrized core.
         bandwidth = float(smoothing) * 2.0 * float(np.median(np.diff(xi_core)))
+        if bandwidth <= 0:
+            raise ValueError("locked reaction-coordinate windows must have distinct xi values")
         grid = np.linspace(xi_core[0], xi_core[-1], 4 * len(xi_core))
         fitted = np.empty((len(grid), core.shape[1]))
         for i, centre in enumerate(grid):
@@ -189,10 +436,16 @@ def build_path(run: RateRun, options: Mapping[str, Any]):
         inner = (grid >= xi_core[0] + 0.5 * bandwidth) & (grid <= xi_core[-1] - 0.5 * bandwidth)
         core = fitted[inner] if inner.sum() >= 4 else fitted
         sampled["smoothing_bandwidth_xi"] = bandwidth
+    if source == "least_action":
+        # Optimize the same smoothed core used by the centroid source.  Any
+        # smoothing after the scan would change the selected action and path.
+        core, details = _least_action_core(core.reshape(len(core), -1, 3), run, options)
+        core = np.asarray(core).reshape(len(core), -1)
+        sampled["least_action"] = details
     path, info = assemble_reaction_path(
-        core, run.energy, run.gradient, run.cartesian_masses, step=float(options["step"]),
-        max_steps=int(options["max_steps"]), rigid_body=True,
-        asymptote_tolerance=float(options["asymptote_tolerance"]),
+        core, run.energy, run.gradient, run.cartesian_masses, step=float(options.get("step", 10.0)),
+        max_steps=int(options.get("max_steps", 600)), rigid_body=True,
+        asymptote_tolerance=float(options.get("asymptote_tolerance", 1e-6)),
     )
     info.update(sampled)
     return mean, mask, path, info
@@ -223,7 +476,7 @@ def _truncation_offset(options, beta):
     return max(float(options["truncation_kt"]) / beta, float(options.get("truncation_min", 0.0) or 0.0))
 
 
-def path_model(run: RateRun, path, options: Mapping[str, Any]):
+def path_model(run: RateRun, path, options: Mapping[str, Any], *, path_source: str = "centroid"):
     """1D vibrationally adiabatic model on the arc length of the assembled path."""
     masses = run.cartesian_masses
     arc = _arc(path, masses)
@@ -239,7 +492,8 @@ def path_model(run: RateRun, path, options: Mapping[str, Any]):
     environment = options.get("environment", "adiabatic")
     model = project_path_subspace(run.energy, run.gradient, path, masses, axis, environment=environment,
                                   dividing_surface=None, rigid_body=True,
-                                  beta=run.beta if environment == "free_energy" else None)
+                                  beta=run.beta if environment == "free_energy" else None,
+                                  provenance={"path_source": str(path_source)})
     surface = model.dividing_surface
     fraction = float(options["absorber_fraction"])
     length = axis[-1] - axis[0]
@@ -493,7 +747,10 @@ def run_subspace_pipeline(specification) -> dict:
                     dimensions.remove(d)
     if 1 in dimensions:
         environment = {"environment": options["subspace"].get("environment", "adiabatic")}
-        model1, quantum1, info1 = path_model(run, path, {**options["quantum"], **environment})
+        model1, quantum1, info1 = path_model(
+            run, path, {**options["quantum"], **environment},
+            path_source=path_info.get("source", "centroid"),
+        )
         corrections[1] = subspace_correction(model1, run.beta, nbeads, quantum_options=quantum1,
                                              rpmd_options=rpmd_options)
         corrections[1].write(out_dir / "C_S_1d.json")
