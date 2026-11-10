@@ -39,7 +39,8 @@ DEFAULTS = {
     "source": {"rate_run": None},
     "path": {"step": 10.0, "max_steps": 600, "spread_factor": 2.0, "asymptote_tolerance": 1e-6,
              "smoothing": 1.5},
-    "subspace": {"dimension": "auto", "threshold": 0.5, "environment": "adiabatic", "curvature": "none"},
+    "subspace": {"dimension": "auto", "threshold": 0.5, "environment": "adiabatic", "curvature": "none",
+                 "zero_point": "harmonic", "dvr_points": 81, "dvr_half_width": None, "dvr_spacing": None},
     "quantum": {"spacing_1d": None, "spacing_2d": None, "refinement": 3, "absorber_fraction": 0.2,
                 "threshold_margin": 1.0, "truncation_kt": 30.0, "truncation_min": 0.0, "padding": None,
                 "dense_limit": 8000,
@@ -240,7 +241,11 @@ def path_model(run: RateRun, path, options: Mapping[str, Any]):
     model = project_path_subspace(run.energy, run.gradient, path, masses, axis, environment=environment,
                                   dividing_surface=None, rigid_body=True,
                                   beta=run.beta if environment == "free_energy" else None,
-                                  curvature=options.get("curvature", "none"))
+                                  curvature=options.get("curvature", "none"),
+                                  zero_point=options.get("zero_point", "harmonic"),
+                                  dvr_points=options.get("dvr_points", 81),
+                                  dvr_half_width=options.get("dvr_half_width"),
+                                  dvr_spacing=options.get("dvr_spacing"))
     surface = model.dividing_surface
     fraction = float(options["absorber_fraction"])
     model_axis = model.axes[0]
@@ -512,8 +517,8 @@ def run_subspace_pipeline(specification) -> dict:
                     models[d] = previous.get(str(d), {"reused": True})
                     dimensions.remove(d)
     if 1 in dimensions:
-        environment = {"environment": options["subspace"].get("environment", "adiabatic"),
-                       "curvature": options["subspace"].get("curvature", "none")}
+        environment = {key: options["subspace"][key] for key in
+                       ("environment", "curvature", "zero_point", "dvr_points", "dvr_half_width", "dvr_spacing")}
         model1, quantum1, info1 = path_model(run, path, {**options["quantum"], **environment})
         corrections[1] = subspace_correction(model1, run.beta, nbeads, quantum_options=quantum1,
                                              rpmd_options=rpmd_options)

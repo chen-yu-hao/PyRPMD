@@ -9,6 +9,7 @@ rate_run = "runs/h3-200K-P128-b20"
 dimension = "auto"
 threshold = 0.5
 environment = "adiabatic"   # bend and H2 stretch: beta hbar omega >= 6 at 200 K
+zero_point = "harmonic"      # alternatives: "rph" or normal-cut "dvr"
 
 [quantum]
 refinement = 3

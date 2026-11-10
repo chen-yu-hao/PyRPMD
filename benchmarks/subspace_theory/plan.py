@@ -37,9 +37,11 @@ def points(curvature_only=False):
     for family, parameter, barrier, t, curvature_mass in checks:
         out.append({"family": family, "parameter": parameter, "barrier": barrier, "temperature": t,
                     "curvature_mass": curvature_mass, "beads": 0, "seed": 0, "truncation": 0.10})
+    out = [dict(item, zero_point=zp) for item in out
+           for zp in (("harmonic", "rph", "dvr") if item["family"] == "curvature" else ("harmonic",))]
     for item in out:
         suffix = "-sct" if item.get("curvature_mass") == "small" else ""
-        item["name"] = "{family}-{parameter:g}-{barrier}-{temperature:g}K-P{beads}-t{truncation:g}{suffix}".format(**item, suffix=suffix)
+        item["name"] = "{family}-{parameter:g}-{barrier}-{temperature:g}K-{zero_point}-P{beads}-t{truncation:g}{suffix}".format(**item, suffix=suffix)
     return out
 
 

@@ -195,6 +195,15 @@ $V_S$, and not from deep tunnelling.
 1. Project with `environment="free_energy"` whenever an environment mode has
    $\beta\hbar\omega\lesssim4$; it is first-order exact, the zero-point projection is not. The effect
    on $C_S$ is reduced by the elasticity.
+   For a curved path, `project_path_subspace` also accepts `zero_point="harmonic"`
+   (the historical normal-cut frequencies), `zero_point="rph"` (the
+   Miller--Handy--Adams reaction-path Hessian with the gradient--curvature
+   connection removed), and `zero_point="dvr"` (a sinc-DVR normal cut).  The
+   RPH option removes the local force--curvature contribution in a harmonic
+   projection; it does not add the missing transverse corner-cutting
+   coordinate.  The DVR option treats anharmonicity along each normal mode and
+   uses the cut ground state, or the finite-temperature cut free energy for
+   `environment="free_energy"`.
 2. Converge $P$ for the stiffest environment mode, or divide the full RPMD rate by $B_P$:
    $P\gtrsim[(\sum_r u^3-\sum_\ddagger u^3)/(48\delta)]^{1/2}$.
 3. Curvature × width predicts the transfer error of a 1D path model:

@@ -18,6 +18,7 @@ on:
     branches:
       - 'claude/subspace-transfer-theory'
       - 'issue-155-curvature'
+      - 'issue-156-rph-dvr'
     paths:
       - 'benchmarks/subspace_theory/transfer.py'
       - 'benchmarks/subspace_theory/plan.py'
@@ -74,6 +75,7 @@ jobs:
           python benchmarks/subspace_theory/transfer.py \
             --family ${{ matrix.point.family }} --parameter ${{ matrix.point.parameter }} \
             --barrier ${{ matrix.point.barrier }} --temperature ${{ matrix.point.temperature }} \
+            --zero-point ${{ matrix.point.zero_point || 'harmonic' }} \
             --curvature-mass ${{ matrix.point.curvature_mass || 'none' }} \
             --seed ${{ matrix.point.seed }} $BEADS --workers 4 --truncation-offset ${{ matrix.point.truncation }} \
             --output "point-${{ matrix.point.name }}.json"
