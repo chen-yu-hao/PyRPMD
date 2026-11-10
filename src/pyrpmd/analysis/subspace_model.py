@@ -109,6 +109,8 @@ class GridPotential:
             spline = make_interp_spline(axis, coefficients, k=3, axis=index)
             knots.append(spline.t)
             coefficients = np.moveaxis(spline.c, 0, index)
+        self._native_data = (tuple(np.ascontiguousarray(t) for t in knots),
+                             np.ascontiguousarray(coefficients))
         self._fallback = None
         try:
             from scipy.interpolate import NdBSpline

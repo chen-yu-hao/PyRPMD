@@ -431,8 +431,7 @@ def _rpmd_options(options, run):
     return rpmd, int(options.get("nbeads") or run.nbeads)
 
 
-def run_subspace_pipeline(specification) -> dict:
-    """Run the full correction from a mapping or a TOML/JSON file."""
+def _read_specification(specification):
     base = None
     if isinstance(specification, (str, Path)):
         path = Path(specification)
@@ -446,7 +445,10 @@ def run_subspace_pipeline(specification) -> dict:
         base = path.resolve().parent
     else:
         spec = dict(specification)
-    options = _merge(DEFAULTS, spec)
+    return _merge(DEFAULTS, spec), base
+
+
+def _prepare_pipeline(options, base):
     source = options["source"].get("rate_run")
     if not source:
         raise ValueError("source.rate_run is required")
@@ -476,8 +478,8 @@ def run_subspace_pipeline(specification) -> dict:
                                                                      ([int(requested)] if np.ndim(requested) == 0 else
                                                                       [int(d) for d in requested]))
     rpmd_options, nbeads = _rpmd_options(options["rpmd"], run)
-    corrections, models = {}, {}
-    if options["output"].get("reuse"):
+    corrections, models, cases = {}, {}, {}
+    if options["output"].get("reuse") and options.get("execution") is None:
         # Re-select and re-apply from saved C_S records (same temperature)
         # without recomputing the subspace rates.
         previous = {}
@@ -494,9 +496,8 @@ def run_subspace_pipeline(specification) -> dict:
     if 1 in dimensions:
         environment = {"environment": options["subspace"].get("environment", "adiabatic")}
         model1, quantum1, info1 = path_model(run, path, {**options["quantum"], **environment})
-        corrections[1] = subspace_correction(model1, run.beta, nbeads, quantum_options=quantum1,
-                                             rpmd_options=rpmd_options)
-        corrections[1].write(out_dir / "C_S_1d.json")
+        cases[1] = dict(model=model1, beta=run.beta, nbeads=nbeads, quantum_options=quantum1,
+                        rpmd_options=rpmd_options)
         models[1] = info1
     if 2 in dimensions:
         candidate = None
@@ -506,10 +507,29 @@ def run_subspace_pipeline(specification) -> dict:
             candidate = np.asarray(static_cw["candidate_direction"])
         environment = {"environment": options["subspace"].get("environment", "adiabatic")}
         model2, quantum2, info2, rpmd_model2 = plane_model(run, path, candidate, {**options["quantum"], **environment})
-        corrections[2] = subspace_correction(model2, run.beta, nbeads, quantum_options=quantum2,
-                                             rpmd_options=rpmd_options, rpmd_model=rpmd_model2)
-        corrections[2].write(out_dir / "C_S_2d.json")
+        cases[2] = dict(model=model2, beta=run.beta, nbeads=nbeads, quantum_options=quantum2,
+                        rpmd_options=rpmd_options, rpmd_model=rpmd_model2)
         models[2] = info2
+    execution = options.get("execution")
+    if execution is not None:
+        execution = dict(execution)
+        directory = Path(execution.get("checkpoint_dir") or out_dir / "tasks")
+        if execution.get("checkpoint_dir") and base is not None and not directory.is_absolute():
+            directory = base / directory
+        execution["checkpoint_dir"] = str(directory)
+    return dict(run=run, out_dir=out_dir, nbeads=nbeads, options=options, cases=cases, execution=execution,
+                corrections=corrections, models=models, path_info=path_info, sampled_cw=sampled_cw,
+                static_cw=static_cw, verdict=verdict)
+
+
+def _finish_pipeline(state, computed):
+    run, out_dir, nbeads = state["run"], state["out_dir"], state["nbeads"]
+    options, models, corrections = state["options"], state["models"], state["corrections"]
+    path_info, sampled_cw, static_cw = state["path_info"], state["sampled_cw"], state["static_cw"]
+    verdict = state["verdict"]
+    for dimension, correction in computed.items():
+        correction.write(out_dir / f"C_S_{dimension}d.json")
+        corrections[dimension] = correction
     sensitivity = nested_subspace_sensitivity(list(corrections.values())) if len(corrections) > 1 else None
     if sensitivity is None:
         chosen, reason = max(corrections), "only dimension computed"
@@ -534,6 +554,36 @@ def run_subspace_pipeline(specification) -> dict:
     report = _json_safe(report)
     (out_dir / "subspace_pipeline.json").write_text(json.dumps(report, indent=2, default=str))
     return report
+
+
+def run_subspace_pipeline(specification) -> dict:
+    """Run a saved-run correction; all ranks participate with execution.backend='mpi'."""
+    from ..parallel import root_call
+    from ..parallel.execution import _optional_world
+    from .subspace_execution import subspace_corrections
+
+    # Only small options/reports cross these collectives. The preparation state
+    # contains a live PES and stays on root; task models travel through the task
+    # scheduler after its absorber closures have been evaluated on the DVR grid.
+    call = root_call if _optional_world() is not None else lambda function, *args: function(*args)
+    options, base = call(_read_specification, specification)
+    state = {}
+
+    def prepare():
+        state.update(_prepare_pipeline(options, base))
+        return state["execution"]
+
+    execution = call(prepare)
+    if execution is not None and execution.get("backend") == "mpi":
+        computed = subspace_corrections(state.get("cases"), execution=execution)
+    else:
+        def compute():
+            if execution is not None:
+                return subspace_corrections(state["cases"], execution=execution)
+            return {key: subspace_correction(**case) for key, case in state["cases"].items()}
+
+        computed = call(compute)
+    return call(_finish_pipeline, state, computed)
 
 
 __all__ = ["RateRun", "build_path", "load_rate_run", "path_model", "plane_model", "run_subspace_pipeline"]
