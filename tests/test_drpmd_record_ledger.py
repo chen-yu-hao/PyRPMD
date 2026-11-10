@@ -109,3 +109,41 @@ def test_parent_checkpoint_size_independent_of_record_history(tmp_path):
     assert ledger.count == 5000
     assert ledger.digest != EMPTY_DIGEST
     assert len(ledger.restore(metadata)) == 5000
+
+
+def test_sparse_allocation_digest_preserves_order_and_membership_with_bounded_size():
+    from pyrpmd.workflows.drpmd_records import allocation_fields, matches_parent_allocation
+    ids = [0, 2, 5]
+    fields = allocation_fields(ids)
+    metadata = {"format": PARENT_KIND, **fields}
+    assert matches_parent_allocation(metadata, ids)
+    assert not matches_parent_allocation(metadata, [0, 1, 2])
+    assert not matches_parent_allocation(metadata, [0, 5, 2])
+    assert not matches_parent_allocation(metadata, [0, 2, 6])
+    assert len(fields["trajectory_ids_digest"]) == 64
+    assert "trajectory_ids" not in fields
+    assert len(json.dumps(allocation_fields(list(range(0, 10000, 2))))) < 180
+    assert "trajectory_ids_digest" not in allocation_fields([7, 8, 9])
+    assert matches_parent_allocation({"format": PARENT_KIND, **allocation_fields([7, 8, 9])}, [7, 8, 9])
+
+
+def test_parent_hashes_sparse_allocation_once_not_at_every_checkpoint(tmp_path, monkeypatch):
+    import pyrpmd.workflows.drpmd_sampling as sampling
+    from pyrpmd.workflows.drpmd_records import allocation_fields
+    calls = []
+
+    def record(ids):
+        calls.append(list(ids))
+        return allocation_fields(ids)
+
+    monkeypatch.setattr(sampling, "allocation_fields", record)
+    options = config()
+    options["collision"].update(max_steps=2)
+    options["output"]["checkpoint_steps"] = 1
+    task = {"config": options, "system": system(), "parent_id": 0,
+            "trajectory_ids": [0, 2, 5], "physics_hash": "sparse-allocation-test",
+            "output": str(tmp_path), "sample_only": True}
+    drpmd._parent_task(task)
+    assert calls == [[0, 2, 5]]
+    metadata, _ = drpmd._load_npz(tmp_path / "checkpoints/parent-000000.npz")
+    assert metadata["trajectory_ids_digest"] == allocation_fields([0, 2, 5])["trajectory_ids_digest"]

@@ -28,12 +28,25 @@ def load_parent_checkpoint(path):
     return metadata, arrays
 
 
+def allocation_fields(ids):
+    """Compact ordered identity for contiguous or explicitly sparse assignments."""
+    start = ids[0] if ids else 0
+    fields = {"trajectory_start": start, "trajectory_count": len(ids)}
+    if any(value != start + offset for offset, value in enumerate(ids)):
+        encoded = json.dumps(ids, separators=(",", ":"), allow_nan=False).encode("ascii")
+        fields["trajectory_ids_digest"] = hashlib.sha256(encoded).hexdigest()
+    return fields
+
+
 def matches_parent_allocation(metadata, ids):
     if metadata["format"] == LEGACY_PARENT_KIND:
         return metadata.get("trajectory_ids") == ids
     start, count = metadata.get("trajectory_start"), metadata.get("trajectory_count")
-    return (type(start) is int and type(count) is int
-            and count == len(ids) and ids == list(range(start, start + count)))
+    if type(start) is not int or type(count) is not int or count != len(ids):
+        return False
+    expected = allocation_fields(ids)
+    return (start == expected["trajectory_start"]
+            and metadata.get("trajectory_ids_digest") == expected.get("trajectory_ids_digest"))
 
 
 def _record_line(record):
