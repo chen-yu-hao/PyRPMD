@@ -175,6 +175,7 @@ def cv_descriptor(cv, n):
         if len(c.com.weights) != n:
             raise ValueError("rate coordinate atom count mismatch")
         result = {"kind": 2 if t is RateSurface else 1,
+                  "regular_branch_only": c.regular_branch_only,
                   "entry": _primitive(n, constant=c.rinf, terms=[(-1., c.com.weights)]),
                   "paths": [[_primitive(n, constant=ref, terms=[(-1., _bond(n, f)), (1., _bond(n, b))])
                              for ref, f, b in zip(c.reference_difference, forming, breaking)]

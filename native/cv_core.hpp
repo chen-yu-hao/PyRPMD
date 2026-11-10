@@ -123,12 +123,16 @@ template<bool Numeric> struct Coordinate {
     int kind; size_t d, npairs=0; double xi=0;
     std::unique_ptr<Primitive> simple, entry;
     std::vector<Primitive> candidates;
-    bool bead_average=false;
+    bool bead_average=false,regular_branch_only=false;
     mutable std::vector<double> g0,g1,hv0,hv1,ring_grad;
     mutable std::vector<NormHVP> geometry0,geometry1;
     struct MetricState { size_t which=0;double a=0,b=0; };
     Coordinate(PyObject* obj,size_t size):d(Numeric?3*size:size) {
         const size_t n=d/3;
+        if(PyDict_Check(obj)) {
+            auto* guard=PyDict_GetItemString(obj,"regular_branch_only");
+            if(guard)regular_branch_only=PyObject_IsTrue(guard)==1;
+        }
         if constexpr(Numeric) {
             using namespace numeric;
             kind=static_cast<int>(number(field(obj,"kind")));
@@ -209,6 +213,7 @@ template<bool Numeric> struct Coordinate {
             return (1.-xi)*a+xi*s;
         }
         const double b=a-s;
+        numeric::ensure(!regular_branch_only || b>1.e-10,"RPMDrate umbrella left the regular branch: s0-s1<=0");
         numeric::ensure(Numeric?std::abs(b)>=1.e-10:!(std::abs(b)<1.e-10),"RPMDrate xi is singular where s0=s1");
         if(g)for(size_t j=0;j<d;++j)g[j]=g0[j]/b-a*(g0[j]-g1[j])/(b*b);
         return a/b;

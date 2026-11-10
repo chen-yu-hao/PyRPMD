@@ -106,6 +106,18 @@ def resolve_sampling(d, runtime, *, selected, materials, native_pimd):
     method = fes_method(d) if task in ("fes", "metadynamics", "opes") else None
     dt, integrator, dyn, notes = runtime.dt, runtime.integrator, runtime.dynamics, runtime.notes
     sampling = deepcopy(d.get("sampling", {}))
+    if "monitor_pair_distances" in sampling:
+        if not isinstance(sampling["monitor_pair_distances"], (bool, np.bool_)):
+            raise InputError("sampling.monitor_pair_distances must be boolean")
+        if sampling["monitor_pair_distances"] and method not in ("metadynamics", "opes"):
+            raise InputError("sampling.monitor_pair_distances requires metadynamics or opes")
+        bias = d.get(method, {})
+        if sampling["monitor_pair_distances"] and (
+            bias.get("shared_walkers") or bias.get("multiple_walkers")
+            or bias.get("walkers_mode", "serial") != "serial"
+        ):
+            raise InputError("sampling.monitor_pair_distances currently requires independent histories")
+        sampling["monitor_pair_distances"] = bool(sampling["monitor_pair_distances"])
     if selected:
         if set(sampling) - {"parents"}:
             raise InputError("State-selected initial_ensemble allows only sampling.parents; thermal equilibration and thermostat settings do not apply")
