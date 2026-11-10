@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import copy
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -434,6 +434,21 @@ def _rpmd_options(options, run):
     return rpmd, int(options.get("nbeads") or run.nbeads)
 
 
+def _correction_identity(run, path, options, nbeads):
+    """Bind saved factors to their Hamiltonian, path and numerical settings."""
+    from ..workflows.common import _fingerprint
+
+    subspace = {key: value for key, value in options["subspace"].items()
+                if key not in ("dimension", "threshold")}
+    return _fingerprint(run.config, run.system, {
+        "subspace_pipeline": 2, "path": np.asarray(path).tolist(),
+        "path_options": options["path"], "subspace": subspace,
+        "quantum": options["quantum"], "rpmd": options["rpmd"],
+        "beta": run.beta, "nbeads": nbeads, "xi_star": run.xi_star,
+        "reaction": run.reaction,
+    })
+
+
 def run_subspace_pipeline(specification) -> dict:
     """Run the full correction from a mapping or a TOML/JSON file."""
     base = None
@@ -479,10 +494,11 @@ def run_subspace_pipeline(specification) -> dict:
                                                                      ([int(requested)] if np.ndim(requested) == 0 else
                                                                       [int(d) for d in requested]))
     rpmd_options, nbeads = _rpmd_options(options["rpmd"], run)
+    identity = _correction_identity(run, path, options, nbeads)
     corrections, models = {}, {}
     if options["output"].get("reuse"):
-        # Re-select and re-apply from saved C_S records (same temperature)
-        # without recomputing the subspace rates.
+        # Legacy factors without an identity are recomputed. Equal beta alone
+        # does not make different paths, masses or effective Hamiltonians equal.
         previous = {}
         if (out_dir / "subspace_pipeline.json").is_file():
             previous = json.loads((out_dir / "subspace_pipeline.json").read_text()).get("models", {})
@@ -490,7 +506,8 @@ def run_subspace_pipeline(specification) -> dict:
             record = out_dir / f"C_S_{d}d.json"
             if record.is_file():
                 saved = SubspaceCorrection.read(record)
-                if np.isclose(saved.beta, run.beta, rtol=1e-9, atol=0):
+                if (saved.diagnostics.get("pipeline_identity") == identity
+                        and np.isclose(saved.beta, run.beta, rtol=1e-9, atol=0)):
                     corrections[d] = saved
                     models[d] = previous.get(str(d), {"reused": True})
                     dimensions.remove(d)
@@ -500,6 +517,8 @@ def run_subspace_pipeline(specification) -> dict:
         model1, quantum1, info1 = path_model(run, path, {**options["quantum"], **environment})
         corrections[1] = subspace_correction(model1, run.beta, nbeads, quantum_options=quantum1,
                                              rpmd_options=rpmd_options)
+        corrections[1] = replace(corrections[1], diagnostics={
+            **corrections[1].diagnostics, "pipeline_identity": identity})
         corrections[1].write(out_dir / "C_S_1d.json")
         models[1] = info1
     if 2 in dimensions:
@@ -512,6 +531,8 @@ def run_subspace_pipeline(specification) -> dict:
         model2, quantum2, info2, rpmd_model2 = plane_model(run, path, candidate, {**options["quantum"], **environment})
         corrections[2] = subspace_correction(model2, run.beta, nbeads, quantum_options=quantum2,
                                              rpmd_options=rpmd_options, rpmd_model=rpmd_model2)
+        corrections[2] = replace(corrections[2], diagnostics={
+            **corrections[2].diagnostics, "pipeline_identity": identity})
         corrections[2].write(out_dir / "C_S_2d.json")
         models[2] = info2
     sensitivity = nested_subspace_sensitivity(list(corrections.values())) if len(corrections) > 1 else None
@@ -526,6 +547,7 @@ def run_subspace_pipeline(specification) -> dict:
     corrected = correct_rate_run(run.root, corrections[chosen], output=out_dir / "rate_quantum_corrected.json")
     report = {
         "schema": "pyrpmd.subspace_pipeline", "schema_version": 1,
+        "pipeline_identity": identity,
         "rate_run": str(run.root), "beta": run.beta, "nbeads": nbeads, "xi_star": run.xi_star,
         "path": path_info, "curvature_width_sampled": sampled_cw, "curvature_width_path": static_cw,
         "recommended_dimension_from_curvature_width": verdict, "dimensions_computed": sorted(corrections),
