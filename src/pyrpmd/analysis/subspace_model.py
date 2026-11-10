@@ -40,6 +40,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from itertools import product
 from typing import Any, Callable, Mapping, Sequence
+import warnings
 
 import numpy as np
 from scipy.linalg import null_space
@@ -594,6 +595,7 @@ def project_path_subspace(
     finite_difference_step: float = 1e-3,
     rigid_body: bool = False,
     beta: float | None = None,
+    curvature: str = "none",
 ) -> SubspaceModel:
     """One-dimensional vibrationally adiabatic model along a curved path.
 
@@ -603,13 +605,23 @@ def project_path_subspace(
     ``V_S(xi) = V(x(xi)) + sum_k omega_k(xi) / 2`` with frequencies from the
     Hessian projected onto the normal plane (``environment='adiabatic'``),
     the harmonic quantum free energy of those modes at ``beta``
-    (``'free_energy'``), or ``V(x(xi))`` alone (``'frozen'``).  Curvature coupling is neglected; check
-    :func:`curvature_width_criterion` before trusting a one-dimensional ``S``.
+    (``'free_energy'``), or ``V(x(xi))`` alone (``'frozen'``).  With
+    ``curvature='small'`` the small-curvature tunnelling (SCT) effective mass
+    is included.  If ``sigma`` is the original mass-weighted arc length, the
+    curvature normal has frequency ``omega_perp`` and width
+    ``tbar = sqrt(hbar / omega_perp)``.  With ``abar = kappa * tbar`` the
+    effective mass is ``mu_eff / mu = exp(-2*abar - abar**2 +
+    (d tbar / d sigma)**2)``.  ``abar`` is clipped to one outside the SCT
+    range of validity.  The coordinate is transformed with
+    ``d tau = sqrt(mu_eff / mu) d sigma`` and the potential is resampled on a
+    uniform ``tau`` grid, so the returned model still has unit mass.
     ``axis`` is the arc-length grid and must lie within the path.
     ``rigid_body`` removes overall translations and rotations from the
     normal plane (molecules in 3D Cartesian coordinates).
     """
     beta = _check_environment(environment, beta, ("frozen", "adiabatic", "free_energy"))
+    if curvature not in ("none", "small"):
+        raise ValueError("curvature must be one of ('none', 'small')")
     points = np.asarray(path, dtype=float)
     if points.ndim != 2 or points.shape[0] < 4 or not np.isfinite(points).all():
         raise ValueError("path must be a finite [points, coordinates] array with at least four points")
@@ -622,6 +634,8 @@ def project_path_subspace(
         raise ValueError(f"axis must lie within the path arc length [0, {arc[-1]:.6g}]")
     if environment != "frozen" and gradient is None and hessian is None:
         raise ValueError("an adiabatic path model needs a gradient or a Hessian")
+    if curvature == "small" and n > 1 and gradient is None and hessian is None:
+        raise ValueError("curvature='small' needs a gradient or a Hessian for omega_perp")
     lam = np.interp(grid, arc, fine)
     positions = spline(lam)
     tangents = spline.derivative()(lam)
@@ -629,32 +643,149 @@ def project_path_subspace(
     values = np.empty(len(grid))
     zpe = np.zeros(len(grid))
     unstable, min_curvature = 0, np.inf
+    curvature_values = np.zeros(len(grid))
+    omega_perp = np.full(len(grid), np.nan)
+    tbar = np.zeros(len(grid))
     for i, (u, tangent) in enumerate(zip(positions, tangents)):
         x = u / sqrt_m
         values[i] = float(potential(x))
-        if environment != "frozen" and n > 1:
+        complement = None
+        k = None
+        if (environment != "frozen" or curvature == "small") and n > 1:
             complement = _vibrational_complement(x, tangent, sqrt_m, rigid_body)
             k = _complement_hessian(x, complement, sqrt_m, gradient, hessian, finite_difference_step)
+        if environment != "frozen" and n > 1:
             zpe[i], lowest = _environment_term(k, environment, beta)
             min_curvature = min(min_curvature, lowest)
             unstable += int(lowest < 0)
-    xi, curvature = path_curvature(points, mass)
+        if curvature == "small" and n > 1:
+            # Curvature vector dT/dsigma of the mass-weighted spline.
+            first = spline.derivative()(lam[i])
+            second = spline.derivative(2)(lam[i])
+            speed = max(float(np.linalg.norm(first)), 1e-300)
+            dtdsigma = (second / speed - first * (first @ second) / speed**3) / speed
+            dtdsigma -= tangent * (tangent @ dtdsigma)
+            kappa_i = float(np.linalg.norm(dtdsigma))
+            curvature_values[i] = kappa_i
+            if kappa_i > 1e-14 and complement is not None and complement.shape[1]:
+                normal = dtdsigma / kappa_i
+                if rigid_body:
+                    # Remove numerical rigid-body leakage from the curvature
+                    # normal while preserving its tangent-orthogonal direction.
+                    vib = _vibrational_complement(x, tangent, sqrt_m, True)
+                    normal = vib @ (vib.T @ normal)
+                normal /= max(float(np.linalg.norm(normal)), 1e-300)
+                coeff = complement.T @ normal
+                coeff_norm = float(np.linalg.norm(coeff))
+                if coeff_norm > 1e-12:
+                    coeff /= coeff_norm
+                omega2 = float(coeff @ (k @ coeff)) if coeff_norm > 1e-12 else 0.0
+                if omega2 > 0.0:
+                    omega_perp[i] = np.sqrt(omega2)
+                    tbar[i] = np.sqrt(1.0 / omega_perp[i])
+            elif k is not None and complement is not None and complement.shape[1]:
+                # At a straight point the curvature normal is undefined.  Its
+                # width is immaterial because kappa is zero, but retaining a
+                # finite value makes the derivative well-defined nearby.
+                positive = np.linalg.eigvalsh(k)
+                positive = positive[positive > 0.0]
+                if len(positive):
+                    omega_perp[i] = np.sqrt(float(np.min(positive)))
+                    tbar[i] = np.sqrt(1.0 / omega_perp[i])
+    xi, path_kappa = path_curvature(points, mass)
     if dividing_surface is None:
         dividing_surface = float(grid[np.argmax(values + zpe)])
+    total_values = values + zpe
+    transformed = False
+    mass_ratio = np.ones(len(grid))
+    tau_grid = grid.copy()
+    clipped_points = 0
+    clipped_fraction = 0.0
+    abar_max = 0.0
+    tau_raw = grid.copy()
+    if curvature == "small" and n > 1:
+        # Use the public curvature diagnostic's arc interpolation to suppress
+        # tiny endpoint artifacts in the spline second derivative.
+        curvature_values = np.interp(grid, xi, path_kappa)
+        valid_tbar = tbar > 0.0
+        if np.count_nonzero(valid_tbar) >= 2:
+            tbar_for_deriv = np.interp(grid, grid[valid_tbar], tbar[valid_tbar])
+            deriv_tbar = np.gradient(tbar_for_deriv, grid, edge_order=2)
+        else:
+            deriv_tbar = np.zeros_like(tbar)
+        # At a straight point the curvature normal is undefined and its width
+        # must not introduce a spurious coordinate mass through finite-
+        # difference noise in tbar.
+        deriv_tbar[curvature_values <= 1e-12] = 0.0
+        abar = curvature_values * tbar_for_deriv if np.count_nonzero(valid_tbar) >= 2 else np.zeros_like(curvature_values)
+        abar_max = float(np.max(abar)) if len(abar) else 0.0
+        clipped = abar > 1.0
+        clipped_points = int(np.count_nonzero(clipped))
+        clipped_fraction = float(np.mean(clipped)) if len(abar) else 0.0
+        if clipped_points:
+            warnings.warn(
+                f"curvature='small' clipped abar > 1 at {clipped_fraction:.1%} of path points",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+        abar_used = np.minimum(abar, 1.0)
+        exponent = -2.0 * abar_used - abar_used**2 + deriv_tbar**2
+        mass_ratio = np.exp(np.clip(exponent, -700.0, 700.0))
+        bad_frequency = (curvature_values > 1e-12) & (~np.isfinite(omega_perp) | (omega_perp <= 0.0))
+        mass_ratio[bad_frequency] = 1.0
+        if np.max(np.abs(mass_ratio - 1.0), initial=0.0) < 1e-14:
+            mass_ratio = np.ones_like(mass_ratio)
+        tau_raw = np.r_[0.0, np.cumsum(0.5 * (np.sqrt(mass_ratio[1:]) +
+                                                np.sqrt(mass_ratio[:-1])) * np.diff(grid))]
+        tau_grid = np.linspace(tau_raw[0], tau_raw[-1], len(grid))
+        total_values = np.interp(tau_grid, tau_raw, total_values)
+        transformed = True
+        dividing_surface = float(np.interp(dividing_surface, grid, tau_raw))
+        if reactant_reference is None:
+            reactant_reference = float(grid[0] + 0.25 * (grid[-1] - grid[0]))
+        reactant_reference = float(np.interp(reactant_reference, grid, tau_raw))
+    unstable_frequency_points = int(np.count_nonzero((curvature_values > 1e-12) &
+                                                     (~np.isfinite(omega_perp) | (omega_perp <= 0.0)))) if n > 1 else 0
     info = {
         "kind": "path_projection",
         "environment": environment,
         "full_dimension": n,
         "path_length": float(arc[-1]),
-        "max_path_curvature": float(np.max(curvature)),
+        "max_path_curvature": float(np.max(path_kappa)),
         "unstable_complement_points": int(unstable),
         "minimum_complement_curvature": None if not np.isfinite(min_curvature) else min_curvature,
         "zero_point_range": [float(zpe.min()), float(zpe.max())],
         "cut": "normal plane in mass-weighted coordinates",
         "rigid_body_removed": bool(rigid_body),
         "beta": beta,
+        "curvature": curvature,
+        "coordinate_transform": "dτ=sqrt(mu_eff/mu)dσ" if transformed else "none",
     }
-    return SubspaceModel((grid,), values + zpe, np.ones(1), dividing_surface, reactant,
+    if transformed:
+        finite_omega = omega_perp[np.isfinite(omega_perp)]
+        info.update({
+            "sigma_length": float(grid[-1] - grid[0]),
+            "tau_length": float(tau_grid[-1] - tau_grid[0]),
+            "effective_mass_ratio_min": float(np.min(mass_ratio)),
+            "effective_mass_ratio_max": float(np.max(mass_ratio)),
+            "effective_mass_ratio_mean": float(np.mean(mass_ratio)),
+            "max_abar": abar_max,
+            "curvature_truncated_points": clipped_points,
+            "curvature_truncated_fraction": clipped_fraction,
+            "unstable_curvature_frequency_points": unstable_frequency_points,
+            "curvature_normal_frequency_range": [
+                float(np.min(finite_omega)) if len(finite_omega) else None,
+                float(np.max(finite_omega)) if len(finite_omega) else None,
+            ],
+            "curvature_sigma": grid.tolist(),
+            "curvature_tau": tau_raw.tolist(),
+            "curvature_mass_ratio": mass_ratio.tolist(),
+            "curvature_tbar": tbar.tolist(),
+            "curvature_abar": abar.tolist(),
+            "curvature_normal_frequency": omega_perp.tolist(),
+            "arc_integral_preserved": float(tau_raw[-1] - tau_raw[0]),
+        })
+    return SubspaceModel((tau_grid,), total_values, np.ones(1), dividing_surface, reactant,
                          reactant_reference, info)
 
 

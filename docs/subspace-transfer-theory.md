@@ -209,6 +209,31 @@ $V_S$, and not from deep tunnelling.
    transverse mode above the valley floor, ridge included, which is far above 30 kT at low
    temperature; check `truncation_margin` and set `truncation_min`.
 
+## Small-curvature reaction-path mass
+
+`project_path_subspace(..., curvature="small")` adds the SCT reaction-path
+Hamiltonian to the one-dimensional model. Let $\sigma$ be the mass-weighted
+arc length and let $\kappa(\sigma)$ be `path_curvature`. At each grid point,
+the curvature normal is projected through the normal-cut Hessian to obtain
+$\omega_\perp$ and the classical turning-point width
+$\bar t=\sqrt{\hbar/\omega_\perp}$. The dimensionless curvature is
+$\bar a=\kappa\bar t$ and the SCT metric is
+
+$$
+\frac{\mu_{\rm eff}}{\mu}=\exp\left[-2\bar a-\bar a^2+
+\left(\frac{d\bar t}{d\sigma}\right)^2\right].
+$$
+
+The implementation clips $\bar a$ to one and records both the un-clipped
+maximum and the clipped fraction in `SubspaceModel.provenance`. A non-zero
+clipping fraction is the applicability boundary of the small-curvature
+expansion; the point should be promoted to a two-dimensional subspace. The
+coordinate is changed by $d\tau=\sqrt{\mu_{\rm eff}/\mu}\,d\sigma$ and
+resampled on a uniform $\tau$ grid with unit mass. Consequently the exact DVR
+and RPMD halves use exactly the same transformed `SubspaceModel`, potential,
+grid and provenance. `curvature="none"` is the identity path and preserves
+the previous values and grid.
+
 ## Tests
 
 All numbers are in
