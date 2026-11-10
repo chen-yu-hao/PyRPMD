@@ -404,5 +404,11 @@ def test_cli_init_quickstart_uses_native_steps_and_resumes_with_same_identity(tm
     assert identity == "9cfaad50467836411241a2190591fff0d39a65eeb5147993a5082bb3eddf0623"
     assert main(["resume", str(output), "--loop-backend", "python"]) == 0
     resumed = json.loads(capsys.readouterr().out)
-    assert resumed == summary
+    assert len(summary["propagation_plan"]) == len(resumed["propagation_plan"]) == 1
+    assert summary["propagation_plan"][0]["backend"] == "native"
+    assert resumed["propagation_plan"][0]["backend"] == "python"
+    assert "explicit Python" in resumed["propagation_plan"][0]["reason"]
+    assert {**resumed["propagation_plan"][0], "backend": "native", "reason": None} == summary["propagation_plan"][0]
+    assert {k: v for k, v in resumed.items() if k != "propagation_plan"} == {
+        k: v for k, v in summary.items() if k != "propagation_plan"}
     assert json.loads((output / "manifest.json").read_text())["physics_fingerprint"] == identity

@@ -220,3 +220,17 @@ def test_summary_preserves_legacy_propagation_collection_and_totals(collection):
     assert result["propagation_totals"] == {
         "native_steps": 7, "python_steps": 3, "fallback_reasons": {"provider": 3}}
     assert _summary_propagation(result) == result
+
+
+def test_backend_plan_borrows_provider_without_reconstructing_or_closing(monkeypatch):
+    from unittest.mock import Mock
+    from pyrpmd import potentials
+    from pyrpmd.runner import propagation_backend_plan
+    config, system = _plan_input()
+    provider = potentials.FreePotential()
+    provider.close = Mock()
+    factory = Mock(side_effect=AssertionError("borrowed provider was reconstructed"))
+    monkeypatch.setattr(potentials, "make_potential", factory)
+    propagation_backend_plan(config, system, potential=provider)
+    factory.assert_not_called()
+    provider.close.assert_not_called()
