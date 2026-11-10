@@ -1,0 +1,726 @@
+{
+  "schema": "pyrpmd.subspace.parallel_benchmark.v1",
+  "mode": "native",
+  "execution": {
+    "backend": "serial",
+    "cpus": 32,
+    "workers": 4,
+    "memory_limit_mb": 8192
+  },
+  "wall_seconds": 250.66536654904485,
+  "physical_converged": false,
+  "temperature_K": 300.0,
+  "nbeads": 32,
+  "rpmd_options": {
+    "windows": 24,
+    "walkers": 32,
+    "burn_in": 40,
+    "sweeps": 80,
+    "leapfrog_steps": 8,
+    "trajectories": 256,
+    "bootstrap": 100,
+    "seed": 20261110,
+    "backend": "native"
+  },
+  "platform": "Linux-5.14.0-611.49.1.el9_7.x86_64-x86_64-with-glibc2.34",
+  "python": "3.11.18 (main, Oct 26 2026, 11:35:17) [GCC 15.3.0]",
+  "numpy": "2.4.6",
+  "scipy": "1.17.1",
+  "affinity": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "native_extension": "/data1/lyl/PyRPMD/subspace-parallel-dev/src/pyrpmd/_subspace.cpython-311-x86_64-linux-gnu.so",
+  "openmp": true,
+  "mpi_ranks": 1,
+  "git_revision": "f410b97807d99d429ab1b63c6b1c7ff93b424b5c",
+  "corrections": {
+    "1d": {
+      "schema": "pyrpmd.subspace_correction",
+      "schema_version": 1,
+      "beta": 1052.5834161649905,
+      "dimension": 1,
+      "factor": 1.0307123786196257,
+      "log_factor": 0.03025019290371976,
+      "log_standard_error": 0.00783200307599906,
+      "quantum_rate": 5.514762747038845e-07,
+      "rpmd_rate": 5.350438067334025e-07,
+      "nbeads": 32,
+      "model": {
+        "dimension": 1,
+        "shape": [
+          161
+        ],
+        "bounds": [
+          [
+            0.0,
+            407.38850275180295
+          ]
+        ],
+        "masses": [
+          1.0
+        ],
+        "dividing_surface": 203.6942513759015,
+        "reactant": "asymptotic",
+        "reactant_reference": 81.4777005503606,
+        "potential_minimum": 0.009957997687793489,
+        "potential_source": "cubic spline of the grid",
+        "construction": {
+          "kind": "path_projection",
+          "environment": "adiabatic",
+          "full_dimension": 2,
+          "path_length": 407.38850275180295,
+          "max_path_curvature": 0.10699722509814502,
+          "unstable_complement_points": 0,
+          "minimum_complement_curvature": 8.758322960692758e-05,
+          "zero_point_range": [
+            0.0046792956095690185,
+            0.010035358097074855
+          ],
+          "cut": "normal plane in mass-weighted coordinates",
+          "rigid_body_removed": false,
+          "beta": null
+        }
+      },
+      "diagnostics": {
+        "rpmd_log_standard_error": 0.00783200307599906,
+        "quantum_relative_extrapolation_spread": 0.0,
+        "quantum_method": "sylvester",
+        "rpmd_transmission": 0.9999133155011418,
+        "rpmd_qtst_rate": 5.350901907584323e-07,
+        "quantum_over_rpmd_qtst": 1.030623031833618,
+        "rpmd_spline_outside_fraction": 0.049564137982528185,
+        "units": "axis-0 length per time"
+      },
+      "approximation": "multiplicative subspace defect: k_RPMD(full) * k_QM(S) / k_RPMD(S)",
+      "exact_general_rate_claim": false,
+      "physical_converged": false,
+      "quantum": {
+        "beta": 1052.5834161649905,
+        "rate": 5.514762747038845e-07,
+        "flux": 6.698324004711171e-09,
+        "reactant_partition": 0.012146168950437334,
+        "method": "sylvester",
+        "diagnostics": {
+          "grid_points": 161,
+          "retained_points": 161,
+          "sylvester_scale": 1.0,
+          "sylvester_info": 0,
+          "sylvester_solver": "blocked_lapack",
+          "timing_seconds": {
+            "assembly_and_eigh": 0.027661873027682304,
+            "schur": 0.41900621354579926,
+            "sylvester": 0.050434257835149765,
+            "dense_total": 0.6636142302304506
+          },
+          "flux_side_t0": 0.0,
+          "lowest_levels": [
+            0.010229976443740199,
+            0.010229976570722244,
+            0.01092673982653122,
+            0.010926741736647585,
+            0.011900503866342444,
+            0.011900524636753668
+          ],
+          "energy_floor": null,
+          "states_below_floor": 0,
+          "partition": {
+            "reference_energy": 0.009969684675641554,
+            "normalization": "per unit length of axis 0 at reactant_reference"
+          },
+          "estimated_peak_memory_mb": 68.75613403320312,
+          "energy_shift": 0.009957997687793489,
+          "cap_width": 81.4777005503606,
+          "cap_strength": 0.016049785293836136,
+          "absorber": "axis-0 ends",
+          "cap_power": 2,
+          "model": {
+            "dimension": 1,
+            "shape": [
+              161
+            ],
+            "bounds": [
+              [
+                0.0,
+                407.38850275180295
+              ]
+            ],
+            "masses": [
+              1.0
+            ],
+            "dividing_surface": 203.6942513759015,
+            "reactant": "asymptotic",
+            "reactant_reference": 81.4777005503606,
+            "potential_minimum": 0.009957997687793489,
+            "potential_source": "cubic spline of the grid",
+            "construction": {
+              "kind": "path_projection",
+              "environment": "adiabatic",
+              "full_dimension": 2,
+              "path_length": 407.38850275180295,
+              "max_path_curvature": 0.10699722509814502,
+              "unstable_complement_points": 0,
+              "minimum_complement_curvature": 8.758322960692758e-05,
+              "zero_point_range": [
+                0.0046792956095690185,
+                0.010035358097074855
+              ],
+              "cut": "normal plane in mass-weighted coordinates",
+              "rigid_body_removed": false,
+              "beta": null
+            }
+          },
+          "units": "axis-0 length per time",
+          "execution": {
+            "pid": 178,
+            "host": "cluster",
+            "threads": 32,
+            "blas_pools": [
+              {
+                "internal_api": "openblas",
+                "prefix": "libscipy_openblas",
+                "num_threads": 32
+              },
+              {
+                "internal_api": "openblas",
+                "prefix": "libscipy_openblas",
+                "num_threads": 32
+              }
+            ],
+            "estimated_peak_memory_mb": 68.75613403320312,
+            "memory_budget_mb": 8192.0,
+            "wall_seconds": 0.6767995059490204,
+            "cpu_seconds": 20.440082461,
+            "start_time_ns": 1794326451089747624,
+            "end_time_ns": 1794326451766555477
+          },
+          "checkpoint_reused": false
+        }
+      },
+      "rpmd": {
+        "beta": 1052.5834161649905,
+        "nbeads": 32,
+        "rate": 5.350438067334025e-07,
+        "rate_standard_error": 4.1904647401302545e-09,
+        "qtst_rate": 5.350901907584323e-07,
+        "qtst_log_standard_error": 0.00783150235205878,
+        "transmission": 0.9999133155011418,
+        "transmission_standard_error": 8.855355705131786e-05,
+        "windows": [
+          81.4777005503606,
+          86.79146362973194,
+          92.10522670910328,
+          97.41898978847462,
+          102.73275286784597,
+          108.04651594721732,
+          113.36027902658866,
+          118.67404210596001,
+          123.98780518533135,
+          129.3015682647027,
+          134.61533134407404,
+          139.92909442344538,
+          145.24285750281672,
+          150.55662058218806,
+          155.8703836615594,
+          161.18414674093077,
+          166.49790982030208,
+          171.81167289967345,
+          177.12543597904477,
+          182.43919905841614,
+          187.75296213778748,
+          193.06672521715882,
+          198.38048829653016,
+          203.6942513759015
+        ],
+        "mean_force": [
+          2.8185377257897106e-06,
+          4.45521942382145e-06,
+          6.294911745107843e-06,
+          8.468927591756526e-06,
+          1.1122338964940812e-05,
+          1.4351002933370083e-05,
+          1.8576581684215036e-05,
+          2.445302205286483e-05,
+          3.288678979530527e-05,
+          4.3650400411574656e-05,
+          5.7931916567607705e-05,
+          7.55957120914557e-05,
+          9.617863352729479e-05,
+          0.00011849547868580438,
+          0.00014062138283872194,
+          0.00016072876642334795,
+          0.0001763740897373646,
+          0.0001830372607852925,
+          0.00017968538098117666,
+          0.0001620062296466929,
+          0.00013311775521640575,
+          9.288754212241683e-05,
+          4.864855948779851e-05,
+          1.1271836255706692e-07
+        ],
+        "mean_force_standard_error": [
+          8.332823910010006e-09,
+          1.0014023732785772e-08,
+          1.1570904280387673e-08,
+          1.3235207571602018e-08,
+          2.710965924835075e-08,
+          3.165977164045049e-08,
+          5.4570328970364515e-08,
+          7.714433860716181e-08,
+          1.2647763748625598e-07,
+          1.225446312230246e-07,
+          1.3692551774294947e-07,
+          1.0750707273274489e-07,
+          6.714654643642142e-08,
+          3.009610477173736e-08,
+          8.666740120742224e-08,
+          1.88281339682562e-07,
+          3.579848575936894e-07,
+          3.288995004308623e-07,
+          4.967644644003401e-07,
+          6.757037983425203e-07,
+          8.649551072317312e-07,
+          6.690609686592595e-07,
+          3.195766398258364e-07,
+          1.4462505871112313e-07
+        ],
+        "free_energy": [
+          0.0,
+          1.9261758856776463e-05,
+          4.7707544421124545e-05,
+          8.674741020857398e-05,
+          0.00013857777219216782,
+          0.00020592754275445754,
+          0.0002928645408255487,
+          0.0004061923423997739,
+          0.0005574818268296449,
+          0.0007595589292727539,
+          0.0010278309090352685,
+          0.0013811854709357108,
+          0.0018364688369860375,
+          0.0024064666389193414,
+          0.0030954239410086897,
+          0.0038973186279186623,
+          0.004796083401726269,
+          0.005755123912585948,
+          0.006724440730347384,
+          0.0076380621605685985,
+          0.00842734056375387,
+          0.009031304574754453,
+          0.009408593700854546,
+          0.009540707583961262
+        ],
+        "diagnostics": {
+          "backend": "native",
+          "threads_requested": 32,
+          "threads_used": 32,
+          "native_steps": 855872,
+          "python_steps": 0,
+          "python_pes_callbacks": 0,
+          "fallback_reason": null,
+          "nbeads": 32,
+          "windows": 24,
+          "walkers_per_window": 32,
+          "hmc_sweeps": 80,
+          "hmc_burn_in": 40,
+          "hmc_time_step": 254.88426704059407,
+          "hmc_acceptance": 0.7686686197916667,
+          "trajectories": 256,
+          "md_time_step": 22.61536608239738,
+          "md_time": 3980.304430501939,
+          "max_energy_error_beta_p": 0.1352524530162546,
+          "plateau_fraction": 0.3,
+          "plateau_drift": 0.0,
+          "thermal_frequency": 0.004421772331062763,
+          "qtst_log_statistical_error": 0.007779387467640276,
+          "ti_quadrature_log_error": 0.0009019754534485003,
+          "barrier_free_energy": 0.009540707583961262,
+          "spline_outside_fraction": 0.049564137982528185,
+          "normalization": "asymptotic",
+          "units": "axis-0 length per time",
+          "physical_converged": false,
+          "execution": {
+            "pid": 178,
+            "host": "cluster",
+            "threads": 32,
+            "blas_pools": [
+              {
+                "internal_api": "openblas",
+                "prefix": "libscipy_openblas",
+                "num_threads": 32
+              },
+              {
+                "internal_api": "openblas",
+                "prefix": "libscipy_openblas",
+                "num_threads": 32
+              }
+            ],
+            "estimated_peak_memory_mb": 70.59381103515625,
+            "memory_budget_mb": 8192.0,
+            "wall_seconds": 5.491992451250553,
+            "cpu_seconds": 167.33549410100002,
+            "start_time_ns": 1794326451766569538,
+            "end_time_ns": 1794326457258578554
+          },
+          "checkpoint_reused": false
+        }
+      }
+    },
+    "2d": {
+      "schema": "pyrpmd.subspace_correction",
+      "schema_version": 1,
+      "beta": 1052.5834161649905,
+      "dimension": 2,
+      "factor": 1.8368343108765592,
+      "log_factor": 0.6080436066706063,
+      "log_standard_error": 0.1290777657196267,
+      "quantum_rate": 5.845990692712085e-07,
+      "rpmd_rate": 3.182644541260942e-07,
+      "nbeads": 32,
+      "model": {
+        "dimension": 2,
+        "shape": [
+          111,
+          111
+        ],
+        "bounds": [
+          [
+            -110.0,
+            110.0
+          ],
+          [
+            70.0,
+            290.0
+          ]
+        ],
+        "masses": [
+          1.0,
+          1.0
+        ],
+        "dividing_surface": 0.0,
+        "reactant": "asymptotic",
+        "reactant_reference": -63.0,
+        "potential_minimum": -7.22324328998325e-05,
+        "potential_source": "cubic spline of the grid",
+        "construction": {
+          "system": "collinear H + H2",
+          "pes": "BKMP2",
+          "grid_spacing": 2.0
+        }
+      },
+      "diagnostics": {
+        "rpmd_log_standard_error": 0.1290777657196267,
+        "quantum_relative_extrapolation_spread": 0.0,
+        "quantum_method": "sylvester",
+        "rpmd_transmission": 0.7319815380663086,
+        "rpmd_qtst_rate": 4.347984717850402e-07,
+        "quantum_over_rpmd_qtst": 1.3445288040483918,
+        "rpmd_spline_outside_fraction": 0.0229104534827905,
+        "units": "axis-0 length per time"
+      },
+      "approximation": "multiplicative subspace defect: k_RPMD(full) * k_QM(S) / k_RPMD(S)",
+      "exact_general_rate_claim": false,
+      "physical_converged": false,
+      "quantum": {
+        "beta": 1052.5834161649905,
+        "rate": 5.845990692712085e-07,
+        "flux": 2.6944054936659303e-13,
+        "reactant_partition": 4.60898012893677e-07,
+        "method": "sylvester",
+        "diagnostics": {
+          "grid_points": 12321,
+          "retained_points": 3624,
+          "sylvester_scale": 1.0,
+          "sylvester_info": 0,
+          "sylvester_solver": "blocked_lapack",
+          "timing_seconds": {
+            "assembly_and_eigh": 11.130454424768686,
+            "schur": 211.24933202005923,
+            "sylvester": 8.445961778983474,
+            "dense_total": 237.6968186199665
+          },
+          "flux_side_t0": 0.0,
+          "lowest_levels": [
+            0.010474462314197547,
+            0.010474464188454342,
+            0.011241466455094759,
+            0.011241474927186584,
+            0.012300788450677497,
+            0.012300903103378592
+          ],
+          "energy_floor": 0.009008489104781938,
+          "states_below_floor": 0,
+          "partition": {
+            "normalization": "quantum line density on the reference slice",
+            "reference_line": -64.0,
+            "slice_points": 35
+          },
+          "estimated_peak_memory_mb": 2469.5449829101562,
+          "truncation_margin": 0.03459861202172684,
+          "truncation_margin_reference": 0.049954160518455165,
+          "truncation_margin_dividing_surface": 0.03459861202172684,
+          "truncation_margin_minimum": 0.03459861202172684,
+          "energy_shift": -7.22324328998325e-05,
+          "cap_width": null,
+          "cap_strength": null,
+          "absorber": "callable",
+          "cap_power": 2,
+          "model": {
+            "dimension": 2,
+            "shape": [
+              111,
+              111
+            ],
+            "bounds": [
+              [
+                -110.0,
+                110.0
+              ],
+              [
+                70.0,
+                290.0
+              ]
+            ],
+            "masses": [
+              1.0,
+              1.0
+            ],
+            "dividing_surface": 0.0,
+            "reactant": "asymptotic",
+            "reactant_reference": -63.0,
+            "potential_minimum": -7.22324328998325e-05,
+            "potential_source": "cubic spline of the grid",
+            "construction": {
+              "system": "collinear H + H2",
+              "pes": "BKMP2",
+              "grid_spacing": 2.0
+            }
+          },
+          "units": "axis-0 length per time",
+          "execution": {
+            "pid": 178,
+            "host": "cluster",
+            "threads": 32,
+            "blas_pools": [
+              {
+                "internal_api": "openblas",
+                "prefix": "libscipy_openblas",
+                "num_threads": 32
+              },
+              {
+                "internal_api": "openblas",
+                "prefix": "libscipy_openblas",
+                "num_threads": 32
+              }
+            ],
+            "estimated_peak_memory_mb": 2469.5449829101562,
+            "memory_budget_mb": 8192.0,
+            "wall_seconds": 237.70397583581507,
+            "cpu_seconds": 6805.884319337,
+            "start_time_ns": 1794326457258616496,
+            "end_time_ns": 1794326694962608672
+          },
+          "checkpoint_reused": false
+        }
+      },
+      "rpmd": {
+        "beta": 1052.5834161649905,
+        "nbeads": 32,
+        "rate": 3.182644541260942e-07,
+        "rate_standard_error": 4.1080864646572865e-08,
+        "qtst_rate": 4.347984717850402e-07,
+        "qtst_log_standard_error": 0.12178497019410106,
+        "transmission": 0.7319815380663086,
+        "transmission_standard_error": 0.03130871355176992,
+        "windows": [
+          -63.0,
+          -60.26086956521739,
+          -57.52173913043478,
+          -54.78260869565217,
+          -52.04347826086956,
+          -49.30434782608695,
+          -46.565217391304344,
+          -43.826086956521735,
+          -41.086956521739125,
+          -38.347826086956516,
+          -35.60869565217391,
+          -32.8695652173913,
+          -30.130434782608695,
+          -27.391304347826086,
+          -24.652173913043477,
+          -21.913043478260867,
+          -19.173913043478258,
+          -16.43478260869565,
+          -13.69565217391304,
+          -10.95652173913043,
+          -8.21739130434782,
+          -5.4782608695652115,
+          -2.739130434782602,
+          0.0
+        ],
+        "mean_force": [
+          9.168755819700027e-06,
+          2.11097143856575e-05,
+          1.883019840911682e-05,
+          3.347308867420114e-05,
+          2.8530170832492598e-05,
+          4.967548425509201e-05,
+          8.642522710851629e-05,
+          9.824204303040191e-05,
+          0.00014187391757000266,
+          0.00016184298087302905,
+          0.00020480909894414167,
+          0.0002467180606694445,
+          0.00029415735942708247,
+          0.0003118627790428736,
+          0.0003284564254329202,
+          0.00033697045071546877,
+          0.00033441776215226946,
+          0.00025138576305766986,
+          0.0002118130190202394,
+          0.0001673041089715122,
+          0.00010982781051193866,
+          7.121504242802777e-05,
+          3.3509427505632654e-05,
+          7.847158496502204e-06
+        ],
+        "mean_force_standard_error": [
+          9.343461507427931e-06,
+          1.0985422291126096e-05,
+          1.0809854255277487e-05,
+          9.973411881660867e-06,
+          8.560564628258158e-06,
+          1.0842015480380823e-05,
+          8.702893684995387e-06,
+          9.19094969800774e-06,
+          1.0649974502165477e-05,
+          9.920435339226451e-06,
+          9.299966660813727e-06,
+          1.1050363351934518e-05,
+          7.178919014539066e-06,
+          1.0501300512134587e-05,
+          9.88364490266576e-06,
+          6.807045173069845e-06,
+          8.56086073552849e-06,
+          7.661720984791014e-06,
+          8.209836562534393e-06,
+          9.356754955444973e-06,
+          4.334871465462395e-06,
+          5.219570471604737e-06,
+          4.123152014131694e-06,
+          4.8362021979754124e-06
+        ],
+        "free_energy": [
+          0.0,
+          5.1095069927167204e-05,
+          0.00010266061074784281,
+          0.00017535550547160783,
+          0.0002609831109459028,
+          0.00035973558612913126,
+          0.0005502949589437415,
+          0.000801309801723191,
+          0.0011288870417174275,
+          0.0015462725628623125,
+          0.0020444579400865507,
+          0.002662278583331502,
+          0.003406249144552699,
+          0.004240557065554203,
+          0.005118136870154469,
+          0.006028969086629141,
+          0.006963022364675057,
+          0.007770347572889004,
+          0.008395419565942057,
+          0.008920471970959262,
+          0.009298284106024006,
+          0.009543322161544259,
+          0.00968659639010999,
+          0.009737891645452442
+        ],
+        "diagnostics": {
+          "backend": "native",
+          "threads_requested": 32,
+          "threads_used": 32,
+          "native_steps": 1123680,
+          "python_steps": 0,
+          "python_pes_callbacks": 0,
+          "fallback_reason": null,
+          "nbeads": 32,
+          "windows": 24,
+          "walkers_per_window": 32,
+          "hmc_sweeps": 80,
+          "hmc_burn_in": 40,
+          "hmc_time_step": 29.205021896926276,
+          "hmc_acceptance": 0.763330078125,
+          "trajectories": 256,
+          "md_time_step": 2.9497427758518566,
+          "md_time": 2141.513255268448,
+          "max_energy_error_beta_p": 0.40148102059936874,
+          "plateau_fraction": 0.3,
+          "plateau_drift": 0.0002638251907296496,
+          "thermal_frequency": 0.033901261092544245,
+          "qtst_log_statistical_error": 0.12151853604040157,
+          "ti_quadrature_log_error": 0.008051357883966522,
+          "barrier_free_energy": 0.009737891645452442,
+          "spline_outside_fraction": 0.0229104534827905,
+          "normalization": "asymptotic",
+          "units": "axis-0 length per time",
+          "physical_converged": false,
+          "execution": {
+            "pid": 178,
+            "host": "cluster",
+            "threads": 32,
+            "blas_pools": [
+              {
+                "internal_api": "openblas",
+                "prefix": "libscipy_openblas",
+                "num_threads": 32
+              },
+              {
+                "internal_api": "openblas",
+                "prefix": "libscipy_openblas",
+                "num_threads": 32
+              }
+            ],
+            "estimated_peak_memory_mb": 84.50054931640625,
+            "memory_budget_mb": 8192.0,
+            "wall_seconds": 6.790887273848057,
+            "cpu_seconds": 202.6095922679997,
+            "start_time_ns": 1794326694962675371,
+            "end_time_ns": 1794326701753577594
+          },
+          "checkpoint_reused": false
+        }
+      }
+    }
+  }
+}

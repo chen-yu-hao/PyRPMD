@@ -132,7 +132,10 @@ def _fingerprint(task):
             for item in value:
                 add(item)
         else:
-            digest.update(json.dumps(_json_safe(value), sort_keys=True, allow_nan=False).encode())
+            # Input identity must not turn NaN/Inf into JSON null: otherwise
+            # an invalid option could reuse a checkpoint for a valid None default.
+            scalar = value.item() if isinstance(value, np.generic) else value
+            digest.update(json.dumps(scalar, sort_keys=True, allow_nan=False).encode())
         digest.update(b"\0")
 
     add((task["kind"], task["beta"], task["nbeads"], model.axes, model.values, model.masses,

@@ -115,6 +115,16 @@ def test_admission_rejects_over_budget_before_computing(monkeypatch):
         subspace_corrections(cases(), execution={"memory_limit_mb": 1})
 
 
+def test_invalid_option_cannot_alias_a_cached_none_default(tmp_path):
+    inputs = cases()
+    inputs["one"]["quantum_options"] = {"cap_strength": None}
+    settings = dict(backend="serial", checkpoint_dir=str(tmp_path))
+    subspace_corrections(inputs, execution=settings)
+    inputs["one"]["quantum_options"]["cap_strength"] = float("nan")
+    with pytest.raises(ValueError, match="JSON"):
+        subspace_corrections(inputs, execution=settings)
+
+
 def test_memory_budget_serializes_tasks_with_multiple_workers():
     result = subspace_corrections(cases(), execution={"cpus": 2, "workers": 2, "memory_limit_mb": 70})["one"]
     q, r = (s.diagnostics["execution"] for s in (result.quantum, result.rpmd))
