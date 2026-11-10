@@ -168,10 +168,7 @@ def test_unknown_path_zero_point_option_is_rejected():
 
 RADIUS = 5.0
 RADIAL_FORCE = 0.10
-PHYSICAL_OMEGA = 0.20
-# The radial Hessian is deliberately chosen so that the force-curvature
-# connection is a visible part of the raw normal frequency.
-RAW_NORMAL_CURVATURE = PHYSICAL_OMEGA**2 - RADIAL_FORCE / RADIUS
+RAW_NORMAL_CURVATURE = 0.02
 
 
 def _curved_circle_potential(points):
@@ -197,8 +194,8 @@ def _curved_circle_hessian(point):
     return RAW_NORMAL_CURVATURE * np.outer(normal, normal) + (radial / radius) * tangent_projector
 
 
-def test_rph_removes_the_curvature_induced_normal_frequency():
-    """A circular analytic path exposes the MHA force-curvature term."""
+def test_rph_preserves_the_actual_linear_normal_cut_frequency():
+    """Differentiate the stated potential instead of inferring a target frequency."""
     theta = np.linspace(-0.8, 0.8, 81)
     path = RADIUS * np.column_stack([np.cos(theta), np.sin(theta)])
     arc = RADIUS * (theta - theta[0])
@@ -227,8 +224,73 @@ def test_rph_removes_the_curvature_induced_normal_frequency():
         dividing_surface=float(axis[len(axis) // 2]),
         reactant_reference=float(axis[10]),
     )
-    # The raw normal cut sees sqrt(omega^2 - F/R), whereas the MHA
-    # force-curvature subtraction restores the physical omega mode.
-    assert np.allclose(harmonic.provenance["zero_point_range"], [0.5 * np.sqrt(RAW_NORMAL_CURVATURE)] * 2, atol=2e-6)
-    assert np.allclose(rph.provenance["zero_point_range"], [0.5 * PHYSICAL_OMEGA] * 2, atol=5e-6)
-    assert rph.provenance["rph_max_correction"] == pytest.approx(RADIAL_FORCE / RADIUS, abs=2e-5)
+    # At theta=0 a normal displacement changes only the radius. Its second
+    # derivative is k, independently of radial force F or path radius R.
+    point = np.array([RADIUS, 0.0])
+    normal = np.array([1.0, 0.0])
+    step = 1e-3
+    actual = (_curved_circle_potential(point + step * normal)
+              - 2 * _curved_circle_potential(point)
+              + _curved_circle_potential(point - step * normal)) / step**2
+    assert actual == pytest.approx(RAW_NORMAL_CURVATURE, rel=1e-8)
+    expected = 0.5 * np.sqrt(actual)
+    assert np.allclose(harmonic.provenance["zero_point_range"], [expected] * 2, atol=2e-6)
+    assert np.allclose(rph.values, harmonic.values, atol=1e-13)
+    assert rph.provenance["rph_max_correction"] == 0.0
+
+
+def test_rph_accepts_an_analytic_hessian_without_a_gradient():
+    path = np.column_stack([np.linspace(-4.0, 4.0, 25), np.zeros(25)])
+    model = project_path_subspace(
+        _harmonic_potential, None, path, [MASS, MASS],
+        np.linspace(0, 8*np.sqrt(MASS), 9), zero_point="rph",
+        hessian=_harmonic_hessian, dividing_surface=4*np.sqrt(MASS))
+    assert np.allclose(model.values, OMEGA / 2, atol=1e-13)
+
+
+@pytest.mark.parametrize("omega", [1e-3, 1e-5])
+def test_dvr_default_box_resolves_soft_positive_modes(omega):
+    path = np.column_stack([np.linspace(-2, 2, 9), np.zeros(9)])
+    potential = lambda x: 0.5 * omega**2 * x[1]**2
+    hessian = lambda x: np.diag([0.0, omega**2])
+    model = project_path_subspace(potential, None, path, [1, 1], np.linspace(0, 4, 9),
+                                  zero_point="dvr", hessian=hessian, dividing_surface=2)
+    assert np.allclose(model.values, omega / 2, rtol=1e-9, atol=1e-14)
+    assert model.provenance["minimum_complement_curvature"] == pytest.approx(omega**2)
+
+
+def test_dvr_unstable_diagnostic_counts_points_and_keeps_curvature_units():
+    path = np.column_stack([np.linspace(-2, 2, 9), np.zeros((9, 2))])
+    potential = lambda x: np.sum(-0.02*x[1:]**2 + 0.0001*x[1:]**4)
+    hessian = lambda x: np.diag([0.0, -0.04, -0.04])
+    model = project_path_subspace(potential, None, path, [1, 1, 1], np.linspace(0, 4, 9),
+                                  zero_point="dvr", hessian=hessian, dividing_surface=2,
+                                  dvr_half_width=15, dvr_points=81)
+    assert model.provenance["unstable_complement_points"] == 9
+    assert model.provenance["minimum_complement_curvature"] == pytest.approx(-0.04)
+
+
+@pytest.mark.parametrize("selector", ["rph", "dvr"])
+def test_old_zero_point_definition_is_not_reused(selector):
+    from types import SimpleNamespace
+    from pyrpmd.analysis.subspace_pipeline import _saved_model_matches_options
+
+    construction = {"zero_point": selector, "environment": "adiabatic", "dvr_points": 81}
+    saved = SimpleNamespace(dimension=1, model={"construction": construction})
+    options = {"zero_point": selector}
+    assert not _saved_model_matches_options(saved, 1, options)
+    construction["zero_point_definition"] = "linear-normal-cuts-v2"
+    assert _saved_model_matches_options(saved, 1, options)
+
+
+def test_pipeline_rejects_fractional_dvr_points_without_truncating():
+    from types import SimpleNamespace
+    from pyrpmd.analysis.subspace_pipeline import DEFAULTS, path_model
+
+    path = np.column_stack([np.linspace(-2, 2, 9), np.zeros((9, 2))])
+    run = SimpleNamespace(cartesian_masses=np.ones(3), beta=1.0, xi_star=0.0,
+                          energy=lambda x: float(x[0]**2), gradient=lambda x: 2*x,
+                          xi=lambda x: float(x[0]))
+    with pytest.raises(ValueError, match="dvr_points must be an integer"):
+        path_model(run, path, {**DEFAULTS["quantum"], "zero_point": "dvr",
+                               "dvr_points": 51.5})

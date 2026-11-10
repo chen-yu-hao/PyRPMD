@@ -244,7 +244,7 @@ def path_model(run: RateRun, path, options: Mapping[str, Any]):
         dividing_surface=None, rigid_body=True,
         beta=run.beta if environment == "free_energy" else None,
         zero_point=options.get("zero_point", "harmonic"),
-        dvr_points=int(options.get("dvr_points", 81)),
+        dvr_points=options.get("dvr_points", 81),
         dvr_half_width=options.get("dvr_half_width"),
         dvr_spacing=options.get("dvr_spacing"),
     )
@@ -285,8 +285,10 @@ def _saved_model_matches_options(saved: SubspaceCorrection, dimension: int,
         expected_zero_point = subspace_options.get("zero_point", "harmonic")
         if construction.get("zero_point", "harmonic") != expected_zero_point:
             return False
+        if expected_zero_point in ("rph", "dvr") and construction.get("zero_point_definition") != "linear-normal-cuts-v2":
+            return False
         if expected_zero_point == "dvr":
-            if construction.get("dvr_points") != int(subspace_options.get("dvr_points", 81)):
+            if construction.get("dvr_points") != subspace_options.get("dvr_points", 81):
                 return False
             for key in ("dvr_half_width", "dvr_spacing"):
                 old, new = construction.get(key), subspace_options.get(key)

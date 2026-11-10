@@ -115,8 +115,9 @@ quantum rate converged to 2.5% in the grid. The corrected rate is RPMD × C_S(2D
      example the ring-polymer mean path from constrained-centroid sampling
      (`ring_polymer_mean_path`), with a normal-cut adiabatic bath and arc-length
      coordinate.  `zero_point="harmonic"` retains the historical projected-Hessian
-     frequencies; `zero_point="rph"` uses the Miller--Handy--Adams projected Hessian
-     with its force--curvature connection removed; and `zero_point="dvr"` solves
+     frequencies; `zero_point="rph"` uses the same quadratic reaction-path
+     potential Hessian `N.T @ H @ N` on the linear normal cut (no additional
+     gradient--curvature subtraction); and `zero_point="dvr"` solves
      independent sinc-DVR cuts along the local normal modes.  For
      `environment="free_energy"`, the DVR option uses the thermal cut free energy
      instead of the ground-state energy.  `dvr_points`, `dvr_half_width`, and

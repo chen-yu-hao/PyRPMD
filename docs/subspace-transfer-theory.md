@@ -197,11 +197,11 @@ $V_S$, and not from deep tunnelling.
    on $C_S$ is reduced by the elasticity.
    For a curved path, `project_path_subspace` also accepts `zero_point="harmonic"`
    (the historical normal-cut frequencies), `zero_point="rph"` (the
-   Miller--Handy--Adams reaction-path Hessian with the gradient--curvature
-   connection removed), and `zero_point="dvr"` (a sinc-DVR normal cut).  The
-   RPH option removes the local force--curvature contribution in a harmonic
-   projection; it does not add the missing transverse corner-cutting
-   coordinate.  The DVR option treats anharmonicity along each normal mode and
+   quadratic reaction-path normal-plane Hessian), and `zero_point="dvr"`
+   (a sinc-DVR normal cut). At fixed path arc length the displacement is
+   linear, so the RPH and harmonic potential Hessians are both `N.T @ H @ N`.
+   Curvature belongs to kinetic and mode-coupling terms; this selector does
+   not add the missing transverse corner-cutting coordinate.  The DVR option treats anharmonicity along each normal mode and
    uses the cut ground state, or the finite-temperature cut free energy for
    `environment="free_energy"`.
 2. Converge $P$ for the stiffest environment mode, or divide the full RPMD rate by $B_P$:

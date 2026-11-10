@@ -313,7 +313,7 @@ def main(argv=None):
     p.add_argument("--beads", type=int, default=None, help="default: max(16, 2 beta w_max rounded up to 8)")
     p.add_argument("--environments", nargs="+", default=["adiabatic", "free_energy"])
     p.add_argument("--zero-point", choices=["harmonic", "rph", "dvr"], default="harmonic",
-                   help="transverse projection: historical harmonic, MHA RPH, or normal-cut DVR")
+                   help="transverse projection: harmonic, quadratic normal-plane RPH, or independent normal-cut DVR")
     p.add_argument("--windows", type=int, default=48)
     p.add_argument("--walkers", type=int, default=64)
     p.add_argument("--sweeps", type=int, default=1000)
