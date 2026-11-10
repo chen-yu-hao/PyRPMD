@@ -140,5 +140,17 @@ def test_implicit_rate_windows_use_narrow_gaussian_width(tmp_path):
 
     source = Path(__file__).resolve().parents[1] / 'examples/rate/minimal.inp'
     config, system = JobSpec.from_file(source).resolve()
+    assert config['umbrella']['kappa'] * config['beta'] == pytest.approx(500.)
     stage = _prepare(config, system, tmp_path, _write=False)
     assert stage['beta'] * stage['umbrella']['kappa'] == pytest.approx(500.)
+
+
+def test_historical_resolved_input_keeps_its_implicit_spring(tmp_path):
+    from pyrpmd.input import JobSpec
+    from pyrpmd.workflows.rate_pmf import _prepare
+
+    source = Path(__file__).resolve().parents[1] / 'examples/rate/minimal.inp'
+    config, system = JobSpec.from_file(source).resolve()
+    config.pop('umbrella')  # historical resolved inputs did not persist this default
+    stage = _prepare(config, system, tmp_path, _write=False)
+    assert stage['beta'] * stage['umbrella']['kappa'] == pytest.approx(50.)

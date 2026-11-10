@@ -306,6 +306,11 @@ def resolve_rate_pmf_stage(raw, resolved, system):
         stride = stage["sampling"]["interval_steps"]
         if production // stride - last_discarded // stride < 2:
             raise InputError("Frozen-bias rate PMF production must include at least two saved samples after freeze_after_steps + freeze_equilibration_steps")
+    if method == "umbrella":
+        umbrella = stage.setdefault("umbrella", {})
+        if not any(key in umbrella for key in
+                   ("stiffness", "stiffness_au", "kappa", "force_constant", "force_matrix")):
+            umbrella["kappa"] = 500.0 / stage["beta"]
     resolved["rate"]["pmf_stage"] = {"schema_version": 1, "sampler": method, "config": stage}
 
 
@@ -344,7 +349,8 @@ def rate_pmf_stage(config, system):
         if not any(key in umbrella for key in selectors):
             umbrella.update(start=-0.05, stop=1.05, count=23)
         if not any(key in umbrella for key in ("stiffness", "stiffness_au", "kappa", "force_constant", "force_matrix")):
-            umbrella["kappa"] = 500.0 / stage["beta"]
+            # Historical resolved stages predate the explicit narrow default.
+            umbrella["kappa"] = 50.0 / stage["beta"]
         umbrella["cvs"] = ["xi"]
     else:
         stage[spec["method"]]["cvs"] = ["xi"]

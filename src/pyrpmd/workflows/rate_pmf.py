@@ -169,7 +169,9 @@ def configure_rate_umbrella(config, system, reaction):
     if not any(k in umbrella for k in selectors):
         umbrella.update(start=-0.05, stop=1.05, count=23)
     if not any(k in umbrella for k in ("stiffness", "stiffness_au", "kappa", "force_constant", "force_matrix")):
-        umbrella["kappa"] = 500.0 / result["beta"]
+        # New inputs persist their stiffness during resolution; preserve the
+        # implicit value of historical resolved inputs/checkpoints here.
+        umbrella["kappa"] = 50.0 / result["beta"]
     umbrella["cvs"] = ["xi"]
     result.setdefault("analysis", {}).update(measure="rate_flux")
     result["analysis"].setdefault("bins", 100)
