@@ -339,7 +339,12 @@ def build_subspace_channels(
     covariant = np.kron(d0, np.eye(n, dtype=complex)) + _block_diag(derivative_couplings)
     metric = _block_diag(metric_couplings)
     base = np.kron(sinc_dvr_kinetic(sigma, masses[0]), np.eye(n))
-    correction = 0.5 * (
+    # The covariant reaction-coordinate kinetic term carries the same
+    # ``1/(2 m_sigma)`` prefactor as the uncoupled sinc-DVR kinetic matrix.
+    # Keeping this factor explicit matters for callers that build channels in
+    # a non-unit mass coordinate; the path adapter uses mass-weighted sigma
+    # and therefore takes ``m_sigma = 1``.
+    correction = 0.5 / masses[0] * (
         covariant.conj().T @ metric @ covariant
         - np.kron(d0.conj().T @ d0, np.eye(n))
     )
