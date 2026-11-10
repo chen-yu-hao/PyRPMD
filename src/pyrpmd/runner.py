@@ -65,7 +65,17 @@ def _validate_resume_identity(config, system, path, old, hashes, digest):
             migrated_fes = fingerprint(scientific_config(normalized), stored_system) == digest
         if not migrated_fes:
             raise InputError("Cannot resume with changed scientific settings or system")
+    mutable_input = None
+    if config.get("task") == "rate" and "subspace_correction" in config.get("rate", {}):
+        stored_config = json.loads((path / "input" / "resolved.json").read_text())
+        # Physics equality was established above. Allow editing only the .inp
+        # wrapper to tune postprocessing, never a PES/model dependency.
+        source = stored_config.get("_input_path")
+        if source and Path(source).suffix.lower() in (".inp", ".toml"):
+            mutable_input = source
     for file, sha in old.get("files", {}).items():
+        if file == mutable_input:
+            continue
         if hashes.get(file) != sha:
             raise InputError(f"Input/model file changed or is missing: {file}")
 
@@ -210,7 +220,7 @@ def _initialize_output(config, system, output, resume=False, initialized_from=No
         shutil.copy2(source, path / "input" / ("original" + source.suffix))
 
 
-def run(job, *, output=None, resume=False, init_from=None, init_index=None, init_bias=False):
+def run(job, *, output=None, resume=False, init_from=None, init_index=None, init_bias=False, stage="all"):
     """Execute a JobSpec, mapping, .inp or .py file and return the root summary.
 
     ``init_from`` warm-starts a *new* run from a configuration saved by an
@@ -219,18 +229,35 @@ def run(job, *, output=None, resume=False, init_from=None, init_index=None, init
     :mod:`pyrpmd.warm_start`. ``init_index`` selects one configuration from a
     checkpoint holding several, and ``init_bias=True`` additionally imports
     the parent's metadynamics hills as an initial bias.
+    ``stage="subspace"`` validates an existing rate run and executes only its
+    configured subspace postprocessing, without preparation or new dynamics.
     """
     spec = _spec(job)
     if output is not None:
         spec = spec.with_overrides(output=output)
     config, system = spec.resolve()
     return run_resolved(config, system, output=output, resume=resume, init_from=init_from,
-                        init_index=init_index, init_bias=init_bias)
+                        init_index=init_index, init_bias=init_bias, stage=stage)
 
 
 def run_resolved(config, system, *, output=None, resume=False, init_from=None, init_index=None,
-                 init_bias=False):
+                 init_bias=False, stage="all"):
     config = normalize_fes_task(copy.deepcopy(config))
+    if stage not in ("all", "subspace"):
+        raise InputError("stage must be all or subspace")
+    if stage == "subspace":
+        if config.get("task") != "rate":
+            raise InputError("--stage subspace requires task='rate'")
+        if resume or init_from is not None or init_index is not None or init_bias:
+            raise InputError("--stage subspace cannot be combined with resume or warm-start options")
+        from .parallel import root_call
+        from .workflows.rate_subspace import run_subspace_stage
+
+        return root_call(run_subspace_stage, config, system, output or config["output"]["directory"])
+    if config.get("task") == "rate":
+        from .input_subspace import normalize_rate_subspace
+
+        normalize_rate_subspace(config)
     parent_run = None
     if init_from is None and (init_index is not None or init_bias):
         raise InputError("init_index and init_bias require init_from")
