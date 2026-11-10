@@ -153,3 +153,51 @@ def test_site_nonroot_passes_root_only_parents_without_iteration(monkeypatch, tm
     monkeypatch.setattr(site, "run_fes", lambda *a, **kw: None)
     monkeypatch.setattr(site, "map_trajectory_tasks", lambda *a, **kw: None)
     assert site.run_site_rate(config, system, tmp_path) is sentinel
+
+
+def test_independent_pmf_plan_uses_its_backend_clock_and_thermostat():
+    import copy
+    import pytest
+    from pyrpmd.dynamics import native_capabilities
+    from pyrpmd.input import JobSpec
+    from pyrpmd.runner import propagation_backend_plan
+    from test_rate_pmf_input import configuration, independent_pmf
+    if not native_capabilities()["available"]:
+        pytest.skip("native build required")
+    raw = configuration()
+    raw["native"] = True
+    raw["rate"] = {"pmf": independent_pmf()}
+    for overrides in ({"loop_backend": "python"}, {"native": False}, {}):
+        request = copy.deepcopy(raw)
+        request["rate"]["pmf"]["dynamics"].update(overrides)
+        resolved, system = JobSpec.from_mapping(request).resolve()
+        plan = {item["stage"]: item for item in propagation_backend_plan(resolved, system)}
+        assert plan["umbrella"]["backend"] == "python"
+        assert plan["umbrella"]["planned_steps"] == 4 * 2 * (10 + 50)
+        assert plan["recrossing child"]["backend"] == "native"
+        if not overrides:
+            assert "PILE-L" in plan["umbrella"]["reason"]
+
+
+def test_surface_plan_uses_declared_surface_before_testing_native_support(monkeypatch):
+    from pyrpmd.runner import propagation_backend_plan
+    from pyrpmd.workflows import surface
+    from test_surface_workflow import cluster_job
+    from pyrpmd.input import JobSpec
+    raw = cluster_job()
+    raw["native"] = True
+    resolved, system = JobSpec.from_mapping(raw).resolve()
+    original = surface.surface_definition
+    seen = []
+    def definition(*args):
+        result = original(*args)
+        coordinate = result["coordinate"]
+        dividing = coordinate.dividing_surface
+        def checked(value):
+            seen.append(value)
+            return dividing(value)
+        coordinate.dividing_surface = checked
+        return result
+    monkeypatch.setattr(surface, "surface_definition", definition)
+    propagation_backend_plan(resolved, system)
+    assert seen == [raw["surface"]["dividing_surface"]]

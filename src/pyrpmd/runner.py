@@ -49,6 +49,17 @@ def propagation_backend_plan(config, system):
     """
     from .propagation import native_support_reason
 
+    if config.get("task") == "rate":
+        from .workflows.prepare import prepare_rate
+        from .workflows.rate_pmf import configure_rate_umbrella
+        try:
+            preparation = prepare_rate(config, system, numerical=False)
+            config = configure_rate_umbrella(config, system, preparation["reaction"])
+        except (KeyError, ValueError):
+            # Inferred reactions need numerical preparation before their CVs
+            # exist; the stage below reports that unavailable plan explicitly.
+            pass
+
     options = config.get("dynamics", {})
     if not isinstance(options, Mapping):
         options = {}
@@ -110,7 +121,11 @@ def propagation_backend_plan(config, system):
             from .bias import UmbrellaBias
             stage_config = (rate_pmf_stage(config, system) if task == "rate" else None) or config
             external = task == "rate" and rate_pmf_options(config)["source"] is not None
-            if not external:
+            if stage_config is not config:
+                # Independent PMF stages own their integrator, clock, native
+                # switch and thermostat; use the same resolved stage as run_rate.
+                stages.extend(propagation_backend_plan(stage_config, system))
+            elif not external:
                 cv, _, windows = resolve_window_plan(stage_config, system)
                 steps = sum(
                     (int(sampling.get("equilibration_steps", 0))
@@ -119,11 +134,20 @@ def propagation_backend_plan(config, system):
                     for sampling in (window_sampling(stage_config, w) for w in windows)
                 )
                 reason = None
-                if dynamics is not None:
+                backend = None
+                from .workflows.sampling import fes_sampler
+                sampler = fes_sampler(stage_config)
+                if (sampler.thermostat == "pile-l" and sampler.thermostat_spec is None
+                        and options.get("loop_backend", "auto") != "native"):
+                    reason = "PILE-L umbrella force steps use Python scheduling"
+                elif sampler.thermostat != "andersen":
+                    reason = "sampling operator backend is checked at runtime"
+                    backend = "unknown"
+                elif dynamics is not None:
                     reason = native_support_reason(
                         dynamics, bias=UmbrellaBias(cv, windows[0].center, windows[0].stiffness),
                         observe=cv)
-                add("umbrella", reason, steps=steps)
+                add("umbrella", reason, steps=steps, backend=backend)
         except Exception as exc:
             add("umbrella", f"CV/bias plan unavailable: {exc}", backend="unknown")
     elif task == "diffusion" and config.get("electronic_friction") is not None:
@@ -155,7 +179,11 @@ def propagation_backend_plan(config, system):
                     from .block_propagation import _native_plan, NotNative
                     from .propagation import NativeUnavailableError
                     from .workflows.rate_constraints import rate_coordinate
-                    surface = rate_coordinate(config, system).dividing_surface(1.0)
+                    dividing_surface = 1.0
+                    if task == "surface_rate":
+                        from .workflows.surface import surface_definition
+                        dividing_surface = surface_definition(config, system)["dividing_surface_bohr"]
+                    surface = rate_coordinate(config, system).dividing_surface(dividing_surface)
                     child_reason = native_support_reason(dynamics, observe=surface)
                     child_backend = "python" if child_reason else "native"
                     if dynamics.loop_backend == "python":
