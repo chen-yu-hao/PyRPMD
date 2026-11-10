@@ -754,6 +754,23 @@ def prepare(job, *, numerical=False):
                     sampling_config = planned if stage is None else stage
                     validate_fes_request(sampling_config, system)
                     preview = plan_preview(sampling_config, system)
+                    if preview["dimension"] == 1:
+                        # Report the harmonic thermal width alongside actual
+                        # center spacing; nominal spring coefficients alone
+                        # obscure when Gaussian UI windows are too broad.
+                        locations = np.asarray(
+                            [w["center_au"][0] for w in preview["windows"]], float
+                        )
+                        for window in preview["windows"]:
+                            spring = float(window["stiffness_au"][0][0])
+                            gaps = np.abs(locations - window["center_au"][0])
+                            gaps = gaps[gaps > 1e-12]
+                            window["thermal_sigma_xi"] = float(
+                                np.sqrt(1.0 / (config["beta"] * spring))
+                            )
+                            window["nearest_center_spacing_xi"] = (
+                                float(gaps.min()) if len(gaps) else None
+                            )
                     result["umbrella_preparation"] = {
                         "dimension": preview["dimension"],
                         "cv_units": preview["cv_units"],

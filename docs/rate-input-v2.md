@@ -97,6 +97,27 @@ The existing scalar/diagonal/full `stiffness` forms remain available for multi-C
 FES. The program applies the ring-polymer factor P internally; do not multiply
 the input by the bead count.
 
+**Check the width as well as the spacing.** For the dimensionless rate coordinate
+the harmonic thermal width is
+`sigma_xi = sqrt(k_B T / k) = sqrt(k_B / a)` when using a bare
+`force_constant = a` (`k_B = 3.16681156e-6 hartree/K`). Thus the example
+`a=0.00016` has `sigma_xi ≈ 0.141` and the barrier-region
+`a=0.00032` has `sigma_xi ≈ 0.0995`, versus spacings of 0.05 and
+0.01. These broad windows can violate Gaussian UI's assumption even with
+adequate overlap and a small bootstrap error. As a narrower starting point,
+tenfold stiffer `a=0.0016`/`0.0032` gives widths ≈0.0445/0.0315;
+use correspondingly closer, overlapping windows (for example 0.02/0.01
+spacing), then check convergence. RPMDrate's `a=0.1` is much stiffer
+(`sigma_xi ≈ 0.00563`) and requires much closer centers.
+
+`pyrpmd prepare` reports `thermal_sigma_xi` and
+`nearest_center_spacing_xi` for every planned one-dimensional rate umbrella
+window under `umbrella_preparation.window_plan`. The UI workflow additionally
+compares its barrier to the already computed MBAR histogram point estimate,
+emitting an explicit warning for a significant difference or an unsupported
+comparison (see [PMF selection](rate-pmf-selection.md)). Width, spacing and
+that comparison are diagnostics, not proof of physical convergence.
+
 ## Regional and explicit windows
 
 ```toml
