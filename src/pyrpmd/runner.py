@@ -486,9 +486,6 @@ def run_resolved(config, system, *, output=None, resume=False, init_from=None, i
     from .workflows import validate_bond_constraint_workflow
     from .workflows.sampling import validate_andersen_schedule
 
-    backend_plan = [] if config.get("task") == "pcet" else propagation_backend_plan(config, system)
-    _append_backend_warnings(config, backend_plan)
-
     validate_bond_constraint_workflow(system, config.get("task"))
     validate_andersen_schedule(config, config.get("task"))
     if ((config.get("task") in ("pimd", "diffusion") and "path_integral" not in config)
@@ -535,6 +532,9 @@ def run_resolved(config, system, *, output=None, resume=False, init_from=None, i
         root_call(resolve_path_sampling, config, system)
     if (parent_run is not None and Path(parent_run).resolve() == Path(target).resolve()):
         raise InputError("A warm start needs a new output directory, not the parent run directory")
+    backend_plan = [] if config.get("task") == "pcet" else propagation_backend_plan(config, system)
+    _append_backend_warnings(config, backend_plan)
+
     root_call(_initialize_output, config, system, target, resume, parent_run)
     if config["task"] == "path_sampling":
         from .workflows.path_sampling import run_path_sampling
