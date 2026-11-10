@@ -1,10 +1,12 @@
 """Parallel MBAR bootstrap draws retain seeded serial semantics."""
 
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 
 from pyrpmd.analysis.fes import mbar_rate_pmf
+from pyrpmd.analysis import rate_pmf as rate_pmf_module
 
 
 class MBARBootstrapParallelTests(unittest.TestCase):
@@ -33,6 +35,8 @@ class MBARBootstrapParallelTests(unittest.TestCase):
 
         self.assertEqual(serial["bootstrap"]["backend"], "serial")
         self.assertEqual(parallel["bootstrap"]["backend"], "thread")
+        self.assertEqual(serial["bootstrap"]["workers_requested"], 1)
+        self.assertEqual(parallel["bootstrap"]["workers_requested"], 2)
         self.assertEqual(parallel["bootstrap"]["workers"], 2)
         np.testing.assert_array_equal(
             serial["pmf_bootstrap_barriers"], parallel["pmf_bootstrap_barriers"]
@@ -41,6 +45,116 @@ class MBARBootstrapParallelTests(unittest.TestCase):
             serial["standard_error"], parallel["standard_error"], equal_nan=True
         )
         self.assertEqual(serial["bootstrap"]["draws"], parallel["bootstrap"]["draws"])
+
+    def test_default_workers_remain_serial(self):
+        result = mbar_rate_pmf(self.samples, **self.options)
+        self.assertEqual(result["bootstrap"]["workers_requested"], 1)
+        self.assertEqual(result["bootstrap"]["workers"], 1)
+        self.assertEqual(result["bootstrap"]["backend"], "serial")
+
+    def test_newton_multiwindow_and_compare_ui_match_serial(self):
+        rng = np.random.default_rng(42)
+        centers = np.array([0.2, 0.5, 0.8])
+        samples = [rng.normal(center, 0.12, 80) for center in centers]
+        options = dict(
+            centers=centers,
+            stiffness=np.full(3, 8.0),
+            beta=1.0,
+            bins=np.linspace(-0.2, 1.2, 20),
+            reference=0.2,
+            xi_star=0.8,
+            bootstrap=4,
+            seed=7,
+            min_count=1,
+            min_weight_ess=None,
+            min_endpoint_ess=None,
+            max_center_displacement_sigma=None,
+            compare_ui=True,
+            ui_points=20,
+        )
+        serial = mbar_rate_pmf(samples, bootstrap_workers=1, **options)
+        parallel = mbar_rate_pmf(samples, bootstrap_workers=2, **options)
+
+        self.assertEqual(serial["solver"]["details"]["method"], "damped_newton")
+        self.assertEqual(parallel["solver"]["details"]["method"], "damped_newton")
+        self.assertEqual(serial["solver"]["unique_umbrella_hamiltonians"], 3)
+        self.assertEqual(parallel["solver"]["unique_umbrella_hamiltonians"], 3)
+        np.testing.assert_array_equal(
+            serial["pmf_bootstrap_barriers"], parallel["pmf_bootstrap_barriers"]
+        )
+        np.testing.assert_array_equal(
+            serial["standard_error"], parallel["standard_error"]
+        )
+        self.assertEqual(serial["bootstrap"]["draws"], parallel["bootstrap"]["draws"])
+        ui_serial = serial["ui_comparison"]
+        ui_parallel = parallel["ui_comparison"]
+        np.testing.assert_array_equal(
+            ui_serial["paired_ui_bootstrap_barriers"],
+            ui_parallel["paired_ui_bootstrap_barriers"],
+        )
+        np.testing.assert_array_equal(
+            ui_serial["paired_difference_bootstrap_hartree"],
+            ui_parallel["paired_difference_bootstrap_hartree"],
+        )
+
+    def test_failure_draw_order_is_stable(self):
+        original = rate_pmf_module._mbar_bootstrap_draw
+
+        def draw_with_failure(task):
+            draw, indices, context = task
+            if draw == 2:
+                broken_context = dict(context)
+
+                def fail_solver(*args, **kwargs):
+                    raise RuntimeError("injected bootstrap failure")
+
+                broken_context["solve_mbar"] = fail_solver
+                task = draw, indices, broken_context
+            return original(task)
+
+        with patch.object(rate_pmf_module, "_mbar_bootstrap_draw", draw_with_failure):
+            serial = mbar_rate_pmf(self.samples, bootstrap_workers=1, **self.options)
+            parallel = mbar_rate_pmf(self.samples, bootstrap_workers=2, **self.options)
+
+        self.assertEqual(
+            [record["draw"] for record in serial["bootstrap"]["draws"]], [0, 1, 2, 3]
+        )
+        self.assertEqual(
+            [record["draw"] for record in parallel["bootstrap"]["draws"]], [0, 1, 2, 3]
+        )
+        self.assertEqual(
+            [record["draw"] for record in serial["bootstrap"]["draws"] if record["valid"]], [0, 1, 3]
+        )
+        self.assertEqual(
+            [record["draw"] for record in parallel["bootstrap"]["draws"] if record["valid"]], [0, 1, 3]
+        )
+        self.assertEqual(serial["bootstrap"]["draws"][2]["reason"], "mbar_solver_error")
+        self.assertEqual(parallel["bootstrap"]["draws"][2]["reason"], "mbar_solver_error")
+        self.assertEqual(
+            [failure["draw"] for failure in serial["bootstrap"]["failures"]], [2]
+        )
+        self.assertEqual(
+            [failure["draw"] for failure in parallel["bootstrap"]["failures"]], [2]
+        )
+        self.assertEqual(
+            serial["bootstrap"]["failure_counts"], parallel["bootstrap"]["failure_counts"]
+        )
+
+    def test_memory_cap_records_requested_and_effective_workers(self):
+        u_nbytes = sum(len(sample) for sample in self.samples) * 8
+        available_memory = 2 * 4 * u_nbytes
+        with patch.object(
+            rate_pmf_module, "_available_memory_bytes", return_value=available_memory
+        ):
+            with self.assertWarns(RuntimeWarning):
+                result = mbar_rate_pmf(
+                    self.samples, bootstrap_workers=4, **self.options
+                )
+
+        self.assertEqual(result["bootstrap"]["workers_requested"], 4)
+        self.assertEqual(result["bootstrap"]["workers"], 1)
+        self.assertEqual(result["bootstrap"]["backend"], "serial")
+        self.assertTrue(any("memory budget" in warning for warning in result["warnings"]))
 
     def test_worker_count_is_validated(self):
         for workers in (0, -1, True, 1.5):
