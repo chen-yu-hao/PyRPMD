@@ -83,7 +83,7 @@ def test_straight_path_zero_point_options_are_consistent(zero_point):
     assert np.allclose(model.values, expected, atol=1e-6)
 
 
-@pytest.mark.parametrize("omega", [1e-4, 1e-6])
+@pytest.mark.parametrize("omega", [1e-4, 1e-6, 1e-10])
 def test_default_dvr_box_resolves_soft_positive_mode(monkeypatch, omega):
     monkeypatch.setitem(globals(), "OMEGA", omega)
     model = _straight_path_model(zero_point="dvr")

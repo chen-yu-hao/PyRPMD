@@ -649,7 +649,7 @@ def _normal_dvr_term(
     adiabatic environment this is the lowest eigenvalue; for ``free_energy``
     it is ``-beta**-1 log Tr exp(-beta H_cut)`` relative to the path energy.
     """
-    frequency = float(max(frequency, 1.0e-8))
+    frequency = float(frequency)
     if half_width is None:
         # Eight oscillator lengths place the hard walls far beyond the ground
         # state (the harmonic-limit error is below 1e-8 with the default grid).
