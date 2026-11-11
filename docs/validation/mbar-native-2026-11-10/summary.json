@@ -1,0 +1,129 @@
+{
+  "baseline_commit": "f410b97807d99d429ab1b63c6b1c7ff93b424b5c",
+  "implementation_commit": "bc775cc",
+  "gates": {
+    "absolute_tolerance": 3e-09,
+    "relative_tolerance": 3e-08,
+    "maximum_observed_errors": {
+      "rate/free_energy": 1.3322676295501878e-15,
+      "rate/weights": 3.469446951953614e-17,
+      "rate/barriers": 1.887379141862766e-15,
+      "rate/standard_error": 1.0061396160665481e-15,
+      "solve/free_energies": 1.1102230246251565e-15,
+      "solve/weights": 1.5612511283791264e-17,
+      "solve/overlap": 1.2184697695261093e-14,
+      "solve/log_weights": 3.552713678800501e-15
+    }
+  },
+  "groups": [
+    {
+      "scope": "rate",
+      "backend": "baseline",
+      "threads": 1,
+      "repeats": 3,
+      "median_seconds": 5.580684494227171,
+      "seconds_range": [
+        5.508842280134559,
+        5.857617927715182
+      ],
+      "median_peak_rss_MiB": 157.328125,
+      "median_cpu_to_wall": 0.9947555914205614,
+      "all_numerical_gates_passed": true
+    },
+    {
+      "scope": "rate",
+      "backend": "baseline",
+      "threads": 4,
+      "repeats": 3,
+      "median_seconds": 2.8300287034362555,
+      "seconds_range": [
+        2.798277210444212,
+        2.8316550739109516
+      ],
+      "median_peak_rss_MiB": 368.078125,
+      "median_cpu_to_wall": 3.0283148960976742,
+      "all_numerical_gates_passed": true
+    },
+    {
+      "scope": "rate",
+      "backend": "native",
+      "threads": 1,
+      "repeats": 3,
+      "median_seconds": 3.421523317694664,
+      "seconds_range": [
+        3.2794772051274776,
+        3.603640355169773
+      ],
+      "median_peak_rss_MiB": 90.85546875,
+      "median_cpu_to_wall": 0.996592792562782,
+      "all_numerical_gates_passed": true
+    },
+    {
+      "scope": "rate",
+      "backend": "native",
+      "threads": 4,
+      "repeats": 3,
+      "median_seconds": 1.28568085283041,
+      "seconds_range": [
+        1.1642773244529963,
+        1.3709698338061571
+      ],
+      "median_peak_rss_MiB": 99.6484375,
+      "median_cpu_to_wall": 2.799557159987337,
+      "all_numerical_gates_passed": true
+    },
+    {
+      "scope": "solve",
+      "backend": "baseline",
+      "threads": 1,
+      "repeats": 3,
+      "median_seconds": 10.230247190222144,
+      "seconds_range": [
+        9.825510000810027,
+        67.08255726285279
+      ],
+      "median_peak_rss_MiB": 416.5859375,
+      "median_cpu_to_wall": 0.995992507760582,
+      "all_numerical_gates_passed": true
+    },
+    {
+      "scope": "solve",
+      "backend": "native",
+      "threads": 1,
+      "repeats": 3,
+      "median_seconds": 1.9964914172887802,
+      "seconds_range": [
+        1.9550094529986382,
+        2.016385927796364
+      ],
+      "median_peak_rss_MiB": 90.6328125,
+      "median_cpu_to_wall": 0.9964962680931636,
+      "all_numerical_gates_passed": true
+    },
+    {
+      "scope": "solve",
+      "backend": "native",
+      "threads": 4,
+      "repeats": 3,
+      "median_seconds": 0.5704625640064478,
+      "seconds_range": [
+        0.5320875011384487,
+        0.5809895601123571
+      ],
+      "median_peak_rss_MiB": 90.59765625,
+      "median_cpu_to_wall": 3.9665713317532587,
+      "all_numerical_gates_passed": true
+    }
+  ],
+  "affinity": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "blas_threads": 1,
+  "numpy": "2.4.6",
+  "python": "3.11.18",
+  "compiler": "g++ -O3 -std=c++17 -fopenmp; no fast-math",
+  "cpu_model": "Intel(R) Xeon(R) Platinum 8176 CPU @ 2.10GHz"
+}

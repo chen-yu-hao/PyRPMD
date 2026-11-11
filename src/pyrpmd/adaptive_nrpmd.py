@@ -19,8 +19,8 @@ import numpy as np
 
 from .analysis.fes import (
     cv_statistical_inefficiency, solve_mbar, statistical_inefficiency,
-    umbrella_reduced_potentials,
 )
+from .analysis.mbar_problem import umbrella_problem
 from .bias import UmbrellaBias
 from .dynamics import CayleyIntegrator
 from .nonadiabatic import _positive_integer
@@ -289,7 +289,7 @@ def reweight_thermal_umbrellas(windows, cv, centers, stiffness, *,
     values = np.concatenate(samples)
     counts = np.array([len(w.states) for w in windows], dtype=int)
     kappa = np.array([b.stiffness for b in stiffness_by_window])
-    u_kn = umbrella_reduced_potentials(values, centers, kappa, first.beta, cv.periods)
+    u_kn = umbrella_problem(values, centers, kappa, first.beta, cv.periods)
     fit = solve_mbar(u_kn, counts, overlap_threshold=overlap_threshold, return_state_weights=False)
     source = ThermalEnsemble(
         tuple(state for w in windows for state in w.states),

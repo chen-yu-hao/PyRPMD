@@ -38,6 +38,15 @@ def _reweighting_signature(reduced_potentials, counts, overlap_threshold):
     """Bind reusable target weights to the exact ordered bias problem."""
     digest = hashlib.sha256()
     for value, dtype in ((reduced_potentials, np.float64), (counts, np.int64)):
+        from .mbar_problem import ReducedPotentials
+        if isinstance(value, ReducedPotentials):
+            digest.update(str(value.shape).encode("ascii"))
+            for row in range(value.shape[0]):
+                selected = value.select(rows=[row])
+                for start in range(0, value.shape[1], 4096):
+                    array = np.ascontiguousarray(selected.block(start, min(start+4096, value.shape[1])))
+                    digest.update(memoryview(array).cast("B"))
+            continue
         array = np.ascontiguousarray(value, dtype=dtype)
         digest.update(str(array.shape).encode("ascii"))
         digest.update(memoryview(array).cast("B"))
@@ -121,6 +130,8 @@ def solve_mbar(
     combine_identical_states=True,
     method="auto",
     return_state_weights=True,
+    backend="auto",
+    threads=1,
 ):
     """Return MBAR target weights, state overlap and identifiability diagnostics.
 
@@ -129,18 +140,20 @@ def solve_mbar(
     physical Hamiltonian from every sampling/target reduced potential. Exact
     duplicate rows are combined internally, then all state-shaped outputs are
     expanded to the original order. Time streams are never combined here.
-    ``return_state_weights=False`` omits the expanded [N,K] state-weight array
-    and returns ``state_weights=None``. Target weights, overlap, free energies
-    and diagnostics are unchanged; unique-state weights are still computed
-    internally for overlap. The default preserves the full public result.
+    ``return_state_weights=False`` streams the overlap accumulation and omits
+    every [N,K] state-weight array. ``backend='auto'`` uses the optional native
+    C++ kernel, releasing the GIL, or bounded NumPy blocks when unavailable.
+    ``threads`` controls one native solve and is capped by CPU affinity.
+    The default preserves the full public state-weight result when requested.
 
-    ``auto`` uses a gauge-constrained damped Newton solve, with the original
-    L-BFGS/fixed-point procedure as fallback. ``legacy`` is retained for
+    ``method='auto'`` uses a gauge-constrained damped Newton solve, with the original
+    L-BFGS/fixed-point procedure as fallback. ``method='legacy'`` is retained for
     independent numerical comparisons. Both require the same final fixed-point
     residual, regardless of optimizer termination. A warm start changes only
     convergence speed, not the reduced potentials or target distribution.
     """
-    u = np.asarray(u_kn, float)
+    from .mbar_problem import ReducedPotentials
+    u = u_kn if isinstance(u_kn, ReducedPotentials) else np.asarray(u_kn, float)
     raw_counts = np.asarray(counts)
     if raw_counts.dtype.kind not in "iuf" or not np.isfinite(raw_counts).all():
         raise ValueError("MBAR counts must be finite positive integers")
@@ -154,7 +167,11 @@ def solve_mbar(
         or not np.array_equal(counts, raw_counts)
     ):
         raise ValueError("MBAR requires u[K,N], positive counts[K] summing to N")
-    if not np.isfinite(u).all():
+    if isinstance(u, ReducedPotentials):
+        finite = all(np.isfinite(a).all() for a in (u.values,u.centers,u.stiffness,u.periods))
+    else:
+        finite = all(np.isfinite(row).all() for row in u)
+    if not finite:
         raise ValueError("MBAR energies must be finite")
     target = np.zeros(u.shape[1]) if target_u is None else np.asarray(target_u, float)
     if target.shape != (u.shape[1],) or not np.isfinite(target).all():
@@ -168,6 +185,9 @@ def solve_mbar(
         or not np.isfinite(overlap_threshold)
         or overlap_threshold < 0
         or method not in ("auto", "legacy")
+        or backend not in ("auto", "native", "numpy")
+        or isinstance(threads, (bool, np.bool_))
+        or not isinstance(threads, (int, np.integer)) or threads < 1
     ):
         raise ValueError("invalid MBAR solver options")
     original_counts = counts
@@ -178,6 +198,15 @@ def solve_mbar(
     )
     if initial.shape != counts.shape or not np.isfinite(initial).all():
         raise ValueError("initial_free_energies must be finite [K]")
+    if method != "legacy":
+        from .mbar_streaming import solve
+        result = solve(u, counts, np.ascontiguousarray(target), initial, tolerance=tolerance,
+                       max_iterations=max_iterations, overlap_threshold=overlap_threshold,
+                       combine_identical_states=combine_identical_states,
+                       return_state_weights=return_state_weights, backend=backend, threads=int(threads))
+        result.diagnostics["warm_start"] = initial_free_energies is not None
+        return result
+    u = np.asarray(u)
     if combine_identical_states:
         representatives, state_map = _identical_rows(u)
     else:
@@ -199,60 +228,14 @@ def solve_mbar(
         new -= new[0]
         return new, logd, float(np.max(np.abs(new - z)))
 
-    # A short initialization is followed by Newton; long fixed-point mixing
-    # across narrow umbrellas was the principal cost in the previous solver.
-    warm_steps = min(200 if method == "legacy" else 8, max_iterations)
-    for _ in range(warm_steps):
+    # Retained dense L-BFGS/fixed-point reference (method="legacy").
+    for _ in range(min(200, max_iterations)):
         new, _, residual = equations(f)
         if residual < tolerance:
             break
         f = new
-    newton_iterations = 0
-    fallback = method == "legacy"
-    if method == "auto" and k > 1:
-        for newton_iterations in range(1, min(80, max_iterations) + 1):
-            _, logd, residual = equations(f)
-            if residual < tolerance:
-                break
-            probabilities = np.exp(logn[:, None] + f[:, None] - u - logd)
-            totals = probabilities.sum(axis=1)
-            gradient = totals - counts
-            hessian = np.diag(totals) - probabilities @ probabilities.T
-            try:
-                step = np.linalg.solve(hessian[1:, 1:], gradient[1:])
-            except np.linalg.LinAlgError:
-                fallback = True
-                break
-            descent = float(gradient[1:] @ step)
-            if not np.isfinite(step).all() or not np.isfinite(descent) or descent <= 0:
-                fallback = True
-                break
-            value = float(logd.sum() - counts @ f)
-            alpha = min(1.0, 20.0 / max(float(np.max(np.abs(step))), 1e-30))
-            accepted = False
-            rounding = 16 * np.finfo(float).eps * max(1.0, abs(value))
-            for _ in range(24):
-                candidate = f.copy()
-                candidate[1:] -= alpha * step
-                _, candidate_logd, candidate_residual = equations(candidate)
-                candidate_value = float(candidate_logd.sum() - counts @ candidate)
-                armijo = candidate_value <= value - 1e-4 * alpha * descent
-                near_roundoff = (
-                    candidate_value <= value + rounding
-                    and candidate_residual < residual
-                )
-                if np.isfinite(candidate_value) and (armijo or near_roundoff):
-                    f = candidate
-                    accepted = True
-                    break
-                alpha *= 0.5
-            if not accepted:
-                fallback = True
-                break
-        if equations(f)[2] >= tolerance:
-            fallback = True
     lbfgs_iterations = 0
-    if k > 1 and fallback and equations(f)[2] >= tolerance:
+    if k > 1 and equations(f)[2] >= tolerance:
 
         def objective(x):
             z = np.concatenate(([0.0], x))
@@ -301,15 +284,11 @@ def solve_mbar(
         residual < tolerance,
         residual,
         {
-            "method": (
-                "single_state"
-                if k == 1
-                else ("lbfgs_fixed_point" if fallback else "damped_newton")
-            ),
+            "method": "single_state" if k == 1 else "lbfgs_fixed_point",
             "unique_states": k,
             "original_states": len(original_counts),
             "state_to_unique": state_map,
-            "newton_iterations": newton_iterations,
+            "newton_iterations": 0,
             "lbfgs_iterations": lbfgs_iterations,
             "polish_iterations": polish_iterations,
             "warm_start": initial_free_energies is not None,

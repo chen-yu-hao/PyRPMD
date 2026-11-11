@@ -564,7 +564,7 @@ def _write_stream_anomalies(output, anomalies, branch_failures, config):
     }))
 
 
-def _pmf_and_parent_tasks(sampled, config, system, output, options):
+def _pmf_and_parent_tasks(sampled, config, system, output, options, executor=None):
     pmf_options = rate_pmf_options(config)
     if pmf_options["source"] is not None:
         from .rate_source import source_estimate
@@ -633,6 +633,9 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options):
                     "bootstrap_workers_source", "default"
                 ),
                 bootstrap_total_cores=pmf_options.get("bootstrap_total_cores"),
+                # This function runs on root only. A collective MPI executor
+                # requires every rank to enter map(), unlike local pools.
+                bootstrap_executor=(executor if config.get("parallel", {}).get("backend") != "mpi" else None),
                 min_weight_ess=pmf_options.get("min_weight_ess"),
                 min_endpoint_ess=pmf_options.get("min_endpoint_ess"),
                 max_center_displacement_sigma=pmf_options.get("max_center_displacement_sigma"),

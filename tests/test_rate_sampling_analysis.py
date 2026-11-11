@@ -19,6 +19,38 @@ from test_rate_pmf_extend import configuration
 from test_rate_pmf_input import configuration as input_configuration
 
 
+def test_rate_analysis_dispatches_bootstrap_to_existing_executor(tmp_path):
+    config, system, stage, streams = _rate_case(tmp_path, "mbar", bootstrap=4)
+    config["parallel"] = {"backend": "process", "trajectory_workers": 2}
+    sampled = _bundle(stage, streams, tmp_path / "umbrella")
+    functions = []
+
+    class Executor:
+        def map(self, function, tasks):
+            functions.append(function.__name__)
+            with ThreadPoolExecutor(max_workers=2) as pool:
+                return list(pool.map(function, tasks))
+
+    pmf, _ = rate._pmf_and_parent_tasks(sampled, config, system, str(tmp_path),
+                                       rate._recrossing_options(config), Executor())
+    assert functions and set(functions) == {"_mbar_bootstrap_draw"}
+    assert pmf["bootstrap"]["backend"] == "executor"
+
+
+def test_root_only_analysis_never_enters_collective_mpi_executor(tmp_path):
+    config, system, stage, streams = _rate_case(tmp_path, "mbar", bootstrap=4)
+    config["parallel"] = {"backend": "mpi", "trajectory_workers": 2}
+    sampled = _bundle(stage, streams, tmp_path / "umbrella")
+
+    class CollectiveExecutor:
+        def map(self, *args):
+            raise AssertionError("collective executor called only on root")
+
+    pmf, _ = rate._pmf_and_parent_tasks(sampled, config, system, str(tmp_path),
+                                       rate._recrossing_options(config), CollectiveExecutor())
+    assert pmf["bootstrap"]["backend"] == "serial"
+
+
 def _rate_case(tmp_path, method, bootstrap=3):
     raw = configuration()
     raw["rate"]["pmf"]["estimator"] = method
