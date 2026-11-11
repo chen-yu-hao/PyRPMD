@@ -131,7 +131,7 @@ def valley_path(model, samples=3201, half_length=2 * S_RANGE):
     return np.column_stack([s, model.centre(s)[0]])
 
 
-def path_projection(model, beta, environment, spacing=1.0):
+def path_projection(model, beta, environment, spacing=1.0, curvature_mass="none", *, zero_point="harmonic"):
     path = valley_path(model)
     arc, curvature = path_curvature(path, [MASS, MASS], samples=2001)
     axis = np.arange(0.0, arc[-1] - 1e-9, spacing)
@@ -139,8 +139,9 @@ def path_projection(model, beta, environment, spacing=1.0):
     s_of_arc = np.interp(arc, np.linspace(0.0, arc[-1], len(path)), path[:, 0])
     reference = float(np.interp(REFERENCE_S, s_of_arc, arc))
     sub = project_path_subspace(model.scalar, model.scalar_gradient, path, [MASS, MASS], axis,
-                                environment=environment, beta=beta if environment == "free_energy" else None,
-                                reactant_reference=reference)
+                                environment=environment, zero_point=zero_point,
+                                beta=beta if environment == "free_energy" else None,
+                                reactant_reference=reference, curvature=curvature_mass)
     return sub, arc, curvature
 
 
@@ -190,8 +191,16 @@ def _limit_threads(count):
 
 def _quantum(args, threads=1):
     kind, family, parameter, barrier, beta, environment = args[:6]
-    if len(args) > 6:
-        REFINE.update(args[6])
+    curvature_mass, zero_point = "none", "harmonic"
+    # Preserve earlier worker tuples that carried just one selector or the
+    # refinement map; the two selector vocabularies are disjoint.
+    for option in args[6:]:
+        if isinstance(option, dict):
+            REFINE.update(option)
+        elif option in ("none", "small"):
+            curvature_mass = option
+        elif option is not None:
+            zero_point = option
     _limit_threads(threads)
     model = Model(family, parameter, barrier)
     start = time.time()
@@ -213,7 +222,7 @@ def _quantum(args, threads=1):
         return dict(finest, ladder=ladder, truncation_offset=truncation_offset(beta),
                     grid_relative_change=float(finest["rate"] / coarse["rate"] - 1.0))
     else:
-        sub = path_projection(model, beta, environment)[0]
+        sub = path_projection(model, beta, environment, curvature_mass=curvature_mass, zero_point=zero_point)[0]
         # Reactant threshold of this H_S (zero-point or free energy of the reactant vibration).
         threshold = float(np.interp(sub.reactant_reference, sub.axes[0], sub.values))
         opts = {"method": "sylvester", "energy_floor": threshold - 1.0 / beta}
@@ -221,14 +230,23 @@ def _quantum(args, threads=1):
     return {"rate": result.rate, "seconds": time.time() - start,
             "retained_points": result.diagnostics.get("retained_points"),
             "grid_points": result.diagnostics.get("grid_points"),
-            "states_below_floor": result.diagnostics.get("states_below_floor")}
+            "states_below_floor": result.diagnostics.get("states_below_floor"),
+            "model_provenance": dict(sub.provenance)}
 
 
 def _rpmd(args):
-    kind, family, parameter, barrier, beta, environment, nbeads, sampling, seed = args
+    kind, family, parameter, barrier, beta, environment = args[:6]
+    nbeads, sampling, seed = args[-3:]
+    curvature_mass, zero_point = "none", "harmonic"
+    for option in args[6:-3]:
+        if option in ("none", "small"):
+            curvature_mass = option
+        elif option is not None:
+            zero_point = option
     _limit_threads(1)
     model = Model(family, parameter, barrier)
-    sub = full_model(model, beta) if kind == "2d" else path_projection(model, beta, environment)[0]
+    sub = full_model(model, beta) if kind == "2d" else path_projection(
+        model, beta, environment, curvature_mass=curvature_mass, zero_point=zero_point)[0]
     start = time.time()
     r = ring_polymer_rate(sub, beta, nbeads, seed=seed, **sampling)
     return {"rate": r.rate, "log_standard_error": r.log_rate_standard_error, "qtst": r.qtst_rate,
@@ -239,15 +257,17 @@ def _rpmd(args):
 
 
 def run_point(family, parameter, barrier, temperature, *, nbeads=None, environments=("adiabatic", "free_energy"),
+              curvature_mass="none", zero_point="harmonic",
               sampling=None, seed=0, workers=None):
     beta = 1.0 / (KELVIN * temperature)
     model = Model(family, parameter, barrier)
     nbeads = bead_number(model, beta) if nbeads is None else int(nbeads)
     sampling = dict(sampling or {})
-    tasks_q = [("2d", family, parameter, barrier, beta, None, json.loads(json.dumps(REFINE)))] + [
-        ("1d", family, parameter, barrier, beta, e) for e in environments]
-    tasks_r = [("2d", family, parameter, barrier, beta, None, nbeads, sampling, seed)] + [
-        ("1d", family, parameter, barrier, beta, e, nbeads, sampling, seed + 1 + i) for i, e in enumerate(environments)]
+    tasks_q = [("2d", family, parameter, barrier, beta, None, curvature_mass, zero_point, json.loads(json.dumps(REFINE)))] + [
+        ("1d", family, parameter, barrier, beta, e, curvature_mass, zero_point) for e in environments]
+    tasks_r = [("2d", family, parameter, barrier, beta, None, curvature_mass, zero_point, nbeads, sampling, seed)] + [
+        ("1d", family, parameter, barrier, beta, e, curvature_mass, zero_point, nbeads, sampling, seed + 1 + i)
+        for i, e in enumerate(environments)]
     cores = workers or os.cpu_count() or 1
     # The dense 2D solve dominates: run it here with every BLAS thread while
     # the RPMD runs and the cheap 1D solves share a process pool.
@@ -265,7 +285,8 @@ def run_point(family, parameter, barrier, temperature, *, nbeads=None, environme
     kr, kc = curvature_width(model, beta)
     record = {
         "family": family, "parameter": float(parameter), "barrier": barrier, "temperature": float(temperature),
-        "beta": beta, "nbeads": nbeads, "seed": seed, "sampling": sampling,
+        "curvature_mass": curvature_mass,
+        "beta": beta, "nbeads": nbeads, "seed": seed, "sampling": sampling, "zero_point": zero_point,
         "crossover_temperature_symmetric": 413.1,
         "curvature_width_max": kr, "path_curvature_max": kc,
         "beta_omega_reactant": beta * w_r, "beta_omega_barrier": beta * w_ts,
@@ -299,6 +320,10 @@ def main(argv=None):
     p.add_argument("--temperature", type=float, required=True)
     p.add_argument("--beads", type=int, default=None, help="default: max(16, 2 beta w_max rounded up to 8)")
     p.add_argument("--environments", nargs="+", default=["adiabatic", "free_energy"])
+    p.add_argument("--curvature-mass", choices=["none", "small"], default="none",
+                   help="SCT coordinate-dependent mass for 1D path projections")
+    p.add_argument("--zero-point", choices=["harmonic", "rph", "dvr"], default="harmonic",
+                   help="transverse projection: harmonic, quadratic normal-plane RPH, or independent normal-cut DVR")
     p.add_argument("--windows", type=int, default=48)
     p.add_argument("--walkers", type=int, default=64)
     p.add_argument("--sweeps", type=int, default=1000)
@@ -317,11 +342,11 @@ def main(argv=None):
                 "trajectories": args.trajectories}
     record = run_point(args.family, args.parameter, args.barrier, args.temperature, nbeads=args.beads,
                        environments=tuple(args.environments), sampling=sampling, seed=args.seed,
-                       workers=args.workers)
+                       workers=args.workers, curvature_mass=args.curvature_mass, zero_point=args.zero_point)
     record["wall_seconds"] = time.time() - start
     with open(args.output, "w") as handle:
         json.dump(record, handle, indent=1, default=float)
-    summary = {k: record[k] for k in ("family", "parameter", "barrier", "temperature", "nbeads",
+    summary = {k: record[k] for k in ("family", "parameter", "barrier", "temperature", "curvature_mass", "zero_point", "nbeads",
                                        "curvature_width_max", "C_full")}
     summary.update({e: {k: v[k] for k in ("C_S", "delta", "delta_standard_error", "G_quantum", "G_rpmd")}
                     for e, v in record["projections"].items()})

@@ -44,7 +44,8 @@ NORMALIZED_OVERLAP_METRIC = "normalized_mbar_cosine"
 
 ADAPTIVE_FIELDS = {"enabled", "pilot_steps", "pilot_equilibration_steps", "max_rounds",
                    "max_windows", "max_pilot_steps", "target_overlap", "min_effective_samples", "min_spacing",
-                   "coverage_bins", "coverage_ranges", "min_bin_effective_samples", "target_coverage"}
+                   "coverage_bins", "coverage_ranges", "min_bin_effective_samples", "target_coverage",
+                   "continuation"}
 
 
 def adaptive_options(config):
@@ -57,7 +58,12 @@ def adaptive_options(config):
     enabled = table.get("enabled", bool(table))
     if not isinstance(enabled, bool):
         raise ValueError("adaptive_umbrella.enabled must be boolean")
+    continuation = table.get("continuation", False)
+    if not isinstance(continuation, bool):
+        raise ValueError("adaptive_umbrella.continuation must be boolean")
     options = {"enabled": enabled}
+    if continuation:
+        options["continuation"] = True
     for key, default, minimum in (
         ("pilot_steps", 1000, 1),
         ("pilot_equilibration_steps", config.get("sampling", {}).get("equilibration_steps", 0), 0),
@@ -98,6 +104,9 @@ def adaptive_options(config):
             raise ValueError("adaptive_umbrella.coverage_ranges must contain [lower, upper] pairs")
         options.update(coverage_bins=bins, coverage_ranges=[list(pair) for pair in ranges])
     if enabled:
+        if continuation and (options["pilot_equilibration_steps"] < 1
+                             or config.get("sampling", {}).get("equilibration_steps", 0) < 1):
+            raise ValueError("umbrella continuation requires positive pilot and production equilibration_steps")
         if config.get("task", "fes") not in ("fes", "rate"):
             raise ValueError("adaptive_umbrella is supported only for FES and rate PMF workflows")
         interval = checked_integer(config.get("sampling", {}).get("sample_interval",
@@ -532,6 +541,36 @@ def _production_diagnostic(result, plan, periods):
     return report
 
 
+def _production_refinement(plan, production, periods):
+    """Propose a fresh pilot from production evidence without changing this plan."""
+    centers = np.asarray(plan["centers"], float)
+    options = plan["options"]
+    stiffness = np.asarray(plan.get("stiffness", np.eye(centers.shape[1])))
+    labels = production["overlap_components"]
+    groups = [(i, j) for i in range(len(centers)) for j in range(i + 1, len(centers))
+              if labels[i] == labels[j]]
+    _, union = _components(len(centers), groups)
+    pairs = [(i, j) for i in range(len(centers)) for j in range(i + 1, len(centers))]
+    def distance(pair):
+        delta = displacement(centers[pair[1]], centers[pair[0]], periods)
+        return float(delta @ stiffness @ delta), pair
+    inserted = []
+    for i, j in sorted(pairs, key=distance):
+        if union(i, j):
+            inserted.append((centers[i] + 0.5 * displacement(centers[j], centers[i], periods)).tolist())
+    return {
+        "scope": "next_run_only", "applied": False, "requires_fresh_output": True,
+        "source": "frozen_production", "frozen_plan_modified": False,
+        "suggested_additional_centers": inserted,
+        "windows_needing_more_effective_samples": [
+            i for i, ess in enumerate(production["effective_samples_per_window"])
+            if ess < options["min_effective_samples"]],
+        "coverage_refinement_needed": not production.get("coverage", {}).get("target_met", True),
+        "diagnostic": production,
+        "policy": "Start a new pilot plan; recheck window limits, overlap, ESS and declared coverage. Do not append windows to frozen production.",
+    }
+
+
 def _annotate(result, plan, output, production_steps=None, *, periods=None):
     summary = result["summary"]
     production = _production_diagnostic(result, plan, periods)
@@ -576,6 +615,10 @@ def _annotate(result, plan, output, production_steps=None, *, periods=None):
         summary["warnings"].append("Frozen production does not meet the declared adaptive umbrella coverage target; pilot coverage is reported separately and cannot establish production support.")
     if production_steps is not None and production_steps < plan["rounds"][-1]["pilot"]["production_steps"]:
         summary["warnings"].append("Production is shorter than the final accepted pilot; pilot success does not establish adequate production statistics.")
+    if not production["target_met"]:
+        refinement_path = Path(output) / "production-refinement.json"
+        write_json(refinement_path, _production_refinement(plan, production, periods))
+        summary["adaptive_umbrella"]["next_run_refinement"] = str(refinement_path)
     # The FES writer persists this annotated summary in all canonical files.
     # Writing only summary.json here would leave the NPZ metadata stale.
     return result
@@ -595,6 +638,84 @@ def _require_frozen(plan, output):
         write_json(Path(output) / "summary.json", summary)
         raise RuntimeError("Adaptive umbrella targets were not reached; production was not started. " +
                            summary["failure_reason"] + ". Inspect " + str(_plan_path(output)))
+
+
+def _save_continuation(config, system, output, initializations):
+    write_json(Path(output) / "continuation.json", {
+        "schema_version": 1,
+        "fingerprint": _fingerprint(config, system, {"umbrella_continuation": 1}),
+        "policy": "coordinates_only; independent replica RNG/momenta and full equilibration",
+        "initializations": initializations,
+    })
+
+
+def _continuation_pilot(tasks, cv, config, system, output, executor):
+    """Complete each neighboring pilot window before seeding the next one."""
+    from .fes import _read_continuation
+
+    initializations = root_call(_read_continuation, config, system, output) or {}
+    pending = sorted({task["window"] for task in tasks})
+    centers = {task["window"]: np.asarray(task["center"]) for task in tasks}
+    stiffness = np.asarray(tasks[0]["stiffness"])
+    reference = cv.value(np.repeat(system.geometry[None], config["beads"], axis=0))
+    completed, sources = [], {}
+    while pending:
+        candidates = [(i, j) for i in pending for j in sources] if sources else [(i, None) for i in pending]
+        def distance(pair):
+            i, j = pair
+            delta = displacement(centers[i], reference if j is None else centers[j], cv.periods)
+            return float(delta @ stiffness @ delta), i, -1 if j is None else j
+        window, source = min(candidates, key=distance)
+        if str(window) not in initializations:
+            initialization = {"source": "reference_geometry"}
+            if source is not None:
+                stream = sources[source]
+                initialization = {
+                    "source": "neighbor_pilot", "source_window": source,
+                    "source_replica": stream["replica"], "source_center": centers[source].tolist(),
+                    "source_checkpoint": str(Path(stream["checkpoint"]).relative_to(output)),
+                    "source_elapsed_steps": config["sampling"]["equilibration_steps"] + config["sampling"]["production_steps"],
+                    "q": np.asarray(stream["last_q"]).tolist(),
+                }
+            initializations[str(window)] = initialization
+            root_call(_save_continuation, config, system, output, initializations)
+        group = [{**task, "initialization": initializations[str(window)]}
+                 for task in tasks if task["window"] == window]
+        streams = (executor.map(_sample_window, group) if executor is not None else
+                   run_tasks(_sample_window, group, config.get("parallel", {})))
+        streams = root_call(list, streams)
+        completed.extend(streams)
+        sources[window] = min(streams, key=lambda stream: stream["replica"])
+        pending.remove(window)
+    return sorted(completed, key=lambda stream: (stream["window"], stream["replica"]))
+
+
+def _production_continuation(config, system, frozen, plan, output):
+    """Freeze final-pilot coordinate seeds before independent production starts."""
+    from .fes import _make_tasks, _read_continuation, _read_window_checkpoint, _window_checkpoint
+
+    if _read_continuation(frozen, system, output) is not None:
+        return
+    last = plan["rounds"][-1]
+    stage = _stage_config(config, last["centers"], plan["stiffness"], last["seed"], pilot=last["pilot"])
+    pilot_output = Path(output) / "adaptation" / f"round_{last['round']:03d}"
+    cv, tasks = _make_tasks(stage, system, pilot_output)
+    initializations = {}
+    total = last["pilot"]["equilibration_steps"] + last["pilot"]["production_steps"]
+    for task in tasks:
+        if task["replica"] != 0:
+            continue
+        saved = _read_window_checkpoint(task, cv)
+        if saved["elapsed"] != total:
+            raise ValueError("continuation requires completed pilot checkpoints")
+        initializations[str(task["window"])] = {
+            "source": "frozen_pilot", "source_round": last["round"],
+            "source_window": task["window"], "source_replica": 0,
+            "source_center": np.asarray(task["center"]).tolist(), "source_elapsed_steps": total,
+            "source_checkpoint": str(_window_checkpoint(task).relative_to(output)),
+            "q": saved["state"].q.tolist(),
+        }
+    _save_continuation(frozen, system, output, initializations)
 
 
 def sample_adaptive_umbrellas(config, system, output, executor=None):
@@ -622,11 +743,16 @@ def sample_adaptive_umbrellas(config, system, output, executor=None):
         tasks = [{"config": stage, "system": system, "specs": specs, "window": i,
                   "replica": r, "center": center, "stiffness": plan["stiffness"], "output": str(pilot_output)}
                  for i, center in enumerate(plan["centers"]) for r in range(replicas)]
-        streams = (executor.map(_sample_window, tasks) if executor is not None else
-                   run_tasks(_sample_window, tasks, config.get("parallel", {})))
+        if options.get("continuation", False):
+            streams = _continuation_pilot(tasks, cv, stage, system, pilot_output, executor)
+        else:
+            streams = (executor.map(_sample_window, tasks) if executor is not None else
+                       run_tasks(_sample_window, tasks, config.get("parallel", {})))
         plan = root_call(_record_round, plan, streams, config, system, str(output), cv, options, pilot)
     root_call(_require_frozen, plan, str(output))
     frozen = _stage_config(config, plan["centers"], plan["stiffness"], plan["production_seed"])
+    if options.get("continuation", False):
+        root_call(_production_continuation, config, system, frozen, plan, output)
     postprocess = partial(_annotate, plan=plan, output=str(output), periods=cv.periods,
                           production_steps=frozen["sampling"]["production_steps"])
     return sample_umbrellas(frozen, system, output, executor=executor,

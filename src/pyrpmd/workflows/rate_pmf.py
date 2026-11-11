@@ -15,6 +15,7 @@ from ..analysis.fes import (
 )
 from ..constants import AU_RATE_TO_CM3_S
 from ..input import rate_pmf_options, rate_pmf_stage
+from ..propagation import combine_propagation_stats
 from .prepare import prepare_rate, prepared_system
 from ..checkpoint import atomic_savez as _atomic_npz
 from ..io import write_report_json as write_json, report_jsonable as jsonable
@@ -168,6 +169,8 @@ def configure_rate_umbrella(config, system, reaction):
     if not any(k in umbrella for k in selectors):
         umbrella.update(start=-0.05, stop=1.05, count=23)
     if not any(k in umbrella for k in ("stiffness", "stiffness_au", "kappa", "force_constant", "force_matrix")):
+        # New inputs persist their stiffness during resolution; preserve the
+        # implicit value of historical resolved inputs/checkpoints here.
         umbrella["kappa"] = 50.0 / result["beta"]
     umbrella["cvs"] = ["xi"]
     result.setdefault("analysis", {}).update(measure="rate_flux")
@@ -222,6 +225,87 @@ def _histogram_endpoint_support(data, value):
         "bracket_centers": axis[bracket].tolist(),
         "raw_count": np.asarray(data["raw_count"]).reshape(-1)[bracket].tolist(),
     }
+
+
+def _ui_mbar_point_comparison(
+    data, *, reference, surface, ui_barrier, beta, standard_error, stiffness
+):
+    """Check Gaussian UI against the MBAR point fit already used for overlap.
+
+    No second solver or bootstrap is run. The histogram has finite-bin bias
+    and no independently estimated uncertainty, so agreement is a diagnostic,
+    not proof of physical convergence. Never extrapolate masked endpoints or
+    gaps to manufacture a comparison.
+    """
+    from ..analysis.rate_support import classify_point
+
+    edges = np.asarray(data["edges"][0], dtype=float)
+    grid = 0.5 * (edges[:-1] + edges[1:])
+    mask = np.asarray(data["mask"], dtype=bool).reshape(-1)
+    free = np.asarray(data["free_energy"], dtype=float).reshape(-1)
+    stderr = (
+        float(standard_error)
+        if standard_error is not None and np.isfinite(standard_error)
+        else None
+    )
+    threshold = max(0.1 / beta, 0.0 if stderr is None else stderr)
+    check = {
+        "method": "existing_histogram_mbar_point_estimate",
+        "status": "unavailable",
+        "ready": False,
+        "reason": None,
+        "reference_xi": float(reference),
+        "surface_xi": float(surface),
+        "ui_barrier_hartree": float(ui_barrier),
+        "mbar_barrier_hartree": None,
+        "mbar_minus_ui_hartree": None,
+        "ui_over_mbar_qtst_ratio": None,
+        "threshold_hartree": float(threshold),
+        "threshold_rule": "max(UI barrier standard error, 0.1 k_B T)",
+        "ui_barrier_standard_error_hartree": stderr,
+        "histogram_max_bin_width_xi": float(np.max(np.diff(edges))),
+        "point_estimate_only": True,
+        "bootstrap_draws": 0,
+    }
+    if not data["connected"]:
+        check["reason"] = "disconnected_overlap"
+        return check
+    if free.shape != grid.shape or mask.shape != grid.shape:
+        check["reason"] = "invalid_histogram_shape"
+        return check
+    # A coarse histogram cannot be an independent check on narrow umbrellas.
+    thermal_width = np.sqrt(1.0 / (beta * np.asarray(stiffness, dtype=float)))
+    if np.max(np.diff(edges)) > 0.5 * np.min(thermal_width):
+        check["reason"] = "histogram_bin_wider_than_half_thermal_width"
+        return check
+    endpoints = {
+        "reference": classify_point(grid, mask, reference),
+        "surface": classify_point(grid, mask, surface),
+    }
+    check["endpoints"] = endpoints
+    if any(p["status"] == "outside_histogram_centers" for p in endpoints.values()):
+        check["reason"] = "endpoint_outside_histogram_centers"
+        return check
+    if any(p["status"] == "masked" for p in endpoints.values()):
+        check["reason"] = "masked_endpoint_bracket"
+        return check
+    left = min(p["bracket"][0] for p in endpoints.values())
+    right = max(p["bracket"][-1] for p in endpoints.values())
+    if mask[left : right + 1].any() or not np.isfinite(free[left : right + 1]).all():
+        check["reason"] = "unsupported_histogram_path"
+        return check
+    mbar_barrier = float(
+        np.interp(surface, grid, free) - np.interp(reference, grid, free)
+    )
+    difference = mbar_barrier - ui_barrier
+    check.update(
+        ready=True,
+        status="discrepant" if abs(difference) > threshold else "consistent",
+        mbar_barrier_hartree=mbar_barrier,
+        mbar_minus_ui_hartree=float(difference),
+        ui_over_mbar_qtst_ratio=float(np.exp(np.clip(beta * difference, -700, 700))),
+    )
+    return check
 
 
 def _ui_rate_pmf(sampled, config, centers, samples, stiffness, options):
@@ -294,10 +378,41 @@ def _ui_rate_pmf(sampled, config, centers, samples, stiffness, options):
         "reference": _histogram_endpoint_support(sampled["data"], 0.0),
         "dividing_surface": _histogram_endpoint_support(sampled["data"], xi),
     }
-    warnings = [
-        "Gaussian UI models each biased window by its mean and variance; inspect non-Gaussian window distributions or compare with MBAR."
-    ]
-    warnings.extend(block_plan["warnings"])
+    comparison = _ui_mbar_point_comparison(
+        sampled["data"], reference=0.0, surface=xi, ui_barrier=barrier,
+        beta=config["beta"], standard_error=stats["standard_error_hartree"],
+        stiffness=stiffness,
+    )
+    window_moments = []
+    for i, (values, center, spring) in enumerate(zip(samples, centers, stiffness)):
+        mean, std = float(np.mean(values)), float(np.std(values))
+        z = (np.asarray(values) - mean) / std if std else None
+        window_moments.append({
+            "stream": i, "center": float(center), "samples": len(values),
+            "mean": mean, "standard_deviation": std,
+            "thermal_sigma_xi": float(np.sqrt(1.0 / (config["beta"] * spring))),
+            "skewness": float(np.mean(z**3)) if z is not None else None,
+            "excess_kurtosis": float(np.mean(z**4) - 3) if z is not None else None,
+        })
+    warnings = list(block_plan["warnings"])
+    if comparison["status"] == "discrepant":
+        warnings.append(
+            "Gaussian UI/MBAR point-estimate barrier disagreement: "
+            f"UI={barrier:.8g} Eh, MBAR={comparison['mbar_barrier_hartree']:.8g} Eh, "
+            f"MBAR-UI={comparison['mbar_minus_ui_hartree']:+.8g} Eh exceeds "
+            f"{comparison['threshold_hartree']:.8g} Eh "
+            "(max(UI bootstrap barrier standard error, 0.1 k_B T)). "
+            "The UI rate may have systematic model bias not included in its "
+            "bootstrap error; use estimator='mbar' or narrower, overlapping "
+            "umbrella windows. Check window_moments for skewness/kurtosis."
+        )
+    elif comparison["status"] == "unavailable" and connected:
+        warnings.append(
+            "Gaussian UI/MBAR point-estimate bias check unavailable "
+            f"({comparison['reason']}); the UI bootstrap error does not include "
+            "Gaussian-window model bias. Improve histogram support/resolution "
+            "or use estimator='mbar'."
+        )
     if not all(point["supported"] for point in empirical.values()):
         warnings.append(
             "A Gaussian UI endpoint lacks observed histogram support; the model value is not an interpolation of measured supported bins."
@@ -372,6 +487,8 @@ def _ui_rate_pmf(sampled, config, centers, samples, stiffness, options):
         },
         "effective_samples_per_stream": sampled["data"]["effective_samples_per_stream"],
         "weight_ess": sampled["data"]["weight_ess"],
+        "ui_mbar_comparison": comparison,
+        "window_moments": window_moments,
         "warnings": warnings,
     }
 
@@ -676,6 +793,13 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options, executor=Non
             "Rate-owned umbrella diagnostics and sample export; sampling does not reconstruct a FES. "
             "Only the selected rate PMF estimator performs barrier bootstrap."
         ),
+        "propagation": {
+            **combine_propagation_stats(
+                [dict(s.get("propagation", {})) for s in streams
+                 if isinstance(s, dict) and s.get("propagation") is not None]),
+            "streams": [dict(s.get("propagation", {})) for s in streams
+                        if isinstance(s, dict) and s.get("propagation") is not None],
+        },
     }
     if "pmf" in config.get("rate", {}):
         from .rate_plan import rate_pmf_plan
@@ -687,6 +811,7 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options, executor=Non
         "bootstrap",
         "window_moments",
         "ui_comparison",
+        "ui_mbar_comparison",
         "effective_samples_per_stream",
         "weight_ess",
         "source",

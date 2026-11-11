@@ -23,6 +23,7 @@ from ..bias import CompositeBias, FluxMetricBias, GridMetadynamicsBias, Metadyna
 from ..checkpoint import load_checkpoint
 from ..cv import RPMDrateCoordinate, make_cvs
 from ..dynamics import Dynamics, State
+from ..io import write_report_json
 from ..warm_start import initial_ring
 from ..parallel import make_task_potential, root_call
 from ..potentials import validate_periodic_spec
@@ -33,8 +34,9 @@ from .common import (_atomic_npz, _fingerprint, _dimension, checked_integer,
                      fingerprint_matches, resolve_cvs)
 from .sampling import (fes_sampler, legacy_metadynamics_sampling, middle_sampling_method,
                        read_operator_checkpoint, validate_andersen_schedule, AndersenSchedule)
+from ._walker_failures import walker_failure_path
 from .biased_sampling import (SamplingRuntime, run_biased_sampling, dispatch_replicas, dispatch_tasks,
-                              failure_writer)
+                              failure_writer, sampling_failure_record, supersede_failure)
 from ..analysis.fes_result import FESResult, write_fes_result
 
 
@@ -528,6 +530,10 @@ def _run_multiple_walkers(config, system, output, executor, return_data):
                     "elapsed": stop}
 
         ensemble = root_call(synchronize)
+    for walker in range(replicas):
+        root_call(supersede_failure,
+                  walker_failure_path(output, "metadynamics", "multiple", walker),
+                  checkpoint=_shared_checkpoint_path(output), elapsed_steps=ensemble["elapsed"])
     return root_call(_analyze_shared, ensemble, config, system, output, return_data)
 
 
@@ -733,16 +739,35 @@ def _sample_replica(task):
                         **grid_payload, **observations)
             _write_hills(_hills_path(output, replica), update.bias)
 
+        failure_path = (walker_failure_path(output, "metadynamics", "multiple", replica)
+                        if shared else Path(output) / "failures" / f"metadynamics_{replica:04d}.json")
+        report_failure = failure_writer(
+            failure_path, dynamics, cv,
+            identity={"method": "metadynamics", "replica": replica},
+            neq=options["neq"], nprod=options["nprod"], checkpoint=checkpoint,
+            bias_state=lambda: _metadynamics_bias_summary(update.bias))
+        if shared:
+            def report_failure(current, error):
+                record = sampling_failure_record(
+                    current, dynamics, cv, error,
+                    identity={"method": "metadynamics", "walkers_mode": "multiple",
+                              "walker": replica},
+                    neq=options["neq"], nprod=options["nprod"], checkpoint=checkpoint,
+                    bias_state=lambda: _metadynamics_bias_summary(update.bias))
+                record["state"]["role"] = "local_state_in_uncommitted_shared_block"
+                record["checkpoint"]["committed_elapsed_steps"] = elapsed
+                failure_path.parent.mkdir(parents=True, exist_ok=True)
+                write_report_json(failure_path, record)
+
         run_biased_sampling(runtime, dynamics, cv, neq=options["neq"], nprod=options["nprod"],
                             interval=options["interval"], sampling=config["sampling"],
                             checkpoint_steps=config.get("output", {}).get("checkpoint_steps", 1000),
                             update=update, sampler=sampler,
                             save=None if shared else save, stop=task.get("stop"),
-                            failure=None if shared else failure_writer(
-                                Path(output) / "failures" / f"metadynamics_{replica:04d}.json",
-                                dynamics, cv, identity={"method": "metadynamics", "replica": replica},
-                                neq=options["neq"], nprod=options["nprod"], checkpoint=checkpoint,
-                                bias_state=lambda: _metadynamics_bias_summary(update.bias)),
+                            failure=report_failure,
+                            pair_distance_log=(
+                                Path(output) / "diagnostics" / f"metadynamics_{replica:04d}.pair-distances.jsonl"
+                                if not shared and config["sampling"].get("monitor_pair_distances", False) else None),
                             active_bias=lambda elapsed, current: total_bias(
                                 current, elapsed >= options["neq"] or config["metadynamics"].get("walls_during_equilibration", True)),
                             energy_bias=total_bias,
@@ -762,6 +787,7 @@ def _sample_replica(task):
                     "sample_bias": np.asarray(runtime.biases), "sample_energies": np.asarray(runtime.energies),
                     "hills": update.bias.hills, "propagation": dynamics.propagation_stats,
                     "checkpoint": str(checkpoint), "complete": runtime.elapsed == options["neq"] + options["nprod"]}
+        supersede_failure(failure_path, checkpoint=checkpoint, elapsed_steps=runtime.elapsed)
         return _read_stream(config, system, output, replica, cv, options)
     finally:
         if hasattr(provider, "close"):

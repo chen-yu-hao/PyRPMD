@@ -16,7 +16,7 @@ from pathlib import Path
 import numpy as np
 from ..warm_start import initial_ring
 
-from pyrpmd.propagation import loop_options
+from pyrpmd.propagation import combine_propagation_stats, loop_options
 
 from ..analysis.fes import reconstruct_fes
 from ..analysis.fes_result import FESResult, write_fes_result
@@ -29,7 +29,7 @@ from ..trajectory import TrajectoryStream, _descriptor, _walk_reverse, materiali
 from ..trajectory_batch import task_provider, trajectory_batch_size
 from ..units import parse_quantity
 from .sampling import AndersenSchedule, fes_sampler, validate_andersen_schedule
-from .biased_sampling import SamplingRuntime, run_biased_sampling, dispatch_tasks, failure_writer
+from .biased_sampling import SamplingRuntime, run_biased_sampling, dispatch_tasks, failure_writer, supersede_failure
 from .common import (
     _atomic_npz, _fingerprint, _dimension, checked_integer, write_json, jsonable,
     fingerprint_matches,
@@ -70,6 +70,7 @@ def _window_identity(task):
         **({"window_id": task["window_id"]} if "window_id" in task else {"window": task["window"]}),
         "replica": task["replica"],
         "center": np.asarray(task["center"]), "stiffness": np.asarray(task["stiffness"]),
+        **({"initialization": task["initialization"]} if "initialization" in task else {}),
     }
 
 
@@ -465,6 +466,9 @@ def separate_reactants_to_xi(geometry, coordinate, target, masses):
 def _sample_window(task):
     config, system = task["config"], task["system"]
     cv = make_cvs(task["specs"], system)
+    for component in cv.cvs:
+        if isinstance(component, RPMDrateCoordinate):
+            component.regular_branch_only = True
     center = np.asarray(task["center"])
     stiffness = np.asarray(task["stiffness"])
     window, replica = task["window"], task["replica"]
@@ -555,7 +559,10 @@ def _sample_window(task):
             # Rigid fragment translations and equivalent-path permutations
             # assume every atom is mobile. With any fixed atoms, retain the
             # reference geometry and use the fixed-aware steering below.
-            if config.get("warm_start"):
+            initialization = task.get("initialization", {})
+            if "q" in initialization:
+                pass  # continuation supplies only coordinates; RNG and momenta remain independent
+            elif config.get("warm_start"):
                 # A warm start replaces the reference geometry by the imported
                 # ring; it is only steered to this window's center.
                 pass
@@ -569,7 +576,8 @@ def _sample_window(task):
                     geometry = separate_reactants_to_xi(
                         geometry, coordinate, center[0], system.masses
                     )
-            q = (initial_ring(config, system) if config.get("warm_start")
+            q = (np.array(initialization["q"], dtype=float, copy=True) if "q" in initialization
+                 else initial_ring(config, system) if config.get("warm_start")
                  else np.repeat(geometry[None], config["beads"], axis=0))
             q = steer_to_center(q, cv, center, system.masses, fixed_atoms=dynamics.fixed_atoms)
             state = State(q, dynamics.sample_momenta())
@@ -597,6 +605,8 @@ def _sample_window(task):
             if saved_elapsed == elapsed:
                 return
             payload = dict(
+                **({"initialization": json.dumps(task["initialization"], allow_nan=False)}
+                   if "initialization" in task else {}),
                 q=state.q,
                 p=state.p,
                 step=state.step,
@@ -651,6 +661,10 @@ def _sample_window(task):
                 bias_state=lambda: {"kind": "fixed_umbrella",
                                     "center": np.asarray(center, float).tolist(),
                                     "stiffness_hartree": np.asarray(stiffness, float).tolist()}),
+        )
+        supersede_failure(
+            checkpoint.parent.parent / "failures" / (checkpoint.stem + ".json"),
+            checkpoint=checkpoint, elapsed_steps=runtime.elapsed,
         )
         state, elapsed = runtime.state, runtime.elapsed
         if descriptor is not None:
@@ -772,6 +786,14 @@ def _write_fes(output, data, streams, cv, config, _postprocess=None):
         "estimator": "mbar",
         "windows": len(set(s["window"] for s in streams)),
         "streams": len(streams),
+        # Keep per-window counters in the public summary.  The checkpoints
+        # already carry this data, but hiding it there made a large FES look
+        # indistinguishable from a Python fallback.
+        "propagation": {
+            **combine_propagation_stats(
+                [dict(s.get("propagation", {})) for s in streams]),
+            "streams": [dict(s.get("propagation", {})) for s in streams],
+        },
         "samples": sum(len(s["samples"]) for s in streams),
         "overlap_connected": data["connected"],
         "overlap_components": data["components"],
@@ -857,6 +879,18 @@ def _analyze_streams(streams, config, system, output, return_data, _postprocess=
     return result if return_data else result["summary"]
 
 
+def _read_continuation(config, system, output):
+    """Read persisted coordinate-only seeds shared by run, resume and analysis."""
+    path = Path(output) / "continuation.json"
+    if not path.exists():
+        return None
+    saved = json.loads(path.read_text())
+    if saved.get("schema_version") != 1 or not fingerprint_matches(
+            saved.get("fingerprint"), config, system, {"umbrella_continuation": 1}):
+        raise ValueError("umbrella continuation physics differs; choose a fresh output directory")
+    return saved["initializations"]
+
+
 def _make_tasks(config, system, output, *, production_steps=None):
     """Build independent windows without changing their original identity."""
     if config.get("analysis", {}).get("measure", "cv_density") not in (
@@ -868,6 +902,9 @@ def _make_tasks(config, system, output, *, production_steps=None):
     from .umbrella_plan import window_sampling
 
     cv, specs, windows = resolve_window_plan(config, system)
+    initializations = _read_continuation(config, system, output)
+    if initializations is not None and set(initializations) != {str(i) for i in range(len(windows))}:
+        raise ValueError("umbrella continuation does not cover every window")
     tasks = []
     for index, window in enumerate(windows):
         sampling = window_sampling(config, window)
@@ -880,6 +917,8 @@ def _make_tasks(config, system, output, *, production_steps=None):
             task = {"config": local, "system": system, "specs": specs, "window": index,
                     "replica": replica, "center": window.center, "stiffness": window.stiffness,
                     "output": str(output)}
+            if initializations is not None:
+                task["initialization"] = initializations[str(index)]
             if window.identifier is not None:
                 task["window_id"] = window.identifier
             if production_steps is not None:

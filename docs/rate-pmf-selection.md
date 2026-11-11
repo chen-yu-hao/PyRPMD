@@ -55,6 +55,34 @@ Use `rate_pmf.*` for the selected UI/MBAR curve and barrier uncertainty. Resume
 and fixed-window production extension use the same split; sampling clocks,
 checkpoint identities, flux measure and overlap rejection are unchanged.
 
+### Gaussian UI model-bias check (issue #170)
+
+UI remains the compatibility default, not a recommended unqualified quantitative
+estimator. Its Gaussian approximation can overestimate the barrier when the
+biased distributions are broad or skewed; a small UI bootstrap error captures
+sampling uncertainty **but not** this model bias. Prefer
+`rate.pmf.estimator = "mbar"` for quantitative work, or demonstrate convergence
+by narrowing the windows while maintaining overlap.
+
+Every completed UI analysis reuses the **existing, zero-bootstrap histogram MBAR
+point estimate** from its overlap/support diagnostics. If both endpoints and
+the entire interval between them are supported and the histogram bins are
+narrower than half the smallest harmonic thermal width, it compares the two
+barriers at the **same fixed dividing surface**. A discrepancy larger than
+`max(UI barrier standard error, 0.1 k_B T)` produces a specific warning
+reporting both barriers and their difference. This is a conservative
+*diagnostic*, not a hypothesis test or a second error bar: finite-bin MBAR also
+has discretization and sampling error. To avoid silently changing existing
+rate semantics, the warning does **not** automatically replace or suppress
+the UI rate. If the comparison is unsupported or too coarsely binned, a separate
+warning identifies why it was unavailable; it never extrapolates missing bins.
+
+The structured `rate_pmf.json` field `ui_mbar_comparison` records the result,
+threshold, support reason and estimated UI/MBAR QTST ratio. `window_moments`
+records each stream's mean, standard deviation, skewness, excess kurtosis and
+thermal width to localize problematic Gaussian windows. There is no extra MBAR
+fit, bootstrap, or change to the sampling measure.
+
 ## Start with a complete example
 
 The four example variants use the existing analytic teaching PES and TS:

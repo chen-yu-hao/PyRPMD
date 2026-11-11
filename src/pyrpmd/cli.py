@@ -8,6 +8,7 @@ import sys
 import numpy as np
 from . import __version__
 from .input import JobSpec, InputError
+from .input_schema import TASKS
 from .io import jsonable, write_json
 
 
@@ -27,14 +28,37 @@ def _report_shortcut_options(p):
     p.add_argument("--report-style", choices=("jctc", "nature"), help="Figure style for --report (default: jctc)")
 
 
+_COMMAND_GROUPS = (
+    ("Everyday", ("init", "validate", "run", "analyze", "resume", "report", "info")),
+    ("Workflow-specific", ("prepare", "extend", "study", "state-check", "export", "project",
+                           "rate-postprocess", "subspace-correct", "nonadiabatic-rate", "instanton", "vtst")),
+    ("Developer tools", ("import-rpmdrate", "precision", "checkpoint", "pes")),
+)
+
+
+class _CommandHelp(argparse.HelpFormatter):
+    def _format_action(self, action):
+        if not isinstance(action, argparse._SubParsersAction):
+            return super()._format_action(action)
+        choices = {item.dest: item for item in action._get_subactions()}
+        result = []
+        for title, names in _COMMAND_GROUPS:
+            result.append(" " * self._current_indent + title + ":\n")
+            result.extend(super(_CommandHelp, self)._format_action(choices.pop(name))
+                          for name in names if name in choices)
+        result.extend(super(_CommandHelp, self)._format_action(item) for item in choices.values())
+        return "".join(result)
+
+
 def parser():
     p = argparse.ArgumentParser(
-        prog="pyrpmd",
+        prog="pyrpmd", formatter_class=_CommandHelp,
+        epilog="Quickstart: pyrpmd init PROJECT --task fes; see https://github.com/chen-yu-hao/PyRPMD#quickstart",
         description="PyRPMD: ring-polymer dynamics, reaction networks, enhanced sampling and PCET models",
     )
     p.add_argument("--version", action="version", version=f"PyRPMD {__version__}")
     p.add_argument("--debug", action="store_true", help="Show a traceback when a command fails")
-    commands = p.add_subparsers(dest="command", required=True)
+    commands = p.add_subparsers(dest="command", required=True, metavar="COMMAND")
     importer = commands.add_parser("import-rpmdrate", help="Convert a trusted RPMDrate rate input without loading its PES")
     importer.add_argument("input", help="Trusted RPMDrate Python input")
     importer.add_argument("--temperature", type=float, required=True, help="Temperature in kelvin")
@@ -48,12 +72,15 @@ def parser():
     register_vtst_parser(commands)
     from .workflows.precision import register_parser as register_precision_parser
     register_precision_parser(commands)
-    starter = commands.add_parser("init", help="Create a self-contained harmonic tutorial in a new or empty directory")
+    starter = commands.add_parser("init", help="Create a self-contained workflow tutorial in a new or empty directory")
     starter.add_argument("directory", help="Directory for quickstart.inp; existing files are never overwritten")
+    starter.add_argument("--task", choices=("fes", "pimd", "rate", "drpmd"), default="fes")
     r = commands.add_parser("run", help="Execute a checked scientific task")
     _input_options(r)
     r.add_argument("--output")
     r.add_argument("--resume", action="store_true")
+    r.add_argument("--stage", choices=("all", "subspace"), default="all",
+                   help="Run the full workflow (default), or only the configured rate subspace postprocessing")
     r.add_argument("--init-from", metavar="RUN_OR_CHECKPOINT",
                    help="Warm-start this new run from a configuration saved by an earlier run "
                         "(its directory, or one checkpoint file). Settings, fingerprint and output "
@@ -230,6 +257,28 @@ def _job(args):
     return s.with_overrides(**options)
 
 
+# Importable module name -> the PyRPMD extra that provides it.
+_OPTIONAL_MODULES = {
+    "torch": "gpu", "ase": "ase", "mpi4py": "mpi", "openmm": "openmm", "lammps": "lammps",
+    "matplotlib": "plots", "pymbar": "analysis", "pyscf": "pyscf", "tblite": "tblite",
+    "mace": "mace", "nequip": "nequip", "deepmd": "deepmd", "fairchem": "fairchem",
+}
+
+
+def _missing_dependency_hint(error):
+    """Turn "No module named 'torch'" into the install command for its extra."""
+    import re
+
+    match = re.search(r"No module named '([A-Za-z0-9_]+)", str(error))
+    extra = _OPTIONAL_MODULES.get(match.group(1)) if match else None
+    if extra is None:
+        return None
+    return (f"The optional dependency {match.group(1)!r} is not installed. From the source "
+            f"checkout run: python -m pip install -e '.[{extra}]' (extra 'pyrpmd[{extra}]'). "
+            "See the Installation chapter for MPI, CUDA and other builds that must match "
+            "your system.")
+
+
 def _print(value):
     from .parallel import is_root
 
@@ -377,12 +426,12 @@ def main(argv=None):
             from .parallel import root_call
             from .scaffold import init_project
 
-            _print(root_call(init_project, args.directory))
+            _print(root_call(init_project, args.directory, task=args.task))
         elif args.command == "run":
             from .runner import run
 
             result = run(_job(args), resume=args.resume, init_from=args.init_from,
-                         init_index=args.init_index, init_bias=args.init_bias)
+                         init_index=args.init_index, init_bias=args.init_bias, stage=args.stage)
             if result is not None:
                 result = _report_after_result(args, result, result["output"])
             if result is not None:
@@ -390,12 +439,20 @@ def main(argv=None):
         elif args.command == "validate":
             spec = _job(args)
             config, system = spec.resolve()
+            from .runner import propagation_backend_plan, _append_backend_warnings
+
             if args.check_pes:
                 from .runner import prepare
 
                 result = prepare(spec, numerical=True)
+                config = result["resolved"]
+                backend_plan = result["propagation_plan"]
             else:
                 from .parallel import execution_plan
+
+                backend_plan = ([] if config.get("task") == "pcet"
+                                else propagation_backend_plan(config, system))
+                _append_backend_warnings(config, backend_plan)
 
                 if config["task"] == "pcet":
                     from .workflows.pcet import prepare_pcet
@@ -416,6 +473,16 @@ def main(argv=None):
                         "parallel": execution_plan(config["parallel"]).__dict__,
                         "warnings": config["_warnings"],
                     }
+            if not args.check_pes:
+                from .resources import with_resources
+
+                result = with_resources(result, config)
+            from .stability import classify_stability
+
+            result["input_warnings"] = config.get("_warnings", [])
+            result["stability"] = classify_stability(config)
+            result["propagation_plan"] = backend_plan
+            result["warnings"] = config.get("_warnings", result.get("warnings", []))
             if config["task"] == "rate":
                 from .workflows.rate_plan import rate_pmf_plan
 
@@ -576,6 +643,7 @@ def main(argv=None):
             import importlib.metadata
             import platform
             from .dynamics import native_capabilities
+            from .stability import stability_registry
 
             dependencies = {}
             for distribution in ("numpy", "scipy", "h5py", "threadpoolctl", "mpi4py", "torch", "ase", "openmm", "lammps", "pymbar", "matplotlib"):
@@ -594,7 +662,8 @@ def main(argv=None):
                         "dependencies": dependencies,
                     },
                     "native": native_capabilities(),
-                    "workflows": ["rate", "drpmd", "fes", "network", "metadynamics", "opes", "pcet", "pimd", "diffusion", "site_rate", "surface_rate", "nonadiabatic", "spectroscopy", "plumed"],
+                    "workflows": list(stability_registry()["tasks"]),
+                    "stability": stability_registry(),
                     "materials": {
                         "cell": "fixed_or_isotropic_bzp",
                         "trajectory": "unwrapped_centroid",
@@ -608,13 +677,16 @@ def main(argv=None):
                     "enhanced_sampling": ["adaptive_umbrella", "replica_exchange_umbrella", "standard_metadynamics", "well_tempered_metadynamics", "shared_walker_metadynamics", "opes", "opes_explore", "adaptive_opes_bandwidth"],
                     "sampling_python_apis": ["plumed_centroid_bias", "transition_interface_sampling", "temperature_hamiltonian_replica_exchange", "positive_ensemble_retis", "audited_biased_kinetics"],
                     "path_integral_actions": ["suzuki_chin", "bosonic", "pigs"],
-                    "spectroscopy_methods": ["pa-cmd", "rpmd", "trpmd", "f-cmd_quadratic_centroid_pmf"],
+                    "spectroscopy_methods": ["pa-cmd", "rpmd", "trpmd", "f-cmd_quadratic_centroid_pmf", "f-qcmd_experimental_bent_triatomic"],
                     "nonadiabatic_python_apis": ["adiabatic_rpsh", "quasi_diabatic_nrpmd", "two_state_mash"],
                     "ml_lifecycle": ["committee", "active_learning_candidates", "delta_rpc"],
                     "unimplemented_methods": ["qcmd", "h-cmd"],
                     "scientific_tools": ["general_centroid_site_rates", "temperature_isotope_studies", "ring_polymer_instanton", "takahashi_imada_thermodynamics", "open_path_momentum"],
                     "initial_ensembles": ["thermal_parent", "ne_rpmd", "qct"],
+                    # 1 is assumed when an input omits schema_version; 2 is the
+                    # staged rate layout described in docs/rate-input-v2.md.
                     "input_schema_version": 1,
+                    "supported_input_schema_versions": [1, 2],
                     "run_manifest_schema_version": 2,
                     "checkpoint_schema_version": 2,
                     "input_formats": ["TOML .inp", "Python build()"],
@@ -648,6 +720,9 @@ def main(argv=None):
 
         if is_root():
             print(f"PyRPMD error: {exc}", file=sys.stderr)
+            hint = _missing_dependency_hint(exc)
+            if hint:
+                print(hint, file=sys.stderr)
             print("Use --debug for a traceback; use 'pyrpmd info' for environment details.", file=sys.stderr)
         return 2
 

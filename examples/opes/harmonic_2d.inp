@@ -1,8 +1,12 @@
+# Smoke test: validates workflow execution, not sampling convergence.
 # Short numerical example, not a converged molecular free-energy calculation.
-task = "opes"
+task = "fes"
 temperature = "300 K"
 beads = 4
 seed = 811
+
+[fes]
+method = "opes"
 
 [system]
 symbols = ["H"]

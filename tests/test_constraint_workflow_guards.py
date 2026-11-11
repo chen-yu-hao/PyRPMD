@@ -54,11 +54,14 @@ def test_run_resolved_rejects_before_creating_run_manifest(tmp_path, monkeypatch
     from pyrpmd import runner
 
     initializer = Mock(side_effect=AssertionError("run files created before constraint rejection"))
+    planner = Mock(side_effect=AssertionError("backend planned before constraint rejection"))
     monkeypatch.setattr(runner, "_initialize_output", initializer)
+    monkeypatch.setattr(runner, "propagation_backend_plan", planner)
     config = {"task": task, "output": {"directory": str(tmp_path / "untouched")}}
     with pytest.raises(ValueError, match="bond constraints"):
         runner.run_resolved(config, _system())
     initializer.assert_not_called()
+    planner.assert_not_called()
     assert not (tmp_path / "untouched").exists()
 
 
@@ -66,13 +69,16 @@ def test_resolved_materials_rejects_unsupported_engine_before_run_files(tmp_path
     from pyrpmd import runner
 
     initializer = Mock(side_effect=AssertionError("run files created before engine rejection"))
+    planner = Mock(side_effect=AssertionError("backend planned before engine rejection"))
     monkeypatch.setattr(runner, "_initialize_output", initializer)
+    monkeypatch.setattr(runner, "propagation_backend_plan", planner)
     config = {"task": "pimd", "sampling": {"engine": "native"},
               "dynamics": {"integrator": "velocity-verlet"},
               "output": {"directory": str(tmp_path / "untouched")}}
     with pytest.raises(ValueError, match="bond constraints"):
         runner.run_resolved(config, _system())
     initializer.assert_not_called()
+    planner.assert_not_called()
     assert not (tmp_path / "untouched").exists()
 
 

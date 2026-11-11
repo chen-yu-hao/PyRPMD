@@ -260,6 +260,7 @@ def _pmf_and_parents(sampled, config, system, output, options):
     public["sample_weights_key"] = "weights"
     public = jsonable(public)
     write_json(path / "surface_pmf.json", public)
+    public["propagation"] = sampled["summary"].get("propagation", {})
     if not pmf["ready"]:
         return public, []
     ordered = sorted(streams, key=lambda s: abs(float(s["center"][0]) - pmf["xi_star"]))
@@ -280,7 +281,7 @@ def run_surface_rate(config, system, output, executor=None):
     validate_bond_constraint_workflow(system, "surface_rate")
     from .sampling import validate_andersen_schedule
     validate_andersen_schedule(config, "surface_rate")
-    from .rate import _recrossing_options, _parent_task, _child_tasks, _aggregate, _dispatch_children
+    from .rate import _recrossing_options, _parent_task, _child_tasks, _aggregate, _dispatch_children, _parent_propagation
 
     config = copy.deepcopy(config)
     config["task"] = "surface_rate"
@@ -309,6 +310,7 @@ def run_surface_rate(config, system, output, executor=None):
         parents = dispatch(_parent_task, parent_tasks)
         tasks = root_call(_child_tasks, parents, config, system, str(output), options, pmf)
         children = _dispatch_children(tasks, config, dispatch)
+    pmf["propagation_parents"] = root_call(_parent_propagation, parents)
     result = root_call(_aggregate, children, pmf, config, str(output), options)
     if result is not None:
         if from_source:

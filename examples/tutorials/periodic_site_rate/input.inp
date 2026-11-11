@@ -1,0 +1,69 @@
+# Directed classical escape over one periodic barrier; compare.py uses exact TST.
+task = "site_rate"
+temperature = "300 K"
+beads = 1
+seed = 16502
+
+[system]
+symbols = ["H"]
+masses = [1837.15264744]
+geometry = [[0.0, 0.0, 0.0]]
+cell = [[4.0, 0.0, 0.0], [0.0, 8.0, 0.0], [0.0, 0.0, 8.0]]
+pbc = [true, false, false]
+
+[potential]
+provider = "builtin"
+name = "periodic_cosine"
+params = {height = [0.006, 0.0, 0.0], confinement = 0.01}
+
+[dynamics]
+timestep = "0.2 fs"
+
+[sampling]
+thermostat = "andersen"
+equilibration = "200 fs"
+production = "4 ps"
+interval = "1 fs"
+andersen_interval = 50
+replicas = 4
+
+[[cvs]]
+name = "site_x"
+kind = "fractional"
+atom = 0
+axis = "x"
+estimator = "centroid"
+
+[umbrella]
+cvs = ["site_x"]
+centers = [-0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+stiffness = 0.2
+
+[analysis]
+bins = 100
+ranges = [[-0.8, 0.8]]
+min_count = 2
+bootstrap = 80
+
+[site_rate]
+cv = "site_x"
+basin = [-0.5, 0.5]
+dividing_surface = 0.5
+direction = 1
+
+[recrossing]
+parent_replicas = 4
+parent_samples = 24
+equilibration = "100 fs"
+parent_interval = "5 fs"
+child_pairs = 2
+child_time = "20 fs"
+bootstrap = 100
+
+[parallel]
+backend = "serial"
+threads_per_rank = 1
+
+[output]
+directory = "run"
+checkpoint_interval = "500 fs"

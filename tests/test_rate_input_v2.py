@@ -30,12 +30,12 @@ def test_explicit_reaction_previews_windows_without_certifying_or_evaluating_ts(
     assert reaction["saddle_valid"] is None and reaction["channel_consistent"] is None
     assert reaction["requires_numerical_preparation"]
     plan = result["umbrella_preparation"]
-    assert plan["windows"] == 42
+    assert plan["windows"] == 66
     windows = plan["window_plan"]
-    np.testing.assert_allclose([w["center_au"][0] for w in windows[:16]], np.arange(16) * .05)
-    np.testing.assert_allclose([w["center_au"][0] for w in windows[16:]], .8 + np.arange(26) * .01)
-    np.testing.assert_allclose([w["stiffness_au"][0][0] for w in windows], [.16] * 16 + [.32] * 26)
-    assert len({w["id"] for w in windows}) == 42
+    np.testing.assert_allclose([w["center_au"][0] for w in windows[:40]], np.arange(40) * .02)
+    np.testing.assert_allclose([w["center_au"][0] for w in windows[40:]], .8 + np.arange(26) * .01)
+    np.testing.assert_allclose([w["stiffness_au"][0][0] for w in windows], [1.6] * 40 + [3.2] * 26)
+    assert len({w["id"] for w in windows}) == 66
     assert all((w["chains"], w["equilibration_steps"], w["production_steps"],
                 w["sample_stride_steps"], w["raw_samples_per_chain"]) == (1, 50, 200, 2, 100)
                for w in windows)
@@ -56,7 +56,7 @@ def test_research_template_checks_saddle_and_declared_channel_without_refining()
     assert reaction["channel_consistent"] is True
     assert reaction["refinement_performed"] is False
     np.testing.assert_array_equal(result["system"]["geometry"], initial.geometry)
-    assert result["umbrella_preparation"]["windows"] == 42
+    assert result["umbrella_preparation"]["windows"] == 66
 
 
 @pytest.mark.parametrize("change, message", [

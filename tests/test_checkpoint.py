@@ -426,7 +426,7 @@ def test_public_resume_rejects_future_parent_payload_with_valid_integrity(tmp_pa
     metadata["format"] = "PyRPMD.drpmd.parent-checkpoint.v999"
     arrays["metadata"] = np.asarray(json.dumps(metadata))
     atomic_savez(checkpoint, kind=metadata["format"], **arrays)
-    with pytest.raises(CheckpointError, match="Expected checkpoint kind"):
+    with pytest.raises(CheckpointError, match="Unsupported checkpoint payload format"):
         resume_run(directory)
 
 

@@ -1,8 +1,12 @@
+# Smoke test: validates workflow execution, not sampling convergence.
 # Analytic periodic teaching model; not a fitted Cu-H potential.
-task = "metadynamics"
+task = "fes"
 temperature = "300 K"
 beads = 4
 seed = 173
+
+[fes]
+method = "metadynamics"
 
 [system]
 symbols = ["Cu", "H"]

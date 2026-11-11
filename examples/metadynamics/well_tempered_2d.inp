@@ -1,8 +1,12 @@
+# Smoke test: validates workflow execution, not sampling convergence.
 # Independent WT metadynamics replicas. Their hills are never combined.
-task = "metadynamics"
+task = "fes"
 temperature = "300 K"
 beads = 4
 seed = 719
+
+[fes]
+method = "metadynamics"
 
 [system]
 symbols = ["H"]

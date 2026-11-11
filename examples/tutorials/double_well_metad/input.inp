@@ -1,0 +1,65 @@
+# Frozen WT-MetaD histogram tutorial; each replica retains its own bias history.
+task = "fes"
+temperature = "300 K"
+beads = 1
+seed = 16503
+
+[fes]
+method = "metadynamics"
+
+[system]
+symbols = ["H"]
+masses = [1837.15264744]
+geometry = [[-1.0, 0.0, 0.0]]
+
+[potential]
+provider = "builtin"
+name = "double_well"
+params = {height = 0.004, width = 1.0, confinement = 0.02}
+
+[dynamics]
+timestep = "0.1 fs"
+
+[sampling]
+thermostat = "andersen"
+equilibration_steps = 2000
+production_steps = 300000
+sample_interval = 10
+andersen_interval = 100
+replicas = 4
+
+[[cvs]]
+name = "x"
+kind = "cartesian"
+atom = 0
+axis = "x"
+estimator = "centroid"
+
+[metadynamics]
+cvs = ["x"]
+mode = "well_tempered"
+sigma = [0.1]
+height = "0.05 kcal/mol"
+pace = 100
+bias_factor = 8.0
+freeze_after_steps = 100000
+freeze_equilibration_steps = 20000
+
+[metadynamics.grid]
+ranges = [[-2.5, 2.5]]
+bins = [501]
+
+[analysis]
+method = "reweighted_histogram"
+bins = 101
+ranges = [[-1.515, 1.515]]
+min_count = 2
+bootstrap = 0
+
+[parallel]
+backend = "serial"
+threads_per_rank = 1
+
+[output]
+directory = "run"
+checkpoint_steps = 10000

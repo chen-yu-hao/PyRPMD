@@ -90,6 +90,7 @@ def cv_descriptor(cv, natoms, memo=None):
         memo[key] = (cv, descriptor)  # retain cv: its id stays unique
         return descriptor
     from .propagation import _check_cv_methods
+    from .cv_periodic import FractionalCoordinate, LinearProjection
     _check_cv_methods(cv)
     tag = {"estimator": getattr(cv, "estimator", "centroid")}
     if type(cv) is cv_module.Distance:
@@ -103,6 +104,26 @@ def cv_descriptor(cv, natoms, memo=None):
             raise ValueError("Cartesian CV atom out of range")
         weights = np.zeros((natoms, 3)); weights[cv.atom, cv.axis] = 1.0
         return dict(tag, kind="linear", weights=weights.ravel().tolist())
+    if type(cv) in (LinearProjection, FractionalCoordinate):
+        # A fixed-cell projection is affine in the Cartesian centroid.  The
+        # tagged native descriptor carries the offset separately so nonzero
+        # ``origin`` values preserve the Python CV exactly.  Restrict this to
+        # the exact built-in classes and reject instance/class overrides.
+        from .cv import CollectiveVariable, _AffineCoordinate
+        inherited = {
+            "value": CollectiveVariable.value,
+            "value_and_jacobian": CollectiveVariable.value_and_jacobian,
+            "centroid_value_gradient": _AffineCoordinate.centroid_value_gradient,
+            "centroid_value_gradient_hessian": _AffineCoordinate.centroid_value_gradient_hessian,
+            "centroid_value_gradient_hvp": _AffineCoordinate.centroid_value_gradient_hvp,
+            "_affine_gradient": LinearProjection._affine_gradient,
+        }
+        if (any(name in getattr(cv, "__dict__", {}) for name in inherited)
+                or any(getattr(type(cv), name, None) is not original
+                       for name, original in inherited.items())):
+            raise NotNative("overridden projection methods require the Python path")
+        return dict(tag, kind="linear", weights=np.asarray(cv._affine_gradient(), float).ravel().tolist(),
+                    constant=-float(cv.origin))
     if type(cv) is cv_module.BondDifference:
         return dict(tag, kind="difference", weights=_pair(cv.bonds[0], natoms), other=_pair(cv.bonds[1], natoms))
     if type(cv) is cv_module.RPMDrateCoordinate:
@@ -112,6 +133,7 @@ def cv_descriptor(cv, natoms, memo=None):
         if len(cv.com.weights) != natoms:
             raise ValueError("rate-coordinate COM size mismatch")
         return dict(tag, kind="rate", weights=cv.com.weights.tolist(), rinf=cv.rinf,
+                    regular_branch_only=cv.regular_branch_only,
                     paths=[[{"forming": _pair(f, natoms), "breaking": _pair(b, natoms), "reference": r}
                             for f, b, r in zip(forming, breaking, cv.reference_difference)]
                            for forming, breaking in cv.paths])

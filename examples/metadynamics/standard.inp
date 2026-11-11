@@ -1,9 +1,13 @@
+# Smoke test: validates workflow execution, not sampling convergence.
 # Standard constant-height metadynamics on an analytic quartic model.
 # This is a short workflow demonstration, not a converged FES or rate.
-task = "metadynamics"
+task = "fes"
 temperature = "300 K"
 beads = 4
 seed = 711
+
+[fes]
+method = "metadynamics"
 
 [system]
 symbols = ["H"]

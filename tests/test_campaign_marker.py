@@ -21,7 +21,10 @@ def run_suite(tmp_path, files, *arguments):
         target = tmp_path / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(source, encoding="utf-8")
-    env = {**os.environ, "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1", "PYTHONPATH": str(tmp_path)}
+    # Keep the temporary suite isolated from repository modules while retaining
+    # a pytest supplied through an existing external dependency directory.
+    test_paths = os.pathsep.join((str(tmp_path), str(Path(pytest.__file__).resolve().parent.parent)))
+    env = {**os.environ, "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1", "PYTHONPATH": test_paths}
     env.pop("PYTEST_ADDOPTS", None)
     return subprocess.run(
         [sys.executable, "-m", "pytest", "-q", "--strict-markers", *arguments],

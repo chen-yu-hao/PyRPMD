@@ -1,7 +1,7 @@
 # 快速入门：可续跑的自由能计算
 
-几秒内你将走完所有任务共用的 PyRPMD 流程：检查输入、运行伞抽样、读取结果、续跑，并在不重跑动力学的情况下重新分析。
-本节使用内置谐振子势，无需外部模型。
+几秒内你将走完所有任务共用的 PyRPMD 流程：检查输入、运行伞抽样、读取结果、与精确解对比、续跑，并在不重跑动力学的情况下重新分析。
+本节使用内置谐振子势，无需外部模型；它的质心自由能有解析解，因此你可以直接检验算出的数值。
 
 ## 1. 运行第一个任务
 
@@ -39,8 +39,8 @@ my-first-run/run/
 
 ## 2. 输入文件
 
-这个例子计算三维谐势中一个 H 核的 **x 方向质心概率密度**。三个伞窗口各运行两个独立副本：先平衡 20 步，
-再生产 100 步、每 5 步保存一个样本，使用 4 个珠子和 0.1 fs 步长。
+这个例子计算 300 K 下三维谐势中一个 H 核**沿环聚合物质心 x 分量的自由能**。五个伞窗口各运行两个独立副本：
+先平衡 0.5 ps，再生产 25 ps、每 12.5 fs 保存一个样本，使用 4 个珠子和 0.5 fs 步长。整个计算在单核上约需 4 s。
 
 ```{literalinclude} ../../../src/pyrpmd/templates/quickstart.inp
 :language: toml
@@ -55,8 +55,10 @@ my-first-run/run/
 | `potential.params.k=0.002` | 谐势 $V=\tfrac12 k\lvert q\rvert^2$ 的原子单位力常数 |
 | `cvs.estimator="centroid"` | CV 在环质心上求值 |
 | `umbrella.stiffness` | 物理伞势的力常数；珠子缩放由 PyRPMD 处理 |
+| `sampling.andersen_interval=50` | 每 50 步（25 fs）重新抽取全部动量 |
 | `sampling.replicas=2` | 每个窗口的独立随机流数 |
-| `analysis.bootstrap=0` | 本次不计算 bootstrap 误差条 |
+| `analysis.bootstrap=20` | 用于误差条的分块 bootstrap 抽样次数 |
+| `analysis.min_count=20` | 样本数更少的格子会被屏蔽而不是给出数值 |
 
 温度、长度、时间和力常数写成带单位的字符串。原子索引从 0 开始。完整规则见[输入](input.md)和[科学约定](science.md)。
 
@@ -73,14 +75,50 @@ for key in ("task", "dimension", "windows", "streams", "samples",
     print(key, summary.get(key))
 ```
 
-摘要给出 `task="fes"`、一维 CV、3 个窗口、6 条采样流和 120 个保存样本；`effective_samples_per_stream`
-给出统计独立的样本数。`overlap_connected=true` 表示所有窗口共享一个全局归一化。`warnings` 列出有效样本不足
-和未采样的网格。单次运行的 `converged` 按设计保持为 `false`：收敛由[科学约定](science.md)中的系列计算确定。
+摘要给出 `task="fes"`、一维 CV、5 个窗口、10 条采样流和 20000 个保存样本；`effective_samples_per_stream`
+给出统计独立的样本数（本例每条流有几百个）。`overlap_connected=true` 表示所有窗口共享一个全局归一化。`warnings` 列出有效样本不足
+和未采样的网格，本例中为空。单次运行的 `converged` 按设计保持为 `false`：PyRPMD 不会凭一次运行认定珠子数、步长或采样已经收敛，
+这些要由[科学约定](science.md)中的系列计算确定；下面第 4 步就是其中最简单的一种检验。
 
 `summary["files"]` 给出数据文件路径。FES 表中 `free_energy_hartree` 是相对自由能，`raw_count` 是每格样本数，
 `masked` 标记没有采样支持的格子，这些格子的值为 NaN。见[输出与分析](results.md)。
 
-## 4. 续跑与重新分析
+## 4. 与精确结果对比
+
+谐势中环聚合物的质心与内部环模式解耦，所以无论珠子数是多少，质心自由能都等于经典结果：
+$F(x)=\tfrac12 k x^2$ 加一个常数。因此这个入门例子实际检验了采样、伞势的珠子缩放和 MBAR 重建：
+
+```python
+import json
+from pathlib import Path
+
+import numpy as np
+
+run_dir = Path("my-first-run/run")
+beta = json.loads((run_dir / "results/summary.json").read_text())["beta"]  # 1/(kB T)，单位 hartree^-1
+table = np.genfromtxt(run_dir / "fes.csv", delimiter=",", names=True)
+x = table["cv0_bohr"]
+exact = 0.5 * 0.002 * x**2
+difference = table["free_energy_hartree"] - exact
+difference -= difference.mean()            # 自由能的零点是任意的
+print("x / bohr   F - F_exact (kBT)   1 SE (kBT)")
+for row in zip(x, difference * beta, table["uncertainty_hartree"] * beta):
+    print("%8.3f %14.3f %14.3f" % row)
+print("largest deviation: %.2f kBT" % (np.abs(difference).max() * beta))
+```
+
+最大偏差约为 0.1 $k_BT$（300 K 下 0.06 kcal/mol），与给出的分块 bootstrap 标准误一致；越靠近边缘、样本越少的格子误差越大。
+参考格（自由能零点）的不确定度按定义为 0。
+
+下面三个小实验说明精度由什么决定；每次使用新的 `--output` 目录：
+
+- **减少采样。** 设 `production_steps = 500`。曲线变得很粗糙，`warnings` 会指出独立样本少于 20 的采样流：
+  此时可信的是误差条，而不是曲线本身。
+- **增加珠子。** 用 `--beads 16` 运行。质心自由能在误差内不变，正如上面的理论所要求的。这是谐势质心的特殊性质：
+  非谐势能或能量估计量需要做珠子数收敛系列。
+- **加大步长。** 对这个很软的模型，`timestep = "2 fs"` 仍然可用；含刚性键的真实分子需要按[科学约定](science.md)做步长检验。
+
+## 5. 续跑与重新分析
 
 ```bash
 pyrpmd resume my-first-run/run
@@ -93,7 +131,7 @@ pyrpmd analyze my-first-run/run --recompute --bins 8 --bootstrap 10
 
 保存的输入定义运行身份。要改变珠子数、温度、势能、步长或采样，使用新的运行目录。
 
-## 5. 同一任务的 Python 写法
+## 6. 同一任务的 Python 写法
 
 保存为包含 `my-first-run/` 的工作目录下的 `my_first_run.py`：
 

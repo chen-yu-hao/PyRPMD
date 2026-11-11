@@ -12,10 +12,13 @@ from collections import Counter
 import csv
 import json
 import math
+import os
 from pathlib import Path
+import tempfile
 
 import numpy as np
 
+from pyrpmd.io import _replace_text_file, jsonable
 from .drpmd_classification import _STATUSES
 from .drpmd_sampling import _field, validate_fragments
 
@@ -279,6 +282,38 @@ def summarize(records, config, system):
     return summary
 
 
+def _write_trajectory_table(path, records):
+    """Publish full per-trajectory metadata separately from the compact summary."""
+    keys = set()
+    for record in records:
+        keys.update(record)
+    first = ("trajectory_id", "parent_id", "status", "channel")
+    columns = [key for key in first if key in keys]
+    columns.extend(sorted(keys.difference(columns)))
+    fd, temporary = tempfile.mkstemp(
+        prefix=path.name + ".", suffix=".tmp", dir=path.parent)
+    try:
+        with os.fdopen(fd, "w", newline="", encoding="utf-8") as stream:
+            writer = csv.writer(stream)
+            writer.writerow(columns)
+            for record in records:
+                row = []
+                for key in columns:
+                    value = record.get(key)
+                    if isinstance(value, (dict, list, tuple, np.ndarray)):
+                        value = json.dumps(jsonable(
+                            value, dataclasses="asdict", callables=False, to_dict="ignore"),
+                            sort_keys=True, separators=(",", ":"), allow_nan=False)
+                    row.append("" if value is None else value)
+                writer.writerow(row)
+            stream.flush()
+            os.fsync(stream.fileno())
+        _replace_text_file(temporary, path)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+
+
 def _write_summary(results, config, system, output, expected, *, write_metadata):
     records = [record for parent in results for record in parent["records"]]
     out = Path(output)
@@ -300,7 +335,7 @@ def _write_summary(results, config, system, output, expected, *, write_metadata)
     summary["parent_thermal_steps"] = {
         str(p["parent_id"]): p["thermal_steps"] for p in results
     }
-    summary["records"] = records
+    summary["trajectory_table"] = "results/trajectories.csv"
     extension_path = out / "results" / "extensions.json"
     if extension_path.exists():
         ledger = json.loads(extension_path.read_text())
@@ -317,6 +352,7 @@ def _write_summary(results, config, system, output, expected, *, write_metadata)
             config["initial_ensemble"], system, config["beads"], config["beta"]).metadata
         summary["initial_ensemble"] = metadata
         write_metadata(out / "states" / "initial-ensemble.json", metadata)
+    _write_trajectory_table(out / "results" / "trajectories.csv", records)
     write_metadata(out / "results" / "summary.json", summary)
     with (out / "results" / "channels.csv").open(
         "w", newline="", encoding="utf-8"
@@ -367,4 +403,4 @@ def _write_summary(results, config, system, output, expected, *, write_metadata)
                     writer.writerow([channel, label, entry["signed_observed_contributions"][i],
                                      entry["rate_cm3_molecule_s"][i] if entry["rate_cm3_molecule_s"] is not None else None,
                                      entry["cross_section_bohr2"][i] if entry["cross_section_bohr2"] is not None else None])
-    return summary
+    return {**summary, "records": records}

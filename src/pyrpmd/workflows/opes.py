@@ -20,7 +20,7 @@ from ..propagation import loop_options
 from ..units import parse_quantity
 from .common import (_atomic_npz, _fingerprint, _dimension, checked_integer,
                      fingerprint_matches, resolve_cvs)
-from .biased_sampling import SamplingRuntime, run_biased_sampling, dispatch_replicas, failure_writer
+from .biased_sampling import SamplingRuntime, run_biased_sampling, dispatch_replicas, failure_writer, supersede_failure
 from ..analysis.fes_result import FESResult, write_fes_result, estimate_fes_uncertainty
 from .sampling import (fes_sampler, checkpoint_cv_config, read_operator_checkpoint,
                        validate_andersen_schedule)
@@ -283,7 +283,9 @@ def _sample_replica(task):
     store_operators = sampler.operator_checkpoint
     checkpoint = _checkpoint_path(output, replica)
     saved = _read_stream(config, system, output, replica, cv, options) if checkpoint.exists() else None
+    failure_path = Path(output) / "failures" / f"opes_{replica:04d}.json"
     if saved is not None and saved["complete"]:
+        supersede_failure(failure_path, checkpoint=checkpoint, elapsed_steps=saved["elapsed"])
         return saved
     fingerprint = _stream_fingerprint(config, system, replica)
     provider = make_task_potential(config["potential"], system)
@@ -340,14 +342,18 @@ def _sample_replica(task):
                             interval=options["interval"], sampling=config["sampling"],
                             checkpoint_steps=config.get("output", {}).get("checkpoint_steps", 1000),
                             update=update, sampler=sampler, save=save,
+                            pair_distance_log=(
+                                Path(output) / "diagnostics" / f"opes_{replica:04d}.pair-distances.jsonl"
+                                if config["sampling"].get("monitor_pair_distances", False) else None),
                             active_bias=lambda elapsed, current: total_bias(current),
                             energy_bias=total_bias,
                             fallback_reason="OPES probability updates require the Python workflow",
                             failure=failure_writer(
-                                Path(output) / "failures" / f"opes_{replica:04d}.json",
+                                failure_path,
                                 dynamics, cv, identity={"method": "opes", "replica": replica},
                                 neq=options["neq"], nprod=options["nprod"], checkpoint=checkpoint,
                                 bias_state=lambda: _opes_bias_summary(update.bias)))
+        supersede_failure(failure_path, checkpoint=checkpoint, elapsed_steps=runtime.elapsed)
         return _read_stream(config, system, output, replica, cv, options)
     finally:
         if hasattr(provider, "close"):
