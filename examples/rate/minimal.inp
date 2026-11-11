@@ -20,5 +20,13 @@ definition = "infer"
 ts_action = "validate"
 check_channel = true
 
+# Explicit RPMDrate-style umbrella coefficient k/T = 0.1;
+# dense centers are required for sigma_xi ~= 0.00563.
+[umbrella]
+start = 0.0
+stop = 1.05
+count = 211
+force_constant = 0.1
+
 [output]
 directory = "runs/minimal"

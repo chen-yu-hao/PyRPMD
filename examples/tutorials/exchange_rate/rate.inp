@@ -45,21 +45,21 @@ estimator = "ui"
 
 [umbrella]
 coordinate = "xi"
-force_constant = 0.0016  # k/T; sigma_xi = 0.0445 at any T
+force_constant = 0.1  # k/T; sigma_xi ~= 0.00563
 
 [[umbrella.regions]]
 id = "entrance"
 start = 0.0
 stop = 0.8
-spacing = 0.02
+spacing = 0.005
 include_endpoints = "left"
 
 [[umbrella.regions]]
 id = "barrier"
 start = 0.8
 stop = 1.05
-spacing = 0.01
-force_constant = 0.0032  # sigma_xi = 0.0315
+spacing = 0.005
+force_constant = 0.1  # k/T; sigma_xi ~= 0.00563
 
 [umbrella.sampling]
 equilibration = "1 ps"

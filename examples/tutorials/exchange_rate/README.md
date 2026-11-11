@@ -35,8 +35,8 @@ separation and native step counters.
 
 `rate.inp` is the longer Bennett–Chandler counterpart. It uses two independent
 chains per window, 1 ps equilibration and 10 ps production. The k/T force
-constants are 0.0016 and 0.0032, giving thermal ξ widths about 0.0445 and 0.0315,
-with center spacings 0.02 and 0.01. It fixes ξ‡=1 and uses 1000 constrained
+constants are both 0.1, giving thermal ξ width about 0.00563,
+with center spacing 0.005 in both regions. This significantly increases cost and requires new stability and overlap checks. It fixes ξ‡=1 and uses 1000 constrained
 parents with 10 child trajectories each, propagated for 100 fs. This is a
 reference-budget input, not a promise of a few-minute run. To compare fresh
 calculations, run it in a new directory and pass `--bc-run RUN` to `compare.py`.
