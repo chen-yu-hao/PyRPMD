@@ -281,6 +281,27 @@ def test_missing_or_invalid_kappa_error_never_passes(tmp_path, error):
     assert "kappa_relative_error_above_target" in auto._quality(result, .1)["reasons"]
 
 
+def test_percentage_failure_withholds_rate_and_schedules_more_parents(tmp_path, monkeypatch):
+    def flat_noisy_children(tasks, config, dispatch):
+        records = drifting_children(tasks, config, dispatch)
+        for record in records:
+            record["numerator"][:] = .2 + .6 * (record["parent"] % 2)
+        return records
+
+    monkeypatch.setattr(auto, "_dispatch_children", flat_noisy_children)
+    config, system, pmf, tasks = setup()
+    config["rate"] = {"auto": {"kappa_relative_error": .005}}
+    result = auto.run_auto_recrossing(config, system, tmp_path, pmf, tasks,
+                                     target_relative_error=.5, max_rounds=1)
+    quality = result["auto_recrossing"]["quality"]
+    assert result["plateau_detected"]
+    assert quality["relative_standard_error"] < .5
+    assert quality["target_kappa_relative_standard_error"] == .005
+    assert "kappa_relative_error_above_target" in quality["reasons"]
+    assert not result["sampling_converged"] and result["rate_cm3_s"] is None
+    assert "increase_parent_samples" in result["auto_recrossing"]["actions"]
+
+
 def test_nonfinite_diagnostics_are_null_and_replay_identically(tmp_path, monkeypatch):
     aggregate = auto._aggregate
 
