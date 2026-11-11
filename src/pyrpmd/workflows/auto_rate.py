@@ -81,6 +81,12 @@ def _pmf_decision(pmf, state, config):
     supported = uncertainty.get("available") and not uncertainty.get("reasons")
     barriers = np.asarray(pmf.get("pmf_bootstrap_barriers", []), float)
     barrier = pmf.get("free_energy_barrier_hartree")
+    barrier_relative = (float(error / abs(barrier))
+                        if log_error is not None and barrier is not None
+                        and np.isfinite(barrier) and barrier != 0 else None)
+    barrier_target = config["rate"]["auto"].get("pmf_relative_error", .01)
+    decision.update(pmf_relative_standard_error=barrier_relative,
+                    target_pmf_relative_standard_error=barrier_target)
     relative = None
     if len(barriers) >= 2 and np.isfinite(barriers).all() and barrier is not None:
         # Use the actual nonlinear QTST bootstrap; beta*sigma(W) alone can
@@ -108,7 +114,8 @@ def _pmf_decision(pmf, state, config):
         if endpoint and (endpoint.get("status") == "masked" or endpoint.get("supported") is False):
             candidates.extend(endpoint.get("bracket_centers", [endpoint["coordinate"]]))
     if (not candidates and pmf.get("ready") and supported
-            and relative is not None and relative <= target):
+            and relative is not None and relative <= target
+            and barrier_relative is not None and barrier_relative <= barrier_target):
         return {**decision, "action": "recrossing"}
     labels = adaptive.get("production_overlap_components", [])
     if len(labels) == len(centers) and len(set(labels)) > 1:

@@ -258,6 +258,29 @@ def test_unpublished_rate_cannot_be_declared_converged(tmp_path):
     assert "rate_publication_prerequisites_not_met" in quality["reasons"]
 
 
+def test_kappa_percentage_rejects_flat_but_imprecise_transmission(tmp_path):
+    result = run(tmp_path)
+    result.update(kappa=.2, kappa_standard_error=.004,
+                  rate_standard_error_cm3_s=.001)
+    quality = auto._quality(result, .1, .01)
+    assert quality["relative_standard_error"] < .1
+    assert quality["kappa_relative_standard_error"] == pytest.approx(.02)
+    assert quality["reasons"] == ["kappa_relative_error_above_target"]
+    options = result["auto_recrossing"]["options"]
+    updated, actions = auto._next_options(result, [], options, .1, .005)
+    assert "increase_parent_samples" in actions
+    assert updated["parent_samples"] == 4 * options["parent_samples"]
+    result["kappa_standard_error"] = .001
+    assert auto._quality(result, .1, .01)["passed"]
+
+
+@pytest.mark.parametrize("error", [None, -1., float("nan"), float("inf")])
+def test_missing_or_invalid_kappa_error_never_passes(tmp_path, error):
+    result = run(tmp_path)
+    result["kappa_standard_error"] = error
+    assert "kappa_relative_error_above_target" in auto._quality(result, .1)["reasons"]
+
+
 def test_nonfinite_diagnostics_are_null_and_replay_identically(tmp_path, monkeypatch):
     aggregate = auto._aggregate
 

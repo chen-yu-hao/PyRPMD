@@ -24,7 +24,9 @@ def test_minimal_auto_rate_fills_all_sampling_stages_without_evaluating_pes(monk
     original = deepcopy(spec.data)
     config, _ = spec.resolve()
     assert spec.data == original
-    assert config["rate"]["auto"] == {"target_relative_error": 0.1, "max_rounds": 8}
+    assert config["rate"]["auto"] == {
+        "precision": "normal", "target_relative_error": .05,
+        "pmf_relative_error": .01, "kappa_relative_error": .01, "max_rounds": 8}
     assert config["reaction"]["definition"] == "infer"
     assert config["umbrella"]["start"] < 0
     assert config["umbrella"]["stop"] > config["rate"]["pmf_search_range"][1]
@@ -50,6 +52,30 @@ def test_explicit_estimator_and_momentum_refresh_are_preserved():
     config, _ = spec.resolve()
     assert config["rate"]["pmf_method"] == "ui"
     assert config["sampling"]["andersen_interval"] == 17
+
+
+@pytest.mark.parametrize("precision,targets", [
+    ("loose", (.10, .02, .02)), ("normal", (.05, .01, .01)), ("tight", (.02, .005, .005)),
+])
+def test_precision_presets_and_explicit_overrides(precision, targets):
+    spec = automatic_spec()
+    spec.data["rate"]["auto"] = {"precision": precision}
+    config, _ = spec.resolve()
+    controls = config["rate"]["auto"]
+    assert config["recrossing"]["plateau_tolerance"] == {"loose": .05, "normal": .02, "tight": .01}[precision]
+    assert tuple(controls[key] for key in (
+        "target_relative_error", "pmf_relative_error", "kappa_relative_error")) == targets
+    spec.data["rate"]["auto"]["kappa_relative_error"] = .003
+    config, _ = spec.resolve()
+    assert config["rate"]["auto"]["kappa_relative_error"] == .003
+
+
+def test_explicit_plateau_tolerance_overrides_preset():
+    spec = automatic_spec()
+    spec.data["rate"]["auto"] = {"precision": "tight"}
+    spec.data["recrossing"] = {"analysis": {"plateau_tolerance": .003}}
+    config, _ = spec.resolve()
+    assert config["recrossing"]["plateau_tolerance"] == .003
 
 
 def test_production_auto_supplies_only_sampling_defaults_and_preserves_physical_choices():
@@ -151,6 +177,12 @@ def test_disabled_auto_preserves_legacy_sampling(auto):
     ({"target_relative_error": 0}, "between zero and one"),
     ({"target_relative_error": float("nan")}, "between zero and one"),
     ({"target_relative_error": True}, "between zero and one"),
+    ({"precision": "unknown"}, "precision must be"),
+    ({"precision": []}, "precision must be"),
+    ({"pmf_relative_error": 0}, "pmf_relative_error must be"),
+    ({"pmf_relative_error": True}, "pmf_relative_error must be"),
+    ({"kappa_relative_error": float("inf")}, "kappa_relative_error must be"),
+    ({"kappa_relative_error": -1}, "kappa_relative_error must be"),
     ({"max_rounds": 0}, "max_rounds"),
     ({"max_round": 2}, "Unknown rate.auto"),
 ])

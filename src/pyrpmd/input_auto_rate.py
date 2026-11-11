@@ -10,6 +10,13 @@ from .input_schema import InputError, _integer, _unknown_fields
 from .units import parse_quantity
 
 
+_PRECISION = {
+    "loose": (.10, .02, .02, .05),
+    "normal": (.05, .01, .01, .02),
+    "tight": (.02, .005, .005, .01),
+}
+
+
 def _default_steps(duration, dt):
     # Generated durations are starting heuristics, rounded to the stage clock.
     # Explicit user durations retain the ordinary exact-multiple validation.
@@ -44,7 +51,8 @@ def normalize_auto_rate_input(config, *, original=None):
         raw = {}
     if not isinstance(raw, Mapping):
         raise InputError("rate.auto must be boolean or a table")
-    allowed = {"enabled", "target_relative_error", "max_rounds"}
+    allowed = {"enabled", "precision", "target_relative_error", "pmf_relative_error",
+               "kappa_relative_error", "max_rounds"}
     if set(raw) - allowed:
         raise _unknown_fields(set(raw) - allowed, allowed, "rate.auto")
     if not isinstance(raw.get("enabled", True), bool):
@@ -54,14 +62,19 @@ def normalize_auto_rate_input(config, *, original=None):
         return
     if config.get("task") != "rate":
         raise InputError("rate.auto requires task='rate'")
-    target = raw.get("target_relative_error", 0.1)
-    if (isinstance(target, bool) or not isinstance(target, (int, float))
-            or not math.isfinite(target) or not 0 < target < 1):
-        raise InputError("rate.auto.target_relative_error must be finite and between zero and one")
-    rate["auto"] = {
-        "target_relative_error": float(target),
-        "max_rounds": _integer(raw.get("max_rounds", 8), "rate.auto.max_rounds"),
-    }
+    precision = raw.get("precision", "normal")
+    if not isinstance(precision, str) or precision not in _PRECISION:
+        raise InputError("rate.auto.precision must be loose, normal or tight")
+    controls = {"precision": precision}
+    for key, default in zip(("target_relative_error", "pmf_relative_error", "kappa_relative_error"),
+                            _PRECISION[precision][:3]):
+        target = raw.get(key, default)
+        if (isinstance(target, bool) or not isinstance(target, (int, float))
+                or not math.isfinite(target) or not 0 < target < 1):
+            raise InputError(f"rate.auto.{key} must be finite and between zero and one")
+        controls[key] = float(target)
+    controls["max_rounds"] = _integer(raw.get("max_rounds", 8), "rate.auto.max_rounds")
+    rate["auto"] = controls
     if "temperature" not in config:
         raise InputError("rate.auto requires explicit temperature")
     temperature = parse_quantity(config["temperature"], "temperature")
@@ -193,6 +206,7 @@ def normalize_auto_rate_input(config, *, original=None):
     ):
         if key not in recrossing and duration not in recrossing:
             recrossing[key] = _default_steps(default, parent_dt)
+    recrossing.setdefault("plateau_tolerance", _PRECISION[precision][3])
     recrossing.setdefault("bootstrap", 200)
     _integer(recrossing["bootstrap"], "automatic recrossing.bootstrap", 100)
     reaction = config.setdefault("reaction", {})

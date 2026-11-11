@@ -53,17 +53,35 @@ if the shared filesystem lacks HDF5 file locks.
 
 ## Precision and budgets
 
-The only optional controller settings are the target relative standard error
-and maximum number of refinement rounds. Use a table in place of `auto = true`:
+Use a precision preset in place of `auto = true` (which selects `normal`):
 
 ```toml
 [rate.auto]
-target_relative_error = 0.10
+precision = "tight"
 max_rounds = 8
 ```
 
-The target applies to statistical uncertainty in the final rate, including PMF
-barrier and transmission-coefficient uncertainty. `max_rounds` bounds the
+| Precision | PMF barrier relative SE | Kappa relative SE | Total rate relative SE | Plateau relative tolerance |
+| --- | --- | --- | --- | --- |
+| `loose` | 2% | 2% | 10% | 5% |
+| `normal` | 1% | 1% | 5% | 2% |
+| `tight` | 0.5% | 0.5% | 2% | 1% |
+
+All three standard-error limits must pass, along with the existing support,
+plateau and energy checks. The PMF percentage is the barrier standard error
+divided by the absolute reference-to-maximum barrier height; it is independent
+of the arbitrary PMF energy zero. An undefined ratio, including a zero barrier,
+cannot pass. Kappa uses its standard error divided by its absolute estimate.
+These are one-standard-error percentages, not confidence intervals. Plateau
+acceptance additionally bounds drift and the simultaneous centered bootstrap
+envelope, including uncertainty in the tail shape.
+
+Optional `pmf_relative_error`, `kappa_relative_error` and
+`target_relative_error` override their preset limits individually, using
+fractions (`0.01` means 1%). An explicit `recrossing.plateau_tolerance` overrides
+the preset plateau tolerance. The total-rate target includes both PMF
+barrier and transmission-coefficient uncertainty; the nonlinear QTST bootstrap
+must also meet its allocated share of that target. `max_rounds` bounds the
 production refinement and recrossing refinement loops separately. AUS pilot
 adaptation retains its own existing `adaptive_umbrella.max_rounds` budget
 (default 8), window cap and pilot-duration cap. Budgets are finite; a stricter

@@ -17,7 +17,7 @@ from .rate_options import _recrossing_dynamics, _recrossing_options, _recrossing
 from .rate_recrossing import _child_tasks, _dispatch_children, _parent_task
 
 
-def _quality(result, target):
+def _quality(result, target, kappa_target=.01):
     uncertainty = result.get("rate_uncertainty", {})
     support = uncertainty.get("recrossing_support", {})
     reasons = []
@@ -46,12 +46,21 @@ def _quality(result, target):
     if energy is None or not np.isfinite(energy) or energy > .1:
         reasons.append("child_energy_error_above_tolerance")
     kappa = result.get("kappa")
+    kappa_error = result.get("kappa_standard_error")
+    kappa_relative = None
+    if (kappa is not None and np.isfinite(kappa) and kappa > 0
+            and kappa_error is not None and np.isfinite(kappa_error) and kappa_error >= 0):
+        kappa_relative = float(kappa_error / abs(kappa))
+    if kappa_relative is None or kappa_relative > kappa_target:
+        reasons.append("kappa_relative_error_above_target")
     if kappa is None or not np.isfinite(kappa) or kappa <= 0:
         reasons.append("nonpositive_transmission")
     elif kappa > 1 + max(.05, 3 * (result.get("kappa_standard_error") or 0)):
         reasons.append("transmission_above_one")
     return {"passed": not reasons, "reasons": reasons, "relative_standard_error": relative,
-            "target_relative_standard_error": target}
+            "target_relative_standard_error": target,
+            "kappa_relative_standard_error": kappa_relative,
+            "target_kappa_relative_standard_error": kappa_target}
 
 
 def _pair_allocation(children, options, kappa):
@@ -80,7 +89,7 @@ def _pair_allocation(children, options, kappa):
     return max(1, min(64, int(np.ceil(optimum))))
 
 
-def _next_options(result, children, options, target):
+def _next_options(result, children, options, target, kappa_target=.01):
     updated = dict(options)
     actions = []
     diagnostic = result.get("plateau_diagnostics", {})
@@ -96,8 +105,11 @@ def _next_options(result, children, options, target):
         updated["child_steps"] *= 2
         actions.append("extend_child_time")
     else:
-        relative = _quality(result, target)["relative_standard_error"]
-        factor = 2 if relative is None else max(2, min(4, int(np.ceil((relative / target) ** 2))))
+        quality = _quality(result, target, kappa_target)
+        ratios = [quality["relative_standard_error"], quality["kappa_relative_standard_error"]]
+        scales = [value / limit for value, limit in zip(ratios, (target, kappa_target))
+                  if value is not None]
+        factor = max(2, min(4, int(np.ceil(max(scales, default=1.) ** 2))))
         preferred_pairs = _pair_allocation(children, options, result.get("kappa") or 0.)
         if preferred_pairs > options["child_pairs"]:
             updated["child_pairs"] = min(preferred_pairs, options["child_pairs"] * factor)
@@ -151,8 +163,10 @@ def _prepare_round(directory, config, system, options, pmf, parent_tasks, target
 def _finish_round(children, parents, pmf, config, directory, options, target):
     round_pmf = dict(pmf, propagation_parents=[p.get("propagation", {}) for p in parents])
     result = _aggregate(children, round_pmf, config, str(directory), options)
-    quality = _quality(result, target)
-    updated, actions = _next_options(result, children, options, target) if not quality["passed"] else (options, [])
+    kappa_target = config.get("rate", {}).get("auto", {}).get("kappa_relative_error", .01)
+    quality = _quality(result, target, kappa_target)
+    updated, actions = (_next_options(result, children, options, target, kappa_target)
+                        if not quality["passed"] else (options, []))
     result["sampling_converged"] = quality["passed"]
     result["auto_recrossing"] = {"quality": quality, "options": options,
                                  "next_options": updated, "actions": actions}

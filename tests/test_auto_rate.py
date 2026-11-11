@@ -28,7 +28,7 @@ def _config():
 def _pmf(error=.01, ess=40):
     return {"ready": True, "status": "ready", "warnings": [], "method": "ui",
             "barrier_standard_error_hartree": error,
-            "free_energy_barrier_hartree": 0., "pmf_bootstrap_barriers": [-error, error],
+            "free_energy_barrier_hartree": 1., "pmf_bootstrap_barriers": [1 - error, 1 + error],
             "uncertainty": {"available": True, "reasons": []},
             "effective_samples_per_stream": [ess] * 6}
 
@@ -70,6 +70,27 @@ def test_nonlinear_qtst_error_must_meet_precision_target():
     assert decision["pmf_log_standard_error"] < decision["target"]
     assert decision["qtst_relative_standard_error"] > decision["target"]
     assert decision["action"] == "add_replicas"
+
+
+def test_pmf_percentage_rejects_small_absolute_error_until_precision_met():
+    pmf = _pmf(.005)
+    pmf["free_energy_barrier_hartree"] = .1
+    pmf["pmf_bootstrap_barriers"] = [.095, .105]
+    config = _config()
+    config["rate"]["auto"]["pmf_relative_error"] = .01
+    decision = auto_rate._pmf_decision(pmf, _state(), config)
+    assert decision["qtst_relative_standard_error"] < decision["target"]
+    assert decision["pmf_relative_standard_error"] == pytest.approx(.05)
+    assert decision["action"] == "add_replicas"
+    pmf.update(barrier_standard_error_hartree=.0005, pmf_bootstrap_barriers=[.0995, .1005])
+    assert auto_rate._pmf_decision(pmf, _state(), config)["action"] == "recrossing"
+
+
+@pytest.mark.parametrize("barrier,error", [(0., 0.), (None, .001), (float("nan"), .001), (1., None)])
+def test_undefined_pmf_percentage_cannot_pass(barrier, error):
+    pmf = _pmf(0.)
+    pmf.update(free_energy_barrier_hartree=barrier, barrier_standard_error_hartree=error)
+    assert auto_rate._pmf_decision(pmf, _state(), _config())["action"] != "recrossing"
 
 
 def test_pmf_histogram_hole_refines_even_when_coarse_coverage_passes():
