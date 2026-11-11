@@ -89,6 +89,34 @@ def test_native_threads_are_actually_used():
     assert fit.diagnostics["threads_used"]==2
 
 
+def test_warm_start_preserves_solution_with_fewer_reductions():
+    pytest.importorskip("pyrpmd._mbar")
+    u, counts = problem()
+    cold = solve_mbar(u, counts, backend="native", return_state_weights=False)
+    warm = solve_mbar(u, counts, backend="native", return_state_weights=False,
+                      initial_free_energies=cold.free_energies)
+    assert warm.converged and warm.diagnostics["warm_start"]
+    np.testing.assert_allclose(warm.free_energies, cold.free_energies, atol=2e-9)
+    np.testing.assert_allclose(warm.log_weights, cold.log_weights, atol=2e-9)
+    assert warm.diagnostics["native_calls"] < cold.diagnostics["native_calls"]
+
+
+def test_rate_fit_and_bootstrap_share_one_explicit_core_budget():
+    pytest.importorskip("pyrpmd._mbar")
+    rng = np.random.default_rng(86)
+    result = mbar_rate_pmf(
+        [rng.normal(c, .2, 500) for c in (.2, .5, .8)], [.2, .5, .8], 8., 1.,
+        reference=.2, xi_star=.8, bins=np.linspace(-.5, 1.5, 12), bootstrap=4,
+        bootstrap_workers=2, bootstrap_total_cores=4, min_count=1,
+        solver_options={"backend": "native", "threads": 64},
+    )
+    assert result["ready"] and result["bootstrap"]["valid"] == 4
+    assert result["solver"]["details"]["threads_requested"] == 4
+    for draw in result["bootstrap"]["draws"]:
+        assert draw["solver_execution"]["backend"] == "native"
+        assert 1 <= draw["solver_execution"]["threads_used"] <= 2
+
+
 def test_external_executor_uses_compact_draws_and_matches_serial(monkeypatch):
     rng=np.random.default_rng(23)
     centers=[.2,.5,.8]

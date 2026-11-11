@@ -42,13 +42,19 @@ bootstrap_workers = 8
 ```
 
 省略时，普通 rate workflow 从 `parallel.trajectory_workers` 解析并行度；
-MPI 默认保持 root 上的串行分析。并发数还受可用内存估计约束。每个
-bootstrap draw 默认只用一个原生线程，避免嵌套并行过量使用核心。
-Python API 可通过 `solver_options={"threads": 4}` 控制单次求解，bootstrap
-内部会按总核心预算缩减每个 draw 的线程数。`reconstruct_fes` 同样支持
+MPI 默认保持 root 上的串行分析。全数据拟合使用声明的总核心预算；
+bootstrap 在并发 draw 之间分配该预算，每个 draw 的原生线程数最多为
+总核心数除以并发数。Python API 可通过 `solver_options={"threads": 4}`
+进一步限制单次求解；未声明总核心预算的直接分析调用默认保持单线程拟合。
+`reconstruct_fes` 同样支持
 `bootstrap_workers` 和 `solver_options`，保持交换 ladder 的同步重采样。
 
-`run_rate(..., executor=...)` 现在将同一个 executor 传递给 MBAR bootstrap。
+内存预算优先使用 Linux `MemAvailable`，包含可回收的文件缓存；存在有限
+cgroup v1/v2 内存限制时，再取各级限制减去当前用量的最小值。没有这些
+信息的平台使用系统空闲页估计。每个 draw 的预算针对索引、权重向量和
+有界求解工作区，谐波伞形势不分配完整的窗口数 × 样本数矩阵。
+
+普通和自动 rate 工作流均将传入的 executor 传递给 MBAR bootstrap。
 分析调用方也可以直接传 `bootstrap_executor`。这样已绑定单核的协调进程
 可以使用原有轨迹 worker，而不在该单核上再开一组本地线程。传输的任务只
 含原始数据引用和小型 RNG 状态；每次最多派发解析后的 worker 数量，子进程
@@ -67,6 +73,10 @@ Python API 可通过 `solver_options={"threads": 4}` 控制单次求解，bootst
 执行 `benchmarks/efficiency/mbar_streaming.py` 可在固定 affinity、BLAS 设置和
 相同样本上，测量完整求解或完整 rate-PMF/bootstrap 的时间与峰值 RSS。
 这类性能测量不表示真实体系的物理收敛。
+
+自动采样增加样本后仍按完整的原始时间流重采样。相关块不足时继续延后
+bootstrap；热启动使用前一次完整拟合的自由能，减少初始迭代，最终仍要求
+相同的 MBAR 方程残差。`tight` 统计阈值和全部请求的 bootstrap draw 均保留。
 
 求解器在固定自由能 gauge 后使用阻尼 Newton；完全相同的约化势能行
 可以精确合并，连续时间序列仍分别重采样。原求解器保留为 fallback
