@@ -100,14 +100,19 @@ def postprocess_rate_subspace(config, directory, *, strict=False):
         specification = {
             "source": {"rate_run": str(root)},
             "subspace": {k: options[k] for k in ("dimension", "threshold", "environment", "curvature",
-                         "zero_point", "dvr_points", "dvr_half_width", "dvr_spacing") if k in options},
+                         "zero_point", "dvr_points", "dvr_half_width", "dvr_spacing",
+                         "hessian_displacement") if k in options},
+            "validity": options.get("validity", {}),
             "path": options["path"], "quantum": options["quantum"], "rpmd": options["rpmd"],
             "output": {"directory": str(target), "reuse": options["reuse"]},
         }
         write_json(target / "request.json", {"options": options, "reuse_key": identity})
         write_json(status_path, {**status, "status": "running"})
         report = run_subspace_pipeline(specification, apply=options["mode"] == "apply", reuse_key=identity)
-        status.update(status="complete", reuse_key=identity,
+        # "invalid_model": the stage ran, but no subspace model passed its
+        # validity gates, so there is no factor and no corrected rate.
+        status.update(status=report.get("status", "complete"), reuse_key=identity,
+                      validity=report.get("validity"),
                       dimensions_computed=report["dimensions_computed"],
                       selected_dimension=report["applied_dimension"],
                       correction_factors={d: c["factor"] for d, c in report["corrections"].items()},

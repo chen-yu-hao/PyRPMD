@@ -14,6 +14,23 @@ not been published as a new wheel release; no release date or DOI is assigned.
 - Add contribution, citation, convergence and issue-reporting guidance.
 - Prepare an additive validation-archive inventory and migration plan. Existing
   tracked scientific data remain in place; no archive has been published.
+- Subspace correction: add validity gates for the automatic path subspace
+  (issue #182). Path continuations no longer have a step budget
+  (`path.max_steps` is optional; the default was 600) and report how they
+  terminated; convergence is judged over an arc length instead of ten points.
+  Unstable transverse Hessians of the path model are classified and reject
+  the model instead of silently losing their zero-point term, and
+  `dimension = "auto"` then adds the 2D model. Grid exits of the ring
+  polymers are resolved by stage (`grid_exit`). A model that fails a gate
+  writes `valid: false`, `factor: null` and `diagnostic_factor` and is never
+  applied; `subspace_pipeline.json` gains `status`, `validity` and
+  `dimension_escalation`, and `applied_dimension`/`corrected_rate` are null
+  when no model passes. New `[rate.subspace_correction.validity]` table,
+  `hessian_displacement` and `path.asymptote_patience`. The finite-difference
+  normal-plane Hessian now displaces the lightest atom by 5e-3 bohr, which
+  changes `C_S` of existing inputs within the finite-difference error.
+  `relaxed_path` defaults to `max_steps=None`; a non-positive subspace rate
+  now yields an invalid correction record instead of `FloatingPointError`.
 
 ## 0.2.0 source baseline
 

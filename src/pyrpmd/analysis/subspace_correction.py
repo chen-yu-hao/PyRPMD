@@ -37,6 +37,102 @@ from .subspace_rpmd import RingPolymerRateResult, ring_polymer_rate
 SCHEMA = "pyrpmd.subspace_correction"
 CORRECTED_SCHEMA = "pyrpmd.rate_quantum_corrected"
 
+# A gate that fails makes the correction invalid unless its policy is "allow"
+# (an explicit, recorded override).  ``max_outside_fraction`` bounds the share
+# of estimator samples that saw the constant continuation of a gridded V_S.
+VALIDITY_POLICY = {"unconverged_path": "reject", "unstable_bath": "reject", "outside_grid": "reject",
+                   "max_outside_fraction": 0.01}
+
+
+def validity_policy(policy: Mapping[str, Any] | None = None) -> dict:
+    """Complete and check a validity policy (see :data:`VALIDITY_POLICY`)."""
+    merged = dict(VALIDITY_POLICY)
+    for key, value in dict(policy or {}).items():
+        if key in merged and value is not None:
+            merged[key] = value
+    for key in ("unconverged_path", "unstable_bath", "outside_grid"):
+        if merged[key] not in ("reject", "allow"):
+            raise ValueError(f"validity policy {key} must be 'reject' or 'allow'")
+    limit = float(merged["max_outside_fraction"])
+    if not np.isfinite(limit) or not 0 <= limit <= 1:
+        raise ValueError("max_outside_fraction must lie in [0, 1]")
+    merged["max_outside_fraction"] = limit
+    return merged
+
+
+def _gate(name, passed, policy, reason, detail):
+    passed = bool(passed)
+    return {"gate": name, "passed": passed, "policy": policy,
+            "overridden": bool(not passed and policy == "allow"),
+            "reason": None if passed else reason, "detail": detail}
+
+
+def validity_gates(construction: Mapping[str, Any], rpmd_diagnostics: Mapping[str, Any] | None = None,
+                   policy: Mapping[str, Any] | None = None) -> dict:
+    """Decide whether a subspace model may carry a correction factor.
+
+    ``construction`` is the model provenance.  Three gates are evaluated when
+    their evidence is present:
+
+    ``path``   both continuations of an assembled reaction path reached their
+               asymptote (``path_termination``, set by the pipeline);
+    ``bath``   the normal-plane Hessian of a path projection is stable
+               (``bath_stable``);
+    ``grid``   the ring-polymer estimator did not sample the constant
+               continuation outside a gridded ``V_S`` (``grid_exit`` of the
+               RPMD diagnostics; absent before the rates are solved).
+
+    The policy stored in the provenance (``validity_policy``) is used unless
+    ``policy`` is given.  Returns ``{"valid", "failures", "overrides",
+    "gates", "policy"}``; ``failures`` lists the gates that reject.
+    """
+    construction = dict(construction or {})
+    policy = validity_policy(policy if policy is not None else construction.get("validity_policy"))
+    gates = []
+    termination = construction.get("path_termination")
+    if termination is not None:
+        ends = {side: dict(termination.get(side) or {}) for side in ("reactant", "product")}
+        bad = [f"{side}: {end.get('status', 'no termination record')}"
+               for side, end in ends.items() if not end.get("converged")]
+        gates.append(_gate("path", not bad, policy["unconverged_path"],
+                           "reaction path did not reach its asymptote (" + "; ".join(bad) + ")",
+                           {side: {k: end.get(k) for k in ("status", "steps", "arc_length",
+                                                           "tail_energy_range", "asymptote_tolerance")}
+                            for side, end in ends.items()}))
+    if "bath_stable" in construction and construction.get("environment") != "frozen":
+        unstable = list(construction.get("significant_unstable") or [])
+        worst = min(unstable, key=lambda r: r["curvature"]) if unstable else None
+        reason = None
+        if worst is not None:
+            reason = (f"unstable transverse Hessian at {len(unstable)} path points (worst "
+                      f"{worst['imaginary_frequency_cm']:.0f}i cm^-1, "
+                      f"{', '.join(construction.get('unstable_characters') or ['unclassified'])})")
+        gates.append(_gate("bath", construction["bath_stable"], policy["unstable_bath"], reason, {
+            "significant_unstable_points": len(unstable),
+            "minimum_complement_curvature": construction.get("minimum_complement_curvature"),
+            "unstable_characters": construction.get("unstable_characters"),
+            "soft_complement_points": construction.get("soft_complement_points"),
+            "dropped_zero_point_bound": construction.get("dropped_zero_point_bound"),
+            "unstable_arc_lengths": [r["arc_length"] for r in unstable],
+        }))
+    exits = (rpmd_diagnostics or {}).get("grid_exit")
+    if exits is not None:
+        limit = policy["max_outside_fraction"]
+        worst = float(exits["estimator_outside_fraction"])
+        gates.append(_gate("grid", worst <= limit, policy["outside_grid"],
+                           f"{worst:.3g} of the ring-polymer estimator sampled V_S outside its grid "
+                           f"(limit {limit:.3g})",
+                           {k: exits.get(k) for k in (
+                               "ti_sample_outside_fraction", "surface_sample_outside_fraction",
+                               "recrossing_exited_fraction", "recrossing_returned_fraction",
+                               "recrossing_uphill_exit_fraction", "recrossing_contaminated_flux_fraction",
+                               "recrossing_max_edge_slope", "estimator_outside_fraction")}
+                           | {"max_outside_fraction": limit}))
+    failures = [g["reason"] for g in gates if not g["passed"] and not g["overridden"]]
+    return {"valid": not failures, "failures": failures,
+            "overrides": [g["gate"] for g in gates if g["overridden"]],
+            "gates": gates, "policy": policy}
+
 
 @dataclass(frozen=True)
 class SubspaceCorrection:
@@ -46,6 +142,12 @@ class SubspaceCorrection:
     statistical and TI-quadrature error plus, for the iterative quantum
     route, the spread of the trapped-norm extrapolation.  Grid, absorbing
     potential and bead-number convergence are not included.
+
+    ``valid`` is false when a validity gate rejected the model
+    (:func:`validity_gates`) or the rates do not form a positive ratio.  The
+    component rates and the gate record are kept, but ``factor`` is then only
+    a diagnostic number: it is written as ``diagnostic_factor`` with
+    ``factor: null`` and cannot be applied to a rate.
     """
 
     beta: float
@@ -59,10 +161,17 @@ class SubspaceCorrection:
     quantum: QuantumRateResult | None = None
     rpmd: RingPolymerRateResult | None = None
     diagnostics: Mapping[str, Any] = field(default_factory=dict)
+    valid: bool = True
+    validity: Mapping[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
-        if not np.isfinite(self.factor) or self.factor <= 0:
+        object.__setattr__(self, "valid", bool(self.valid))
+        usable = np.isfinite(self.factor) and self.factor > 0
+        if self.valid and not usable:
             raise ValueError("correction factor must be positive and finite")
+        if not usable:
+            object.__setattr__(self, "factor", float("nan"))
+        object.__setattr__(self, "validity", dict(self.validity))
         if not 1 <= int(self.dimension) <= 3:
             raise ValueError("subspace dimension must be one to three")
         object.__setattr__(self, "model", dict(self.model))
@@ -70,7 +179,16 @@ class SubspaceCorrection:
 
     @property
     def log_factor(self) -> float:
-        return float(np.log(self.factor))
+        return float(np.log(self.factor)) if np.isfinite(self.factor) else float("nan")
+
+    @property
+    def invalid_reasons(self) -> list:
+        return list(self.validity.get("failures", [])) if not self.valid else []
+
+    def require_valid(self) -> None:
+        if not self.valid:
+            raise ValueError("the subspace correction failed its validity gates and cannot be applied: "
+                             + "; ".join(self.invalid_reasons or ["no reason recorded"]))
 
     def to_dict(self) -> dict:
         record = {
@@ -78,8 +196,11 @@ class SubspaceCorrection:
             "schema_version": 1,
             "beta": self.beta,
             "dimension": int(self.dimension),
-            "factor": self.factor,
-            "log_factor": self.log_factor,
+            "valid": self.valid,
+            "validity": self.validity,
+            "factor": self.factor if self.valid else None,
+            "log_factor": self.log_factor if self.valid else None,
+            "diagnostic_factor": self.factor,
             "log_standard_error": self.log_standard_error,
             "quantum_rate": self.quantum_rate,
             "rpmd_rate": self.rpmd_rate,
@@ -106,10 +227,17 @@ class SubspaceCorrection:
     def from_dict(cls, data: Mapping[str, Any]) -> "SubspaceCorrection":
         if data.get("schema") != SCHEMA:
             raise ValueError(f"not a {SCHEMA} record")
-        return cls(float(data["beta"]), int(data["dimension"]), float(data["factor"]),
-                   float(data["log_standard_error"]), float(data["quantum_rate"]),
-                   float(data["rpmd_rate"]), int(data["nbeads"]), data.get("model", {}),
-                   diagnostics=data.get("diagnostics", {}))
+        def number(value):  # non-finite values of an invalid record are stored as null
+            return float("nan") if value is None else float(value)
+
+        factor = data.get("factor")
+        if factor is None:
+            factor = data.get("diagnostic_factor")
+        return cls(float(data["beta"]), int(data["dimension"]), number(factor),
+                   number(data["log_standard_error"]), number(data["quantum_rate"]),
+                   number(data["rpmd_rate"]), int(data["nbeads"]), data.get("model", {}),
+                   diagnostics=data.get("diagnostics", {}),
+                   valid=bool(data.get("valid", True)), validity=data.get("validity", {}))
 
     @classmethod
     def read(cls, path) -> "SubspaceCorrection":
@@ -156,8 +284,15 @@ def _validate_rpmd_model(model, rpmd_model):
 
 
 def _assemble_correction(model, beta, nbeads, quantum, rpmd):
-    if quantum.rate <= 0 or rpmd.rate <= 0:
-        raise FloatingPointError("subspace rates must be positive to form a correction factor")
+    described = model.describe()
+    validity = validity_gates(described["construction"], rpmd.diagnostics)
+    positive = bool(np.isfinite(quantum.rate) and np.isfinite(rpmd.rate) and quantum.rate > 0 and rpmd.rate > 0)
+    if not positive:
+        # Keep both component results: a ratio that cannot be formed is a
+        # finding about the model, not a reason to lose the evidence.
+        validity["failures"].append("subspace rates must be positive to form a correction factor "
+                                    f"(quantum {quantum.rate:.6g}, RPMD {rpmd.rate:.6g})")
+        validity["valid"] = False
     quantum_spread = float(quantum.diagnostics.get("relative_extrapolation_spread", 0.0) or 0.0)
     log_error = float(np.hypot(rpmd.log_rate_standard_error, quantum_spread))
     diagnostics = {
@@ -166,13 +301,15 @@ def _assemble_correction(model, beta, nbeads, quantum, rpmd):
         "quantum_method": quantum.method,
         "rpmd_transmission": rpmd.transmission,
         "rpmd_qtst_rate": rpmd.qtst_rate,
-        "quantum_over_rpmd_qtst": quantum.rate / rpmd.qtst_rate if rpmd.qtst_rate > 0 else None,
+        "quantum_over_rpmd_qtst": quantum.rate / rpmd.qtst_rate if positive and rpmd.qtst_rate > 0 else None,
         "rpmd_spline_outside_fraction": rpmd.diagnostics.get("spline_outside_fraction"),
+        "rpmd_grid_exit": rpmd.diagnostics.get("grid_exit"),
         "units": quantum.diagnostics.get("units"),
     }
-    return SubspaceCorrection(float(beta), model.dimension, quantum.rate / rpmd.rate, log_error,
-                              quantum.rate, rpmd.rate, int(nbeads), model.describe(),
-                              quantum, rpmd, diagnostics)
+    return SubspaceCorrection(float(beta), model.dimension,
+                              quantum.rate / rpmd.rate if positive else float("nan"), log_error,
+                              quantum.rate, rpmd.rate, int(nbeads), described,
+                              quantum, rpmd, diagnostics, validity["valid"], validity)
 
 
 def harmonic_bead_factor(dividing_frequencies: Any, reactant_frequencies: Any, beta: float, nbeads: int) -> dict:
@@ -241,6 +378,7 @@ def apply_subspace_correction(
     """
     if not isinstance(correction, SubspaceCorrection):
         raise TypeError("correction must be a SubspaceCorrection")
+    correction.require_valid()
     relative = None
     rate = float(rate)
     if not np.isfinite(rate) or rate < 0:
@@ -289,9 +427,12 @@ def nested_subspace_sensitivity(corrections: Sequence[SubspaceCorrection], *, to
     the largest dimension computed (``recommended_dimension`` is then
     ``None`` when the deciding step was undetermined, so a caller can fall
     back to another criterion).  The caller is responsible for the subspaces
-    being nested and at the same temperature.
+    being nested and at the same temperature.  Invalid corrections are
+    refused: a diagnostic factor is no evidence about the defect.
     """
     items = sorted(corrections, key=lambda c: c.dimension)
+    for item in items:
+        item.require_valid()
     if len(items) < 2:
         raise ValueError("at least two nested corrections are required")
     betas = np.array([c.beta for c in items])
@@ -417,5 +558,5 @@ def correct_rate_run(directory, correction, *, output=None, beta_rtol: float = 1
 
 __all__ = [
     "SubspaceCorrection", "apply_subspace_correction", "correct_rate_run", "harmonic_bead_factor",
-    "nested_subspace_sensitivity", "subspace_correction",
+    "nested_subspace_sensitivity", "subspace_correction", "validity_gates", "validity_policy",
 ]

@@ -20,8 +20,7 @@ class NativeRingPolymer(_RingPolymer):
 
     def _record(self, info):
         self.threads_used = max(self.threads_used, info["threads"])
-        self.model.interpolant.evaluations += info["evaluations"]
-        self.model.interpolant.outside += info["outside"]
+        self.model.interpolant.record(info["evaluations"], info["outside"])
 
     def potential(self, modes):
         points = np.ascontiguousarray(self.beads(modes).reshape(-1, self.d))

@@ -45,6 +45,14 @@ walkers = 32
 sweeps = 800
 trajectories = 1024
 seed = 17
+
+# Validity gates (defaults shown). "allow" is an explicit, recorded override.
+[rate.subspace_correction.validity]
+unconverged_path = "reject"   # both path continuations must reach their asymptote
+unstable_bath = "reject"      # the transverse Hessian of the path model must be stable
+outside_grid = "reject"       # the RPMD estimator must stay on the V_S grid
+max_outside_fraction = 0.01
+on_invalid = "stop"           # or "diagnose": solve a rejected model anyway, never apply it
 ```
 
 ```bash
@@ -122,6 +130,69 @@ Unpublishable source rates remain unpublished, and all corrected results retain
 The standalone `pyrpmd subspace-correct correct.toml` command is retained for
 compatibility and calls the same numerical pipeline.
 
+### Validity gates
+
+A positive `k_QM(H_S) / k_RPMD(H_S)` is not yet a correction factor: the ratio
+is only meaningful if `H_S` is a valid model. Three gates are evaluated, and a
+model that fails one is recorded but never applied.
+
+| Gate | Passes when | Evidence in `subspace_pipeline.json` |
+| --- | --- | --- |
+| `path` | both continuations ended with `asymptote_converged` | `path.reactant_termination`, `path.product_termination` (status, steps, arc length, trailing energy range) |
+| `bath` | no normal-plane curvature below `-soft_mode_frequency**2` along the 1D path model | `models.1.model_construction.significant_unstable` (arc length, imaginary frequency, character) |
+| `grid` | at most `max_outside_fraction` of the ring-polymer estimator saw `V_S` outside its grid | `corrections.D.rpmd.diagnostics.grid_exit` |
+
+**Path.** The continuations have no step budget. How far an asymptote lies is a
+property of the potential — an ion–dipole tail needs far more steps than a
+neutral one — and a path that stops at a count is not a path to the asymptote.
+A continuation ends when the energy varies by less than `asymptote_tolerance`
+over the last `10 * step` of arc length. The window is an arc length rather than
+ten points, so halved steps at a bend cannot imitate a flat tail. It ends
+unconverged with `asymptote_not_approached` when that trailing energy range has
+not fallen by 10% during `asymptote_patience` (50) consecutive windows — a bound
+coordinate, a potential leaving its fitted domain, a path that wanders — with
+`step_collapsed` when the tangent cannot be resolved at the smallest step, and
+with `potential_failure` on a failed or non-finite evaluation. `path.max_steps`
+is optional; if set, reaching it is `max_steps_exhausted` and fails the gate.
+
+**Bath.** A vibrationally adiabatic model needs a bath that is bound in the plane
+normal to the path. A negative normal-plane curvature has no zero-point energy;
+the term is omitted, which lowers `V_S` exactly where the model has failed.
+Imaginary frequencies below `soft_mode_frequency` (2.3e-4 Eh, 50 cm⁻¹) are soft
+modes — free relative rotations of separating fragments, whose curvature tends
+to zero with either sign; they are counted (`soft_complement_points`) and
+`dropped_zero_point_bound` bounds the omitted energy. Larger ones fail the gate
+and are classified from the vibrational Hessian in the basis of the tangent and
+the normal plane: `tangent_misaligned` (one unstable vibrational mode, the
+reaction mode, leaking into the bath because the path tangent is tilted away
+from it by `tangent_to_lowest_mode_degrees`) or `ridge` (two or more: a
+transverse coordinate is not a bath mode). Either way that coordinate belongs in
+`S`, so `dimension = "auto"` then also builds the 2D model
+(`dimension_escalation`). The finite-difference Hessian displaces the lightest
+atom by `hessian_displacement` (5e-3 bohr); the former fixed mass-weighted step
+moved hydrogen by 2e-5 bohr, where the gradient difference of a soft mode is
+comparable to the evaluation noise of a fitted potential.
+
+**Grid.** Outside its grid a gridded `V_S` is a constant with zero force.
+`spline_outside_fraction` counts every gradient evaluation — rejected HMC
+proposals, equilibration, and recrossing trajectories that left through a flat
+channel end and are simply committed — so it cannot say how much of the
+estimator was affected. `grid_exit` resolves it: per-stage counts (`stages`),
+the bead points of the accepted TI and dividing-surface samples outside the grid
+(`ti_sample_outside_fraction`, `surface_sample_outside_fraction`), and for the
+recrossing trajectories the flux share that crossed the dividing surface again
+after leaving, or whose centroid left where `V_S` still rises outwards by more
+than 0.1 kT per thermal length (`recrossing_contaminated_flux_fraction`). The
+gate uses the largest of the three (`estimator_outside_fraction`).
+
+When a gate fails, `C_S_Dd.json` carries `valid: false`, `factor: null`, the
+ratio as `diagnostic_factor`, the gate record in `validity` and both component
+rate results; `apply_subspace_correction` refuses it. With `on_invalid = "stop"`
+a model whose path or bath gate fails is not solved at all. If no model passes,
+the report has `status = "invalid_model"`, no corrected rate is written (a
+corrected rate left by an earlier run is removed), `status.json` of the native
+stage carries the same status, and `pyrpmd subspace-correct` exits nonzero.
+
 ## One command from a rate run
 
 ```bash
@@ -169,6 +240,8 @@ The command then runs:
    of librating light atoms are shorter than the bonds. Every selected core is then continued
    by steepest-descent path following (minimum on a sphere around each point, forward hemisphere, rigid-body modes
    excluded; uphill segments use the hyperplane minimum), with step halving at sharp turns.
+   The continuation runs until the energy is flat over ten step lengths of arc; there is no
+   step budget, and each end records how it terminated (see [Validity gates](#validity-gates)).
 3. **Curvature × width.** From `Sigma(xi)` along the sampled windows
    (`rho = sqrt(2 n^T Sigma n)` along the curvature normal) and, along the whole path, with
    the harmonic bead width of the mode along the normal. Above the threshold (default 0.5)
@@ -421,8 +494,11 @@ factor `harmonic_bead_factor` for environment modes.
 | Beads | `nbeads` | `C_S` should correct the same finite-`P` estimator as the full run |
 | Sampling | `walkers`, `sweeps`, `trajectories` | `log_standard_error` |
 
-Ring polymers that leave the model grid sample an extrapolated spline; this is reported as
-`spline_outside_fraction` and must be zero for a gridded (projected) model.
+Ring polymers that leave the model grid sample a constant continuation of the spline.
+`spline_outside_fraction` counts all such evaluations, including committed recrossing
+trajectories that have left through a flat channel end; the part that reaches the estimator
+is `grid_exit.estimator_outside_fraction`, which must stay below `max_outside_fraction`
+(see [Validity gates](#validity-gates)). Enlarge the grid if it does not.
 
 ## Validation
 

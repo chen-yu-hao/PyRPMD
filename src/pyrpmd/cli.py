@@ -611,7 +611,18 @@ def main(argv=None):
             from .analysis.subspace_pipeline import run_subspace_pipeline
 
             report = run_subspace_pipeline(args.input)
-            if report is not None:
+            if report is not None and report["corrected_rate"] is None:
+                _print({
+                    "rate_run": report["rate_run"],
+                    "status": report["status"],
+                    "dimensions_computed": report["dimensions_computed"],
+                    "validity_failures": report["validity"]["failures"],
+                    "report": "subspace_pipeline.json in the output directory",
+                })
+                if report["status"] == "invalid_model":
+                    raise SystemExit("subspace-correct: no subspace model passed the validity gates; "
+                                     "no correction factor was applied")
+            elif report is not None:
                 corrected = report["corrected_rate"]
                 unit = "s_inv" if corrected.get("task") == "surface_rate" else "cm3_s"
                 _print({
