@@ -273,6 +273,122 @@ corr.write("C_S_300K.json")
 correct_rate_run("runs/rate-300K", corr)
 ```
 
+## Hybrid CPU and MPI execution
+
+The gridded RPMD solver uses a C++17 extension by default when available. It
+copies SciPy's cubic B-spline knots and coefficients and evaluates the same
+potential and analytic gradient in C++. HMC proposal trajectories and paired
+recrossing trajectories release the GIL and run without Python callbacks.
+OpenMP distributes independent ring polymers across threads; SIMD covers the
+normal-mode updates. Free ring propagation uses the existing FFT implementation
+(direct Fourier transforms for non-power-of-two bead counts).
+
+Python still owns the NumPy random stream, randomized proposal lengths, the
+Metropolis test, shared burn-in step-size adaptation, walker statistics, TI,
+and paired-trajectory bootstrap. Thread count does not change random draws or
+reduction order. The FFT and spline arithmetic can differ slightly from the
+Python reference; long chaotic trajectories need statistical comparison as
+well as short trajectory comparisons. The physical definitions, error formulas
+and existing result fields are retained.
+
+For a single calculation, pass `threads=32` to `ring_polymer_rate`. Select
+`backend="python"` for the reference implementation or `backend="native"` to
+require the compiled kernel. `backend="auto"` reports a fallback reason if the
+extension is missing or a model has Python potential callbacks. Callbacks are
+never silently replaced by an interpolated potential: use an explicit
+`SubspaceModel` containing the intended grid to enable native propagation.
+
+The quantum solver retains SciPy eigensolvers and complex Schur decomposition.
+Dense DVR assembly avoids full Kronecker temporaries. The Sylvester equation is
+solved in triangular blocks with LAPACK `ztrsyl` and BLAS matrix updates;
+LAPACK scaling or near-degeneracy triggers the original full solve. A dense
+memory estimate is checked before allocation. This changes neither the DVR
+grid nor the flux operator, absorbing potential or reactant normalization.
+
+Add an execution section to a pipeline TOML to overlap QM/RPMD and, when both
+dimensions are requested, all four stages of `C_S(1D)` and `C_S(2D)`:
+
+```toml
+[execution]
+backend = "process"
+cpus = 32
+workers = 4
+blas_threads = 8
+memory_limit_mb = 8192
+resume = true
+# checkpoint_dir = "subspace-tasks"  # default: output directory / tasks
+
+[rpmd]
+backend = "native"
+```
+
+`cpus` is the total CPU budget and `workers` the maximum number of concurrent
+tasks. Each process receives `floor(cpus / workers)` OpenMP threads
+(using fewer workers if there are fewer unfinished tasks). Memory estimates
+include dense linear algebra or RPMD state, side histories and bootstrap
+temporaries; tasks are admitted only while their combined estimates fit the
+budget. BLAS uses at most `blas_threads` (default 8) and never exceeds that
+process's CPU allocation. Large thread teams can slow the sequential stages
+of complex Schur decomposition; the cap is independently adjustable for the
+installed BLAS and matrix size. Set `OMP_WAIT_POLICY=PASSIVE` before launching
+mixed Python/OpenMP workloads so idle dynamics threads sleep during sampling
+and analysis. These are conservative working-memory estimates, not OS memory limits.
+Set the budget below the job's memory allocation to leave room for Python,
+loaded libraries and the coordinator. BLAS thread limits are scoped inside
+separate processes, avoiding conflicting thread limits in Python thread pools.
+
+The same scheduler is available through Python:
+
+```python
+from pyrpmd.analysis import subspace_correction, subspace_corrections
+
+# Guard process-spawning code with if __name__ == "__main__" in a script.
+corr = subspace_correction(model, beta, 32,
+    execution={"backend": "process", "cpus": 32, "workers": 2})
+corrections = subspace_corrections({
+    "1d": {"model": model1, "beta": beta, "nbeads": 32},
+    "2d": {"model": model2, "beta": beta, "nbeads": 32},
+}, execution={"cpus": 32, "workers": 4, "memory_limit_mb": 8192})
+```
+
+For multiple nodes, install the existing `mpi` extra and set
+`execution.backend = "mpi"`. Launch the same command on all ranks, for example
+with two ranks per node on two nodes:
+
+```bash
+mpiexec -n 4 --map-by ppr:2:node:PE=16 pyrpmd subspace-correct correct.toml
+```
+
+The launcher example uses Open MPI; use the equivalent binding options for
+your MPI implementation and scheduler. `cpus` and `memory_limit_mb` are
+**per-node** budgets in MPI mode. Each shared-memory node divides them among
+its ranks; `workers` applies only to the local process backend. Rank zero
+builds models and writes the pipeline report, dynamically dispatches tasks,
+and also computes. Only gridded models and quantum grid arrays travel between
+ranks; no live PES object or pipeline closure is sent. All ranks must call
+the Python API. Rank zero alone supplies `cases` to `subspace_corrections`;
+other ranks may pass `None`. There are no MPI collectives inside time steps.
+A single correction currently supplies two distributed tasks; two dimensions
+supply four. This is task-level scaling, not distributed dense linear algebra.
+
+Each completed quantum or RPMD result is atomically checkpointed, including
+the RPMD time series. Identity includes the grids, masses, temperature,
+beads, potential metadata, sampled absorber/truncation arrays, numerical and
+sampling settings, seed, solver implementation and NumPy/SciPy versions.
+Changing thread counts or rank placement can reuse results. Changed physical
+or sampling inputs cannot. With an execution section the task cache replaces
+the older `output.reuse` shortcut, which checked temperature alone. A failed
+or interrupted task reruns from its original seed; completed tasks survive a
+job/launcher restart. This is restart between tasks, not continuation within
+an unfinished HMC chain or recovery of a failed MPI rank inside a live job.
+
+Diagnostics include actual OpenMP team size, native/Python polymer-step
+counts, Python potential callbacks, fallback reasons, per-task CPU/wall time,
+BLAS limits, memory estimates and checkpoint reuse. `physical_converged`
+remains false. The reproducible H+H2 benchmark is
+`benchmarks/h3_subspace/parallel.py`; its fixed 300 K/P32 budget tests execution
+and numerical compatibility, and does not establish a converged reaction rate.
+
 ## Choosing the subspace
 
 `S` must contain the RPMD defect, not merely the strongly coupled modes. The research behind

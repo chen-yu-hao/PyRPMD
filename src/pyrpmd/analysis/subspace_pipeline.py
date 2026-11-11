@@ -758,12 +758,7 @@ def pipeline_identity(root, options):
                                 "options": numerical, "implementation": implementation})
 
 
-def run_subspace_pipeline(specification, *, apply=True, reuse_key=None) -> dict:
-    """Run from a mapping or TOML/JSON; ``apply=False`` writes factors only.
-
-    Cached factors are tied to source data, numerical settings and solver
-    implementations for native and standalone callers alike.
-    """
+def _read_specification(specification):
     base = None
     if isinstance(specification, (str, Path)):
         path = Path(specification)
@@ -777,7 +772,11 @@ def run_subspace_pipeline(specification, *, apply=True, reuse_key=None) -> dict:
         base = path.resolve().parent
     else:
         spec = dict(specification)
-    options = _merge(DEFAULTS, spec)
+    return _merge(DEFAULTS, spec), base
+
+
+def _prepare_pipeline(options, base, reuse_key):
+    """Open the saved run and bind its reuse identity before any model is built."""
     source = options["source"].get("rate_run")
     if not source:
         raise ValueError("source.rate_run is required")
@@ -792,15 +791,15 @@ def run_subspace_pipeline(specification, *, apply=True, reuse_key=None) -> dict:
     try:
         if reuse_key is None:
             reuse_key = pipeline_identity(run.root, options)
-        return _run_pipeline(run, out_dir, options, apply=apply, reuse_key=reuse_key)
-    finally:
-        close = getattr(run.provider, "close", None)
-        if callable(close):
-            close()
+        return {"run": run, **_build_cases(run, out_dir, options, base, reuse_key)}
+    except BaseException:
+        _close_run(run)
+        raise
 
 
-def _run_pipeline(run, out_dir, options, *, apply, reuse_key):
-    from ..io import file_sha256, write_json
+def _build_cases(run, out_dir, options, base, reuse_key):
+    """Build the path and subspace models and list the corrections still to solve."""
+    from ..io import file_sha256
 
     out_dir.mkdir(parents=True, exist_ok=True)
     mean, mask, path, path_info = build_path(run, options["path"])
@@ -819,8 +818,11 @@ def _run_pipeline(run, out_dir, options, *, apply, reuse_key):
                                                                      ([int(requested)] if np.ndim(requested) == 0 else
                                                                       [int(d) for d in requested]))
     rpmd_options, nbeads = _rpmd_options(options["rpmd"], run)
-    corrections, models = {}, {}
-    if options["output"].get("reuse"):
+    corrections, models, cases = {}, {}, {}
+    # With an execution table the task scheduler owns reuse through its own
+    # identity-checked checkpoints; saved C_S records are reused only on the
+    # ordinary sequential route.
+    if options["output"].get("reuse") and options.get("execution") is None:
         previous = {}
         report_path = out_dir / "subspace_pipeline.json"
         if report_path.is_file():
@@ -853,9 +855,8 @@ def _run_pipeline(run, out_dir, options, *, apply, reuse_key):
             run, path, {**options["quantum"], **environment},
             path_source=path_info.get("source", "centroid"),
         )
-        corrections[1] = subspace_correction(model1, run.beta, nbeads, quantum_options=quantum1,
-                                             rpmd_options=rpmd_options)
-        corrections[1].write(out_dir / "C_S_1d.json")
+        cases[1] = dict(model=model1, beta=run.beta, nbeads=nbeads, quantum_options=quantum1,
+                        rpmd_options=rpmd_options)
         models[1] = info1
     if 2 in dimensions:
         candidate = None
@@ -865,10 +866,37 @@ def _run_pipeline(run, out_dir, options, *, apply, reuse_key):
             candidate = np.asarray(static_cw["candidate_direction"])
         environment = {"environment": options["subspace"].get("environment", "adiabatic")}
         model2, quantum2, info2, rpmd_model2 = plane_model(run, path, candidate, {**options["quantum"], **environment})
-        corrections[2] = subspace_correction(model2, run.beta, nbeads, quantum_options=quantum2,
-                                             rpmd_options=rpmd_options, rpmd_model=rpmd_model2)
-        corrections[2].write(out_dir / "C_S_2d.json")
+        cases[2] = dict(model=model2, beta=run.beta, nbeads=nbeads, quantum_options=quantum2,
+                        rpmd_options=rpmd_options, rpmd_model=rpmd_model2)
         models[2] = info2
+    execution = options.get("execution")
+    if execution is not None:
+        execution = dict(execution)
+        directory = Path(execution.get("checkpoint_dir") or out_dir / "tasks")
+        if execution.get("checkpoint_dir") and base is not None and not directory.is_absolute():
+            directory = base / directory
+        execution["checkpoint_dir"] = str(directory)
+    return dict(out_dir=out_dir, nbeads=nbeads, options=options, cases=cases, execution=execution,
+                corrections=corrections, models=models, path_info=path_info, sampled_cw=sampled_cw,
+                static_cw=static_cw, verdict=verdict, reuse_key=reuse_key)
+
+
+def _close_run(run):
+    close = getattr(run.provider, "close", None)
+    if callable(close):
+        close()
+
+
+def _finish_pipeline(state, computed, apply):
+    from ..io import file_sha256, write_json
+
+    run, out_dir, nbeads = state["run"], state["out_dir"], state["nbeads"]
+    options, models, corrections = state["options"], state["models"], state["corrections"]
+    path_info, sampled_cw, static_cw = state["path_info"], state["sampled_cw"], state["static_cw"]
+    verdict, reuse_key = state["verdict"], state["reuse_key"]
+    for dimension, correction in computed.items():
+        correction.write(out_dir / f"C_S_{dimension}d.json")
+        corrections[dimension] = correction
     sensitivity = nested_subspace_sensitivity(list(corrections.values())) if len(corrections) > 1 else None
     if sensitivity is None:
         chosen, reason = max(corrections), "only dimension computed"
@@ -900,6 +928,48 @@ def _run_pipeline(run, out_dir, options, *, apply, reuse_key):
     report = _json_safe(report)
     write_json(out_dir / "subspace_pipeline.json", report)
     return report
+
+
+def run_subspace_pipeline(specification, *, apply=True, reuse_key=None) -> dict:
+    """Run from a mapping or TOML/JSON; ``apply=False`` writes factors only.
+
+    Cached factors are tied to source data, numerical settings and solver
+    implementations for native and standalone callers alike. With
+    ``execution.backend='mpi'`` every rank participates in the rate solves.
+    """
+    from ..parallel import root_call
+    from ..parallel.execution import _optional_world
+    from .subspace_execution import subspace_corrections
+
+    # Only small options/reports cross these collectives. The preparation state
+    # contains a live PES and stays on root; task models travel through the task
+    # scheduler after its absorber closures have been evaluated on the DVR grid.
+    call = root_call if _optional_world() is not None else lambda function, *args: function(*args)
+    options, base = call(_read_specification, specification)
+    state = {}
+
+    def prepare():
+        state.update(_prepare_pipeline(options, base, reuse_key))
+        return state["execution"]
+
+    def release():
+        if "run" in state:
+            _close_run(state["run"])
+
+    try:
+        execution = call(prepare)
+        if execution is not None and execution.get("backend") == "mpi":
+            computed = subspace_corrections(state.get("cases"), execution=execution)
+        else:
+            def compute():
+                if execution is not None:
+                    return subspace_corrections(state["cases"], execution=execution)
+                return {key: subspace_correction(**case) for key, case in state["cases"].items()}
+
+            computed = call(compute)
+        return call(_finish_pipeline, state, computed, apply)
+    finally:
+        call(release)
 
 
 __all__ = ["RateRun", "build_path", "load_rate_run", "path_model", "plane_model", "run_subspace_pipeline"]

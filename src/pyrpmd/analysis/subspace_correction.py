@@ -124,6 +124,7 @@ def subspace_correction(
     quantum_options: Mapping[str, Any] | None = None,
     rpmd_options: Mapping[str, Any] | None = None,
     rpmd_model: SubspaceModel | None = None,
+    execution: Mapping[str, Any] | None = None,
 ) -> SubspaceCorrection:
     """Compute ``C_S = k_QM(H_S) / k_RPMD(H_S)`` for one temperature.
 
@@ -133,13 +134,28 @@ def subspace_correction(
     a finer grid for the ring-polymer spline; the quantum DVR uses ``model``,
     whose nodes must be a subset of it.
     """
+    if execution is not None:
+        from .subspace_execution import subspace_corrections
+
+        return subspace_corrections({"correction": {
+            "model": model, "beta": beta, "nbeads": nbeads, "quantum_options": quantum_options,
+            "rpmd_options": rpmd_options, "rpmd_model": rpmd_model,
+        }}, execution=execution)["correction"]
+    _validate_rpmd_model(model, rpmd_model)
     quantum = exact_quantum_rate(model, beta, **dict(quantum_options or {}))
+    rpmd = ring_polymer_rate(rpmd_model if rpmd_model is not None else model, beta, nbeads,
+                             **dict(rpmd_options or {}))
+    return _assemble_correction(model, beta, nbeads, quantum, rpmd)
+
+
+def _validate_rpmd_model(model, rpmd_model):
     if rpmd_model is not None:
         if (rpmd_model.dimension != model.dimension or rpmd_model.dividing_surface != model.dividing_surface
                 or rpmd_model.reactant_reference != model.reactant_reference):
             raise ValueError("rpmd_model must describe the same subspace, surface and reference")
-    rpmd = ring_polymer_rate(rpmd_model if rpmd_model is not None else model, beta, nbeads,
-                             **dict(rpmd_options or {}))
+
+
+def _assemble_correction(model, beta, nbeads, quantum, rpmd):
     if quantum.rate <= 0 or rpmd.rate <= 0:
         raise FloatingPointError("subspace rates must be positive to form a correction factor")
     quantum_spread = float(quantum.diagnostics.get("relative_extrapolation_spread", 0.0) or 0.0)

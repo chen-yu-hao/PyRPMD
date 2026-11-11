@@ -368,7 +368,11 @@ def test_standalone_reuse_identity_tracks_path_and_source(tmp_path, monkeypatch)
     closed, identities = [], []
     fake_run = SimpleNamespace(root=root, provider=SimpleNamespace(close=lambda: closed.append(True)))
     monkeypatch.setattr(pipe, "load_rate_run", lambda *a: fake_run)
-    monkeypatch.setattr(pipe, "_run_pipeline", lambda *a, **k: identities.append(k["reuse_key"]) or {})
+    # The pipeline prepares cases, solves them and writes a report; replace
+    # the model building and the report so only the identity binding runs.
+    monkeypatch.setattr(pipe, "_build_cases", lambda run, out, options, base, key: (
+        identities.append(key) or {"execution": None, "cases": {}}))
+    monkeypatch.setattr(pipe, "_finish_pipeline", lambda state, computed, apply: {})
     request = {"source": {"rate_run": str(root)}, "output": {"reuse": True}}
     pipe.run_subspace_pipeline(request, apply=False)
     pipe.run_subspace_pipeline(request, apply=False)

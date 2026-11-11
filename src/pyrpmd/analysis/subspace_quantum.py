@@ -45,6 +45,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any, Mapping
+from time import perf_counter
 
 import numpy as np
 from scipy.linalg import eigh, schur
@@ -154,20 +155,30 @@ class _GridOperators:
         infinite walls, exact once the truncation energy is high enough.
         """
         if keep is None:
-            h = np.diag(self.potential.ravel()).astype(float)
+            h = np.zeros((self.size, self.size), order="F")
+            h[np.diag_indices(self.size)] = self.potential.ravel()
             for axis, matrix in enumerate(self.kinetic):
-                left = int(np.prod(self.shape[:axis]))
                 right = int(np.prod(self.shape[axis + 1:]))
-                h += np.kron(np.kron(np.eye(left), matrix), np.eye(right))
+                row = np.arange(self.shape[axis]) * right
+                for start in range(0, self.size, len(row) * right):
+                    for offset in range(right):
+                        index = row + start + offset
+                        h[np.ix_(index, index)] += matrix
             return h
         index = np.unravel_index(np.asarray(keep), self.shape)
-        h = np.diag(self.potential.ravel()[keep]).astype(float)
+        h = np.zeros((len(keep), len(keep)), order="F")
+        h[np.diag_indices(len(keep))] = self.potential.ravel()[keep]
         for axis, matrix in enumerate(self.kinetic):
-            same = np.ones((len(keep), len(keep)), dtype=bool)
+            # Couple only points on the same grid line. Avoid N x N masks,
+            # gathered kinetic matrices and full Kronecker temporaries.
+            labels = np.zeros(len(keep), dtype=np.int64)
             for other in range(len(self.shape)):
                 if other != axis:
-                    same &= index[other][:, None] == index[other][None, :]
-            h += np.where(same, matrix[np.ix_(index[axis], index[axis])], 0.0)
+                    labels = labels * self.shape[other] + index[other]
+            order = np.argsort(labels, kind="stable")
+            cuts = np.flatnonzero(np.diff(labels[order])) + 1
+            for group in np.split(order, cuts):
+                h[np.ix_(group, group)] += matrix[np.ix_(index[axis][group], index[axis][group])]
         return h
 
 
@@ -177,6 +188,8 @@ def _transverse_partition(model: SubspaceModel, beta: float, shift: float) -> tu
         energy = float(model.energy(np.array([[reference]]))[0])
         return float(np.exp(-beta * (energy - shift))), {"reference_energy": energy}
     axes = model.axes[1:]
+    if np.prod([len(a) for a in axes]) > 5000:
+        raise ValueError("transverse reactant slice exceeds 5000 points; use a coarser transverse grid")
     mesh = np.stack(np.meshgrid(*axes, indexing="ij"), axis=-1)
     points = np.concatenate([np.full(mesh.shape[:-1] + (1,), reference), mesh], axis=-1)
     slice_potential = np.asarray(model.energy(points), dtype=float).ravel()
@@ -186,8 +199,6 @@ def _transverse_partition(model: SubspaceModel, beta: float, shift: float) -> tu
         left = int(np.prod(shape[:index]))
         right = int(np.prod(shape[index + 1:]))
         hamiltonian = hamiltonian + np.kron(np.kron(np.eye(left), sinc_dvr_kinetic(axis, mass)), np.eye(right))
-    if hamiltonian.shape[0] > 5000:
-        raise ValueError("transverse reactant slice exceeds 5000 points; use a coarser transverse grid")
     levels = np.linalg.eigvalsh(hamiltonian)
     weights = np.exp(-beta * (levels - shift))
     return float(weights.sum()), {
@@ -196,13 +207,14 @@ def _transverse_partition(model: SubspaceModel, beta: float, shift: float) -> tu
     }
 
 
-def _reactant_partition(model, beta, shift, *, energies=None, vectors=None, operators=None, tolerance=1e-12):
+def _reactant_partition(model, beta, shift, *, energies=None, vectors=None, operators=None, tolerance=1e-12,
+                        product=None):
     if model.reactant == "asymptotic":
         transverse, info = _transverse_partition(model, beta, shift)
         value = np.sqrt(model.masses[0] / (2.0 * np.pi * beta)) * transverse
         info.update(normalization="per unit length of axis 0 at reactant_reference")
         return float(value), info
-    reactant = 1.0 - operators.product.ravel()
+    reactant = 1.0 - (operators.product.ravel() if product is None else product)
     if energies is None:
         energies, vectors = _lowest_states(operators, beta, shift, tolerance)
     weights = np.exp(-beta * (energies - shift))
@@ -253,6 +265,40 @@ def _slice_density(model, operators, keep, energies, vectors, beta, shift):
                   "reference_line": float(axis0[row]), "slice_points": int(on_line.sum())}
 
 
+def _triangular_sylvester(triangular, rhs, block_size=64):
+    """Solve T^H X - X T = rhs with LAPACK tiles and BLAS matrix updates.
+
+    The tile traversal follows the lower/upper triangular dependencies.
+    Rare LAPACK scaling or perturbed eigenvalues use the original full solve,
+    retaining LAPACK's global overflow/near-degeneracy handling.
+    """
+    n = len(rhs)
+    if n <= block_size:
+        return (*ztrsyl(triangular, triangular, rhs, trana="C", tranb="N", isgn=-1), "lapack")
+    solution = np.empty((n, n), dtype=complex, order="F")
+    for i in range(0, n, block_size):
+        rows = slice(i, min(i + block_size, n))
+        for j in range(0, n, block_size):
+            cols = slice(j, min(j + block_size, n))
+            tile = np.array(rhs[rows, cols], order="F", copy=True)
+            if i:
+                tile -= triangular[:i, rows].conj().T @ solution[:i, cols]
+            if j:
+                tile += solution[rows, :j] @ triangular[:j, cols]
+            value, scale, info = ztrsyl(triangular[rows, rows], triangular[cols, cols], tile,
+                                       trana="C", tranb="N", isgn=-1, overwrite_c=True)
+            if scale != 1.0 or info != 0 or not np.isfinite(value).all():
+                return (*ztrsyl(triangular, triangular, rhs, trana="C", tranb="N", isgn=-1),
+                        "lapack_fallback")
+            solution[rows, cols] = value
+    return solution, 1.0, 0, "blocked_lapack"
+
+
+def _dense_memory_mb(model, retained, normalization="default"):
+    transverse = int(np.prod(model.shape[1:])) if model.reactant == "asymptotic" and normalization == "default" else 0
+    return 64 + (192 * retained**2 + 64 * np.prod(model.shape) + 32 * transverse**2) / 2**20
+
+
 def _dense_rate_matrix(
     hamiltonian,
     eps,
@@ -293,37 +339,17 @@ def _dense_rate_matrix(
     if not np.isfinite(beta) or beta <= 0:
         raise ValueError("beta must be positive")
     shift = float(shift)
+    started = perf_counter()
     energies, vectors = eigh(hamiltonian)
+    diagonalized = perf_counter()
     half = np.exp(-0.5 * beta * (energies - shift))
     if energy_floor is not None:
         energy_floor = float(energy_floor)
         if not np.isfinite(energy_floor):
             raise ValueError("energy_floor must be finite")
         half = np.where(energies >= energy_floor, half, 0.0)
-    # K = [H, h] is real antisymmetric for the real Hamiltonians used by the
-    # DVR and channel constructions.  The formula below also accepts a
-    # complex Hermitian matrix and uses the Hermitian commutator convention.
-    commutator = hamiltonian * product[None, :]
-    commutator -= product[:, None] * hamiltonian
-    boltzmann_half = (vectors * half[None, :]) @ vectors.conj().T
-    thermal_real = boltzmann_half @ commutator @ boltzmann_half
-    del boltzmann_half
-    absorbing = np.asarray(hamiltonian, dtype=complex).copy()
-    absorbing[np.diag_indices_from(absorbing)] -= 1j * eps
-    triangular, unitary = schur(absorbing, output="complex", overwrite_a=True)
-    del absorbing
-    # Right-hand side i U^+ F U = -U^+ K U, with F=iK.
-    rhs = unitary.conj().T @ commutator @ unitary
-    rhs *= -1.0
-    solution, scale, info = ztrsyl(triangular, triangular, rhs, trana="C", tranb="N", isgn=-1)
-    del rhs, triangular
-    if info < 0:
-        raise RuntimeError(f"ztrsyl failed with info={info}")
-    solution /= scale
-    projected = unitary.conj().T @ thermal_real @ unitary
-    flux = float(np.real(1j * np.einsum("ij,ji->", projected, solution)))
-    side_check = float(np.real(1j * np.sum(np.diag(thermal_real) * product)))
-    del projected, solution, unitary, thermal_real
+    # The partition needs the eigenvectors; evaluate it first so they can be
+    # released before the Schur and Sylvester steps allocate their matrices.
     if partition is None:
         if reactant_weights is None:
             raise ValueError("partition or reactant_weights is required")
@@ -345,15 +371,59 @@ def _dense_rate_matrix(
         partition_info = {"normalization": "caller supplied matrix partition"}
     if not np.isfinite(value) or value <= 0:
         raise FloatingPointError("matrix partition must be finite and positive")
+    lowest_levels = energies[:6].tolist()
+    states_below_floor = int(np.sum(energies < energy_floor)) if energy_floor is not None else 0
+    # K = [H, h] is real antisymmetric for the real Hamiltonians used by the
+    # DVR and channel constructions.  The formula below also accepts a
+    # complex Hermitian matrix and uses the Hermitian commutator convention.
+    # Each matrix is released once used, so the peak stays near four complex
+    # N x N arrays (the Schur pair, the right-hand side and the solution).
+    commutator = hamiltonian * product[None, :]
+    commutator -= product[:, None] * hamiltonian
+    boltzmann_half = (vectors * half[None, :]) @ vectors.conj().T
+    del vectors, energies
+    thermal_real = boltzmann_half @ commutator @ boltzmann_half
+    del boltzmann_half
+    absorbing = np.array(hamiltonian, dtype=complex, order="F")
+    absorbing[np.diag_indices_from(absorbing)] -= 1j * eps
+    schur_started = perf_counter()
+    triangular, unitary = schur(absorbing, output="complex", overwrite_a=True)
+    schur_finished = perf_counter()
+    del absorbing
+    # Right-hand side i U^+ F U = -U^+ K U, with F=iK.
+    rhs = unitary.conj().T @ commutator
+    del commutator
+    rhs = rhs @ unitary
+    rhs *= -1.0
+    sylvester_started = perf_counter()
+    solution, scale, info, solver = _triangular_sylvester(triangular, rhs)
+    sylvester_finished = perf_counter()
+    del rhs, triangular
+    if info < 0:
+        raise RuntimeError(f"ztrsyl failed with info={info}")
+    solution /= scale
+    projected = unitary.conj().T @ thermal_real
+    projected = projected @ unitary
+    flux = float(np.real(1j * np.einsum("ij,ji->", projected, solution)))
+    del projected, solution, unitary
+    # Tr[F_beta h] vanishes for an exact thermal flux operator; a nonzero value
+    # measures how well the grid represents the dividing surface.
+    side_check = float(np.real(1j * np.sum(np.diag(thermal_real) * product)))
+    del thermal_real
     return flux, value, {
         "grid_points": int(n),
         "retained_points": int(n),
         "sylvester_scale": float(scale),
         "sylvester_info": int(info),
+        "sylvester_solver": solver,
+        "timing_seconds": {"assembly_and_eigh": diagonalized - started,
+                           "schur": schur_finished - schur_started,
+                           "sylvester": sylvester_finished - sylvester_started,
+                           "dense_total": perf_counter() - started},
         "flux_side_t0": side_check,
-        "lowest_levels": energies[:6].tolist(),
+        "lowest_levels": lowest_levels,
         "energy_floor": energy_floor,
-        "states_below_floor": int(np.sum(energies < energy_floor)) if energy_floor is not None else 0,
+        "states_below_floor": states_below_floor,
         "partition": partition_info,
     }
 
@@ -645,6 +715,7 @@ def exact_quantum_rate(
     normalization: str = "default",
     energy_floor: float | None = None,
     truncation_energy: Any = None,
+    memory_limit_mb: float | None = None,
 ) -> QuantumRateResult:
     """Exact thermal rate constant of ``model`` at inverse temperature ``beta``.
 
@@ -715,7 +786,8 @@ def exact_quantum_rate(
     eps = eps_axis.reshape((-1,) + (1,) * (model.dimension - 1))
     shift = float(operators.potential.min())
     if absorber is not None:
-        eps = np.asarray(absorber(model.grid_points().reshape(-1, model.dimension)), dtype=float).reshape(model.shape)
+        values = absorber(model.grid_points().reshape(-1, model.dimension)) if callable(absorber) else absorber
+        eps = np.asarray(values, dtype=float).reshape(model.shape)
         if not np.isfinite(eps).all() or np.any(eps < 0):
             raise ValueError("absorber must return finite nonnegative values")
     if normalization not in ("default", "slice"):
@@ -732,8 +804,14 @@ def exact_quantum_rate(
     if method == "sylvester":
         if retained > max(dense_limit, 6000):
             raise ValueError("grid too large for the dense Sylvester route")
+        estimate_mb = _dense_memory_mb(model, retained, normalization)
+        if memory_limit_mb is not None and (not np.isfinite(memory_limit_mb) or memory_limit_mb <= 0):
+            raise ValueError("memory_limit_mb must be finite and positive")
+        if memory_limit_mb is not None and estimate_mb > memory_limit_mb:
+            raise MemoryError(f"dense DVR needs an estimated {estimate_mb:.1f} MiB; budget is {memory_limit_mb:.1f} MiB")
         flux, partition, info = _dense_rate(model, operators, eps, beta, shift, keep=keep,
                                             energy_floor=energy_floor, normalization=normalization)
+        info["estimated_peak_memory_mb"] = estimate_mb
     else:
         if keep is not None or energy_floor is not None or normalization != "default":
             raise ValueError("truncation_energy, energy_floor and slice normalization need the dense route")

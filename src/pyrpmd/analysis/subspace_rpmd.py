@@ -114,6 +114,10 @@ class _RingPolymer:
         self.c = normal_mode_matrix(self.p)
         self.omega = free_ring_frequencies(self.p, self.beta)
         self.momentum_scale = np.sqrt(self.mass / self.beta_p)
+        self.backend = "python"
+        self.native_steps = self.python_steps = self.python_pes_calls = 0
+        self.threads_used = 1
+        self.fallback_reason = None
 
     def beads(self, modes):
         return np.einsum("jk,bkd->bjd", self.c, modes)
@@ -122,6 +126,7 @@ class _RingPolymer:
         return np.einsum("jk,bjd->bkd", self.c, beads)
 
     def potential(self, modes):
+        self.python_pes_calls += 1
         energy, gradient = self.model.energy_and_gradient(self.beads(modes))
         if not np.isfinite(energy).all() or not np.isfinite(gradient).all():
             raise FloatingPointError("subspace potential returned non-finite values")
@@ -144,6 +149,7 @@ class _RingPolymer:
         return cos, q_from_p, p_from_q
 
     def step(self, modes, momenta, force, dt, propagator, constrained):
+        self.python_steps += len(modes)
         momenta = momenta + 0.5 * dt * force
         cos, q_from_p, p_from_q = propagator
         modes, momenta = cos * modes + q_from_p * momenta, p_from_q * modes + cos * momenta
@@ -153,6 +159,17 @@ class _RingPolymer:
             force[:, 0, 0] = 0.0
         momenta = momenta + 0.5 * dt * force
         return modes, momenta, force, energy, gradient
+
+    def propagate(self, modes, momenta, force, dt, propagator, constrained, steps, *, surface=None):
+        side = None if surface is None else np.empty((steps + 1, len(modes)), dtype=bool)
+        if side is not None:
+            side[0] = modes[:, 0, 0] / np.sqrt(self.p) > surface
+        for step in range(steps):
+            trial = self.step(modes, momenta, force, dt, propagator, constrained)
+            modes, momenta, force = trial[:3]
+            if side is not None:
+                side[step + 1] = modes[:, 0, 0] / np.sqrt(self.p) > surface
+        return trial, side
 
     def sample_momenta(self, rng, batch, constrained):
         momenta = rng.normal(size=(batch, self.p, self.d)) * self.momentum_scale[None, None, :]
@@ -204,6 +221,8 @@ def ring_polymer_rate(
     plateau_fraction: float = 0.3,
     bootstrap: int = 400,
     seed: int = 0,
+    backend: str = "auto",
+    threads: int = 1,
 ) -> RingPolymerRateResult:
     """RPMD rate of ``model`` by centroid TI and recrossing trajectories.
 
@@ -247,13 +266,19 @@ def ring_polymer_rate(
             raise ValueError("windows must be increasing, contain four points and end at the dividing surface")
         if model.reactant == "asymptotic" and not np.isclose(grid[0], model.reactant_reference):
             raise ValueError("asymptotic windows must start at reactant_reference")
-    ring = _RingPolymer(model, beta, int(nbeads))
+    from .subspace_native import make_ring
+
+    ring = make_ring(model, beta, int(nbeads), backend, threads)
     frequency = _thermal_frequency(model, beta)
     hmc_step = 0.3 / frequency if hmc_dt is None else float(hmc_dt)
     md_step = 0.1 / frequency if md_dt is None else float(md_dt)
+    if not np.isfinite(hmc_step) or hmc_step <= 0 or not np.isfinite(md_step) or md_step <= 0:
+        raise ValueError("HMC and MD time steps must be finite and positive")
     if md_time is None:
         length = float(model.axes[0][-1] - model.axes[0][0])
         md_time = 0.3 * length * np.sqrt(beta * model.masses[0])
+    if not np.isfinite(md_time) or md_time <= 0:
+        raise ValueError("md_time must be finite and positive")
     md_steps = max(10, int(np.ceil(float(md_time) / md_step)))
 
     # --- constrained-centroid HMC for every window in one batch ---------
@@ -282,8 +307,7 @@ def ring_polymer_rate(
         trial = (modes, momenta, force, energy, gradient)
         steps = max(1, int(round(leapfrog_steps * rng.uniform(0.5, 1.5))))
         try:
-            for _ in range(steps):
-                trial = ring.step(trial[0], trial[1], trial[2], hmc_step, propagator, True)
+            trial, _ = ring.propagate(modes, momenta, force, hmc_step, propagator, True, steps)
             new_modes, new_momenta, new_force, new_energy, new_gradient = trial
             delta = ring.kinetic(new_momenta) + ring.spring(new_modes) + new_energy - start_h
             accept = np.log(rng.uniform(size=batch)) < -ring.beta_p * np.nan_to_num(delta, nan=np.inf)
@@ -347,8 +371,8 @@ def ring_polymer_rate(
         start_h = ring.kinetic(momenta) + ring.spring(surf_modes) + surf_energy
         trial = (surf_modes, momenta, surf_force, surf_energy, surf_gradient)
         try:
-            for _ in range(max(1, int(round(leapfrog_steps * rng.uniform(0.5, 1.5))))):
-                trial = ring.step(trial[0], trial[1], trial[2], hmc_step, propagator, True)
+            steps = max(1, int(round(leapfrog_steps * rng.uniform(0.5, 1.5))))
+            trial, _ = ring.propagate(surf_modes, momenta, surf_force, hmc_step, propagator, True, steps)
             delta = ring.kinetic(trial[1]) + ring.spring(trial[0]) + trial[3] - start_h
             accept = np.log(rng.uniform(size=nwalk)) < -ring.beta_p * np.nan_to_num(delta, nan=np.inf)
         except FloatingPointError:
@@ -369,12 +393,9 @@ def ring_polymer_rate(
     md_force = -ring.modes(md_gradient)
     md_propagator = ring.free_propagator(md_step)
     initial_h = ring.kinetic(md_momenta) + ring.spring(md_modes) + md_energy
-    side = np.empty((md_steps + 1, 2 * ntraj), dtype=bool)
-    side[0] = md_modes[:, 0, 0] / np.sqrt(ring.p) > surface
-    for step in range(1, md_steps + 1):
-        md_modes, md_momenta, md_force, md_energy, _ = ring.step(
-            md_modes, md_momenta, md_force, md_step, md_propagator, False)
-        side[step] = md_modes[:, 0, 0] / np.sqrt(ring.p) > surface
+    trial, side = ring.propagate(md_modes, md_momenta, md_force, md_step, md_propagator,
+                                 False, md_steps, surface=surface)
+    md_modes, md_momenta, md_force, md_energy, _ = trial
     final_h = ring.kinetic(md_momenta) + ring.spring(md_modes) + md_energy
     energy_error = float(np.max(np.abs(final_h - initial_h)) * ring.beta_p)
     forward, backward = side[:, :ntraj].astype(float), side[:, ntraj:].astype(float)
@@ -395,6 +416,13 @@ def ring_polymer_rate(
     rate = qtst * plateau
     relative = np.hypot(log_qtst_error, kappa_error / plateau if plateau > 0 else np.inf)
     diagnostics = {
+        "backend": ring.backend,
+        "threads_requested": int(threads),
+        "threads_used": ring.threads_used,
+        "native_steps": ring.native_steps,
+        "python_steps": ring.python_steps,
+        "python_pes_callbacks": ring.python_pes_calls,
+        "fallback_reason": ring.fallback_reason,
         "nbeads": int(nbeads),
         "windows": int(nw),
         "walkers_per_window": nwalk,

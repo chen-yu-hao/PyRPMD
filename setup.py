@@ -63,6 +63,16 @@ if os.environ.get("PYRPMD_NO_NATIVE", "0") != "1":
             extra_link_args=link_args,
         )
     )
+    extensions.append(
+        Extension(
+            "pyrpmd._subspace",
+            ["native/subspace.cpp"],
+            language="c++",
+            depends=["native/ring_fft.h"],
+            extra_compile_args=compile_args,
+            extra_link_args=link_args,
+        )
+    )
     extensions.append(Extension("pyrpmd._mbar", ["native/mbar.cpp"], language="c++",
                                 extra_compile_args=compile_args, extra_link_args=link_args))
 setup(
