@@ -35,6 +35,7 @@ from .rate_pmf import (
     mbar_rate_pmf as _mbar_rate_pmf,
 )
 from .umbrella import _histogram, umbrella_integration, umbrella_reduced_potentials
+from .mbar_problem import umbrella_problem
 
 
 def _grouped_resample_indices(counts, block_lengths, groups, rng):
@@ -58,6 +59,8 @@ def reconstruct_fes(
     correlation_observables=None,
     *,
     bootstrap_groups=None,
+    bootstrap_workers=1,
+    solver_options=None,
 ):
     """Reconstruct 1D/2D/3D density w.r.t. ds1...dsD, not bin probability mass.
 
@@ -193,9 +196,15 @@ def reconstruct_fes(
             for a in arrays:
                 a[:, j] = (a[:, j] - lo) % p + lo
         x = np.concatenate(arrays)
-    u = umbrella_reduced_potentials(x, centers, k, beta, periods)
+    u = umbrella_problem(x, centers, k, beta, periods)
+    from .rate_pmf import _resolve_bootstrap_workers, _cap_bootstrap_workers, _ordered_thread_map
+    import os
+    requested = _resolve_bootstrap_workers(bootstrap_workers, bootstrap)
+    affinity = len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else os.cpu_count() or 1
+    workers = min(affinity, _cap_bootstrap_workers(requested, bootstrap, u.nbytes))
+    options = dict(solver_options or {})
     mbar = solve_mbar(u, counts, overlap_threshold=overlap_threshold,
-                      return_state_weights=False)
+                      return_state_weights=False, **options)
     if not mbar.converged:
         raise RuntimeError(
             f"MBAR did not converge; equation residual={mbar.residual:g}"
@@ -227,9 +236,8 @@ def reconstruct_fes(
     if connected and bootstrap and np.any(~mask):
         rng = np.random.default_rng(seed)
         ref = np.unravel_index(np.nanargmin(f), f.shape)
-        for draw in range(int(bootstrap)):
-            indices = _grouped_resample_indices(
-                counts, block_plan["block_lengths"], groups, rng)
+        def calculate(task):
+            draw, indices = task
             xb = x[indices]
             # Every umbrella is already evaluated at each original (wrapped)
             # frame. Resampling columns retains the identical bias problem.
@@ -239,22 +247,35 @@ def reconstruct_fes(
                 overlap_threshold=overlap_threshold,
                 initial_free_energies=mbar.free_energies,
                 return_state_weights=False,
+                **{**options, "threads": min(options.get("threads", 1), max(1, affinity // workers))},
             )
             record = {"draw": draw, "valid": False, "reason": None,
                       "solver_residual": mb.residual}
-            records.append(record)
             if not mb.converged:
                 record["reason"] = "mbar_not_converged"
-                continue
+                return record, None
             if len(set(mb.components)) > 1:
                 record["reason"] = "disconnected_overlap"
-                continue
+                return record, None
             _, _, _, fb, _ = _histogram(xb, mb.weights, edges, beta, min_count)
             if np.isfinite(fb[ref]):
-                boots.append(fb - fb[ref])
                 record["valid"] = True
+                return record, fb - fb[ref]
             else:
                 record["reason"] = "reference_bin_masked"
+                return record, None
+        tasks = ((draw, _grouped_resample_indices(counts, block_plan["block_lengths"], groups, rng))
+                 for draw in range(int(bootstrap)))
+        if workers == 1:
+            calculated = map(calculate, tasks)
+        else:
+            from threadpoolctl import threadpool_limits
+            with threadpool_limits(limits=1, user_api="blas"):
+                calculated = _ordered_thread_map(calculate, tasks, workers)
+        for record, curve in calculated:
+            records.append(record)
+            if curve is not None:
+                boots.append(curve)
         if boots:
             b = np.asarray(boots)
             valid = np.isfinite(b).sum(axis=0)
@@ -305,6 +326,8 @@ def reconstruct_fes(
         "bootstrap_replicates": len(boots),
         "bootstrap_requested": int(bootstrap),
         "bootstrap_attempted": len(records),
+        "bootstrap_workers": workers,
+        "solver": mbar.diagnostics,
         "bootstrap_valid_per_bin": valid,
         "bootstrap_reference_bin": None if ref is None else np.asarray(ref),
         "bootstrap_diagnostics": records,
@@ -350,6 +373,7 @@ def mbar_rate_pmf(
     bootstrap_workers=None,
     bootstrap_workers_source="default",
     bootstrap_total_cores=None,
+    bootstrap_executor=None,
     min_weight_ess=_DEFAULT_MIN_WEIGHT_ESS,
     min_endpoint_ess=_DEFAULT_MIN_ENDPOINT_ESS,
     max_center_displacement_sigma=_DEFAULT_MAX_CENTER_DISPLACEMENT_SIGMA,
@@ -365,6 +389,7 @@ def mbar_rate_pmf(
         solver_options=solver_options, bootstrap_workers=bootstrap_workers,
         bootstrap_workers_source=bootstrap_workers_source,
         bootstrap_total_cores=bootstrap_total_cores,
+        bootstrap_executor=bootstrap_executor,
         min_weight_ess=min_weight_ess,
         min_endpoint_ess=min_endpoint_ess,
         max_center_displacement_sigma=max_center_displacement_sigma,

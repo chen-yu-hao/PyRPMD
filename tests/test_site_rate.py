@@ -356,7 +356,7 @@ def test_correlated_pmf_bootstrap_and_chain_cluster_rate_uncertainty(tmp_path):
     data["statistical_inefficiency"] = np.asarray([
         statistical_inefficiency(stream["samples"]) for stream in sampled["streams"]
     ])
-    with patch.object(site, "umbrella_reduced_potentials", wraps=site.umbrella_reduced_potentials) as bias_matrix:
+    with patch.object(site, "umbrella_problem", wraps=site.umbrella_problem) as bias_matrix:
         pmf, tasks = site._estimate_pmf(sampled, config, system, tmp_path)
     assert bias_matrix.call_count == 1
     assert pmf["ready"]

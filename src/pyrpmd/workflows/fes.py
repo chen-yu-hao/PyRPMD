@@ -869,6 +869,7 @@ def _analyze_streams(streams, config, system, output, return_data, _postprocess=
         min_count=checked_integer(options.get("min_count", 1), "analysis.min_count"),
         overlap_threshold=float(options.get("overlap_threshold", 1e-6)),
         return_reweighting=return_data and config.get("task") == "surface_rate",
+        bootstrap_workers=options.get("bootstrap_workers", 1),
         bootstrap_groups=([s["exchange_group"] for s in streams]
                           if all("exchange_group" in s for s in streams) else None),
     )

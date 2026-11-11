@@ -29,8 +29,8 @@ from ..analysis.fes import (
     CV_CORRELATION_OBSERVABLES,
     cv_statistical_inefficiency,
     solve_mbar,
-    umbrella_reduced_potentials,
 )
+from ..analysis.mbar_problem import umbrella_problem
 from ..bias import displacement
 from ..parallel import root_call, run_tasks
 from .fes import resolve_umbrellas, _sample_window
@@ -289,7 +289,7 @@ def diagnose_and_refine(streams, centers, stiffness, beta, periods, options, *,
     ess = [sum(len(s["samples"]) / g for s, g in zip(group, factors))
            for group, factors in zip(groups, stream_g)]
     joined = np.concatenate(samples)
-    reduced = umbrella_reduced_potentials(joined, centers, np.broadcast_to(stiffness, (count,) + np.shape(stiffness)), beta, periods)
+    reduced = umbrella_problem(joined, centers, np.broadcast_to(stiffness, (count,) + np.shape(stiffness)), beta, periods)
     mbar = solve_mbar(reduced, [len(x) for x in samples], return_state_weights=False)
     if not mbar.converged:
         raise RuntimeError(f"adaptive pilot MBAR failed its equation residual: {mbar.residual:g}")

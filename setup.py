@@ -73,6 +73,8 @@ if os.environ.get("PYRPMD_NO_NATIVE", "0") != "1":
             extra_link_args=link_args,
         )
     )
+    extensions.append(Extension("pyrpmd._mbar", ["native/mbar.cpp"], language="c++",
+                                extra_compile_args=compile_args, extra_link_args=link_args))
 setup(
     ext_modules=extensions,
     license_files=["LICENSE", "THIRD_PARTY_NOTICES.md", "native/thermal-NOTICE.md",

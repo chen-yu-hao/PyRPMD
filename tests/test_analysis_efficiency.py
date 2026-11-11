@@ -55,11 +55,16 @@ def test_optional_state_weights_preserve_public_default_and_all_other_mbar_outpu
     assert compact.converged is full.converged is True
     assert compact.residual == full.residual
     for name, value in full.diagnostics.items():
+        if name == "state_weights_materialized":
+            # The streaming solver records whether it built the [N, K] matrix;
+            # the legacy solver does not report this field.
+            assert value is True and compact.diagnostics[name] is False
+            continue
         np.testing.assert_equal(compact.diagnostics[name], value)
 
 
 @pytest.mark.parametrize("correlation_policy", ["legacy", "moments"])
-def test_fes_reuses_bias_columns_with_the_same_periodic_multistream_bootstrap(monkeypatch, correlation_policy):
+def test_fes_streams_bias_with_the_same_periodic_multistream_bootstrap(monkeypatch, correlation_policy):
     rng = np.random.default_rng(1825)
     centers = np.array([[-0.6, -0.2], [0.6, 0.3], [-0.6, -0.2]])
     stiffness = np.array([[[0.6, 0.1], [0.1, 1.2]],
@@ -100,7 +105,7 @@ def test_fes_reuses_bias_columns_with_the_same_periodic_multistream_bootstrap(mo
     plan = fes._bootstrap_block_plan(counts, gs)
     assert plan["status"] != "unavailable"
     reference_rng = np.random.default_rng(seed)
-    expected_coordinates, expected_matrices, reference_curves = [x], [u], []
+    reference_curves = []
     for _ in range(draws):
         xb = np.concatenate([_legacy_block_resample(sample, block, reference_rng)
                              for sample, block in zip(wrapped, plan["block_lengths"])])
@@ -110,35 +115,22 @@ def test_fes_reuses_bias_columns_with_the_same_periodic_multistream_bootstrap(mo
         _, _, _, fb, _ = histogram(xb, mb.weights, edges, beta, min_count)
         if np.isfinite(fb[reference_bin]):
             reference_curves.append(fb - fb[reference_bin])
-        expected_coordinates.append(xb)
-        expected_matrices.append(ub)
-    bias_calls, solve_calls, histogram_calls = [], [], []
+    # The reference above is the dense route: one explicit [N, K] bias matrix
+    # and one dense solve per draw. The production route evaluates harmonic
+    # umbrella potentials on demand and resamples by index, so it must never
+    # build that matrix, yet it has to reproduce the dense numbers.
+    bias_calls = []
 
     def counted_bias(*args, **kwargs):
         bias_calls.append(True)
         return build_bias(*args, **kwargs)
 
-    def checked_solve(reduced, sizes, **kwargs):
-        np.testing.assert_array_equal(reduced, expected_matrices[len(solve_calls)])
-        np.testing.assert_array_equal(sizes, counts)
-        assert kwargs.get("return_state_weights") is False
-        solve_calls.append(True)
-        return solve(reduced, sizes, **kwargs)
-
-    def checked_histogram(coordinates, *args, **kwargs):
-        np.testing.assert_array_equal(coordinates, expected_coordinates[len(histogram_calls)])
-        histogram_calls.append(True)
-        return histogram(coordinates, *args, **kwargs)
-
     monkeypatch.setattr(fes, "umbrella_reduced_potentials", counted_bias)
-    monkeypatch.setattr(fes, "solve_mbar", checked_solve)
-    monkeypatch.setattr(fes, "_histogram", checked_histogram)
     result = fes.reconstruct_fes(samples, centers, stiffness, beta, bins=edges,
                                  periods=periods, bootstrap=draws, seed=seed,
                                  min_count=min_count)
-    assert len(bias_calls) == 1
-    assert len(solve_calls) == len(histogram_calls) == draws + 1
-    np.testing.assert_array_equal(result["free_energy"], point_free)
+    assert bias_calls == []
+    np.testing.assert_allclose(result["free_energy"], point_free, rtol=1e-12, atol=1e-13)
     np.testing.assert_array_equal(result["mask"], point_mask)
     assert result["bootstrap_replicates"] == len(reference_curves)
     expected_se = np.full_like(point_free, np.nan)
@@ -151,7 +143,7 @@ def test_fes_reuses_bias_columns_with_the_same_periodic_multistream_bootstrap(mo
             expected_valid[index] = len(values)
             if len(values) > 1:
                 expected_se[index] = values.std(ddof=1)
-    np.testing.assert_allclose(result["standard_error"], expected_se, rtol=1e-13, atol=1e-14)
+    np.testing.assert_allclose(result["standard_error"], expected_se, rtol=1e-11, atol=1e-13)
     np.testing.assert_array_equal(result["bootstrap_valid_per_bin"], expected_valid)
     for original, sample in zip(original_samples, samples):
         np.testing.assert_array_equal(sample, original)
