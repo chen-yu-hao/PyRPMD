@@ -273,10 +273,10 @@ def _missing_dependency_hint(error):
     extra = _OPTIONAL_MODULES.get(match.group(1)) if match else None
     if extra is None:
         return None
-    return (f"The optional dependency {match.group(1)!r} is not installed. Install it with "
-            f"python -m pip install 'pyrpmd[{extra}]' (from a source checkout: "
-            f"python -m pip install -e '.[{extra}]'); see the Installation chapter for "
-            "MPI, CUDA and other builds that must match your system.")
+    return (f"The optional dependency {match.group(1)!r} is not installed. From the source "
+            f"checkout run: python -m pip install -e '.[{extra}]' (extra 'pyrpmd[{extra}]'). "
+            "See the Installation chapter for MPI, CUDA and other builds that must match "
+            "your system.")
 
 
 def _print(value):

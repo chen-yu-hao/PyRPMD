@@ -191,8 +191,12 @@ class DiagnosticTests(unittest.TestCase):
         for task in ("rate", "fes", "path_sampling", "spectroscopy", "nonadiabatic", "plumed"):
             self.assertIn(task, result["workflows"])
         self.assertEqual(result["supported_input_schema_versions"], [1, 2])
-        # Every advertised task reaches its own resolver, not the unknown-task error.
-        for task in result["workflows"]:
+        # Every input task is advertised and reaches its own resolver, not the
+        # unknown-task error. The registry also lists workflows with their own command.
+        from pyrpmd.input_schema import TASKS
+
+        self.assertLessEqual(set(TASKS), set(result["workflows"]))
+        for task in TASKS:
             with self.subTest(task=task):
                 try:
                     JobSpec.from_mapping({"task": task}).resolve()

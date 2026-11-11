@@ -13,6 +13,7 @@ seed = 20261030
 symbols = ["H"]
 geometry = [[0.0, 0.0, 0.0]]
 geometry_unit = "bohr"
+multiplicity = 2          # one unpaired electron
 
 [potential]
 provider = "harmonic"
