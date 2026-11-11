@@ -364,14 +364,21 @@ def test_correlated_pmf_bootstrap_and_chain_cluster_rate_uncertainty(tmp_path):
     assert pmf["pmf_uncertainty"]["valid"] == 12
     assert pmf["pmf_uncertainty"]["attempted"] == 12
     assert not pmf["pmf_uncertainty"]["failures"]
-    # Original af90f20d draws: caching/reindexing the bias matrix must retain
-    # each circular-block draw and its density/population covariance.
-    np.testing.assert_allclose(pmf["_bootstrap_qtst_s"], [
+    # Check the historical draws with an independently converged dense solver.
+    # The streaming solve uses the default 1e-9 equation tolerance; its changed
+    # reduction/warm-start order need not reproduce historical rounding bits.
+    solver = site.solve_mbar
+    def dense_reference(*args, **kwargs):
+        return solver(*args, **{**kwargs, "method": "legacy", "tolerance": 1e-12})
+    with patch.object(site, "solve_mbar", dense_reference):
+        reference, _ = site._estimate_pmf(sampled, config, system, tmp_path / "reference")
+    np.testing.assert_allclose(pmf["_bootstrap_qtst_s"], reference["_bootstrap_qtst_s"], rtol=2e-9)
+    np.testing.assert_allclose(reference["_bootstrap_qtst_s"], [
         5318747484353080.0, 5205230174098718.0, 4537989576419254.0,
         5120295485005186.0, 5178448838812025.0, 5190898006599793.0,
         5177997520763552.0, 5449767309564981.0, 5209963077366592.0,
         4815956230820733.0, 5271839157421368.0, 5222931139830863.0,
-    ], rtol=3e-13)
+    ], rtol=3e-12)
     assert pmf["pmf_uncertainty"]["standard_error_s"] > 0
     assert len(tasks) == 2
     children = [

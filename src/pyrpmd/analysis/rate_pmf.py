@@ -10,6 +10,7 @@ from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 import copy
 from itertools import islice
 import os
+from pathlib import Path
 import warnings as _warnings
 
 import numpy as np
@@ -206,22 +207,53 @@ def _resolve_bootstrap_workers(requested, bootstrap):
 
 
 def _available_memory_bytes():
-    """Return an approximate amount of currently available system memory."""
-    try:
-        page_size = int(os.sysconf("SC_PAGE_SIZE"))
-        available_pages = int(os.sysconf("SC_AVPHYS_PAGES"))
-        if page_size > 0 and available_pages > 0:
-            return page_size * available_pages
-    except (AttributeError, OSError, TypeError, ValueError):
-        pass
+    """Use reclaimable host memory, bounded by finite cgroup headroom."""
+    available = None
     try:
         with open("/proc/meminfo", encoding="ascii") as handle:
             for line in handle:
                 if line.startswith("MemAvailable:"):
-                    return int(line.split()[1]) * 1024
+                    available = int(line.split()[1]) * 1024
+                    break
     except (OSError, ValueError, IndexError):
         pass
-    return None
+    if available is None:
+        try:
+            page_size = int(os.sysconf("SC_PAGE_SIZE"))
+            available_pages = int(os.sysconf("SC_AVPHYS_PAGES"))
+            if page_size > 0 and available_pages > 0:
+                available = page_size * available_pages
+        except (AttributeError, OSError, TypeError, ValueError):
+            pass
+    try:
+        memberships = Path("/proc/self/cgroup").read_text().splitlines()
+    except OSError:
+        memberships = []
+    for membership in memberships:
+        hierarchy, controllers, relative = membership.split(":", 2)
+        if hierarchy == "0":
+            root = Path("/sys/fs/cgroup")
+            limit_name, usage_name = "memory.max", "memory.current"
+        elif "memory" in controllers.split(","):
+            root = Path("/sys/fs/cgroup/memory")
+            limit_name, usage_name = "memory.limit_in_bytes", "memory.usage_in_bytes"
+        else:
+            continue
+        directory = root / relative.lstrip("/")
+        # A parent slice can impose a tighter limit than the process's group.
+        while directory == root or root in directory.parents:
+            try:
+                limit = int((directory / limit_name).read_text())
+                usage = int((directory / usage_name).read_text())
+                if limit < 2**60:  # v1's effectively unlimited sentinel
+                    headroom = max(0, limit - usage)
+                    available = headroom if available is None else min(available, headroom)
+            except (OSError, ValueError):  # missing controller or v2's "max"
+                pass
+            if directory == root:
+                break
+            directory = directory.parent
+    return available
 
 
 def _cap_bootstrap_workers(requested, bootstrap, u_nbytes, available_memory=None):
@@ -482,7 +514,7 @@ def mbar_rate_pmf(
         raise ValueError("bootstrap must be zero or >=2")
     workers_requested = _resolve_bootstrap_workers(bootstrap_workers, bootstrap)
     if bootstrap_total_cores is None:
-        total_cores = max(1, os.cpu_count() or 1)
+        total_cores = workers_requested
     elif (
         isinstance(bootstrap_total_cores, (bool, np.bool_))
         or not isinstance(bootstrap_total_cores, (int, np.integer))
@@ -579,6 +611,10 @@ def mbar_rate_pmf(
     if bootstrap_executor is None:
         affinity_cores = len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else os.cpu_count() or 1
         bootstrap_workers = min(bootstrap_workers, total_cores, affinity_cores)
+    # An explicit resource budget also parallelizes the full-data fit. Keep
+    # the analysis API's implicit serial fit and explicitly requested threads.
+    options.setdefault("threads", total_cores if bootstrap_total_cores is not None else 1)
+    options["threads"] = min(options["threads"], total_cores)
     fit = _solve_mbar(u, fit_counts, overlap_threshold=overlap_threshold,
                      return_state_weights=False, **options)
     connected = len(np.unique(fit.components)) == 1

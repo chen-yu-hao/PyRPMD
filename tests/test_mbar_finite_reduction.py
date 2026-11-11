@@ -31,8 +31,8 @@ def test_heterogeneous_umbrella_solution_matches_scipy_and_legacy(monkeypatch):
     warm = mbar.solve_mbar(u, counts, tolerance=1e-11,
                           initial_free_energies=fast.free_energies + np.linspace(0., .1, 7))
     legacy = mbar.solve_mbar(u, counts, method="legacy", tolerance=1e-11)
-    monkeypatch.setattr(mbar, "_finite_logsumexp", logsumexp)
-    reference = mbar.solve_mbar(u, counts, tolerance=1e-11)
+    monkeypatch.setattr("pyrpmd.analysis.mbar_streaming._finite_logsumexp", logsumexp)
+    reference = mbar.solve_mbar(u, counts, tolerance=1e-11, backend="numpy")
     for result in (fast, warm, legacy, reference):
         assert result.converged and result.residual < 1e-10
         np.testing.assert_allclose(result.free_energies, reference.free_energies, atol=2e-9)

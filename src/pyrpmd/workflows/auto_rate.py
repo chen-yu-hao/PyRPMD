@@ -231,7 +231,7 @@ def run_auto_rate(config, system, output, executor=None):
                 _postprocess=hook,
             )
         pmf, parent_tasks = root_call(_pmf_and_parent_tasks, sampled, config, system,
-                                     str(output), options)
+                                     str(output), options, executor)
         decision = root_call(_pmf_decision, pmf, state, config)
         record = {"round": state["round"], "generation": state["generation"],
                   "production_steps": state["production_steps"], "replicas": state["replicas"],

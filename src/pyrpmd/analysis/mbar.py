@@ -217,7 +217,8 @@ def solve_mbar(
         result = solve(u, counts, np.ascontiguousarray(target), initial, tolerance=tolerance,
                        max_iterations=max_iterations, overlap_threshold=overlap_threshold,
                        combine_identical_states=combine_identical_states,
-                       return_state_weights=return_state_weights, backend=backend, threads=int(threads))
+                       return_state_weights=return_state_weights, backend=backend, threads=int(threads),
+                       warm_start=initial_free_energies is not None)
         result.diagnostics["warm_start"] = initial_free_energies is not None
         return result
     u = np.asarray(u)

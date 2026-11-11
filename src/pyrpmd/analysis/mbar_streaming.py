@@ -8,6 +8,7 @@ from scipy.special import logsumexp
 from scipy.sparse.csgraph import connected_components
 
 from .mbar_problem import ReducedPotentials
+from .mbar import _finite_logsumexp
 
 
 class Reduction:
@@ -53,8 +54,8 @@ class Reduction:
                 raise ValueError("nonfinite MBAR reduced potentials")
             common = u.min(axis=0)
             u -= common
-            logd = logsumexp(logn[:, None] + free[:, None] - u, axis=0)
-            logsum = np.logaddexp(logsum, logsumexp(-u-logd, axis=1))
+            logd = _finite_logsumexp(logn[:, None] + free[:, None] - u, axis=0)
+            logsum = np.logaddexp(logsum, _finite_logsumexp(-u-logd, axis=1))
             probabilities = np.exp(logn[:, None] + free[:, None] - u - logd)
             totals += probabilities.sum(axis=1)
             objective += logd.sum()
@@ -73,7 +74,8 @@ class Reduction:
 
 
 def solve(problem, counts, target, initial, *, tolerance, max_iterations,
-          overlap_threshold, combine_identical_states, return_state_weights, backend, threads):
+          overlap_threshold, combine_identical_states, return_state_weights, backend, threads,
+          warm_start=False):
     from .mbar import MBARResult
     if not isinstance(problem, ReducedPotentials):
         problem = ReducedPotentials(problem)
@@ -86,7 +88,8 @@ def solve(problem, counts, target, initial, *, tolerance, max_iterations,
     f -= f[0]
     evaluate = Reduction(reduced, counts, target, backend, threads)
     k = len(counts)
-    for _ in range(min(8, max_iterations)):
+    warm_steps = min(2 if warm_start else 8, max_iterations)
+    for _ in range(warm_steps):
         new = evaluate(f)[0]
         if np.max(abs(new-f)) < tolerance:
             break
@@ -149,6 +152,7 @@ def solve(problem, counts, target, initial, *, tolerance, max_iterations,
         "unique_states": k, "original_states": len(original_counts), "state_to_unique": state_map,
         "newton_iterations": newton_iterations, "lbfgs_iterations": lbfgs_iterations,
         "polish_iterations": polish_iterations,
+        "warm_steps": warm_steps,
         "backend": "native" if evaluate.native is not None else "numpy_blocked",
         "threads_requested": threads, "threads_used": evaluate.observed_threads,
         "native_calls": evaluate.calls if evaluate.native is not None else 0,
