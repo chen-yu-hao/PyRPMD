@@ -30,7 +30,7 @@ from pyrpmd.validation import checked_integer as _integer, finite_positive
 from .drpmd_persistence import _load_npz, _mapping_arrays, _restore_rng, _rng_state
 from .drpmd_records import (
     LEGACY_PARENT_KIND, PARENT_KIND, ParentRecordLedger,
-    load_parent_checkpoint, matches_parent_allocation, allocation_fields,
+    load_parent_checkpoint, matches_parent_allocation,
 )
 
 KB = 3.1668115634556e-6
@@ -341,7 +341,11 @@ def _parent_task(task, services):
         config.get("output", {}).get("checkpoint_steps", 1000), "checkpoint_steps"
     )
     thermal_seconds = 0.0
-    allocation = allocation_fields(ids)
+    # Public workflow allocations are contiguous; retain arbitrary legacy task
+    # allocations without rewriting their IDs as a different contiguous range.
+    allocation = ({"trajectory_start": ids[0], "trajectory_count": len(ids)}
+                  if ids == list(range(ids[0], ids[0] + len(ids)))
+                  else {"trajectory_ids": ids})
 
     def save_parent():
         services.save_arrays(

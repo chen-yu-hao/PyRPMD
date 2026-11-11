@@ -3,6 +3,7 @@
 from types import SimpleNamespace
 
 import numpy as np
+import pytest
 
 from pyrpmd.constants import KB_AU
 import pyrpmd.analysis.subspace_pipeline as pipeline
@@ -98,11 +99,14 @@ def test_build_path_sources_record_selection_and_bead_rms(monkeypatch):
 
     assert centroid_info["source"] == "centroid"
     assert weighted_info["source"] == "bead_weighted"
-    # The fixture's y mode is entirely translation/rotation of a diatom.
-    # It must not be interpreted as transverse vibrational corner cutting.
-    assert max(weighted_info["bead_weighted"]["bead_rms_range"]) < 1e-12
+    assert weighted_info["bead_weighted"]["bead_rms_range"][1] == 0.5
+    # Only the transverse component of the y covariance contributes away
+    # from the central point, where the tangent is exactly along x.
     displacement = (weighted - centroid).reshape(len(weighted), -1)
-    assert np.max(np.linalg.norm(displacement, axis=1)) < 1e-12
+    tangent, _ = pipeline._path_tangent_and_curvature(centroid, run.cartesian_masses)
+    expected_variance = 0.25 * (1.0 - tangent[:, 1] ** 2)
+    np.testing.assert_allclose(np.sum(displacement ** 2, axis=1), expected_variance)
+    np.testing.assert_allclose(np.sum(displacement * tangent, axis=1), 0.0, atol=1e-14)
     assert least_info["source"] == "least_action"
     assert len(least_info["least_action"]["scan"]) == 5
     assert 0.0 <= least_info["least_action"]["selected_alpha"] <= 1.0
@@ -234,32 +238,8 @@ def test_high_temperature_sources_keep_comparable_path_diagnostics(monkeypatch):
     assert least_info["source"] == "least_action"
     assert np.isfinite(weighted_action)
     assert least_info["least_action"]["selected_action_hbar"] <= centroid_action + 1e-12
-    np.testing.assert_allclose(weighted, centroid, atol=1e-12)
+    assert not np.allclose(weighted, centroid)
     assert not np.allclose(least, centroid)
-
-
-def test_bead_rms_uses_projected_covariance_before_diagonalization():
-    x = np.linspace(-1., 1., 7)
-    core = np.stack([x, .2*x*x, np.zeros_like(x)], axis=-1)[:, None, :]
-    direction = np.array([np.sqrt(1. - 1e-4), .01, 0.])
-    covariance = 100. * np.outer(direction, direction)
-    mean = SimpleNamespace(xi=np.arange(7.), mean_centroid=core,
-                           bead_covariance=np.repeat(covariance[None], 7, axis=0))
-    shifted, _ = pipeline._bead_weighted_core(mean, np.ones(7, bool), np.ones(1))
-    # At the central point, P Sigma P has variance .01 in the y direction;
-    # renormalizing the old eigenvector would incorrectly give a shift of 10.
-    np.testing.assert_allclose(shifted[3, 0] - core[3, 0], [0., .1, 0.], atol=1e-12)
-
-
-def test_instanton_fallback_preserves_full_centroid_smoothing(monkeypatch):
-    monkeypatch.setattr(pipeline, "mean_path_from_rate_run", lambda root: _MeanPath())
-    monkeypatch.setattr(pipeline, "assemble_reaction_path",
-                        lambda core, *a, **kw: (np.asarray(core), {}))
-    monkeypatch.setattr(pipeline, "crossover_temperature", lambda *a: 100.)
-    centroid = pipeline.build_path(_Run(), {"source": "centroid", "smoothing": 1.5})[2]
-    fallback = pipeline.build_path(_Run(), {"source": "instanton", "smoothing": 1.5})
-    assert fallback[3]["instanton"]["fallback"] == "centroid"
-    np.testing.assert_array_equal(fallback[2], centroid)
 
 
 def test_path_projection_records_unstable_normal_hessian():
@@ -279,3 +259,68 @@ def test_path_projection_records_unstable_normal_hessian():
     # The complete potential along the displaced path is retained in V_S;
     # only the non-positive normal zero-point contribution is dropped.
     assert np.isfinite(model.values).all()
+
+
+def test_bead_weighted_diagonalizes_transverse_covariance():
+    mean = _MeanPath()
+    mean._centroid[:, :, 1] = 0.0
+    tangent = np.array([1.0, 0.0, 0.0, 1.0, 0.0, 0.0]) / np.sqrt(2.0)
+    normal = np.array([0.0, 1.0, 0.0, 0.0, 0.0, 0.0])
+    other_normal = np.array([0.0, 0.0, 1.0, 0.0, 0.0, 0.0])
+    mixed = (10.0 * tangent + normal) / np.sqrt(101.0)
+    covariance = 100.0 * np.outer(mixed, mixed) + 4.0 * np.outer(other_normal, other_normal)
+    mean.bead_covariance[:] = covariance
+    shifted, info = pipeline._bead_weighted_core(mean, mean.locked(), [1.0, 1.0])
+    displacement = (shifted - mean.mean_centroid).reshape(len(mean.xi), -1)
+    np.testing.assert_allclose(displacement, np.tile(2.0 * other_normal, (len(mean.xi), 1)), atol=1e-12)
+    np.testing.assert_allclose(info["principal_variance_range"], [4.0, 4.0])
+
+
+def test_least_action_diagnostics_describe_smoothed_selected_path(monkeypatch):
+    mean = _MeanPath()
+    monkeypatch.setattr(pipeline, "mean_path_from_rate_run", lambda root: mean)
+    monkeypatch.setattr(pipeline, "assemble_reaction_path",
+                        lambda core, *args, **kwargs: (np.asarray(core), {}))
+    run = _Run()
+    _, _, centroid, _ = pipeline.build_path(run, {"source": "centroid", "smoothing": 1.5})
+    _, _, selected, info = pipeline.build_path(run, {"source": "least_action", "smoothing": 1.5})
+    scan = info["least_action"]
+    np.testing.assert_allclose(scan["scan"][0]["action_hbar"], pipeline._wkb_action(centroid, run)[0])
+    np.testing.assert_allclose(scan["selected_action_hbar"], pipeline._wkb_action(selected, run)[0])
+    assert scan["selected_action_hbar"] <= scan["scan"][0]["action_hbar"]
+
+
+def test_instanton_records_actual_even_seed_beads(monkeypatch):
+    monkeypatch.setattr(pipeline, "crossover_temperature", lambda *args: 1.0e9)
+    def optimizer(provider, masses, temperature, seed, **kwargs):
+        return SimpleNamespace(converged=True, gradient_max=0.0, negative_modes=1,
+                               path_bohr=seed, message="converged")
+    monkeypatch.setattr(pipeline, "optimize_instanton", optimizer)
+    for requested, actual in [(1, 8), (9, 10)]:
+        folded, info = pipeline._instanton_core(
+            _Run(), _MeanPath().mean_centroid, {"instanton_beads": requested})
+        assert info["requested_bead_number"] == requested
+        assert info["bead_number"] == actual
+        assert info["folded_beads"] == len(folded) == actual // 2
+
+
+@pytest.mark.parametrize("zero_point", ["harmonic", "rph", "dvr"])
+def test_path_source_provenance_survives_sct_projection(zero_point):
+    radius, omega = 10.0, 0.2
+    theta = np.linspace(-1.0, 1.0, 101)
+    path = radius * np.column_stack([np.cos(theta), np.sin(theta)])
+    def potential(x):
+        return 0.5 * omega**2 * (np.linalg.norm(x) - radius)**2
+    def gradient(x):
+        r = np.linalg.norm(x)
+        return omega**2 * (r - radius) * x / r
+    model = project_path_subspace(potential, gradient, path, [1.0, 1.0],
+                                  np.linspace(0.0, 20.0, 81), dividing_surface=10.0,
+                                  curvature="small", zero_point=zero_point, dvr_half_width=8.0,
+                                  provenance={"path_source": "least_action"})
+    assert model.provenance["path_source"] == "least_action"
+    assert model.provenance["curvature"] == "small"
+    assert model.provenance["zero_point"] == zero_point
+    assert model.provenance["tau_length"] < model.provenance["sigma_length"]
+    assert model.provenance["normal_hessian_positive"]
+    assert model.provenance["unstable_complement_indices"] == []

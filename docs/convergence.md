@@ -1,7 +1,7 @@
 # How to converge a result
 
 Start with a model whose result is independently known. The
-[analytic tutorials](../examples/tutorials/) provide fixed inputs and comparison
+[analytic tutorials](https://github.com/chen-yu-hao/PyRPMD/tree/main/examples/tutorials) provide fixed inputs and comparison
 scripts for harmonic PIMD, periodic site escape, a double-well free energy,
 free diffusion and harmonic spectra. Their reports distinguish a measured
 uncertainty from discretization error and from an unfinished calculation.
@@ -38,10 +38,10 @@ normalization in the input. Use a fresh run when these physical choices change.
 | Diffusion | Unwrapped centroids, a diffusive MSD interval after the ballistic regime, fit-window variation, long independent replicas and consistent drift treatment. |
 | Spectra | Physical production dynamics, property-surface identity, longer records, window dependence, independent replica estimates and finite frequency resolution. |
 
-The [PMF comparison tool](../benchmarks/h3/rate_pmf_comparison.py) compares
+The [PMF comparison tool](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/h3/rate_pmf_comparison.py) compares
 MBAR, histogram WHAM and Gaussian UI on the same saved samples. Agreement
 between estimators does not replace independent sampling. The
-[MetaD/OPES stability ladder](../benchmarks/h3/stability_ladder.py) tests domain
+[MetaD/OPES stability ladder](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/h3/stability_ladder.py) tests domain
 survival under increasing bias and dt/2 before a separate longer run.
 
 ## Interpret the reported status

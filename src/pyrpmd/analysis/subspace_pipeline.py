@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import copy
 import json
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -55,8 +55,8 @@ DEFAULTS = {
              "asymptote_tolerance": 1e-6, "smoothing": 1.5,
              "least_action_points": 9},
     "subspace": {"dimension": "auto", "threshold": 0.5, "environment": "adiabatic", "curvature": "none",
-                 "zero_point": "harmonic", "dvr_points": 81, "dvr_half_width": None, "dvr_spacing": None,
-                 "channels": None},
+                 "zero_point": "harmonic", "dvr_points": 81, "dvr_half_width": None,
+                 "dvr_spacing": None},
     "quantum": {"spacing_1d": None, "spacing_2d": None, "refinement": 3, "absorber_fraction": 0.2,
                 "threshold_margin": 1.0, "truncation_kt": 30.0, "truncation_min": 0.0, "padding": None,
                 "dense_limit": 8000,
@@ -117,10 +117,13 @@ def load_rate_run(directory) -> RateRun:
     from ..workflows.rate_constraints import rate_coordinate
     from .rate_io import _root
 
-    root = _root(directory, "summary.json")
+    root = _root(directory, "input/resolved.json")
     config = json.loads((root / "input" / "resolved.json").read_text())
     system = System.from_dict(json.loads((root / "input" / "system.json").read_text()))
     preparation = json.loads((root / "preparation.json").read_text()) if (root / "preparation.json").is_file() else {}
+    from ..workflows.prepare import prepared_system
+
+    system = prepared_system(system, preparation)
     reaction = dict(config.get("reaction", {}))
     reaction.update(preparation.get("reaction", {}))
     for key in ("fragments", "forming_bonds", "breaking_bonds"):
@@ -232,17 +235,13 @@ def _bead_weighted_core(mean, mask, masses):
             eigenvalues.append(0.0)
             continue
         covariance = 0.5 * (covariance + covariance.T)
-        # Project the covariance before diagonalization: projecting a nearly
-        # tangential eigenvector and retaining its old eigenvalue exaggerates
-        # the transverse RMS. Molecular paths also exclude rigid motions.
-        complement = _vibrational_complement(
-            core[k].ravel(), tangent[k], sqrt_m, rigid_body=core.shape[1] > 1)
-        if complement.shape[1] == 0:
-            eigenvalues.append(0.0)
-            continue
-        values, vectors = np.linalg.eigh(complement.T @ covariance @ complement)
-        eigenvalue = max(float(values[-1]), 0.0)
-        vector = complement @ vectors[:, -1]
+        # Project the covariance before diagonalizing: projecting a full-space
+        # eigenvector but retaining its eigenvalue overcounts tangential spread
+        # and need not select the largest transverse mode.
+        projector = np.eye(len(tangent[k])) - np.outer(tangent[k], tangent[k])
+        transverse = projector @ covariance @ projector
+        values, vectors = np.linalg.eigh(0.5 * (transverse + transverse.T))
+        vector, eigenvalue = vectors[:, -1], max(float(values[-1]), 0.0)
         sign = float(np.sign(vector @ curvature[k]))
         if sign == 0.0:
             # A locally straight section has no curvature sign.  Keep the
@@ -350,8 +349,9 @@ def _instanton_core(run, core, options):
     # folded half-ring is what the path builder consumes, but the full bead
     # number is the quantity needed to reproduce an optimizer run and to
     # interpret the physical mode count.
-    details["bead_number"] = beads
     seed = _instanton_seed_from_core(core, beads)
+    details["requested_bead_number"] = beads
+    details["bead_number"] = int(len(seed))
     try:
         result = optimize_instanton(run.provider, run.system.masses, temperature, seed,
                                     transition_state=run.system.geometry,
@@ -419,13 +419,9 @@ def build_path(run: RateRun, options: Mapping[str, Any]):
         core, details = _instanton_core(run, core.reshape(len(core), -1, 3), options)
         core = np.asarray(core).reshape(len(core), -1)
         sampled["instanton"] = details
-    elif source == "least_action":
-        core, details = _least_action_core(core.reshape(len(core), -1, 3), run, options)
-        core = np.asarray(core).reshape(len(core), -1)
-        sampled["least_action"] = details
 
     smoothing = options.get("smoothing")
-    if smoothing and len(core) >= 5 and (source != "instanton" or sampled["instanton"].get("fallback") == "centroid"):
+    if smoothing and len(core) >= 5 and source != "instanton":
         # Fit xbar(xi) against the sampling coordinate itself: window means
         # carry transverse noise, and a chord-length parametrization of noisy
         # points zig-zags.  Local quadratic regression in xi, evaluated on a
@@ -445,6 +441,12 @@ def build_path(run: RateRun, options: Mapping[str, Any]):
         inner = (grid >= xi_core[0] + 0.5 * bandwidth) & (grid <= xi_core[-1] - 0.5 * bandwidth)
         core = fitted[inner] if inner.sum() >= 4 else fitted
         sampled["smoothing_bandwidth_xi"] = bandwidth
+    if source == "least_action":
+        # Optimize the same smoothed core used by the centroid source.  Any
+        # smoothing after the scan would change the selected action and path.
+        core, details = _least_action_core(core.reshape(len(core), -1, 3), run, options)
+        core = np.asarray(core).reshape(len(core), -1)
+        sampled["least_action"] = details
     path, info = assemble_reaction_path(
         core, run.energy, run.gradient, run.cartesian_masses, step=float(options.get("step", 10.0)),
         max_steps=int(options.get("max_steps", 600)), rigid_body=True,
@@ -493,15 +495,17 @@ def path_model(run: RateRun, path, options: Mapping[str, Any], *, path_source: s
     # Bennett--Chandler needs a dividing surface the dynamics must cross: use
     # the barrier top of V_S (the quantum rate does not depend on it).
     environment = options.get("environment", "adiabatic")
-    model = project_path_subspace(run.energy, run.gradient, path, masses, axis, environment=environment,
-                                  dividing_surface=None, rigid_body=True,
-                                  beta=run.beta if environment == "free_energy" else None,
-                                  curvature=options.get("curvature", "none"),
-                                  zero_point=options.get("zero_point", "harmonic"),
-                                  dvr_points=options.get("dvr_points", 81),
-                                  dvr_half_width=options.get("dvr_half_width"),
-                                  dvr_spacing=options.get("dvr_spacing"),
-                                  provenance={"path_source": str(path_source)})
+    model = project_path_subspace(
+        run.energy, run.gradient, path, masses, axis, environment=environment,
+        dividing_surface=None, rigid_body=True,
+        beta=run.beta if environment == "free_energy" else None,
+        curvature=options.get("curvature", "none"),
+        provenance={"path_source": str(path_source)},
+        zero_point=options.get("zero_point", "harmonic"),
+        dvr_points=options.get("dvr_points", 81),
+        dvr_half_width=options.get("dvr_half_width"),
+        dvr_spacing=options.get("dvr_spacing"),
+    )
     surface = model.dividing_surface
     fraction = float(options["absorber_fraction"])
     model_axis = model.axes[0]
@@ -519,6 +523,43 @@ def path_model(run: RateRun, path, options: Mapping[str, Any], *, path_source: s
             "reactant_reference": reference, "channel_thresholds": thresholds, "energy_floor": floor,
             "model_construction": dict(model.provenance)}
     return model, quantum, info
+
+
+def _saved_model_matches_options(saved: SubspaceCorrection, dimension: int,
+                                 subspace_options: Mapping[str, Any]) -> bool:
+    """Guard ``output.reuse`` against silently reusing a different H_S.
+
+    The correction record stores :meth:`SubspaceModel.describe`, including the
+    path construction provenance.  A selector change (harmonic/RPH/DVR), or a
+    DVR grid change, changes H_S and therefore invalidates an old C_S record.
+    Older records predate ``zero_point`` and are treated as historical
+    harmonic projections for backwards compatibility.
+    """
+    construction = dict(saved.model.get("construction", {}))
+    if int(saved.dimension) != int(dimension):
+        return False
+    if dimension == 1:
+        expected_environment = subspace_options.get("environment", "adiabatic")
+        if construction.get("environment", "adiabatic") != expected_environment:
+            return False
+        expected_zero_point = subspace_options.get("zero_point", "harmonic")
+        if construction.get("zero_point", "harmonic") != expected_zero_point:
+            return False
+        if expected_zero_point in ("rph", "dvr") and construction.get("zero_point_definition") != "linear-normal-cuts-v2":
+            return False
+        if expected_zero_point == "dvr":
+            if construction.get("dvr_points") != subspace_options.get("dvr_points", 81):
+                return False
+            for key in ("dvr_half_width", "dvr_spacing"):
+                old, new = construction.get(key), subspace_options.get(key)
+                if old is None or new is None:
+                    if old is not None or new is not None:
+                        return False
+                elif not np.isclose(float(old), float(new), rtol=0.0, atol=1e-14):
+                    return False
+    elif construction.get("environment", "adiabatic") != subspace_options.get("environment", "adiabatic"):
+        return False
+    return True
 
 
 def _in_plane_threshold(model, center, direction, *, window=0.05):
@@ -695,23 +736,34 @@ def _rpmd_options(options, run):
     return rpmd, int(options.get("nbeads") or run.nbeads)
 
 
-def _correction_identity(run, path, options, nbeads):
-    """Bind saved factors to their Hamiltonian, path and numerical settings."""
-    from ..workflows.common import _fingerprint
+def pipeline_identity(root, options):
+    """Bind cached factors to samples, geometry, PES files and numerical settings."""
+    from .. import __version__
+    from ..io import file_sha256, fingerprint_payload, referenced_files
 
-    subspace = {key: value for key, value in options["subspace"].items()
-                if key not in ("dimension", "threshold")}
-    return _fingerprint(run.config, run.system, {
-        "subspace_pipeline": 2, "path": np.asarray(path).tolist(),
-        "path_options": options["path"], "subspace": subspace,
-        "quantum": options["quantum"], "rpmd": options["rpmd"],
-        "beta": run.beta, "nbeads": nbeads, "xi_star": run.xi_star,
-        "reaction": run.reaction,
-    })
+    names = ("input/resolved.json", "input/system.json", "preparation.json", "centroid_path.npz", "rate_pmf.json")
+    files = {name: file_sha256(root / name) for name in names if (root / name).is_file()}
+    saved = json.loads((root / "input" / "resolved.json").read_text())
+    numerical = {k: v for k, v in options.items()
+                 if k not in {"enabled", "mode", "reuse", "output", "source"}}
+    # Hash the implementations too: a source checkout can change without a
+    # version bump, and its old numerical result must not silently be reused.
+    analysis = Path(__file__).resolve().parent
+    implementation = {p.name: file_sha256(p) for p in
+                      (analysis / name for name in ("subspace_pipeline.py", "subspace_model.py",
+                       "subspace_quantum.py", "subspace_rpmd.py", "subspace_correction.py", "centroid_path.py"))}
+    implementation["instanton.py"] = file_sha256(analysis.parent / "instanton.py")
+    return fingerprint_payload({"schema": 1, "version": __version__, "files": files,
+                                "potential_files": referenced_files({"potential": saved["potential"]}),
+                                "options": numerical, "implementation": implementation})
 
 
-def run_subspace_pipeline(specification) -> dict:
-    """Run the full correction from a mapping or a TOML/JSON file."""
+def run_subspace_pipeline(specification, *, apply=True, reuse_key=None) -> dict:
+    """Run from a mapping or TOML/JSON; ``apply=False`` writes factors only.
+
+    Cached factors are tied to source data, numerical settings and solver
+    implementations for native and standalone callers alike.
+    """
     base = None
     if isinstance(specification, (str, Path)):
         path = Path(specification)
@@ -737,8 +789,20 @@ def run_subspace_pipeline(specification) -> dict:
     out_dir = Path(out_dir) if out_dir else run.root / "subspace"
     if base is not None and not out_dir.is_absolute():
         out_dir = base / out_dir
-    out_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        if reuse_key is None:
+            reuse_key = pipeline_identity(run.root, options)
+        return _run_pipeline(run, out_dir, options, apply=apply, reuse_key=reuse_key)
+    finally:
+        close = getattr(run.provider, "close", None)
+        if callable(close):
+            close()
 
+
+def _run_pipeline(run, out_dir, options, *, apply, reuse_key):
+    from ..io import file_sha256, write_json
+
+    out_dir.mkdir(parents=True, exist_ok=True)
     mean, mask, path, path_info = build_path(run, options["path"])
     np.save(out_dir / "path.npy", path)
     threshold = float(options["subspace"]["threshold"])
@@ -755,32 +819,42 @@ def run_subspace_pipeline(specification) -> dict:
                                                                      ([int(requested)] if np.ndim(requested) == 0 else
                                                                       [int(d) for d in requested]))
     rpmd_options, nbeads = _rpmd_options(options["rpmd"], run)
-    identity = _correction_identity(run, path, options, nbeads)
     corrections, models = {}, {}
     if options["output"].get("reuse"):
-        # Legacy factors without an identity are recomputed. Equal beta alone
-        # does not make different paths, masses or effective Hamiltonians equal.
         previous = {}
-        if (out_dir / "subspace_pipeline.json").is_file():
-            previous = json.loads((out_dir / "subspace_pipeline.json").read_text()).get("models", {})
-        for d in list(dimensions):
+        report_path = out_dir / "subspace_pipeline.json"
+        if report_path.is_file():
+            try:
+                loaded = json.loads(report_path.read_text())
+                previous = loaded if isinstance(loaded, dict) else {}
+            except (OSError, ValueError):
+                pass  # A damaged report is not reusable evidence.
+        matched = reuse_key is None or previous.get("reuse_key") == reuse_key
+        for d in list(dimensions) if matched else []:
             record = out_dir / f"C_S_{d}d.json"
-            if record.is_file():
+            if not record.is_file():
+                continue
+            if reuse_key is not None and previous.get("correction_files", {}).get(record.name) != file_sha256(record):
+                continue
+            try:
                 saved = SubspaceCorrection.read(record)
-                if (saved.diagnostics.get("pipeline_identity") == identity
-                        and np.isclose(saved.beta, run.beta, rtol=1e-9, atol=0)):
-                    corrections[d] = saved
-                    models[d] = previous.get(str(d), {"reused": True})
-                    dimensions.remove(d)
+            except (OSError, ValueError, KeyError, TypeError):
+                continue
+            if (saved.dimension == d and saved.nbeads == nbeads
+                    and np.isclose(saved.beta, run.beta, rtol=1e-9, atol=0)
+                    and _saved_model_matches_options(saved, d, options["subspace"])):
+                corrections[d] = saved
+                models[d] = previous.get("models", {}).get(str(d), {"reused": True})
+                dimensions.remove(d)
     if 1 in dimensions:
-        environment = {key: options["subspace"][key] for key in
+        environment = {k: options["subspace"].get(k) for k in
                        ("environment", "curvature", "zero_point", "dvr_points", "dvr_half_width", "dvr_spacing")}
-        model1, quantum1, info1 = path_model(run, path, {**options["quantum"], **environment},
-                                                path_source=path_info.get("source", "centroid"))
+        model1, quantum1, info1 = path_model(
+            run, path, {**options["quantum"], **environment},
+            path_source=path_info.get("source", "centroid"),
+        )
         corrections[1] = subspace_correction(model1, run.beta, nbeads, quantum_options=quantum1,
                                              rpmd_options=rpmd_options)
-        corrections[1] = replace(corrections[1], diagnostics={
-            **corrections[1].diagnostics, "pipeline_identity": identity})
         corrections[1].write(out_dir / "C_S_1d.json")
         models[1] = info1
     if 2 in dimensions:
@@ -791,19 +865,8 @@ def run_subspace_pipeline(specification) -> dict:
             candidate = np.asarray(static_cw["candidate_direction"])
         environment = {"environment": options["subspace"].get("environment", "adiabatic")}
         model2, quantum2, info2, rpmd_model2 = plane_model(run, path, candidate, {**options["quantum"], **environment})
-        channels = options["subspace"].get("channels")
-        if channels is None:
-            corrections[2] = subspace_correction(model2, run.beta, nbeads, quantum_options=quantum2,
-                                                 rpmd_options=rpmd_options, rpmd_model=rpmd_model2)
-        else:
-            from .subspace_channels import channels_from_model
-
-            projection = channels_from_model(model2, n_channels=channels)
-            corrections[2] = projection.correction(run.beta, nbeads, quantum_options=quantum2,
-                                                   rpmd_options=rpmd_options, rpmd_model=rpmd_model2)
-            info2["channels"] = projection.describe()
-        corrections[2] = replace(corrections[2], diagnostics={
-            **corrections[2].diagnostics, "pipeline_identity": identity})
+        corrections[2] = subspace_correction(model2, run.beta, nbeads, quantum_options=quantum2,
+                                             rpmd_options=rpmd_options, rpmd_model=rpmd_model2)
         corrections[2].write(out_dir / "C_S_2d.json")
         models[2] = info2
     sensitivity = nested_subspace_sensitivity(list(corrections.values())) if len(corrections) > 1 else None
@@ -815,21 +878,27 @@ def run_subspace_pipeline(specification) -> dict:
         # Undetermined nested step: fall back on curvature x width.
         chosen = verdict if verdict in corrections else max(corrections)
         reason = "nested sensitivity undetermined; curvature x width verdict"
-    corrected = correct_rate_run(run.root, corrections[chosen], output=out_dir / "rate_quantum_corrected.json")
+    corrected = (correct_rate_run(run.root, corrections[chosen], output=out_dir / "rate_quantum_corrected.json")
+                 if apply else None)
     report = {
         "schema": "pyrpmd.subspace_pipeline", "schema_version": 1,
-        "pipeline_identity": identity,
         "rate_run": str(run.root), "beta": run.beta, "nbeads": nbeads, "xi_star": run.xi_star,
         "path": path_info, "curvature_width_sampled": sampled_cw, "curvature_width_path": static_cw,
         "recommended_dimension_from_curvature_width": verdict, "dimensions_computed": sorted(corrections),
-        "models": models, "corrections": {str(d): c.to_dict() for d, c in corrections.items()},
+        "models": models,
+        # Keep the saved quantum/RPMD curves when reusing a scalar correction
+        # object (SubspaceCorrection.read deliberately loads only its summary).
+        "corrections": {str(d): json.loads((out_dir / f"C_S_{d}d.json").read_text()) for d in corrections},
         "nested_sensitivity": sensitivity, "applied_dimension": int(chosen), "applied_dimension_reason": reason,
         "corrected_rate": corrected,
+        "mode": "apply" if apply else "factor_only",
+        "reuse_key": reuse_key,
+        "correction_files": {f"C_S_{d}d.json": file_sha256(out_dir / f"C_S_{d}d.json") for d in corrections},
         "options": {k: v for k, v in options.items()},
         "physical_converged": False,
     }
     report = _json_safe(report)
-    (out_dir / "subspace_pipeline.json").write_text(json.dumps(report, indent=2, default=str))
+    write_json(out_dir / "subspace_pipeline.json", report)
     return report
 
 

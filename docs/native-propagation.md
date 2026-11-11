@@ -138,8 +138,18 @@ observations and failure prefixes are bit-identical to the previous loop.
 
 The resolved backend is recorded in `propagation_plan` during validation and
 the accepted work is recorded in `propagation` in the result summary.  The
-table describes the normal `loop_backend="auto"` decision; an explicit
-`loop_backend="python"` always selects the Python row.
+table describes the normal `loop_backend="auto"` decision. For workflows using
+`Dynamics`, an explicit `loop_backend="python"` selects the Python row.
+
+Materials summaries retain their existing per-replica `propagation` list;
+`propagation_totals` contains its aggregate `native_steps`, `python_steps`,
+and `fallback_reasons`. FES and rate summaries retain their `propagation`
+mapping with aggregate counts and stage details.
+
+`propagation_plan` describes the current invocation's requested configuration.
+On a completed resume, changing `--loop-backend` can therefore change this plan
+without advancing any trajectory. The saved propagation counters continue to
+report the work actually performed; they and the scientific identity are unchanged.
 
 | Task | Stage | Native when | Python fallback / first reason |
 | --- | --- | --- | --- |
@@ -148,10 +158,13 @@ table describes the normal `loop_backend="auto"` decision; an explicit
 | `rate`, `surface_rate` | recrossing parent/child | exported native dividing-surface descriptors and a compatible PES | arbitrary classifiers, constraints, or unsupported providers |
 | `diffusion` | production | fixed-cell native PES; NVE or constant scalar/diagonal centroid friction | position-dependent/off-diagonal friction, barostat, monitor, or unsupported providers |
 | `diffusion`, `pimd` | equilibration/sampling | native PILE-L or Andersen block contract and supported stateless PES | barostat, constraints, active-learning monitor, unsupported ring, or provider callbacks |
+| `diffusion`, `pimd` with `sampling.engine="torch"` | tensor workflow | Tensor execution is independent of ordinary C++ `Dynamics` bindings | `unknown`; device and tensor execution backend are confirmed at runtime |
 | `drpmd` | collision propagation | native outcome descriptor plus a compatible native PES | arbitrary Python classifier or missing native event descriptor |
 
-Native support is conservative: a stage is reported as Python as soon as one
-component cannot be represented without a Python callback.  This keeps the
+External provider bindings are reported as `unknown` until runtime, without
+loading plugins during static validation. Stage budgets count all declared
+umbrella replicas and both members of recrossing pairs. A known Python-only
+component produces a Python fallback reason.  This keeps the
 reported path aligned with the actual execution rather than with the fact that
 the free-ring substep itself may still be compiled.
 

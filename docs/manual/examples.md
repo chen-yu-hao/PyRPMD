@@ -20,11 +20,11 @@ its production summary.
 
 | Tutorial input | Independent reference | Measured run time | Comparison |
 | --- | --- | --- | --- |
-| [harmonic PIMD](../../examples/tutorials/harmonic_pimd/README.md) | Finite-P harmonic energy and ring radius | 10.20 s | passed; potential-energy deviation 1.565 SEM |
-| [periodic site rate](../../examples/tutorials/periodic_site_rate/README.md) | Directed classical TST | 176.80 s | passed |
-| [double-well WT-MetaD](../../examples/tutorials/double_well_metad/README.md) | Exact bin-integrated Boltzmann density | 93.95 s | passed |
-| [free diffusion](../../examples/tutorials/free_diffusion/README.md) | kBT/(m gamma) | 31.07 s | passed |
-| [harmonic spectroscopy](../../examples/tutorials/harmonic_spectroscopy/README.md) | sqrt(k/m) centroid frequency | 95.36 s | passed; 0.225 cm⁻¹ difference within 2.545 cm⁻¹ half-bin bound |
+| [harmonic PIMD](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/tutorials/harmonic_pimd/README.md) | Finite-P harmonic energy and ring radius | 10.20 s | passed; potential-energy deviation 1.565 SEM |
+| [periodic site rate](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/tutorials/periodic_site_rate/README.md) | Directed classical TST | 176.80 s | passed |
+| [double-well WT-MetaD](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/tutorials/double_well_metad/README.md) | Exact bin-integrated Boltzmann density | 93.95 s | passed |
+| [free diffusion](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/tutorials/free_diffusion/README.md) | kBT/(m gamma) | 31.07 s | passed |
+| [harmonic spectroscopy](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/tutorials/harmonic_spectroscopy/README.md) | sqrt(k/m) centroid frequency | 95.36 s | passed; 0.225 cm⁻¹ difference within 2.545 cm⁻¹ half-bin bound |
 
 Use a fresh output directory and run the tutorial's comparison command. These
 fixed-model checks do not certify arbitrary production systems; see

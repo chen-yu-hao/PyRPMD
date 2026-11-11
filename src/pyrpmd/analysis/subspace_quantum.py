@@ -47,12 +47,11 @@ from dataclasses import dataclass, field
 from typing import Any, Mapping
 
 import numpy as np
-from scipy.linalg import eigh, eigvalsh, schur
+from scipy.linalg import eigh, schur
 from scipy.linalg.lapack import ztrsyl
 from scipy.special import ive
 
 from .subspace_model import SubspaceModel
-from .subspace_metric import constant_metric_model
 
 
 def sinc_dvr_kinetic(axis: np.ndarray, mass: float) -> np.ndarray:
@@ -124,7 +123,6 @@ class _GridOperators:
     """Kronecker-sum sinc-DVR Hamiltonian applied to batches ``[k, *shape]``."""
 
     def __init__(self, model: SubspaceModel):
-        model = constant_metric_model(model)
         self.model = model
         self.shape = model.shape
         self.size = int(np.prod(self.shape))
@@ -199,7 +197,6 @@ def _transverse_partition(model: SubspaceModel, beta: float, shift: float) -> tu
 
 
 def _reactant_partition(model, beta, shift, *, energies=None, vectors=None, operators=None, tolerance=1e-12):
-    model = constant_metric_model(model)
     if model.reactant == "asymptotic":
         transverse, info = _transverse_partition(model, beta, shift)
         value = np.sqrt(model.masses[0] / (2.0 * np.pi * beta)) * transverse
@@ -271,8 +268,7 @@ def _dense_rate_matrix(
 
     ``hamiltonian`` is the finite-dimensional Hermitian ``H_0`` matrix,
     ``product`` is the diagonal of the product-side projector, and ``eps``
-    is a nonnegative diagonal or positive-semidefinite absorbing matrix.
-    The matrix need not come from a
+    is the diagonal absorbing potential.  The matrix need not come from a
     tensor-product DVR; this is the interface used by the adiabatic-channel
     solver.  ``partition`` may be a number or a callable receiving
     ``(energies, eigenvectors)``.  If it is omitted, ``reactant_weights``
@@ -288,17 +284,11 @@ def _dense_rate_matrix(
         raise ValueError("hamiltonian must be finite and Hermitian")
     n = hamiltonian.shape[0]
     product = np.asarray(product, dtype=float).reshape(-1)
-    eps = np.asarray(eps)
-    if product.size != n or eps.shape not in ((n,), (n, n)):
-        raise ValueError("product and eps must match the Hamiltonian dimension")
-    if not np.isfinite(product).all() or not np.isfinite(eps).all():
-        raise ValueError("product and eps must be finite")
-    if eps.ndim == 1:
-        if np.iscomplexobj(eps) and np.any(eps.imag != 0) or np.any(eps.real < 0):
-            raise ValueError("absorber diagonal must be real and nonnegative")
-    elif (not np.allclose(eps, eps.conj().T, atol=1e-12, rtol=1e-12)
-          or eigvalsh(eps, subset_by_index=(0, 0))[0] < -1e-12 * max(1., np.max(np.abs(eps)))):
-        raise ValueError("absorber matrix must be Hermitian positive semidefinite")
+    eps = np.asarray(eps, dtype=float).reshape(-1)
+    if product.size != n or eps.size != n:
+        raise ValueError("product and eps must have one value per Hamiltonian state")
+    if not np.isfinite(product).all() or not np.isfinite(eps).all() or np.any(eps < 0):
+        raise ValueError("product and eps must be finite; eps must be nonnegative")
     beta = float(beta)
     if not np.isfinite(beta) or beta <= 0:
         raise ValueError("beta must be positive")
@@ -319,10 +309,7 @@ def _dense_rate_matrix(
     thermal_real = boltzmann_half @ commutator @ boltzmann_half
     del boltzmann_half
     absorbing = np.asarray(hamiltonian, dtype=complex).copy()
-    if eps.ndim == 1:
-        absorbing[np.diag_indices_from(absorbing)] -= 1j * eps
-    else:
-        absorbing -= 1j * eps
+    absorbing[np.diag_indices_from(absorbing)] -= 1j * eps
     triangular, unitary = schur(absorbing, output="complex", overwrite_a=True)
     del absorbing
     # Right-hand side i U^+ F U = -U^+ K U, with F=iK.
@@ -372,7 +359,6 @@ def _dense_rate_matrix(
 
 
 def _dense_rate(model, operators, eps, beta, shift, *, keep=None, energy_floor=None, normalization="default"):
-    model = constant_metric_model(model)
     keep = np.arange(operators.size) if keep is None else np.asarray(keep)
     hamiltonian = operators.dense_hamiltonian(keep if len(keep) < operators.size else None)
     product = operators.product.ravel()[keep]
@@ -705,7 +691,9 @@ def exact_quantum_rate(
     """
     if not isinstance(model, SubspaceModel):
         raise TypeError("model must be a SubspaceModel")
-    model = constant_metric_model(model)
+    if model.metric is not None:
+        raise ValueError("tensor-product exact rates do not support a position-dependent metric; "
+                         "use the channel Hamiltonian interface")
     beta = float(beta)
     if not np.isfinite(beta) or beta <= 0:
         raise ValueError("beta must be positive")

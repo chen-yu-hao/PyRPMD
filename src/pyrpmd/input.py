@@ -24,6 +24,7 @@ from .input_fes import fes_method, normalize_fes_task, _normalize_fes_input
 from .input_rate_pmf import (
     normalize_rate_pmf_input, normalize_rate_pmf_stages, resolve_rate_pmf_stage, rate_pmf_stage, rate_pmf_spec,
 )
+from .input_subspace import normalize_rate_subspace
 from .input_reaction import normalize_reaction_input
 from .input_stages import normalize_stage_input
 from .input_paths import (
@@ -223,6 +224,7 @@ class JobSpec:
                 if unknown:
                     raise _unknown_fields(unknown, allowed, section)
         normalize_rate_pmf_input(d, self.base_directory)
+        normalize_rate_subspace(d)
         validate_input_preflight(d)
         task = d.get("task")
         if task not in ("rate", "drpmd", "fes", "metadynamics", "opes", "pimd", "diffusion", "site_rate", "surface_rate"):

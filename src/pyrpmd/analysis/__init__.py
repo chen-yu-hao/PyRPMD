@@ -84,7 +84,6 @@ from .subspace_quantum import QuantumRateResult, exact_quantum_rate, dense_rate_
 from .subspace_channels import (
     SubspaceChannels,
     build_subspace_channels,
-    channels_from_model,
     construct_subspace_channels,
     project_path_channels,
     project_path_subspace_channels,
@@ -170,7 +169,6 @@ __all__ = [
     "dense_rate_matrix",
     "SubspaceChannels",
     "build_subspace_channels",
-    "channels_from_model",
     "construct_subspace_channels",
     "project_path_channels",
     "project_path_subspace_channels",

@@ -78,6 +78,8 @@ def parser():
     _input_options(r)
     r.add_argument("--output")
     r.add_argument("--resume", action="store_true")
+    r.add_argument("--stage", choices=("all", "subspace"), default="all",
+                   help="Run the full workflow (default), or only the configured rate subspace postprocessing")
     r.add_argument("--init-from", metavar="RUN_OR_CHECKPOINT",
                    help="Warm-start this new run from a configuration saved by an earlier run "
                         "(its directory, or one checkpoint file). Settings, fingerprint and output "
@@ -406,7 +408,7 @@ def main(argv=None):
             from .runner import run
 
             result = run(_job(args), resume=args.resume, init_from=args.init_from,
-                         init_index=args.init_index, init_bias=args.init_bias)
+                         init_index=args.init_index, init_bias=args.init_bias, stage=args.stage)
             if result is not None:
                 result = _report_after_result(args, result, result["output"])
             if result is not None:
@@ -416,15 +418,18 @@ def main(argv=None):
             config, system = spec.resolve()
             from .runner import propagation_backend_plan, _append_backend_warnings
 
-            backend_plan = ([] if config.get("task") == "pcet"
-                            else propagation_backend_plan(config, system))
-            _append_backend_warnings(config, backend_plan)
             if args.check_pes:
                 from .runner import prepare
 
                 result = prepare(spec, numerical=True)
+                config = result["resolved"]
+                backend_plan = result["propagation_plan"]
             else:
                 from .parallel import execution_plan
+
+                backend_plan = ([] if config.get("task") == "pcet"
+                                else propagation_backend_plan(config, system))
+                _append_backend_warnings(config, backend_plan)
 
                 if config["task"] == "pcet":
                     from .workflows.pcet import prepare_pcet

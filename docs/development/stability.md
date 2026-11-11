@@ -1,6 +1,6 @@
 # Workflow stability and compatibility
 
-The executable registry is [`src/pyrpmd/stability.py`](../../src/pyrpmd/stability.py).
+The executable registry is [`src/pyrpmd/stability.py`](https://github.com/chen-yu-hao/PyRPMD/blob/main/src/pyrpmd/stability.py).
 It classifies a workflow's supported interface and validation scope. A label
 does not change `ready`, `converged`, uncertainty, failed-history counts or a
 withheld rate in a calculation result. Method-specific overrides take priority;
@@ -43,22 +43,22 @@ an individual run. Use [How to converge a result](../convergence.md) for that.
 ## Developer and validation records
 
 User-facing workflows start in the [English manual](../index.md) or
-[Chinese manual](../zh/index.md). Their installation, input, potentials,
+[Chinese manual](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/zh/index.md). Their installation, input, potentials,
 materials, execution and analysis chapters are the supported language paths;
 the older standalone Chinese science notes remain historical references.
 
 The following existing records are preserved at their original paths so
 published links and scientific provenance remain usable:
 
-- [Validation history](../validation.md), [literature inventory](../literature-validation.md)
+- [Validation history](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation.md), [literature inventory](../literature-validation.md)
   and [method references](../manual/references.md).
-- [Roadmap and open work](../roadmap.md), [task records](../tasks/README.md),
-  [periodic-materials audit](../periodic-materials-audit.md) and
+- [Roadmap and open work](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/roadmap.md), [task records](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/tasks/README.md),
+  [periodic-materials audit](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/periodic-materials-audit.md) and
   [implementation review](../implementation-review-2026-11-03.md).
 - [Archive migration plan](../data-archive-plan.md) and
   [prepared release/archive inventory](archive-migration.md).
-- [Bilingual contribution guide](../../CONTRIBUTING.md) and
-  [unreleased changes](../../CHANGELOG.md).
+- [Bilingual contribution guide](https://github.com/chen-yu-hao/PyRPMD/blob/main/CONTRIBUTING.md) and
+  [unreleased changes](https://github.com/chen-yu-hao/PyRPMD/blob/main/CHANGELOG.md).
 
 Historical test counts and published-model comparisons apply to the commits
 and environments stated in each record. They are not current-build results.

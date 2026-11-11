@@ -154,7 +154,7 @@ def _prepare_extension(directory, max_time):
                 raise InputError("Parent checkpoint identity conflicts with the original run")
             for record in ParentRecordLedger(checkpoint).restore(metadata):
                 trajectory_id = record.get("trajectory_id")
-                if trajectory_id not in ids or trajectory_id in cached:
+                if owners.get(trajectory_id) != parent_id or trajectory_id in cached:
                     raise InputError("Parent record ledger has conflicting trajectory IDs")
                 cached[trajectory_id] = record
     for trajectory_id in range(n):

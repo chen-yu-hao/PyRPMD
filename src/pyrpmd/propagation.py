@@ -587,7 +587,7 @@ def native_support_reason(dynamics, *, bias=None, observe=None):
 
 
 def scientific_config(config):
-    """Remove block/backend tuning without dropping any scientific setting."""
+    """Remove execution/postprocessing controls from trajectory identity."""
     from copy import deepcopy
     result = deepcopy(config)
     if "dynamics" in result:
@@ -629,6 +629,12 @@ def scientific_config(config):
             and "child_batch_pairs" in config.get("rate", {}).get("recrossing", {})):
         result.pop("rate")
     rate = result.get("rate", {})
+    # Subspace calculations consume saved samples; they never alter the RPMD
+    # Hamiltonian or trajectories. Keep their numerical identity separately.
+    if "subspace_correction" in rate:
+        rate.pop("subspace_correction")
+        if not rate:
+            result.pop("rate", None)
     request = rate.get("pmf")
     if isinstance(request, dict) and isinstance(request.get("dynamics"), dict):
         for key in ("loop_backend", "block_steps", "electronic_backend", "electronic_device"):
@@ -649,4 +655,3 @@ def scientific_config(config):
 
 # The valid-prefix API is additive; propagate() retains whole-block rollback.
 from .block_propagation import BlockResult, PropagationError, propagate_block
-

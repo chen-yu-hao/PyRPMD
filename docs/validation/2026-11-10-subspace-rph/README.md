@@ -1,153 +1,90 @@
-# Curved-path zero-point projections (issue #156)
+# Normal-cut zero-point projections (issue #156)
 
-Date: 2026-11-10. This note records the implementation and validation status
-of the three `project_path_subspace` zero-point choices. It is diagnostic; no
-rate in this directory is marked `physical_converged`.
+This note records the reviewed definitions of the three
+`project_path_subspace` zero-point choices. No result here establishes
+physical convergence of a rate.
 
-## Change under test
+## Quadratic potential definition
 
-`zero_point="harmonic"` is the pre-issue normal-cut projected Hessian. The
-new `"rph"` choice forms the mass-weighted Miller--Handy--Adams reaction-path
-force constants and removes the local force--curvature connection before
-diagonalisation. In a normal basis (N), with (P=NN^T),
+For a fixed arc length `s`, the normal displacement is
+`x(s,Q) = x(s) + M^(-1/2) N(s) Q`. It is linear in `Q`, so its Hessian is
 
-\[
- K_{\rm RPH}=N^TKN-\tfrac12\{(N^Tg)(N^T\kappa)^T
-                    +(N^T\kappa)(N^Tg)^T\},
-\]
+`K_normal = N.T @ M^(-1/2) @ H_cartesian @ M^(-1/2) @ N`.
 
-where (g=\nabla V/\sqrt m) and \(\kappa=d\hat t/d\xi\). In codimension one
-this is (K_{nn}-(g\cdot n)(\kappa\cdot n)), the term specified by the
-Miller--Handy--Adams expansion. `"dvr"` diagonalises each local normal cut
-with a Colbert--Miller sinc-DVR (81 points and eight oscillator lengths by
-default); it takes the cut ground level, or the cut thermal free energy for
-`environment="free_energy"`.
+Both `zero_point="harmonic"` and `zero_point="rph"` use this quadratic
+normal-plane potential. The selector does not subtract a gradient-curvature
+term and does not add reaction-path kinetic or mode couplings. Those are
+separate from the potential Taylor expansion. The previously proposed
+subtraction changed the actual normal-cut frequency and has been removed.
+Consequently the RPH and harmonic projected energies agree for the same
+path and Hessian; no separate RPH improvement in the transfer factor is
+claimed.
 
-## Unit and analytic checks
+An analytic counterexample is a circular path of radius `R=5` on
+`V(r)=F*(r-R)+k*(r-R)^2/2`, with `F=0.10` and `k=0.02`. A radial normal cut
+has second derivative exactly `k`, independent of `F/R`. The correct
+quadratic zero-point energy is `sqrt(k)/2 = 0.0707106781` for both selectors.
+The regression checks an independent finite difference of the potential
+and the entire projected curve. An analytic Hessian is sufficient; the RPH
+selector does not require a separate gradient.
 
-The new `tests/test_subspace_model_zero_point.py` has nine tests. A straight
-separable harmonic tube gives the same (V_S) for all three choices. The DVR
-normal-cut zero-point term agrees with \(\hbar\omega/2\) to below (10^{-6})
-(the direct check is (2.8\times10^{-16}) in the local run). A circular
-analytic path with radial force (F=0.10), radius (R=5), and physical
-frequency (0.20) gives
+## Independent normal-cut DVR
 
-| projection | normal zero-point | RPH correction |
-| --- | ---: | ---: |
-| harmonic | 0.07071 | 0 |
-| rph | 0.10000 | (F/R=0.02000) |
+`zero_point="dvr"` diagonalizes each Hessian normal-mode cut with a unit-mass
+Colbert-Miller sinc DVR. It adds each cut's ground energy relative to the
+path energy, or its thermal quantum free energy for
+`environment="free_energy"`. This is a sum of independent one-dimensional
+cuts, not a coupled multidimensional transverse DVR. Strong intermode
+anharmonicity or degenerate-mode ambiguity requires a higher-dimensional
+calculation.
 
-This check isolates the gradient-times-curvature term and does not assert that
-an RPH one-dimensional model contains corner-cutting tunnelling.
+The default normal half-width is eight oscillator lengths of the actual
+positive normal frequency. Only non-positive Hessian eigenvalues use the
+explicit fallback box heuristic. In review, a soft harmonic mode with
+`omega=1e-5` had incorrectly received the much narrower `omega=0.01` box:
+its zero-point energy was `1.845995e-4` instead of `5e-6` hartree. The corrected
+automatic box reproduces the harmonic zero-point energy. Non-positive
+curvatures remain diagnostic failures requiring an explicit box-convergence
+study, even if their anharmonic cuts happen to be confining.
 
-## Curvature-family rate matrix
+`dvr_points`, `dvr_half_width` and `dvr_spacing` remain numerical convergence
+controls. `unstable_complement_points` counts path points with at least one
+negative Hessian eigenvalue, while `minimum_complement_curvature` records a
+Hessian eigenvalue; it never mixes that value with a DVR energy.
 
-The read-only workflow now carries `zero_point` in the matrix and runs all
-three choices for the curvature family (`h=0, 0.3, 0.6, 0.9`, symmetric and
-asymmetric barriers, 600/300/200 K). The branch filter includes
-`issue-156-rph-dvr`; `tools/check_workflow_policy.py` reports `workflow policy:
-OK`. The aggregate job prints `zero_point`, (C_S), and
-\(\Delta=\ln C(H)-\ln C_S\) for every row.
+## Cache and workflow behavior
 
-The existing Actions run (harmonic projection, 600 K, symmetric barrier) is
-the before curve:
+The construction records `zero_point_definition="linear-normal-cuts-v2"`.
+Saved RPH/DVR factors from the old subtraction or box rule are not reused.
+Historical harmonic projections remain compatible. Fractional `dvr_points`
+values are rejected rather than silently truncated by the pipeline.
 
-| h | kappa*rho | ln C_S(1D) | Delta |
-| ---: | ---: | ---: | ---: |
-| 0.0 | 0.00 | +0.102 | +0.008 |
-| 0.3 | 0.40 | +0.094 | +0.022 |
-| 0.6 | 0.79 | +0.045 | +0.078 |
-| 0.9 | 1.19 | −0.016 | +0.163 |
+The benchmark workflow carries the selector through the existing curvature
+matrix. Harmonic and RPH now define identical potential curves, so differences
+between their rates can only be sampling noise. Old pilot RPH rates from the
+removed subtraction are superseded and are not evidence for this revision.
+DVR, exact-rate grids, boxes, absorbers, truncation margins, bead count and
+RPMD statistics must all be converged before a physical transfer claim.
 
-The corresponding full-system (C(H)) values are 1.116, 1.123, 1.130, and
-1.159. Thus the historical normal-cut model loses 0.12 in (ln C_S) while
-(ln C(H)) rises by only 0.04.
+## Validation
 
-The three curves are intentionally produced by the workflow rather than
-substituted with a low-statistics local run. A local pilot at 600 K, using a
-coarse 2.0 arc-length grid and 8 walkers × 40 sweeps × 64 trajectories, was
-used only as a smoke test; it is not a converged rate and is not used to claim
-the target. Its (h=0.9), spacing-1.0 values were
+Run with one BLAS thread:
 
-| projection | C_S(1D) | ln C_S | Delta at kappa*rho=1.19 using C(H)=1.159 |
-| --- | ---: | ---: | ---: |
-| harmonic | 0.973 | −0.027 | +0.172 |
-| rph | 0.976 | −0.024 | +0.172 |
-| dvr | 1.009 | +0.009 | +0.139 |
+```bash
+PYTHONPATH=src OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -m pytest -q \
+  tests/test_subspace_model_zero_point.py tests/test_subspace_correction.py \
+  tests/test_subspace_transfer.py
+python tools/check_workflow_policy.py
+```
 
-The pilot confirms that the DVR removes part of the shoulder-induced trend,
-but it does not satisfy the convergence gate. The Actions artifacts are the
-required source for the final \(\ln C_S\)-versus-(h) and
-\(\Delta(\kappa\rho)\) comparison; statistical errors, spacing ladders, and
-the energy truncation margin must be read from those `TABLE` rows before
-accepting a physical result.
+The tests include analytic quadratic and finite-temperature harmonic limits,
+normal-cut grid refinement, a curved radial-potential derivative, a Hessian-only
+RPH route, soft positive modes, negative-curvature diagnostics and rejection of
+obsolete numerical definitions in saved correction factors. No new H + H2
+production calculation is reported by this review.
 
-## Exact-rate and truncation checks
-
-The exact solver is unchanged and still reports `truncation_margin`. For the
-2D transfer matrix the existing accepted wall is 0.07 Eh above the barrier plus
-the largest transverse zero-point term (about six stiff-mode quanta); the
-0.10-Eh check changes the two 200 K curvature points by at most the previously
-recorded 0.002 in \(\Delta\). The new normal-cut DVR has explicit grid
-controls (`dvr_points`, `dvr_half_width`, `dvr_spacing`) in model provenance.
-The harmonic analytic test was repeated with 81 points and eight oscillator
-lengths; changing the cut grid is a required check before a rate is called
-converged.
-
-The cut-grid check is executable as
-`python -m pytest tests/test_subspace_model_zero_point.py -k dvr_cut_grid_refinement_is_stable`.
-It uses the separable harmonic tube from the unit tests (mass 1060, transverse
-frequency 0.010, 41 path cuts) and compares the full projected energy curve for
-three grids:
-
-| `dvr_points` | `dvr_half_width` | `zero_point_range` (Eh) |
-| ---: | ---: | ---: |
-| 41 | 80.0 | 0.0050000000000000 |
-| 81 | 80.0 | 0.0050000000000000 |
-| 81 | 100.0 | 0.0050000000000000 |
-
-Increasing the point count changes the curve by at most `2.44e-16` Eh, and
-widening the box changes it by at most `1.99e-16` Eh (the coarse-to-widened
-comparison is `4.43e-16` Eh). These values are the normal-cut projection
-diagnostic only; they do not establish convergence of a transfer rate.
-
-The same check at the symmetric curvature-family point `h = 0.9` (the barrier
-top, using a nine-point local arc window) gives a nontrivial normal-cut range
-and the same grid stability:
-
-| `dvr_points` | `dvr_half_width` | `zero_point_range` (Eh) | max curve change (Eh) |
-| ---: | ---: | ---: | ---: |
-| 41 | 80.0 | `[0.0050000000000001, 0.0057836292234997]` | — |
-| 81 | 80.0 | `[0.0050000000000000, 0.0057836292235030]` | `3.31e-15` vs 41 points |
-| 81 | 100.0 | `[0.0050000000000001, 0.0057836292234984]` | `4.58e-15` vs 80.0 half-width |
-
-The executable regression is
-`python -m pytest tests/test_subspace_model_zero_point.py -k curvature_point_dvr`.
-It compares all nine local projected energies, rather than only the barrier
-value, and records the selected grid parameters in model provenance.
-
-## H + H₂, 200 K
-
-The restored data branch `data/subspace-runs-2026-11` contains the raw run and
-the previous calculation reports (C_S(1D)=2.06\pm0.04) and
-\(C_S(2D)=2.66\pm0.20\), giving (1.97\times10^{-18}) cm³/s against the
-2.01×10⁻¹⁸ reference. Recomputing this saved run in the current container was
-blocked before the projection stage because the provenance points to the
-checksum-pinned BKMP2 plugin (`benchmarks/h3/pes.py`) and GNU Fortran is not
-installed. No replacement number is presented as converged.
-
-The RPH/DVR choice changes only the one-dimensional normal environment term;
-the curvature-width test and the 2D curvature-normal plane remain separate.
-They can be combined multiplicatively only after the nested (C_S(2D)/C_S(1D))
-sensitivity and the DVR/Hessian grid checks are rerun on the same saved PES.
-
-## Applicability and failure modes
-
-The RPH correction is a local harmonic connection correction. It does not
-restore a transverse coordinate when \(\kappa\rho\gtrsim1\), and it can leave
-negative normal curvatures (recorded in provenance). The DVR option handles
-anharmonic normal cuts but still uses independent local normal modes; strong
-mode mixing or a path that exits the PES domain requires a higher-dimensional
-subspace. All rate outputs and this report retain `physical_converged=false`
-until the spacing, cut grid, absorber, truncation margin, bead number, and RPMD
-sampling gates pass.
+Review validation completed with **46 passed** for the three suites above
+(Python 3.11, NumPy 1.26.4, SciPy 1.12.0; 69.57 seconds), followed by the
+additional fractional-grid pipeline regression: **1 passed, 15 deselected**.
+The source was unchanged between these runs. Workflow policy and
+`git diff --check` passed.

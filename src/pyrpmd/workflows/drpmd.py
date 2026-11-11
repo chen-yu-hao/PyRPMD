@@ -26,7 +26,7 @@ from pyrpmd.trajectory_batch import map_trajectory_tasks, trajectory_batch_size
 from pyrpmd.validation import checked_integer as _integer
 from . import drpmd_analysis, drpmd_sampling, drpmd_trajectory
 from .drpmd_records import (
-    PARENT_KIND, ParentRecordLedger, load_parent_checkpoint, matches_parent_allocation, allocation_fields,
+    PARENT_KIND, ParentRecordLedger, load_parent_checkpoint, matches_parent_allocation,
 )
 from .drpmd_analysis import RATE_AU_TO_CM3_S, _electronic_summary, _wilson, summarize
 from .drpmd_classification import (
@@ -189,8 +189,8 @@ def _write_dynamic_summary(sampled, collisions, config, system, output, expected
         ledger.replace(parent["records"])
         meta.pop("records", None)
         meta.pop("trajectory_ids", None)
-        meta.pop("trajectory_ids_digest", None)
-        meta.update(format=PARENT_KIND, **allocation_fields(actual_ids),
+        meta.update(format=PARENT_KIND, trajectory_start=actual_ids[0],
+                    trajectory_count=len(actual_ids),
                     record_count=ledger.count, record_digest=ledger.digest)
         _atomic_npz(path, meta, **arrays)
     return _write_summary(sampled, config, system, output, expected)

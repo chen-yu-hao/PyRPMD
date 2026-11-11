@@ -1,7 +1,5 @@
 """Regression coverage for issue #167 backend transparency and projections."""
 
-import copy
-
 import numpy as np
 import pytest
 
@@ -39,6 +37,7 @@ def test_summary_propagation_combines_nested_streams_without_mutating_records():
         "fallback_reasons": {"cv": 3, "pes": 1},
     }
     assert first["fallback_reasons"] == {"cv": 2}
+    assert _summary_propagation(result) == result
     assert combine_propagation_stats([]) == {
         "native_steps": 0, "python_steps": 0, "fallback_reasons": {},
     }
@@ -55,154 +54,227 @@ def test_large_python_backend_plan_adds_one_actionable_warning():
     assert "fractional" in config["_warnings"][0]
 
 
-def test_missing_runtime_counts_are_unknown_not_zero():
-    result = _summary_propagation({"task": "legacy_workflow"})
-    assert result["propagation"]["native_steps"] is None
-    assert result["propagation"]["python_steps"] is None
-    assert result["propagation"]["measurement_available"] is False
+def test_summary_counts_collision_records_and_does_not_recount_nested_totals():
+    collision = {"native_steps": 7, "python_steps": 2}
+    nested = {"native_steps": 3, "python_steps": 1, "fallback_reasons": {"cv": 1},
+              "streams": [{"native_steps": 3, "python_steps": 1, "fallback_reasons": {"cv": 1}}]}
+    result = _summary_propagation({"records": [{"propagation": collision}],
+                                   "stages": [{"propagation": nested}]})
+    assert result["propagation"] == {
+        "native_steps": 10, "python_steps": 3, "fallback_reasons": {"cv": 1}}
 
 
-def test_native_ensemble_list_keeps_block_details_and_aggregates_measured_steps():
-    streams = [{"native_steps": 420, "python_steps": 0, "native_blocks": 21}] * 2
-    result = _summary_propagation({"propagation": streams})
-    assert result["propagation"] == streams
-    assert result["propagation_totals"] == {
-        "native_steps": 840, "python_steps": 0, "fallback_reasons": {}}
+def _plan_input():
+    system = System(("H", "H", "H"), [2., 2., 2.],
+                    [[-1.5, 0., 0.], [0., 0., 0.], [1.5, 0., 0.]], ((0,), (1, 2)))
+    config = {
+        "task": "rate", "beta": 3., "beads": 4, "dt_au": .02,
+        "potential": {"provider": "free"},
+        "sampling": {"equilibration_steps": 10, "production_steps": 100, "replicas": 2},
+        "cvs": [{"kind": "cartesian", "atom": 0, "axis": 0}],
+        "umbrella": {"centers": [-1., 0., 1.], "stiffness": 2.},
+        "reaction": {"fragments": [[0], [1, 2]], "forming_bonds": [[0, 1]],
+                     "breaking_bonds": [[1, 2]], "rinf": 10.},
+        "recrossing": {"parent_replicas": 2, "parent_samples": 3, "equilibration_steps": 5,
+                       "parent_interval_steps": 7, "child_pairs": 4, "child_steps": 11},
+    }
+    return config, system
 
 
-def test_aggregate_with_nested_details_is_counted_once():
-    counts = {"native_steps": 5, "python_steps": 0, "fallback_reasons": {}}
-    result = _summary_propagation({"streams": [{"propagation": {**counts, "details": counts}}]})
-    assert result["propagation"]["native_steps"] == 5
-
-
-def _rate_plan_config():
-    system=System(("H","H","H"),[1837.,1837.,1837.],[[-1.757,0.,0.],[0.,0.,0.],[1.757,0.,0.]])
-    config={"task":"rate","beta":100.,"beads":4,"dt_au":.02,
-        "potential":{"provider":"free"},
-        "reaction":{"fragments":[[0],[1,2]],"forming_bonds":[[0,1]],"breaking_bonds":[[1,2]],"rinf":10.},
-        "sampling":{"equilibration_steps":2,"production_steps":8,"sample_interval":2,"replicas":1},
-        "umbrella":{"centers":[0.,.5,1.],"kappa":.2},
-        "analysis":{"bins":12,"bootstrap":0},
-        "recrossing":{"child_steps":8}}
-    return config,system
-
-
-@pytest.mark.parametrize("provider", ["python","cabi","f2py"])
-def test_external_native_binding_is_unknown_without_loading_provider(provider,monkeypatch):
-    from pyrpmd import potentials
-    from pyrpmd.runner import propagation_backend_plan
-    config,system=_rate_plan_config()
-    config["potential"]={"provider":provider,"factory":"unavailable.py:build","library":"missing.so"}
-    monkeypatch.setattr(potentials,"make_potential",lambda *a: pytest.fail("external provider must not load"))
-    stages=propagation_backend_plan(config,system)
-    assert stages and all(stage["backend"]=="unknown" for stage in stages)
-    assert all("deferred" in stage["reason"] for stage in stages)
-
-
-def test_explicit_python_remains_known_for_a_deferred_provider():
-    from pyrpmd.runner import propagation_backend_plan
-    config,system=_rate_plan_config()
-    config["potential"]={"provider":"python","factory":"unavailable.py:build"}
-    config["dynamics"]={"loop_backend":"python"}
-    assert all(s["backend"]=="python" for s in propagation_backend_plan(config,system))
-
-
-def test_gas_rate_parent_and_child_native_descriptors_are_not_reported_as_python():
+def test_backend_plan_preserves_native_rate_stages_and_separate_budgets():
+    import pytest
     from pyrpmd.dynamics import native_capabilities
     from pyrpmd.runner import propagation_backend_plan
     if not native_capabilities()["available"]:
-        pytest.skip("native extension unavailable")
-    config,system=_rate_plan_config()
-    before=copy.deepcopy(config)
-    stages={s["stage"]:s for s in propagation_backend_plan(config,system)}
-    assert config==before
-    for stage in ("umbrella","recrossing parent","recrossing child"):
-        assert stages[stage]["backend"]=="native", stages[stage]
-        assert stages[stage]["reason"] is None
-    config["recrossing"]["dynamics"]="trpmd"
-    child=next(s for s in propagation_backend_plan(config,system) if s["stage"]=="recrossing child")
-    assert child["backend"]=="python" and "TRPMD" in child["reason"]
+        pytest.skip("native build required")
+    config, system = _plan_input()
+    plan = {item["stage"]: item for item in propagation_backend_plan(config, system)}
+    assert plan["umbrella"]["planned_steps"] == 3 * 2 * 110
+    assert plan["recrossing parent"]["planned_steps"] == 2 * (5 + 3 * 7)
+    assert plan["recrossing child"]["planned_steps"] == 2 * 2 * 3 * 4 * 11
+    assert plan["recrossing parent"]["backend"] == "native"
+    assert plan["recrossing child"]["backend"] == "native"
 
 
-def test_site_rate_python_parent_and_child_are_distinct_from_native_umbrella():
+def test_external_binding_is_unknown_without_loading_provider(monkeypatch):
+    from pyrpmd.runner import propagation_backend_plan
+    from pyrpmd import potentials
+    config, system = _plan_input()
+    config["potential"] = {"provider": "c_abi", "library": "not-loaded.so"}
+    monkeypatch.setattr(potentials, "make_potential", lambda *a: (_ for _ in ()).throw(AssertionError("loaded PES")))
+    plan = propagation_backend_plan(config, system)
+    assert {item["backend"] for item in plan} == {"unknown"}
+    config["dynamics"] = {"loop_backend": "python"}
+    assert {item["backend"] for item in propagation_backend_plan(config, system)} == {"python"}
+
+
+def test_rate_nonroot_does_not_iterate_root_only_parent_results(monkeypatch, tmp_path):
+    from pyrpmd.workflows import rate
+    config, system = _plan_input()
+    sentinel = object()
+    seen = []
+    def root_call(function, *args, **kwargs):
+        seen.append(function.__name__)
+        if function is rate._prepare:
+            return config, system
+        if function is rate._pmf_and_parent_tasks:
+            return {}, [object()]
+        if function is rate._parent_propagation:
+            assert args == (None,)
+            return []
+        if function is rate._child_tasks:
+            return []
+        if function is rate._aggregate:
+            return sentinel
+        if function.__name__ == "finish_rate":
+            assert args[-1] is sentinel
+            return sentinel
+        raise AssertionError(function)
+    monkeypatch.setattr(rate, "root_call", root_call)
+    monkeypatch.setattr(rate, "sample_umbrellas", lambda *a, **kw: None)
+    monkeypatch.setattr(rate, "run_tasks", lambda *a, **kw: None)
+    monkeypatch.setattr(rate, "_dispatch_children", lambda *a, **kw: None)
+    assert rate.run_rate(config, system, tmp_path) is sentinel
+    assert "_parent_propagation" in seen
+
+
+def test_site_nonroot_passes_root_only_parents_without_iteration(monkeypatch, tmp_path):
+    from pyrpmd.workflows import site_rate as site
+    config, system = _plan_input()
+    config["task"] = "site_rate"
+    sentinel = object()
+    def root_call(function, *args, **kwargs):
+        if function is site.validate_site_rate:
+            return None
+        if function is site._estimate_pmf:
+            return {}, []
+        if function is site._child_tasks:
+            return []
+        if function is site._aggregate:
+            assert args[-1] is None
+            return sentinel
+        raise AssertionError(function)
+    monkeypatch.setattr(site, "root_call", root_call)
+    monkeypatch.setattr(site, "run_fes", lambda *a, **kw: None)
+    monkeypatch.setattr(site, "map_trajectory_tasks", lambda *a, **kw: None)
+    assert site.run_site_rate(config, system, tmp_path) is sentinel
+
+
+def test_independent_pmf_plan_uses_its_backend_clock_and_thermostat():
+    import copy
+    import pytest
+    from pyrpmd.dynamics import native_capabilities
     from pyrpmd.input import JobSpec
     from pyrpmd.runner import propagation_backend_plan
+    from test_rate_pmf_input import configuration, independent_pmf
+    if not native_capabilities()["available"]:
+        pytest.skip("native build required")
+    raw = configuration()
+    raw["native"] = True
+    raw["rate"] = {"pmf": independent_pmf()}
+    for overrides in ({"loop_backend": "python"}, {"native": False}, {}):
+        request = copy.deepcopy(raw)
+        request["rate"]["pmf"]["dynamics"].update(overrides)
+        resolved, system = JobSpec.from_mapping(request).resolve()
+        plan = {item["stage"]: item for item in propagation_backend_plan(resolved, system)}
+        assert plan["umbrella"]["backend"] == "python"
+        assert plan["umbrella"]["planned_steps"] == 4 * 2 * (10 + 50)
+        assert plan["recrossing child"]["backend"] == "native"
+        if not overrides:
+            assert "PILE-L" in plan["umbrella"]["reason"]
+
+
+def test_surface_plan_uses_declared_surface_before_testing_native_support(monkeypatch):
+    from pyrpmd.runner import propagation_backend_plan
+    from pyrpmd.workflows import surface
+    from test_surface_workflow import cluster_job
+    from pyrpmd.input import JobSpec
+    raw = cluster_job()
+    raw["native"] = True
+    resolved, system = JobSpec.from_mapping(raw).resolve()
+    original = surface.surface_definition
+    seen = []
+    def definition(*args):
+        result = original(*args)
+        coordinate = result["coordinate"]
+        dividing = coordinate.dividing_surface
+        def checked(value):
+            seen.append(value)
+            return dividing(value)
+        coordinate.dividing_surface = checked
+        return result
+    monkeypatch.setattr(surface, "surface_definition", definition)
+    propagation_backend_plan(resolved, system)
+    assert seen == [raw["surface"]["dividing_surface"]]
+
+
+@pytest.mark.parametrize("collection", [list, tuple])
+def test_summary_preserves_legacy_propagation_collection_and_totals(collection):
+    streams = collection([
+        {"sampling": {"native_steps": 7, "python_steps": 0}, "production": None},
+        {"sampling": {"native_steps": 0, "python_steps": 3,
+                      "fallback_reasons": {"provider": 3}}},
+    ])
+    source = {"propagation": streams}
+    result = _summary_propagation(source)
+    assert result["propagation"] is streams
+    assert "propagation_totals" not in source
+    assert "propagation_streams" not in result
+    assert result["propagation_totals"] == {
+        "native_steps": 7, "python_steps": 3, "fallback_reasons": {"provider": 3}}
+    assert _summary_propagation(result) == result
+
+
+def test_backend_plan_borrows_provider_without_reconstructing_or_closing(monkeypatch):
+    from unittest.mock import Mock
+    from pyrpmd import potentials
+    from pyrpmd.runner import propagation_backend_plan
+    config, system = _plan_input()
+    provider = potentials.FreePotential()
+    provider.close = Mock()
+    factory = Mock(side_effect=AssertionError("borrowed provider was reconstructed"))
+    monkeypatch.setattr(potentials, "make_potential", factory)
+    propagation_backend_plan(config, system, potential=provider)
+    factory.assert_not_called()
+    provider.close.assert_not_called()
+
+
+@pytest.mark.parametrize("filename, stage, steps", [
+    ("torch_pimd.inp", "propagation", 800),
+    ("torch_diffusion.inp", "production", 880),
+])
+def test_torch_materials_plan_is_unknown_without_provider_or_torch_import(monkeypatch, filename, stage, steps):
+    import builtins
+    import importlib
     from pathlib import Path
-    config,system=JobSpec.from_file(Path(__file__).resolve().parents[1]/"examples/tutorials/periodic_site_rate/input.inp").resolve()
-    stages={s["stage"]:s for s in propagation_backend_plan(config,system)}
-    assert stages["site parent"]["backend"]=="python"
-    assert stages["site child"]["backend"]=="python"
-    assert "checkpointed" in stages["site parent"]["reason"]
-
-
-def test_history_dependent_fes_plan_does_not_invent_an_umbrella_stage():
+    from unittest.mock import Mock
+    from pyrpmd import dynamics, potentials
+    from pyrpmd.input import JobSpec
     from pyrpmd.runner import propagation_backend_plan
-    config,system=_rate_plan_config()
-    config.update(task="fes",fes={"method":"metadynamics"})
-    stages=propagation_backend_plan(config,system)
-    assert [s["stage"] for s in stages]==["metadynamics"]
-    assert stages[0]["backend"]=="unknown"
+    from pyrpmd.workflows.materials import resolve_materials
+    from pyrpmd.workflows.pimd import select_engine
 
-
-
-def _umbrella_budget_config():
-    system=System(("H",),[1837.],[[0.,0.,0.]])
-    config={"task":"fes","beta":100.,"beads":4,"dt_au":.02,"native":False,
-            "potential":{"provider":"free"},
-            "sampling":{"equilibration_steps":20,"production_steps":100,"replicas":2,"sample_interval":5},
-            "cvs":[{"name":"x","kind":"cartesian","atom":0,"axis":"x"}],
-            "umbrella":{"cvs":["x"],"centers":[-.5,0.,.5],"stiffness":.2}}
-    return config,system
-
-
-def test_umbrella_budget_includes_each_window_replica_and_local_override():
-    from pyrpmd.runner import propagation_backend_plan
-    config,system=_umbrella_budget_config()
-    assert propagation_backend_plan(config,system)[0]["planned_steps"]==720
-    config["umbrella"].pop("centers")
-    config["umbrella"]["windows"]=[{"id":"left","center":-.2},
-        {"id":"right","center":.2,"sampling":{"equilibration":{"steps":7},"production":{"steps":13}}}]
-    assert propagation_backend_plan(config,system)[0]["planned_steps"]==280
-
-
-def test_recrossing_budgets_include_parent_equilibration_and_both_child_signs():
-    from pyrpmd.runner import propagation_backend_plan
-    config,system=_rate_plan_config()
-    config["recrossing"].update(parent_replicas=3,parent_samples=5,equilibration_steps=7,
-                               parent_interval_steps=11,child_pairs=4,child_steps=13)
-    budgets={stage["stage"]:stage["planned_steps"] for stage in propagation_backend_plan(config,system)}
-    assert budgets["recrossing parent"]==3*(7+5*11)
-    assert budgets["recrossing child"]==3*5*4*2*13
-    assert budgets["umbrella"]==3*(2+8)
-
-
-def test_diffusion_equilibration_and_production_have_separate_budgets():
-    from pyrpmd.runner import propagation_backend_plan
-    config,system=_umbrella_budget_config()
-    config["task"]="diffusion"
-    config.pop("umbrella");config.pop("cvs")
-    stages={stage["stage"]:stage for stage in propagation_backend_plan(config,system)}
-    assert stages["sampling"]["planned_steps"]==2*20
-    assert stages["production"]["planned_steps"]==2*100
-
-
-def test_adaptive_unknown_budget_does_not_emit_false_million_step_warning():
-    from pyrpmd.runner import propagation_backend_plan
-    config,system=_umbrella_budget_config()
-    config["sampling"]["production_steps"]=2_000_000
-    config["adaptive_umbrella"]={"enabled":True}
-    plan=propagation_backend_plan(config,system)
-    assert plan[0]["planned_steps"] is None
-    _append_backend_warnings(config,plan)
-    assert config["_warnings"]==[]
-
-
-def test_million_step_warning_uses_expanded_window_budget():
-    from pyrpmd.runner import propagation_backend_plan
-    config,system=_umbrella_budget_config()
-    config["sampling"]["production_steps"]=200_000
-    plan=propagation_backend_plan(config,system)
-    assert plan[0]["planned_steps"]==1_200_120
-    _append_backend_warnings(config,plan)
-    assert len(config["_warnings"])==1 and "1,200,120" in config["_warnings"][0]
+    def guarded_import(original):
+        def check(name, *args, **kwargs):
+            if name == "torch" or name.startswith("torch."):
+                raise AssertionError("static backend planning imported Torch")
+            return original(name, *args, **kwargs)
+        return check
+    monkeypatch.setattr(builtins, "__import__", guarded_import(builtins.__import__))
+    monkeypatch.setattr(importlib, "import_module", guarded_import(importlib.import_module))
+    factory = Mock(side_effect=AssertionError("static tensor plan constructed a PES"))
+    constructor = Mock(side_effect=AssertionError("tensor plan constructed ordinary Dynamics"))
+    monkeypatch.setattr(potentials, "make_potential", factory)
+    monkeypatch.setattr(dynamics, "Dynamics", constructor)
+    example = Path(__file__).resolve().parents[1] / "examples/materials" / filename
+    config, system = JobSpec.from_file(example).resolve()
+    resolve_materials(config, system)
+    assert select_engine(config).runner == "run_torch_materials"
+    plan = propagation_backend_plan(config, system)
+    assert len(plan) == 1
+    assert plan[0]["stage"] == stage and plan[0]["planned_steps"] == steps
+    assert plan[0]["backend"] == "unknown"
+    assert "Torch tensor workflow" in plan[0]["reason"]
+    assert "runtime" in plan[0]["reason"]
+    factory.assert_not_called()
+    constructor.assert_not_called()
