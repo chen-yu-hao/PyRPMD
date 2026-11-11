@@ -197,9 +197,8 @@ def read_status(directory):
             break
         except FileNotFoundError as error:
             raise ValueError(f"No progress.json in {directory}; the run has not started or predates progress reporting") from error
-        except PermissionError as error:
-            if (sys.platform != "win32" or getattr(error, "winerror", None) not in (5, 32, 33)
-                    or attempt == len(delays)):
+        except PermissionError:
+            if sys.platform != "win32" or attempt == len(delays):
                 raise
             time.sleep(delays[attempt])
     if (not isinstance(value, dict) or value.get("schema") != SCHEMA
