@@ -22,7 +22,7 @@ pyrpmd info
 For the NumPy implementation use `PYRPMD_NO_NATIVE=1 python -m pip install .`.
 MPI, GPU and external potential adapters are optional; see the
 [installation guide](docs/manual/installation.md). The next 0.2.x binary release
-is being prepared; this README does not assume an unpublished wheel is on PyPI.
+is being prepared.
 
 ## First run
 
