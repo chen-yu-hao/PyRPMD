@@ -608,86 +608,90 @@ def run_resolved(config, system, *, output=None, resume=False, init_from=None, i
     _append_backend_warnings(config, backend_plan)
 
     root_call(_initialize_output, config, system, target, resume, parent_run)
-    if config["task"] == "path_sampling":
-        from .workflows.path_sampling import run_path_sampling
+    from .progress import RunProgress
 
-        result = run_path_sampling(config, system, Path(target))
-    elif "tempering" in config:
-        from .workflows.tempering import run_tempering
+    with RunProgress(target, config, backend_plan) as progress:
+        if config["task"] == "path_sampling":
+            from .workflows.path_sampling import run_path_sampling
 
-        result = run_tempering(config, system, Path(target))
-    elif config["task"] == "spectroscopy":
-        from .workflows.spectroscopy import run_spectroscopy
+            result = run_path_sampling(config, system, Path(target))
+        elif "tempering" in config:
+            from .workflows.tempering import run_tempering
 
-        result = run_spectroscopy(config, system, Path(target))
-    elif config["task"] == "plumed":
-        from .workflows.plumed import run_plumed
+            result = run_tempering(config, system, Path(target))
+        elif config["task"] == "spectroscopy":
+            from .workflows.spectroscopy import run_spectroscopy
 
-        result = run_plumed(config, system, Path(target))
-    elif config["task"] == "pcet":
-        from .workflows.pcet import run_pcet
+            result = run_spectroscopy(config, system, Path(target))
+        elif config["task"] == "plumed":
+            from .workflows.plumed import run_plumed
 
-        result = run_pcet(config, system, Path(target))
-    elif config["task"] == "nonadiabatic":
-        from .workflows.nonadiabatic import run_nonadiabatic
+            result = run_plumed(config, system, Path(target))
+        elif config["task"] == "pcet":
+            from .workflows.pcet import run_pcet
 
-        result = run_nonadiabatic(config, system, Path(target))
-    elif config["task"] == "drpmd":
-        from .workflows.drpmd import run_drpmd
+            result = run_pcet(config, system, Path(target))
+        elif config["task"] == "nonadiabatic":
+            from .workflows.nonadiabatic import run_nonadiabatic
 
-        result = run_drpmd(config, system, Path(target))
-    elif config["task"] == "fes":
-        from .workflows.fes_dispatch import run_fes
+            result = run_nonadiabatic(config, system, Path(target))
+        elif config["task"] == "drpmd":
+            from .workflows.drpmd import run_drpmd
 
-        result = run_fes(config, system, Path(target))
-    elif config["task"] == "rate":
-        from .workflows.rate import run_rate
+            result = run_drpmd(config, system, Path(target))
+        elif config["task"] == "fes":
+            from .workflows.fes_dispatch import run_fes
 
-        result = run_rate(config, system, Path(target))
-    elif config["task"] == "surface_rate":
-        from .workflows.surface import run_surface_rate
+            result = run_fes(config, system, Path(target))
+        elif config["task"] == "rate":
+            from .workflows.rate import run_rate
 
-        result = run_surface_rate(config, system, Path(target))
-    elif config["task"] == "network":
-        from .workflows.network import run_network
+            result = run_rate(config, system, Path(target))
+        elif config["task"] == "surface_rate":
+            from .workflows.surface import run_surface_rate
 
-        result = run_network(config, system, Path(target))
-    elif config["task"] == "pimd" and "path_integral" in config:
-        from .workflows.path_integral import run_path_integral
+            result = run_surface_rate(config, system, Path(target))
+        elif config["task"] == "network":
+            from .workflows.network import run_network
 
-        result = run_path_integral(config, system, Path(target))
-    elif config["task"] in ("pimd", "diffusion"):
-        from .workflows.materials import run_materials
+            result = run_network(config, system, Path(target))
+        elif config["task"] == "pimd" and "path_integral" in config:
+            from .workflows.path_integral import run_path_integral
 
-        result = run_materials(config, system, Path(target))
-    elif config["task"] == "site_rate":
-        from .workflows.site_rate import run_site_rate
+            result = run_path_integral(config, system, Path(target))
+        elif config["task"] in ("pimd", "diffusion"):
+            from .workflows.materials import run_materials
 
-        result = run_site_rate(config, system, Path(target))
-    else:
-        raise InputError("Unknown workflow")
-    if is_root() and result is not None:
-        result = _summary_propagation(result)
-        result = {
-            **result,
-            "software": "PyRPMD",
-            "version": __version__,
-            "output": target,
-            "preset": config.get("preset", "pilot"),
-            "input_warnings": config.get("_warnings", []),
-            "stability": classify_stability(config),
-            "propagation_plan": backend_plan,
-        }
-        if config.get("warm_start"):
-            from .warm_start import report
+            result = run_materials(config, system, Path(target))
+        elif config["task"] == "site_rate":
+            from .workflows.site_rate import run_site_rate
 
-            result["warm_start"] = report(config)
-        # dRPMD returns records for API compatibility, but persists the full
-        # table separately so the run's summary stays bounded in size.
-        stored = ({key: value for key, value in result.items() if key != "records"}
-                  if config["task"] == "drpmd" else result)
-        write_json(Path(target) / "results" / "summary.json", stored)
-    return result
+            result = run_site_rate(config, system, Path(target))
+        else:
+            raise InputError("Unknown workflow")
+        if is_root() and result is not None:
+            result = _summary_propagation(result)
+            result = {
+                **result,
+                "software": "PyRPMD",
+                "version": __version__,
+                "output": target,
+                "preset": config.get("preset", "pilot"),
+                "input_warnings": config.get("_warnings", []),
+                "stability": classify_stability(config),
+                "propagation_plan": backend_plan,
+            }
+            if config.get("warm_start"):
+                from .warm_start import report
+
+                result["warm_start"] = report(config)
+            # dRPMD returns records for API compatibility, but persists the full
+            # table separately so the run's summary stays bounded in size.
+            stored = ({key: value for key, value in result.items() if key != "records"}
+                      if config["task"] == "drpmd" else result)
+            write_json(Path(target) / "results" / "summary.json", stored)
+        progress.result = result
+        return result
 
 
 def _resume_parallel(current, overrides):

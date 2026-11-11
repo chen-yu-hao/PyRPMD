@@ -247,7 +247,9 @@ def _prepare_extension(directory, target):
             raise InputError("Umbrella checkpoints differ from the completed rate generation")
     if ledger["requests"] and target == ledger["requests"][-1]["production_steps"]:
         if ledger["requests"][-1]["status"] == "completed":
-            return {"completed": True, "output": str(path), "ledger": ledger}
+            return {"completed": True, "output": str(path), "ledger": ledger,
+                    "generation": str(generation), "config": prepared_config,
+                    "sampling_config": sampling_config, "checkpoint_records": records}
     else:
         relative = generation_name(target)
         if (path / relative).exists():
@@ -385,40 +387,56 @@ def extend_rate(directory, *, production_steps):
     root_call(_lock, path)
     try:
         prepared = root_call(_prepare_extension, path, target)
-        if prepared["completed"]:
-            return root_call(_publish_completed, path, prepared["ledger"])
-        recovered = root_call(_recover_receipt, prepared)
-        if recovered is not None:
-            return recovered
-        config, system = prepared["config"], prepared["system"]
-        # Preparation runs on root. MPI workers also need the saved import
-        # directory for module factories and file plugins' sibling imports.
-        if config.get("_base_directory") and config["_base_directory"] not in sys.path:
-            sys.path.insert(0, config["_base_directory"])
-        generation = Path(prepared["generation"])
-        root_call(write_json, generation / "preparation.json", prepared["preparation"])
-        sampled = fes.sample_umbrellas(
-            prepared["sampling_config"], system, generation / "umbrella",
-            production_steps=target, checkpoint_output=path / "umbrella",
-        )
-        options = rate._recrossing_options(config)
-        pmf, parent_tasks = root_call(rate._pmf_and_parent_tasks,
-            sampled, config, system, str(generation), options)
-        generation_identity = root_call(_bind_generation, prepared, pmf, parent_tasks)
-        for task in parent_tasks:
-            task["generation_identity"] = generation_identity
+        from ..progress import RunProgress
 
-        def dispatch(function, tasks):
-            return run_tasks(function, tasks, config.get("parallel", {}))
+        reporting = {**prepared["config"], "resume": True}
+        options = rate._recrossing_options(prepared["config"])
+        neq = prepared["sampling_config"]["sampling"]["equilibration_steps"]
+        plan = [
+            {"stage": "umbrella", "planned_steps": len(prepared.get("checkpoint_records", ())) * (neq + target)},
+            {"stage": "recrossing parent", "planned_steps": options["parent_replicas"] * (
+                options["equilibration_steps"] + options["parent_samples"] * options["parent_interval_steps"])},
+            {"stage": "recrossing child", "planned_steps": 2 * options["parent_replicas"] *
+                options["parent_samples"] * options["child_pairs"] * options["child_steps"]},
+        ]
+        with RunProgress(path, reporting, plan, checkpoint_directory=prepared["generation"]) as progress:
+            if prepared["completed"]:
+                progress.result = root_call(_publish_completed, path, prepared["ledger"])
+                return progress.result
+            recovered = root_call(_recover_receipt, prepared)
+            if recovered is not None:
+                progress.result = recovered
+                return recovered
+            config, system = prepared["config"], prepared["system"]
+            # Preparation runs on root. MPI workers also need the saved import
+            # directory for module factories and file plugins' sibling imports.
+            if config.get("_base_directory") and config["_base_directory"] not in sys.path:
+                sys.path.insert(0, config["_base_directory"])
+            generation = Path(prepared["generation"])
+            root_call(write_json, generation / "preparation.json", prepared["preparation"])
+            sampled = fes.sample_umbrellas(
+                prepared["sampling_config"], system, generation / "umbrella",
+                production_steps=target, checkpoint_output=path / "umbrella",
+            )
+            options = rate._recrossing_options(config)
+            pmf, parent_tasks = root_call(rate._pmf_and_parent_tasks,
+                sampled, config, system, str(generation), options)
+            generation_identity = root_call(_bind_generation, prepared, pmf, parent_tasks)
+            for task in parent_tasks:
+                task["generation_identity"] = generation_identity
 
-        if parent_tasks:
-            parents = dispatch(rate._parent_task, parent_tasks)
-            tasks = root_call(rate._child_tasks, parents, config, system,
-                              str(generation), options, pmf)
-            children = rate._dispatch_children(tasks, config, dispatch)
-        else:
-            children = []
-        summary = root_call(rate._aggregate, children, pmf, config, str(generation), options)
-        return root_call(_finish_extension, prepared, summary)
+            def dispatch(function, tasks):
+                return run_tasks(function, tasks, config.get("parallel", {}))
+
+            if parent_tasks:
+                parents = dispatch(rate._parent_task, parent_tasks)
+                tasks = root_call(rate._child_tasks, parents, config, system,
+                                  str(generation), options, pmf)
+                children = rate._dispatch_children(tasks, config, dispatch)
+            else:
+                children = []
+            summary = root_call(rate._aggregate, children, pmf, config, str(generation), options)
+            progress.result = root_call(_finish_extension, prepared, summary)
+            return progress.result
     finally:
         root_call(_unlock, path)

@@ -118,7 +118,8 @@ def saved_run(tmp_path, *, mode="apply"):
 
 def source_hashes(root):
     return {str(p.relative_to(root)): file_sha256(p) for p in root.rglob("*")
-            if p.is_file() and "subspace" not in p.relative_to(root).parts}
+            if p.is_file() and "subspace" not in p.relative_to(root).parts
+            and p.relative_to(root).as_posix() not in {"progress.json", "run.log.jsonl"}}
 
 
 def fake_report(apply=True):
@@ -147,6 +148,10 @@ def test_stage_routes_shared_pipeline_and_preserves_sources(tmp_path, monkeypatc
     assert result["subspace_correction"]["status"] == "complete"
     assert ("corrected_rate_cm3_s" in result["subspace_correction"]) == (mode == "apply")
     assert source_hashes(root) == before
+    progress = json.loads((root / "progress.json").read_text())
+    assert progress["status"] == "completed"
+    assert progress["stage"] == "subspace"
+    assert progress["total_steps"] is None
     assert calls[0][0]["source"]["rate_run"] == str(root)
     assert calls[0][1]["apply"] == (mode == "apply")
     assert len(calls[0][1]["reuse_key"]) == 64

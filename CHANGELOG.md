@@ -5,6 +5,16 @@ not been published as a new wheel release; no release date or DOI is assigned.
 
 ## Unreleased
 
+- Add `pyrpmd status RUN_DIR` and `--watch` with committed-step counters,
+  percentages, stage ETA and stale-heartbeat detection. Runner, resume and
+  extension paths atomically publish advisory `progress.json`; only the main
+  process / MPI root appends structured events to `run.log.jsonl` and stderr.
+  Stdout remains result JSON. Explicit subspace postprocessing now updates
+  these two advisory root files while preserving scientific source artifacts.
+  Unknown/adaptive budgets remain null; execution completion is not scientific
+  convergence. Checkpoint formats, numerical work and physics identities are
+  unchanged. See [Monitoring](docs/manual/progress.md).
+
 - Add machine-readable stable, beta and research workflow classifications and
   a compatibility policy for public stable inputs, summaries and checkpoints.
 - Add analytic tutorial inputs and comparison scripts, keeping the short
