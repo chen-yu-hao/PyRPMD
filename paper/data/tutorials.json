@@ -1,0 +1,116 @@
+{
+ "harmonic_pimd": {
+  "tutorial": "harmonic_pimd",
+  "passed": true,
+  "checks": [
+   {
+    "observable": "potential_energy",
+    "measured": 0.002634001271316296,
+    "reference": 0.002618793759773454,
+    "standard_error": 9.715222404661544e-06,
+    "deviation_in_standard_errors": 1.5653281941898982,
+    "resolution_bound": 0.0,
+    "difference": 1.5207511542842094e-05,
+    "precision_target_relative_sem": 0.03,
+    "passed": true
+   },
+   {
+    "observable": "kinetic_centroid_virial",
+    "measured": 0.0026187924904799986,
+    "reference": 0.002618793759773454,
+    "standard_error": 2.3856645133604813e-06,
+    "deviation_in_standard_errors": -0.000532050272948784,
+    "resolution_bound": 0.0,
+    "difference": -1.269293455497672e-09,
+    "precision_target_relative_sem": 0.03,
+    "passed": true
+   },
+   {
+    "observable": "radius_of_gyration_squared_bohr2",
+    "measured": 0.11937272869246143,
+    "reference": 0.1193728556218071,
+    "standard_error": 0.00023856645133604813,
+    "deviation_in_standard_errors": -0.0005320502734650568,
+    "resolution_bound": 0.0,
+    "difference": -1.2692934567293257e-07,
+    "precision_target_relative_sem": 0.03,
+    "passed": true
+   }
+  ],
+  "scope": "Analytic model agreement at the specified finite bead count and budget; production summary is unchanged."
+ },
+ "periodic_site_rate": {
+  "tutorial": "periodic_site_rate",
+  "passed": true,
+  "checks": [
+   {
+    "observable": "directed_rate_s",
+    "measured": 23411236713.196247,
+    "reference": 22712947312.580242,
+    "standard_error": 3319966842.7883577,
+    "deviation_in_standard_errors": 0.21033023330724865,
+    "resolution_bound": 0.0,
+    "difference": 698289400.616005,
+    "precision_target_relative_sem": 0.15,
+    "passed": true
+   }
+  ],
+  "scope": "Analytic model agreement at the specified finite bead count and budget; production summary is unchanged."
+ },
+ "double_well_metad": {
+  "tutorial": "double_well_metad",
+  "passed": true,
+  "checks": [
+   {
+    "observable": "histogram_barrier_hartree",
+    "measured": 0.0040819763958035,
+    "reference": 0.003994976184650449,
+    "standard_error": 9.461516136280235e-05,
+    "deviation_in_standard_errors": 0.9195165964939621,
+    "resolution_bound": 0.0,
+    "difference": 8.700021115305104e-05,
+    "precision_target_relative_sem": 0.15,
+    "passed": true,
+    "continuous_barrier_hartree": 0.004
+   }
+  ],
+  "scope": "Analytic model agreement at the specified finite bead count and budget; production summary is unchanged."
+ },
+ "free_diffusion": {
+  "tutorial": "free_diffusion",
+  "passed": true,
+  "checks": [
+   {
+    "observable": "diffusion_au",
+    "measured": 0.0011505860130363336,
+    "reference": 0.001068939529679944,
+    "standard_error": 0.00010282364615361357,
+    "deviation_in_standard_errors": 0.7940438450744454,
+    "resolution_bound": 0.0,
+    "difference": 8.164648335638952e-05,
+    "precision_target_relative_sem": 0.15,
+    "passed": true
+   }
+  ],
+  "scope": "Analytic model agreement at the specified finite bead count and budget; production summary is unchanged."
+ },
+ "harmonic_spectroscopy": {
+  "tutorial": "harmonic_spectroscopy",
+  "passed": true,
+  "checks": [
+   {
+    "observable": "ir_peak_cm1",
+    "measured": 1145.201437676761,
+    "reference": 1144.9768580572038,
+    "standard_error": 0.0,
+    "deviation_in_standard_errors": null,
+    "resolution_bound": 2.5448920837261357,
+    "difference": 0.22457961955728933,
+    "precision_target_relative_sem": null,
+    "passed": true,
+    "peak_grid_spacing_cm1": 5.0897841674522715
+   }
+  ],
+  "scope": "Analytic model agreement at the specified finite bead count and budget; production summary is unchanged."
+ }
+}

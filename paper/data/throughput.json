@@ -1,0 +1,366 @@
+{
+ "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+ "rows": [
+  {
+   "path": "fused",
+   "beads": 16,
+   "atoms": 3,
+   "steps": 20000,
+   "threads": 1,
+   "seconds_per_step_median": 2.63892555e-06,
+   "seconds_per_step_min": 2.6154279000000004e-06,
+   "seconds_per_step_max": 2.6649176e-06,
+   "loop_stats": {
+    "native_steps": 100016,
+    "python_steps": 0,
+    "fallback_reasons": {}
+   }
+  },
+  {
+   "path": "substep",
+   "beads": 16,
+   "atoms": 3,
+   "steps": 2000,
+   "threads": 1,
+   "seconds_per_step_median": 0.000169565979,
+   "seconds_per_step_min": 0.0001531638535,
+   "seconds_per_step_max": 0.000239327337,
+   "loop_stats": {
+    "native_steps": 0,
+    "python_steps": 10016,
+    "fallback_reasons": {
+     "explicit Python loop backend": 10016
+    }
+   }
+  },
+  {
+   "path": "numpy",
+   "beads": 16,
+   "atoms": 3,
+   "steps": 1000,
+   "threads": 1,
+   "seconds_per_step_median": 0.000312749914,
+   "seconds_per_step_min": 0.00021137159300000004,
+   "seconds_per_step_max": 0.000348586612,
+   "loop_stats": {
+    "native_steps": 0,
+    "python_steps": 5016,
+    "fallback_reasons": {
+     "explicit Python loop backend": 5016
+    }
+   }
+  },
+  {
+   "path": "fused",
+   "beads": 32,
+   "atoms": 3,
+   "steps": 20000,
+   "threads": 1,
+   "seconds_per_step_median": 3.6667853000000002e-06,
+   "seconds_per_step_min": 2.8254967e-06,
+   "seconds_per_step_max": 4.70186265e-06,
+   "loop_stats": {
+    "native_steps": 100016,
+    "python_steps": 0,
+    "fallback_reasons": {}
+   }
+  },
+  {
+   "path": "substep",
+   "beads": 32,
+   "atoms": 3,
+   "steps": 2000,
+   "threads": 1,
+   "seconds_per_step_median": 0.000166068639,
+   "seconds_per_step_min": 0.00015069857999999999,
+   "seconds_per_step_max": 0.00019571986600000002,
+   "loop_stats": {
+    "native_steps": 0,
+    "python_steps": 10016,
+    "fallback_reasons": {
+     "explicit Python loop backend": 10016
+    }
+   }
+  },
+  {
+   "path": "numpy",
+   "beads": 32,
+   "atoms": 3,
+   "steps": 1000,
+   "threads": 1,
+   "seconds_per_step_median": 0.000215725921,
+   "seconds_per_step_min": 0.000209436912,
+   "seconds_per_step_max": 0.000270517665,
+   "loop_stats": {
+    "native_steps": 0,
+    "python_steps": 5016,
+    "fallback_reasons": {
+     "explicit Python loop backend": 5016
+    }
+   }
+  },
+  {
+   "path": "fused",
+   "beads": 64,
+   "atoms": 3,
+   "steps": 20000,
+   "threads": 1,
+   "seconds_per_step_median": 6.8255041e-06,
+   "seconds_per_step_min": 6.7124999500000006e-06,
+   "seconds_per_step_max": 7.933928250000001e-06,
+   "loop_stats": {
+    "native_steps": 100016,
+    "python_steps": 0,
+    "fallback_reasons": {}
+   }
+  },
+  {
+   "path": "substep",
+   "beads": 64,
+   "atoms": 3,
+   "steps": 2000,
+   "threads": 1,
+   "seconds_per_step_median": 0.00021766431100000004,
+   "seconds_per_step_min": 0.000199754119,
+   "seconds_per_step_max": 0.0002350974205,
+   "loop_stats": {
+    "native_steps": 0,
+    "python_steps": 10016,
+    "fallback_reasons": {
+     "explicit Python loop backend": 10016
+    }
+   }
+  },
+  {
+   "path": "numpy",
+   "beads": 64,
+   "atoms": 3,
+   "steps": 1000,
+   "threads": 1,
+   "seconds_per_step_median": 0.000236819882,
+   "seconds_per_step_min": 0.000227269356,
+   "seconds_per_step_max": 0.000246868394,
+   "loop_stats": {
+    "native_steps": 0,
+    "python_steps": 5016,
+    "fallback_reasons": {
+     "explicit Python loop backend": 5016
+    }
+   }
+  },
+  {
+   "path": "fused",
+   "beads": 128,
+   "atoms": 3,
+   "steps": 20000,
+   "threads": 1,
+   "seconds_per_step_median": 1.2870949100000001e-05,
+   "seconds_per_step_min": 1.2415274000000002e-05,
+   "seconds_per_step_max": 1.6413006400000003e-05,
+   "loop_stats": {
+    "native_steps": 100016,
+    "python_steps": 0,
+    "fallback_reasons": {}
+   }
+  },
+  {
+   "path": "substep",
+   "beads": 128,
+   "atoms": 3,
+   "steps": 2000,
+   "threads": 1,
+   "seconds_per_step_median": 0.000191930184,
+   "seconds_per_step_min": 0.0001708179685,
+   "seconds_per_step_max": 0.00030257747550000005,
+   "loop_stats": {
+    "native_steps": 0,
+    "python_steps": 10016,
+    "fallback_reasons": {
+     "explicit Python loop backend": 10016
+    }
+   }
+  },
+  {
+   "path": "numpy",
+   "beads": 128,
+   "atoms": 3,
+   "steps": 1000,
+   "threads": 1,
+   "seconds_per_step_median": 0.000261178776,
+   "seconds_per_step_min": 0.000232127989,
+   "seconds_per_step_max": 0.000302792844,
+   "loop_stats": {
+    "native_steps": 0,
+    "python_steps": 5016,
+    "fallback_reasons": {
+     "explicit Python loop backend": 5016
+    }
+   }
+  },
+  {
+   "path": "fused",
+   "beads": 256,
+   "atoms": 3,
+   "steps": 20000,
+   "threads": 1,
+   "seconds_per_step_median": 3.239862365e-05,
+   "seconds_per_step_min": 2.7239604650000006e-05,
+   "seconds_per_step_max": 3.550242495e-05,
+   "loop_stats": {
+    "native_steps": 100016,
+    "python_steps": 0,
+    "fallback_reasons": {}
+   }
+  },
+  {
+   "path": "substep",
+   "beads": 256,
+   "atoms": 3,
+   "steps": 2000,
+   "threads": 1,
+   "seconds_per_step_median": 0.00023126333500000001,
+   "seconds_per_step_min": 0.00022173331850000003,
+   "seconds_per_step_max": 0.000264395785,
+   "loop_stats": {
+    "native_steps": 0,
+    "python_steps": 10016,
+    "fallback_reasons": {
+     "explicit Python loop backend": 10016
+    }
+   }
+  },
+  {
+   "path": "numpy",
+   "beads": 256,
+   "atoms": 3,
+   "steps": 1000,
+   "threads": 1,
+   "seconds_per_step_median": 0.000395734094,
+   "seconds_per_step_min": 0.000281792993,
+   "seconds_per_step_max": 0.000522251315,
+   "loop_stats": {
+    "native_steps": 0,
+    "python_steps": 5016,
+    "fallback_reasons": {
+     "explicit Python loop backend": 5016
+    }
+   }
+  },
+  {
+   "path": "fused",
+   "beads": 32,
+   "atoms": 64,
+   "steps": 4000,
+   "threads": 1,
+   "seconds_per_step_median": 5.902775825000001e-05,
+   "seconds_per_step_min": 5.0404389e-05,
+   "seconds_per_step_max": 6.760958475e-05,
+   "loop_stats": {
+    "native_steps": 20016,
+    "python_steps": 0,
+    "fallback_reasons": {}
+   }
+  },
+  {
+   "path": "substep",
+   "beads": 32,
+   "atoms": 64,
+   "steps": 400,
+   "threads": 1,
+   "seconds_per_step_median": 0.0002612033025,
+   "seconds_per_step_min": 0.00025979611,
+   "seconds_per_step_max": 0.0002703705875,
+   "loop_stats": {
+    "native_steps": 0,
+    "python_steps": 2016,
+    "fallback_reasons": {
+     "explicit Python loop backend": 2016
+    }
+   }
+  },
+  {
+   "path": "numpy",
+   "beads": 32,
+   "atoms": 64,
+   "steps": 200,
+   "threads": 1,
+   "seconds_per_step_median": 0.00042361556500000004,
+   "seconds_per_step_min": 0.000404520285,
+   "seconds_per_step_max": 0.00045607414000000003,
+   "loop_stats": {
+    "native_steps": 0,
+    "python_steps": 1016,
+    "fallback_reasons": {
+     "explicit Python loop backend": 1016
+    }
+   }
+  },
+  {
+   "path": "fused",
+   "beads": 32,
+   "atoms": 512,
+   "steps": 1000,
+   "threads": 1,
+   "seconds_per_step_median": 0.0004892016300000001,
+   "seconds_per_step_min": 0.000461170349,
+   "seconds_per_step_max": 0.000508089597,
+   "loop_stats": {
+    "native_steps": 5016,
+    "python_steps": 0,
+    "fallback_reasons": {}
+   }
+  },
+  {
+   "path": "substep",
+   "beads": 32,
+   "atoms": 512,
+   "steps": 100,
+   "threads": 1,
+   "seconds_per_step_median": 0.0034615950500000003,
+   "seconds_per_step_min": 0.0033141198700000003,
+   "seconds_per_step_max": 0.00425081443,
+   "loop_stats": {
+    "native_steps": 0,
+    "python_steps": 516,
+    "fallback_reasons": {
+     "explicit Python loop backend": 516
+    }
+   }
+  },
+  {
+   "path": "numpy",
+   "beads": 32,
+   "atoms": 512,
+   "steps": 50,
+   "threads": 1,
+   "seconds_per_step_median": 0.0062696394200000005,
+   "seconds_per_step_min": 0.005290063780000001,
+   "seconds_per_step_max": 0.007019106540000001,
+   "loop_stats": {
+    "native_steps": 0,
+    "python_steps": 266,
+    "fallback_reasons": {
+     "explicit Python loop backend": 266
+    }
+   }
+  }
+ ],
+ "agreement": [
+  {
+   "beads": 32,
+   "atoms": 3,
+   "steps": 1000,
+   "max_abs_q_fused_minus_numpy": 1.6470158570314197e-13,
+   "max_abs_p_fused_minus_numpy": 9.43600753089413e-12,
+   "max_abs_q_substep_minus_numpy": 1.6470158570314197e-13
+  },
+  {
+   "beads": 32,
+   "atoms": 64,
+   "steps": 1000,
+   "max_abs_q_fused_minus_numpy": 2.2282176104226892e-13,
+   "max_abs_p_fused_minus_numpy": 1.2136069926782511e-11,
+   "max_abs_q_substep_minus_numpy": 2.2282176104226892e-13
+  }
+ ]
+}

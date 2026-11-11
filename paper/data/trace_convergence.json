@@ -1,0 +1,38 @@
+{
+ "beta_hbar_omega": 8.0,
+ "rows": [
+  {
+   "beads": 4,
+   "primitive_absolute_logZ_error": 0.47503706046400485,
+   "TI_absolute_logZ_error": 0.05344998886233432
+  },
+  {
+   "beads": 8,
+   "primitive_absolute_logZ_error": 0.15042308715145003,
+   "TI_absolute_logZ_error": 0.0048197391430679914
+  },
+  {
+   "beads": 16,
+   "primitive_absolute_logZ_error": 0.040564955074584574,
+   "TI_absolute_logZ_error": 0.0003348970809762264
+  },
+  {
+   "beads": 32,
+   "primitive_absolute_logZ_error": 0.010351113295453906,
+   "TI_absolute_logZ_error": 2.1515446485320666e-05
+  },
+  {
+   "beads": 64,
+   "primitive_absolute_logZ_error": 0.0026013489127469924,
+   "TI_absolute_logZ_error": 1.3540970549286158e-06
+  },
+  {
+   "beads": 128,
+   "primitive_absolute_logZ_error": 0.0006511927699786035,
+   "TI_absolute_logZ_error": 8.477865787170913e-08
+  }
+ ],
+ "ti_energy_hartree": 0.007442866480634012,
+ "ti_energy_sem_hartree": 5.519372223978238e-05,
+ "ti_beads": 16
+}

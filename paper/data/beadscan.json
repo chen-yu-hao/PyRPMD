@@ -1,0 +1,63 @@
+{
+ "rows": [
+  {
+   "beads": 1,
+   "kinetic_cv": 0.0014250652035556256,
+   "kinetic_cv_sem": 0.0,
+   "potential": 0.0014344201912652233,
+   "potential_sem": 1.965657961469609e-05,
+   "finite_p_reference": 0.001425065203555383
+  },
+  {
+   "beads": 2,
+   "kinetic_cv": 0.0020421714552409246,
+   "kinetic_cv_sem": 3.6507679326500194e-06,
+   "potential": 0.00207612630027961,
+   "potential_sem": 3.950936749281132e-05,
+   "finite_p_reference": 0.0020375892836218355
+  },
+  {
+   "beads": 4,
+   "kinetic_cv": 0.0024361468119298815,
+   "kinetic_cv_sem": 2.746806849135114e-06,
+   "potential": 0.0024240798440041175,
+   "potential_sem": 1.6452085260261634e-05,
+   "finite_p_reference": 0.0024312411623851784
+  },
+  {
+   "beads": 8,
+   "kinetic_cv": 0.002578065517963357,
+   "kinetic_cv_sem": 3.4784660872958963e-06,
+   "potential": 0.0026343629124007182,
+   "potential_sem": 3.914213796781876e-05,
+   "finite_p_reference": 0.0025774694172154304
+  },
+  {
+   "beads": 16,
+   "kinetic_cv": 0.0026187924904799986,
+   "kinetic_cv_sem": 2.3856645133604813e-06,
+   "potential": 0.002634001271316296,
+   "potential_sem": 9.715222404661544e-06,
+   "finite_p_reference": 0.002618793759773454
+  },
+  {
+   "beads": 32,
+   "kinetic_cv": 0.0026329578558919008,
+   "kinetic_cv_sem": 3.3527605658457157e-06,
+   "potential": 0.0026527093606285865,
+   "potential_sem": 4.43051883861722e-05,
+   "finite_p_reference": 0.002629468495934292
+  },
+  {
+   "beads": 64,
+   "kinetic_cv": 0.0026336134264501798,
+   "kinetic_cv_sem": 2.1732898096974734e-06,
+   "potential": 0.002599947535059302,
+   "potential_sem": 2.6728755532557753e-05,
+   "finite_p_reference": 0.002632159488874718
+  }
+ ],
+ "beta_hbar_omega": 3.4729529486500823,
+ "exact_quantum_kinetic": 0.002633058489062227,
+ "classical_kinetic": 0.001425065203555383
+}

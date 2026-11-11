@@ -1,0 +1,254 @@
+[
+ {
+  "integrator": "cayley-bcb",
+  "dt_fs": 0.4,
+  "steps": 500,
+  "stable": true,
+  "initial_energy": 5.841794523526406,
+  "max_abs_energy_error": 0.01120184128925139,
+  "max_relative_energy_error": 0.0019175342857641945,
+  "loop_stats": {
+   "native_steps": 500,
+   "python_steps": 0,
+   "fallback_reasons": {}
+  }
+ },
+ {
+  "integrator": "cayley-bcb",
+  "dt_fs": 0.2,
+  "steps": 1000,
+  "stable": true,
+  "initial_energy": 5.841794523526406,
+  "max_abs_energy_error": 0.0023794885852623793,
+  "max_relative_energy_error": 0.00040732151322330287,
+  "loop_stats": {
+   "native_steps": 1000,
+   "python_steps": 0,
+   "fallback_reasons": {}
+  }
+ },
+ {
+  "integrator": "cayley-bcb",
+  "dt_fs": 0.1,
+  "steps": 2000,
+  "stable": true,
+  "initial_energy": 5.841794523526406,
+  "max_abs_energy_error": 0.0007203790012120237,
+  "max_relative_energy_error": 0.00012331467639111108,
+  "loop_stats": {
+   "native_steps": 2000,
+   "python_steps": 0,
+   "fallback_reasons": {}
+  }
+ },
+ {
+  "integrator": "cayley-bcb",
+  "dt_fs": 0.05,
+  "steps": 4000,
+  "stable": true,
+  "initial_energy": 5.841794523526406,
+  "max_abs_energy_error": 0.00012107293287577647,
+  "max_relative_energy_error": 2.0725298089171862e-05,
+  "loop_stats": {
+   "native_steps": 4000,
+   "python_steps": 0,
+   "fallback_reasons": {}
+  }
+ },
+ {
+  "integrator": "cayley-bcb",
+  "dt_fs": 0.025,
+  "steps": 8000,
+  "stable": true,
+  "initial_energy": 5.841794523526406,
+  "max_abs_energy_error": 3.176006321581326e-05,
+  "max_relative_energy_error": 5.436696393190026e-06,
+  "loop_stats": {
+   "native_steps": 8000,
+   "python_steps": 0,
+   "fallback_reasons": {}
+  }
+ },
+ {
+  "integrator": "cayley-bcb",
+  "dt_fs": 0.0125,
+  "steps": 16000,
+  "stable": true,
+  "initial_energy": 5.841794523526406,
+  "max_abs_energy_error": 9.05296580100412e-06,
+  "max_relative_energy_error": 1.549689186181661e-06,
+  "loop_stats": {
+   "native_steps": 16000,
+   "python_steps": 0,
+   "fallback_reasons": {}
+  }
+ },
+ {
+  "integrator": "normal-mode-bab",
+  "dt_fs": 0.4,
+  "steps": 500,
+  "stable": true,
+  "initial_energy": 5.841794523526406,
+  "max_abs_energy_error": 0.00944830697282395,
+  "max_relative_energy_error": 0.0016173637971642432,
+  "loop_stats": {
+   "native_steps": 500,
+   "python_steps": 0,
+   "fallback_reasons": {}
+  }
+ },
+ {
+  "integrator": "normal-mode-bab",
+  "dt_fs": 0.2,
+  "steps": 1000,
+  "stable": true,
+  "initial_energy": 5.841794523526406,
+  "max_abs_energy_error": 0.0022578742469576696,
+  "max_relative_energy_error": 0.0003865035372032738,
+  "loop_stats": {
+   "native_steps": 1000,
+   "python_steps": 0,
+   "fallback_reasons": {}
+  }
+ },
+ {
+  "integrator": "normal-mode-bab",
+  "dt_fs": 0.1,
+  "steps": 2000,
+  "stable": true,
+  "initial_energy": 5.841794523526406,
+  "max_abs_energy_error": 0.0005736558496929334,
+  "max_relative_energy_error": 9.819856679016593e-05,
+  "loop_stats": {
+   "native_steps": 2000,
+   "python_steps": 0,
+   "fallback_reasons": {}
+  }
+ },
+ {
+  "integrator": "normal-mode-bab",
+  "dt_fs": 0.05,
+  "steps": 4000,
+  "stable": true,
+  "initial_energy": 5.841794523526406,
+  "max_abs_energy_error": 0.00014396184781695354,
+  "max_relative_energy_error": 2.4643428870560614e-05,
+  "loop_stats": {
+   "native_steps": 4000,
+   "python_steps": 0,
+   "fallback_reasons": {}
+  }
+ },
+ {
+  "integrator": "normal-mode-bab",
+  "dt_fs": 0.025,
+  "steps": 8000,
+  "stable": true,
+  "initial_energy": 5.841794523526406,
+  "max_abs_energy_error": 3.602405922631391e-05,
+  "max_relative_energy_error": 6.166608407953374e-06,
+  "loop_stats": {
+   "native_steps": 8000,
+   "python_steps": 0,
+   "fallback_reasons": {}
+  }
+ },
+ {
+  "integrator": "normal-mode-bab",
+  "dt_fs": 0.0125,
+  "steps": 16000,
+  "stable": true,
+  "initial_energy": 5.841794523526406,
+  "max_abs_energy_error": 9.008102592744649e-06,
+  "max_relative_energy_error": 1.5420094898009006e-06,
+  "loop_stats": {
+   "native_steps": 16000,
+   "python_steps": 0,
+   "fallback_reasons": {}
+  }
+ },
+ {
+  "integrator": "velocity-verlet",
+  "dt_fs": 0.4,
+  "steps": 500,
+  "stable": true,
+  "initial_energy": 5.841794523526406,
+  "max_abs_energy_error": 0.14886884477619855,
+  "max_relative_energy_error": 0.025483409965322383,
+  "loop_stats": {
+   "native_steps": 500,
+   "python_steps": 0,
+   "fallback_reasons": {}
+  }
+ },
+ {
+  "integrator": "velocity-verlet",
+  "dt_fs": 0.2,
+  "steps": 1000,
+  "stable": true,
+  "initial_energy": 5.841794523526406,
+  "max_abs_energy_error": 0.024084795424448302,
+  "max_relative_energy_error": 0.004122841932808942,
+  "loop_stats": {
+   "native_steps": 1000,
+   "python_steps": 0,
+   "fallback_reasons": {}
+  }
+ },
+ {
+  "integrator": "velocity-verlet",
+  "dt_fs": 0.1,
+  "steps": 2000,
+  "stable": true,
+  "initial_energy": 5.841794523526406,
+  "max_abs_energy_error": 0.006218822119279821,
+  "max_relative_energy_error": 0.0010645396879734518,
+  "loop_stats": {
+   "native_steps": 2000,
+   "python_steps": 0,
+   "fallback_reasons": {}
+  }
+ },
+ {
+  "integrator": "velocity-verlet",
+  "dt_fs": 0.05,
+  "steps": 4000,
+  "stable": true,
+  "initial_energy": 5.841794523526406,
+  "max_abs_energy_error": 0.001374883964929019,
+  "max_relative_energy_error": 0.0002353530168498752,
+  "loop_stats": {
+   "native_steps": 4000,
+   "python_steps": 0,
+   "fallback_reasons": {}
+  }
+ },
+ {
+  "integrator": "velocity-verlet",
+  "dt_fs": 0.025,
+  "steps": 8000,
+  "stable": true,
+  "initial_energy": 5.841794523526406,
+  "max_abs_energy_error": 0.0003261425992917566,
+  "max_relative_energy_error": 5.5829180225065534e-05,
+  "loop_stats": {
+   "native_steps": 8000,
+   "python_steps": 0,
+   "fallback_reasons": {}
+  }
+ },
+ {
+  "integrator": "velocity-verlet",
+  "dt_fs": 0.0125,
+  "steps": 16000,
+  "stable": true,
+  "initial_energy": 5.841794523526406,
+  "max_abs_energy_error": 7.917163343051925e-05,
+  "max_relative_energy_error": 1.3552622077287169e-05,
+  "loop_stats": {
+   "native_steps": 16000,
+   "python_steps": 0,
+   "fallback_reasons": {}
+  }
+ }
+]

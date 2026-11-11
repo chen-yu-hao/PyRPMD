@@ -1,0 +1,33 @@
+{
+ "calculation": "dRPMD, 4096 collisions, 32 parents, P=4, process backend",
+ "identical_results_across_workers": true,
+ "rows": [
+  {
+   "workers": 1,
+   "wall_seconds": 61.485866505,
+   "repeats": [
+    64.235468866,
+    55.056292838,
+    61.485866505
+   ]
+  },
+  {
+   "workers": 2,
+   "wall_seconds": 32.870393333,
+   "repeats": [
+    28.638809496,
+    32.870393333,
+    34.634655696
+   ]
+  },
+  {
+   "workers": 4,
+   "wall_seconds": 20.184997687,
+   "repeats": [
+    18.330584755,
+    20.184997687,
+    20.990267879
+   ]
+  }
+ ]
+}
