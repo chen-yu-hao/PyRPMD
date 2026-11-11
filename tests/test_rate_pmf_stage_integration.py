@@ -40,7 +40,7 @@ def test_explicit_reaction_prepares_the_selected_independent_sampler(method):
     assert result["pmf_plan"]["sampling"]["timestep_fs"] == pytest.approx(.2)
     assert result["pmf_plan"]["recrossing"]["timestep_fs"] == pytest.approx(.1)
     if method == "umbrella":
-        assert result["umbrella_preparation"]["windows"] == 24
+        assert result["umbrella_preparation"]["windows"] == 59
         assert all(w["production_steps"] == 500 for w in result["umbrella_preparation"]["window_plan"])
     else:
         assert "umbrella_preparation" not in result
@@ -82,10 +82,10 @@ def test_regional_operation_controls_use_pmf_clock_and_preserve_parent_clock(nes
     if thermostat == "andersen":
         assert stage["sampling"]["andersen_interval"] == 10
     plan = result["umbrella_preparation"]["window_plan"]
-    assert len(plan) == 42
+    assert len(plan) == 66
     assert all((w["equilibration_steps"], w["production_steps"], w["sample_stride_steps"])
                == (25, 100, 1) for w in plan)
-    np.testing.assert_allclose([w["stiffness_au"][0][0] for w in plan], [.16] * 16 + [.32] * 26)
+    np.testing.assert_allclose([w["stiffness_au"][0][0] for w in plan], [1.6] * 40 + [3.2] * 26)
 
 
 @pytest.mark.parametrize("field,value", [

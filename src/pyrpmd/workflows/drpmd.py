@@ -25,6 +25,9 @@ from pyrpmd.parallel import execution_plan, make_task_potential, run_tasks, root
 from pyrpmd.trajectory_batch import map_trajectory_tasks, trajectory_batch_size
 from pyrpmd.validation import checked_integer as _integer
 from . import drpmd_analysis, drpmd_sampling, drpmd_trajectory
+from .drpmd_records import (
+    PARENT_KIND, ParentRecordLedger, load_parent_checkpoint, matches_parent_allocation,
+)
 from .drpmd_analysis import RATE_AU_TO_CM3_S, _electronic_summary, _wilson, summarize
 from .drpmd_classification import (
     ConnectivityClassifier,
@@ -177,11 +180,18 @@ def _write_dynamic_summary(sampled, collisions, config, system, output, expected
     for parent in sampled:
         parent["records"].sort(key=lambda record: record["trajectory_id"])
         path = Path(output) / "checkpoints" / f"parent-{parent['parent_id']:06d}.npz"
-        meta, arrays = _load_npz(path, expected_kind="PyRPMD.drpmd.parent-checkpoint.v1")
+        meta, arrays = load_parent_checkpoint(path)
         actual_ids = [record["trajectory_id"] for record in parent["records"]]
-        if actual_ids != meta["trajectory_ids"]:
+        if (meta.get("parent_id") != parent["parent_id"]
+                or not matches_parent_allocation(meta, actual_ids)):
             raise RuntimeError("Dynamic collision ledger has missing or duplicate global IDs")
-        meta["records"] = parent["records"]
+        ledger = ParentRecordLedger(path)
+        ledger.replace(parent["records"])
+        meta.pop("records", None)
+        meta.pop("trajectory_ids", None)
+        meta.update(format=PARENT_KIND, trajectory_start=actual_ids[0],
+                    trajectory_count=len(actual_ids),
+                    record_count=ledger.count, record_digest=ledger.digest)
         _atomic_npz(path, meta, **arrays)
     return _write_summary(sampled, config, system, output, expected)
 

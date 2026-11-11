@@ -8,6 +8,7 @@ This script is used by package CI as well as local release verification.
 from __future__ import annotations
 
 import argparse
+import csv
 import importlib
 import importlib.metadata
 import json
@@ -214,7 +215,7 @@ def main():
     starter_run = starter / "run"
     starter_summary = json.loads(command(
         "init-analyze", [sys.executable, "-m", "pyrpmd", "analyze", str(starter_run)]))
-    for key, expected in (("task", "fes"), ("samples", 120), ("streams", 6), ("windows", 3)):
+    for key, expected in (("task", "fes"), ("samples", 20000), ("streams", 10), ("windows", 5)):
         if starter_summary.get(key) != expected:
             raise AssertionError(f"Installed starter has unexpected {key}: {starter_summary.get(key)!r}")
     command("init-resume", [sys.executable, "-m", "pyrpmd", "resume", str(starter_run)])
@@ -297,7 +298,10 @@ def main():
         resolved = json.loads((directory / "input" / "resolved.json").read_text())
         if resolved["dynamics"]["integrator"] != scheme or resolved["sampling"]["integrator"] != scheme + "-andersen":
             raise AssertionError(f"dRPMD {scheme} did not retain its selected sampling/production method")
-        records = summary["records"]
+        with (directory / summary["trajectory_table"]).open(newline="", encoding="utf-8") as stream:
+            records = list(csv.DictReader(stream))
+        for record in records:
+            record["propagation"] = json.loads(record["propagation"])
         if len(records) != 2 or summary["parent_thermal_steps"] != {"0": 8}:
             raise AssertionError(f"dRPMD {scheme} did not execute the actual parent/child workflow")
         if any(r["status"] == "failed" or

@@ -586,6 +586,25 @@ class COMDistance(CollectiveVariable):
         return _com_distance(q, self.weights, 1)
 
 
+class RPMDrateBranchError(ValueError):
+    """A rate umbrella attempted to leave the regular reaction-coordinate branch."""
+
+    def __init__(self, s0, s1):
+        denominator = float(s0 - s1)
+        self.branch = {"s0": float(s0), "s1": float(s1),
+                       "denominator": denominator,
+                       "branch": "beyond_singular_surface", "regular": False}
+        super().__init__(f"RPMDrate umbrella left the regular branch: s0-s1={denominator:g}")
+
+
+def _check_rate_branch(coordinate, s0, s1):
+    denominator = s0 - s1
+    if coordinate.regular_branch_only and denominator <= 1e-10:
+        raise RPMDrateBranchError(s0, s1)
+    if abs(denominator) < 1e-10:
+        raise ValueError("RPMDrate xi is singular where s0=s1")
+
+
 class RPMDrateCoordinate(CollectiveVariable):
     """xi=s0/(s0-s1), including atom-permuted equivalent transition states.
 
@@ -606,11 +625,13 @@ class RPMDrateCoordinate(CollectiveVariable):
         breaking_bonds,
         rinf,
         equivalent_paths=None,
+        regular_branch_only=False,
         **kwargs,
     ):
         super().__init__(**kwargs)
         if self.estimator != "centroid":
             raise ValueError("RPMDrate rate coordinate requires centroid estimator")
+        self.regular_branch_only = bool(regular_branch_only)
         self.com = COMDistance(fragments, masses)
         self.masses = np.asarray(masses, float)
         self.reference = np.asarray(reference, float)
@@ -675,8 +696,7 @@ class RPMDrateCoordinate(CollectiveVariable):
     def centroid_value_gradient_hessian(self, q):
         a, ga, ha, s1, g1, h1 = self.surfaces(q)
         b, gb, hb = a - s1, ga - g1, ha - h1
-        if abs(b) < 1e-10:
-            raise ValueError("RPMDrate xi is singular where s0=s1")
+        _check_rate_branch(self, a, s1)
         h = (
             ha / b
             - (
@@ -701,8 +721,7 @@ class RPMDrateCoordinate(CollectiveVariable):
             return _hessian_hvp(self, q, v)
         a, ga, ha, s1, g1, h1 = _rate_surfaces_hvp(self, q, v)
         b, gb, hb = a - s1, ga - g1, ha - h1
-        if abs(b) < 1e-10:
-            raise ValueError("RPMDrate xi is singular where s0=s1")
+        _check_rate_branch(self, a, s1)
         hvp = _quotient_hvp(a, ga, ha, b, gb, hb, v)
         return a / b, ga / b - a * gb / b**2, hvp
 
@@ -714,8 +733,7 @@ class RPMDrateCoordinate(CollectiveVariable):
             return s, g
         a, ga, s1, g1 = _rate_surfaces(self, q, 1)
         b, gb = a - s1, ga - g1
-        if abs(b) < 1e-10:
-            raise ValueError("RPMDrate xi is singular where s0=s1")
+        _check_rate_branch(self, a, s1)
         return a / b, ga / b - a * gb / b**2
 
     def dividing_surface(self, xi):
@@ -934,8 +952,7 @@ def _prepare_builtin_rate_hvp(cv, q):
             return (1 - xi) * h0 + xi * h1
     else:
         b, gb = a - s1, ga - g1
-        if abs(b) < 1e-10:
-            raise ValueError("RPMDrate xi is singular where s0=s1")
+        _check_rate_branch(coordinate, a, s1)
         gradient = ga / b - a * gb / b**2
 
         def apply(v):
@@ -964,8 +981,7 @@ def _centroid_builtin_value(cv, q):
     if cls is RPMDrateCoordinate:
         a, s1 = _rate_surfaces(cv, q, 0)
         b = a - s1
-        if abs(b) < 1e-10:
-            raise ValueError("RPMDrate xi is singular where s0=s1")
+        _check_rate_branch(cv, a, s1)
         return a / b
     s0, s1 = _rate_surfaces(cv.coordinate, q, 0)
     return (1 - cv.xi) * s0 + cv.xi * s1

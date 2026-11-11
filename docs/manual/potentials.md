@@ -261,7 +261,7 @@ bead factors of its estimator included. The protocol covers static, differentiab
 
 `outcomes.factory` supplies a product classifier for dRPMD. Encode same-composition exchange and
 isomerization channels explicitly. Complete examples and return values are in the
-[plugin specification](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/potentials.md) *(partly Chinese)*
+[plugin specification](api.md)
 and the [2D custom CV](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/fes/custom_cv.py).
 
 ## Primary sources and reproduction tasks

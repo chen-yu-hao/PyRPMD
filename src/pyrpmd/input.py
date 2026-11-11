@@ -17,13 +17,14 @@ import tomllib
 
 from .system import System
 from .input_schema import (
-    InputError, _ROOT, _SECTIONS, _integer, _positive, _unknown_fields,
+    InputError, TASKS, _ROOT, _SECTIONS, _integer, _positive, _unknown_fields, _unknown_task,
 )
 from .input_options import validate_nonadiabatic, rate_pmf_options
 from .input_fes import fes_method, normalize_fes_task, _normalize_fes_input
 from .input_rate_pmf import (
-    normalize_rate_pmf_input, normalize_rate_pmf_stages, resolve_rate_pmf_stage, rate_pmf_stage,
+    normalize_rate_pmf_input, normalize_rate_pmf_stages, resolve_rate_pmf_stage, rate_pmf_stage, rate_pmf_spec,
 )
+from .input_subspace import normalize_rate_subspace
 from .input_reaction import normalize_reaction_input
 from .input_stages import normalize_stage_input
 from .input_paths import (
@@ -130,6 +131,17 @@ class JobSpec:
         return JobSpec(d, self.base_directory, self.input_path)
 
     def resolve(self):
+        resolved, system = self._resolve()
+        from .input_diagnostics import input_diagnostics
+
+        notes = resolved.setdefault("_warnings", [])
+        notes.extend(note for note in input_diagnostics(self.data, resolved, system) if note not in notes)
+        return resolved, system
+
+    def _resolve(self):
+        task = self.data.get("task")
+        if not isinstance(task, str) or task not in TASKS:
+            raise _unknown_task(task)
         if self.data.get("task") == "path_sampling":
             from .path_sampling_input import resolve_path_sampling_job
 
@@ -215,10 +227,11 @@ class JobSpec:
                 if unknown:
                     raise _unknown_fields(unknown, allowed, section)
         normalize_rate_pmf_input(d, self.base_directory)
+        normalize_rate_subspace(d)
         validate_input_preflight(d)
         task = d.get("task")
         if task not in ("rate", "drpmd", "fes", "metadynamics", "opes", "pimd", "diffusion", "site_rate", "surface_rate"):
-            raise InputError("task must be rate, drpmd, fes, metadynamics, opes, network, pcet, pimd, diffusion, site_rate or surface_rate")
+            raise _unknown_task(task)
         selected = "initial_ensemble" in d
         initial_ensemble = None
         base = Path(self.base_directory).resolve()
@@ -287,6 +300,11 @@ class JobSpec:
         if str(base) not in sys.path:
             sys.path.insert(0, str(base))
         resolve_rate_pmf_stage(d, resolved, system)
+        if task == "rate" and rate_pmf_spec(resolved) is None:
+            umbrella = resolved.setdefault("umbrella", {})
+            if not any(key in umbrella for key in
+                       ("stiffness", "stiffness_au", "kappa", "force_constant", "force_matrix")):
+                umbrella["kappa"] = 500.0 / resolved["beta"]
         validate_workflow(resolved, system, materials=materials, source_pmf=source_pmf)
         return resolved, system
 

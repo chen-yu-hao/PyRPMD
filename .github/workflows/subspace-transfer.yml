@@ -3,16 +3,31 @@ name: Subspace transfer-error study
 # Exact 2D quantum and RPMD rates versus 1D projected subspace corrections on
 # Eckart model families (benchmarks/subspace_theory, docs/subspace-transfer-theory.md).
 # Read-only: every point is an artifact and the aggregate table is printed in the log.
+# The channel branch can run the same baseline matrix for comparison.
 
 on:
   workflow_dispatch:
-  push:
+  pull_request:
     branches:
-      - 'claude/subspace-transfer-theory'
+      - 'main'
     paths:
       - 'benchmarks/subspace_theory/transfer.py'
       - 'benchmarks/subspace_theory/plan.py'
       - 'benchmarks/subspace_theory/aggregate.py'
+      - '.github/workflows/subspace-transfer.yml'
+  push:
+    branches:
+      - 'claude/subspace-transfer-theory'
+      - 'issue-157-path-source'
+      - 'issue-155-curvature'
+      - 'issue-156-rph-dvr'
+      - 'codex/subspace-channels-158'
+    paths:
+      - 'benchmarks/subspace_theory/transfer.py'
+      - 'benchmarks/subspace_theory/plan.py'
+      - 'benchmarks/subspace_theory/aggregate.py'
+      - 'src/pyrpmd/analysis/subspace_model.py'
+      - 'src/pyrpmd/analysis/subspace_pipeline.py'
       - '.github/workflows/subspace-transfer.yml'
 
 permissions:
@@ -40,7 +55,7 @@ jobs:
         with:
           python-version: '3.12'
       - id: plan
-        run: echo "points=$(python benchmarks/subspace_theory/plan.py)" >> "$GITHUB_OUTPUT"
+        run: echo "points=$(python benchmarks/subspace_theory/plan.py --curvature-only)" >> "$GITHUB_OUTPUT"
 
   point:
     needs: plan
@@ -65,7 +80,8 @@ jobs:
           python benchmarks/subspace_theory/transfer.py \
             --family ${{ matrix.point.family }} --parameter ${{ matrix.point.parameter }} \
             --barrier ${{ matrix.point.barrier }} --temperature ${{ matrix.point.temperature }} \
-            --seed ${{ matrix.point.seed }} $BEADS --workers 4 --truncation-offset ${{ matrix.point.truncation }} \
+            --curvature-mass ${{ matrix.point.curvature_mass || 'none' }} \
+            --zero-point ${{ matrix.point.zero_point }} --seed ${{ matrix.point.seed }} $BEADS --workers 4 --truncation-offset ${{ matrix.point.truncation }} \
             --output "point-${{ matrix.point.name }}.json"
       - uses: actions/upload-artifact@v4
         with:

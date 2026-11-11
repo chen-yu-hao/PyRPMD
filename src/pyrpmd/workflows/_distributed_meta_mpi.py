@@ -7,6 +7,8 @@ from pathlib import Path
 import numpy as np
 from ..bias import CompositeBias
 from ..warm_start import initial_ring
+from .biased_sampling import supersede_failure
+from ._walker_failures import record_walker_failure, walker_failure_path
 from ..checkpoint import atomic_savez, load_checkpoint
 from ..dynamics import Dynamics, State
 from ..potentials import make_potential
@@ -204,8 +206,15 @@ def _run_mpi(config, system, output, *, return_data=False):
                 dynamics.rng.bit_generator.state = rng
                 bias.truncate_history(count)
                 save()
-                raise RuntimeError("MPI walker step failed: " + "; ".join(
+                failure = RuntimeError("MPI walker step failed: " + "; ".join(
                     error for error in errors if error is not None))
+                record_walker_failure(
+                    output, "metadynamics", "mpi-sync", rank, dynamics, cv, failure,
+                    state=state, elapsed=elapsed,
+                    samples=[row[rank] for row in saved["samples"]] if rank == 0 else [],
+                    options=options, checkpoint=checkpoint,
+                    bias_state=lambda: {"hill_count": bias.hill_count})
+                raise failure
             values = None
             if record or deposit:
                 values = allgather_centers(
@@ -229,6 +238,11 @@ def _run_mpi(config, system, output, *, return_data=False):
             if elapsed % config.get("output", {}).get("checkpoint_steps", 1000) == 0:
                 save()
         save()
+        _root_collective(
+            comm, lambda: [supersede_failure(
+                walker_failure_path(output, "metadynamics", "mpi-sync", index),
+                checkpoint=checkpoint, elapsed_steps=elapsed) for index in range(walkers)],
+            "metadynamics failure recovery record")
         def analyze():
             ensemble = dict(
                 states=[], rng=[], bias=bias, elapsed=elapsed,

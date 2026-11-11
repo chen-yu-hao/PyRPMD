@@ -140,12 +140,13 @@ def pipeline_fixture(monkeypatch, directory):
     y = np.linspace(-2, 2, 9)
     m2 = SubspaceModel((m1.axes[0], y), m1.values[:, None] + .2 * y[None, :]**2,
                        [1., 1.], 0., reactant_reference=-3.)
-    run = SimpleNamespace(root=directory, beta=2., nbeads=4, xi_star=1.)
+    run = SimpleNamespace(root=directory, beta=2., nbeads=4, xi_star=1., provider=SimpleNamespace())
+    monkeypatch.setattr(pipeline, "pipeline_identity", lambda *args: "fixture-identity")
     mean = SimpleNamespace(curvature_width=lambda *args, **kwargs: {"maximum": 0.})
     monkeypatch.setattr(pipeline, "load_rate_run", lambda *args: run)
     monkeypatch.setattr(pipeline, "build_path", lambda *args: (mean, None, np.zeros((4, 2)), {}))
     monkeypatch.setattr(pipeline, "_static_curvature_width", lambda *args: {"maximum": 0., "candidate_direction": [0., 1.]})
-    monkeypatch.setattr(pipeline, "path_model", lambda *args: (m1, {}, {"dimension": 1}))
+    monkeypatch.setattr(pipeline, "path_model", lambda *args, **kwargs: (m1, {}, {"dimension": 1}))
     monkeypatch.setattr(pipeline, "plane_model", lambda *args: (m2, {}, {"dimension": 2}, None))
     monkeypatch.setattr(pipeline, "correct_rate_run", lambda *args, **kwargs: {"physical_converged": False})
     return dict(source={"rate_run": str(directory)}, subspace={"dimension": [1, 2]},

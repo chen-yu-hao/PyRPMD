@@ -135,15 +135,21 @@ def test_native_constructor_failure_closes_provider(monkeypatch):
     import pyrpmd.potentials as potentials
     from pyrpmd.potentials.builtin import FreePotential
 
+    from unittest.mock import Mock
+    from pyrpmd import runner
+
     provider = FreePotential()
     closed = []
     provider.close = lambda: closed.append(True)
     monkeypatch.setattr(potentials, "make_potential", lambda *args: provider)
+    planner = Mock(side_effect=AssertionError("diagnostics preceded native preparation"))
+    monkeypatch.setattr(runner, "propagation_backend_plan", planner)
     config = job()
     config["sampling"]["thermostat_params"] = {"gamma_centroid": -1.}
     with pytest.raises(ValueError, match="gamma_centroid"):
         prepare(config, numerical=True)
     assert closed == [True]
+    planner.assert_not_called()
 
 
 @pytest.fixture
@@ -234,3 +240,34 @@ def test_native_nonfinite_force_releases_lease_before_closing(monkeypatch, perio
         prepare(config, numerical=True)
     assert lifetime == {"leases": 0, "closed": True}
     assert not output.exists()
+
+
+@pytest.mark.parametrize("frontend", ["api", "cli"])
+def test_native_prepare_borrows_one_provider_for_backend_diagnostics(tmp_path, monkeypatch, capsys, frontend):
+    pytest.importorskip("pyrpmd._thermal")
+    from unittest.mock import Mock
+    import pyrpmd.potentials as potentials
+    from pyrpmd.potentials.builtin import FreePotential
+
+    providers = []
+    def factory(*args):
+        provider = FreePotential()
+        provider.close = Mock()
+        providers.append(provider)
+        return provider
+    monkeypatch.setattr(potentials, "make_potential", factory)
+    config = job()
+    # Resource-owning providers are opened only by numerical preparation;
+    # analytic builtin validation separately creates disposable parameter probes.
+    config["potential"] = {"provider": "native_periodic", "library": str(tmp_path / "unused.so")}
+    if frontend == "api":
+        result = prepare(config, numerical=True)
+    else:
+        input_path = tmp_path / "native.py"
+        input_path.write_text("def build():\n    return " + repr(config) + "\n")
+        assert main(["validate", str(input_path), "--check-pes"]) == 0
+        result = json.loads(capsys.readouterr().out)
+    assert result["pes_check"]["step"] == 0
+    assert result["propagation_plan"]
+    assert len(providers) == 1
+    providers[0].close.assert_called_once_with()

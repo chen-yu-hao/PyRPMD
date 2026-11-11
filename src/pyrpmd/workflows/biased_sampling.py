@@ -66,6 +66,23 @@ def _pair_distance_report(q):
     }
 
 
+def _record_pair_distance(path, runtime, start):
+    """Record every accepted state in an explicitly requested short preflight."""
+    import json
+    from pathlib import Path
+
+    report = _pair_distance_report(runtime.state.q)
+    if report is None:
+        raise ValueError("pair-distance monitoring requires at least two atoms")
+    minimum = report["minimum_bead_pair_distance"]
+    row = {"start_step": int(start), "end_step": int(runtime.elapsed),
+           "minimum_bead_pair_distance": minimum, "finite": bool(np.isfinite(minimum))}
+    target = Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    with target.open("a") as handle:
+        handle.write(json.dumps(row, allow_nan=False) + "\n")
+
+
 def sampling_failure_record(runtime, dynamics, cv, error, *, identity, neq, nprod,
                             bias_state=None, checkpoint=None):
     """Structured evidence for a biased history that could not continue.
@@ -101,6 +118,8 @@ def sampling_failure_record(runtime, dynamics, cv, error, *, identity, neq, npro
         ),
     }
     result = getattr(error, "result", None)
+    if getattr(error, "branch", None) is not None:
+        record["attempted_branch"] = dict(error.branch)
     if isinstance(error, PropagationError) and result is not None:
         record["error"].update(backend=getattr(result, "backend", None),
                                completed_steps=int(getattr(result, "completed", 0)),
@@ -149,9 +168,30 @@ def history_failures(output):
             record = json.loads(path.read_text())
         except (OSError, ValueError):
             record = {"status": "unreadable_failure_record"}
+        if record.get("status") == "superseded":
+            continue
         record["file"] = str(path)
         records.append(record)
     return records
+
+
+def supersede_failure(path, *, checkpoint, elapsed_steps):
+    """Retain failure evidence after the same history durably completes."""
+    import json
+    from pathlib import Path
+
+    from ..io import write_report_json
+
+    target = Path(path)
+    if not target.exists():
+        return
+    record = json.loads(target.read_text())
+    if record.get("status") != "history_failed":
+        return
+    record["status"] = "superseded"
+    record["resolution"] = {"status": "history_completed", "checkpoint": str(checkpoint),
+                            "elapsed_steps": int(elapsed_steps)}
+    write_report_json(target, record)
 
 
 def dispatch_replicas(config, system, output, worker, executor=None, *, task_fields=None):
@@ -480,7 +520,7 @@ def run_biased_sampling(runtime, dynamics, cv, bias=None, *, neq, nprod, interva
                         checkpoint_steps, sampling, save=None, update=None,
                         sampler=None, active_bias=None, energy_bias=None,
                         fallback_reason=None, initial_save=True, final_save=True,
-                        stop=None, failure=None):
+                        stop=None, failure=None, pair_distance_log=None):
     """Run or resume one stream up to a checkpoint/synchronization boundary.
 
     ``update`` has ``bias``, ``due``, ``snapshot``, ``apply`` and ``restore``;
@@ -495,19 +535,31 @@ def run_biased_sampling(runtime, dynamics, cv, bias=None, *, neq, nprod, interva
         runtime.collision_clock = AndersenSchedule(sampling.get("andersen_interval", 10))
     fused = (update is None and sampler.thermostat == "andersen"
              and dynamics.can_fuse(bias=bias, observe=cv))
+    try:
+        for component in getattr(cv, "cvs", (cv,)):
+            if getattr(component, "regular_branch_only", False):
+                component.value(runtime.state.q)
+    except Exception as error:
+        if failure is not None:
+            failure(runtime, error)
+        raise
     if initial_save and save is not None:
         save(runtime)
+    if pair_distance_log is not None:
+        _record_pair_distance(pair_distance_log, runtime, runtime.elapsed)
     while runtime.elapsed < total:
+        start = runtime.elapsed
+        block_end = min(total, start + 1) if pair_distance_log is not None else total
         try:
             if update is None:
-                _fixed_step(runtime, dynamics, cv, bias, neq=neq, total=total,
+                _fixed_step(runtime, dynamics, cv, bias, neq=neq, total=block_end,
                             interval=interval, checkpoint_steps=checkpoint_steps,
                             sampling=sampling, sampler=sampler, fused=fused)
             else:
                 handled = False
                 if runtime.native_path_contract == 1:
                     handled = _history_block(
-                        runtime, dynamics, cv, update, neq=neq, total=total,
+                        runtime, dynamics, cv, update, neq=neq, total=block_end,
                         interval=interval, checkpoint_steps=checkpoint_steps,
                         sampling=sampling, sampler=sampler,
                         active_bias=active_bias, energy_bias=energy_bias)
@@ -530,6 +582,8 @@ def run_biased_sampling(runtime, dynamics, cv, bias=None, *, neq, nprod, interva
                 except Exception as report_error:  # keep the original failure
                     error.add_note(f"failure artifact not written: {report_error}")
             raise
+        if pair_distance_log is not None:
+            _record_pair_distance(pair_distance_log, runtime, start)
         if save is not None and runtime.elapsed % checkpoint_steps == 0:
             save(runtime)
     if final_save and save is not None:

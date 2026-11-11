@@ -35,7 +35,7 @@ also selects the same Python environment used by `python -m pip`.
 | `native.integrators` | Compiled integrators: `cayley-bcb`, `normal-mode-bab`, `velocity-verlet` |
 | `workflows` | Available `task` values reported by this installation; see [Input and CLI](input.md) for workflow schemas |
 | `enhanced_sampling`, `initial_ensembles` | Sampling methods and selected-state preparations (`thermal_parent`, `ne_rpmd`, `qct`) |
-| `input_schema_version` | Current input schema version (1) |
+| `input_schema_version`, `supported_input_schema_versions` | Schema assumed when an input omits `schema_version` (1), and the versions this installation reads (1 and 2; version 2 is the staged [rate input layout](../rate-input-v2.md)) |
 
 Optional features such as ASE, MPI, Torch and external potential libraries need their own
 dependencies; see [Optional dependencies](#optional-dependencies).
@@ -108,9 +108,10 @@ pyrpmd analyze installation-check/run
 pyrpmd resume installation-check/run
 ```
 
-The saved summary should report `task="fes"`, 3 windows, 6 streams and 120 samples. A completed
-`resume` keeps the task finished. The [Quickstart](quickstart.md) explains the diagnostic fields and
-why a tiny pilot is not a convergence test. Choose another starter directory when repeating this check.
+The saved summary should report `task="fes"`, 5 windows, 10 streams and 20000 samples, after about
+4 s on one core. A completed `resume` keeps the task finished. The [Quickstart](quickstart.md)
+explains the diagnostic fields and compares the result with the exact harmonic free energy.
+Choose another starter directory when repeating this check.
 
 For development, install `.[test]` and run `python -m pytest -q` from the repository root.
 Tests for optional interfaces and external models may skip when their prerequisites are missing;

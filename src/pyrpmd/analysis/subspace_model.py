@@ -40,9 +40,11 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from itertools import product
 from typing import Any, Callable, Mapping, Sequence
+import warnings
 
 import numpy as np
 from scipy.linalg import null_space
+from scipy.special import logsumexp
 
 MAX_DIMENSION = 3
 _REACTANT_KINDS = ("asymptotic", "well")
@@ -202,6 +204,7 @@ class SubspaceModel:
     provenance: Mapping[str, Any] = field(default_factory=dict)
     function: Callable[[np.ndarray], np.ndarray] | None = None
     gradient: Callable[[np.ndarray], np.ndarray] | None = None
+    metric: Callable[[np.ndarray], np.ndarray] | np.ndarray | None = None
 
     def __post_init__(self):
         axes = tuple(_axis(a, f"axes[{i}]") for i, a in enumerate(self.axes))
@@ -229,6 +232,12 @@ class SubspaceModel:
             value = getattr(self, name)
             if value is not None and not callable(value):
                 raise TypeError(f"{name} must be callable or None")
+        metric = self.metric
+        if metric is not None and not callable(metric):
+            metric = np.asarray(metric, dtype=float)
+            if metric.shape != shape or not np.isfinite(metric).all() or np.any(metric <= 0):
+                raise ValueError("metric must be a positive finite grid or callable")
+            metric.flags.writeable = False
         object.__setattr__(self, "axes", axes)
         object.__setattr__(self, "values", values)
         object.__setattr__(self, "masses", masses)
@@ -236,6 +245,7 @@ class SubspaceModel:
         object.__setattr__(self, "reactant_reference", reference)
         object.__setattr__(self, "provenance", dict(self.provenance))
         object.__setattr__(self, "_interpolant", None)
+        object.__setattr__(self, "metric", metric)
 
     @property
     def dimension(self) -> int:
@@ -282,6 +292,22 @@ class SubspaceModel:
                 gradient[..., axis] = (self.function(points + shift) - self.function(points - shift)) / (2 * step)
         return value, gradient
 
+    def inverse_metric(self, points: np.ndarray) -> np.ndarray:
+        """Return an optional position-dependent inverse metric factor."""
+        points = np.asarray(points, dtype=float)
+        if self.metric is None:
+            return np.ones(points.shape[:-1], dtype=float)
+        if callable(self.metric):
+            value = np.asarray(self.metric(points), dtype=float)
+        else:
+            from scipy.interpolate import RegularGridInterpolator
+            interpolant = RegularGridInterpolator(self.axes, self.metric,
+                                                   bounds_error=False, fill_value=None)
+            value = interpolant(points.reshape(-1, self.dimension)).reshape(points.shape[:-1])
+        if value.shape != points.shape[:-1] or not np.isfinite(value).all() or np.any(value <= 0):
+            raise ValueError("inverse metric returned invalid values")
+        return value
+
     def describe(self) -> dict:
         """JSON-safe summary of the Hamiltonian, without the grid values."""
         return {
@@ -294,6 +320,7 @@ class SubspaceModel:
             "reactant_reference": self.reactant_reference,
             "potential_minimum": float(self.values.min()),
             "potential_source": "callable" if self.function is not None else "cubic spline of the grid",
+            "position_dependent_metric": self.metric is not None,
             "construction": dict(self.provenance),
         }
 
@@ -308,6 +335,7 @@ def model_from_function(
     reactant: str = "asymptotic",
     reactant_reference: float | None = None,
     provenance: Mapping[str, Any] | None = None,
+    metric: Callable[[np.ndarray], np.ndarray] | np.ndarray | None = None,
 ) -> SubspaceModel:
     """Wrap a vectorized 1-3D potential ``V(points[..., d])`` as a model."""
     if not callable(potential):
@@ -318,7 +346,7 @@ def model_from_function(
     info = {"kind": "function"}
     info.update(dict(provenance or {}))
     return SubspaceModel(grids, values, masses, dividing_surface, reactant, reactant_reference,
-                         info, potential, gradient)
+                         info, potential, gradient, metric)
 
 
 def _orthonormal_basis(basis: Any, size: int) -> np.ndarray:
@@ -581,6 +609,126 @@ def path_curvature(path: Any, masses: Any = 1.0, *, samples: int = 401) -> tuple
     return np.linspace(0.0, arc[-1], samples), curvature
 
 
+
+def _sinc_dvr_kinetic_1d(axis: np.ndarray) -> np.ndarray:
+    """Return the unit-mass Colbert--Miller sinc-DVR kinetic matrix.
+
+    The path coordinate and all normal coordinates are mass weighted, hence
+    every normal cut has unit mass.  Keeping this small helper here avoids an
+    import cycle with :mod:`subspace_quantum`, which uses the same matrix for
+    the full subspace Hamiltonian.
+    """
+    axis = np.asarray(axis, dtype=float)
+    n = axis.size
+    spacing = float(axis[1] - axis[0])
+    difference = np.arange(n)[:, None] - np.arange(n)[None, :]
+    with np.errstate(divide="ignore", invalid="ignore"):
+        matrix = 2.0 * np.where(difference % 2 == 0, 1.0, -1.0) / difference.astype(float) ** 2
+    matrix[np.diag_indices(n)] = np.pi**2 / 3.0
+    return matrix / (2.0 * spacing * spacing)
+
+
+def _normal_dvr_term(
+    potential: Callable[[np.ndarray], float],
+    x: np.ndarray,
+    direction: np.ndarray,
+    sqrt_m: np.ndarray,
+    base_energy: float,
+    frequency: float,
+    environment: str,
+    beta: float | None,
+    *,
+    points: int,
+    half_width: float | None,
+    spacing: float | None,
+) -> tuple[float, float]:
+    """Solve one mass-weighted normal cut with a finite sinc DVR.
+
+    ``direction`` is a unit vector in mass-weighted Cartesian coordinates and
+    ``q`` in the DVR is therefore converted back to Cartesian displacement as
+    ``q * direction / sqrt(m)``.  The returned term is relative to the path
+    energy, so adding all independent normal cuts to ``base_energy`` preserves
+    the same energy origin as the harmonic normal-cut model.  For an
+    adiabatic environment this is the lowest eigenvalue; for ``free_energy``
+    it is ``-beta**-1 log Tr exp(-beta H_cut)`` relative to the path energy.
+    """
+    frequency = float(frequency)
+    if half_width is None:
+        # Eight oscillator lengths place the hard walls far beyond the ground
+        # state (the harmonic-limit error is below 1e-8 with the default grid).
+        half_width = 8.0 / np.sqrt(frequency)
+    half_width = float(half_width)
+    if not np.isfinite(half_width) or half_width <= 0:
+        raise ValueError("dvr_half_width must be finite and positive")
+    if spacing is not None:
+        spacing = float(spacing)
+        if not np.isfinite(spacing) or spacing <= 0:
+            raise ValueError("dvr_spacing must be finite and positive")
+        count = int(np.ceil(2.0 * half_width / spacing)) + 1
+    else:
+        count = int(points)
+    if count < 8:
+        raise ValueError("dvr_points must be at least eight")
+    # An odd number keeps q=0 on the grid and gives a symmetric hard wall.
+    if count % 2 == 0:
+        count += 1
+    axis = np.linspace(-half_width, half_width, count)
+    cuts = x[None, :] + axis[:, None] * direction[None, :] / sqrt_m[None, :]
+    energies = np.asarray([float(potential(point)) for point in cuts], dtype=float)
+    if not np.isfinite(energies).all():
+        raise FloatingPointError("normal-cut DVR encountered a non-finite potential")
+    hamiltonian = _sinc_dvr_kinetic_1d(axis) + np.diag(energies)
+    spectrum = np.linalg.eigvalsh(hamiltonian)
+    relative = spectrum - float(base_energy)
+    if environment == "free_energy":
+        # All DVR states contribute to the one-dimensional quantum partition
+        # function; logsumexp avoids overflow at the low temperatures used by
+        # subspace-transfer calculations.
+        value = -float(logsumexp(-float(beta) * relative)) / float(beta)
+    else:
+        value = float(relative[0])
+    return value, float(spectrum[0])
+
+
+def _path_dvr_environment(
+    potential: Callable[[np.ndarray], float],
+    x: np.ndarray,
+    complement: np.ndarray,
+    sqrt_m: np.ndarray,
+    k: np.ndarray,
+    base_energy: float,
+    environment: str,
+    beta: float | None,
+    *,
+    points: int,
+    half_width: float | None,
+    spacing: float | None,
+) -> tuple[float, float, int]:
+    """Sum independent normal-mode DVR free energies at one path point."""
+    if complement.shape[1] == 0:
+        return 0.0, np.inf, 0
+    eigenvalues, eigenvectors = np.linalg.eigh(k)
+    # Use Hessian normal modes rather than arbitrary null-space directions.
+    # Degenerate modes still need a coupled-mode convergence check when the
+    # anharmonic potential is not separable.
+    total = 0.0
+    lowest = float(np.min(eigenvalues))
+    unstable = int(np.count_nonzero(eigenvalues < 0.0))
+    for value, vector in zip(eigenvalues, eigenvectors.T):
+        direction = complement @ vector
+        term, _ = _normal_dvr_term(
+            potential, x, direction, sqrt_m, base_energy,
+            # Harmonic ZPE drops non-positive modes.  A DVR cut still needs a
+            # finite box for such a mode; use a conservative 1e-4 Eh
+            # curvature scale for the box-size heuristic while retaining the
+            # actual anharmonic cut potential in the Hamiltonian.
+            np.sqrt(float(value) if value > 0.0 else 1.0e-4), environment, beta,
+            points=points, half_width=half_width, spacing=spacing,
+        )
+        total += term
+    return float(total), lowest, unstable
+
+
 def project_path_subspace(
     potential: Callable[[np.ndarray], float],
     gradient: Callable[[np.ndarray], np.ndarray] | None,
@@ -596,6 +744,12 @@ def project_path_subspace(
     finite_difference_step: float = 1e-3,
     rigid_body: bool = False,
     beta: float | None = None,
+    provenance: Mapping[str, Any] | None = None,
+    curvature: str = "none",
+    zero_point: str = "harmonic",
+    dvr_points: int = 81,
+    dvr_half_width: float | None = None,
+    dvr_spacing: float | None = None,
 ) -> SubspaceModel:
     """One-dimensional vibrationally adiabatic model along a curved path.
 
@@ -605,13 +759,50 @@ def project_path_subspace(
     ``V_S(xi) = V(x(xi)) + sum_k omega_k(xi) / 2`` with frequencies from the
     Hessian projected onto the normal plane (``environment='adiabatic'``),
     the harmonic quantum free energy of those modes at ``beta``
-    (``'free_energy'``), or ``V(x(xi))`` alone (``'frozen'``).  Curvature coupling is neglected; check
+    (``'free_energy'``), or ``V(x(xi))`` alone (``'frozen'``).  With
+    ``curvature='small'`` the small-curvature tunnelling (SCT) effective mass
+    is included.  If ``sigma`` is the original mass-weighted arc length, the
+    curvature normal has frequency ``omega_perp`` and width
+    ``tbar = sqrt(hbar / omega_perp)``.  With ``abar = kappa * tbar`` the
+    effective mass is ``mu_eff / mu = exp(-2*abar - abar**2 +
+    (d tbar / d sigma)**2)``, capped at one as in SCT
+    (``mu_eff = mu * min(exp(...), 1)``).  ``abar`` is clipped to one outside
+    the SCT range of validity.  The coordinate is transformed with
+    ``d tau = sqrt(mu_eff / mu) d sigma`` and the potential is resampled on a
+    uniform ``tau`` grid, so the returned model still has unit mass.
+    With ``zero_point='rph'`` the quadratic reaction-path potential uses the same
+    normal-plane Hessian ``N.T @ H @ N`` as ``harmonic``. Since the normal
+    displacement at fixed arc length is linear, no gradient-curvature term
+    is subtracted. Curvature enters kinetic and mode couplings beyond the optional SCT effective mass. Check
     :func:`curvature_width_criterion` before trusting a one-dimensional ``S``.
     ``axis`` is the arc-length grid and must lie within the path.
     ``rigid_body`` removes overall translations and rotations from the
     normal plane (molecules in 3D Cartesian coordinates).
+    ``zero_point`` selects the transverse quantum term for an adiabatic or
+    free-energy environment: ``"harmonic"`` is the historical normal-cut
+    Hessian term, ``"rph"`` is the reaction-path projected Hessian term, and
+    ``"dvr"`` solves independent one-dimensional normal cuts with a sinc DVR.
+    The latter replaces ``hbar omega/2`` by the cut ground state (or by its
+    finite-temperature quantum free energy when ``environment="free_energy"``).
+    ``dvr_points``, ``dvr_half_width`` and ``dvr_spacing`` control the normal
+    cut grids; the half-width defaults to eight oscillator lengths.
     """
     beta = _check_environment(environment, beta, ("frozen", "adiabatic", "free_energy"))
+    if curvature not in ("none", "small"):
+        raise ValueError("curvature must be one of ('none', 'small')")
+    if zero_point not in ("harmonic", "rph", "dvr"):
+        raise ValueError("zero_point must be one of ('harmonic', 'rph', 'dvr')")
+    try:
+        dvr_points_int = int(dvr_points)
+    except (TypeError, ValueError, OverflowError) as error:
+        raise ValueError("dvr_points must be an integer >= 8") from error
+    if dvr_points_int != dvr_points or dvr_points_int < 8:
+        raise ValueError("dvr_points must be an integer >= 8")
+    dvr_points = dvr_points_int
+    if dvr_half_width is not None and (not np.isfinite(float(dvr_half_width)) or float(dvr_half_width) <= 0):
+        raise ValueError("dvr_half_width must be finite and positive")
+    if dvr_spacing is not None and (not np.isfinite(float(dvr_spacing)) or float(dvr_spacing) <= 0):
+        raise ValueError("dvr_spacing must be finite and positive")
     points = np.asarray(path, dtype=float)
     if points.ndim != 2 or points.shape[0] < 4 or not np.isfinite(points).all():
         raise ValueError("path must be a finite [points, coordinates] array with at least four points")
@@ -624,6 +815,8 @@ def project_path_subspace(
         raise ValueError(f"axis must lie within the path arc length [0, {arc[-1]:.6g}]")
     if environment != "frozen" and gradient is None and hessian is None:
         raise ValueError("an adiabatic path model needs a gradient or a Hessian")
+    if curvature == "small" and n > 1 and gradient is None and hessian is None:
+        raise ValueError("curvature='small' needs a gradient or a Hessian for omega_perp")
     lam = np.interp(grid, arc, fine)
     positions = spline(lam)
     tangents = spline.derivative()(lam)
@@ -631,32 +824,180 @@ def project_path_subspace(
     values = np.empty(len(grid))
     zpe = np.zeros(len(grid))
     unstable, min_curvature = 0, np.inf
+    unstable_indices = []
+    curvature_values = np.zeros(len(grid))
+    omega_perp = np.full(len(grid), np.nan)
+    tbar = np.zeros(len(grid))
     for i, (u, tangent) in enumerate(zip(positions, tangents)):
         x = u / sqrt_m
         values[i] = float(potential(x))
-        if environment != "frozen" and n > 1:
+        complement = None
+        k = None
+        if (environment != "frozen" or curvature == "small") and n > 1:
             complement = _vibrational_complement(x, tangent, sqrt_m, rigid_body)
             k = _complement_hessian(x, complement, sqrt_m, gradient, hessian, finite_difference_step)
-            zpe[i], lowest = _environment_term(k, environment, beta)
+        if environment != "frozen" and n > 1:
+            if zero_point == "dvr":
+                zpe[i], lowest, _ = _path_dvr_environment(
+                    potential, x, complement, sqrt_m, k, values[i], environment, beta,
+                    points=dvr_points, half_width=dvr_half_width, spacing=dvr_spacing,
+                )
+            else:
+                # Both quadratic selectors use the same linear normal cut.
+                zpe[i], lowest = _environment_term(k, environment, beta)
             min_curvature = min(min_curvature, lowest)
-            unstable += int(lowest < 0)
-    xi, curvature = path_curvature(points, mass)
+            if lowest <= 0:
+                unstable += 1
+                unstable_indices.append(int(i))
+        if curvature == "small" and n > 1:
+            # Curvature vector dT/dsigma of the mass-weighted spline.
+            first = spline.derivative()(lam[i])
+            second = spline.derivative(2)(lam[i])
+            speed = max(float(np.linalg.norm(first)), 1e-300)
+            dtdsigma = (second / speed - first * (first @ second) / speed**3) / speed
+            dtdsigma -= tangent * (tangent @ dtdsigma)
+            kappa_i = float(np.linalg.norm(dtdsigma))
+            curvature_values[i] = kappa_i
+            if kappa_i > 1e-14 and complement is not None and complement.shape[1]:
+                normal = dtdsigma / kappa_i
+                if rigid_body:
+                    # Remove numerical rigid-body leakage from the curvature
+                    # normal while preserving its tangent-orthogonal direction.
+                    vib = _vibrational_complement(x, tangent, sqrt_m, True)
+                    normal = vib @ (vib.T @ normal)
+                normal /= max(float(np.linalg.norm(normal)), 1e-300)
+                coeff = complement.T @ normal
+                coeff_norm = float(np.linalg.norm(coeff))
+                if coeff_norm > 1e-12:
+                    coeff /= coeff_norm
+                omega2 = float(coeff @ (k @ coeff)) if coeff_norm > 1e-12 else 0.0
+                if omega2 > 0.0:
+                    omega_perp[i] = np.sqrt(omega2)
+                    tbar[i] = np.sqrt(1.0 / omega_perp[i])
+            elif k is not None and complement is not None and complement.shape[1]:
+                # At a straight point the curvature normal is undefined.  Its
+                # width is immaterial because kappa is zero, but retaining a
+                # finite value makes the derivative well-defined nearby.
+                positive = np.linalg.eigvalsh(k)
+                positive = positive[positive > 0.0]
+                if len(positive):
+                    omega_perp[i] = np.sqrt(float(np.min(positive)))
+                    tbar[i] = np.sqrt(1.0 / omega_perp[i])
+    xi, path_kappa = path_curvature(points, mass)
     if dividing_surface is None:
         dividing_surface = float(grid[np.argmax(values + zpe)])
+    total_values = values + zpe
+    transformed = False
+    mass_ratio = np.ones(len(grid))
+    tau_grid = grid.copy()
+    clipped_points = 0
+    clipped_fraction = 0.0
+    abar_max = 0.0
+    exponent_capped = 0
+    tau_raw = grid.copy()
+    if curvature == "small" and n > 1:
+        # Use the public curvature diagnostic's arc interpolation to suppress
+        # tiny endpoint artifacts in the spline second derivative.
+        curvature_values = np.interp(grid, xi, path_kappa)
+        valid_tbar = tbar > 0.0
+        if np.count_nonzero(valid_tbar) >= 2:
+            tbar_for_deriv = np.interp(grid, grid[valid_tbar], tbar[valid_tbar])
+            deriv_tbar = np.gradient(tbar_for_deriv, grid, edge_order=2)
+        else:
+            deriv_tbar = np.zeros_like(tbar)
+        # At a straight point the curvature normal is undefined and its width
+        # must not introduce a spurious coordinate mass through finite-
+        # difference noise in tbar.
+        deriv_tbar[curvature_values <= 1e-12] = 0.0
+        abar = curvature_values * tbar_for_deriv if np.count_nonzero(valid_tbar) >= 2 else np.zeros_like(curvature_values)
+        abar_max = float(np.max(abar)) if len(abar) else 0.0
+        clipped = abar > 1.0
+        clipped_points = int(np.count_nonzero(clipped))
+        clipped_fraction = float(np.mean(clipped)) if len(abar) else 0.0
+        if clipped_points:
+            warnings.warn(
+                f"curvature='small' clipped abar > 1 at {clipped_fraction:.1%} of path points",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+        abar_used = np.minimum(abar, 1.0)
+        exponent = -2.0 * abar_used - abar_used**2 + deriv_tbar**2
+        # SCT caps the effective mass at the path mass: mu_eff = mu * min(exp(...), 1).
+        exponent_capped = int(np.count_nonzero(exponent > 0.0))
+        mass_ratio = np.exp(np.minimum(np.clip(exponent, -700.0, 700.0), 0.0))
+        bad_frequency = (curvature_values > 1e-12) & (~np.isfinite(omega_perp) | (omega_perp <= 0.0))
+        mass_ratio[bad_frequency] = 1.0
+        if np.max(np.abs(mass_ratio - 1.0), initial=0.0) < 1e-14:
+            mass_ratio = np.ones_like(mass_ratio)
+        if reactant_reference is None:
+            reactant_reference = float(grid[0] + 0.25 * (grid[-1] - grid[0]))
+        if not grid[0] <= reactant_reference < dividing_surface:
+            raise ValueError("reactant_reference must lie on the reactant side of the dividing surface")
+        # Keep the original origin and bypass interpolation for the identity
+        # transform.  In particular a straight path on a cropped arc grid must
+        # retain its axes, potential and reference coordinates bit for bit.
+        if np.any(mass_ratio != 1.0):
+            tau_raw = grid[0] + np.r_[0.0, np.cumsum(
+                0.5 * (np.sqrt(mass_ratio[1:]) + np.sqrt(mass_ratio[:-1])) * np.diff(grid))]
+            tau_grid = np.linspace(tau_raw[0], tau_raw[-1], len(grid))
+            total_values = np.interp(tau_grid, tau_raw, total_values)
+            dividing_surface = float(np.interp(dividing_surface, grid, tau_raw))
+            reactant_reference = float(np.interp(reactant_reference, grid, tau_raw))
+        transformed = True
+    unstable_frequency_points = int(np.count_nonzero((curvature_values > 1e-12) &
+                                                     (~np.isfinite(omega_perp) | (omega_perp <= 0.0)))) if n > 1 else 0
     info = {
         "kind": "path_projection",
         "environment": environment,
+        "zero_point": zero_point,
+        "zero_point_definition": "linear-normal-cuts-v2",
+        "dvr_points": dvr_points if zero_point == "dvr" else None,
+        "dvr_half_width": dvr_half_width if zero_point == "dvr" else None,
+        "dvr_spacing": dvr_spacing if zero_point == "dvr" else None,
         "full_dimension": n,
         "path_length": float(arc[-1]),
-        "max_path_curvature": float(np.max(curvature)),
+        "max_path_curvature": float(np.max(path_kappa)),
         "unstable_complement_points": int(unstable),
+        "unstable_complement_indices": unstable_indices,
+        "unstable_complement_arc_lengths": [float(grid[i]) for i in unstable_indices],
+        "normal_hessian_positive": not bool(unstable),
         "minimum_complement_curvature": None if not np.isfinite(min_curvature) else min_curvature,
         "zero_point_range": [float(zpe.min()), float(zpe.max())],
+        "rph_max_correction": 0.0 if zero_point == "rph" else None,
         "cut": "normal plane in mass-weighted coordinates",
         "rigid_body_removed": bool(rigid_body),
         "beta": beta,
+        "curvature": curvature,
+        "coordinate_transform": "dτ=sqrt(mu_eff/mu)dσ" if transformed else "none",
     }
-    return SubspaceModel((grid,), values + zpe, np.ones(1), dividing_surface, reactant,
+    if transformed:
+        finite_omega = omega_perp[np.isfinite(omega_perp)]
+        info.update({
+            "sigma_length": float(grid[-1] - grid[0]),
+            "tau_length": float(tau_grid[-1] - tau_grid[0]),
+            "effective_mass_ratio_min": float(np.min(mass_ratio)),
+            "effective_mass_ratio_max": float(np.max(mass_ratio)),
+            "effective_mass_ratio_mean": float(np.mean(mass_ratio)),
+            "max_abar": abar_max,
+            "curvature_truncated_points": clipped_points,
+            "curvature_truncated_fraction": clipped_fraction,
+            "effective_mass_capped_points": exponent_capped,
+            "unstable_curvature_frequency_points": unstable_frequency_points,
+            "curvature_normal_frequency_range": [
+                float(np.min(finite_omega)) if len(finite_omega) else None,
+                float(np.max(finite_omega)) if len(finite_omega) else None,
+            ],
+            "curvature_sigma": grid.tolist(),
+            "curvature_tau": tau_raw.tolist(),
+            "curvature_mass_ratio": mass_ratio.tolist(),
+            "curvature_tbar": tbar.tolist(),
+            "curvature_abar": abar.tolist(),
+            "curvature_normal_frequency": omega_perp.tolist(),
+            "arc_integral_preserved": float(tau_raw[-1] - tau_raw[0]),
+        })
+    if provenance:
+        info.update(dict(provenance))
+    return SubspaceModel((tau_grid,), total_values, np.ones(1), dividing_surface, reactant,
                          reactant_reference, info)
 
 

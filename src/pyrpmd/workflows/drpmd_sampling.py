@@ -28,6 +28,10 @@ from pyrpmd.parallel import execution_plan
 from pyrpmd.propagation import loop_options
 from pyrpmd.validation import checked_integer as _integer, finite_positive
 from .drpmd_persistence import _load_npz, _mapping_arrays, _restore_rng, _rng_state
+from .drpmd_records import (
+    LEGACY_PARENT_KIND, PARENT_KIND, ParentRecordLedger,
+    load_parent_checkpoint, matches_parent_allocation,
+)
 
 KB = 3.1668115634556e-6
 _positive = partial(finite_positive, allow_bool=True)
@@ -306,18 +310,17 @@ def _parent_task(task, services):
     geometry = np.asarray(_field(system, "geometry"), dtype=float)
     parent = State(np.repeat(geometry[None], beads, axis=0), dynamics.sample_momenta())
     burn_done, next_index, pending, records = 0, 0, None, []
+    ledger = ParentRecordLedger(parent_path)
+    migrate_legacy = False
     if parent_path.exists():
         if not resume:
             raise FileExistsError(
                 f"Parent checkpoint exists: {parent_path}; use resume explicitly"
             )
-        meta, arrays = _load_npz(
-            parent_path, expected_kind="PyRPMD.drpmd.parent-checkpoint.v1"
-        )
-        if (
-            meta.get("physics_hash") != physics_hash
-            or meta.get("trajectory_ids") != ids
-        ):
+        meta, arrays = load_parent_checkpoint(parent_path)
+        if (meta.get("physics_hash") != physics_hash
+                or meta.get("parent_id") != parent_id
+                or not matches_parent_allocation(meta, ids)):
             raise ValueError(
                 "Parent checkpoint does not match this job or parent allocation"
             )
@@ -327,32 +330,39 @@ def _parent_task(task, services):
             if "operators" not in meta:
                 raise ValueError("fragment PILE parent checkpoint omits operator state")
             dynamics.load_operator_state_dict(meta["operators"])
-        burn_done, next_index, pending, records = (
-            meta["burn_done"],
-            meta["next_index"],
-            meta["pending"],
-            meta["records"],
+        burn_done, next_index, pending = (
+            meta["burn_done"], meta["next_index"], meta["pending"],
         )
+        records = ledger.restore(meta)
+        migrate_legacy = meta["format"] == LEGACY_PARENT_KIND
+    elif ledger.path.exists():
+        raise FileExistsError(f"Orphaned parent record ledger: {ledger.path}")
     checkpoint_steps = _integer(
         config.get("output", {}).get("checkpoint_steps", 1000), "checkpoint_steps"
     )
     thermal_seconds = 0.0
+    # Public workflow allocations are contiguous; retain arbitrary legacy task
+    # allocations without rewriting their IDs as a different contiguous range.
+    allocation = ({"trajectory_start": ids[0], "trajectory_count": len(ids)}
+                  if ids == list(range(ids[0], ids[0] + len(ids)))
+                  else {"trajectory_ids": ids})
 
     def save_parent():
         services.save_arrays(
             parent_path,
             {
-                "format": "PyRPMD.drpmd.parent-checkpoint.v1",
+                "format": PARENT_KIND,
                 "physics_hash": physics_hash,
                 "parent_id": parent_id,
-                "trajectory_ids": ids,
+                **allocation,
                 "step": parent.step,
                 "time": parent.time,
                 "rng": _rng_state(dynamics),
                 "burn_done": burn_done,
                 "next_index": next_index,
                 "pending": pending,
-                "records": records,
+                "record_count": ledger.count,
+                "record_digest": ledger.digest,
                 "hamiltonian_convention": "sum_beads_beta_over_P",
                 **({"operators": dynamics.operator_state_dict(),
                     "sampling_integrator": sampling_method,
@@ -374,6 +384,7 @@ def _parent_task(task, services):
                 if trajectory_id not in complete:
                     record = _saved_collision(dict(task, trajectory_id=trajectory_id),
                                               production, classifier, services)
+                    ledger.append(record)
                     records.append(record)
                     save_parent()
         while burn_done < equil:
@@ -471,8 +482,11 @@ def _parent_task(task, services):
                     resume,
                 )
                 record["parent_sample_step"] = parent.step
+                ledger.append(record)
                 records.append(record)
             next_index, pending = index + 1, None
+            save_parent()
+        if migrate_legacy:
             save_parent()
         return {
             "parent_id": parent_id,
