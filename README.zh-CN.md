@@ -20,7 +20,7 @@ pyrpmd info
 
 NumPy 路径使用 `PYRPMD_NO_NATIVE=1 python -m pip install .`。
 MPI、GPU 与外部势能接口按需安装，见[安装手册](docs/zh/manual/installation.md)。
-后续 0.2.x 二进制发布正在准备；这里不把尚未发布的 wheel 当成已在 PyPI 上架。
+后续 0.2.x 二进制发布正在准备。
 
 ## 第一次运行
 
