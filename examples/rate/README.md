@@ -13,10 +13,10 @@ channels and explicit H masses; neither automatically certifies a converged rate
 
 ## Analytic teaching and workflow regression inputs
 
-Start a rate study with [`research.inp`](research.inp). It explicitly declares the reactant
+Start a rate study with [`research.inp`](research.inp). It uses `force_constant=0.1` (the RPMDrate H + H2 example coefficient) with 0.005 window spacing; the resulting dense grid is costly and must be convergence-checked. It explicitly declares the reactant
 fragments, product partition and forming/breaking bonds, then independently requests a TS
-validation and a downhill channel check. Its regional table gives 16 entrance windows and
-26 barrier windows with different force constants. Umbrella sampling, constrained parents
+validation and a downhill channel check. Its regional table gives 160 entrance windows and
+51 barrier windows with the same normalized force constant. Umbrella sampling, constrained parents
 and recrossing children have separate settings.
 
 The example leaves `rate.dividing_surface` unset so the supported PMF maximum
@@ -31,7 +31,7 @@ pyrpmd resume runs/rate
 ```
 
 The new `force_constant` defaults to the RPMDrate temperature-normalized coefficient `k/T`:
-`0.00016` at 1000 K means a physical spring of 0.16 hartree for dimensionless xi. Explicit
+`0.1` at 1000 K means a physical spring of 100 hartree for dimensionless xi. This follows the RPMDrate H + H2 example, but is not a universal convergence recommendation. Explicit
 physical units remain supported. See the complete [input guide](../../docs/rate-input-v2.md)
 ([中文](../../docs/zh/rate-input-v2.md)) for the regional boundaries, units and migration rules.
 

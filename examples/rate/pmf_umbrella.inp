@@ -47,10 +47,10 @@ replicas = 2
 [rate.pmf.umbrella]
 start = -0.05
 stop = 1.10
-count = 59
-# At 1000 K sigma_xi ~= 0.0445, with center spacing ~= 0.02.
-# Check the UI/MBAR point comparison and converge sampling and stiffness.
-kappa = "1.6 hartree"
+count = 231
+# RPMDrate convention k = 0.1*T = 100 hartree at 1000 K.
+# Center spacing 0.005, thermal width sigma_xi ~= 0.00563.
+kappa = "100 hartree"
 
 [rate.pmf.analysis]
 # Only rate analysis controls live here; do not add analysis.method = "mbar".

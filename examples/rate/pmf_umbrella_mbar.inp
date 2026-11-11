@@ -49,8 +49,10 @@ replicas = 2
 [rate.pmf.umbrella]
 start = -0.05
 stop = 1.10
-count = 24
-kappa = "0.16 hartree"
+count = 231
+# RPMDrate convention k = 0.1*T = 100 hartree at 1000 K.
+# Center spacing 0.005, thermal width sigma_xi ~= 0.00563.
+kappa = "100 hartree"
 
 [rate.pmf.analysis]
 # The selected rate MBAR backend handles paired-endpoint bootstrap.

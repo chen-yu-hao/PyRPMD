@@ -46,24 +46,24 @@ estimator = "ui"
 
 [umbrella]
 coordinate = "xi"
-# Bare force_constant means k/T in atomic stiffness units per kelvin ("1/T").
-# Here k = 0.00016 * 1000 = 0.16 hartree, preserving the teaching pilot strength.
-force_constant = 0.00016
+# Bare force_constant = k/T; 0.1 matches the RPMDrate H+H2 example.
+# Here k = 0.1 * 1000 = 100 hartree (RPMDrate H+H2 convention).
+force_constant = 0.1
 
 [[umbrella.regions]]
 id = "entrance"
 start = 0.0
 stop = 0.8
-spacing = 0.05
+spacing = 0.005
 include_endpoints = "left"
 
 [[umbrella.regions]]
 id = "barrier"
 start = 0.8
 stop = 1.05
-spacing = 0.01
+spacing = 0.005
 include_endpoints = "both"
-force_constant = 0.00032
+force_constant = 0.1
 
 [umbrella.sampling]
 equilibration = "5 fs"

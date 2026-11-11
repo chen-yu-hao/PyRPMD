@@ -34,9 +34,10 @@ with the identical source bytes.
   via `equivalent_paths`; the symmetry factor stays **1.0**, with **no second
   factor of 2**. All barriers and rates use a consistent electronic surface.
 - Entrance separation `Rinf=10 bohr` and reaction coordinate xi from the
-  benchmark rate workflow; 47 windows span -0.05 to 1.10 with 0.025 spacing.
-  A spring of 1.900086938 hartree is approximately 400 kBT at 1500 K for
-  dimensionless xi; the polymer-bead factor is applied internally.
+  benchmark rate workflow; 231 windows span -0.05 to 1.10 with 0.005 spacing.
+  The 150-hartree spring at 1500 K follows `kforce=0.1*T` in the RPMDrate H + H2
+  example (beta*k≈31577, sigma_xi≈0.00563). The polymer-bead factor is applied
+  internally. This increases work substantially and does not establish convergence.
 - PMF uses MBAR; recrossing uses unbiased, unthermostatted paired RPMD children.
   The dividing surface xi* is automatically selected from the maximum of the
   supported MBAR PMF (discrete histogram bin center). Its location must be

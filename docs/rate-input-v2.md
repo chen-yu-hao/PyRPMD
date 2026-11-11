@@ -84,11 +84,7 @@ resolved; the dynamics does not divide the force constant by temperature.
 | `force_constant = "0.16 hartree"` | Fixed 0.16 hartree, independent of T |
 | Legacy `stiffness = 0.16` or `kappa = 0.16` | Fixed 0.16 atomic stiffness units, unchanged |
 
-The historical teaching template used `0.00016` at 1000 K to retain the old
-0.16-hartree spring. Copying RPMDrate's coefficient `0.1` would instead give
-100 hartree at 1000 K; it is not an equivalent conversion. The omitted rate
-default retains its old physical strength, `50 k_B T`, rather than silently
-changing to a particular RPMDrate example's value.
+The previous teaching coefficient `0.00016` at 1000 K produced a soft 0.16-hartree spring. The rate tutorial inputs in this repository now use the RPMDrate H + H2 **example** coefficient `force_constant = 0.1`, which resolves to 100 hartree at 1000 K. This is a reproducibility baseline, **not a universal optimum**. The omitted rate default still uses its separate legacy `50 k_B T` strength; specify `force_constant = 0.1` explicitly when comparing tutorials.
 
 For a dimensional CV, supply the corresponding stiffness/K unit, such as
 `hartree/bohr^2/K`; the `1/T` shorthand is limited to dimensionless CVs. Bare
@@ -104,11 +100,7 @@ the harmonic thermal width is
 `a=0.00016` has `sigma_xi ≈ 0.141` and the barrier-region
 `a=0.00032` has `sigma_xi ≈ 0.0995`, versus spacings of 0.05 and
 0.01. These broad windows can violate Gaussian UI's assumption even with
-adequate overlap and a small bootstrap error. As a narrower starting point,
-tenfold stiffer `a=0.0016`/`0.0032` gives widths ≈0.0445/0.0315;
-use correspondingly closer, overlapping windows (for example 0.02/0.01
-spacing), then check convergence. RPMDrate's `a=0.1` is much stiffer
-(`sigma_xi ≈ 0.00563`) and requires much closer centers.
+adequate overlap and a small bootstrap error. For consistency with the RPMDrate H + H2 example, the rate tutorials now use `a=0.1` (`sigma_xi ≈ 0.00563`) with centers spaced by 0.005. This greatly increases the number of windows, computational cost, and potentially the timestep stability requirements. Verify overlap, equilibration, and PMF/rate convergence before using the settings for quantitative work.
 
 `pyrpmd prepare` reports `thermal_sigma_xi` and
 `nearest_center_spacing_xi` for every planned one-dimensional rate umbrella
@@ -123,22 +115,22 @@ that comparison are diagnostics, not proof of physical convergence.
 ```toml
 [umbrella]
 coordinate = "xi"
-force_constant = 0.00016
+force_constant = 0.1
 
 [[umbrella.regions]]
 id = "entrance"
 start = 0.0
 stop = 0.8
-spacing = 0.05
+spacing = 0.005
 include_endpoints = "left"
 
 [[umbrella.regions]]
 id = "barrier"
 start = 0.8
 stop = 1.05
-spacing = 0.01
+spacing = 0.005
 include_endpoints = "both"
-force_constant = 0.00032
+force_constant = 0.1
 ```
 
 The first region generates 16 centers from 0 to 0.75; the second generates 26
@@ -157,7 +149,7 @@ windows use explicit records and a positive-definite force matrix.
 [[umbrella.windows]]
 id = "near-saddle"
 center = 0.95
-force_constant = 0.00032
+force_constant = 0.1
 
 [umbrella.windows.sampling]
 production = "40 fs"
@@ -262,9 +254,6 @@ preserve its old behavior. Do not edit an existing run's saved input in place.
 ### Updated default window width
 
 New implicit rate umbrella plans use `beta*kappa=500`, giving
-`sigma_xi=1/sqrt(500)=0.04472`. UI remains the estimator default. The explicit
-research examples now use `force_constant=0.0016` (entrance) and `0.0032`
-(barrier), with 0.02/0.01 spacing, matching the narrow-window teaching check
-in issue #170. Existing explicit spring settings and resolved checkpoints
+`sigma_xi=1/sqrt(500)=0.04472`. UI remains the estimator default. The explicit research examples now use `force_constant=0.1` in both regions, with 0.005 spacing, to match the RPMDrate H + H2 example convention. This is not a convergence-validated universal recommendation. Existing explicit spring settings and resolved checkpoints
 retain their values. Window narrowing reduces the Gaussian-model error; it
 does not replace sampling or estimator comparisons.

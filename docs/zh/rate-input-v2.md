@@ -65,9 +65,7 @@ $$
 | `force_constant = "0.16 hartree"` | 固定 0.16 hartree，不随 T 改变 |
 | 旧 `stiffness = 0.16` 或 `kappa = 0.16` | 保留原来固定原子单位力常数的含义 |
 
-因此教学模板在 1000 K 下用 `0.00016` 得到原来的 0.16 hartree。
-直接照抄 RPMDrate 示例系数 `0.1` 会得到 100 hartree，强度并不等价。
-省略速率力常数时仍保留原来的 `50 k_B T` 强度，不会因更换输入约定而突然改变默认势。
+旧教学模板在 1000 K 下用 `0.00016` 得到 0.16 hartree 的软约束；当前 rate 教程改用 RPMDrate H + H₂ 示例系数 `force_constant = 0.1`，在 1000 K 下为 100 hartree。这只是便于对照的示例设置，**不是适用于所有体系的收敛最优值**。省略力常数时程序仍使用原有 `50 k_B T` 默认值；要与教程一致需显式指定 `0.1`。
 
 对于有量纲 CV，显式使用相应的刚度/K 单位，例如 `hartree/bohr^2/K`；
 `1/T` 简写只适用于无量纲 CV。`force_matrix` 的裸系数同样表示原子刚度单位/K。
@@ -80,10 +78,7 @@ $$
 示例中 `a=0.00016` 的 `sigma_xi ≈ 0.141`，势垒区
 `a=0.00032` 的宽度约为 `0.0995`，对应中心间距为 0.05 和 0.01。
 这些宽窗口即使重叠良好且 bootstrap 标准误差很小，也可能使 UI 高斯近似产生
-系统性误差。可用十倍刚度 `a=0.0016`/`0.0032`（宽度约为
-0.0445/0.0315）、较密且保持重叠的中心（如 0.02/0.01）作为起点，
-再做窗口宽度收敛检查。RPMDrate 示例的 `a=0.1` 更硬，
-`sigma_xi ≈ 0.00563`，须配合更密的窗口。
+系统性误差。为与 RPMDrate H + H₂ 示例一致，当前 rate 教程使用 `a=0.1`（`sigma_xi ≈ 0.00563`），窗口中心间距为 `0.005`。这会显著增加窗口数量和计算量，也需要重新检查积分步长稳定性、窗口重叠、热化和 PMF/速率收敛。
 
 `pyrpmd prepare` 在 `umbrella_preparation.window_plan` 中为每个一维
 速率窗口报告 `thermal_sigma_xi`（热宽度）与
@@ -97,25 +92,25 @@ $$
 ```toml
 [umbrella]
 coordinate = "xi"
-force_constant = 0.00016
+force_constant = 0.1
 
 [[umbrella.regions]]
 id = "entrance"
 start = 0.0
 stop = 0.8
-spacing = 0.05
+spacing = 0.005
 include_endpoints = "left"
 
 [[umbrella.regions]]
 id = "barrier"
 start = 0.8
 stop = 1.05
-spacing = 0.01
+spacing = 0.005
 include_endpoints = "both"
-force_constant = 0.00032
+force_constant = 0.1
 ```
 
-第一段生成 0 至 0.75 的 16 个中心，第二段生成 0.8 至 1.05 的 26 个中心，共 42 个。
+第一段生成 0 至 0.795 的 160 个中心，第二段生成 0.8 至 1.05 的 51 个中心，共 211 个。
 端点包含方式可选 `left`、`right`、`both`、`neither`。间距必须整除区间，
 不静默追加一个较短尾间隔；重复中心和冲突定义会被拒绝。
 禁止的是分区定义冲突，采样分布之间的统计重叠仍然必要。
@@ -207,6 +202,6 @@ pyrpmd resume runs/research-layout
 ### 更新后的默认窗口宽度
 
 新建隐式 rate umbrella 计划采用 `beta*kappa=500`，因此 `sigma_xi=0.04472`；
-UI 仍是默认估计器。research 示例采用入口/势垒 `k/T=0.0016/0.0032`，
-间隔 `0.02/0.01`。显式弹簧参数和已解析 checkpoint 不变；收窄窗口
+UI 仍是默认估计器。research 示例在入口/势垒区均采用 `k/T=0.1`，
+间隔均为 `0.005`；此设置还需独立的收敛验证。显式弹簧参数和已解析 checkpoint 不变；收窄窗口
 不能替代采样收敛以及 UI/MBAR 同样本比较。
