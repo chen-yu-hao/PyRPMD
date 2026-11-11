@@ -48,7 +48,7 @@ def test_public_toy_auto_budget_exhaustion_resumes_without_repeating_pilots(tmp_
     assert summary["sampling_converged"] is False and summary["rate_cm3_s"] is None
 
 
-def test_public_independent_pmf_stage_reaches_frozen_production_and_resumes(tmp_path):
+def test_public_independent_pmf_stage_preserves_unfinished_window_tuning_on_resume(tmp_path):
     # A free model exercises sampling/checkpoint plumbing, not a physical H3 rate.
     system = System(("H", "H", "H"), np.array([2., 2., 2.]),
                     np.array([[-1.5, 0., 0.], [0., 0., 0.], [1.5, 0., 0.]]),
@@ -84,15 +84,15 @@ def test_public_independent_pmf_stage_reaches_frozen_production_and_resumes(tmp_
     output = tmp_path / "independent-pmf"
     result = run(spec, output=output)
     assert result["status"] == "auto_rate_incomplete"
-    assert result["automatic_rate"]["reason"] == "pmf_budget_exhausted"
+    assert result["automatic_rate"]["reason"] == "aus_budget_exhausted"
     assert result["rate_cm3_s"] is None and not result["sampling_converged"]
     plan = json.loads((output / "umbrella" / "adaptive-plan.json").read_text())
-    assert plan["status"] == "frozen" and plan["pilot_samples_used_in_production"] == 0
-    state = json.loads((output / "auto-rate" / "state.json").read_text())
-    assert [record["production_steps"] for record in state["history"]] == [200, 400]
-    assert all(record["decision"]["action"] == "extend_time" for record in state["history"])
-    assert (output / "rate_pmf.json").is_file()
-    assert len(list((output / "umbrella" / "checkpoints").glob("*.npz"))) == 22
+    assert plan["status"] == "incomplete" and plan["pilot_samples_used_in_production"] == 0
+    assert plan["schema_version"] == 4
+    assert len(plan["rounds"]) == 2
+    assert any(r["stiffness_update"]["changed"] for r in plan["rounds"])
+    assert not (output / "rate_pmf.json").exists()
+    assert not (output / "umbrella" / "checkpoints").exists()
     checkpoints = _checkpoints(output)
     resumed = resume_run(output)
     assert resumed["automatic_rate"] == result["automatic_rate"]

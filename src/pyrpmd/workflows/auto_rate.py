@@ -90,9 +90,6 @@ def _pmf_decision(pmf, state, config):
         if not np.isfinite(relative):
             relative = None
     decision["qtst_relative_standard_error"] = relative
-    if (pmf.get("ready") and supported
-            and relative is not None and relative <= target):
-        return {**decision, "action": "recrossing"}
     if (pmf.get("window_anomalies") or
             any(not check["passed"] for check in pmf.get("stream_state_checks", []))):
         return {**decision, "action": "stop", "reason": "umbrella_stream_anomaly"}
@@ -101,6 +98,18 @@ def _pmf_decision(pmf, state, config):
     frozen = state["frozen_config"]
     centers = np.asarray(frozen["umbrella"]["centers_au"], float)[:, 0]
     candidates = []
+    support = pmf.get("support", {})
+    histogram = support.get("histogram", {})
+    grid = np.asarray(histogram.get("centers", []))
+    for interval in support.get("search_endpoints", {}).get("masked_intervals", []):
+        candidates.extend(grid[interval["first_bin"]:interval["last_bin"] + 1].tolist())
+    for endpoint in (support.get("reference_endpoint"),
+                     *support.get("observed_histogram", {}).values()):
+        if endpoint and (endpoint.get("status") == "masked" or endpoint.get("supported") is False):
+            candidates.extend(endpoint.get("bracket_centers", [endpoint["coordinate"]]))
+    if (not candidates and pmf.get("ready") and supported
+            and relative is not None and relative <= target):
+        return {**decision, "action": "recrossing"}
     labels = adaptive.get("production_overlap_components", [])
     if len(labels) == len(centers) and len(set(labels)) > 1:
         order = np.argsort(centers)
@@ -137,8 +146,15 @@ def _pmf_decision(pmf, state, config):
 def _advance(state, decision):
     state["round"] += 1
     if decision["action"] == "refine_windows":
+        from .adaptive_umbrella import interpolate_stiffness
+
         state["generation"] += 1
         sampling = copy.deepcopy(state.pop("frozen_config"))
+        old_centers = sampling["umbrella"]["centers_au"]
+        springs = sampling["umbrella"]["stiffness_au"]
+        sampling["umbrella"]["stiffness_au"] = interpolate_stiffness(
+            old_centers, springs, [[x] for x in decision["centers"]], (None,),
+        ).tolist()
         sampling["umbrella"]["centers_au"] = [[x] for x in decision["centers"]]
         sampling["adaptive_umbrella"] = copy.deepcopy(state["sampling_config"]["adaptive_umbrella"])
         sampling["seed"] = int(np.random.SeedSequence(

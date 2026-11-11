@@ -3,6 +3,8 @@
 Set `rate.auto = true` to let the gas-phase rate workflow choose and refine its
 sampling settings. The controller uses adaptive umbrella sampling (AUS), then
 the existing Bennett–Chandler constrained-parent/paired-child calculation. It
+uses histogram MBAR by default, so non-Gaussian windows do not require a
+Gaussian UI model. An explicitly selected UI estimator remains supported. It
 selects the dividing surface from the supported PMF maximum unless an explicit
 surface was supplied.
 
@@ -42,6 +44,12 @@ Static validation resolves the defaults without evaluating the PES. Use the
 ordinary `prepare --pilot` or `validate --check-pes` interface to inspect
 numerical preparation. The bundled example is an analytic teaching potential,
 not a physical benchmark.
+
+The [BKMP2 example](../examples/rate/bkmp2_auto.inp) exercises the same automatic
+workflow for H + H2 at 1500 K and P=16 with a 0.05 fs step. It requires the
+locally built, provenance-checked BKMP2 library described in `benchmarks/h3`.
+Use a local filesystem for the calculation and archive the results afterwards
+if the shared filesystem lacks HDF5 file locks.
 
 ## Precision and budgets
 
@@ -83,25 +91,37 @@ sampling in control.
 The starting search interval is `xi = [0, 1.05]`. Initial umbrella centers and
 histogram bounds extend beyond this interval so that the reference and search
 endpoints lie inside sampled histogram centers. The default initial spacing
-is approximately 0.05 and the shared physical spring is
+is approximately 0.05 and each window starts with the physical spring
 `k = k_B T / 0.05^2`. A user-provided center plan or spring replaces that start.
 The controller then uses observed overlap, effective samples and coordinate
-coverage to refine the windows. During pilots it can strengthen a spring when
-centers are poorly restrained or soften a spring when excessively narrow
-distributions prevent overlap. Spring adjustments are recorded, confined to
-pilots and bounded to between 1/16 and 16 times the initial spring. An adjusted
-spring requires another pilot before production.
+coverage to refine the windows. Each window adapts its own spring from its
+mean displacement and covariance. In one dimension, the local curvature
+estimate is `F'' = 1/(beta * variance) - K`. A steep slope or unstable broad
+distribution calls for a stronger restraint; a narrow distribution in a flat
+region permits a softer spring. A window with inadequate effective samples
+waits for a longer pilot. New windows inherit a positive interpolation of
+neighboring springs. Each update is bounded between 0.5 and 2, with total
+spring scales between 1/64 and 256 of their initial values. All decisions and
+physical matrices are saved in the version-4 adaptive plan. Older saved plans
+retain their original shared-spring policy. Changed springs require another
+independent pilot before production; pilot samples never enter the PMF.
 
 The default pilot lasts 200 fs after 100 fs of equilibration. Formal production
 starts with two independent replicas per frozen window, 100 fs of
 equilibration and 1000 fs of production, sampled every 1 fs. Pilot samples do
 not enter the production PMF. Windows and springs are frozen before production;
 insufficient production support or PMF precision causes additional sampling.
+When correlated blocks are insufficient, auto records the PMF point estimate
+and defers the expensive bootstrap until its existing block-support criterion
+is met. Deferred uncertainty remains unavailable and cannot authorize recrossing.
 The decision uses production diagnostics, not the success of the pilot. If
 production exposes inadequate spatial coverage or overlap, the controller
 refines the umbrella plan in a new independent generation; it discards the
 previous generation from the final production estimate instead of mixing
 different adaptive plans.
+This refinement also checks actual unsupported PMF bins and endpoint brackets,
+even when a coarser coverage grid passes. The automatic Andersen refresh
+interval defaults to 20 fs in physical time; an explicit interval takes priority.
 
 Recrossing starts with four independent parent chains, 16 configurations per
 chain, two positive/negative momentum pairs per configuration and 50 fs child

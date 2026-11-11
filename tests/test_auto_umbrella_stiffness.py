@@ -98,8 +98,9 @@ def test_budget_extension_restores_the_last_proposed_spring(tmp_path):
     adaptive.extend_adaptive_budget(tmp_path, {"max_rounds": 8})
     resumed = json.loads(path.read_text())
     assert resumed["stiffness"] == proposal["next_stiffness"]
-    assert resumed["stiffness_scale"] == proposal["stiffness_scale"]
-    assert resumed["stiffness_floor_scale"] == proposal["stiffness_floor_scale"]
+    assert resumed["schema_version"] == 4
+    assert resumed["initial_stiffness"] == proposal["next_initial_stiffness"]
+    assert len(resumed["stiffness"]) == len(resumed["centers"])
 
 
 def test_changed_spring_is_frozen_and_resume_keeps_production_exact(tmp_path, monkeypatch):
@@ -110,7 +111,7 @@ def test_changed_spring_is_frozen_and_resume_keeps_production_exact(tmp_path, mo
     assert any(r["stiffness_update"]["changed"] for r in plan["rounds"])
     assert plan["stiffness"] == plan["rounds"][-1]["stiffness"]
     assert not plan["rounds"][-1]["stiffness_update"]["changed"]
-    assert all(s["stiffness"].tolist() == plan["stiffness"] for s in expected["streams"])
+    assert all(s["stiffness"].tolist() == plan["stiffness"][s["window"]] for s in expected["streams"])
     assert all(len(s["samples"]) == 40 for s in expected["streams"])
     original = adaptive._record_round
 
@@ -128,3 +129,44 @@ def test_changed_spring_is_frozen_and_resume_keeps_production_exact(tmp_path, mo
     for left, right in zip(expected["streams"], actual["streams"]):
         np.testing.assert_array_equal(left["samples"], right["samples"])
         np.testing.assert_array_equal(left["last_q"], right["last_q"])
+
+
+def test_each_window_responds_to_its_own_slope_and_curvature():
+    centers = np.arange(3.)[:, None]
+    noise = np.tile([-1., 1.], 100)[:, None]
+    streams = [{"window": i, "samples": center + shift + noise * width}
+               for i, (center, shift, width) in enumerate(zip(centers, [0., .8, 0.], [.1, .5, .6]))]
+    matrices = np.full((3, 1, 1), 4.)
+    plan = {"initial_stiffness": matrices.tolist(),
+            "options": {"min_effective_samples": 20, "adapt_stiffness": True}}
+    report = {"effective_samples_per_window": [100., 100., 100.],
+              "next_centers": centers.tolist() + [[.5]]}
+    result = adaptive._window_stiffness_decision(streams, centers, matrices, 1., (None,), report, plan)
+    np.testing.assert_allclose(np.asarray(result["next_stiffness"])[:3, 0, 0], [2., 8., 4.])
+    assert result["windows"][0]["local_curvature"] == pytest.approx(96.)
+    assert 2. < result["next_stiffness"][3][0][0] < 8.
+    report["effective_samples_per_window"][1] = 2.
+    limited = adaptive._window_stiffness_decision(streams, centers, matrices, 1., (None,), report, plan)
+    assert limited["windows"][1]["factor"] == 1.
+    assert limited["windows"][0]["factor"] == .5
+
+
+def test_heterogeneous_springs_reach_the_real_sampler_and_reweighting(tmp_path):
+    config = _config()
+    config["umbrella"] = {"centers_au": [[-.2], [0.], [.2]],
+                          "stiffness_au": [[[2.]], [[7.]], [[4.]]]}
+    config["adaptive_umbrella"]["adapt_stiffness"] = False
+    system = System(("H",), np.array([1.]), np.zeros((1, 3)))
+    result = run_fes(config, system, tmp_path, return_data=True)
+    plan = json.loads((tmp_path / "adaptive-plan.json").read_text())
+    assert plan["schema_version"] == 4 and plan["status"] == "frozen"
+    for stream in result["streams"]:
+        assert stream["stiffness"].tolist() == plan["stiffness"][stream["window"]]
+    np.testing.assert_array_equal(np.asarray(plan["stiffness"])[:3, 0, 0], [2., 7., 4.])
+
+
+def test_malformed_window_matrix_stack_is_rejected_before_sampling():
+    config = _config()
+    config["umbrella"] = {"centers_au": [[0.], [1.]], "stiffness_au": [[[1.]]]}
+    with pytest.raises(ValueError, match="one square matrix per window"):
+        adaptive.validate_adaptive_umbrella(config, System(("H",), np.ones(1), np.zeros((1, 3))))

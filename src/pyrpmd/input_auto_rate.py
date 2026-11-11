@@ -74,6 +74,10 @@ def normalize_auto_rate_input(config, *, original=None):
         raise InputError("rate.pmf must be a table")
     if stage is not config and stage.get("method", "umbrella") != "umbrella":
         raise InputError("rate.auto requires rate.pmf.method='umbrella'")
+    if stage is config:
+        rate.setdefault("pmf_method", "mbar")
+    else:
+        stage.setdefault("estimator", "mbar")
 
     search = rate.setdefault("pmf_search_range", [0.0, 1.05])
     if (not isinstance(search, (list, tuple)) or len(search) != 2
@@ -118,6 +122,11 @@ def normalize_auto_rate_input(config, *, original=None):
         raise InputError("sampling must be a table")
     inherited = shared_sampling if stage is not config else {}
     _sampling_defaults(sampling, inherited, dt)
+    if (sampling.get("thermostat", inherited.get("thermostat", "andersen")) == "andersen"
+            and "andersen_interval" not in sampling and "andersen_interval" not in inherited):
+        # A ten-step default overdamps the slow reaction coordinate as dt is
+        # reduced. Keep the automatic momentum-refresh clock in physical time.
+        sampling["andersen_interval"] = _default_steps("20 fs", dt)
     if stage is not config:
         _sampling_defaults(shared_sampling, {}, parent_dt)
     _integer(sampling.get("replicas", inherited.get("replicas", 2)), "automatic PMF sampling.replicas", 2)

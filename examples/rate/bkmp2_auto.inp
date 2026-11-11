@@ -1,0 +1,51 @@
+# Build benchmarks/h3/build/libbkmp2.so with benchmarks/h3/build_pes.py first.
+# Sampling automation does not establish bead/timestep/Rinf convergence.
+schema_version = 2
+task = "rate"
+preset = "production"
+temperature = "1500 K"
+beads = 16
+seed = 20261111
+
+[system]
+symbols = ["H", "H", "H"]
+masses_amu = [1.00782503223, 1.00782503223, 1.00782503223]
+geometry_unit = "bohr"
+geometry = [[-1.7570000251, 0.0, 0.0], [0.0, 0.0, 0.0], [1.7570000251, 0.0, 0.0]]
+charge = 0
+multiplicity = 2
+
+[potential]
+provider = "python"
+factory = "../../benchmarks/h3/pes.py:build"
+
+[reaction]
+definition = "explicit"
+reactant_fragments = [[0], [1, 2]]
+product_fragments = [[0, 1], [2]]
+forming_bonds = [[0, 1]]
+breaking_bonds = [[1, 2]]
+equivalent_paths = [[0, 2, 1]]
+rinf = "10 bohr"
+electronic_weight = 1.0
+symmetry_factor = 1.0
+
+[preparation]
+ts_action = "validate"
+check_channel = true
+
+[dynamics]
+timestep = "0.05 fs"
+integrator = "cayley-bcb"
+
+[rate]
+auto = true
+
+[parallel]
+backend = "process"
+trajectory_workers = 8
+bead_workers = 1
+threads_per_rank = 1
+
+[output]
+directory = "runs/bkmp2-auto"

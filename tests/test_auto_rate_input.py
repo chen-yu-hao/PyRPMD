@@ -32,6 +32,8 @@ def test_minimal_auto_rate_fills_all_sampling_stages_without_evaluating_pes(monk
     assert config["sampling"]["replicas"] == 2
     assert config["sampling"]["production_steps"] == time_steps("1000 fs", config["dt_au"])
     assert config["analysis"]["bootstrap"] == 200
+    assert config["rate"]["pmf_method"] == "mbar"
+    assert config["sampling"]["andersen_interval"] == time_steps("20 fs", config["dt_au"])
     assert config["adaptive_umbrella"]["enabled"]
     assert config["adaptive_umbrella"]["adapt_stiffness"]
     assert config["adaptive_umbrella"]["target_coverage"] == 1
@@ -39,6 +41,15 @@ def test_minimal_auto_rate_fills_all_sampling_stages_without_evaluating_pes(monk
     assert config["recrossing"]["parent_samples"] == 16
     assert config["recrossing"]["child_pairs"] == 2
     assert config["recrossing"]["bootstrap"] == 200
+
+
+def test_explicit_estimator_and_momentum_refresh_are_preserved():
+    spec = automatic_spec()
+    spec.data["rate"]["pmf_method"] = "ui"
+    spec.data["sampling"] = {"andersen_interval": 17}
+    config, _ = spec.resolve()
+    assert config["rate"]["pmf_method"] == "ui"
+    assert config["sampling"]["andersen_interval"] == 17
 
 
 def test_production_auto_supplies_only_sampling_defaults_and_preserves_physical_choices():

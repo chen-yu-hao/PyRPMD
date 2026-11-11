@@ -72,6 +72,28 @@ def test_nonlinear_qtst_error_must_meet_precision_target():
     assert decision["action"] == "add_replicas"
 
 
+def test_pmf_histogram_hole_refines_even_when_coarse_coverage_passes():
+    pmf = _pmf()
+    pmf.update(ready=False, support={
+        "histogram": {"centers": [.1, .3, .7, .9]},
+        "search_endpoints": {"masked_intervals": [{"first_bin": 2, "last_bin": 2}]},
+    }, adaptive_umbrella={"production_coverage": {"target_met": True}})
+    decision = auto_rate._pmf_decision(pmf, _state(), _config())
+    assert decision["action"] == "refine_windows"
+    assert .7 in decision["centers"]
+
+
+def test_window_refinement_keeps_existing_springs_attached_to_their_centers(tmp_path):
+    state = _state()
+    state.update(round=0, generation=0, production_steps=20, replicas=2,
+                 sampling_directory=str(tmp_path / "umbrella"))
+    state["frozen_config"]["umbrella"]["stiffness_au"] = [[[1.]], [[4.]], [[9.]]]
+    auto_rate._advance(state, {"action": "refine_windows", "centers": [0., .25, .5, .75, 1.]})
+    assert "frozen_config" not in state
+    matrices = np.asarray(state["sampling_config"]["umbrella"]["stiffness_au"])
+    np.testing.assert_allclose(matrices[:, 0, 0], [1., 2.5, 4., 6.5, 9.])
+
+
 def _mock_sampling(monkeypatch, *, interrupt=False, never_ready=False):
     calls = []
     stopped = False

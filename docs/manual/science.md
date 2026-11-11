@@ -251,7 +251,8 @@ separately from confidence intervals.
 The [input defaults](input.md#defaults) are short starting budgets. In particular, P=32, a
 0.1 fs time step, 1 ps adaptive production, ESS 20 and 20 bootstrap draws do not specify an
 accuracy for an unknown reaction or material. `preset="production"` does not establish
-convergence. Adaptive placement holds the umbrella stiffness fixed, refines the supplied domain,
+convergence. Adaptive placement refines the supplied domain and optionally
+tunes each window's spring using `adapt_stiffness=true`,
 then discards the pilot data and starts separately equilibrated production with a new seed.
 It cannot discover unspecified basins or certify slow variables outside the selected CVs.
 

@@ -351,6 +351,7 @@ def mbar_rate_pmf(
     bootstrap_workers=None,
     bootstrap_workers_source="default",
     bootstrap_total_cores=None,
+    require_block_support=False,
     min_weight_ess=DEFAULT_MIN_WEIGHT_ESS,
     min_endpoint_ess=DEFAULT_MIN_ENDPOINT_ESS,
     max_center_displacement_sigma=DEFAULT_MAX_CENTER_DISPLACEMENT_SIGMA,
@@ -389,6 +390,9 @@ def mbar_rate_pmf(
 
     compare_ui adds a cheap Gaussian-UI calculation on the *same* bootstrap
     draws, exposing paired estimator differences without a second MBAR solve.
+    ``require_block_support`` defers draws on short correlated streams. The
+    point estimate is unchanged, but uncertainty remains unavailable; auto
+    uses this to allocate more dynamics before attempting a reliable error.
     ``bootstrap_workers`` bounds a thread pool used for the independent MBAR
     draws. The analysis API treats ``None`` (the default) and ``1`` as serial;
     the workflow resolves an omitted input setting from
@@ -664,6 +668,7 @@ def mbar_rate_pmf(
     gs = np.asarray([cv_statistical_inefficiency(a) for a in arrays])
     block_plan = _bootstrap_block_plan(counts, gs)
     block_plan["observables"] = CV_CORRELATION_OBSERVABLES
+    defer_bootstrap = require_block_support and block_plan["status"] != "finite_block_estimate"
     blocks = block_plan["block_lengths"]
     warnings.extend(block_plan["warnings"])
     moments = []
@@ -736,7 +741,7 @@ def mbar_rate_pmf(
     draws, endpoints, curves, records, failures = [], [], [], [], []
     ui_draws, paired_mbar, differences, ui_failures = [], [], [], []
     rng = np.random.default_rng(seed)
-    if ready:
+    if ready and not defer_bootstrap:
         base_indices = [np.arange(n) for n in counts]
         context = {
             "u": u,
@@ -964,7 +969,8 @@ def mbar_rate_pmf(
             "failures": failures,
             "failure_counts": failure_counts,
             "draws": records,
-            "skipped_reason": reason if not ready else None,
+            "skipped_reason": (reason if not ready else
+                               "insufficient_correlated_blocks" if defer_bootstrap else None),
             "endpoint_values_hartree": np.asarray(endpoints).reshape(-1, 2),
             "endpoint_covariance_hartree_squared": (
                 np.cov(np.asarray(endpoints).T, ddof=1) if len(endpoints) >= 2 else None
