@@ -1,0 +1,18 @@
+# An analytic teaching PES: replace it and the TS for a physical calculation.
+schema_version = 2
+task = "rate"
+temperature = "1000 K"
+beads = 4
+
+[system]
+transition_state = "ts.xyz"
+
+[potential]
+provider = "python"
+factory = "toy_exchange.py:build"
+
+[rate]
+auto = true
+
+[output]
+directory = "runs/automatic-rate"

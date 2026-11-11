@@ -25,6 +25,7 @@ from .input_rate_pmf import (
     normalize_rate_pmf_input, normalize_rate_pmf_stages, resolve_rate_pmf_stage, rate_pmf_stage, rate_pmf_spec,
 )
 from .input_subspace import normalize_rate_subspace
+from .input_auto_rate import normalize_auto_rate_input
 from .input_reaction import normalize_reaction_input
 from .input_stages import normalize_stage_input
 from .input_paths import (
@@ -213,6 +214,7 @@ class JobSpec:
         method, fes_notes = _normalize_fes_input(d)
         pmf_stage_input = normalize_rate_pmf_stages(d)
         normalize_stage_input(d, independent_rate_parent=bool(pmf_stage_input))
+        normalize_auto_rate_input(d, original=self.data)
         normalize_reaction_input(d)
         unknown = set(d) - _ROOT
         if unknown:

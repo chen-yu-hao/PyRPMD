@@ -246,6 +246,15 @@ def resolve_plan(config, system):
 
     windows = []
     ids, previous_centers = set(), set()
+    # Frozen adaptive plans persist centers and physical spring matrices in
+    # the same order, without converting atomic coordinates back to user units.
+    matrices = None
+    if default_force is not None and default_force[0] == "stiffness_au":
+        raw = np.asarray(default_force[1], dtype=float)
+        if raw.ndim == 3:
+            if raw.shape != (len(records), cv.dimension, cv.dimension):
+                raise ValueError("stiffness_au stack must contain one square matrix per window")
+            matrices = raw
     for index, (value, record, source, identifier) in enumerate(records):
         value = np.asarray(value, float)
         if value.shape != (cv.dimension,) or not np.isfinite(value).all():
@@ -256,7 +265,8 @@ def resolve_plan(config, system):
         if strict and key in previous_centers:
             raise ValueError("duplicate umbrella center; fix endpoint inclusion or use chains_per_window")
         previous_centers.add(key)
-        force = _force_choice(record, strict=True, path=f"umbrella window {index}") or default_force
+        fallback = ("stiffness_au", matrices[index]) if matrices is not None else default_force
+        force = _force_choice(record, strict=True, path=f"umbrella window {index}") or fallback
         stiffness = _stiffness(force, cv, config)
         UmbrellaBias(cv, value, stiffness)
         sampling = None
@@ -280,7 +290,7 @@ def resolve_plan(config, system):
     overrides = any(w.sampling for w in windows)
     for backend in ("adaptive_umbrella", "replica_exchange"):
         options = config.get(backend, {})
-        if options and options.get("enabled", True) and (heterogeneous or overrides):
+        if options and options.get("enabled", True) and (overrides or (heterogeneous and backend == "replica_exchange")):
             raise ValueError(f"{backend} does not yet support heterogeneous window force constants or per-window sampling")
     return cv, selected, windows
 

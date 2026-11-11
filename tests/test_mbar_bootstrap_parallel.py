@@ -53,6 +53,25 @@ class MBARBootstrapParallelTests(unittest.TestCase):
         self.assertEqual(result["bootstrap"]["workers"], 1)
         self.assertEqual(result["bootstrap"]["backend"], "serial")
 
+    def test_auto_mode_defers_unusable_draws_without_changing_the_pmf(self):
+        short = [np.tile(np.arange(.1, 1., .2), 4)]
+        baseline = mbar_rate_pmf(short, **{**self.options, "bootstrap": 0})
+        with patch.object(rate_pmf_module, "_mbar_bootstrap_draw", side_effect=AssertionError("unusable draw")):
+            result = mbar_rate_pmf(short, require_block_support=True, **self.options)
+        assert result["ready"] == baseline["ready"]
+        np.testing.assert_array_equal(result["free_energy"], baseline["free_energy"])
+        assert result["bootstrap"]["attempted"] == 0
+        assert result["bootstrap"]["skipped_reason"] == "insufficient_correlated_blocks"
+        assert not result["barrier_uncertainty"]["available"]
+        assert result["barrier_standard_error_hartree"] is None
+
+    def test_auto_mode_uses_all_requested_draws_when_blocks_are_supported(self):
+        regular = mbar_rate_pmf(self.samples, **self.options)
+        automatic = mbar_rate_pmf(self.samples, require_block_support=True, **self.options)
+        assert automatic["bootstrap"]["block_plan"]["status"] == "finite_block_estimate"
+        assert automatic["bootstrap"]["attempted"] == self.options["bootstrap"]
+        np.testing.assert_array_equal(automatic["pmf_bootstrap_barriers"], regular["pmf_bootstrap_barriers"])
+
     def test_newton_multiwindow_and_compare_ui_match_serial(self):
         rng = np.random.default_rng(42)
         centers = np.array([0.2, 0.5, 0.8])

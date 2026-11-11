@@ -89,7 +89,7 @@ _SECTIONS = {
     ),
     "rate": set(
         "recrossing pmf_points pmf_method pmf_search_range dividing_surface compare_ui pmf_source pmf "
-        "pmf_min_weight_ess pmf_min_endpoint_ess pmf_max_window_displacement subspace_correction".split()
+        "pmf_min_weight_ess pmf_min_endpoint_ess pmf_max_window_displacement subspace_correction auto".split()
     ),
     "recrossing": set(
         "parent_replicas parent_samples equilibration equilibration_steps parent_interval parent_interval_steps child_pairs child_pairs_per_parent child_steps child_time dividing_surface plateau_fraction plateau_tolerance bootstrap constraint_tolerance child_batch_pairs dynamics friction_scale integrator parent children analysis parent_thermostat".split()
@@ -111,7 +111,7 @@ _SECTIONS = {
     ),
     "barostat": set("method pressure time_constant friction mode tau gamma compressibility cell_mask reference_cell reference_cell_unit stress".split()),
     "adaptive_umbrella": set(
-        "enabled pilot_steps pilot_equilibration_steps max_rounds max_windows max_pilot_steps target_overlap min_effective_samples min_spacing coverage_bins coverage_ranges min_bin_effective_samples target_coverage continuation".split()
+        "enabled adapt_stiffness pilot_steps pilot_equilibration_steps max_rounds max_windows max_pilot_steps target_overlap min_effective_samples min_spacing coverage_bins coverage_ranges min_bin_effective_samples target_coverage continuation".split()
     ),
     "diffusion": set(
         "atom_indices axes reference_atoms fit_range max_lag bootstrap seed block_length".split()

@@ -891,7 +891,7 @@ def _read_continuation(config, system, output):
     return saved["initializations"]
 
 
-def _make_tasks(config, system, output, *, production_steps=None):
+def _make_tasks(config, system, output, *, production_steps=None, replicas=None):
     """Build independent windows without changing their original identity."""
     if config.get("analysis", {}).get("measure", "cv_density") not in (
         "cv_density", "rate_flux",
@@ -910,10 +910,12 @@ def _make_tasks(config, system, output, *, production_steps=None):
         sampling = window_sampling(config, window)
         local = {**config, "sampling": sampling} if window.sampling else config
         fes_sampler(local)
-        replicas = checked_integer(sampling.get("replicas", 1), "sampling.replicas")
+        original_replicas = checked_integer(sampling.get("replicas", 1), "sampling.replicas")
+        replica_count = (original_replicas if replicas is None else
+                         checked_integer(replicas, "replicas", original_replicas))
         if production_steps is not None:
             _production_budget(local, production_steps)
-        for replica in range(replicas):
+        for replica in range(replica_count):
             task = {"config": local, "system": system, "specs": specs, "window": index,
                     "replica": replica, "center": window.center, "stiffness": window.stiffness,
                     "output": str(output)}
@@ -983,7 +985,7 @@ def _validate_umbrella_sampling(config, system):
 
 
 def sample_umbrellas(config, system, output, executor=None, *, production_steps=None,
-                     checkpoint_output=None, _postprocess=None):
+                     checkpoint_output=None, _postprocess=None, replicas=None):
     """Sample independent umbrella streams without reconstructing a FES.
 
     The returned bundle carries the effective (possibly adaptively frozen)
@@ -995,6 +997,8 @@ def sample_umbrellas(config, system, output, executor=None, *, production_steps=
     ``production_steps`` is an authorized total extension budget, not a change
     to checkpoint identity. ``checkpoint_output`` selects the original stream
     directory while analysis products are destined for ``output``.
+    ``replicas`` similarly increases the total independent stream count while
+    retaining the original configuration and existing stream identities.
     """
     _validate_umbrella_sampling(config, system)
     if config.get("replica_exchange"):
@@ -1004,12 +1008,12 @@ def sample_umbrellas(config, system, output, executor=None, *, production_steps=
     if config.get("adaptive_umbrella"):
         from .adaptive_umbrella import adaptive_options, sample_adaptive_umbrellas
         if adaptive_options(config)["enabled"]:
-            if production_steps is not None or checkpoint_output is not None:
+            if production_steps is not None or checkpoint_output is not None or replicas is not None:
                 raise ValueError("production extension requires independent fixed windows")
             return sample_adaptive_umbrellas(config, system, output, executor=executor)
     config = copy.deepcopy(config)
     _, tasks = _make_tasks(config, system, output if checkpoint_output is None else checkpoint_output,
-                          production_steps=production_steps)
+                          production_steps=production_steps, replicas=replicas)
     if any("window_id" in task for task in tasks):
         from .umbrella_plan import plan_preview
         root_call(_write_window_plan, output, plan_preview(config, system))
