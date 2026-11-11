@@ -125,10 +125,32 @@ def test_prepare_exposes_width_and_nearest_center_spacing():
     entrance = next(w for w in window_plan if w["source"] == "entrance")
     barrier = next(w for w in window_plan if w["source"] == "barrier")
     assert entrance["thermal_sigma_xi"] == pytest.approx(
-        np.sqrt(KB_AU / 0.00016)
+        np.sqrt(KB_AU / 0.0016)
     )
     assert barrier["thermal_sigma_xi"] == pytest.approx(
-        np.sqrt(KB_AU / 0.00032)
+        np.sqrt(KB_AU / 0.0032)
     )
-    assert entrance["nearest_center_spacing_xi"] == pytest.approx(0.05)
+    assert entrance["nearest_center_spacing_xi"] == pytest.approx(0.02)
     assert barrier["nearest_center_spacing_xi"] == pytest.approx(0.01)
+
+
+def test_implicit_rate_windows_use_narrow_gaussian_width(tmp_path):
+    from pyrpmd.input import JobSpec
+    from pyrpmd.workflows.rate_pmf import _prepare
+
+    source = Path(__file__).resolve().parents[1] / 'examples/rate/minimal.inp'
+    config, system = JobSpec.from_file(source).resolve()
+    assert config['umbrella']['kappa'] * config['beta'] == pytest.approx(500.)
+    stage = _prepare(config, system, tmp_path, _write=False)
+    assert stage['beta'] * stage['umbrella']['kappa'] == pytest.approx(500.)
+
+
+def test_historical_resolved_input_keeps_its_implicit_spring(tmp_path):
+    from pyrpmd.input import JobSpec
+    from pyrpmd.workflows.rate_pmf import _prepare
+
+    source = Path(__file__).resolve().parents[1] / 'examples/rate/minimal.inp'
+    config, system = JobSpec.from_file(source).resolve()
+    config.pop('umbrella')  # historical resolved inputs did not persist this default
+    stage = _prepare(config, system, tmp_path, _write=False)
+    assert stage['beta'] * stage['umbrella']['kappa'] == pytest.approx(50.)

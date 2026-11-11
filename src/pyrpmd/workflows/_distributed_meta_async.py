@@ -16,6 +16,8 @@ from .common import _fingerprint
 from .metadynamics import resolve_metadynamics, resolve_walls
 from .shared_metadynamics import ASYNC_KIND, validate_shared
 from ..warm_start import initial_ring
+from .biased_sampling import supersede_failure
+from ._walker_failures import walker_failure_path, record_async_checkpoint_failure
 
 from ._distributed_meta_async_io import (
     _async_identity, _async_path, _collect_async, _new_async_bias,
@@ -31,6 +33,7 @@ def _run_async(config, system, output, *, return_data=False):
     restored = (_read_async_walker(config, system, output, walker, cv, options)
                 if checkpoint.exists() else None)
     provider = make_potential(config["potential"], system)
+    dynamics = None
     try:
         dynamics = Dynamics(
             provider, system.masses, config["beta"], config["beads"],
@@ -159,6 +162,9 @@ def _run_async(config, system, output, *, return_data=False):
             save()
         # The last finishing process performs aggregate analysis. Earlier
         # finishers return an honest pending status without waiting for peers.
+        supersede_failure(
+            walker_failure_path(output, "metadynamics", "async-files", walker),
+            checkpoint=checkpoint, elapsed_steps=elapsed)
         if all(_async_path(output, index).exists() for index in range(walkers)):
             streams = [_read_async_walker(
                 config, system, output, index, cv, options) for index in range(walkers)]
@@ -170,6 +176,11 @@ def _run_async(config, system, output, *, return_data=False):
                 "walkers_mode": "async-files", "walker": walker,
                 "checkpoint": str(checkpoint), "physical_converged": False,
                 "converged": False}
+    except Exception as error:
+        record_async_checkpoint_failure(
+            output, "metadynamics", walker, dynamics, cv, error,
+            options=options, checkpoint=checkpoint)
+        raise
     finally:
         if hasattr(provider, "close"):
             provider.close()

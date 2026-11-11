@@ -97,6 +97,7 @@ Installation <manual/installation>
 Quickstart <manual/quickstart>
 Input <manual/input>
 Science <manual/science>
+Converging a result <convergence>
 ```
 
 ```{toctree}
@@ -178,6 +179,9 @@ Paper systems and reproduction <manual/reproduction>
 Python API <manual/api>
 Troubleshooting <manual/troubleshooting>
 Developer guide <manual/development>
+Stability and compatibility <development/stability>
+Archive migration <development/archive-migration>
+Review history <development/review-history>
 Distribution and releases <distribution>
 Literature validation <literature-validation>
 Publication readiness <publication-readiness>

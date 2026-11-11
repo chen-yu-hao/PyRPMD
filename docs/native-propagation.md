@@ -156,7 +156,7 @@ report the work actually performed; they and the scientific identity are unchang
 | `fes`, `rate`, `surface_rate` | fixed umbrella production | stateless native PES, centroid CV/bias descriptors (including `fractional`), and a supported sampling schedule | custom/stateful PES, unsupported CV or bias, composed operators, or thermostat scheduling |
 | `site_rate` | umbrella production | same fixed-bias conditions as FES | constrained parent and checkpointed child stages use Python RATTLE/trajectory scheduling |
 | `rate`, `surface_rate` | recrossing parent/child | exported native dividing-surface descriptors and a compatible PES | arbitrary classifiers, constraints, or unsupported providers |
-| `diffusion` | unthermostatted production | fixed-cell native PES with no barostat, monitor, or electronic friction | electronic friction uses Python OU centroid orchestration; other unsupported providers retain the one-step loop |
+| `diffusion` | production | fixed-cell native PES; NVE or constant scalar/diagonal centroid friction | position-dependent/off-diagonal friction, barostat, monitor, or unsupported providers |
 | `diffusion`, `pimd` | equilibration/sampling | native PILE-L or Andersen block contract and supported stateless PES | barostat, constraints, active-learning monitor, unsupported ring, or provider callbacks |
 | `diffusion`, `pimd` with `sampling.engine="torch"` | tensor workflow | Tensor execution is independent of ordinary C++ `Dynamics` bindings | `unknown`; device and tensor execution backend are confirmed at runtime |
 | `drpmd` | collision propagation | native outcome descriptor plus a compatible native PES | arbitrary Python classifier or missing native event descriptor |
@@ -422,3 +422,19 @@ thermostat/RNG/checkpoint identity (E2), so it is not expected to reproduce
 legacy arrays bit-for-bit.  `python_steps = 0` in the summary is the required
 runtime check.  NPT remains the native `task="pimd"` route with a barostat, and
 is intentionally outside this diffusion integration.
+
+## Constant electronic friction
+
+The fixed-cell diffusion workflow supports a complete native centroid-friction
+block for a constant scalar or diagonal gamma and a native PES binding. The
+C++ loop executes both OU half steps, force kicks and ring propagation. Python
+pre-draws the same NumPy noise stream, and a failed block consumes only the
+accepted prefix. Fixed atoms and exact checkpoint/RNG recovery are covered.
+Position-dependent friction, off-diagonal tensors and custom overrides retain
+the Python path with a reported reason. `propagate_block` owns this optimized
+workflow path; generic `propagate` remains the Python reference. Missing
+measured counters are reported as null, never inferred as zero from a plan.
+
+Workflows with an existing per-stream `propagation` list keep that list and
+its block details. Their additive `propagation_totals` contains measured
+native/Python totals; workflows already using a mapping retain that mapping.

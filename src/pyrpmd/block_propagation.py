@@ -133,6 +133,7 @@ def cv_descriptor(cv, natoms, memo=None):
         if len(cv.com.weights) != natoms:
             raise ValueError("rate-coordinate COM size mismatch")
         return dict(tag, kind="rate", weights=cv.com.weights.tolist(), rinf=cv.rinf,
+                    regular_branch_only=cv.regular_branch_only,
                     paths=[[{"forming": _pair(f, natoms), "breaking": _pair(b, natoms), "reference": r}
                             for f, b, r in zip(forming, breaking, cv.reference_difference)]
                            for forming, breaking in cv.paths])

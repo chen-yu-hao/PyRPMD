@@ -188,7 +188,9 @@ def test_plumed_cli_preflight_run_and_resume_rejection(tmp_path, monkeypatch, ca
     output = tmp_path / "cli-run"
     assert main(["validate", str(path), "--check-pes", "--output", str(output)]) == 0
     capsys.readouterr()
-    assert not kernels  # Read/validation does not initialize or update PLUMED.
+    assert len(kernels) == 1  # Availability probe queries the API without init/input/update.
+    assert kernels[0].values == {} and kernels[0].updates == []
+    assert kernels[0].calculations == [] and kernels[0].finalized == 1
     assert main(["run", str(path), "--output", str(output)]) == 0
     capsys.readouterr()
     before = (output / "plumed" / "COLVAR").read_bytes()
@@ -196,4 +198,4 @@ def test_plumed_cli_preflight_run_and_resume_rejection(tmp_path, monkeypatch, ca
     captured = capsys.readouterr()
     assert "resume is unsupported" in captured.err
     assert (output / "plumed" / "COLVAR").read_bytes() == before
-    assert len(kernels) == 1
+    assert len(kernels) == 2

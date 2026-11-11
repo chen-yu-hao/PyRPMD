@@ -10,7 +10,7 @@ import numpy as np
 
 from .input_options import rate_pmf_options
 from .input_fes import fes_method
-from .input_runtime import _steps
+from .input_runtime import _steps, _timestep_source
 from .input_schema import InputError, _SECTIONS, _integer, _positive
 from .units import parse_quantity
 
@@ -290,7 +290,8 @@ def resolve_collision(d, system, sys_spec, runtime, *, selected):
             collision.get("trajectories", 4), "collision.trajectories"
         )
         collision["max_steps"] = _steps(
-            collision, "max_steps", "max_time", "100 fs", dt
+            collision, "max_steps", "max_time", "100 fs", dt,
+            section="collision", timestep=_timestep_source(d)
         )
         if collision["sampling"] == "fixed_energy":
             if "energy" not in collision:
@@ -303,7 +304,8 @@ def resolve_collision(d, system, sys_spec, runtime, *, selected):
             "outcomes.exit_distance",
         )
         outcomes["persistence_steps"] = _steps(
-            outcomes, "persistence_steps", "persistence", "1 fs", dt
+            outcomes, "persistence_steps", "persistence", "1 fs", dt,
+            section="outcomes", timestep=_timestep_source(d)
         )
         outcomes["check_interval"] = _integer(
             outcomes.get("check_interval", 1), "outcomes.check_interval"

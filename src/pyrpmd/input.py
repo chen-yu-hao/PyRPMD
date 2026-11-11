@@ -22,7 +22,7 @@ from .input_schema import (
 from .input_options import validate_nonadiabatic, rate_pmf_options
 from .input_fes import fes_method, normalize_fes_task, _normalize_fes_input
 from .input_rate_pmf import (
-    normalize_rate_pmf_input, normalize_rate_pmf_stages, resolve_rate_pmf_stage, rate_pmf_stage,
+    normalize_rate_pmf_input, normalize_rate_pmf_stages, resolve_rate_pmf_stage, rate_pmf_stage, rate_pmf_spec,
 )
 from .input_subspace import normalize_rate_subspace
 from .input_reaction import normalize_reaction_input
@@ -131,6 +131,14 @@ class JobSpec:
         return JobSpec(d, self.base_directory, self.input_path)
 
     def resolve(self):
+        resolved, system = self._resolve()
+        from .input_diagnostics import input_diagnostics
+
+        notes = resolved.setdefault("_warnings", [])
+        notes.extend(note for note in input_diagnostics(self.data, resolved, system) if note not in notes)
+        return resolved, system
+
+    def _resolve(self):
         if self.data.get("task") == "path_sampling":
             from .path_sampling_input import resolve_path_sampling_job
 
@@ -289,6 +297,11 @@ class JobSpec:
         if str(base) not in sys.path:
             sys.path.insert(0, str(base))
         resolve_rate_pmf_stage(d, resolved, system)
+        if task == "rate" and rate_pmf_spec(resolved) is None:
+            umbrella = resolved.setdefault("umbrella", {})
+            if not any(key in umbrella for key in
+                       ("stiffness", "stiffness_au", "kappa", "force_constant", "force_matrix")):
+                umbrella["kappa"] = 500.0 / resolved["beta"]
         validate_workflow(resolved, system, materials=materials, source_pmf=source_pmf)
         return resolved, system
 

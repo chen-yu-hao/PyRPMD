@@ -1,0 +1,107 @@
+# Stiff-window BC counterpart of the thermal dRPMD teaching model.
+schema_version = 2
+task = "rate"
+preset = "production"
+temperature = "1500 K"
+beads = 4
+seed = 170167
+
+[system]
+transition_state = "ts.xyz"
+geometry_unit = "bohr"
+multiplicity = 2
+
+[potential]
+provider = "cabi"
+library = "build/libexchange.so"
+
+[reaction]
+definition = "explicit"
+reactant_fragments = [[0], [1, 2]]
+product_fragments = [[0, 1], [2]]
+forming_bonds = [[0, 1]]
+breaking_bonds = [[1, 2]]
+rinf = "9 bohr"
+
+[preparation]
+ts_action = "validate"
+check_channel = true
+
+[dynamics]
+integrator = "cayley-bcb"
+timestep = "0.1 fs"
+loop_backend = "native"
+block_steps = 256
+
+[sampling]
+replicas = 2
+
+[rate]
+pmf_points = 1001
+
+[rate.pmf]
+method = "umbrella"
+estimator = "ui"
+
+[umbrella]
+coordinate = "xi"
+force_constant = 0.0016  # k/T; sigma_xi = 0.0445 at any T
+
+[[umbrella.regions]]
+id = "entrance"
+start = 0.0
+stop = 0.8
+spacing = 0.02
+include_endpoints = "left"
+
+[[umbrella.regions]]
+id = "barrier"
+start = 0.8
+stop = 1.05
+spacing = 0.01
+force_constant = 0.0032  # sigma_xi = 0.0315
+
+[umbrella.sampling]
+equilibration = "1 ps"
+production = "10 ps"
+sample_every = "1 fs"
+chains_per_window = 2
+
+[umbrella.sampling.thermostat]
+type = "andersen"
+refresh_every = "2 fs"
+
+[rate.pmf.analysis]
+bins = 240
+ranges = [[-0.05, 1.1]]
+bootstrap_replicates = 50
+
+[recrossing]
+dividing_surface = 1.0
+
+[recrossing.parent]
+chains = 8
+equilibration = "1 ps"
+draw_every = "10 fs"
+configurations_per_chain = 125
+
+[recrossing.parent.thermostat]
+type = "andersen"
+refresh_every = "2 fs"
+
+[recrossing.children]
+method = "rpmd"
+pairs_per_configuration = 5
+duration = "100 fs"
+
+[recrossing.analysis]
+bootstrap_replicates = 200
+
+[parallel]
+backend = "serial"
+trajectory_workers = 1
+threads_per_rank = 1
+
+[output]
+directory = "runs/rate"
+checkpoint_steps = 2000

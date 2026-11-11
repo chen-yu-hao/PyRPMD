@@ -27,14 +27,37 @@ def _report_shortcut_options(p):
     p.add_argument("--report-style", choices=("jctc", "nature"), help="Figure style for --report (default: jctc)")
 
 
+_COMMAND_GROUPS = (
+    ("Everyday", ("init", "validate", "run", "analyze", "resume", "report", "info")),
+    ("Workflow-specific", ("prepare", "extend", "study", "state-check", "export", "project",
+                           "rate-postprocess", "subspace-correct", "nonadiabatic-rate", "instanton", "vtst")),
+    ("Developer tools", ("import-rpmdrate", "precision", "checkpoint", "pes")),
+)
+
+
+class _CommandHelp(argparse.HelpFormatter):
+    def _format_action(self, action):
+        if not isinstance(action, argparse._SubParsersAction):
+            return super()._format_action(action)
+        choices = {item.dest: item for item in action._get_subactions()}
+        result = []
+        for title, names in _COMMAND_GROUPS:
+            result.append(" " * self._current_indent + title + ":\n")
+            result.extend(super(_CommandHelp, self)._format_action(choices.pop(name))
+                          for name in names if name in choices)
+        result.extend(super(_CommandHelp, self)._format_action(item) for item in choices.values())
+        return "".join(result)
+
+
 def parser():
     p = argparse.ArgumentParser(
-        prog="pyrpmd",
+        prog="pyrpmd", formatter_class=_CommandHelp,
+        epilog="Quickstart: pyrpmd init PROJECT --task fes; see https://github.com/chen-yu-hao/PyRPMD#quickstart",
         description="PyRPMD: ring-polymer dynamics, reaction networks, enhanced sampling and PCET models",
     )
     p.add_argument("--version", action="version", version=f"PyRPMD {__version__}")
     p.add_argument("--debug", action="store_true", help="Show a traceback when a command fails")
-    commands = p.add_subparsers(dest="command", required=True)
+    commands = p.add_subparsers(dest="command", required=True, metavar="COMMAND")
     importer = commands.add_parser("import-rpmdrate", help="Convert a trusted RPMDrate rate input without loading its PES")
     importer.add_argument("input", help="Trusted RPMDrate Python input")
     importer.add_argument("--temperature", type=float, required=True, help="Temperature in kelvin")
@@ -48,8 +71,9 @@ def parser():
     register_vtst_parser(commands)
     from .workflows.precision import register_parser as register_precision_parser
     register_precision_parser(commands)
-    starter = commands.add_parser("init", help="Create a self-contained harmonic tutorial in a new or empty directory")
+    starter = commands.add_parser("init", help="Create a self-contained workflow tutorial in a new or empty directory")
     starter.add_argument("directory", help="Directory for quickstart.inp; existing files are never overwritten")
+    starter.add_argument("--task", choices=("fes", "pimd", "rate", "drpmd"), default="fes")
     r = commands.add_parser("run", help="Execute a checked scientific task")
     _input_options(r)
     r.add_argument("--output")
@@ -379,7 +403,7 @@ def main(argv=None):
             from .parallel import root_call
             from .scaffold import init_project
 
-            _print(root_call(init_project, args.directory))
+            _print(root_call(init_project, args.directory, task=args.task))
         elif args.command == "run":
             from .runner import run
 
@@ -426,6 +450,14 @@ def main(argv=None):
                         "parallel": execution_plan(config["parallel"]).__dict__,
                         "warnings": config["_warnings"],
                     }
+            if not args.check_pes:
+                from .resources import with_resources
+
+                result = with_resources(result, config)
+            from .stability import classify_stability
+
+            result["input_warnings"] = config.get("_warnings", [])
+            result["stability"] = classify_stability(config)
             result["propagation_plan"] = backend_plan
             result["warnings"] = config.get("_warnings", result.get("warnings", []))
             if config["task"] == "rate":
@@ -588,6 +620,7 @@ def main(argv=None):
             import importlib.metadata
             import platform
             from .dynamics import native_capabilities
+            from .stability import stability_registry
 
             dependencies = {}
             for distribution in ("numpy", "scipy", "h5py", "threadpoolctl", "mpi4py", "torch", "ase", "openmm", "lammps", "pymbar", "matplotlib"):
@@ -606,7 +639,8 @@ def main(argv=None):
                         "dependencies": dependencies,
                     },
                     "native": native_capabilities(),
-                    "workflows": ["rate", "drpmd", "fes", "network", "metadynamics", "opes", "pcet", "pimd", "diffusion", "site_rate", "surface_rate", "nonadiabatic", "spectroscopy", "plumed"],
+                    "workflows": list(stability_registry()["tasks"]),
+                    "stability": stability_registry(),
                     "materials": {
                         "cell": "fixed_or_isotropic_bzp",
                         "trajectory": "unwrapped_centroid",

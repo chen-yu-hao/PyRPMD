@@ -106,6 +106,8 @@ static Py_ssize_t product(Py_ssize_t a,Py_ssize_t b) {
     return a*b;
 }
 struct ReleaseGIL {PyThreadState* state;ReleaseGIL():state(PyEval_SaveThread()){}~ReleaseGIL(){PyEval_RestoreThread(state);}};
+
+#include "centroid_friction.h"
 // One OpenMP region per call only with several threads: an inactive
 // parallel region still costs a runtime call on every half kick.
 static void kick(double* p,const double* f,const Cayley& c) {
@@ -563,12 +565,25 @@ static PyObject* advance(PyObject*,PyObject* args) {
             if(!(total>0))throw std::invalid_argument("empty native fragment");
             fragments.push_back(std::move(frag));}
         if(constraint && !fragments.empty())throw std::invalid_argument("combined centroid constraints are unsupported");
+        std::unique_ptr<CentroidFriction> friction;
+        auto* friction_obj=PyDict_GetItemString(options,"centroid_friction");
+        if(friction_obj && friction_obj!=Py_None){
+            if(constraint || !fragments.empty() || !biases.empty() || outcome)
+                throw std::invalid_argument("centroid friction blocks require unbiased unconstrained dynamics");
+            if(!(c->dt>0.))throw std::invalid_argument("centroid friction requires a positive timestep");
+            friction=std::make_unique<CentroidFriction>(friction_obj,*c,steps);
+            for(Py_ssize_t i=0;i<nd;++i)if(fixed.mask[i/3]
+                    && (friction->decay[i]!=1. || friction->amplitude[i]!=0.))
+                throw std::invalid_argument("fixed coordinates cannot receive centroid friction");
+        }
         // Momentum refreshes are pre-drawn by Python.  Keep the descriptors
         // alive for the whole block, but never call Python from the hot loop.
         std::vector<long long> refresh_offsets;
         std::unique_ptr<Buffer> refresh_momenta;
         std::string refresh_projection="none";
         auto* refresh_obj=PyDict_GetItemString(options,"refresh");
+        if(friction && refresh_obj && refresh_obj!=Py_None)
+            throw std::invalid_argument("centroid friction does not combine momentum refreshes");
         if(refresh_obj && refresh_obj!=Py_None){
             if(!PyDict_Check(refresh_obj))throw std::invalid_argument("refresh must be a dictionary");
             PyRef os(PySequence_Fast(field(refresh_obj,"offsets"),"refresh offsets must be a sequence"));
@@ -636,6 +651,7 @@ static PyObject* advance(PyObject*,PyObject* args) {
         Vec alternate_q(S),alternate_p(S),work(c->workspace_size()),center(nd),pc(nd),free_q;
         if(constraint)free_q.resize(S);
         double *cq=q.doubles(),*cp=p.doubles(),*tq=alternate_q.data(),*tp=alternate_p.data();
+        Vec ou_momenta(friction ? S : 0);
         Vec refresh_backup_q,refresh_backup_p;
         if(!refresh_offsets.empty()){refresh_backup_q.resize(S);refresh_backup_p.resize(S);}
         Vec kinetic_mass(nd),spring_mass(nd);
@@ -702,10 +718,16 @@ static PyObject* advance(PyObject*,PyObject* args) {
                         const double eb=evaluate(cq);
                         if(check_energy && step==0)total_energy(cq,cp,eb);
                     }
+                    const double* input_p=cp;
+                    if(friction){
+                        std::copy(cp,cp+S,ou_momenta.begin());
+                        friction->apply(ou_momenta.data(),step,0);
+                        input_p=ou_momenta.data();
+                    }
                     if(fragments.empty()){
                         // Accepted fixed positions already hold, so the
                         // pre-propagation projection only resets momenta.
-                        kick(tp,cp,forces.data(),*c);fixed.project_momenta(tp,P);
+                        kick(tp,input_p,forces.data(),*c);fixed.project_momenta(tp,P);
                         c->propagate(cq,tq,tp,work.data());
                     } else {
                         // Fragment projection may move q at roundoff: keep the
@@ -723,6 +745,7 @@ static PyObject* advance(PyObject*,PyObject* args) {
                         if(!converged)throw std::runtime_error("centroid RATTLE constraint failed to converge");
                         for(Py_ssize_t b=0;b<P;++b)for(Py_ssize_t i=0;i<nd;++i)tp[b*nd+i]+=lambda/c->dt*old_normal->g[i];}
                     double eb=evaluate(tq);kick(tp,forces.data(),*c);project_state(tq,tp);
+                    if(friction){friction->apply(tp,step,1);fixed.project_momenta(tp,P);}
                     if(!fragments.empty())shared_point=nullptr;
                     if(constraint){centroid(tq,center.data(),P,nd);auto d=constraint->eval(center.data());double z=metric(d,*c);centroid(tp,pc.data(),P,nd);double v=0;for(Py_ssize_t i=0;i<nd;++i)v+=d.g[i]*pc[i]/c->mass[i/3];for(Py_ssize_t b=0;b<P;++b)for(Py_ssize_t i=0;i<nd;++i)tp[b*nd+i]-=v/z*d.g[i];}
                     // The endpoint PES call already validated q unless a

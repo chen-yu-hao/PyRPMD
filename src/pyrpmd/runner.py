@@ -15,6 +15,7 @@ from . import __version__
 from .input import JobSpec, InputError, fes_method, normalize_fes_task
 from .io import write_json, referenced_files, fingerprint, jsonable, _windows_drive_files
 from .system import System
+from .stability import classify_stability
 
 
 def _planned_propagation_steps(config):
@@ -162,11 +163,39 @@ def propagation_backend_plan(config, system, *, potential=None):
             add("umbrella", f"CV/bias plan unavailable: {exc}", backend="unknown")
     elif task == "diffusion" and config.get("electronic_friction") is not None:
         provider_kind = config.get("electronic_friction", {}).get("provider", "constant")
-        add("production", (
-            "constant electronic friction uses Python OU centroid orchestration"
-            if provider_kind == "constant" else
-            "electronic friction provider callbacks require the Python loop"
-        ))
+        if provider_kind != "constant":
+            add("production", "electronic friction provider callbacks require the Python loop")
+        elif dynamics is None or base_backend != "native":
+            add("production")
+        else:
+            # Constant scalar or diagonal centroid friction has a fused native
+            # block; ask the same eligibility check that execution uses.
+            friction = None
+            try:
+                from .electronic_friction import ElectronicFrictionDynamics, make_electronic_friction
+                from .friction_block import native_friction_plan
+                from .propagation import NativeUnavailableError
+                friction = make_electronic_friction(config, system)
+                driver = ElectronicFrictionDynamics(
+                    provider, system.masses, config["beta"], config["beads"], config["dt_au"], friction,
+                    native=config.get("native", options.get("native", True)),
+                    threads=config.get("parallel", {}).get("threads_per_rank", 1),
+                    fixed_atoms=getattr(system, "fixed_atoms", ()),
+                    fixed_positions=system.geometry if getattr(system, "fixed_atoms", ()) else None,
+                    **{key: options[key] for key in ("loop_backend", "block_steps", "integrator")
+                       if key in options},
+                )
+                try:
+                    native_friction_plan(driver)
+                    add("production")
+                except NativeUnavailableError as exc:
+                    add("production", str(exc))
+            except Exception as exc:
+                add("production", f"electronic-friction plan could not be inspected: {exc}",
+                    backend="unknown")
+            finally:
+                if callable(getattr(friction, "close", None)):
+                    friction.close()
     elif task != "diffusion":
         add("propagation")
 
@@ -552,6 +581,11 @@ def run_resolved(config, system, *, output=None, resume=False, init_from=None, i
     config["resume"] = bool(resume)
     from .parallel import root_call, is_root
 
+    maturity = classify_stability(config)
+    if is_root() and maturity["level"] == "research":
+        import warnings
+
+        warnings.warn(f"Research-level workflow: {maturity['scope']}", UserWarning, stacklevel=2)
     # Reject before initialization can migrate a legacy manifest bound by the ledger.
     if (resume and config["task"] == "rate"
             and (Path(target) / "results" / "extensions.json").is_file()):
@@ -641,6 +675,7 @@ def run_resolved(config, system, *, output=None, resume=False, init_from=None, i
             "output": target,
             "preset": config.get("preset", "pilot"),
             "input_warnings": config.get("_warnings", []),
+            "stability": classify_stability(config),
             "propagation_plan": backend_plan,
         }
         if config.get("warm_start"):
@@ -840,6 +875,7 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
             **result, "software": "PyRPMD", "version": __version__,
             "output": str(path), "preset": config.get("preset", "pilot"),
             "input_warnings": config.get("_warnings", []),
+            "stability": classify_stability(config),
         }
         root_call(write_json, path / "results" / "summary.json", result)
         return result
@@ -853,7 +889,7 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
         result = analyze_nonadiabatic(config, system, path)
         result.update(software="PyRPMD", version=__version__, output=str(path),
                       preset=config.get("preset", "pilot"),
-                      input_warnings=config.get("_warnings", []))
+                      input_warnings=config.get("_warnings", []), stability=classify_stability(config))
         write_json(path / "results" / "summary.json", result)
         return result
     if config["task"] not in ("fes", "metadynamics", "opes", "diffusion", "spectroscopy"):
@@ -898,6 +934,7 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
             **result, "software": "PyRPMD", "version": __version__,
             "output": str(path), "preset": config.get("preset", "pilot"),
             "input_warnings": config.get("_warnings", []),
+            "stability": classify_stability(config),
         }
         root_call(write_json, path / "results" / "summary.json", result)
         return result
@@ -936,14 +973,27 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
         "preset": config.get("preset", "pilot"),
         "analysis_settings": analysis,
         "input_warnings": config.get("_warnings", []),
+        "stability": classify_stability(config),
     }
     root_call(write_json, path / "results" / "summary.json", result)
     return result
 
 
 def prepare(job, *, numerical=False):
+    from .resources import resource_report
+
     spec = _spec(job)
     config, system = spec.resolve()
+    resources = resource_report(config)
+    result = _prepare(spec, numerical=numerical and resources["available"], _resolved=(config, system))
+    result.update(resources=resources, ready=bool(result.get("ready", True) and resources["available"]),
+                  stability=classify_stability(config))
+    return result
+
+
+def _prepare(job, *, numerical=False, _resolved=None):
+    spec = _spec(job)
+    config, system = spec.resolve() if _resolved is None else _resolved
     backend_plan = []
     if config["task"] == "nonadiabatic":
         from .workflows.nonadiabatic import prepare_nonadiabatic

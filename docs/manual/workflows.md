@@ -90,9 +90,9 @@ For an adaptive run, inspect `pmf.adaptive_umbrella.production_target_met` separ
 or physical convergence. See the [acceptance procedure](science.md#assessing-adaptive-umbrella-results).
 
 The mathematics is in the
-[rate conventions](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/science.md) *(Chinese)* and
-the [UI / MBAR notes](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/mbar-rate-pmf.md) *(Chinese)*.
-The [H₃/BKMP2 benchmark](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/h3/README.md) *(partly Chinese)*
+[rate conventions](science.md) and
+the [UI / MBAR notes](../rate-pmf-selection.md).
+The [H₃/BKMP2 benchmark](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/h3/README.md)
 runs the full workflow on a published reactive potential.
 
 ### Extending fixed-window rate production

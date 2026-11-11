@@ -66,17 +66,14 @@ A change to a public interface updates the documentation, the examples and tests
 numerical and state behavior in the same commit. Changes to sampling measures, forces, constraints,
 random streams or restart identity come with their scientific reasoning and regression tests.
 
-The [implementation and guide audit](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/implementation-guide-audit-2026-10-31.md)
-records the review scope, prioritized work, implemented fixes and remaining validation boundaries.
-
-The [2026-10-31 user-experience review](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/ux-review-2026-10-31.md)
-tracks the audit scope, prioritized to-do list, implemented fixes and remaining work.
+Historical implementation findings and their provenance are collected in the
+[development review archive](../development/review-history.md).
 
 ## Running the tests
 
 ```bash
 python -m pip install -e '.[test,ase]'
-python -m pytest -q
+python -m pytest -q -m "not campaign"
 git diff --check
 ```
 

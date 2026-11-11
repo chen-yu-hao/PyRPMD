@@ -69,7 +69,7 @@ markers = [
 
 
 [tool.setuptools.package-data]
-"pyrpmd" = ["templates/*.inp"]
+"pyrpmd" = ["templates/*.inp", "templates/*.py", "templates/*.xyz"]
 "pyrpmd.pesgen" = ["_native/*.cpp", "_native/*.f90", "_native/*.h"]
 "pyrpmd.potentials" = ["_licenses/*.txt"]
 
