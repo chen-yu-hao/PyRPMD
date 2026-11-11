@@ -159,8 +159,10 @@ Region/window records inherit common umbrella settings and can override their
 own force constant or sampling budget. `regions` and `windows` are alternative
 sources, not simultaneous layers. Different K values propagate into each
 window's dynamics, saved metadata and UI/MBAR reconstruction. Fixed independent
-windows support heterogeneous K; adaptive and replica-exchange combinations
-that still require a shared K are rejected explicitly.
+windows and AUS support heterogeneous K. With `adapt_stiffness=true`, AUS
+tunes each window independently before freezing production. Replica exchange
+still requires a shared K. Per-window sampling overrides remain unsupported
+in AUS and replica exchange.
 Replica exchange also retains its existing thermostat-clock interface: an
 explicit new Andersen schedule is rejected there, including `schedule="fixed"`.
 The operation-named Andersen examples in this guide target independent windows

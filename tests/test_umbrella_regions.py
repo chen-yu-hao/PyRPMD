@@ -148,7 +148,7 @@ def test_unit_converted_region_endpoints_detect_duplicate_boundary():
     assert windows[16].center[0] == pytest.approx(.8 * ANGSTROM_TO_AU)
 
 
-@pytest.mark.parametrize("backend", ["adaptive_umbrella", "replica_exchange"])
+@pytest.mark.parametrize("backend", ["replica_exchange"])
 def test_heterogeneous_backends_reject_before_any_output(backend, tmp_path):
     cfg = config()
     cfg[backend] = {"enabled": True}

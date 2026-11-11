@@ -10,6 +10,7 @@ from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 import copy
 from itertools import islice
 import os
+from pathlib import Path
 import warnings as _warnings
 
 import numpy as np
@@ -206,22 +207,53 @@ def _resolve_bootstrap_workers(requested, bootstrap):
 
 
 def _available_memory_bytes():
-    """Return an approximate amount of currently available system memory."""
-    try:
-        page_size = int(os.sysconf("SC_PAGE_SIZE"))
-        available_pages = int(os.sysconf("SC_AVPHYS_PAGES"))
-        if page_size > 0 and available_pages > 0:
-            return page_size * available_pages
-    except (AttributeError, OSError, TypeError, ValueError):
-        pass
+    """Use reclaimable host memory, bounded by finite cgroup headroom."""
+    available = None
     try:
         with open("/proc/meminfo", encoding="ascii") as handle:
             for line in handle:
                 if line.startswith("MemAvailable:"):
-                    return int(line.split()[1]) * 1024
+                    available = int(line.split()[1]) * 1024
+                    break
     except (OSError, ValueError, IndexError):
         pass
-    return None
+    if available is None:
+        try:
+            page_size = int(os.sysconf("SC_PAGE_SIZE"))
+            available_pages = int(os.sysconf("SC_AVPHYS_PAGES"))
+            if page_size > 0 and available_pages > 0:
+                available = page_size * available_pages
+        except (AttributeError, OSError, TypeError, ValueError):
+            pass
+    try:
+        memberships = Path("/proc/self/cgroup").read_text().splitlines()
+    except OSError:
+        memberships = []
+    for membership in memberships:
+        hierarchy, controllers, relative = membership.split(":", 2)
+        if hierarchy == "0":
+            root = Path("/sys/fs/cgroup")
+            limit_name, usage_name = "memory.max", "memory.current"
+        elif "memory" in controllers.split(","):
+            root = Path("/sys/fs/cgroup/memory")
+            limit_name, usage_name = "memory.limit_in_bytes", "memory.usage_in_bytes"
+        else:
+            continue
+        directory = root / relative.lstrip("/")
+        # A parent slice can impose a tighter limit than the process's group.
+        while directory == root or root in directory.parents:
+            try:
+                limit = int((directory / limit_name).read_text())
+                usage = int((directory / usage_name).read_text())
+                if limit < 2**60:  # v1's effectively unlimited sentinel
+                    headroom = max(0, limit - usage)
+                    available = headroom if available is None else min(available, headroom)
+            except (OSError, ValueError):  # missing controller or v2's "max"
+                pass
+            if directory == root:
+                break
+            directory = directory.parent
+    return available
 
 
 def _cap_bootstrap_workers(requested, bootstrap, u_nbytes, available_memory=None):
@@ -366,6 +398,7 @@ def mbar_rate_pmf(
     bootstrap_workers_source="default",
     bootstrap_total_cores=None,
     bootstrap_executor=None,
+    require_block_support=False,
     min_weight_ess=DEFAULT_MIN_WEIGHT_ESS,
     min_endpoint_ess=DEFAULT_MIN_ENDPOINT_ESS,
     max_center_displacement_sigma=DEFAULT_MAX_CENTER_DISPLACEMENT_SIGMA,
@@ -404,6 +437,9 @@ def mbar_rate_pmf(
 
     compare_ui adds a cheap Gaussian-UI calculation on the *same* bootstrap
     draws, exposing paired estimator differences without a second MBAR solve.
+    ``require_block_support`` defers draws on short correlated streams. The
+    point estimate is unchanged, but uncertainty remains unavailable; auto
+    uses this to allocate more dynamics before attempting a reliable error.
     ``bootstrap_workers`` bounds a thread pool used for the independent MBAR
     draws. The analysis API treats ``None`` (the default) and ``1`` as serial;
     the workflow resolves an omitted input setting from
@@ -478,7 +514,7 @@ def mbar_rate_pmf(
         raise ValueError("bootstrap must be zero or >=2")
     workers_requested = _resolve_bootstrap_workers(bootstrap_workers, bootstrap)
     if bootstrap_total_cores is None:
-        total_cores = max(1, os.cpu_count() or 1)
+        total_cores = workers_requested
     elif (
         isinstance(bootstrap_total_cores, (bool, np.bool_))
         or not isinstance(bootstrap_total_cores, (int, np.integer))
@@ -575,6 +611,10 @@ def mbar_rate_pmf(
     if bootstrap_executor is None:
         affinity_cores = len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else os.cpu_count() or 1
         bootstrap_workers = min(bootstrap_workers, total_cores, affinity_cores)
+    # An explicit resource budget also parallelizes the full-data fit. Keep
+    # the analysis API's implicit serial fit and explicitly requested threads.
+    options.setdefault("threads", total_cores if bootstrap_total_cores is not None else 1)
+    options["threads"] = min(options["threads"], total_cores)
     fit = _solve_mbar(u, fit_counts, overlap_threshold=overlap_threshold,
                      return_state_weights=False, **options)
     connected = len(np.unique(fit.components)) == 1
@@ -683,6 +723,7 @@ def mbar_rate_pmf(
     gs = np.asarray([cv_statistical_inefficiency(a) for a in arrays])
     block_plan = _bootstrap_block_plan(counts, gs)
     block_plan["observables"] = CV_CORRELATION_OBSERVABLES
+    defer_bootstrap = require_block_support and block_plan["status"] != "finite_block_estimate"
     blocks = block_plan["block_lengths"]
     warnings.extend(block_plan["warnings"])
     moments = []
@@ -755,7 +796,7 @@ def mbar_rate_pmf(
     draws, endpoints, curves, records, failures = [], [], [], [], []
     ui_draws, paired_mbar, differences, ui_failures = [], [], [], []
     rng = np.random.default_rng(seed)
-    if ready:
+    if ready and not defer_bootstrap:
         base_indices = [np.arange(n) for n in counts]
         context = {
             "u": u,
@@ -996,7 +1037,8 @@ def mbar_rate_pmf(
             "failures": failures,
             "failure_counts": failure_counts,
             "draws": records,
-            "skipped_reason": reason if not ready else None,
+            "skipped_reason": (reason if not ready else
+                               "insufficient_correlated_blocks" if defer_bootstrap else None),
             "endpoint_values_hartree": np.asarray(endpoints).reshape(-1, 2),
             "endpoint_covariance_hartree_squared": (
                 np.cov(np.asarray(endpoints).T, ddof=1) if len(endpoints) >= 2 else None

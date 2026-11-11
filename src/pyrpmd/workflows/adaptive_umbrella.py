@@ -3,8 +3,9 @@
 The algorithm refines the supplied 1D/2D/3D domain; it does not discover arbitrary
 unspecified basins. Missing overlap is repaired by midpoint insertion along
 the shortest gaps between overlap components. Pilot length grows only when
-effective sample size is insufficient, subject to an explicit cap. Stiffness is kept
-fixed. Every decision, seed and diagnostic is persisted before the next stage.
+effective sample size is insufficient, subject to an explicit cap. Optional
+pilot-only stiffness tuning balances centering and overlap in each window;
+production uses the frozen window-specific springs. Every decision is persisted.
 An optional, explicitly bounded coverage grid also inserts windows into cells
 with insufficient local reweighting ESS: graph connectivity alone cannot
 guarantee coverage of a two-dimensional free-energy surface.
@@ -42,7 +43,7 @@ LEGACY_OVERLAP_METRIC = "mbar_symmetric_transition"
 NORMALIZED_OVERLAP_METRIC = "normalized_mbar_cosine"
 
 
-ADAPTIVE_FIELDS = {"enabled", "pilot_steps", "pilot_equilibration_steps", "max_rounds",
+ADAPTIVE_FIELDS = {"enabled", "adapt_stiffness", "pilot_steps", "pilot_equilibration_steps", "max_rounds",
                    "max_windows", "max_pilot_steps", "target_overlap", "min_effective_samples", "min_spacing",
                    "coverage_bins", "coverage_ranges", "min_bin_effective_samples", "target_coverage",
                    "continuation"}
@@ -58,10 +59,13 @@ def adaptive_options(config):
     enabled = table.get("enabled", bool(table))
     if not isinstance(enabled, bool):
         raise ValueError("adaptive_umbrella.enabled must be boolean")
+    adapt_stiffness = table.get("adapt_stiffness", False)
+    if not isinstance(adapt_stiffness, bool):
+        raise ValueError("adaptive_umbrella.adapt_stiffness must be boolean")
     continuation = table.get("continuation", False)
     if not isinstance(continuation, bool):
         raise ValueError("adaptive_umbrella.continuation must be boolean")
-    options = {"enabled": enabled}
+    options = {"enabled": enabled, "adapt_stiffness": adapt_stiffness}
     if continuation:
         options["continuation"] = True
     for key, default, minimum in (
@@ -143,10 +147,33 @@ def validate_adaptive_umbrella(config, system):
     _resolve_coverage_options(options, cv)
     if len(centers) > options["max_windows"]:
         raise ValueError("initial umbrella count exceeds adaptive_umbrella.max_windows")
+    matrices = _window_matrices(stiffness, len(centers), cv.dimension)
     for i, c in enumerate(centers):
         delta = displacement(centers[:i], c, cv.periods)
-        if len(delta) and np.any(np.einsum("ni,ij,nj->n", delta, stiffness, delta) * config["beta"] < options["min_spacing"]**2):
+        if len(delta) and np.any(np.einsum("ni,nij,nj->n", delta, (matrices[:i] + matrices[i]) / 2, delta) * config["beta"] < options["min_spacing"]**2):
             raise ValueError("adaptive umbrella initial centers are duplicate or closer than min_spacing")
+
+
+def _window_matrices(stiffness, count, dimension):
+    return np.broadcast_to(np.asarray(stiffness, float), (count, dimension, dimension)).copy()
+
+
+def interpolate_stiffness(centers, matrices, targets, periods):
+    """Positive matrix interpolation for newly inserted windows, in CV units."""
+    centers, targets = np.asarray(centers, float), np.asarray(targets, float)
+    matrices = _window_matrices(matrices, len(centers), centers.shape[1])
+    metric = matrices.mean(axis=0)
+    result = []
+    for target in targets:
+        delta = displacement(centers, target, periods)
+        distance = np.einsum("ni,ij,nj->n", delta, metric, delta)
+        nearest = np.argsort(distance)[:2]
+        if distance[nearest[0]] < 1e-24 or len(nearest) == 1:
+            result.append(matrices[nearest[0]])
+        else:
+            weight = 1 / np.sqrt(distance[nearest])
+            result.append(np.average(matrices[nearest], axis=0, weights=weight))
+    return np.asarray(result)
 
 
 def _seed(config, phase, round_index=0):
@@ -281,6 +308,8 @@ def diagnose_and_refine(streams, centers, stiffness, beta, periods, options, *,
     streams = list(streams)
     centers = np.asarray(centers, float)
     count = len(centers)
+    matrices = _window_matrices(stiffness, count, centers.shape[1])
+    metric = matrices.mean(axis=0)
     groups = [[s for s in streams if s["window"] == i] for i in range(count)]
     if any(not group for group in groups):
         raise ValueError("pilot results must contain every umbrella window")
@@ -289,7 +318,7 @@ def diagnose_and_refine(streams, centers, stiffness, beta, periods, options, *,
     ess = [sum(len(s["samples"]) / g for s, g in zip(group, factors))
            for group, factors in zip(groups, stream_g)]
     joined = np.concatenate(samples)
-    reduced = umbrella_problem(joined, centers, np.broadcast_to(stiffness, (count,) + np.shape(stiffness)), beta, periods)
+    reduced = umbrella_problem(joined, centers, matrices, beta, periods)
     mbar = solve_mbar(reduced, [len(x) for x in samples], return_state_weights=False)
     if not mbar.converged:
         raise RuntimeError(f"adaptive pilot MBAR failed its equation residual: {mbar.residual:g}")
@@ -303,7 +332,7 @@ def diagnose_and_refine(streams, centers, stiffness, beta, periods, options, *,
     def separation(pair):
         i, j = pair
         delta = displacement(centers[j], centers[i], periods)
-        return float(beta * delta @ stiffness @ delta)
+        return float(beta * delta @ ((matrices[i] + matrices[j]) / 2) @ delta)
     for i, j in sorted(pairs, key=lambda pair: (separation(pair), pair)):
         if union(i, j):
             missing.append((i, j))
@@ -313,7 +342,7 @@ def diagnose_and_refine(streams, centers, stiffness, beta, periods, options, *,
     for i, j in missing:
         midpoint = centers[i] + 0.5 * displacement(centers[j], centers[i], periods)
         delta = displacement(np.asarray(proposed), midpoint, periods)
-        distances = np.sqrt(np.maximum(0, beta * np.einsum("ni,ij,nj->n", delta, stiffness, delta)))
+        distances = np.sqrt(np.maximum(0, beta * np.einsum("ni,ij,nj->n", delta, metric, delta)))
         reason = None
         if len(proposed) >= options["max_windows"]:
             reason = "max_windows"
@@ -341,7 +370,7 @@ def diagnose_and_refine(streams, centers, stiffness, beta, periods, options, *,
             for index in candidates:
                 center = np.array([(edge[i] + edge[i + 1]) / 2 for edge, i in zip(edges, index)])
                 delta = displacement(np.asarray(proposed), center, periods)
-                distances = np.sqrt(np.maximum(0, beta * np.einsum("ni,ij,nj->n", delta, stiffness, delta)))
+                distances = np.sqrt(np.maximum(0, beta * np.einsum("ni,ij,nj->n", delta, metric, delta)))
                 if distances.min() <= options["min_spacing"]:
                     reason = "min_spacing"
                 elif len(proposed) >= options["max_windows"]:
@@ -413,6 +442,14 @@ def extend_adaptive_budget(output, limits):
     plan["options"] = options
     last = plan["rounds"][-1]
     plan["centers"] = last["next_centers"]
+    if "stiffness_update" in last:
+        update = last["stiffness_update"]
+        plan["stiffness"] = update["next_stiffness"]
+        if plan.get("schema_version", 1) >= 4:
+            plan["initial_stiffness"] = update["next_initial_stiffness"]
+        for key in ("stiffness_scale", "stiffness_floor_scale"):
+            if key in update:
+                plan[key] = update[key]
     if plan.get("schema_version", 1) >= 2:
         plan["next_pilot_steps"] = _next_pilot_steps(last["pilot"]["production_steps"], last, options)
     plan["status"] = "adapting"
@@ -429,7 +466,7 @@ def _open_plan(config, system, output, centers, stiffness, options, create=True)
             raise ValueError("adaptive umbrella plan checksum mismatch")
         if not fingerprint_matches(plan.get("fingerprint"), config, system, {"adaptive_umbrella_schema": 1}):
             raise ValueError("adaptive umbrella plan physics differs; choose a fresh output directory")
-        if plan.get("schema_version", 1) not in (1, 2, 3):
+        if plan.get("schema_version", 1) not in (1, 2, 3, 4):
             raise ValueError("unsupported adaptive umbrella plan schema version")
         _plan_overlap_metric(plan)
         return plan
@@ -440,6 +477,10 @@ def _open_plan(config, system, output, centers, stiffness, options, create=True)
             "centers": centers.tolist(), "stiffness": stiffness.tolist(), "options": options,
             "next_pilot_steps": options["pilot_steps"],
             "rounds": [], "production_seed": _seed(config, 2), "pilot_samples_used_in_production": 0}
+    if options.get("adapt_stiffness") or np.asarray(stiffness).ndim == 3:
+        plan.update(schema_version=4, stiffness_policy="per_window_moments",
+                    stiffness=_window_matrices(stiffness, len(centers), centers.shape[1]).tolist())
+        plan["initial_stiffness"] = copy.deepcopy(plan["stiffness"])
     _save_plan(output, plan)
     return plan
 
@@ -457,10 +498,133 @@ def _next_pilot_steps(current, report, options):
     return min(options["max_pilot_steps"], 2 * current)
 
 
+def _stiffness_decision(streams, centers, stiffness, beta, periods, report, plan):
+    """Tune one spring from discarded pilots, using dimensionless distances.
+
+    A factor of two bounds each update, and the total scale stays within
+    [1/16, 16] of the initial spring. Once a spring fails centering, the next
+    stronger spring is a permanent floor: subsequent softening cannot cycle
+    back to that failed value. Window insertion still repairs remaining gaps.
+    """
+    centers, stiffness = np.asarray(centers), np.asarray(stiffness)
+    scale = plan.get("stiffness_scale", 1.)
+    floor = plan.get("stiffness_floor_scale", 1 / 16)
+    shifts, widths = [], []
+    for i, center in enumerate(centers):
+        neighbors = displacement(np.delete(centers, i, axis=0), center, periods)
+        if not len(neighbors):
+            continue
+        spacing = np.sqrt(np.min(beta * np.einsum("ni,ij,nj->n", neighbors, stiffness, neighbors)))
+        samples = np.concatenate([s["samples"] for s in streams if s["window"] == i])
+        delta = displacement(samples, center, periods)
+        mean = delta.mean(axis=0)
+        shifts.append(float(np.sqrt(beta * mean @ stiffness @ mean) / spacing))
+        centered = delta - mean
+        widths.append(float(np.sqrt(np.mean(beta * np.einsum(
+            "ni,ij,nj->n", centered, stiffness, centered))) / spacing))
+    enough = report["effective_samples_target_met"]
+    centered = not shifts or max(shifts) <= .5
+    next_scale, reason = scale, "centering_and_width_acceptable"
+    if not enough:
+        reason = "insufficient_pilot_effective_samples"
+    elif not centered:
+        next_scale = min(16., 2 * scale)
+        floor = max(floor, next_scale)
+        reason = "increase_for_center_displacement" if next_scale > scale else "stiffness_limit"
+    elif (widths and not report["overlap_connected_at_target"]
+          and max(widths) < .3 and max(shifts) < .25):
+        next_scale = max(floor, .5 * scale)
+        reason = "soften_narrow_disconnected_windows" if next_scale < scale else "centering_floor"
+    factor = next_scale / scale
+    return {"changed": factor != 1., "factor": factor, "reason": reason,
+            "centering_target_met": centered,
+            "displacement_per_spacing": shifts, "width_per_spacing": widths,
+            "next_stiffness": (stiffness * factor).tolist(),
+            "stiffness_scale": next_scale, "stiffness_floor_scale": floor}
+
+
+def _window_stiffness_decision(streams, centers, stiffness, beta, periods, report, plan):
+    """Infer local curvature from biased moments, and tune each spring alone.
+
+    In one dimension, F''(mean) = 1/(beta*variance) - K. Targeting a width
+    comparable to the neighboring spacing compensates a negative barrier
+    curvature while allowing softer springs in flat regions. The mean shift
+    supplies a separate lower bound on K in steep regions. Updates require
+    effective pilot samples, are damped/bounded, and never change production.
+    """
+    centers = np.asarray(centers, float)
+    count, dimension = centers.shape
+    matrices = _window_matrices(stiffness, count, dimension)
+    initial = _window_matrices(plan["initial_stiffness"], count, dimension)
+    updated = matrices.copy()
+    records = []
+    for i, (center, matrix) in enumerate(zip(centers, matrices)):
+        neighbors = displacement(np.delete(centers, i, axis=0), center, periods)
+        spacing = (float(np.sqrt(np.min(np.einsum("ni,ij,nj->n", neighbors, matrix, neighbors))))
+                   if len(neighbors) else float(np.sqrt(1 / beta)))
+        values = np.concatenate([s["samples"] for s in streams if s["window"] == i])
+        delta = displacement(values, center, periods)
+        mean = delta.mean(axis=0)
+        covariance = np.atleast_2d(np.cov(delta, rowvar=False, ddof=0))
+        shift = float(np.sqrt(mean @ matrix @ mean) / spacing)
+        width = float(np.sqrt(np.trace(matrix @ covariance)) / spacing)
+        ess = report["effective_samples_per_window"][i]
+        enough = ess >= plan["options"]["min_effective_samples"]
+        centered = shift <= max(.5, 2 * width / np.sqrt(max(1., ess)))
+        factor, curvature, reason = 1., None, "width_and_center_acceptable"
+        if dimension == 1 and covariance[0, 0] > 0:
+            curvature = float(1 / (beta * covariance[0, 0]) - matrix[0, 0])
+        if not plan["options"].get("adapt_stiffness"):
+            centered, reason = True, "fixed_window_spring"
+        elif not enough:
+            reason = "insufficient_pilot_effective_samples"
+        elif not centered:
+            factor, reason = min(2., max(1.25, shift / .35)), "increase_for_center_displacement"
+        elif width > 1.5:
+            factor, reason = min(2., (width / .8)**2), "stabilize_broad_window"
+        elif width < .35:
+            if curvature is not None:
+                distance = spacing / np.sqrt(matrix[0, 0])
+                desired = 1 / (beta * (.6 * distance)**2) - curvature
+                # Do not soften below the restraint needed on a steep slope.
+                desired = max(desired, matrix[0, 0] * shift / .4)
+                factor = float(np.clip(desired / matrix[0, 0], .5, 1.))
+            else:
+                factor = .5
+            reason = "soften_local_curvature" if factor < .8 else "slope_limits_softening"
+            if factor >= .8:
+                factor = 1.
+        scale = float(np.trace(matrix) / np.trace(initial[i]))
+        factor = float(np.clip(scale * factor, 1 / 64, 256) / scale)
+        updated[i] = matrix * factor
+        records.append({"window": i, "factor": factor, "reason": reason,
+                        "centering_target_met": centered,
+                        "displacement_per_spacing": shift, "width_per_spacing": width,
+                        "effective_samples": float(ess), "local_curvature": curvature,
+                        "stiffness_before": matrix.tolist(), "stiffness_after": updated[i].tolist()})
+    targets = report["next_centers"]
+    return {"policy": "per_window_moments", "windows": records,
+            "changed": any(r["factor"] != 1 for r in records),
+            "centering_target_met": all(r["centering_target_met"] for r in records),
+            "next_stiffness": interpolate_stiffness(centers, updated, targets, periods).tolist(),
+            "next_initial_stiffness": interpolate_stiffness(centers, initial, targets, periods).tolist()}
+
+
 def _record_round(plan, streams, config, system, output, cv, options, pilot):
+    streams = list(streams)
     report = diagnose_and_refine(streams, np.asarray(plan["centers"]), np.asarray(plan["stiffness"]),
                                 config["beta"], cv.periods, options,
                                 overlap_metric=_plan_overlap_metric(plan))
+    stiffness_changed = False
+    if options.get("adapt_stiffness", False) or plan.get("schema_version", 1) >= 4:
+        tune = (_window_stiffness_decision if plan.get("schema_version", 1) >= 4
+                else _stiffness_decision)
+        update = tune(streams, plan["centers"], plan["stiffness"],
+                                     config["beta"], cv.periods, report, plan)
+        report["stiffness_update"] = update
+        report["stiffness"] = copy.deepcopy(plan["stiffness"])
+        stiffness_changed = update["changed"]
+        report["target_met"] &= update["centering_target_met"] and not stiffness_changed
     round_index = plan["next_round"]
     decision = {"round": round_index, "seed": _seed(config, 1, round_index),
                 "centers": plan["centers"], "pilot": pilot, **report}
@@ -475,18 +639,30 @@ def _record_round(plan, streams, config, system, output, cv, options, pilot):
         plan["status"] = "incomplete"
         targets = "overlap/effective-sample" + ("/coverage" if "coverage" in report else "")
         plan["failure_reason"] = "max_rounds before " + targets + " targets"
-    elif not report["overlap_connected_at_target"] and not report["inserted"]:
+    elif ("stiffness_update" in report
+          and report["stiffness_update"].get("reason") == "stiffness_limit"):
+        plan["status"] = "incomplete"
+        plan["failure_reason"] = "stiffness_limit before centering target"
+    elif not report["overlap_connected_at_target"] and not report["inserted"] and not stiffness_changed:
         plan["status"] = "incomplete"
         plan["failure_reason"] = "no admissible midpoint: max_windows or min_spacing"
     elif (plan.get("schema_version", 1) >= 2
           and (not report["effective_samples_target_met"]
                or not report.get("coverage", {}).get("target_met", True))
-          and pilot["production_steps"] >= options["max_pilot_steps"] and not report["inserted"]):
+          and pilot["production_steps"] >= options["max_pilot_steps"]
+          and not report["inserted"] and not stiffness_changed):
         plan["status"] = "incomplete"
         target = ("effective-sample" if not report["effective_samples_target_met"] else "coverage")
         plan["failure_reason"] = "max_pilot_steps before " + target + " target"
     else:
         plan["centers"] = report["next_centers"]
+        if "stiffness_update" in report:
+            plan["stiffness"] = update["next_stiffness"]
+            if plan.get("schema_version", 1) >= 4:
+                plan["initial_stiffness"] = update["next_initial_stiffness"]
+            for key in ("stiffness_scale", "stiffness_floor_scale"):
+                if key in update:
+                    plan[key] = update[key]
     _save_plan(output, plan)
     write_json(Path(output) / "adaptation" / f"round_{round_index:03d}" / "diagnostics.json", decision)
     return plan
@@ -581,6 +757,8 @@ def _annotate(result, plan, output, production_steps=None, *, periods=None):
         "target_scope": "discarded_adaptation_pilots", "pilot_target_met": True,
         "overlap_metric": production["overlap_metric"],
         "frozen_windows": len(plan["centers"]), "pilot_samples_used_in_production": 0,
+        "stiffness_policy": plan.get("stiffness_policy", "shared"),
+        "frozen_stiffness": plan.get("stiffness"),
         "production_seed": plan["production_seed"], "plan": str(_plan_path(output)),
         "production_target_met": production["target_met"],
         "production_overlap_connected_at_target": production["overlap_connected_at_target"],
@@ -740,8 +918,9 @@ def sample_adaptive_umbrellas(config, system, output, executor=None):
         stage = _stage_config(config, plan["centers"], plan["stiffness"], _seed(config, 1, index), pilot=pilot)
         pilot_output = Path(output) / "adaptation" / f"round_{index:03d}"
         replicas = checked_integer(config.get("sampling", {}).get("replicas", 1), "sampling.replicas")
+        matrices = _window_matrices(plan["stiffness"], len(plan["centers"]), cv.dimension)
         tasks = [{"config": stage, "system": system, "specs": specs, "window": i,
-                  "replica": r, "center": center, "stiffness": plan["stiffness"], "output": str(pilot_output)}
+                  "replica": r, "center": center, "stiffness": matrices[i], "output": str(pilot_output)}
                  for i, center in enumerate(plan["centers"]) for r in range(replicas)]
         if options.get("continuation", False):
             streams = _continuation_pilot(tasks, cv, stage, system, pilot_output, executor)

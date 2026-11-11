@@ -18,6 +18,20 @@ from scipy.sparse.csgraph import connected_components
 from scipy.special import logsumexp
 
 
+def _finite_logsumexp(values, axis=None):
+    """Stable real reduction for the solver's checked finite arrays.
+
+    MBAR needs neither signed weights nor complex/array-API dispatch. Avoid
+    the extra exponentiation and full-size maximum masks in that general
+    path. Exceptional optimizer iterates retain SciPy's nonfinite semantics.
+    """
+    maximum = np.max(values, axis=axis, keepdims=True)
+    if not np.isfinite(maximum).all():
+        return logsumexp(values, axis=axis)
+    total = np.exp(values - maximum).sum(axis=axis, keepdims=True)
+    return np.squeeze(maximum + np.log(total), axis=axis)
+
+
 @dataclass
 class MBARResult:
     free_energies: np.ndarray
@@ -203,7 +217,8 @@ def solve_mbar(
         result = solve(u, counts, np.ascontiguousarray(target), initial, tolerance=tolerance,
                        max_iterations=max_iterations, overlap_threshold=overlap_threshold,
                        combine_identical_states=combine_identical_states,
-                       return_state_weights=return_state_weights, backend=backend, threads=int(threads))
+                       return_state_weights=return_state_weights, backend=backend, threads=int(threads),
+                       warm_start=initial_free_energies is not None)
         result.diagnostics["warm_start"] = initial_free_energies is not None
         return result
     u = np.asarray(u)
@@ -221,15 +236,19 @@ def solve_mbar(
     u = u - common[None]
     target = target - common
     k = len(counts)
+    reduce_log = logsumexp if method == "legacy" else _finite_logsumexp
 
     def equations(z):
-        logd = logsumexp(logn[:, None] + z[:, None] - u, axis=0)
-        new = -logsumexp(-u - logd[None], axis=1)
+        logd = reduce_log(logn[:, None] + z[:, None] - u, axis=0)
+        new = -reduce_log(-u - logd[None], axis=1)
         new -= new[0]
         return new, logd, float(np.max(np.abs(new - z)))
 
-    # Retained dense L-BFGS/fixed-point reference (method="legacy").
-    for _ in range(min(200, max_iterations)):
+    # A short initialization is followed by Newton; long fixed-point mixing
+    # across narrow umbrellas was the principal cost in the previous solver.
+    warm_default = 200 if method == "legacy" else (8 if initial_free_energies is None else 2)
+    warm_steps = min(warm_default, max_iterations)
+    for _ in range(warm_steps):
         new, _, residual = equations(f)
         if residual < tolerance:
             break
@@ -239,7 +258,7 @@ def solve_mbar(
 
         def objective(x):
             z = np.concatenate(([0.0], x))
-            logd = logsumexp(logn[:, None] + z[:, None] - u, axis=0)
+            logd = reduce_log(logn[:, None] + z[:, None] - u, axis=0)
             memberships = np.exp(logn[:, None] + z[:, None] - u - logd)
             value = float(logd.sum() - counts @ z)
             grad = memberships.sum(axis=1) - counts
@@ -269,7 +288,7 @@ def solve_mbar(
     _, logd, residual = equations(f)
     unique_weights = np.exp(f[:, None] - u - logd[None]).T
     logw = -target - logd
-    logw = logw - logsumexp(logw)
+    logw = logw - reduce_log(logw)
     weights = np.exp(logw)
     gram = unique_weights.T @ unique_weights
     overlap = gram[state_map[:, None], state_map[None, :]] * original_counts[None, :]

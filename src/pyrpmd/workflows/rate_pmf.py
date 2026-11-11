@@ -329,9 +329,10 @@ def _ui_rate_pmf(sampled, config, centers, samples, stiffness, options):
     connected = bool(sampled["data"]["connected"])
     gs = np.asarray(sampled["data"]["statistical_inefficiency"])
     block_plan = _bootstrap_block_plan(np.asarray([len(s) for s in samples]), gs)
+    defer_bootstrap = bool(config.get("rate", {}).get("auto")) and block_plan["status"] != "finite_block_estimate"
     rng = np.random.default_rng(np.random.SeedSequence([options["analysis_seed"], 401]))
     barriers, curves, records, endpoints, failures = [], [], [], [], []
-    if connected:
+    if connected and not defer_bootstrap:
         for draw in range(options["bootstrap"]):
             record = {"draw": draw, "valid": False, "reason": None}
             draws = [
@@ -476,7 +477,8 @@ def _ui_rate_pmf(sampled, config, centers, samples, stiffness, options):
             "failure_counts": {"ui_fit_failed": len(failures)} if failures else {},
             "draws": records,
             "surface_held_fixed": True,
-            "skipped_reason": None if connected else "disconnected_overlap",
+            "skipped_reason": ("disconnected_overlap" if not connected else
+                               "insufficient_correlated_blocks" if defer_bootstrap else None),
             "block_lengths": block_plan["block_lengths"],
             "block_plan": block_plan,
             "endpoint_values_hartree": np.asarray(endpoints).reshape(-1, 2),
@@ -636,6 +638,7 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options, executor=Non
                 # This function runs on root only. A collective MPI executor
                 # requires every rank to enter map(), unlike local pools.
                 bootstrap_executor=(executor if config.get("parallel", {}).get("backend") != "mpi" else None),
+                require_block_support=bool(config.get("rate", {}).get("auto")),
                 min_weight_ess=pmf_options.get("min_weight_ess"),
                 min_endpoint_ess=pmf_options.get("min_endpoint_ess"),
                 max_center_displacement_sigma=pmf_options.get("max_center_displacement_sigma"),
