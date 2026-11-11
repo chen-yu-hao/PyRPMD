@@ -82,7 +82,9 @@ def init_project(directory, task="fes"):
         "input": str(input_path),
         "output": str(output),
         "task": task,
-        "purpose": "Short workflow tutorial; not a converged scientific calculation",
+        "purpose": ("Harmonic free-energy tutorial with an exact reference, F(x) = k x^2 / 2"
+                    if task == "fes" else
+                    "Short workflow tutorial; not a converged scientific calculation"),
         "next_steps_shell": "powershell" if os.name == "nt" else "posix",
         "next_steps": [_command_text(step, windows=os.name == "nt") for step in steps],
         "next_step_arguments": steps,

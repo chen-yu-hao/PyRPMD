@@ -37,7 +37,7 @@ measurements from the tutorial batch above. Unmeasured entries are `pending`.
 
 | Input/program | Content | Time | Chapter |
 | --- | --- | --- | --- |
-| `examples/manual/quickstart.inp` | 1D harmonic FES with three umbrella windows and 6 streams | ~2 s | [Quickstart](quickstart.md) |
+| `examples/manual/quickstart.inp` | 1D harmonic FES with five umbrella windows and 10 streams, checked against the exact $\tfrac12 kx^2$ | ~4 s | [Quickstart](quickstart.md) |
 | `examples/manual/low_level.py` | 100-step program with `Dynamics` / `State` | <1 s | [API](api.md) |
 | `examples/fes/harmonic2d.inp` | Two centroid CVs, 2D MBAR and masks | ~6 s | [Gas phase and free energy](workflows.md) |
 | `examples/fes/replica_exchange_2d.inp` | PILE-L, replica-exchange umbrellas and synchronized bootstrap | ~8 s | [Replica exchange](../replica-exchange.md) |

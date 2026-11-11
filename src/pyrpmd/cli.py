@@ -8,6 +8,7 @@ import sys
 import numpy as np
 from . import __version__
 from .input import JobSpec, InputError
+from .input_schema import TASKS
 from .io import jsonable, write_json
 
 
@@ -254,6 +255,28 @@ def _job(args):
     if args.command in ("run", "validate"):
         options["output"] = args.output
     return s.with_overrides(**options)
+
+
+# Importable module name -> the PyRPMD extra that provides it.
+_OPTIONAL_MODULES = {
+    "torch": "gpu", "ase": "ase", "mpi4py": "mpi", "openmm": "openmm", "lammps": "lammps",
+    "matplotlib": "plots", "pymbar": "analysis", "pyscf": "pyscf", "tblite": "tblite",
+    "mace": "mace", "nequip": "nequip", "deepmd": "deepmd", "fairchem": "fairchem",
+}
+
+
+def _missing_dependency_hint(error):
+    """Turn "No module named 'torch'" into the install command for its extra."""
+    import re
+
+    match = re.search(r"No module named '([A-Za-z0-9_]+)", str(error))
+    extra = _OPTIONAL_MODULES.get(match.group(1)) if match else None
+    if extra is None:
+        return None
+    return (f"The optional dependency {match.group(1)!r} is not installed. From the source "
+            f"checkout run: python -m pip install -e '.[{extra}]' (extra 'pyrpmd[{extra}]'). "
+            "See the Installation chapter for MPI, CUDA and other builds that must match "
+            "your system.")
 
 
 def _print(value):
@@ -654,13 +677,16 @@ def main(argv=None):
                     "enhanced_sampling": ["adaptive_umbrella", "replica_exchange_umbrella", "standard_metadynamics", "well_tempered_metadynamics", "shared_walker_metadynamics", "opes", "opes_explore", "adaptive_opes_bandwidth"],
                     "sampling_python_apis": ["plumed_centroid_bias", "transition_interface_sampling", "temperature_hamiltonian_replica_exchange", "positive_ensemble_retis", "audited_biased_kinetics"],
                     "path_integral_actions": ["suzuki_chin", "bosonic", "pigs"],
-                    "spectroscopy_methods": ["pa-cmd", "rpmd", "trpmd", "f-cmd_quadratic_centroid_pmf"],
+                    "spectroscopy_methods": ["pa-cmd", "rpmd", "trpmd", "f-cmd_quadratic_centroid_pmf", "f-qcmd_experimental_bent_triatomic"],
                     "nonadiabatic_python_apis": ["adiabatic_rpsh", "quasi_diabatic_nrpmd", "two_state_mash"],
                     "ml_lifecycle": ["committee", "active_learning_candidates", "delta_rpc"],
                     "unimplemented_methods": ["qcmd", "h-cmd"],
                     "scientific_tools": ["general_centroid_site_rates", "temperature_isotope_studies", "ring_polymer_instanton", "takahashi_imada_thermodynamics", "open_path_momentum"],
                     "initial_ensembles": ["thermal_parent", "ne_rpmd", "qct"],
+                    # 1 is assumed when an input omits schema_version; 2 is the
+                    # staged rate layout described in docs/rate-input-v2.md.
                     "input_schema_version": 1,
+                    "supported_input_schema_versions": [1, 2],
                     "run_manifest_schema_version": 2,
                     "checkpoint_schema_version": 2,
                     "input_formats": ["TOML .inp", "Python build()"],
@@ -694,6 +720,9 @@ def main(argv=None):
 
         if is_root():
             print(f"PyRPMD error: {exc}", file=sys.stderr)
+            hint = _missing_dependency_hint(exc)
+            if hint:
+                print(hint, file=sys.stderr)
             print("Use --debug for a traceback; use 'pyrpmd info' for environment details.", file=sys.stderr)
         return 2
 

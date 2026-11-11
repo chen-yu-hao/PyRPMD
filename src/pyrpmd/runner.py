@@ -844,10 +844,19 @@ def extend_run(directory, *, max_time=None, production_steps=None):
 def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffusion=None):
     """Read results or reanalyze saved FES/transport data without new trajectories."""
     path = Path(directory).resolve()
+    if not path.is_dir():
+        raise InputError(
+            f"No run directory at {path}; pass the --output directory of a finished 'pyrpmd run'"
+        )
     if not recompute and bins is None and bootstrap is None and diffusion is None:
         summary = path / "results" / "summary.json"
         if not summary.is_file():
             summary = path / "summary.json"
+        if not summary.is_file():
+            raise InputError(
+                f"No saved summary in {path}; the run has not finished. Continue it with "
+                f"'pyrpmd resume {path}', or pass the directory of a completed run"
+            )
         result = json.loads(summary.read_text())
         if "rate_extension" in result:
             from .rate_artifacts import active_rate_directory
@@ -859,6 +868,11 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
             if (path / "fes.npz").is_file():
                 return FESResult.read(path, summary=result).summary()
         return result
+    if not (path / "input" / "resolved.json").is_file():
+        raise InputError(
+            f"No saved input in {path}; reanalysis needs the run directory written by "
+            "'pyrpmd run' (it contains manifest.json and input/resolved.json)"
+        )
     config = json.loads((path / "input" / "resolved.json").read_text())
     if "tempering" in config:
         if bins is not None or bootstrap is not None or diffusion is not None:

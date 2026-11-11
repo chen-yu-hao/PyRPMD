@@ -31,7 +31,7 @@ PyRPMD 需要 **Python 3.11 或更高版本**、NumPy ≥ 1.26、SciPy ≥ 1.11 
 | `native.integrators` | 已编译的积分器：`cayley-bcb`、`normal-mode-bab`、`velocity-verlet` |
 | `workflows` | 当前安装报告的可用 `task` 值；各工作流的输入约定见[输入与 CLI](input.md) |
 | `enhanced_sampling`、`initial_ensembles` | 增强采样方法与选态初始制备（`thermal_parent`、`ne_rpmd`、`qct`） |
-| `input_schema_version` | 当前输入版本（1） |
+| `input_schema_version`、`supported_input_schema_versions` | 输入未写 `schema_version` 时采用的版本（1），以及本安装可读取的版本（1 和 2；版本 2 是分阶段的[速率输入布局](../rate-input-v2.md)） |
 
 ASE、MPI、Torch 和外部势能库等可选功能需要各自的依赖，见[可选依赖](#可选依赖)。
 
@@ -95,8 +95,8 @@ pyrpmd analyze installation-check/run
 pyrpmd resume installation-check/run
 ```
 
-保存的摘要应显示 `task="fes"`、3 个窗口、6 条采样流与 120 个样本；已完成任务在 `resume` 后仍为完成状态。
-[快速入门](quickstart.md)解释诊断字段，以及为什么短 pilot 不能作为收敛检验。重复检查时请选择另一个入门目录。
+保存的摘要应显示 `task="fes"`、5 个窗口、10 条采样流与 20000 个样本，单核约需 4 s；已完成任务在 `resume` 后仍为完成状态。
+[快速入门](quickstart.md)解释诊断字段，并把结果与谐振子自由能的精确解对比。重复检查时请选择另一个入门目录。
 
 开发者可安装 `.[test]`，再从仓库根目录运行 `python -m pytest -q`。
 缺少依赖时，可选接口与外部模型的测试可能跳过，请阅读具体原因。编译器、socket、MPI 与真实模型的验证要求见

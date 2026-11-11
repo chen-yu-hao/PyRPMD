@@ -46,7 +46,7 @@ class StarterTests(unittest.TestCase):
             self.assertTrue(validated["ready"])
             self.assertEqual(validated["output"], str(output))
             self.assertEqual(run["task"], "fes")
-            self.assertEqual((run["windows"], run["streams"], run["samples"]), (3, 6, 120))
+            self.assertEqual((run["windows"], run["streams"], run["samples"]), (5, 10, 20000))
             self.assertFalse(run["converged"])
             self.assertEqual(run, analyzed)
             self.assertEqual(run, resumed)
@@ -183,6 +183,68 @@ class DiagnosticTests(unittest.TestCase):
         self.assertTrue(environment["platform"])
         self.assertIn("h5py", environment["dependencies"])
         self.assertTrue(environment["dependencies"]["numpy"])
+
+    def test_info_lists_every_runnable_task_and_schema_version(self):
+        status, stdout, stderr = self.invoke(["info"])
+        self.assertEqual(status, 0, stderr)
+        result = json.loads(stdout)
+        for task in ("rate", "fes", "path_sampling", "spectroscopy", "nonadiabatic", "plumed"):
+            self.assertIn(task, result["workflows"])
+        self.assertEqual(result["supported_input_schema_versions"], [1, 2])
+        # Every input task is advertised and reaches its own resolver, not the
+        # unknown-task error. The registry also lists workflows with their own command.
+        from pyrpmd.input_schema import TASKS
+
+        self.assertLessEqual(set(TASKS), set(result["workflows"]))
+        for task in TASKS:
+            with self.subTest(task=task):
+                try:
+                    JobSpec.from_mapping({"task": task}).resolve()
+                except Exception as error:  # incomplete inputs fail later, for other reasons
+                    self.assertNotIn("Unknown task", str(error))
+
+    def test_misspelled_or_missing_task_names_the_choices(self):
+        for task, suggestion in (("rates", "'rate'"), ("path-sampling", "'path_sampling'"),
+                                 ("PIMD", "'pimd'"), ("metadynamic", "'metadynamics'")):
+            with self.subTest(task=task), self.assertRaises(InputError) as caught:
+                JobSpec.from_mapping({"task": task, "fes": {}}).resolve()
+            self.assertIn(f"Unknown task {task!r}", str(caught.exception))
+            self.assertIn(f"Did you mean {suggestion}?", str(caught.exception))
+        for data in ({}, {"task": 3}, {"task": "zzz"}):
+            with self.subTest(data=data), self.assertRaises(InputError) as caught:
+                JobSpec.from_mapping(data).resolve()
+            self.assertIn("choose one of: rate, drpmd, fes", str(caught.exception))
+            self.assertNotIn("Did you mean", str(caught.exception))
+
+    def test_missing_optional_dependency_names_the_extra_to_install(self):
+        from pyrpmd.cli import _missing_dependency_hint
+
+        hint = _missing_dependency_hint(ModuleNotFoundError("No module named 'torch'"))
+        self.assertIn("pyrpmd[gpu]", hint)
+        wrapped = RuntimeError("Root stage failed: ModuleNotFoundError: No module named 'mpi4py'")
+        self.assertIn("pyrpmd[mpi]", _missing_dependency_hint(wrapped))
+        self.assertIn("pyrpmd[ase]", _missing_dependency_hint(ImportError("No module named 'ase.io'")))
+        self.assertIsNone(_missing_dependency_hint(ImportError("No module named 'my_private_pes'")))
+        self.assertIsNone(_missing_dependency_hint(ValueError("invalid temperature")))
+
+    def test_analyze_explains_a_missing_or_unfinished_run_directory(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            missing = Path(temporary) / "missing"
+            status, stdout, stderr = self.invoke(["analyze", str(missing)])
+            self.assertEqual((status, stdout), (2, ""))
+            self.assertIn("No run directory at", stderr)
+            self.assertNotIn("Errno", stderr)
+            self.assertFalse(missing.exists())
+            empty = Path(temporary) / "empty"
+            empty.mkdir()
+            status, stdout, stderr = self.invoke(["analyze", str(empty)])
+            self.assertEqual((status, stdout), (2, ""))
+            self.assertIn("No saved summary", stderr)
+            self.assertIn("pyrpmd resume", stderr)
+            status, stdout, stderr = self.invoke(["analyze", str(empty), "--recompute"])
+            self.assertEqual((status, stdout), (2, ""))
+            self.assertIn("No saved input", stderr)
+            self.assertEqual(list(empty.iterdir()), [])
 
 
 if __name__ == "__main__":
