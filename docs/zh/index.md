@@ -106,6 +106,7 @@ PCET <manual/pcet>
 势能生成 <manual/pes-generation>
 JaxPIP 拟合与原生执行 <manual/jaxpip-generation>
 执行与并行 <manual/execution>
+进度监控与结构化日志 <manual/progress>
 输出与分析 <manual/results>
 自动分析与出图 <manual/analysis-reports>
 示例索引 <manual/examples>
