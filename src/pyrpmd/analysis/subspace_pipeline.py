@@ -2,7 +2,8 @@
 
     rate run (output.centroid_path = true)
       -> ring-polymer mean path xbar(xi) from the umbrella windows
-      -> path to both asymptotes (sampled core + steepest-descent continuation)
+      -> path to both asymptotes (sampled core + steepest-descent continuation,
+         followed without a step budget until the energy is flat)
       -> curvature x width: Sigma(xi) where sampled, harmonic width elsewhere
       -> 1D vibrationally adiabatic path model           -> C_S(1D)
       -> if kappa*rho > threshold: 2D plane through the TS spanned by the
@@ -10,6 +11,13 @@
          (the collinear plane for a collinear atom transfer)  -> C_S(2D)
       -> nested sensitivity ln(C_2D/C_1D), recommended C_S
       -> rate_quantum_corrected.json next to the run
+
+Validity gates decide whether a model may carry a factor at all: the path
+must have reached both asymptotes, the transverse (normal-plane) Hessian of
+the path model must be stable, and the ring-polymer estimator must not have
+sampled a gridded ``V_S`` outside its grid.  A model that fails is recorded
+with its diagnostics and never applied; ``validity.* = "allow"`` is the
+explicit override.
 
 :func:`run_subspace_pipeline` takes a mapping or a TOML file (the
 ``pyrpmd subspace-correct`` command).  Every intermediate quantity is written
@@ -29,8 +37,9 @@ from typing import Any, Mapping
 import numpy as np
 
 from .centroid_path import mean_path_from_rate_run, rigid_body_modes
-from .subspace_correction import (SubspaceCorrection, correct_rate_run, nested_subspace_sensitivity,
-                                  subspace_correction)
+from .subspace_correction import (CORRECTED_SCHEMA, SubspaceCorrection, correct_rate_run,
+                                  nested_subspace_sensitivity, subspace_correction, validity_gates,
+                                  validity_policy)
 from .subspace_model import (_vibrational_complement, assemble_reaction_path, path_curvature,
                              project_linear_subspace, project_path_subspace, relaxed_path)
 from .subspace_quantum import _json_safe, sinc_dvr_kinetic
@@ -51,12 +60,20 @@ def optimize_instanton(*args, **kwargs):
 
 DEFAULTS = {
     "source": {"rate_run": None},
-    "path": {"source": "centroid", "step": 10.0, "max_steps": 600, "spread_factor": 2.0,
-             "asymptote_tolerance": 1e-6, "smoothing": 1.5,
+    # max_steps = None: the continuations run until the asymptote criterion
+    # is met.  A finite value is a hard budget whose exhaustion fails the path gate.
+    "path": {"source": "centroid", "step": 10.0, "max_steps": None, "spread_factor": 2.0,
+             "asymptote_tolerance": 1e-6, "asymptote_patience": 50, "smoothing": 1.5,
              "least_action_points": 9},
+    # hessian_displacement (bohr) is the largest Cartesian displacement of the
+    # lightest atom in the finite-difference normal-plane Hessian.
     "subspace": {"dimension": "auto", "threshold": 0.5, "environment": "adiabatic", "curvature": "none",
                  "zero_point": "harmonic", "dvr_points": 81, "dvr_half_width": None,
-                 "dvr_spacing": None},
+                 "dvr_spacing": None, "hessian_displacement": 5e-3},
+    # on_invalid = "stop": a model whose path or bath gate fails is not solved;
+    # "diagnose": solve it anyway and keep the component rates (never applied).
+    "validity": {"unconverged_path": "reject", "unstable_bath": "reject", "outside_grid": "reject",
+                 "max_outside_fraction": 0.01, "soft_mode_frequency": 2.3e-4, "on_invalid": "stop"},
     "quantum": {"spacing_1d": None, "spacing_2d": None, "refinement": 3, "absorber_fraction": 0.2,
                 "threshold_margin": 1.0, "truncation_kt": 30.0, "truncation_min": 0.0, "padding": None,
                 "dense_limit": 8000,
@@ -449,8 +466,9 @@ def build_path(run: RateRun, options: Mapping[str, Any]):
         sampled["least_action"] = details
     path, info = assemble_reaction_path(
         core, run.energy, run.gradient, run.cartesian_masses, step=float(options.get("step", 10.0)),
-        max_steps=int(options.get("max_steps", 600)), rigid_body=True,
+        max_steps=None if options.get("max_steps") is None else int(options["max_steps"]), rigid_body=True,
         asymptote_tolerance=float(options.get("asymptote_tolerance", 1e-6)),
+        patience=int(options.get("asymptote_patience", 50)),
     )
     info.update(sampled)
     return mean, mask, path, info
@@ -481,9 +499,38 @@ def _truncation_offset(options, beta):
     return max(float(options["truncation_kt"]) / beta, float(options.get("truncation_min", 0.0) or 0.0))
 
 
+def _hessian_step(options, masses):
+    """Mass-weighted finite-difference step for a Cartesian displacement in bohr.
+
+    A unit mass-weighted displacement moves an atom by ``1/sqrt(m)``; a fixed
+    mass-weighted step of 1e-3 is therefore ~2e-5 bohr for hydrogen, where the
+    gradient difference of a soft mode is comparable to the evaluation noise
+    of a fitted (single-precision) potential and the sign of a small
+    transverse curvature is not determined.
+    """
+    return float(options.get("hessian_displacement", 5e-3)) * float(np.sqrt(np.min(masses)))
+
+
+def _model_provenance(path_info, validity, **extra):
+    """What the validity gates need to travel with a model to its correction."""
+    provenance = dict(extra)
+    if path_info is not None:
+        provenance["path_termination"] = {
+            "reactant": path_info.get("reactant_termination"),
+            "product": path_info.get("product_termination"),
+        }
+    provenance["validity_policy"] = validity_policy(validity)
+    return provenance
+
+
 def path_model(run: RateRun, path, options: Mapping[str, Any], *, path_source: str = "centroid"):
-    """1D vibrationally adiabatic model on the arc length of the assembled path."""
+    """1D vibrationally adiabatic model on the arc length of the assembled path.
+
+    ``options['path_info']`` (from :func:`build_path`) and ``options['validity']``
+    travel into the model provenance, where the validity gates read them.
+    """
     masses = run.cartesian_masses
+    path_info, validity = options.get("path_info"), dict(options.get("validity") or {})
     arc = _arc(path, masses)
     energies = np.array([run.energy(p) for p in path])
     spacing = options.get("spacing_1d")
@@ -500,11 +547,13 @@ def path_model(run: RateRun, path, options: Mapping[str, Any], *, path_source: s
         dividing_surface=None, rigid_body=True,
         beta=run.beta if environment == "free_energy" else None,
         curvature=options.get("curvature", "none"),
-        provenance={"path_source": str(path_source)},
+        provenance=_model_provenance(path_info, validity, path_source=str(path_source)),
         zero_point=options.get("zero_point", "harmonic"),
         dvr_points=options.get("dvr_points", 81),
         dvr_half_width=options.get("dvr_half_width"),
         dvr_spacing=options.get("dvr_spacing"),
+        finite_difference_step=_hessian_step(options, masses),
+        soft_mode_frequency=float(validity.get("soft_mode_frequency", 2.3e-4)),
     )
     surface = model.dividing_surface
     fraction = float(options["absorber_fraction"])
@@ -593,6 +642,7 @@ def _in_plane_threshold(model, center, direction, *, window=0.05):
 
 def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
     """2D plane through the TS: rate dividing-surface normal x curvature normal."""
+    path_info, validity = options.get("path_info"), dict(options.get("validity") or {})
     from scipy.spatial import cKDTree
 
     masses = run.cartesian_masses
@@ -684,9 +734,11 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
     fine_model = project_linear_subspace(run.energy, run.gradient, ts, masses, np.column_stack([e0, e1]), axes,
                                          environment=environment, dividing_surface=0.0, rigid_body=True,
                                          skip_above=skip, wall_energy=skip + 1.0,
+                                         finite_difference_step=_hessian_step(options, masses),
                                          beta=run.beta if environment == "free_energy" else None)
     reference_point = np.array([np.interp(reference_arc, arc, plane[:, 0]), np.interp(reference_arc, arc, plane[:, 1])])
-    provenance = dict(fine_model.provenance, plane_basis=[e0.tolist(), e1.tolist()], refinement=refinement)
+    provenance = dict(fine_model.provenance, plane_basis=[e0.tolist(), e1.tolist()], refinement=refinement,
+                      **_model_provenance(path_info, validity))
     rpmd_model = type(fine_model)(fine_model.axes, fine_model.values, fine_model.masses, 0.0, "asymptotic",
                                   float(reference_point[0]), provenance)
     model = type(fine_model)(tuple(a[::refinement] for a in fine_model.axes),
@@ -819,6 +871,25 @@ def _build_cases(run, out_dir, options, base, reuse_key):
                                                                       [int(d) for d in requested]))
     rpmd_options, nbeads = _rpmd_options(options["rpmd"], run)
     corrections, models, cases = {}, {}, {}
+    validity = dict(options.get("validity") or {})
+    diagnose = validity.get("on_invalid", "stop") == "diagnose"
+    if validity.get("on_invalid", "stop") not in ("stop", "diagnose"):
+        raise ValueError("validity.on_invalid must be 'stop' or 'diagnose'")
+    rejected, escalation = {}, None
+    gating = {"path_info": path_info, "validity": validity,
+              "hessian_displacement": options["subspace"].get("hessian_displacement", 5e-3)}
+
+    def admit(dimension, case, info):
+        """Gate a model on what is known before any rate is solved (path, bath)."""
+        gates = validity_gates(case["model"].provenance)
+        info["validity"] = gates
+        models[dimension] = info
+        if gates["valid"] or diagnose:
+            cases[dimension] = case
+        else:
+            rejected[dimension] = gates
+        return gates
+
     # With an execution table the task scheduler owns reuse through its own
     # identity-checked checkpoints; saved C_S records are reused only on the
     # ordinary sequential route.
@@ -852,12 +923,17 @@ def _build_cases(run, out_dir, options, base, reuse_key):
         environment = {k: options["subspace"].get(k) for k in
                        ("environment", "curvature", "zero_point", "dvr_points", "dvr_half_width", "dvr_spacing")}
         model1, quantum1, info1 = path_model(
-            run, path, {**options["quantum"], **environment},
+            run, path, {**options["quantum"], **environment, **gating},
             path_source=path_info.get("source", "centroid"),
         )
-        cases[1] = dict(model=model1, beta=run.beta, nbeads=nbeads, quantum_options=quantum1,
-                        rpmd_options=rpmd_options)
-        models[1] = info1
+        gates1 = admit(1, dict(model=model1, beta=run.beta, nbeads=nbeads, quantum_options=quantum1,
+                               rpmd_options=rpmd_options), info1)
+        bath = [g for g in gates1["gates"] if g["gate"] == "bath" and not g["passed"] and not g["overridden"]]
+        if bath and requested == "auto" and 2 not in dimensions and 2 not in corrections:
+            # An unstable normal plane means a transverse coordinate is not a
+            # bath mode of this path: it belongs in S, whatever kappa*rho says.
+            dimensions.append(2)
+            escalation = {"from": 1, "to": 2, "reason": bath[0]["reason"]}
     if 2 in dimensions:
         candidate = None
         if isinstance(sampled_cw, dict) and "candidate_direction" in sampled_cw and sampled_max >= static_cw["maximum"]:
@@ -865,10 +941,10 @@ def _build_cases(run, out_dir, options, base, reuse_key):
         if candidate is None:
             candidate = np.asarray(static_cw["candidate_direction"])
         environment = {"environment": options["subspace"].get("environment", "adiabatic")}
-        model2, quantum2, info2, rpmd_model2 = plane_model(run, path, candidate, {**options["quantum"], **environment})
-        cases[2] = dict(model=model2, beta=run.beta, nbeads=nbeads, quantum_options=quantum2,
-                        rpmd_options=rpmd_options, rpmd_model=rpmd_model2)
-        models[2] = info2
+        model2, quantum2, info2, rpmd_model2 = plane_model(run, path, candidate,
+                                                           {**options["quantum"], **environment, **gating})
+        admit(2, dict(model=model2, beta=run.beta, nbeads=nbeads, quantum_options=quantum2,
+                      rpmd_options=rpmd_options, rpmd_model=rpmd_model2), info2)
     execution = options.get("execution")
     if execution is not None:
         execution = dict(execution)
@@ -878,7 +954,8 @@ def _build_cases(run, out_dir, options, base, reuse_key):
         execution["checkpoint_dir"] = str(directory)
     return dict(out_dir=out_dir, nbeads=nbeads, options=options, cases=cases, execution=execution,
                 corrections=corrections, models=models, path_info=path_info, sampled_cw=sampled_cw,
-                static_cw=static_cw, verdict=verdict, reuse_key=reuse_key)
+                static_cw=static_cw, verdict=verdict, reuse_key=reuse_key, rejected=rejected,
+                escalation=escalation)
 
 
 def _close_run(run):
@@ -894,30 +971,54 @@ def _finish_pipeline(state, computed, apply):
     options, models, corrections = state["options"], state["models"], state["corrections"]
     path_info, sampled_cw, static_cw = state["path_info"], state["sampled_cw"], state["static_cw"]
     verdict, reuse_key = state["verdict"], state["reuse_key"]
+    rejected, escalation = state.get("rejected", {}), state.get("escalation")
     for dimension, correction in computed.items():
         correction.write(out_dir / f"C_S_{dimension}d.json")
         corrections[dimension] = correction
-    sensitivity = nested_subspace_sensitivity(list(corrections.values())) if len(corrections) > 1 else None
-    if sensitivity is None:
-        chosen, reason = max(corrections), "only dimension computed"
-    elif sensitivity["recommended_dimension"] in corrections:
+    # Only models that passed every gate are evidence about the defect; the
+    # others keep their record (and component rates) but decide nothing.
+    usable = {d: c for d, c in corrections.items() if c.valid}
+    sensitivity = nested_subspace_sensitivity(list(usable.values())) if len(usable) > 1 else None
+    if not usable:
+        chosen, reason = None, "no subspace model passed the validity gates"
+    elif sensitivity is None:
+        chosen = max(usable)
+        reason = "only dimension computed" if len(corrections) + len(rejected) == 1 else "only valid dimension"
+    elif sensitivity["recommended_dimension"] in usable:
         chosen, reason = sensitivity["recommended_dimension"], "nested sensitivity"
     else:
         # Undetermined nested step: fall back on curvature x width.
-        chosen = verdict if verdict in corrections else max(corrections)
+        chosen = verdict if verdict in usable else max(usable)
         reason = "nested sensitivity undetermined; curvature x width verdict"
-    corrected = (correct_rate_run(run.root, corrections[chosen], output=out_dir / "rate_quantum_corrected.json")
-                 if apply else None)
+    target = out_dir / "rate_quantum_corrected.json"
+    corrected = correct_rate_run(run.root, usable[chosen], output=target) if apply and chosen is not None else None
+    if chosen is None and target.is_file():
+        # A corrected rate from an earlier run must not outlive the model it came from.
+        try:
+            stale = json.loads(target.read_text()).get("schema") == CORRECTED_SCHEMA
+        except (OSError, ValueError, AttributeError):
+            stale = False
+        if stale:
+            target.unlink()
+    dimension_validity = {str(d): c.validity for d, c in corrections.items()}
+    dimension_validity.update({str(d): gates for d, gates in rejected.items()})
+    failures = {d: v.get("failures", []) for d, v in dimension_validity.items() if v.get("failures")}
     report = {
         "schema": "pyrpmd.subspace_pipeline", "schema_version": 1,
+        "status": "complete" if chosen is not None else "invalid_model",
         "rate_run": str(run.root), "beta": run.beta, "nbeads": nbeads, "xi_star": run.xi_star,
         "path": path_info, "curvature_width_sampled": sampled_cw, "curvature_width_path": static_cw,
         "recommended_dimension_from_curvature_width": verdict, "dimensions_computed": sorted(corrections),
+        "dimension_escalation": escalation,
+        "validity": {"valid": chosen is not None, "valid_dimensions": sorted(usable),
+                     "rejected_before_solving": sorted(rejected), "failures": failures,
+                     "dimensions": dimension_validity, "policy": options.get("validity")},
         "models": models,
         # Keep the saved quantum/RPMD curves when reusing a scalar correction
         # object (SubspaceCorrection.read deliberately loads only its summary).
         "corrections": {str(d): json.loads((out_dir / f"C_S_{d}d.json").read_text()) for d in corrections},
-        "nested_sensitivity": sensitivity, "applied_dimension": int(chosen), "applied_dimension_reason": reason,
+        "nested_sensitivity": sensitivity,
+        "applied_dimension": None if chosen is None else int(chosen), "applied_dimension_reason": reason,
         "corrected_rate": corrected,
         "mode": "apply" if apply else "factor_only",
         "reuse_key": reuse_key,

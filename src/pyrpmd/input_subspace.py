@@ -10,8 +10,11 @@ from .validation import finite_real
 
 _SECTION = "rate.subspace_correction"
 _FIELDS = {"enabled", "mode", "dimension", "environment", "threshold", "reuse", "path", "quantum", "rpmd",
-           "curvature", "zero_point", "dvr_points", "dvr_half_width", "dvr_spacing"}
-_PATH = {"source", "step", "max_steps", "spread_factor", "asymptote_tolerance", "smoothing",
+           "curvature", "zero_point", "dvr_points", "dvr_half_width", "dvr_spacing", "hessian_displacement",
+           "validity"}
+_VALIDITY = {"unconverged_path", "unstable_bath", "outside_grid", "max_outside_fraction",
+             "soft_mode_frequency", "on_invalid"}
+_PATH = {"source", "step", "max_steps", "spread_factor", "asymptote_tolerance", "asymptote_patience", "smoothing",
          "least_action_points", "instanton_beads", "instanton_max_iterations", "crossover_temperature"}
 _QUANTUM = {"spacing_1d", "spacing_2d", "refinement", "absorber_fraction", "threshold_margin",
             "truncation_kt", "truncation_min", "padding", "dense_limit", "reference_kt", "product_drop_kt"}
@@ -69,10 +72,25 @@ def rate_subspace_options(config):
         options["dimension"] = sorted(dims) if isinstance(dimension, (list, tuple)) else dims[0]
     options["threshold"] = _real(options.get("threshold", 0.5), f"{_SECTION}.threshold")
     options["dvr_points"] = _integer(options.get("dvr_points", 81), f"{_SECTION}.dvr_points", 8)
-    for key in ("dvr_half_width", "dvr_spacing"):
+    for key in ("dvr_half_width", "dvr_spacing", "hessian_displacement"):
         if key in options:
             options[key] = _real(options[key], f"{_SECTION}.{key}")
-    minima = {"max_steps": 1, "least_action_points": 2, "instanton_beads": 1,
+    # Validity gates: "reject" is the default; "allow" is a recorded override.
+    validity = _table(options.get("validity", {}), _VALIDITY, f"{_SECTION}.validity")
+    for key, value in validity.items():
+        name = f"{_SECTION}.validity.{key}"
+        if key == "on_invalid":
+            if value not in ("stop", "diagnose"):
+                raise InputError(f"{name} must be stop or diagnose")
+        elif key in ("max_outside_fraction", "soft_mode_frequency"):
+            validity[key] = _real(value, name, zero=True)
+            if key == "max_outside_fraction" and validity[key] > 1:
+                raise InputError(f"{name} must lie in [0, 1]")
+        elif value not in ("reject", "allow"):
+            raise InputError(f"{name} must be reject or allow")
+    options["validity"] = validity
+    # path.max_steps is optional: without it the continuations have no step budget.
+    minima = {"max_steps": 1, "asymptote_patience": 1, "least_action_points": 2, "instanton_beads": 1,
               "instanton_max_iterations": 1, "refinement": 1, "dense_limit": 1, "windows": 4,
               "walkers": 2, "burn_in": 0, "sweeps": 2, "leapfrog_steps": 1,
               "trajectories": 2, "bootstrap": 2, "seed": 0}

@@ -197,6 +197,13 @@ def _thermal_frequency(model: SubspaceModel, beta: float) -> float:
     return float(np.sqrt(max(curvature, 1e-30)))
 
 
+# Checkpoints at which recrossing trajectories are tested for having left the grid.
+_EXIT_CHECKPOINTS = 64
+# Outward slope of V_S at a grid exit, in kT per thermal length sqrt(beta/m),
+# above which the constant continuation has removed a restoring force.
+_EDGE_SLOPE_TOLERANCE = 0.1
+
+
 def _integrate_profile(windows, mean_force):
     from scipy.interpolate import CubicSpline
 
@@ -235,6 +242,19 @@ def ring_polymer_rate(
     start paired ``+p``/``-p`` RPMD trajectories of length ``md_time``.
     Default time steps follow the largest thermally accessible frequency of
     ``V_S``; free ring-polymer motion is integrated exactly.
+
+    For a gridded model ``diagnostics['grid_exit']`` resolves where the ring
+    polymers left the grid, since beyond it the spline is a constant with
+    zero force.  The samples the estimator uses are tested directly: the
+    accepted production configurations of the thermodynamic integration and
+    the dividing-surface configurations.  A recrossing trajectory that
+    leaves through a flat channel end is committed and harmless, so the
+    recrossing stage is judged by the trajectories that carry extrapolated
+    dynamics into the transmission coefficient: those that cross the dividing
+    surface again *after* having left the grid (``returned``), and those
+    whose centroid left where ``V_S`` still rises outwards by more than
+    ``0.1 kT`` per thermal length (``uphill``) -- the missing restoring force
+    could have sent them back, so the grid ended before the channel did.
     """
     if not isinstance(model, SubspaceModel):
         raise TypeError("model must be a SubspaceModel")
@@ -269,6 +289,21 @@ def ring_polymer_rate(
     from .subspace_native import make_ring
 
     ring = make_ring(model, beta, int(nbeads), backend, threads)
+    spline = model.interpolant if model.function is None else None
+    if spline is not None:
+        spline.reset_counters()
+
+    def stage(name):
+        if spline is not None:
+            spline.set_stage(name)
+
+    def beads_outside(configurations):
+        """Bead points of ``[batch, mode, dimension]`` configurations outside the grid."""
+        if spline is None:
+            return np.zeros(configurations.shape[:2], dtype=bool)
+        return spline.outside_mask(ring.beads(configurations))
+
+    stage("initialization")
     frequency = _thermal_frequency(model, beta)
     hmc_step = 0.3 / frequency if hmc_dt is None else float(hmc_dt)
     md_step = 0.1 / frequency if md_dt is None else float(md_dt)
@@ -301,7 +336,9 @@ def ring_polymer_rate(
     accepted_total, proposals = 0, 0
     samples = np.zeros(batch)
     sample_count = 0
+    sampled_beads = sampled_outside = 0
     for sweep in range(int(burn_in) + int(sweeps)):
+        stage("hmc_burn_in" if sweep < burn_in else "hmc_production")
         momenta = ring.sample_momenta(rng, batch, True)
         start_h = ring.kinetic(momenta) + ring.spring(modes) + energy
         trial = (modes, momenta, force, energy, gradient)
@@ -329,6 +366,9 @@ def ring_polymer_rate(
             proposals += batch
             samples += gradient[:, :, 0].mean(axis=1)
             sample_count += 1
+            if spline is not None:
+                sampled_beads += batch * ring.p
+                sampled_outside += int(np.count_nonzero(beads_outside(modes)))
     walker_means = (samples / sample_count).reshape(nw, nwalk)
     mean_force = walker_means.mean(axis=1)
     mean_force_error = walker_means.std(axis=1, ddof=1) / np.sqrt(nwalk)
@@ -366,6 +406,7 @@ def ring_polymer_rate(
     surf_energy = energy[first:].copy()
     surf_gradient = gradient[first:].copy()
     collected = []
+    stage("surface_sampling")
     while sum(len(c) for c in collected) < trajectories:
         momenta = ring.sample_momenta(rng, nwalk, True)
         start_h = ring.kinetic(momenta) + ring.spring(surf_modes) + surf_energy
@@ -389,13 +430,47 @@ def ring_polymer_rate(
     velocity = momenta[:, 0, 0] / (np.sqrt(ring.p) * model.masses[0])
     md_modes = np.concatenate([starts, starts])
     md_momenta = np.concatenate([momenta, -momenta])
+    surface_outside = beads_outside(starts)
+    stage("recrossing")
     md_energy, md_gradient = ring.potential(md_modes)
     md_force = -ring.modes(md_gradient)
     md_propagator = ring.free_propagator(md_step)
     initial_h = ring.kinetic(md_momenta) + ring.spring(md_modes) + md_energy
-    trial, side = ring.propagate(md_modes, md_momenta, md_force, md_step, md_propagator,
-                                 False, md_steps, surface=surface)
-    md_modes, md_momenta, md_force, md_energy, _ = trial
+    # Propagate in segments (the same steps, so the trajectories are
+    # unchanged) and look at the beads between them: the first checkpoint at
+    # which a ring polymer has a bead outside the grid is its exit.
+    edges = np.unique(np.linspace(0, md_steps, min(md_steps, _EXIT_CHECKPOINTS) + 1).astype(int))
+    exit_step = np.where(beads_outside(md_modes).any(axis=1), 0, -1)
+    edge_slope = np.full(2 * ntraj, np.nan)
+
+    def record_edge_slope(configurations):
+        """Outward slope of V_S, in kT per thermal length, where a centroid first left the grid."""
+        centroid = configurations[:, 0, :] / np.sqrt(ring.p)
+        inside = np.clip(centroid, spline.lower, spline.upper)
+        offset = centroid - inside
+        distance = np.linalg.norm(offset, axis=1)
+        new = np.flatnonzero(np.isnan(edge_slope) & (distance > 0))
+        if not len(new):
+            return
+        normal = offset[new] / distance[new, None]
+        delta = float(np.min(model.spacing))
+        slope = (spline.energy(inside[new]) - spline.energy(inside[new] - delta * normal)) / delta
+        thermal_length = np.sqrt(beta * np.sum(normal**2 / model.masses[None, :], axis=1))
+        edge_slope[new] = beta * slope * thermal_length
+
+    if spline is not None:
+        record_edge_slope(md_modes)
+    sides = []
+    for begin, stop in zip(edges[:-1], edges[1:]):
+        trial, part = ring.propagate(md_modes, md_momenta, md_force, md_step, md_propagator,
+                                     False, int(stop - begin), surface=surface)
+        md_modes, md_momenta, md_force, md_energy, _ = trial
+        sides.append(part if begin == 0 else part[1:])
+        if spline is not None:
+            exit_step[(exit_step < 0) & beads_outside(md_modes).any(axis=1)] = stop
+            record_edge_slope(md_modes)
+    side = np.concatenate(sides)
+    stage("finished")
     final_h = ring.kinetic(md_momenta) + ring.spring(md_modes) + md_energy
     energy_error = float(np.max(np.abs(final_h - initial_h)) * ring.beta_p)
     forward, backward = side[:, :ntraj].astype(float), side[:, ntraj:].astype(float)
@@ -411,6 +486,35 @@ def ring_polymer_rate(
         boot.append(numerator[-tail:, index].sum(axis=1).mean() / np.sum(np.abs(velocity[index])))
     kappa_error = float(np.std(boot, ddof=1)) if len(boot) > 1 else float("nan")
     plateau_drift = float(abs(kappa[-tail] - kappa[-1]))
+
+    grid_exit = None
+    if spline is not None:
+        exited = exit_step >= 0
+        at_exit = side[np.maximum(exit_step, 0), np.arange(2 * ntraj)]
+        later = np.arange(md_steps + 1)[:, None] >= exit_step[None, :]
+        returned = exited & np.any(later & (side != at_exit[None, :]), axis=0)
+        uphill = np.nan_to_num(edge_slope, nan=0.0) > _EDGE_SLOPE_TOLERANCE
+        flux = np.abs(np.concatenate([velocity, velocity]))
+        grid_exit = {
+            "stages": spline.stage_report(),
+            "ti_sample_outside_fraction": float(sampled_outside / max(sampled_beads, 1)),
+            "surface_sample_outside_fraction": float(np.mean(surface_outside)),
+            "recrossing_exited_fraction": float(np.mean(exited)),
+            "recrossing_returned_fraction": float(np.mean(returned)),
+            "recrossing_uphill_exit_fraction": float(np.mean(uphill)),
+            "recrossing_contaminated_flux_fraction": float(
+                flux[returned | uphill].sum() / max(flux.sum(), 1e-300)),
+            "recrossing_max_edge_slope": float(np.nanmax(edge_slope)) if np.isfinite(edge_slope).any() else None,
+            "edge_slope_tolerance": _EDGE_SLOPE_TOLERANCE,
+            "recrossing_checkpoints": int(len(edges) - 1),
+            "definition": "ti/surface: bead points of accepted estimator samples outside the grid; "
+                          "returned: recrossing trajectories that change side after their first exit; "
+                          "uphill: centroid left where V_S rises outwards (kT per thermal length); "
+                          "contaminated: flux share of returned or uphill trajectories",
+        }
+        grid_exit["estimator_outside_fraction"] = max(
+            grid_exit["ti_sample_outside_fraction"], grid_exit["surface_sample_outside_fraction"],
+            grid_exit["recrossing_contaminated_flux_fraction"])
 
     qtst = float(np.exp(log_qtst))
     rate = qtst * plateau
@@ -440,7 +544,8 @@ def ring_polymer_rate(
         "qtst_log_statistical_error": log_qtst_statistical,
         "ti_quadrature_log_error": float(quadrature_error),
         "barrier_free_energy": float(free_energy[-1] - free_energy[0]) if model.reactant == "asymptotic" else float(free_energy[-1] - free_energy.min()),
-        "spline_outside_fraction": model.interpolant.outside_fraction if model.function is None else 0.0,
+        "spline_outside_fraction": spline.outside_fraction if spline is not None else 0.0,
+        "grid_exit": grid_exit,
         "normalization": model.reactant,
         "units": "axis-0 length per time" if model.reactant == "asymptotic" else "per time",
         "physical_converged": False,
