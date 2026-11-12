@@ -29,7 +29,7 @@ def _report_shortcut_options(p):
 
 
 _COMMAND_GROUPS = (
-    ("Everyday", ("init", "validate", "run", "analyze", "resume", "report", "info")),
+    ("Everyday", ("init", "validate", "run", "status", "analyze", "resume", "report", "info")),
     ("Workflow-specific", ("prepare", "extend", "study", "state-check", "export", "project",
                            "rate-postprocess", "subspace-correct", "nonadiabatic-rate", "instanton", "vtst")),
     ("Developer tools", ("import-rpmdrate", "precision", "checkpoint", "pes")),
@@ -72,6 +72,8 @@ def parser():
     register_vtst_parser(commands)
     from .workflows.precision import register_parser as register_precision_parser
     register_precision_parser(commands)
+    from .progress import register_parser as register_status_parser
+    register_status_parser(commands)
     starter = commands.add_parser("init", help="Create a self-contained workflow tutorial in a new or empty directory")
     starter.add_argument("directory", help="Directory for quickstart.inp; existing files are never overwritten")
     starter.add_argument("--task", choices=("fes", "pimd", "rate", "drpmd"), default="fes")
@@ -406,6 +408,8 @@ def _pes(args):
 def main(argv=None):
     args = parser().parse_args(argv)
     try:
+        if hasattr(args, "_status_handler"):
+            return args._status_handler(args)
         if hasattr(args, "_instanton_handler"):
             return args._instanton_handler(args)
         if hasattr(args, "_vtst_handler"):
@@ -583,8 +587,10 @@ def main(argv=None):
                     bins=args.bins,
                     bootstrap=args.bootstrap,
                     diffusion={key: value for key, value in {
-                        "fit_range": args.fit_range, "axes": args.axes,
-                        "atom_indices": args.atoms, "max_lag": args.max_lag,
+                        "fit_range": args.fit_range,
+                        "axes": args.axes,
+                        "atom_indices": args.atoms,
+                        "max_lag": args.max_lag,
                     }.items() if value is not None} or None,
                 )
             _print(_report_after_result(args, result, args.directory))

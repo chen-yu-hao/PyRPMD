@@ -70,6 +70,7 @@ To create a ready input first, use `pyrpmd init my-first-run` and follow the
 pyrpmd validate job.inp --check-pes     # check input and units, construct the PES
 pyrpmd run job.inp --output runs/job    # run; results in runs/job/results/summary.json
 pyrpmd analyze runs/job                 # read the summary; FES methods, diffusion and nonadiabatic populations accept --recompute
+pyrpmd status runs/job --watch          # watch committed progress and stage ETA
 pyrpmd resume runs/job                  # continue from checkpoints without changing the science
 pyrpmd report runs/job                  # optional: figures, index.html and report.json from saved data
 ```
@@ -127,6 +128,7 @@ Potentials and plugins <manual/potentials>
 PES generation <manual/pes-generation>
 JaxPIP fitting and native execution <manual/jaxpip-generation>
 Execution <manual/execution>
+Progress and structured logs <manual/progress>
 Propagation stack <propagation-stack>
 Expensive potentials <performance-dynamics>
 Trajectory batching <batched-dynamics>

@@ -37,7 +37,10 @@ The starter computes the centroid free energy of a harmonic oscillator in a few
 seconds. Its exact answer is $F(x)=\tfrac12 kx^2$, and the
 [Quickstart](docs/manual/quickstart.md) shows how to compare: the result agrees to
 about 0.1 $k_BT$. The tutorials below do the same for the other tasks. Resume a
-saved run with `pyrpmd resume first-run/run`.
+saved run with `pyrpmd resume first-run/run`. In another terminal, use
+`pyrpmd status first-run/run --watch` to inspect committed progress and stage ETA.
+[Monitoring and structured logs](docs/manual/progress.md) explains coverage,
+unknown budgets and MPI/process behavior.
 
 ![Schematic ring polymer near a barrier](docs/_static/gifs/ring_polymer.gif)
 

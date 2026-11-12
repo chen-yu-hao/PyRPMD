@@ -1,7 +1,8 @@
 """Optional, root-only postprocessing of a native gas-phase rate run.
 
-Only RUN/subspace is written. Source rates and their publication gates stay
-unchanged; a failed correction cannot invalidate or overwrite a completed rate.
+Scientific output is written only under RUN/subspace. The explicit stage also
+updates advisory progress/log files at the run root. Source rates and their
+publication gates stay unchanged; a failed correction cannot overwrite a rate.
 """
 
 from __future__ import annotations
@@ -150,6 +151,11 @@ def run_subspace_stage(config, system, directory):
     if options is None or not options["enabled"]:
         raise InputError("--stage subspace requires rate.subspace_correction.enabled=true")
     root = validate_saved_rate(config, system, directory)
-    status = postprocess_rate_subspace(config, root, strict=True)
-    return {"task": "rate", "stage": "subspace", "output": str(root),
-            "subspace_correction": status, "physical_converged": False}
+    from ..progress import RunProgress
+
+    with RunProgress(root, {"task": "subspace", "resume": True}) as progress:
+        status = postprocess_rate_subspace(config, root, strict=True)
+        result = {"task": "rate", "stage": "subspace", "output": str(root),
+                  "subspace_correction": status, "physical_converged": False}
+        progress.result = result
+        return result

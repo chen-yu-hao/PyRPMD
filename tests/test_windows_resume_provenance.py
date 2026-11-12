@@ -132,7 +132,9 @@ def _saved_run(tmp_path, inputs, *, schema=2, kind="both", task="drpmd",
 
 def _bytes(directory):
     return {path.relative_to(directory).as_posix(): path.read_bytes()
-            for path in directory.rglob("*") if path.is_file()}
+            for path in directory.rglob("*")
+            if path.is_file() and path.relative_to(directory).as_posix()
+            not in {"progress.json", "run.log.jsonl"}}
 
 
 def _assert_diagnostic(error, paths):
