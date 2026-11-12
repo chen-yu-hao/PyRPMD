@@ -25,6 +25,19 @@ from .rate_options import _recrossing_options
 from .rate_pmf import _pmf_and_parent_tasks, _prepare
 
 
+MIN_GROWTH_FACTOR = 1.25
+MAX_GROWTH_FACTOR = 2.0
+
+
+def _bounded_growth_factor(relative, target, *, fallback=MAX_GROWTH_FACTOR):
+    """Choose a bounded budget multiplier from the observed relative error."""
+    if (relative is None or target is None or not np.isfinite(relative)
+            or not np.isfinite(target) or relative <= 0 or target <= 0):
+        return MAX_GROWTH_FACTOR if fallback is None else float(fallback)
+    return float(np.clip((relative / target) ** 2,
+                         MIN_GROWTH_FACTOR, MAX_GROWTH_FACTOR))
+
+
 def _state_path(output):
     return Path(output) / "auto-rate" / "state.json"
 
@@ -146,8 +159,10 @@ def _pmf_decision(pmf, state, config):
     ess = np.asarray(pmf.get("effective_samples_per_stream", []), float)
     if (not supported or relative is None or not len(ess)
             or not np.isfinite(ess).all() or float(ess.min()) < 20):
-        return {**decision, "action": "extend_time", "reason": "correlated_sample_support"}
-    return {**decision, "action": "add_replicas", "reason": "pmf_precision"}
+        return {**decision, "action": "extend_time", "reason": "correlated_sample_support",
+                "growth_factor": MAX_GROWTH_FACTOR}
+    return {**decision, "action": "add_replicas", "reason": "pmf_precision",
+            "growth_factor": _bounded_growth_factor(relative, target)}
 
 
 def _advance(state, decision):
@@ -171,9 +186,21 @@ def _advance(state, decision):
         state["sampling_directory"] = str(Path(state["sampling_directory"]).parents[0] /
                                            f"umbrella-generation-{state['generation']:03d}")
     elif decision["action"] == "extend_time":
-        state["production_steps"] *= 2
+        factor = float(np.clip(decision.get("growth_factor", MAX_GROWTH_FACTOR),
+                               MIN_GROWTH_FACTOR, MAX_GROWTH_FACTOR))
+        state["production_steps"] = max(
+            state["production_steps"] + 1,
+            int(np.ceil(state["production_steps"] * factor)),
+        )
+        decision["growth_factor"] = factor
     elif decision["action"] == "add_replicas":
-        state["replicas"] *= 2
+        factor = float(np.clip(decision.get("growth_factor", MAX_GROWTH_FACTOR),
+                               MIN_GROWTH_FACTOR, MAX_GROWTH_FACTOR))
+        state["replicas"] = max(
+            state["replicas"] + 1,
+            int(np.ceil(state["replicas"] * factor)),
+        )
+        decision["growth_factor"] = factor
 
 
 def _incomplete(pmf, config, output, options, reason, history):
@@ -231,7 +258,7 @@ def run_auto_rate(config, system, output, executor=None):
                 _postprocess=hook,
             )
         pmf, parent_tasks = root_call(_pmf_and_parent_tasks, sampled, config, system,
-                                     str(output), options)
+                                     str(output), options, executor)
         decision = root_call(_pmf_decision, pmf, state, config)
         record = {"round": state["round"], "generation": state["generation"],
                   "production_steps": state["production_steps"], "replicas": state["replicas"],
