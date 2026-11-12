@@ -97,6 +97,16 @@ def test_explicit_aus_targets_override_precision_preset():
     assert config["adaptive_umbrella"]["target_coverage"] == .97
 
 
+def test_automatic_precision_preserves_the_same_coverage_target_for_production():
+    from pyrpmd.workflows.adaptive_umbrella import adaptive_options
+
+    spec = automatic_spec()
+    spec.data["rate"]["auto"] = {"precision": "normal"}
+    config, _ = spec.resolve()
+    assert config["adaptive_umbrella"]["target_coverage"] == .98
+    assert adaptive_options(config)["target_coverage"] == .98
+
+
 def test_production_auto_supplies_only_sampling_defaults_and_preserves_physical_choices():
     spec = automatic_spec()
     spec.data.update(preset="production", beads=8)

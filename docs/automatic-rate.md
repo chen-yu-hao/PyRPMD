@@ -76,12 +76,16 @@ These are one-standard-error percentages, not confidence intervals. Plateau
 acceptance additionally bounds drift and the simultaneous centered bootstrap
 envelope, including uncertainty in the tail shape.
 
-The precision preset also fills AUS pilot targets: `target_overlap`,
-`min_effective_samples` and `target_coverage`. These values control pilot
-window insertion and local force-constant adaptation; they do not replace the
-frozen-production PMF support and ESS gates. An explicit `[adaptive_umbrella]`
-value takes precedence over the preset, so a project can tighten or relax one
-of these targets without changing the rate uncertainty requirements.
+The precision preset also fills AUS adaptation targets: `target_overlap`,
+`min_effective_samples` and `target_coverage`. `target_overlap` and the ESS
+target guide pilot window insertion and local force-constant adaptation;
+`target_coverage` is intentionally checked both during adaptation and on the
+frozen production generation. These settings therefore tighten the final
+production coverage gate as the requested precision becomes stricter; they do
+not replace the rate PMF bootstrap or recrossing uncertainty gates. An explicit
+`[adaptive_umbrella]` value takes precedence over the preset, so a project can
+tighten or relax one of these targets without changing the rate uncertainty
+requirements.
 
 Optional `pmf_relative_error`, `kappa_relative_error` and
 `target_relative_error` override their preset limits individually, using
