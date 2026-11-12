@@ -1,0 +1,26 @@
+{
+  "schema": "pyrpmd.issue_191.rate_run_summary",
+  "temperature_K": 150,
+  "nbeads": 64,
+  "beta": 2105.166832026581,
+  "windows": 139,
+  "streams": 1390,
+  "samples": 13900000,
+  "locked_windows": 21,
+  "native_steps": 180700000,
+  "python_steps": 0,
+  "physical_converged": false,
+  "potential_provider": "cabi",
+  "potential_abi_version": 1,
+  "system_symbols": [
+    "H",
+    "H",
+    "H",
+    "H",
+    "N"
+  ],
+  "charge": -1,
+  "multiplicity": 1,
+  "reaction": "H2 + NH2- -> NH3 + H-",
+  "rinf_angstrom": 30.0
+}

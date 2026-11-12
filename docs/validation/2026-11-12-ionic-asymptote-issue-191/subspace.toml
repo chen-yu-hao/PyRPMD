@@ -1,0 +1,55 @@
+# H2 + NH2- -> NH3 + H-; T=150 K, P=64.
+# reproduce.py replaces source.rate_run and output.directory at runtime.
+[source]
+rate_run = "./artifacts/path/scientific"
+
+[path]
+step = 10.0
+spread_factor = 2.0
+smoothing = 1.5
+asymptote_tolerance = 1e-6
+asymptote_patience = 50
+
+[subspace]
+dimension = 1
+threshold = 0.5
+environment = "adiabatic"
+
+[validity]
+unconverged_path = "reject"
+unstable_bath = "reject"
+outside_grid = "reject"
+max_outside_fraction = 0.01
+soft_mode_frequency = 2.3e-4
+on_invalid = "diagnose"
+
+[quantum]
+refinement = 3
+truncation_kt = 30.0
+truncation_min = 0.10
+threshold_margin = 1.0
+reference_kt = 0.3
+product_drop_kt = 15.0
+dense_limit = 8000
+
+[rpmd]
+nbeads = 64
+windows = 48
+walkers = 32
+burn_in = 200
+sweeps = 800
+trajectories = 1024
+seed = 150064
+
+[output]
+directory = "./reproduction-output"
+factor_only = true
+reuse = false
+
+[execution]
+backend = "process"
+cpus = 1
+workers = 1
+blas_threads = 1
+memory_limit_mb = 20000
+resume = true
