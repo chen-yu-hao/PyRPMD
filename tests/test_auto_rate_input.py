@@ -38,7 +38,9 @@ def test_minimal_auto_rate_fills_all_sampling_stages_without_evaluating_pes(monk
     assert config["sampling"]["andersen_interval"] == time_steps("20 fs", config["dt_au"])
     assert config["adaptive_umbrella"]["enabled"]
     assert config["adaptive_umbrella"]["adapt_stiffness"]
-    assert config["adaptive_umbrella"]["target_coverage"] == 1
+    assert config["adaptive_umbrella"]["target_overlap"] == .03
+    assert config["adaptive_umbrella"]["min_effective_samples"] == 20.
+    assert config["adaptive_umbrella"]["target_coverage"] == .98
     assert config["recrossing"]["parent_replicas"] == 4
     assert config["recrossing"]["parent_samples"] == 16
     assert config["recrossing"]["child_pairs"] == 2
@@ -62,7 +64,12 @@ def test_precision_presets_and_explicit_overrides(precision, targets):
     spec.data["rate"]["auto"] = {"precision": precision}
     config, _ = spec.resolve()
     controls = config["rate"]["auto"]
+    aus_targets = {
+        "loose": (.02, 10., .95), "normal": (.03, 20., .98), "tight": (.05, 50., 1.),
+    }[precision]
     assert config["recrossing"]["plateau_tolerance"] == {"loose": .05, "normal": .02, "tight": .01}[precision]
+    assert tuple(config["adaptive_umbrella"][key] for key in (
+        "target_overlap", "min_effective_samples", "target_coverage")) == aus_targets
     assert tuple(controls[key] for key in (
         "target_relative_error", "pmf_relative_error", "kappa_relative_error")) == targets
     spec.data["rate"]["auto"]["kappa_relative_error"] = .003
@@ -76,6 +83,18 @@ def test_explicit_plateau_tolerance_overrides_preset():
     spec.data["recrossing"] = {"analysis": {"plateau_tolerance": .003}}
     config, _ = spec.resolve()
     assert config["recrossing"]["plateau_tolerance"] == .003
+
+
+def test_explicit_aus_targets_override_precision_preset():
+    spec = automatic_spec()
+    spec.data["rate"]["auto"] = {"precision": "tight"}
+    spec.data["adaptive_umbrella"] = {
+        "target_overlap": .035, "min_effective_samples": 31, "target_coverage": .97,
+    }
+    config, _ = spec.resolve()
+    assert config["adaptive_umbrella"]["target_overlap"] == .035
+    assert config["adaptive_umbrella"]["min_effective_samples"] == 31.
+    assert config["adaptive_umbrella"]["target_coverage"] == .97
 
 
 def test_production_auto_supplies_only_sampling_defaults_and_preserves_physical_choices():

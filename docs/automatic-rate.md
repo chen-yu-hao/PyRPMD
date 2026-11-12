@@ -61,11 +61,11 @@ precision = "tight"
 max_rounds = 8
 ```
 
-| Precision | PMF barrier relative SE | Kappa relative SE | Total rate relative SE | Plateau relative tolerance |
-| --- | --- | --- | --- | --- |
-| `loose` | 2% | 2% | 10% | 5% |
-| `normal` | 1% | 1% | 5% | 2% |
-| `tight` | 0.5% | 0.5% | 2% | 1% |
+| Precision | PMF barrier relative SE | Kappa relative SE | Total rate relative SE | Plateau tolerance | AUS overlap | AUS min ESS | AUS coverage |
+| --- | --- | --- | --- | --- | ---: | ---: | ---: |
+| `loose` | 2% | 2% | 10% | 5% | 0.02 | 10 | 95% |
+| `normal` | 1% | 1% | 5% | 2% | 0.03 | 20 | 98% |
+| `tight` | 0.5% | 0.5% | 2% | 1% | 0.05 | 50 | 100% |
 
 All three standard-error limits must pass, along with the existing support,
 plateau and energy checks. The PMF percentage is the barrier standard error
@@ -76,10 +76,29 @@ These are one-standard-error percentages, not confidence intervals. Plateau
 acceptance additionally bounds drift and the simultaneous centered bootstrap
 envelope, including uncertainty in the tail shape.
 
+The precision preset also fills AUS pilot targets: `target_overlap`,
+`min_effective_samples` and `target_coverage`. These values control pilot
+window insertion and local force-constant adaptation; they do not replace the
+frozen-production PMF support and ESS gates. An explicit `[adaptive_umbrella]`
+value takes precedence over the preset, so a project can tighten or relax one
+of these targets without changing the rate uncertainty requirements.
+
 Optional `pmf_relative_error`, `kappa_relative_error` and
 `target_relative_error` override their preset limits individually, using
 fractions (`0.01` means 1%). An explicit `recrossing.plateau_tolerance` overrides
-the preset plateau tolerance. The total-rate target includes both PMF
+the preset plateau tolerance. For example:
+
+```toml
+[rate.auto]
+precision = "tight"
+
+[adaptive_umbrella]
+target_overlap = 0.04
+min_effective_samples = 40
+target_coverage = 1.0
+```
+
+The total-rate target includes both PMF
 barrier and transmission-coefficient uncertainty; the nonlinear QTST bootstrap
 must also meet its allocated share of that target. `max_rounds` bounds the
 production refinement and recrossing refinement loops separately. AUS pilot
