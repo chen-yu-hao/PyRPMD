@@ -5,6 +5,19 @@ not been published as a new wheel release; no release date or DOI is assigned.
 
 ## Unreleased
 
+- Subspace correction: path continuations stop in a local minimum
+  (`minimum_reached`) instead of climbing out of it along the incoming tangent
+  (issue #191). Ion–molecule reactions with pre- and post-reaction complexes
+  previously wandered for thousands of steps and ended with
+  `asymptote_not_approached`, or passed through a well to the asymptote on its
+  far side. A product well at least `quantum.product_drop_kt` below the
+  barrier top is an accepted terminus, and the 1D model then absorbs products
+  inside it (`exact_quantum_rate` accepts a per-end `cap_width` pair); a
+  reactant complex is reported with its reason and still fails the path gate.
+  Termination records gain `accepted`, `reason`, `max_energy`,
+  `drop_below_top` and `gradient_norm`; the path gate now reads "did not
+  reach an accepted terminus".
+
 - Add `pyrpmd status RUN_DIR` and `--watch` with committed-step counters,
   percentages, stage ETA and stale-heartbeat detection. Runner, resume and
   extension paths atomically publish advisory `progress.json`; only the main

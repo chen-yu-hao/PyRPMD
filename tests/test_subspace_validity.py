@@ -32,15 +32,17 @@ def tail_gradient(x):
 
 
 def test_step_budget_ends_a_path_short_of_its_asymptote_and_says_so():
+    # The start lies slightly off the valley floor; see the next test for a
+    # start so far off it that the first step turns the path into the well.
     options = dict(step=0.25, rigid_body=False, return_info=True)
-    short, budget = relaxed_path(tail_potential, tail_gradient, [0.5, 0.1], [1.0, 0.0], [1.0, 1.0],
-                                 max_steps=20, **options)
+    short, budget = relaxed_path(tail_potential, tail_gradient, [0.5, 0.01], [1.0, 0.0], [1.0, 1.0],
+                                 max_steps=10, **options)
     assert budget["status"] == "max_steps_exhausted" and not budget["converged"]
-    assert budget["steps"] == 20
-    # The tail still changes by four orders of magnitude more than the tolerance.
+    assert budget["steps"] == 10
+    # The tail still changes by three orders of magnitude more than the tolerance.
     assert budget["tail_energy_range"] > 1e3 * budget["asymptote_tolerance"]
 
-    full, free = relaxed_path(tail_potential, tail_gradient, [0.5, 0.1], [1.0, 0.0], [1.0, 1.0], **options)
+    full, free = relaxed_path(tail_potential, tail_gradient, [0.5, 0.01], [1.0, 0.0], [1.0, 1.0], **options)
     assert free["status"] == "asymptote_converged" and free["converged"]
     assert free["max_steps"] is None and free["steps"] > budget["steps"]
     assert free["tail_energy_range"] < free["asymptote_tolerance"]
@@ -48,9 +50,26 @@ def test_step_budget_ends_a_path_short_of_its_asymptote_and_says_so():
     assert tail_potential(short[-1]) < tail_potential(full[-1]) - 5e-5
     assert abs(tail_potential(full[-1])) < 2e-5
     # Default return type is unchanged.
-    points = relaxed_path(tail_potential, tail_gradient, [0.5, 0.1], [1.0, 0.0], [1.0, 1.0],
+    points = relaxed_path(tail_potential, tail_gradient, [0.5, 0.01], [1.0, 0.0], [1.0, 1.0],
                           step=0.25, rigid_body=False)
     np.testing.assert_array_equal(points, full)
+    assert np.all(full[:, 0] >= 0.5 - 1e-12)  # it climbs the +x tail it was sent along
+
+
+def test_a_path_that_turns_into_a_well_stops_there_instead_of_climbing_out_the_far_side():
+    """Issue #191: a valley that ends in a minimum is not continued uphill.
+
+    From 0.1 off the floor the first step relaxes across the valley, turns
+    the tangent and the path descends into the well at x = 0.  Continuing
+    uphill along the incoming tangent once reached the far-side asymptote
+    (x -> -inf) and reported it as converged; the far side of a well is not
+    the asymptote the path was sent towards.
+    """
+    points, info = relaxed_path(tail_potential, tail_gradient, [0.5, 0.1], [1.0, 0.0], [1.0, 1.0],
+                                step=0.25, rigid_body=False, return_info=True)
+    assert info["status"] == "minimum_reached" and not info["converged"]
+    assert np.linalg.norm(points[-1]) < 0.02 and points[:, 0].min() > -0.02
+    assert info["gradient_norm"] < 1e-3 and info["end_energy"] == pytest.approx(-1e-2, abs=1e-6)
 
 
 def test_halved_steps_cannot_fake_a_flat_tail():

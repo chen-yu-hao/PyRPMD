@@ -48,7 +48,7 @@ seed = 17
 
 # Validity gates (defaults shown). "allow" is an explicit, recorded override.
 [rate.subspace_correction.validity]
-unconverged_path = "reject"   # both path continuations must reach their asymptote
+unconverged_path = "reject"   # both path continuations must end at an accepted terminus
 unstable_bath = "reject"      # the transverse Hessian of the path model must be stable
 outside_grid = "reject"       # the RPMD estimator must stay on the V_S grid
 max_outside_fraction = 0.01
@@ -138,7 +138,7 @@ model that fails one is recorded but never applied.
 
 | Gate | Passes when | Evidence in `subspace_pipeline.json` |
 | --- | --- | --- |
-| `path` | both continuations ended with `asymptote_converged` | `path.reactant_termination`, `path.product_termination` (status, steps, arc length, trailing energy range) |
+| `path` | both continuations ended at an accepted terminus: `asymptote_converged`, or a product well `product_drop_kt` below the barrier | `path.reactant_termination`, `path.product_termination` (status, `accepted`, `reason`, steps, arc length, trailing energy range, end energy, drop below the barrier top) |
 | `bath` | no normal-plane curvature below `-soft_mode_frequency**2` along the 1D path model | `models.1.model_construction.significant_unstable` (arc length, imaginary frequency, character) |
 | `grid` | at most `max_outside_fraction` of the ring-polymer estimator saw `V_S` outside its grid | `corrections.D.rpmd.diagnostics.grid_exit` |
 
@@ -154,6 +154,21 @@ coordinate, a potential leaving its fitted domain, a path that wanders — with
 `step_collapsed` when the tangent cannot be resolved at the smallest step, and
 with `potential_failure` on a failed or non-finite evaluation. `path.max_steps`
 is optional; if set, reaching it is `max_steps_exhausted` and fails the gate.
+
+A descending continuation that runs into a local minimum — a pre- or
+post-reaction complex, typical of ion–molecule reactions with a submerged
+barrier — stops there with `minimum_reached` (issue #191). Steepest descent
+cannot leave a minimum, and climbing on along the incoming tangent only climbs
+a wall: such paths used to wander for thousands of steps and end with
+`asymptote_not_approached`, or pass through the well and reach the asymptote on
+its far side. A minimum is judged per side. On the product side it is accepted
+(`accepted: "product_well"`) when it lies at least `quantum.product_drop_kt`
+(15 kT) below the highest energy on the path: products are committed there,
+which is all the correction needs, and the 1D model then absorbs products only
+inside the committed part of the well (`models.1.product_absorber`). On the
+reactant side it is never accepted: both rates are normalized on a slice of the
+free reactant channel, which lies beyond the complex, so the gate fails with
+the reason `bound pre-reaction complex`.
 
 **Bath.** A vibrationally adiabatic model needs a bath that is bound in the plane
 normal to the path. A negative normal-plane curvature has no zero-point energy;
@@ -240,8 +255,9 @@ The command then runs:
    of librating light atoms are shorter than the bonds. Every selected core is then continued
    by steepest-descent path following (minimum on a sphere around each point, forward hemisphere, rigid-body modes
    excluded; uphill segments use the hyperplane minimum), with step halving at sharp turns.
-   The continuation runs until the energy is flat over ten step lengths of arc; there is no
-   step budget, and each end records how it terminated (see [Validity gates](#validity-gates)).
+   The continuation runs until the energy is flat over ten step lengths of arc, or stops in
+   a local minimum; there is no step budget, and each end records how it terminated and
+   whether that end is accepted (see [Validity gates](#validity-gates)).
 3. **Curvature × width.** From `Sigma(xi)` along the sampled windows
    (`rho = sqrt(2 n^T Sigma n)` along the curvature normal) and, along the whole path, with
    the harmonic bead width of the mode along the normal. Above the threshold (default 0.5)

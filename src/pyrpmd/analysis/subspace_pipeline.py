@@ -408,7 +408,9 @@ def build_path(run: RateRun, options: Mapping[str, Any]):
     ``centroid`` preserves the historical mean-centroid path.  The other
     sources only change the sampled core; all of them use the same
     :func:`assemble_reaction_path` continuation and therefore the same
-    asymptotic reference geometry and potential.
+    asymptotic reference geometry and potential.  ``options['product_drop_kt']``
+    (set by the pipeline from ``quantum.product_drop_kt``) lets the product
+    continuation end in a well that deep below the barrier top.
     """
     options = dict(options or {})
     source = str(options.get("source", "centroid")).lower()
@@ -464,11 +466,15 @@ def build_path(run: RateRun, options: Mapping[str, Any]):
         core, details = _least_action_core(core.reshape(len(core), -1, 3), run, options)
         core = np.asarray(core).reshape(len(core), -1)
         sampled["least_action"] = details
+    # A product continuation may end in a well once it lies as far below the
+    # barrier as the quantum box absorbs products (quantum.product_drop_kt).
+    drop_kt = options.get("product_drop_kt")
     path, info = assemble_reaction_path(
         core, run.energy, run.gradient, run.cartesian_masses, step=float(options.get("step", 10.0)),
         max_steps=None if options.get("max_steps") is None else int(options["max_steps"]), rigid_body=True,
         asymptote_tolerance=float(options.get("asymptote_tolerance", 1e-6)),
         patience=int(options.get("asymptote_patience", 50)),
+        product_well_drop=None if drop_kt is None else float(drop_kt) / run.beta,
     )
     info.update(sampled)
     return mean, mask, path, info
@@ -562,16 +568,50 @@ def path_model(run: RateRun, path, options: Mapping[str, Any], *, path_source: s
     reference = model_axis[0] + (fraction + 0.05) * length
     model = type(model)(model.axes, model.values, model.masses, model.dividing_surface, model.reactant,
                         reference, model.provenance)
-    product_reference = model_axis[-1] - (fraction + 0.05) * length
+    product_cap = _product_cap(model_axis, model.values, surface, fraction * length,
+                               float(options.get("product_drop_kt", 15.0)) / run.beta)
+    if product_cap["width"] < fraction * length:
+        # The product channel ends in a well: absorb from where it is committed.
+        cap_width = [fraction * length, product_cap["width"]]
+        product_reference = model_axis[-1] - product_cap["width"]
+    else:
+        cap_width = fraction * length
+        product_reference = model_axis[-1] - (fraction + 0.05) * length
     thresholds = [float(np.interp(reference, model_axis, model.values)),
                   float(np.interp(product_reference, model_axis, model.values))]
     floor = max(thresholds) - float(options["threshold_margin"]) / run.beta
-    quantum = {"cap_width": fraction * length, "energy_floor": floor, "dense_limit": int(options["dense_limit"])}
+    quantum = {"cap_width": cap_width, "energy_floor": floor, "dense_limit": int(options["dense_limit"])}
     info = {"grid_points": int(len(model_axis)), "spacing": float(model.spacing[0]), "dividing_surface": surface,
             "rate_dividing_surface_arc": rate_surface,
             "reactant_reference": reference, "channel_thresholds": thresholds, "energy_floor": floor,
+            "product_absorber": product_cap,
             "model_construction": dict(model.provenance)}
     return model, quantum, info
+
+
+def _product_cap(axis, values, surface, default, drop):
+    """Product absorber of a 1D path model: ``default`` wide unless the channel ends sooner.
+
+    Products are committed once ``V_S`` has fallen ``drop`` below its value
+    at the dividing surface (the 2D model uses the same rule).  When the path
+    ends in a product well closer to that point than ``default``, the
+    absorber covers only the committed part of the well; otherwise it keeps
+    the default width, so models whose product channel runs on are unchanged.
+    """
+    values = np.asarray(values, dtype=float)
+    top = float(np.interp(surface, axis, values))
+    committed = np.flatnonzero((axis > surface) & (values <= top - drop))
+    if not len(committed):
+        return {"width": float(default), "committed_arc": None, "rule": "default"}
+    start = float(axis[committed[0]])
+    available = float(axis[-1] - start)
+    if available >= default:
+        return {"width": float(default), "committed_arc": start, "rule": "default"}
+    if available < 4.0 * float(axis[1] - axis[0]):
+        # Too few grid points to absorb anything: keep the default and let the
+        # solver reject an absorber that reaches the dividing surface.
+        return {"width": float(default), "committed_arc": start, "rule": "product_well_unresolved"}
+    return {"width": available, "committed_arc": start, "rule": "committed_product_well"}
 
 
 def _saved_model_matches_options(saved: SubspaceCorrection, dimension: int,
@@ -854,7 +894,8 @@ def _build_cases(run, out_dir, options, base, reuse_key):
     from ..io import file_sha256
 
     out_dir.mkdir(parents=True, exist_ok=True)
-    mean, mask, path, path_info = build_path(run, options["path"])
+    mean, mask, path, path_info = build_path(
+        run, dict(options["path"], product_drop_kt=options["quantum"].get("product_drop_kt", 15.0)))
     np.save(out_dir / "path.npy", path)
     threshold = float(options["subspace"]["threshold"])
     sampled_cw = None

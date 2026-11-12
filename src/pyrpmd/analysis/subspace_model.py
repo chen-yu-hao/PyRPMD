@@ -1165,6 +1165,15 @@ def relaxed_path(
         the energy varies by less than ``asymptote_tolerance`` over the last
         ``10 * step`` of arc length.  The window is an arc length, not a
         point count, so halved steps cannot fake a flat tail.
+    ``minimum_reached``
+        after the path has descended, every point of the forward hemisphere
+        lies above the current point even at the smallest step: the valley
+        ends in a local minimum (a pre- or post-reaction complex, a product
+        well).  A steepest-descent path cannot leave a minimum; continuing
+        uphill along the incoming tangent would climb a wall and wander, so
+        the follower stops here.  Whether a minimum is an acceptable end of
+        the reaction path is decided by the caller
+        (:func:`assemble_reaction_path`), not here: ``converged`` is false.
     ``asymptote_not_approached``
         the energy range of that trailing window has not fallen by 10% during
         ``patience`` consecutive windows: the valley is not flattening (a
@@ -1181,7 +1190,9 @@ def relaxed_path(
 
     Returns the Cartesian points ``[k, n]`` including ``start``; with
     ``return_info=True`` also a dictionary with ``status``, ``converged``,
-    the number of steps, the arc length and the trailing energy range.
+    the number of steps, the arc length, the trailing energy range, the
+    highest energy met (``max_energy``) and, at a minimum, the norm of the
+    mass-weighted vibrational gradient there (``gradient_norm``).
     """
     from scipy.optimize import minimize
 
@@ -1213,6 +1224,18 @@ def relaxed_path(
     best_range, stale, next_check = np.inf, 0, window
     tail_range, forced, forced_total = np.inf, 0, 0
     status, message = None, None
+    max_energy, gradient_norm = energy, None
+    # ``slope`` is dV/ds along the tangent at the current point: negative
+    # while the path descends its valley.  ``previous`` keeps the point
+    # before the last step when that point was itself descending.  An
+    # uphill forward sphere then means a minimum lies ahead within the
+    # sphere (slope < 0) or was stepped over (slope >= 0 after a descending
+    # point).  Otherwise -- a start below a barrier top, a valley that rises
+    # towards its asymptote -- the hyperplane step climbs as before.  A
+    # transverse relaxation that lowers the energy while the valley itself
+    # rises leaves the slope positive and is not mistaken for a minimum.
+    g_here = np.asarray(gradient(x), float) / sqrt_m
+    slope, previous, last_length = float(g_here @ t), None, 0.0
 
     def sphere(y, w, h):
         v = t + w @ y
@@ -1238,6 +1261,28 @@ def relaxed_path(
             v = t + w @ result.x
             trial = x + current * (v / np.linalg.norm(v)) / sqrt_m
             trial_energy = float(result.fun)
+            if trial_energy > energy and slope >= 0 and previous is not None and previous[2] @ t < 0:
+                # The last step crossed the bottom of the valley: go back to
+                # the descending point before it and approach with shorter steps.
+                x, energy, g_here = previous
+                slope, previous = float(g_here @ t), None
+                points.pop()
+                energies.pop()
+                arcs.pop()
+                current = 0.5 * last_length
+                if current < smallest:
+                    status = "minimum_reached"
+                    break
+                continue
+            if trial_energy > energy and slope < 0:
+                if current > smallest:
+                    # The minimum lies closer than this sphere: refine.
+                    current *= 0.5
+                    continue
+                if trial_energy - energy > 1e-12 * max(1.0, abs(energy)):
+                    status = "minimum_reached"
+                    break
+                # Indistinguishable from a flat plateau: keep going forward.
             if trial_energy > energy:
                 result = minimize(plane, np.zeros(w.shape[1]), args=(w, current), jac=True, method="BFGS",
                                   options={"gtol": 1e-10, "maxiter": 400})
@@ -1263,7 +1308,19 @@ def relaxed_path(
                 break
         else:
             forced = 0
-        x, t, energy = trial, new_t, trial_energy
+        try:
+            g_trial = np.asarray(gradient(trial), float) / sqrt_m
+        except (ArithmeticError, ValueError, RuntimeError) as error:
+            status, message = "potential_failure", f"{type(error).__name__}: {error}"
+            break
+        if not np.isfinite(g_trial).all():
+            status, message = "potential_failure", "non-finite gradient on the path"
+            break
+        previous = (x, energy, g_here) if slope < 0 else None
+        g_here = g_trial
+        x, t, energy, last_length = trial, new_t, trial_energy, length
+        slope = float(g_here @ t)
+        max_energy = max(max_energy, energy)
         points.append(x.copy())
         energies.append(energy)
         arcs.append(arcs[-1] + length)
@@ -1285,6 +1342,9 @@ def relaxed_path(
     path = np.asarray(points)
     if not return_info:
         return path
+    if status == "minimum_reached":
+        w = _vibrational_complement(x, t, sqrt_m, rigid_body)
+        gradient_norm = float(np.hypot(np.linalg.norm(w.T @ g_here), t @ g_here))
     info = {
         "status": status,
         "converged": status == PATH_CONVERGED,
@@ -1295,6 +1355,8 @@ def relaxed_path(
         "asymptote_tolerance": asymptote_tolerance,
         "end_energy": float(energies[-1]),
         "energy_change": float(energies[-1] - energies[0]),
+        "max_energy": float(max_energy),
+        "gradient_norm": gradient_norm,
         "final_step": float(current),
         "unresolved_turns": int(forced_total),
         "max_steps": None if max_steps is None else int(max_steps),
@@ -1315,20 +1377,39 @@ def assemble_reaction_path(
     max_angle_degrees: float = 20.0,
     asymptote_tolerance: float = 1e-6,
     patience: int = 50,
+    product_well_drop: float | None = None,
 ) -> tuple[np.ndarray, dict]:
-    """Extend a sampled core path (e.g. the ring-polymer mean path) to both asymptotes.
+    """Extend a sampled core path (e.g. the ring-polymer mean path) to both ends.
 
     ``core`` is ordered from reactants to products, ``[points, n]`` Cartesian.
     The ends are continued with :func:`relaxed_path` along the end tangents,
     without a step budget unless ``max_steps`` is given.  The returned
     ``info`` records which points are sampled and which are the relaxed
     (classical valley) continuation, and how each continuation terminated
-    (``reactant_termination``/``product_termination``);
-    ``asymptotes_converged`` is true only when both reached their asymptote.
+    (``reactant_termination``/``product_termination``).
+
+    Each termination record says whether that end is an accepted terminus
+    (``converged``) and why (``accepted``/``reason``):
+
+    * an ``asymptote_converged`` end is accepted on either side;
+    * a product continuation that stops in a minimum (``minimum_reached``)
+      is accepted as a product well when the minimum lies at least
+      ``product_well_drop`` (energy) below the highest energy on the path.
+      The correction only needs the products to be committed: they are
+      absorbed once the path has dropped that far below its maximum, so a
+      deep post-reaction complex is as good an end as the separated products;
+    * a reactant continuation that stops in a minimum is never accepted.  It
+      is a bound pre-reaction complex, and the rates are normalized per unit
+      length on a slice of the *free* reactant channel, which lies beyond it.
+
+    ``termini_accepted`` (and, for older readers, ``asymptotes_converged``)
+    is true only when both ends are accepted.
     """
     points = np.asarray(core, dtype=float).reshape(len(core), -1)
     if len(points) < 2:
         raise ValueError("a core path needs at least two points")
+    if product_well_drop is not None and not (np.isfinite(product_well_drop) and product_well_drop >= 0):
+        raise ValueError("product_well_drop must be finite and nonnegative, or None")
     sqrt_m = np.sqrt(_positive_vector(masses, points.shape[1], "masses"))
     mw = points * sqrt_m
     options = dict(step=step, max_steps=max_steps, rigid_body=rigid_body, patience=patience,
@@ -1337,6 +1418,27 @@ def assemble_reaction_path(
     back, reactant = relaxed_path(potential, gradient, points[0], mw[0] - mw[1], masses, **options)
     ahead, product = relaxed_path(potential, gradient, points[-1], mw[-1] - mw[-2], masses, **options)
     path = np.concatenate([back[:0:-1], points, ahead[1:]])
+    top = max(max(float(potential(p)) for p in points), reactant["max_energy"], product["max_energy"])
+    for side, end in (("reactant", reactant), ("product", product)):
+        end["barrier_top_energy"] = top
+        end["drop_below_top"] = top - end["end_energy"]
+        end["accepted"] = "asymptote" if end["converged"] else None
+        end["reason"] = None
+        if end["status"] != "minimum_reached":
+            continue
+        if side == "reactant":
+            end["reason"] = ("bound pre-reaction complex: the reactant normalization needs the free "
+                             "reactant channel beyond it")
+        elif product_well_drop is None:
+            end["reason"] = "product wells are not accepted without a required drop below the barrier top"
+        elif end["drop_below_top"] >= product_well_drop:
+            end["converged"], end["accepted"] = True, "product_well"
+            end["required_drop"] = float(product_well_drop)
+        else:
+            end["required_drop"] = float(product_well_drop)
+            end["reason"] = (f"product well only {end['drop_below_top']:.3g} below the barrier top "
+                             f"(needs {product_well_drop:.3g}): not committed")
+    accepted = bool(reactant["converged"] and product["converged"])
     info = {
         "core_points": int(len(points)),
         "reactant_continuation_points": int(len(back) - 1),
@@ -1346,7 +1448,9 @@ def assemble_reaction_path(
         "step": float(step),
         "reactant_termination": reactant,
         "product_termination": product,
-        "asymptotes_converged": bool(reactant["converged"] and product["converged"]),
+        "termini_accepted": accepted,
+        "asymptotes_converged": accepted,
+        "product_well_drop": None if product_well_drop is None else float(product_well_drop),
     }
     return path, info
 

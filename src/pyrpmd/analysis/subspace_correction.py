@@ -67,6 +67,15 @@ def _gate(name, passed, policy, reason, detail):
             "reason": None if passed else reason, "detail": detail}
 
 
+_PATH_EVIDENCE = ("status", "steps", "arc_length", "tail_energy_range", "asymptote_tolerance")
+# Recorded by newer path builders only; older reports keep their five fields.
+_PATH_TERMINUS = ("accepted", "reason", "end_energy", "drop_below_top", "required_drop", "gradient_norm")
+
+
+def _path_evidence(end):
+    return {k: end.get(k) for k in _PATH_EVIDENCE} | {k: end[k] for k in _PATH_TERMINUS if k in end}
+
+
 def validity_gates(construction: Mapping[str, Any], rpmd_diagnostics: Mapping[str, Any] | None = None,
                    policy: Mapping[str, Any] | None = None) -> dict:
     """Decide whether a subspace model may carry a correction factor.
@@ -74,8 +83,10 @@ def validity_gates(construction: Mapping[str, Any], rpmd_diagnostics: Mapping[st
     ``construction`` is the model provenance.  Three gates are evaluated when
     their evidence is present:
 
-    ``path``   both continuations of an assembled reaction path reached their
-               asymptote (``path_termination``, set by the pipeline);
+    ``path``   both continuations of an assembled reaction path ended at an
+               accepted terminus (``path_termination``, set by the pipeline):
+               an asymptote, or on the product side a well deep enough below
+               the barrier to commit products;
     ``bath``   the normal-plane Hessian of a path projection is stable
                (``bath_stable``);
     ``grid``   the ring-polymer estimator did not sample the constant
@@ -93,12 +104,11 @@ def validity_gates(construction: Mapping[str, Any], rpmd_diagnostics: Mapping[st
     if termination is not None:
         ends = {side: dict(termination.get(side) or {}) for side in ("reactant", "product")}
         bad = [f"{side}: {end.get('status', 'no termination record')}"
+               + (f" -- {end['reason']}" if end.get("reason") else "")
                for side, end in ends.items() if not end.get("converged")]
         gates.append(_gate("path", not bad, policy["unconverged_path"],
-                           "reaction path did not reach its asymptote (" + "; ".join(bad) + ")",
-                           {side: {k: end.get(k) for k in ("status", "steps", "arc_length",
-                                                           "tail_energy_range", "asymptote_tolerance")}
-                            for side, end in ends.items()}))
+                           "reaction path did not reach an accepted terminus (" + "; ".join(bad) + ")",
+                           {side: _path_evidence(end) for side, end in ends.items()}))
     if "bath_stable" in construction and construction.get("environment") != "frozen":
         unstable = list(construction.get("significant_unstable") or [])
         worst = min(unstable, key=lambda r: r["curvature"]) if unstable else None
