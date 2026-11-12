@@ -219,8 +219,7 @@ class ReweightedThermalEnsemble:
              "source_samples": len(self.weights), "resampled_parents": count,
              "unique_source_parents": len(np.unique(indices)),
              "source_reweighting": self.summary(),
-             "uncertainty_requires_source_chain_bootstrap": True,
-             "physical_converged": False},
+             "uncertainty_requires_source_chain_bootstrap": True},
         )
 
     def summary(self):
@@ -229,8 +228,7 @@ class ReweightedThermalEnsemble:
                 "min_average_sign": self.min_average_sign,
                 "min_effective_samples": self.min_effective_samples,
                 "available": not self.unavailable_reasons,
-                "unavailable_reasons": self.unavailable_reasons,
-                "physical_converged": False}
+                "unavailable_reasons": self.unavailable_reasons}
 
 
 def reweight_thermal_umbrellas(windows, cv, centers, stiffness, *,
@@ -297,7 +295,7 @@ def reweight_thermal_umbrellas(windows, cv, centers, stiffness, *,
         np.concatenate([w.electronic_populations for w in windows]),
         first.masses, first.beta, first.potential, np.concatenate([w.sweeps for w in windows]),
         {"distribution": "unweighted_collection_of_frozen_thermal_umbrellas",
-         "static_bias": True, "physical_converged": False},
+         "static_bias": True},
     )
     frame_g = np.repeat(inefficiencies, counts)
     sign = float(fit.weights @ source.signs)
@@ -384,7 +382,7 @@ class AdaptiveNRPMDPathResult:
                 "path_change_below_tolerance": self.stopping_reason == "path_change_below_tolerance",
                 "production_path_frozen": True, "pilot_samples_used_in_MBAR": False,
                 "sampling_time_is_physical_time": False,
-                "reweighting": self.reweighted.summary(), "physical_converged": False}
+                "reweighting": self.reweighted.summary()}
 
 
 def run_adaptive_nrpmd_path(potential, masses, beta, images, nstates, cv, stiffness, *,

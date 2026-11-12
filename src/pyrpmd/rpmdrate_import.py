@@ -212,8 +212,7 @@ def _convert(path, temperature, beads, pes_module):
     namespace, calls, imports = _execute(path, temperature, beads)
     report = {"format": "PyRPMD.rpmdrate-import.v1", "source": str(path),
               "upstream_commit": UPSTREAM_COMMIT, "temperature_K": temperature, "beads": beads,
-              "calls": calls, "pes_imports": imports, "unmapped": [], "defaults": {},
-              "physical_converged": False}
+              "calls": calls, "pes_imports": imports, "unmapped": [], "defaults": {}}
 
     def unmapped(record, setting, reason, replacement):
         report["unmapped"].append({"call_id": record["id"], "setting": setting,

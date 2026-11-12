@@ -190,7 +190,7 @@ def main():
     report = {
         "model": "quartic_x_harmonic_yz_mass1_beta1_beads1",
         "reference": reference,
-        "dt_au": args.dt, "physical_converged": False,
+        "dt_au": args.dt, 
         "hardware": {"platform": platform.platform(), "processor": platform.processor(),
                      "cpu_count": os.cpu_count(),
                      "OMP_NUM_THREADS": os.environ.get("OMP_NUM_THREADS"),

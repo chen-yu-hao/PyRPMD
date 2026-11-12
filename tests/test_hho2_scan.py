@@ -150,7 +150,6 @@ def test_actual_synthetic_stream_analysis_and_masked_channel_fractions(tmp_path,
     summary = scan.analyze(output)
     assert summary["samples"] == 8
     assert summary["overlap_connected"]
-    assert summary["physical_converged"] is False
     assert "SYNTHETIC" in summary["model_reference"]
     assert summary["supported_bins"] == 1
     assert not summary["projected_connections"]

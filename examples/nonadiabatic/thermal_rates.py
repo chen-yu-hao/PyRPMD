@@ -60,7 +60,7 @@ def run(samples=64, beads=2, steps=30, seed=20261031):
             "summary": nuclear.summarize(), "time_au": nuclear.time.tolist(),
             "rate_curve_au": nuclear.rate_curve.tolist() if nuclear.rate_curve is not None else None,
         },
-        "physical_converged": False,
+        
         "rate_constant": None,
     }
 

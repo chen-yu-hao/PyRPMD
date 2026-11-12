@@ -41,7 +41,6 @@ def test_energy_and_heat_capacity_agree_with_harmonic_log_partition_derivatives(
     expected_heat = beta**2 * (values[2] - 2 * values[1] + values[0]) / eps**2
     assert result["internal_energy_hartree"] == pytest.approx(expected_energy, abs=5 * result["internal_energy_standard_error_hartree"])
     assert result["heat_capacity_over_kB"] == pytest.approx(expected_heat, abs=5 * result["heat_capacity_standard_error_over_kB"])
-    assert result["physical_converged"] is False
 
 
 def test_fourth_order_trace_convergence_and_bead_savings():
@@ -159,7 +158,6 @@ def test_momentum_fourier_normalization_matches_analytic_gaussian_and_keeps_grid
     assert result["integral_on_supplied_momentum_grid"] == pytest.approx(1, abs=2e-4)
     short = momentum_distribution_from_open_paths(samples, np.linspace(-0.3, 0.3, 21), bandwidth_bohr=bandwidth, block_size=100)
     assert short["integral_on_supplied_momentum_grid"] < 0.4
-    assert result["physical_converged"] is False
 
 
 def test_closed_positions_and_fictitious_momenta_are_rejected_as_momentum_input():

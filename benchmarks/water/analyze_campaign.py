@@ -90,7 +90,7 @@ def analyze(directory, output, *, make_plot=True):
               "box_angstrom": manifest["box_angstrom"], "molecules": n,
               "committed_steps": manifest["committed_steps"], "complete": manifest["complete"],
               "elapsed_seconds": manifest["elapsed_seconds"],
-              "physical_converged": False, "literature_reproduced": False,
+               "literature_reproduced": False,
               "validated_diffusion_angstrom2_ps": None, "validated_standard_error_angstrom2_ps": None,
               "equilibration": {}, "segments": [], "fit_window_comparison": [],
               "eligibility": {"published_equilibration_ps": 100,
@@ -231,7 +231,7 @@ def replay_compact(output):
                 slope = np.polyfit(t[mask], curves[prefix + "msd_angstrom2"][mask], 1)[0] / 6
                 np.testing.assert_allclose(slope, row["raw_D_angstrom2_ps"], atol=2e-12, rtol=2e-12)
     return {"artifact_integrity_passed": True, "correlation_estimator_replay_passed": True,
-            "raw_coordinate_replay_requires_archive": True, "physical_converged": False,
+            "raw_coordinate_replay_requires_archive": True, 
             "literature_reproduced": False}
 
 
@@ -286,8 +286,5 @@ def main():
     if args.output is None:
         parser.error("--output is required when analyzing raw checkpoints")
     report = analyze(args.run, args.output, make_plot=not args.no_plot)
-    print(json.dumps({key: report[key] for key in ("committed_steps", "complete", "physical_converged", "segments")}, indent=2))
-
-
-if __name__ == "__main__":
+ain__":
     main()

@@ -424,8 +424,7 @@ def main(argv=None):
             result = import_rpmdrate(args.input, temperature=args.temperature, beads=args.beads,
                                      pes_module=args.pes_module, output=args.output,
                                      allow_unmapped=args.allow_unmapped)
-            _print({"output": result["output"], "unmapped": result["unmapped"],
-                    "physical_converged": False})
+            _print({"output": result["output"], "unmapped": result["unmapped"]})
         elif args.command == "init":
             from .parallel import root_call
             from .scaffold import init_project
@@ -639,7 +638,6 @@ def main(argv=None):
                     "applied_dimension": report["applied_dimension"],
                     "rpmd_rate_" + unit: corrected.get("rpmd_rate_estimate_" + unit),
                     "corrected_rate_" + unit: corrected.get("corrected_rate_estimate_" + unit),
-                    "physical_converged": False,
                 })
         elif args.command == "project":
             from .analysis.projection import project_run

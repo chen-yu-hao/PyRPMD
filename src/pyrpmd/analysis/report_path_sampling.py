@@ -30,7 +30,7 @@ def collect_path_sampling_summary(run):
         "swap_attempts", "swap_accepts", "swap_length_rejections",
         "move_attempts", "move_accepts", "length_rejections",
         "zero_swap_attempts", "zero_swap_accepts", "zero_swap_length_rejections",
-        "qualification", "uncertainty_qualification", "physical_converged",
+        "qualification", "uncertainty_qualification",
     )
     run["metrics"].update({key: deepcopy(summary[key]) for key in fields if key in summary})
     run["metrics"]["rate_unit"] = "s^-1"

@@ -116,7 +116,6 @@ def test_muller_brown_thermal_string_matches_quadrature_and_umbrella_mbar():
     # geometric stop is not evidence of a relaxed path or physical convergence.
     result = finite_temperature_string(images, sampler, tolerance=1e6, max_iterations=1)
     assert result.iterations == 0
-    assert not result.physical_converged
     assert result.statistics.correlation_resolved
     np.testing.assert_array_equal(result.images, images)
     assert np.all(np.abs(result.free_energy - coarse_profile)

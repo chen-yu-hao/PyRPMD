@@ -74,7 +74,6 @@ def test_interruption_and_changed_block_chunk_checkpoint_sizes_are_exact(tmp_pat
     equal_runs(reference, resumed, ref_path, interrupted_path, cfg)
     assert resumed["summary"]["engine"] == "torch"
     assert not resumed["summary"]["converged"]
-    assert not resumed["summary"]["physical_converged"]
 
 
 @pytest.mark.parametrize("neq", [0, 5])
@@ -297,4 +296,3 @@ def test_saved_pimd_statistics_match_exact_finite_bead_harmonic_distribution(tmp
     radius = np.mean([stream["radii_gyration_squared"].mean() for stream in result["streams"]])
     assert radius == pytest.approx(3 * (variance - 1 / (cfg["beta"] * 2.0)), rel=.035)
     assert result["summary"]["converged"] is False
-    assert result["summary"]["physical_converged"] is False

@@ -65,7 +65,7 @@ def main():
     output = {"rng": args.rng, "beads": beads, "beta_au": beta, "dt_au": dt,
               "energies": energies, "normal_modes": results,
               "accepted": all(row["accepted"] for row in energies.values()) and all(row["accepted"] for row in results),
-              "physical_converged": False}
+              }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(output, indent=2)+"\n")
     print(json.dumps(output))

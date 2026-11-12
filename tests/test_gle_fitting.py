@@ -72,7 +72,6 @@ def test_piglet_fit_quantum_harmonic_reference_diffusion_and_relaxation(beads):
         assert potential == pytest.approx(kinetic, abs=2e-11)
     metadata = spec["parameter_metadata"]
     assert metadata["fit_converged"] is True
-    assert metadata["physical_converged"] is False
     assert metadata["maximum_relative_error"] < .004
     assert metadata["lyapunov_relative_residual"] < 1e-11
     assert metadata["solver"]["success"] is True
@@ -161,7 +160,6 @@ def test_optimal_gle_canonical_equilibrium_and_sampling_efficiency():
     assert metadata["minimum_efficiency"] > 2 / (10 + .1)
     assert metadata["minimum_efficiency"] > .4
     assert metadata["fit_converged"] is True
-    assert metadata["physical_converged"] is False
     assert metadata["solver"]["success"] is True
     assert len(metadata["validation_tau_V_au"]) == len(metadata["validation_frequency_grid_au"])
     json.dumps(spec, allow_nan=False)

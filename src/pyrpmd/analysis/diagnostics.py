@@ -50,7 +50,6 @@ def nve_energy_diagnostics(energies, times, *, beads, beta, tolerance_kbt=0.1):
         "tolerance_kbt_per_bead": float(tolerance_kbt),
         "within_tolerance": all(row["within_tolerance"] for row in per_replica),
         "per_replica": per_replica,
-        "physical_converged": False,
     }
 
 

@@ -32,9 +32,8 @@ separate from the path-only result documented here.
 
 No transverse vibrational, rotational, translational, molecular symmetry, or
 three-dimensional bimolecular standard-state factor is guessed. An optimized
-action by itself is **not a multidimensional rate**. `physical_converged=false`
-is retained in results; numerical stationarity does not establish bead, PES,
-partition-function or semiclassical accuracy. Periodic paths must be supplied
+action by itself is **not a multidimensional rate**. Numerical stationarity
+does not establish bead, PES, partition-function or semiclassical accuracy. Periodic paths must be supplied
 in a continuous, unwrapped Cartesian representation with a PES that implements
 the required boundary conditions; the solver does not infer winding sectors.
 
@@ -216,7 +215,6 @@ than silently skipping a failed calculation.
 | `numerical_converged` | Every requested orbit and prefactor passed their stationarity/mode checks |
 | `bead_convergence` | Successive rate changes, the chosen tolerance and the requirement of two passing refinements |
 | `discretization_converged`, `converged` | Both of the last two rate refinements passed the requested tolerance |
-| `physical_converged` | Always false; semiclassical, PES, Hessian and reactant-model errors require independent validation |
 | `rows` | Every optimized path, Hessian spectrum, cost counters, partition components and rate |
 | `physics_fingerprint`, `scientific_identity` | Versioned identity and all resolved scientific settings |
 
@@ -372,7 +370,8 @@ which reports SCI rates on BKMP2 to two significant figures. All three results
 are within those rounding intervals. The largest relative difference from
 the printed number is 2.10% at 200 K; this does not justify a claim of matching
 more digits than the reference supplies. All three scans pass the requested
-two-successive-refinement 1% criterion and retain `physical_converged=false`.
+two-successive-refinement 1% criterion; semiclassical and model validation
+remain separate.
 
 The same table's exact quantum rates are 3.24e-16, 3.67e-17 and 2.01e-18 cm³/s
 at 300, 250 and 200 K, respectively. The substantial difference near crossover
@@ -579,7 +578,7 @@ The golden-rule report has a separate versioned identity. Both PES identities,
 coupling, all resolved controls, paths, active mask, masses, reactant data and
 three convergence scans enter that identity. Original thermal-rate and splitting
 identity contents are unchanged. Outputs are atomic result files, not new
-optimizer checkpoints; `physical_converged` remains false.
+optimizer checkpoints.
 
 ```bash
 pyrpmd instanton examples/instanton/golden_rule.py --output golden-rule.json
@@ -659,5 +658,4 @@ spectra, and iteration histories can be regenerated with `run_instanton`;
 the [CLI example result](validation/golden-rule-instanton-2026-11-02/workflow.json)
 retains those arrays for its smaller example. The [run record](validation/golden-rule-instanton-2026-11-02/run.json)
 links the raw test and documentation-build logs. Numerical and discretization
-success are reported separately; every study retains
-`physical_converged=false`.
+success are reported separately.

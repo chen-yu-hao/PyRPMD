@@ -42,7 +42,6 @@ def test_ratio_and_uncertainty_match_independent_joint_block_jackknife():
     assert result["internal_energy_standard_error_hartree"] == pytest.approx(1.5 * expected_error)
     assert result["sign_resolved"]
     assert result["warnings"] == []
-    assert result["physical_converged"] is False
 
 
 def test_numerator_denominator_covariance_cancels_for_constant_observable():
@@ -148,7 +147,6 @@ def test_automatic_blocking_detects_slow_ratio_influence_hidden_by_large_offset(
     assert diagnostics["block_length_frames"] >= diagnostics["statistical_inefficiency"]
     assert "potential_energy_numerator_hartree_ratio_influence" in diagnostics["correlation_observables"]
     assert result["potential_energy_standard_error_hartree"] > 0
-    assert result["physical_converged"] is False
 
 
 @pytest.mark.parametrize("sign,kwargs,code", [
@@ -165,7 +163,6 @@ def test_unresolved_sign_reports_warning_and_suppresses_all_physical_conclusions
     result = exchange_thermodynamics(data, block_size=1, **kwargs)
     assert code in warning_codes(result)
     assert result["sign_resolved"] is False
-    assert result["physical_converged"] is False
     assert result["average_sign_standard_error"] is not None
     for key in ("potential_energy_hartree", "kinetic_energy_hartree", "internal_energy_hartree",
                 "virial_internal_energy_hartree", "pressure_au", "pressure_standard_error_au",

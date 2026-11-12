@@ -95,7 +95,7 @@ def run(output, library, **options):
     report = {
         "schema": "pyrpmd.h3.sampling-control.v1",
         "created_utc": datetime.now(timezone.utc).isoformat(),
-        "control": options, "physical_converged": False, "literature_reproduced": False,
+        "control": options,  "literature_reproduced": False,
         "classical_control": config["beads"] == 1,
         "rate_estimate_cm3_molecule_s": result.get("rate_estimate_cm3_s"),
         "qtst_cm3_molecule_s": result.get("pmf", {}).get("k_qtst_cm3_s"),

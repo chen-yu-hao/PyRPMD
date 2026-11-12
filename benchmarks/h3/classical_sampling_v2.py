@@ -166,7 +166,7 @@ def run(output, library, *, seed, centers, stiffness, xi_moves=1, warmup=2000,
             swaps=swaps, lineage=lineage, rng=np.array(json.dumps(rng.bit_generator.state)))
         progress = dict(seed=seed, xi_moves=xi_moves, completed_sweeps=completed,
             production_sweeps=n, elapsed_seconds=time.perf_counter()-started,
-            physical_converged=False)
+            )
         write_json(output/"progress.json", progress)
         print(json.dumps(progress), flush=True)
 
@@ -242,7 +242,7 @@ def run(output, library, *, seed, centers, stiffness, xi_moves=1, warmup=2000,
         cpu_elapsed_seconds=time.process_time()-started_cpu,
         created_utc=datetime.now(timezone.utc).isoformat(),
         source_unchanged=settings["source_sha256"] == source_identity(library),
-        checkpoint_sha256=file_hash(checkpoint), physical_converged=False, literature_reproduced=False,
+        checkpoint_sha256=file_hash(checkpoint),  literature_reproduced=False,
         acceptance_per_window=accepted/np.maximum(proposed, 1),
         xi_acceptance_active_windows=float(accepted[4].sum()/max(1, proposed[4].sum())),
         diagnostics_columns=["R_centroid_bohr", "r_centroid_bohr", "signed_cosine", "minimum_bead_pair_bohr",

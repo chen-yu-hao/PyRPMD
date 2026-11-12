@@ -58,7 +58,6 @@ def test_flux_side_normalization_and_bootstrap():
     assert result.bootstrap_rate.shape == (64, 5)
     assert result.standard_error is not None
     assert result.diagnostics["plateau_detected"]
-    assert result.physical_converged is False
 
 
 def test_flux_side_defect_zero_and_full_subspace_limits():

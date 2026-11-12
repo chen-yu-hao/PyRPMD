@@ -195,7 +195,7 @@ def energy_heat_capacity(samples_or_action, positions=None, *, block_size=None,
             "heat_capacity_over_kB": float(heat),
             "heat_capacity_standard_error_over_kB": error_heat,
             "heat_capacity_hartree_per_K": float(heat * KB_AU),
-            "diagnostics": diagnostics, "physical_converged": False,
+            "diagnostics": diagnostics,
             "scope": "closed_trace_thermodynamics_of_temperature_independent_PES"}
 
 
@@ -279,7 +279,7 @@ def isotope_substitution_free_energy(samples, new_masses_au, *, estimator="scale
             "log_partition_ratio_new_over_old": log_ratio,
             "free_energy_new_minus_old_hartree": -log_ratio / action.beta,
             "log_partition_ratio_standard_error": error,
-            "diagnostics": diagnostics, "physical_converged": False}
+            "diagnostics": diagnostics}
 
 
 def isotope_fractionation(phase_a, phase_b, *, allow_poor_overlap=False):
@@ -309,8 +309,7 @@ def isotope_fractionation(phase_a, phase_b, *, allow_poor_overlap=False):
     return {"alpha_A_over_B": alpha, "log_alpha_A_over_B": float(log_alpha),
             "1000_log_alpha": float(1000 * log_alpha), "log_alpha_standard_error": error,
             "temperature_K": phase_a["temperature_K"], "overlap_adequate": bool(adequate),
-            "definition": "(new/old isotope ratio in phase A)/(new/old isotope ratio in phase B)",
-            "physical_converged": False}
+            "definition": "(new/old isotope ratio in phase A)/(new/old isotope ratio in phase B)"}
 
 
 def fractionation_mass_integration(masses_au, kinetic_A_hartree, kinetic_B_hartree, temperature_K):
@@ -332,7 +331,7 @@ def fractionation_mass_integration(masses_au, kinetic_A_hartree, kinetic_B_hartr
             "alpha_A_over_B": math.exp(log_alpha) if log_alpha <= math.log(np.finfo(float).max) else None,
             "1000_log_alpha": 1000 * log_alpha, "temperature_K": temperature,
             "method": "trapezoidal_mass_thermodynamic_integration",
-            "mass_grid_points": len(masses), "physical_converged": False}
+            "mass_grid_points": len(masses)}
 
 
 def quantum_kinetic_energy(samples, *, estimator="auto", block_size=None):
@@ -377,7 +376,7 @@ def quantum_kinetic_energy(samples, *, estimator="auto", block_size=None):
     return {"kinetic_energy_per_atom_hartree": values.mean(axis=0).tolist(),
             "standard_error_per_atom_hartree": errors, "estimator": estimator,
             "action_method": action.method, "temperature_K": action.temperature_K,
-            "diagnostics_per_atom": diagnostics, "physical_converged": False}
+            "diagnostics_per_atom": diagnostics}
 
 
 def momentum_distribution_from_open_paths(samples, momenta_au, *, bandwidth_bohr=None, block_size=None):
@@ -446,7 +445,7 @@ def momentum_distribution_from_open_paths(samples, momenta_au, *, bandwidth_bohr
             "normalization": "Fourier transform divided by 2*pi*g(0); no finite-grid renormalization",
             "atom": samples.action.atom, "axis": samples.action.axis,
             "temperature_K": samples.action.temperature_K, "imaginary_time_links": samples.positions.shape[1] - 1,
-            "diagnostics": diagnostics, "physical_converged": False}
+            "diagnostics": diagnostics}
 
 
 def harmonic_log_partition(beta, frequencies_au, *, beads=None, method="primitive"):
@@ -504,8 +503,8 @@ def exchange_thermodynamics(estimator_samples, *, block_size=None,
     ``sign_sigma``-standard-error interval reaching zero, or nonpositive
     leave-one-block-out signs suppress *all* reweighted observables.  The
     return value retains the sign diagnostic and explicit structured warnings
-    instead of returning unstable physical conclusions.  ``physical_converged``
-    is always false, including for bosons (whose sign is identically one).
+    instead of returning unstable physical conclusions, including for bosons
+    (whose sign is identically one).
     No real-time or permutation-resolved observables are estimated here.
     """
     minimum_average_sign = _positive(minimum_average_sign, "minimum_average_sign")
@@ -603,7 +602,6 @@ def exchange_thermodynamics(estimator_samples, *, block_size=None,
     result = {"samples": len(signs), "average_sign": average_sign,
               "average_sign_standard_error": sign_error, "sign_resolved": resolved,
               "warnings": warnings, "diagnostics": diagnostics,
-              "physical_converged": False,
               "scope": "symmetric_equilibrium_observables_reweighted_from_bosonic_sampling"}
     for key, (mean_key, error_key) in channels.items():
         if key not in columns:

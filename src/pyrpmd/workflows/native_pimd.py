@@ -468,7 +468,7 @@ def _diffusion_summary(streams, config, system, output, return_data=False):
                      metadata=metadata)
         trajectories.append(str(path))
     result = {
-        "task": "diffusion", "status": "complete", "physical_converged": False,
+        "task": "diffusion", "status": "complete",
         "converged": False, "replicas": len(streams),
         "samples_per_replica": [s["frames"] for s in streams],
         "phase": "unthermostatted_rpmd_production", "backend": "native-cxx17",
@@ -531,7 +531,7 @@ def _summary(streams, config, system, output, return_data=False):
     means = np.asarray([s["means"] for s in streams])
     errors = np.std(means, axis=0, ddof=1)/np.sqrt(len(streams)) if len(streams)>1 else None
     bmode = config.get("barostat", {}).get("mode", "none")
-    summary = {"task": "pimd", "status": "complete", "physical_converged": False, "converged": False,
+    summary = {"task": "pimd", "status": "complete", "converged": False,
         "phase": "equilibrium_sampling", "backend": "native-cxx17", "python_step_callbacks": 0,
         "sampling_thermostat": config["sampling"].get("thermostat", "pile-l"), "barostat": bmode,
         "sampling_splitting": sampling_splitting(

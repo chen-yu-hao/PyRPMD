@@ -117,7 +117,7 @@ def compare(name, *, trajectories=128, seed=20261102, dt=4., duration=240.,
         "mash_total_events": int(np.sum(hop_counts)),
         "mash_elapsed_seconds": elapsed,
         "mash_microseconds_per_output_step": elapsed*1e6/(trajectories*steps),
-        "physical_converged": False,
+        
         "limitations": ["finite nuclear packet and finite trajectory ensemble",
                         "pointwise SEM excludes method and discretization error",
                         "reference refinements do not establish all domain limits",

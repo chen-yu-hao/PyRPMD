@@ -204,7 +204,6 @@ class GoldenRuleInstantonResult:
                       coordinate_hessian_eigenvalues=self.coordinate_hessian_eigenvalues.tolist(),
                       coordinate_negative_modes=0, removed_phase_modes=0, removed_rigid_modes=0,
                       unstable_time_modes=1, numerical_converged=self.converged,
-                      physical_converged=False,
                       scope="normal_regime_bound_or_constrained_condon_golden_rule")
         if include_path:
             report.update(path0_bohr=self.path0_bohr.tolist(), path1_bohr=self.path1_bohr.tolist())
@@ -526,7 +525,7 @@ def golden_rule_rate(result, *, coupling_hartree, log_reactant_partition,
             "action_hbar": result.action_hbar,
             "time_schur_curvature_hartree2": result.time_schur_curvature_hartree2,
             "log_coordinate_prefactor": result.log_coordinate_prefactor,
-            "numerical_converged": True, "physical_converged": False,
+            "numerical_converged": True,
             "limitations": ["leading golden-rule semiclassical approximation; weak real constant Condon coupling",
                             "bound/constrained dimensionless reactant partition; no free rigid modes",
                             "positive imaginary times only; Marcus inverted regime unsupported",

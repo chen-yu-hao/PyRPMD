@@ -72,7 +72,7 @@ def validate(replicas=128, steps=40, seed=731, output="steered-double-well"):
         "timing": {"seconds_including_checkpoints": elapsed,
                    "microseconds_per_step_including_checkpoints": 1e6 * elapsed / (2 * replicas * steps),
                    "threads": 1, "native": False, "platform": platform.platform()},
-        "physical_converged": False,
+        
         "note": "Statistical validation of this toy model does not establish molecular or bead convergence.",
     }
     write_report_json(output / "steered-reference.json", summary)

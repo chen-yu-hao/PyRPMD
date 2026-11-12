@@ -97,7 +97,6 @@ not assume that low-temperature tunnelling rates actually obey Arrhenius law.
         "r_squared_ln_k": None if total == 0 else float(1 - residual @ residual / total),
         "degrees_of_freedom": len(t) - 2,
         "uncertainty_model": "independent log-rate errors (delta approximation)" if standard_errors is not None else "unweighted residual variance",
-        "physical_converged": False,
         "note": "Inspect residuals and temperature range; an Arrhenius fit does not validate rates or exclude tunnelling curvature.",
     }
 
@@ -455,7 +454,6 @@ def analyze_rate_study(plan, records):
     return {"schema": "pyrpmd.rate-study.results", "schema_version": 1, "rate_unit": unit,
             "rows": rows, "arrhenius": fits, "kinetic_isotope_effects": kies, "convergence_checks": checks,
             "numerically_converged_on_tested_grid": bool(checks) and all(c["passed"] for c in checks),
-            "physical_converged": False,
             "notes": ["Only accepted workflow rates are fitted; diagnostic rate_estimate values are never substituted.",
                       "Convergence requires |difference| + z*SE(difference) <= atol + rtol*|finer rate|.",
                       "A tested grid does not establish sampling, PMF-domain, recrossing-time, classifier or PES validity.",

@@ -299,7 +299,6 @@ def test_small_real_factor_pipeline_and_verified_reuse(tmp_path, monkeypatch):
     report = pipe.run_subspace_pipeline(request, apply=False, reuse_key="same")
     assert report["corrections"]["1"]["factor"] > 0
     assert report["corrected_rate"] is None
-    assert report["physical_converged"] is False
     assert closed == [True]
     original = pipe.subspace_correction
     monkeypatch.setattr(pipe, "subspace_correction", lambda *a, **k: pytest.fail("recomputed valid cache"))

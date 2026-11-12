@@ -264,7 +264,7 @@ def main():
     previous = legacy_provider("lammps", LAMMPSPotential, args.baseline_ref)
     adapter_path = ROOT/"src/pyrpmd/potentials/lammps.py"
     report = {"schema": "pyrpmd.t19.lammps-profile.v1", "complete": False,
-              "physical_converged": False, "environment": environment(), "baseline_ref": args.baseline_ref,
+               "environment": environment(), "baseline_ref": args.baseline_ref,
               "source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
               "source_sha256": {"adapter": hashlib.sha256(adapter_path.read_bytes()).hexdigest(),
                                 "benchmark": hashlib.sha256(Path(__file__).read_bytes()).hexdigest()},

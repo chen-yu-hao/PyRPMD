@@ -400,7 +400,7 @@ def main():
                       "flux_native": "unconstrained rate-flux propagation via native/propagation.h",
                       "flux_fused": "unconstrained rate-flux propagation via native/fused.hpp"},
         "measurement": "Public-call wall time, no startup/compilation/warmup/state-copy time. Peak process RSS includes imports and all work buffers.",
-        "physical_converged": False, "cases": [],
+         "cases": [],
     }
     args.work_dir.mkdir(parents=True, exist_ok=True)
     print("mode                     N    old us/step    new us/step    speedup    old/new peak MiB", flush=True)

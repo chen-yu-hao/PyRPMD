@@ -246,7 +246,7 @@ def analyze(output, library):
               "maximum_classical_quadrature_log_change": quadrature,
               "equilibrium_control_equivalence_gates_passed": bool(passed),
               "protocol_sha256": sha(Path(output)/"protocol.json"),
-              "physical_converged": False, "literature_reproduced": False,
+               "literature_reproduced": False,
               "limitations": ["Only equilibrium QTST factors are compared; no recrossing children are generated for these controls.",
                               "Failure of a 5% equivalence interval may mean a resolved change or insufficient statistical power.",
                               "All comparisons share the same frozen eight-seed baseline; they are not independent of one another."]}

@@ -196,7 +196,7 @@ def comparison(*, trajectories=128, beads=4, seed=20261103, half_gap=.02,
                       "scipy": scipy.__version__,
                       "omp_num_threads": os.environ.get("OMP_NUM_THREADS"),
                       "openblas_num_threads": os.environ.get("OPENBLAS_NUM_THREADS")},
-        "physical_converged": False,
+        
         "limitations": [
             "finite packet, finite trajectory ensemble and approximate trajectory method",
             "SEM includes independent-trajectory sampling only, not method or discretization bias",

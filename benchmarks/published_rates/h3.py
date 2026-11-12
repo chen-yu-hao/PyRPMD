@@ -91,7 +91,7 @@ def run(output, library, *, profile="pilot", seed=831072, workers=2, resume=Fals
                         "independent_parent_chains": 2,
                         "method": support.get("combination", "unavailable")},
         "profile": profile, "seed": seed, "elapsed_seconds": elapsed,
-        "workflow_status": result.get("status"), "physical_converged": False,
+        "workflow_status": result.get("status"), 
         "provenance": {"source": str(output / "run" / "summary.json"),
                        "settings": str(output / "settings.json"),
                        "driver_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),

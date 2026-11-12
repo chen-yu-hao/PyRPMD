@@ -365,7 +365,7 @@ def run(output, config, *, resume=False, wall_seconds=None, max_steps=None):
             "created_utc": datetime.now(timezone.utc).isoformat(), "artifacts": {}, "chunks": [],
             "committed_steps": 0, "complete": False, "wall_seconds": 0., "process_cpu_seconds": 0.,
             "external_reference": True, "pyrpmd_production_trajectory": False,
-            "physical_converged": False, "literature_reproduced": False,
+             "literature_reproduced": False,
             "propagator": "OpenMM native RPMD, full PME at every bead; no RPC or MTS",
             "preparation": "external global geometric Andersen clock; mean interval exact on the discrete step grid",
             "momentum_distribution": "bead Maxwell at P*T; NVE refresh removes only total ring COM momentum",

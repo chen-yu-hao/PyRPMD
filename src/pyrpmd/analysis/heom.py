@@ -100,8 +100,8 @@ class HEOMState:
 class HEOMResult:
     """Unclipped reduced densities and complete final bath-memory state.
 
-    ``physical_converged`` deliberately remains false: compare at least
-    hierarchy depths and Matsubara cutoffs before treating this as a reference.
+    Compare at least hierarchy depths and Matsubara cutoffs before treating this
+    as a reference.
     No normalization, positivity projection, or Hermitization is performed.
     """
 
@@ -111,8 +111,6 @@ class HEOMResult:
     max_trace_error: float
     max_hermiticity_error: float
     min_density_eigenvalue: float
-    physical_converged: bool = False
-
     @property
     def populations(self):
         return self.density.diagonal(axis1=-2, axis2=-1).real

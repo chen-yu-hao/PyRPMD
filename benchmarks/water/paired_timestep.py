@@ -551,7 +551,7 @@ def analyze(registration_path, output):
               "protocol_sha256": PROTOCOL_SHA256, "chains": rows, "paired_comparisons": comparisons,
               "all_eight_pairs_complete": True, "energy_limits_pass": energy_pass,
               "overall_numerical_control_pass": energy_pass and all(item["equivalent_within_margin"] for item in comparisons.values()),
-              "independence_unit": "eight paired chain differences", "physical_converged": False,
+              "independence_unit": "eight paired chain differences", 
               "preparation_gate_failure_repaired": False, "literature_reproduced": False,
               "literature_comparison": None, "external_OpenMM_reference": True,
               "PyRPMD_production_validation": False,

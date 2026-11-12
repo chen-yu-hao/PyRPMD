@@ -209,7 +209,6 @@ class SubspaceCorrection:
             "diagnostics": self.diagnostics,
             "approximation": "multiplicative subspace defect: k_RPMD(full) * k_QM(S) / k_RPMD(S)",
             "exact_general_rate_claim": False,
-            "physical_converged": False,
         }
         if self.quantum is not None:
             record["quantum"] = self.quantum.to_dict()
@@ -408,7 +407,6 @@ def apply_subspace_correction(
         "subspace_dimension": correction.dimension,
         "beta": correction.beta,
         "approximation": "multiplicative subspace defect",
-        "physical_converged": False,
     }
 
 
@@ -549,7 +547,6 @@ def correct_rate_run(directory, correction, *, output=None, beta_rtol: float = 1
         "uncertainty_scope": "full-run RPMD standard error and subspace ln C_S error combined in quadrature; grid, absorbing-potential and bead convergence excluded",
         "approximation": applied["approximation"],
         "exact_general_rate_claim": False,
-        "physical_converged": False,
     }
     result = _json_safe(result)
     write_json(target, result)

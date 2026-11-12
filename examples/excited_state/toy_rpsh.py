@@ -62,7 +62,7 @@ def run(*, steps: int = 20, dt: float = 0.02, seed: int = 7) -> dict:
         drift = final_energy - initial_energy
         return {
             "completed": True,
-            "physical_converged": False,
+            
             "model": "analytic two-state avoided crossing",
             "units": "atomic",
             "steps": state.step,

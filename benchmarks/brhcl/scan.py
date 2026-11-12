@@ -90,7 +90,7 @@ def plan(*, profile="pilot", temperature=2000., beads=1, dt_fs=.1,
         "planned_total_samples": streams * (nprod // interval),
         "single_dense_matrix_lower_bound_bytes": 8 * streams**2 * (nprod // interval),
         "aggregate_bead_steps": streams * (neq + nprod) * int(beads),
-        "integrator": "cayley-bcb", "loop_backend": "native", "physical_converged": False,
+        "integrator": "cayley-bcb", "loop_backend": "native", 
         "orientation_mc_trials": int(orientation_mc_trials),
         "sampler": ("native RPMD propagation plus invariant-measure orientation Metropolis at Andersen refresh; equilibrium samples only"
                     if orientation_mc_trials else "native RPMD propagation with Andersen momentum refresh; equilibrium samples"),
@@ -409,7 +409,7 @@ def analyze(output, *, bootstrap=None, reference=False, reference_cache=None):
         np.divide(p,mass[None],out=p,where=mass[None]>0);p[:,~supported]=np.nan
         selected=select_channel_basins(CHANNELS,p,energy,supported)
         threshold_checks.append({"scale":scale,"basins":selected,"raw_label_agreement":float(np.mean(other==labels))})
-    summary={"schema":"pyrpmd.brhcl.analysis.v1","model":"BrHCl_LEPS1","physical_converged":False,
+    summary={"schema":"pyrpmd.brhcl.analysis.v1","model":"BrHCl_LEPS1",
              "temperature_K":settings["temperature_K"],"beads":settings["beads"],"timestep_fs":settings["dt_fs"],
              "streams":len(streams),"samples":len(x),"overlap_connected":result["connected"],
              "supported_bins":int(supported.sum()),"total_bins":supported.size,

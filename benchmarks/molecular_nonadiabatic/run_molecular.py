@@ -55,7 +55,7 @@ def run_case(method="nrpmd", *, steps=100, trajectories=8, beads=4, seed=2026110
     initial = potential.evaluate(geometry[None])
     summary = {
         "format": "PyRPMD.NaH2.molecular_smoke.v1", "completed": True,
-        "physical_converged": False, "method": method, "model": potential.to_dict(),
+         "method": method, "model": potential.to_dict(),
         "symbols": list(potential.symbols), "masses_amu": masses_amu.tolist(),
         "masses_electron": masses.tolist(), "positions_bohr": geometry.tolist(),
         "momenta_atomic": momentum.tolist(), "beta_hartree_inverse": beta,
@@ -101,7 +101,7 @@ def main():
         print(json.dumps({"method": method, "completed": True,
                           "final_populations": summary["final_diabatic_population_mean"],
                           "max_energy_drift": summary["max_abs_sum_bead_energy_drift_hartree"],
-                          "physical_converged": False}, sort_keys=True))
+                          }, sort_keys=True))
 
 
 if __name__ == "__main__":

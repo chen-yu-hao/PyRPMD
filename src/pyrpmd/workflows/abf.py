@@ -359,7 +359,7 @@ def _analyze(streams, config, system, output, return_data):
                "status": "finite_time_estimate" if all(s["complete"] for s in streams) else "partial_finite_time_estimate",
                "replicas": len(streams), "samples": sum(s["bias"].bias.observations if isinstance(s["bias"], ExtendedABF)
                                                           else s["bias"].observations for s in streams),
-               "converged": False, "physical_converged": False,
+               "converged": False,
                "estimator": "czar" if options["method"] == "eabf" else "projected_mean_force",
                "algorithm": "extended_system_projected_abf" if options["method"] == "eabf" else "projected_abf",
                "reference_bin": None if reference is None else list(reference), "common_support": bool(common.any()),

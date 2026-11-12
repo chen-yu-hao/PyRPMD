@@ -152,7 +152,7 @@ def main():
              [(n, p) for n in args.atoms or [64, 1000, 4096] for p in args.beads or [8, 32, 128]])
     modes = args.thermostats or (["none", "pile-l"] if args.baseline else
                                 ["none", "pile-l", "pile-g", "gle", "piglet", "nhc", "bzp"])
-    result = {"schema": "thermal-throughput-v1", "complete": False, "physical_converged": False, "environment": environment(),
+    result = {"schema": "thermal-throughput-v1", "complete": False,  "environment": environment(),
               "options": {**vars(args), "output": str(args.output)}, "measurements": []}
     args.output.parent.mkdir(parents=True, exist_ok=True)
     for atoms, beads in cases:

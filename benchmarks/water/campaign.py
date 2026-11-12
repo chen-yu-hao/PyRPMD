@@ -252,7 +252,7 @@ def run(output, config, *, resume=False, wall_seconds=None, max_steps=None):
         manifest = {"schema": "pyrpmd.water-campaign.v1", "config": asdict(config),
                     "source_sha256": identity, "initial_checkpoint_sha256": initial_hash,
                     "box_angstrom": box, "chunks": [], "complete": False,
-                    "physical_converged": False, "literature_reproduced": False,
+                     "literature_reproduced": False,
                     "created_utc": datetime.now(timezone.utc).isoformat(),
                     "python": platform.python_version(), "platform": platform.platform(),
                     "dependencies": {k: importlib.metadata.version(k) for k in ("numpy", "scipy", "openmm")},

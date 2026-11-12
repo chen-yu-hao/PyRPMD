@@ -166,7 +166,6 @@ def test_instanton_records_converged_orbit_below_crossover(monkeypatch):
     assert info["bead_number"] == 8
     assert info["folded_beads"] == 4
     assert info["fallback"] is None
-    assert info["physical_converged"] is False
 
 
 def test_instanton_runs_real_below_crossover_orbit_and_records_diagnostics():
@@ -198,7 +197,6 @@ def test_instanton_runs_real_below_crossover_orbit_and_records_diagnostics():
     assert info["bead_number"] == 32
     assert info["folded_beads"] == 16
     assert info["fallback"] is None
-    assert info["physical_converged"] is False
     assert folded.shape == (16, 1, 3)
     assert np.ptp(folded[:, 0, 0]) > 1.0
 

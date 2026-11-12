@@ -123,7 +123,6 @@ def test_eckart_bead_convergence_and_stationary_modes():
         assert result.negative_modes == 1
         assert result.energy_hartree == pytest.approx(analytic["energy"], rel=0.008)
         assert result.spread_bohr > 4.0
-        assert result.to_dict()["physical_converged"] is False
     assert errors[0] / errors[1] > 3.9
     assert errors[1] / errors[2] > 3.9
     assert errors[2] < 0.0051
@@ -171,7 +170,6 @@ def test_one_dimensional_rate_matches_analytic_instanton_prefactor():
     assert result["rate"] == pytest.approx(expected, rel=0.006)
     assert result["d_energy_d_beta_hartree2"] == pytest.approx(analytic["d_energy_d_beta"], rel=0.001)
     assert result["beta_derivative_relative_difference"] < 0.0002
-    assert result["physical_converged"] is False
 
 
 def test_energy_reference_is_applied_consistently():

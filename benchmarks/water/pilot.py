@@ -147,7 +147,7 @@ def run(output, *, beads=4, equilibration_steps=64, production_steps=256, seed=5
     report = {
         "schema": "pyrpmd.qtip4pf-pilot.v1", "generated_utc": datetime.now(timezone.utc).isoformat(),
         "scope": "model/PME/virtual-site/integrator/observable software validation",
-        "physical_converged": False, "literature_reproduced": False,
+         "literature_reproduced": False,
         "liquid_diffusion_angstrom2_ps": None, "liquid_ir_validated": False,
         "model_source": SOURCE, "parameters": PARAMETERS,
         "conditions": {"temperature_K": 298, "molecules": 8, "density_g_cm3": .997,
@@ -193,7 +193,7 @@ def main():
     args = parser.parse_args()
     report = run(args.output, beads=args.beads, equilibration_steps=args.equilibration_steps,
                  production_steps=args.production_steps, seed=args.seed)
-    print(json.dumps({k: report[k] for k in ("software_checks_passed", "physical_converged",
+    print(json.dumps({k: report[k] for k in ("software_checks_passed", 
           "max_energy_drift_per_bead_hartree", "diffusion_diagnostic_status", "elapsed_seconds")}, indent=2))
     raise SystemExit(0 if report["software_checks_passed"] else 1)
 

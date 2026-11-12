@@ -90,7 +90,6 @@ def test_independent_harmonic_semiclassical_limit_and_segment_scans(reference_st
         assert orbit["time_schur_curvature_hartree2"] < 0
         assert row["rate"]["rate_unit"] == "s^-1"
     assert report["numerical_converged"]
-    assert not report["physical_converged"]
     assert report["surface0_convergence"]["refinement_ratios"] == [2.0, 2.0]
     assert report["surface1_convergence"]["refinement_ratios"] == [2.0, 2.0]
     json.dumps(report, allow_nan=False)
@@ -148,7 +147,6 @@ def test_high_temperature_limit_agrees_with_independent_marcus_formula():
     marcus = 1e-10 * math.sqrt(math.pi * beta / reorganization) * math.exp(-beta * reorganization / 4) / ATOMIC_TIME_S
     assert report["final_rate"]["rate"] == pytest.approx(marcus, rel=0.002)
     assert report["discretization_converged"]
-    assert not report["physical_converged"]
 
 
 @pytest.mark.parametrize("change,match", [
@@ -236,5 +234,4 @@ def test_existing_cli_dispatch_runs_diabatic_adapter_example_and_saves_atomicall
     assert report["number_of_optimizations"] == 10
     assert report["numerical_converged"]
     assert report["discretization_converged"]
-    assert not report["physical_converged"]
     assert not list(tmp_path.glob("*.tmp"))

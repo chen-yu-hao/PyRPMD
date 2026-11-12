@@ -174,7 +174,7 @@ def build_report(run_root, output):
             shutil.copyfile(source, evidence/name)
     for source in sorted((run_root/"reference-validation").glob("*.json")):
         shutil.copyfile(source,evidence/f"reference-{source.name}")
-    result = {"schema":"pyrpmd.brhcl.validation.v1", "physical_converged":False,
+    result = {"schema":"pyrpmd.brhcl.validation.v1", 
               "reference_converged_bins":int(exact["quadrature_converged"].sum()),
               "reference_total_bins":int(exact["quadrature_converged"].size),
               "reference_max_successive_order_error_kbt":float(exact["quadrature_error_kbt"].max()),

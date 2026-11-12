@@ -54,7 +54,6 @@ def test_quartic_action_and_full_prefactor_converge_to_analytic_instanton():
         errors.append(abs(result["splitting_hartree"]/exact-1))
         assert result["action_hbar"] == pytest.approx(action, rel=0.002)
         assert result["splitting_wavenumber_cm^-1"] == pytest.approx(result["splitting_hartree"]/WAVENUMBER_TO_AU)
-        assert result["physical_converged"] is False
     assert errors[0] > 3*errors[1] > 9*errors[2]
     assert errors[2] < 0.002
 

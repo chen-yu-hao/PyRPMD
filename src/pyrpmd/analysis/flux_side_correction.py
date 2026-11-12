@@ -107,8 +107,8 @@ class FluxSideResult:
 
     ``correlation`` is ``<F(0) h(t)>`` in the supplied flux convention, and
     ``rate`` is this curve divided by the supplied reactant population.  The
-    object intentionally carries ``physical_converged=False`` until callers
-    verify the finite-surface, dynamics, plateau and source-chain limits.
+    callers must verify the finite-surface, dynamics, plateau and source-chain
+    limits before treating the result as physically validated.
     """
 
     time: np.ndarray
@@ -161,10 +161,6 @@ class FluxSideResult:
             interval.flags.writeable = False
             object.__setattr__(self, "confidence_interval", interval)
         object.__setattr__(self, "diagnostics", dict(self.diagnostics))
-
-    @property
-    def physical_converged(self):
-        return False
 
 
 def flux_side_rate(
@@ -264,7 +260,6 @@ def flux_side_rate(
         "confidence_level": float(confidence_level),
         "confidence_interval_available": bool(interval is not None),
         "uncertainty_scope": "whole-replica bootstrap; independent replicas required",
-        "physical_converged": False,
         "surface_and_side_convention": "caller-supplied flux and h in [0,1]",
         "plateau_detected": False,
         "candidate_rate": None,
@@ -372,7 +367,6 @@ def hybrid_flux_side_correction(
         "mode": mode,
         "ridge": ridge,
         "inverse_defect_rms": float(np.sqrt(np.mean(np.abs(quantum - sub) ** 2))),
-        "physical_converged": False,
         "approximation": "matched-subspace-flux-side-defect-transfer" if mode != "ratio" else "matched-subspace-multiplicative-defect",
         "exact_general_rate_claim": False,
         "assumption": "the selected subspace carries the full-system quantum flux-side defect",

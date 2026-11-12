@@ -301,7 +301,6 @@ class FiniteTemperatureStringResult:
     maximum_perpendicular_drift: float
     maximum_perpendicular_standard_error: float
     converged: bool
-    physical_converged: bool
     iterations: int
     history: tuple
     diagnostics: dict
@@ -349,8 +348,8 @@ def finite_temperature_string(images, sampler, *, step=0.01, tolerance=1e-3,
     Custom thermal samplers may be used without checkpointing.  ``max_iterations``
     is a total budget, so increasing it on resume extends the same random streams.
     The geometric stopping criterion includes ``confidence_z`` block errors;
-    ``physical_converged`` remains false until independent stiffness, time-step,
-    equilibration, image-spacing and sampling studies have been performed.
+    Independent stiffness, time-step, equilibration, image-spacing and sampling
+    studies are required before treating the result as physically validated.
     """
     path = _validated(images)
     initial = path.copy()

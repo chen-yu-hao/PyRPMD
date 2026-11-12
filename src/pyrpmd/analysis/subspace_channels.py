@@ -247,7 +247,6 @@ class SubspaceChannels:
                                                if np.isfinite(normal_frequency) else False),
                      # A channel solve is a numerical result until the user
                      # checks the normal-box and sigma-grid ladders.
-                     "physical_converged": False,
                      "position_dependent_metric": bool(np.any(abs(self.curvature) > 0))})
         return QuantumRateResult(beta, flux / partition_value, flux, partition_value,
                                  "sylvester", info)

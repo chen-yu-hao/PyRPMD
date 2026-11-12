@@ -76,7 +76,6 @@ def test_exchange_interrupted_resume_preserves_signed_history_and_rng(
                 "exchange_estimators", "fingerprint"):
         np.testing.assert_array_equal(a[key], b[key])
     assert resumed["replicas"][0]["thermodynamics"] == whole["replicas"][0]["thermodynamics"]
-    assert resumed["physical_converged"] is False
     monkeypatch.setattr(Dynamics, name, lambda *args, **kwargs: pytest.fail("complete run propagated"))
     assert run_path_integral(config, system, tmp_path / "split") == resumed
 
@@ -214,7 +213,6 @@ def test_unresolved_sign_never_reports_bosonic_potential_as_fermionic_energy(tmp
     assert replica["potential_energy_hartree"] is None
     assert replica["bosonic_sampling_potential_energy_hartree"] > 0
     assert result["warnings"]
-    assert result["physical_converged"] is False
     json.dumps(result, allow_nan=False)
 
 

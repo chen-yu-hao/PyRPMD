@@ -102,7 +102,6 @@ def test_mbar_recovers_analytic_gaussian_moments_and_window_free_energies(gaussi
         result.diagnostics["absolute_measure_window_free_energies"], expected_f, atol=0.002,
     )
     assert result.average_sign == pytest.approx(1.0)
-    assert result.summary()["physical_converged"] is False
     assert result.diagnostics["sampling_time_is_physical_time"] is False
     assert result.weights.sum() == pytest.approx(1.0)
     assert np.all(result.weights >= 0)
@@ -277,7 +276,6 @@ def test_adaptive_path_moves_into_curved_valley_freezes_endpoints_and_uses_fresh
     assert summary["production_path_frozen"] is True
     assert summary["pilot_samples_used_in_MBAR"] is False
     assert summary["sampling_time_is_physical_time"] is False
-    assert summary["physical_converged"] is False
     assert not first.centers.flags.writeable
 
 

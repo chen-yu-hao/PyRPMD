@@ -352,7 +352,7 @@ def _write_results(directory, config, identity, histories):
     reason = "fewer_than_two_trajectories" if len(histories) < 2 else None
     metadata = {"format": _RESULT_KIND, "method": method, "physics_fingerprint": identity,
                 "independent_trajectories": True, "statistics_axis": "trajectory",
-                "time_unit": "atomic", "energy_unit": "hartree", "physical_converged": False,
+                "time_unit": "atomic", "energy_unit": "hartree",
                 "sem_unavailable_reason": reason, **statistics, **_execution_metadata(config)}
     arrays = {"metadata": np.asarray(json.dumps(metadata, sort_keys=True, allow_nan=False)),
               "time": steps*config["dt_au"], "steps": steps, "populations": population,
@@ -407,7 +407,7 @@ def prepare_extended_nonadiabatic(config, system, numerical=False):
         result = {"method": config["method"], "nstates": dynamics.nstates, "model": config["model"],
                   "initialization": config["initial"]["kind"], "state_shape": list(state.q.shape),
                   "electronic_state_class": type(state).__name__, "integrator": dynamics.integrator_name,
-                  "initial_energy_hartree": float(record["energy"]), "physical_converged": False,
+                  "initial_energy_hartree": float(record["energy"]),
                   **_estimator_metadata(config["method"]), **_execution_metadata(config)}
         if numerical:
             from ..potentials.diabatic import check_diabatic_potential
@@ -459,7 +459,6 @@ def analyze_extended_nonadiabatic(config, system, directory):
             "uncertainty": "pointwise SEM across independent trajectories; excludes systematic method and discretization errors",
             "max_abs_energy_drift_at_saved_frames_hartree": float(np.max(np.abs(arrays["energy_drift"]))),
             "max_electronic_norm_drift_at_saved_frames": float(np.max(np.abs(arrays["norm_drift"]))),
-            "final_active_surface_fractions": None if "active_surface_fractions" not in arrays else arrays["active_surface_fractions"][-1].tolist(),
-            "physical_converged": False, "completed": True, "initialization": config["initial"],
+            "final_active_surface_fractions": None if "active_surface_fractions" not in arrays else arrays["active_surface_fractions"][-1].tolist(), "completed": True, "initialization": config["initial"],
             "physics_fingerprint": identity, "arrays": str(directory/"results"/"nonadiabatic.npz"),
             "time_series": str(directory/"results"/"populations.csv")}

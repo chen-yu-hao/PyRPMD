@@ -371,7 +371,7 @@ def _write_results(directory, config, identity, histories):
     metadata = {
         "format": _RESULT_KIND, "method": config["method"], "physics_fingerprint": identity,
         "independent_trajectories": True, "statistics_axis": "trajectory", "time_unit": "atomic",
-        "energy_unit": "hartree", "physical_converged": False, "sem_unavailable_reason": reason,
+        "energy_unit": "hartree", "sem_unavailable_reason": reason,
         **_estimator_metadata(config),
     }
     arrays = {
@@ -420,7 +420,7 @@ def prepare_multistate_nonadiabatic(config, system, *, numerical=False):
             "method": config["method"], "nstates": dynamics.nstates, "model": config["model"],
             "initialization": config["initial"]["kind"], "state_shape": list(state.q.shape),
             "electronic_state_class": type(state).__name__, "integrator": config["dynamics"]["integrator"],
-            "initial_energy_hartree": float(record["energy"]), "physical_converged": False,
+            "initial_energy_hartree": float(record["energy"]),
             **_estimator_metadata(config),
         }
         if numerical:
@@ -473,8 +473,7 @@ def analyze_multistate_nonadiabatic(config, system, directory):
         "sem_unavailable_reason": metadata["sem_unavailable_reason"],
         "uncertainty": "pointwise SEM across independent trajectories; excludes systematic method and discretization errors",
         "max_abs_energy_drift_at_saved_frames_hartree": float(np.max(np.abs(arrays["energy_drift"]))),
-        "max_electronic_norm_drift_at_saved_frames": float(np.max(np.abs(arrays["norm_drift"]))),
-        "physical_converged": False, "completed": True, "initialization": config["initial"],
+        "max_electronic_norm_drift_at_saved_frames": float(np.max(np.abs(arrays["norm_drift"]))), "completed": True, "initialization": config["initial"],
         "physics_fingerprint": identity, "arrays": str(directory/"results"/"nonadiabatic.npz"),
         "time_series": str(directory/"results"/"populations.csv"),
     }

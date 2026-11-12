@@ -229,7 +229,7 @@ source hashes, all numerical controls, partition conventions, and the resulting
 SHA-256 fingerprint. No RNG is used and the calculation has no checkpoint or
 resume state.
 
-`physical_converged` is always `false`. The workflow also leaves
+The workflow also leaves
 `numerical_converged` false because a single path does not establish numerical
 convergence. A defensible study must independently vary at least:
 

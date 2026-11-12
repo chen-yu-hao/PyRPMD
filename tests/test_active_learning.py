@@ -79,7 +79,7 @@ def test_three_rounds_keep_versions_full_reference_provenance_and_rng(tmp_path):
     assert result["label_attempts"] == result["successful_labels"] == 15
     assert [len(q) for q in reference.calls] == [2, 2, 1]*3
     assert result["rounds_completed"] == 3 and len(result["model_versions"]) == 4
-    assert not result["converged"] and not result["physical_converged"]
+    assert not result["converged"]
     for index, event in enumerate(result["history"]):
         assert event["round"] == index and event["trained"]
         assert event["committee"] == result["model_versions"][index]["sha256"]
@@ -200,7 +200,7 @@ def test_small_disagreement_only_certifies_the_sampled_batch(tmp_path):
     assert result["uncertainty_converged"] is True
     assert result["uncertainty_scope"] == "current_sampled_batch_only"
     assert result["uncertainty_is_calibrated_error"] is False
-    assert result["physical_converged"] is False and result["converged"] is False
+    assert result["converged"] is False
     assert reference.calls == [] and loop.dataset is None
 
 

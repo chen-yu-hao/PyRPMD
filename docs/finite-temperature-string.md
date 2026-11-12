@@ -92,9 +92,8 @@ five estimated correlation times long. This remains a diagnostic, not proof
 that all slow coordinates were sampled.
 
 `converged` is a geometric criterion on the final images, including a selected
-multiple of the perpendicular block error. `physical_converged` is always false:
-stiffness bias, equilibration, sampling, timestep and path discretization require
-separate studies. The final residual and history refer to the returned images.
+multiple of the perpendicular block error. Stiffness bias, equilibration,
+sampling, timestep and path discretization require separate studies. The final residual and history refer to the returned images.
 
 Checkpoints are atomic, integrity-checked NPZ archives at complete sampling
 iteration boundaries. They contain the string, its current estimates, each

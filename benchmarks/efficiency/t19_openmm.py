@@ -272,7 +272,7 @@ def run_case(*, model_name, beads, atoms, device, platform=None, workers=(1, 4),
             "model_parameters": _model_parameters(model_name, model, q, extras),
             "warmup": warmup, "repeats": repeats, "rounds": rounds, "seed": seed,
             "mode_orders": mode_orders,
-            "modes": results, "physical_converged": False}
+            "modes": results}
 
 
 def _positive(value):
@@ -330,7 +330,7 @@ def main(argv=None):
                              "parsed_arguments": {key: str(value) if isinstance(value, Path) else value
                                                   for key, value in vars(args).items()}},
               "requested_device": args.device, "requested_platform": selected,
-              "claims_cuda_measurement": False, "physical_converged": False, "cases": []}
+              "claims_cuda_measurement": False,  "cases": []}
     unavailable = selected not in info["openmm_platforms"]
     failed = False
     for atoms in args.atoms:

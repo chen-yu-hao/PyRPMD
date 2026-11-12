@@ -321,7 +321,7 @@ def _apply_flux(summary, options):
 
 def _empty_summary(method):
     return {"method": method, "overall_crossing_probability": None, "rate_estimate_au": None,
-            "rate_estimate_s_inv": None, "rate_s_inv": None, "converged": False, "physical_converged": False}
+            "rate_estimate_s_inv": None, "rate_s_inv": None, "converged": False}
 
 
 def _retis_observations(result):
@@ -552,7 +552,7 @@ def run_path_sampling(config, system, directory, *, max_operations=None):
                "beta_au": config["beta"], "beads": config["beads"], "dt_au": config["dt_au"],
                "physics_fingerprint": identity["physics"], "coordinate": options["cv"], "coordinate_unit": options["interface_unit"],
                "checkpoint": "checkpoints/path_sampling.npz", "observations": "samples/path_sampling.npz",
-               "rate_s_inv": None, "converged": False, "physical_converged": False,
+               "rate_s_inv": None, "converged": False,
                "convergence_note": "Completed budget is not physical convergence; establish stationarity, interface support, timestep/bead/path-length convergence and independent-chain uncertainty."}
     if not complete:
         summary["status"] = "partial"

@@ -93,7 +93,7 @@ def compare(study_directory, reference_file):
             "sixteen_minus_eight": reference["convergence"]["sixteen_minus_eight"],
             "scope": "independent_reference_on_common_coarse_grid_and_domain",
         },
-        "physical_converged": False, "rate_constant": None,
+         "rate_constant": None,
     }
     (directory / "comparison.json").write_text(json.dumps(result, indent=2, allow_nan=False) + "\n")
     with (directory / "comparison.csv").open("w", newline="") as stream:

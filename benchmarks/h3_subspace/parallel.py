@@ -117,7 +117,7 @@ def main():
         from pyrpmd import _subspace
 
         record = dict(schema="pyrpmd.subspace.parallel_benchmark.v1", mode=args.mode, execution=options,
-                      wall_seconds=elapsed, physical_converged=False, temperature_K=300., nbeads=32,
+                      wall_seconds=elapsed,  temperature_K=300., nbeads=32,
                       rpmd_options=cases["1d"]["rpmd_options"],
                       platform=platform.platform(), python=sys.version, numpy=np.__version__, scipy=scipy.__version__,
                       affinity=sorted(os.sched_getaffinity(0)), native_extension=_subspace.__file__,

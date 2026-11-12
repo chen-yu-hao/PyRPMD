@@ -11,8 +11,7 @@ histogram with bin-integrated quadrature and independent umbrella/MBAR.
 All model quantities are in atomic units; beta=1 is an illustrative toy-model
 temperature, not a claim about molecular convergence.  Independent-replica
 standard errors in this validation harness are not production convergence
-certificates.  The ordinary workflow deliberately leaves physical_converged
-false.
+certificates.  The ordinary workflow reports task-specific diagnostics only.
 
 Example::
 
@@ -203,7 +202,7 @@ def reference_case(dimension, target, *, iterations=300, replicas=6, block_size=
             "reference_free_energy": exact.tolist(), "ves_mean": mean.tolist(), "ves_sem": sem.tolist(),
             "mbar_free_energy": mbar.tolist(), "mbar_sem": mbar_sem.tolist(),
             "support": supported.tolist(), "states": states, "rejection_proposals": proposals,
-            "physical_converged": False,
+            
             "scope": "IID continuous sampling of each current VES bias; no MD mixing claim"}
 
 
@@ -321,13 +320,11 @@ def md_validation(directory, *, replicas=6, production_steps=30000, timestep=.04
         combined = np.sqrt(sem**2 + mbar_sem**2)
         band = float(student_t.ppf(1 - .01/(2*np.sum(support)), replicas - 1))
         # Explicit saved-state recomputation and finished-run resume must
-        # reproduce the result and may not label it physically converged.
+        # reproduce the result.
         reanalyzed = analyze_run(output, recompute=True)
         resumed = resume_run(output)
         reread = FESResult.read(output)
         np.testing.assert_array_equal(result.free_energy, reread.free_energy)
-        assert not summary["physical_converged"]
-        assert not resumed["physical_converged"] and not reanalyzed["physical_converged"]
         metrics = {
             "dimension": dimension, "target": target, "beta": BETA,
             "replicas": replicas, "production_steps": production_steps, "timestep_au": timestep,
@@ -351,7 +348,7 @@ def md_validation(directory, *, replicas=6, production_steps=30000, timestep=.04
             "steps_per_second": replicas*(production_steps + 1000)/sampled_seconds,
             "reference_free_energy": exact.tolist(), "ves_mean": mean.tolist(), "ves_sem": sem.tolist(),
             "mbar_free_energy": mbar.tolist(), "mbar_sem": mbar_sem.tolist(),
-            "support": support.tolist(), "physical_converged": False,
+            "support": support.tolist(), 
             "finished_resume_and_reanalysis_exact": True,
             "scope": "P=1 MD on toy models; no molecular, bead, basis or timestep convergence claim",
         }

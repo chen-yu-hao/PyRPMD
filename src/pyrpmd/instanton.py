@@ -281,8 +281,7 @@ class InstantonResult:
         output.update(nbeads=len(self.path_bohr),
                       hessian_eigenvalues=self.hessian_eigenvalues.tolist(),
                       scope="stationary_action_path_not_a_multidimensional_rate",
-                      numerical_converged=self.converged,
-                      physical_converged=False)
+                      numerical_converged=self.converged)
         if include_path:
             output["path_bohr"] = self.path_bohr.tolist()
         return output
@@ -698,7 +697,6 @@ def instanton_rate_1d(potential, masses, temperature_kelvin, initial_path, *,
         "beta_derivative_relative_difference": relative_error,
         "beta_relative_step": h / 2,
         "numerical_converged": central.converged,
-        "physical_converged": False,
         "instanton": central.to_dict(),
         "limitations": ["one active Cartesian degree of freedom",
                         "semiclassical, nonuniform near crossover",

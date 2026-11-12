@@ -22,7 +22,7 @@ def saved_run(directory):
         "samples": 100, "flux_au": .1, "flux_s_inv": 4.1e15,
         "overall_crossing_probability": .3,
         "rate_estimate_au": .03, "rate_estimate_s_inv": 1.2e15,
-        "rate_s_inv": None, "converged": False, "physical_converged": False,
+        "rate_s_inv": None, "converged": False,
         "rate_standard_error_block_conditional_on_flux_au": .004,
         "qualification": "Memory loss beyond neighboring interfaces must be checked.",
         "uncertainty_qualification": "Supplied-flux uncertainty is excluded.",
@@ -45,7 +45,7 @@ def test_saved_path_sampling_report_never_constructs_provider(tmp_path, monkeypa
     metrics = report["metrics"]
     for key in ("method", "interfaces", "flux_au", "rate_estimate_au", "rate_estimate_s_inv",
                 "rate_s_inv", "overall_crossing_probability",
-                "rate_standard_error_block_conditional_on_flux_au", "physical_converged"):
+                "rate_standard_error_block_conditional_on_flux_au"):
         assert metrics[key] == summary[key]
     assert "rate_standard_error_au" not in metrics
     assert metrics["rate_s_inv"] is None

@@ -483,8 +483,6 @@ def test_small_molecular_rpsh_energy_drift_and_step_refinement():
     from examples.nonadiabatic.pyscf_lih_rpsh import run
     coarse = run(steps=6, dt=2., initial_state=1)
     fine = run(steps=12, dt=1., initial_state=1)
-    assert not coarse["physical_converged"]
-    assert not fine["physical_converged"]
     assert coarse["max_energy_drift_hartree"] < 1e-6
     assert fine["max_energy_drift_hartree"] < .4*coarse["max_energy_drift_hartree"] + 1e-10
     assert coarse["max_overlap_singular_value_deviation"] < 1e-6

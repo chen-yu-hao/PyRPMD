@@ -69,7 +69,6 @@ def test_harmonic_memory_matches_exact_schur_complement():
     exact = np.array([np.linalg.inv(K + (.04-1j*v)**2*np.eye(2))[0, 0] for v in w])
     np.testing.assert_allclose(result[:, 0, 0], exact, atol=1e-12)
     assert diagnostics['passivity_grid_passed']
-    assert not diagnostics['physical_converged']
 
 
 def test_optional_static_covariance_matches_zero_frequency():
@@ -125,7 +124,6 @@ def test_selector_captures_even_nonlinear_force_and_joint_coordinate_group():
     assert selection.selected_indices == (0, 1)
     assert selection.basis.shape == (3, 2)
     assert selection.diagnostics["selection_is_error_bound"] is False
-    assert selection.diagnostics["physical_converged"] is False
 
 
 def test_selector_reports_nested_ranking_without_forcing_full_space():

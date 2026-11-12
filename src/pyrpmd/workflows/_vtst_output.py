@@ -198,7 +198,6 @@ def _summary(result: Mapping[str, Any], output: Path, fingerprint: str) -> dict[
         "task": "vtst",
         "output": str(output),
         "physics_fingerprint": fingerprint,
-        "physical_converged": False,
         "numerical_converged": False,
         "mep_side_force_converged": result["path"]["side_converged"],
         "endpoint_connected": result["endpoint_validation"].get("connected"),
@@ -240,7 +239,6 @@ def _publish(
             "version": __version__,
             "physics_fingerprint": fingerprint,
             "physics_identity": identity,
-            "physical_converged": False,
             "restartable": False,
             "rng": "not_used",
             "units": {

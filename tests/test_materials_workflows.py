@@ -232,7 +232,6 @@ def test_initial_observation_failure_has_recoverable_state(tmp_path, monkeypatch
 def test_pimd_summary_contains_physical_estimators_separate_from_hamiltonian(tmp_path):
     result = run_materials(config("pimd"), system(), tmp_path)
     assert result["task"] == "pimd"
-    assert not result["physical_converged"]
     assert result["phase"] == "equilibrium_sampling"
     assert set(result["estimators"]) == set(OBSERVABLE_NAMES)
     assert result["estimators"]["internal_energy_centroid_virial"]["mean"] != result["estimators"]["ring_polymer_hamiltonian"]["mean"]
@@ -249,7 +248,6 @@ def test_diffusion_reanalysis_needs_no_potential_and_can_change_selections(tmp_p
     result = run_materials(cfg, system(), tmp_path)
     assert result["task"] == "diffusion"
     assert result["phase"] == "unthermostatted_rpmd_production"
-    assert not result["physical_converged"]
     assert result["diffusion"]["input"]["atom_indices"] == [0]
     changed = copy.deepcopy(cfg)
     changed["diffusion"].update(axes=[0], reference_atoms=[1], bootstrap=3)

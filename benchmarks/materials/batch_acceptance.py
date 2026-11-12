@@ -322,7 +322,7 @@ def compare_runs(reference, candidate):
             raise AssertionError("RNG or accepted propagation counters changed")
     summaries = [json.loads((Path(p) / "results/summary.json").read_text()) for p in (reference, candidate)]
     fields = ("estimators", "sampling_diagnostics", "radius_of_gyration_squared_bohr2", "diffusion",
-              "analysis_status", "nve_energy_diagnostics", "samples_per_replica", "physical_converged")
+              "analysis_status", "nve_energy_diagnostics", "samples_per_replica")
     for field in fields:
         if summaries[0].get(field) != summaries[1].get(field):
             raise AssertionError(f"Summary statistic differs: {field}")
@@ -377,7 +377,7 @@ def run_acceptance(model, output, *, modes=("serial", "process", "batch", "proce
     report = {"schema": "pyrpmd.materials-batch-acceptance.v1", "generated_utc": datetime.now(timezone.utc).isoformat(),
               "potential": PROVENANCE, "source_at_start": source_identity(),
               "versions": {n: importlib.metadata.version(n) for n in ("numpy", "scipy", "ase")},
-              "physical_converged": False, "implementation_checks_passed": False,
+               "implementation_checks_passed": False,
               "scope": "fixed-cell real Ni-H force/virial contracts and finite-step serial/process/task-batch/MPI equivalence",
               "performance_scope": "single measurement per mode, startup and count probe included; no speedup assertion",
               "cases": [], "recovery": {}}
@@ -443,7 +443,7 @@ def main():
     result = run_acceptance(model, args.output, modes=tuple(args.modes.split(",")),
                             mpi_command=args.mpi_command, mpi_dynamic_command=args.mpi_dynamic_command)
     print(json.dumps({"implementation_checks_passed": result["implementation_checks_passed"],
-                      "physical_converged": False, "report": str(args.output / "report.json")}))
+                       "report": str(args.output / "report.json")}))
 
 
 if __name__ == "__main__":
