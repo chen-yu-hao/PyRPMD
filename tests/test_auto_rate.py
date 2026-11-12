@@ -49,6 +49,30 @@ def test_pmf_decides_time_independent_trajectories_and_supported_precision():
     assert auto_rate._pmf_decision(limited, _state(), _config())["action"] == "extend_time"
 
 
+def test_pmf_growth_factor_is_bounded_and_error_driven():
+    config = _config()
+    config["rate"]["auto"]["target_relative_error"] = .1
+    state = _state()
+    decision = auto_rate._pmf_decision(_pmf(.01, 40), state, config)
+    assert decision["action"] == "recrossing"
+
+    noisy = _pmf(.01, 40)
+    noisy["pmf_bootstrap_barriers"] = [1. - .4, 1. + .4]
+    decision = auto_rate._pmf_decision(noisy, state, config)
+    assert decision["action"] == "add_replicas"
+    assert decision["growth_factor"] == pytest.approx(2.)
+
+
+def test_budget_advance_uses_fractional_growth_without_reducing_counts():
+    state = _state()
+    state.update(round=0, generation=0, production_steps=20, replicas=2,
+                 sampling_directory="/tmp/auto-rate-growth")
+    auto_rate._advance(state, {"action": "extend_time", "growth_factor": 1.25})
+    assert state["production_steps"] == 25
+    auto_rate._advance(state, {"action": "add_replicas", "growth_factor": 1.25})
+    assert state["replicas"] == 3
+
+
 def test_window_coverage_uses_effective_samples_not_just_nonempty_bins():
     pmf = _pmf()
     pmf["ready"] = False

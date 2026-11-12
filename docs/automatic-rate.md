@@ -87,6 +87,13 @@ adaptation retains its own existing `adaptive_umbrella.max_rounds` budget
 (default 8), window cap and pilot-duration cap. Budgets are finite; a stricter
 error target can exhaust them without yielding an accepted rate.
 
+Production time and replica budgets use a bounded growth factor between 1.25
+and 2.0. When a valid bootstrap error is available, the controller estimates
+the required factor from `(observed error / target error)^2` and clamps it to
+that interval. Correlated-block support without a usable error estimate uses
+the upper bound. Replica counts are rounded upward so every refinement adds an
+independent stream.
+
 Existing sampling settings are valid starting points. For example, an explicit
 `sampling.production`, `sampling.replicas`, `recrossing.child_time` or
 operation-named stage setting is preserved as the initial budget. Automatic
