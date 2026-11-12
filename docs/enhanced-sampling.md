@@ -197,7 +197,7 @@ the dimensionless metric `sqrt(beta * delta.T @ K @ delta)`; `min_spacing`
 uses this metric too. Periodic displacements follow the shortest wrapped
 arc. Stiffness stays fixed unless `adapt_stiffness=true`, which tunes each
 window's spring from local biased moments before freezing production; see
-[automatic rates](automatic-rate.md). Insufficient per-window ESS doubles the next pilot's sampling duration. An
+[automatic rates](automatic-rate.html). Insufficient per-window ESS doubles the next pilot's sampling duration. An
 unmet coverage target also doubles it once no further windows can be inserted;
 a placement-only refinement otherwise keeps the current length. Each
 round uses a separate deterministic seed. `max_pilot_steps` caps the duration

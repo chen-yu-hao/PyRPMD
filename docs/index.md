@@ -15,7 +15,7 @@ go straight to your task:
 | Quantity | `task` | Chapter |
 | --- | --- | --- |
 | Gas-phase bimolecular RPMD rate | `rate` | [Gas phase and free energy](manual/workflows.md) |
-| Automatic AUS sampling and recrossing | `rate` with `auto = true` | [Automatic rate](automatic-rate.md) |
+| Automatic AUS sampling and recrossing | `rate` with `auto = true` | [Automatic rate](automatic-rate.html) |
 | Direct collisions and product channels | `drpmd` | [Gas phase](manual/workflows.md); [NRPMD](manual/nonadiabatic.md) |
 | Model electronic populations and coherences | `nonadiabatic` | [Population workflow](nonadiabatic-workflow.md) |
 | Collisions from selected incoming vibrational states (NE-RPMD, QCT) | `drpmd` + `[initial_ensemble]`; `state-check`, `extend` commands | [Gas phase](manual/workflows.md#selected-vibrational-initial-states) |
