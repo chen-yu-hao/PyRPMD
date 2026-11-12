@@ -71,12 +71,16 @@ autodoc_class_signature = "separated"
 html_theme = "pydata_sphinx_theme"
 html_title = f"PyRPMD {release} User Manual"
 html_static_path = ["_static"]
+# Absolute paths so docs/zh/conf.py, which reuses these settings, finds the same files.
+_LOGO_ICON = str(ROOT / "docs" / "_static" / "logo" / "pyrpmd-icon.svg")
+html_favicon = _LOGO_ICON
 html_css_files = ["manual.css"]
 templates_path = ["_templates"]
 # Every chapter is a top-level page, so the primary sidebar would stay empty on
 # desktop; the navbar and the mobile drawer still list all chapters.
 html_sidebars = {"**": []}
 html_theme_options = {
+    "logo": {"image_light": _LOGO_ICON, "image_dark": _LOGO_ICON, "text": html_title, "alt_text": "PyRPMD"},
     "github_url": "https://github.com/chen-yu-hao/PyRPMD",
     "show_toc_level": 2,
     "navigation_depth": 3,

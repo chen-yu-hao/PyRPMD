@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/_static/logo/pyrpmd-logo-dark.svg">
+    <img src="docs/_static/logo/pyrpmd-logo.svg" alt="PyRPMD 标志：环聚合物珠串位于双势阱的势垒顶部" width="400">
+  </picture>
+</p>
+
 # PyRPMD
 
 [中文手册](docs/zh/index.md) · [English](README.md) ·

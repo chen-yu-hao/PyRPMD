@@ -9,6 +9,7 @@ include tools/check_workflow_policy.py
 include tools/campaign_launch.py
 recursive-include native *.cpp *.h *.hpp *.c
 recursive-include docs *.md *.json *.csv *.png *.pdf *.py *.css *.txt *.html *.npz *.xml *.log
+recursive-include docs/_static/logo *.svg
 exclude docs/validation/tier1-2026-10-31/*.npz
 prune docs/_build
 recursive-include examples *.inp *.toml *.py *.xyz *.json *.md *.slurm

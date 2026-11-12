@@ -14,6 +14,8 @@ globals().update({k: v for k, v in _shared.items() if not k.startswith("_")})
 
 language = "zh_CN"
 html_title = f"PyRPMD {release} 使用手册"
+html_theme_options = {**_shared["html_theme_options"],
+                      "logo": {**_shared["html_theme_options"]["logo"], "text": html_title}}
 html_static_path = ["../_static"]
 templates_path = ["../_templates"]
 html_context = {**_shared["html_context"], "doc_path": "docs/zh"}

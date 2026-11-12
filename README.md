@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/_static/logo/pyrpmd-logo-dark.svg">
+    <img src="docs/_static/logo/pyrpmd-logo.svg" alt="PyRPMD logo: a ring polymer of beads resting on the barrier of a double-well potential" width="400">
+  </picture>
+</p>
+
 # PyRPMD
 
 [English manual](docs/index.md) · [中文](README.zh-CN.md) ·
