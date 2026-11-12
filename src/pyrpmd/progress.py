@@ -189,11 +189,19 @@ def read_status(directory):
     """Read a snapshot without modifying the run or initializing its potential."""
     directory = Path(directory)
     path = directory / "progress.json"
-    try:
-        with path.open(encoding="utf-8") as source:
-            value = json.load(source)
-    except FileNotFoundError as error:
-        raise ValueError(f"No progress.json in {directory}; the run has not started or predates progress reporting") from error
+    delays = (.005, .01, .02, .04, .08)
+    for attempt in range(len(delays) + 1):
+        try:
+            with path.open(encoding="utf-8") as source:
+                value = json.load(source)
+            break
+        except FileNotFoundError as error:
+            raise ValueError(f"No progress.json in {directory}; the run has not started or predates progress reporting") from error
+        except PermissionError as error:
+            if (sys.platform != "win32" or getattr(error, "winerror", None) not in (5, 32, 33)
+                    or attempt == len(delays)):
+                raise
+            time.sleep(delays[attempt])
     if (not isinstance(value, dict) or value.get("schema") != SCHEMA
             or type(value.get("schema_version")) is not int or value["schema_version"] != 1):
         raise ValueError(f"Unsupported progress schema in {path}")
