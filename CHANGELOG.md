@@ -5,6 +5,16 @@ not been published as a new wheel release; no release date or DOI is assigned.
 
 ## Unreleased
 
+- Subspace correction: the 2D plane model's reactant absorber now continues
+  past the start of the path. When the reference slice lies near the reactant
+  end, the absorber region reaches beyond the path; grid points there took the
+  arc length of the path's end point, so the absorber ramp stopped far below
+  its strength and the grid ended 40 units past the path. Reactant waves
+  reflected off the grid edge, and k_QM was 22% low on the curved-valley
+  validation model. Validation against exact rates on 2D, 3D and rotated 8D
+  model potentials:
+  [report](docs/validation/2026-11-13-subspace-rph-2d/README.md).
+
 - Subspace correction: reference slices must also be quantum-free. The
   quantum and the RPMD rate are normalized by the quantum and the centroid
   reactant density on the slice; on a slope these differ at O(hbar^2). The
