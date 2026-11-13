@@ -115,8 +115,10 @@ reuse = true               # reuses only content-matched factor records
 dimension = "auto"         # or 1, 2, [1, 2] for a deliberate nested check
 environment = "adiabatic"  # use "free_energy" for thermally occupied bath modes
 threshold = 0.5
+model_2d = "rph"           # 2D model: reaction-path Hamiltonian on the MEP, or "plane"
 
 [rate.subspace_correction.path]
+source = "mep"             # default: IRC from the refined saddle; "centroid" = previous default
 step = 10.0
 smoothing = 1.5
 

@@ -62,7 +62,7 @@ GUESS = np.array([0.0, 0.0, -1.8, 0.0, 0.0, 0.02, 0.05, 0.0, 1.75])   # bent, as
 
 def make_run(ion=0.0, temperature=200.0):
     energy, gradient = model(ion)
-    saddle, record = refine_saddle(gradient, GUESS, MASSES)
+    saddle, record = refine_saddle(gradient, GUESS, np.repeat(MASSES, 3))
     assert record["saddle"]
     coordinate = RPMDrateCoordinate([[0], [1, 2]], MASSES, saddle.reshape(3, 3), [[0, 1]], [[1, 2]], R_INF)
 
@@ -112,7 +112,7 @@ def build(run, monkeypatch, source, windows=None, **options):
 
 def test_saddle_refinement_finds_the_collinear_leps_saddle_from_a_bent_guess():
     energy, gradient = model()
-    saddle, record = refine_saddle(gradient, GUESS, MASSES)
+    saddle, record = refine_saddle(gradient, GUESS, np.repeat(MASSES, 3))
     assert record["saddle"] and record["negative_modes"] == 1 and record["iterations"] <= 10
     r12, r23, r13 = _distances(saddle)
     assert r12 == pytest.approx(r23, abs=1e-4) and r13 == pytest.approx(r12 + r23, abs=1e-4)  # collinear
@@ -125,14 +125,14 @@ def test_saddle_refinement_finds_the_collinear_leps_saddle_from_a_bent_guess():
     assert mode[1, 2] == pytest.approx(-2.0 * mode[0, 2], abs=1e-4)
     # A minimum is refused as a saddle.
     h2 = np.array([0.0, 0.0, -9.0, 0.0, 0.0, -0.7, 0.0, 0.0, 0.7])
-    _, minimum = refine_saddle(gradient, h2 + 0.01, MASSES, max_iterations=5)
+    _, minimum = refine_saddle(gradient, h2 + 0.01, np.repeat(MASSES, 3), max_iterations=5)
     assert not minimum["saddle"]
 
 
 def test_mass_weighted_hessian_is_symmetric_and_has_rigid_body_zeros():
     energy, gradient = model()
-    saddle, _ = refine_saddle(gradient, GUESS, MASSES)
-    values = np.linalg.eigvalsh(mass_weighted_hessian(gradient, saddle, MASSES))
+    saddle, _ = refine_saddle(gradient, GUESS, np.repeat(MASSES, 3))
+    values = np.linalg.eigvalsh(mass_weighted_hessian(gradient, saddle, np.repeat(MASSES, 3)))
     # 3N = 9 for a linear molecule: 5 rigid-body zeros, one negative curvature, 3 positive.
     assert np.sum(np.abs(values) < 1e-7) == 5 and np.sum(values < -1e-7) == 1 and np.sum(values > 1e-7) == 3
 

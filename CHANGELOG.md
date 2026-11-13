@@ -5,6 +5,25 @@ not been published as a new wheel release; no release date or DOI is assigned.
 
 ## Unreleased
 
+- **Compatibility:** the subspace correction now builds its reaction path from
+  the minimum-energy path by default (`path.source = "mep"`; previously
+  `"centroid"`), and its 2D model is the reaction-path Hamiltonian on that
+  path (`subspace.model_2d = "rph"`; previously the fixed plane through the
+  transition state, still available as `"plane"`). Corrections computed with
+  the old defaults are not reused. Set `path.source = "centroid"` and
+  `subspace.model_2d = "plane"` to reproduce them.
+- Subspace correction: new 2D reaction-path Hamiltonian model
+  (`analysis/subspace_rph.py`). Axis 0 is the MEP arc length, axis 1 the
+  displacement along a Bishop-transported normal that carries the curvature
+  near the barrier; the ribbon is unrolled into a plane where the kinetic
+  energy `p_s^2/(2(1 - kappa q)^2) + p_q^2/2` is flat, so the existing 2D
+  quantum and RPMD solvers include corner cutting. Model potentials in
+  abstract coordinates can drive the pipeline with `run.rigid_body = False`.
+- Subspace correction: both 2D models now place the reactant reference slice
+  on a DVR grid node. The quantum rate was normalized on the nearest grid line
+  and the RPMD TI at the exact reference, i.e. on different slices wherever
+  the channel is only flat to `reference_kt`.
+
 - Subspace correction: new path sources that do not rely on centroid
   geometries, which are thermal averages (a librating bond's centroid is
   shorter than the bond). `path.source = "mep"` refines the rate run's

@@ -23,8 +23,11 @@ stationary-point constructions on the potential itself:
     lengths.  It is a distinguished-coordinate path: on it ``grad V`` is
     parallel to ``grad xi``, not in general to the path tangent.
 
-All work is in mass-weighted Cartesian coordinates; rigid-body modes are
-removed with :func:`pyrpmd.analysis.centroid_path.rigid_body_modes`.
+All work is in mass-weighted coordinates.  ``masses`` are per coordinate
+(``3N`` for atoms); with ``rigid_body`` the coordinates are atomic Cartesians
+and rigid-body modes are removed with
+:func:`pyrpmd.analysis.centroid_path.rigid_body_modes`.  Model potentials in
+abstract coordinates pass ``rigid_body=False`` (``run.rigid_body``).
 """
 
 from __future__ import annotations
@@ -36,23 +39,31 @@ import numpy as np
 from .centroid_path import rigid_body_modes
 
 
-def _vibrational_basis(x, masses):
+def rigid_modes(x: Any, masses: Any, rigid_body: bool = True) -> np.ndarray:
+    """Orthonormal mass-weighted rigid-body modes ``[n, 5 or 6]``, or ``[n, 0]`` without them."""
+    x = np.asarray(x, dtype=float).ravel()
+    if not rigid_body:
+        return np.zeros((x.size, 0))
+    return rigid_body_modes(x.reshape(-1, 3), np.asarray(masses, dtype=float).reshape(-1, 3)[:, 0])
+
+
+def _vibrational_basis(x, masses, rigid_body=True):
     """Orthonormal mass-weighted basis of the vibrational space at ``x``."""
     from scipy.linalg import null_space
 
-    rigid = rigid_body_modes(np.asarray(x).reshape(-1, 3), masses)
-    return null_space(rigid.T)
+    rigid = rigid_modes(x, masses, rigid_body)
+    return null_space(rigid.T) if rigid.shape[1] else np.eye(np.asarray(x).size)
 
 
 def mass_weighted_hessian(gradient: Callable[[np.ndarray], np.ndarray], x: Any, masses: Any, *,
                           displacement: float = 5e-3) -> np.ndarray:
-    """Central-difference mass-weighted Hessian ``[3N, 3N]`` at ``x``.
+    """Central-difference mass-weighted Hessian ``[n, n]`` at ``x`` (``masses`` per coordinate).
 
-    ``displacement`` is the Cartesian displacement (bohr) of the lightest
-    atom; the mass-weighted step is the same for every coordinate.
+    ``displacement`` is the displacement of the lightest coordinate; the
+    mass-weighted step is the same for every coordinate.
     """
     x = np.asarray(x, dtype=float).ravel()
-    sqrt_m = np.sqrt(np.repeat(np.asarray(masses, dtype=float), 3))
+    sqrt_m = np.sqrt(np.asarray(masses, dtype=float))
     h = float(displacement) * float(np.sqrt(np.min(masses)))
     columns = []
     for i in range(x.size):
@@ -66,7 +77,7 @@ def mass_weighted_hessian(gradient: Callable[[np.ndarray], np.ndarray], x: Any, 
 
 
 def refine_saddle(gradient: Callable[[np.ndarray], np.ndarray], x0: Any, masses: Any, *,
-                  trust_radius: float = 5.0, gradient_tolerance: float = 1e-5, max_iterations: int = 100,
+                  rigid_body: bool = True, trust_radius: float = 5.0, gradient_tolerance: float = 1e-5, max_iterations: int = 100,
                   displacement: float = 5e-3) -> tuple[np.ndarray, dict]:
     """Refine ``x0`` to a first-order saddle point by partitioned RFO.
 
@@ -81,10 +92,10 @@ def refine_saddle(gradient: Callable[[np.ndarray], np.ndarray], x0: Any, masses:
     """
     x = np.asarray(x0, dtype=float).ravel().copy()
     masses = np.asarray(masses, dtype=float)
-    sqrt_m = np.sqrt(np.repeat(masses, 3))
+    sqrt_m = np.sqrt(masses)
     record = {"iterations": 0, "converged": False}
     for iteration in range(int(max_iterations) + 1):
-        basis = _vibrational_basis(x, masses)
+        basis = _vibrational_basis(x, masses, rigid_body)
         g = basis.T @ (np.asarray(gradient(x), dtype=float).ravel() / sqrt_m)
         cartesian = np.abs((basis @ g) * sqrt_m).max() if g.size else 0.0
         hessian = basis.T @ mass_weighted_hessian(gradient, x, masses, displacement=displacement) @ basis
@@ -124,17 +135,17 @@ def mep_core(run: Any, options: Mapping[str, Any]) -> tuple[np.ndarray, dict]:
     """Saddle point displaced along its imaginary mode, ordered reactants -> products.
 
     ``run`` provides ``gradient``, ``xi_value_gradient``, ``system.geometry``
-    (the transition-state reference of the rate coordinate) and
-    ``system.masses``.  Options: ``mep_displacement`` (mass-weighted,
+    (the transition-state reference of the rate coordinate),
+    ``cartesian_masses`` and optionally ``rigid_body`` (default true).  Options: ``mep_displacement`` (mass-weighted,
     default a tenth of ``step``), ``ts_gradient_tolerance`` (hartree/bohr,
     default 1e-5) and ``hessian_displacement``.
     """
-    masses = np.asarray(run.system.masses, dtype=float)
-    sqrt_m = np.sqrt(np.repeat(masses, 3))
+    masses = np.asarray(run.cartesian_masses, dtype=float)
+    sqrt_m = np.sqrt(masses)
     step = float(options.get("step", 10.0))
     displacement = float(options.get("mep_displacement") or 0.1 * step)
     saddle, record = refine_saddle(run.gradient, np.asarray(run.system.geometry, dtype=float).ravel(), masses,
-                                   trust_radius=0.5 * step,
+                                   rigid_body=getattr(run, "rigid_body", True), trust_radius=0.5 * step,
                                    gradient_tolerance=float(options.get("ts_gradient_tolerance", 1e-5)),
                                    displacement=float(options.get("hessian_displacement", 5e-3)))
     if not record["saddle"]:
@@ -169,8 +180,7 @@ def pmf_minimum_core(run: Any, xi_values: Any, options: Mapping[str, Any]) -> tu
     grid = np.unique(np.asarray(xi_values, dtype=float))
     if len(grid) < 2:
         raise ValueError("path.source = 'pmf_minimum' needs at least two umbrella windows")
-    masses = np.asarray(run.system.masses, dtype=float)
-    sqrt_m = np.sqrt(np.repeat(masses, 3))
+    sqrt_m = np.sqrt(np.asarray(run.cartesian_masses, dtype=float))
     seed = np.asarray(run.system.geometry, dtype=float).ravel()
     start = int(np.argmin(np.abs(grid - run.xi_value_gradient(seed)[0])))
     tolerance = float(options.get("pmf_constraint_tolerance", 1e-8))

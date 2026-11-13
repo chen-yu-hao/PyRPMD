@@ -261,7 +261,9 @@ reaction path bends after the transition state.
 
 The command then runs:
 
-1. **Path source.** `[path] source = "centroid"` is the historical mean-centroid path.
+1. **Path source.** `[path] source = "mep"` (the default) is the minimum-energy path
+   described below; `"centroid"` is the historical mean-centroid path (the default before
+   this release).
    `"bead_weighted"` shifts each locked-window centroid along the transverse principal
    eigenvector of the bead covariance `Sigma(xi)` by its bead RMS `sqrt(lambda_max)`, with
    the sign chosen from the local curvature. `"instanton"` uses the folded half-ring from
@@ -315,7 +317,30 @@ The command then runs:
    removed) and its `C_S`. With large curvature the normal cuts cross inside the bend and
    the adiabatic potential develops a cusp; `C_S(1D)` is then not trustworthy, which is
    what the curvature test says.
-5. **2D model**: the plane through the transition state spanned by the rate dividing-surface
+5. **2D model.** `subspace.model_2d` selects it.
+
+   `"rph"` (default) is the reaction-path Hamiltonian on the MEP
+   (`pyrpmd.analysis.subspace_rph`). Axis 0 is the arc length `s` of the path, axis 1 the
+   displacement `q` along a normal `n(s)`; the rest of the bath stays adiabatic as in the
+   1D model. With `x(s, q) = w(s) + q n(s)` the kinetic energy is
+   `p_s^2 / (2 (1 - kappa q)^2) + p_q^2 / 2`, `kappa = t' . n`: on the inner side of a bend
+   the path is shorter, which is corner cutting. `n` is transported along the path without
+   rotating about it (a Bishop frame), so the ribbon has exactly this metric; it is the
+   transport of the curvature direction that carries most of the curvature weighted by
+   `exp(-beta (V_top - V))` (`captured_curvature` in the report). A ribbon with this metric
+   is isometric to a strip of the plane: it is unrolled along a plane curve with the same
+   signed curvature, where the Hamiltonian is the ordinary flat
+   `-(d^2/dX^2 + d^2/dY^2)/2 + V_S`, so the 2D solvers below apply unchanged; each grid
+   point is mapped back to `(s, q)` by its nearest point on the developed curve. For a
+   two-dimensional system the development is congruent to the system itself. A path that
+   twists (torsion) keeps only the component of its curvature along `n`; the rest couples
+   to adiabatic modes as in 1D. The box runs from the reactant reference slice (the end of
+   the flat channel that starts at the reactant end, as in 1D) to two de Broglie
+   wavelengths past the product absorber; axis 0 bisects the path direction at the
+   reference slice and at the barrier, and the path must advance along it through the box.
+   The default spacing is a third of the narrowest width of the `n` mode on both axes.
+
+   `"plane"` is the plane through the transition state spanned by the rate dividing-surface
    normal (mass-weighted `grad xi`, so the 2D dividing line is the rate's `xi = 1` surface)
    and the principal direction of the path within the complement; for a collinear atom
    transfer this is exactly the collinear plane. The curvature-normal candidate is reported
@@ -332,6 +357,11 @@ The command then runs:
    below its maximum. The default grid is anisotropic: a third of the narrowest
    in-plane vibrational width along the transfer axis, a quarter of the shortest de
    Broglie wavelength along the path axis.
+
+   In both 2D models the reactant reference slice is moved onto a node of the DVR grid:
+   the quantum rate is normalized on the grid line nearest the reference and the RPMD TI
+   starts exactly at the reference, so off a node the two rates were normalized on
+   different slices, which matters wherever the channel is only flat to `reference_kt`.
 6. **Nested sensitivity** `ln(C_2D/C_1D)` selects the dimension, and
    `rate_quantum_corrected.json` is written next to the run. Every intermediate result is
    in `subspace_pipeline.json`.

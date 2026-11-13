@@ -40,8 +40,9 @@ from .centroid_path import mean_path_from_rate_run, rigid_body_modes
 from .subspace_correction import (CORRECTED_SCHEMA, SubspaceCorrection, correct_rate_run,
                                   nested_subspace_sensitivity, subspace_correction, validity_gates,
                                   validity_policy)
-from .subspace_model import (_vibrational_complement, assemble_reaction_path, path_curvature,
+from .subspace_model import (SubspaceModel, _vibrational_complement, assemble_reaction_path, path_curvature,
                              project_linear_subspace, project_path_subspace, relaxed_path)
+from .subspace_paths import rigid_modes
 from .subspace_quantum import _json_safe, sinc_dvr_kinetic
 
 
@@ -64,12 +65,15 @@ DEFAULTS = {
     # is met.  A finite value is a hard budget whose exhaustion fails the path gate.
     # reactant_xi: where a reactant continuation that climbs out of a
     # pre-reaction complex ends (xi = 0 is the rate's R_inf reference).
-    "path": {"source": "centroid", "step": 10.0, "max_steps": None, "spread_factor": 2.0,
+    "path": {"source": "mep", "step": 10.0, "max_steps": None, "spread_factor": 2.0,
              "asymptote_tolerance": 1e-6, "asymptote_patience": 50, "smoothing": 1.5,
              "least_action_points": 9, "reactant_xi": 0.0},
     # hessian_displacement (bohr) is the largest Cartesian displacement of the
     # lightest atom in the finite-difference normal-plane Hessian.
+    # model_2d: "rph" (MEP arc length x curvature normal, corner cutting) or
+    # "plane" (the fixed plane through the transition state).
     "subspace": {"dimension": "auto", "threshold": 0.5, "environment": "adiabatic", "curvature": "none",
+                 "model_2d": "rph",
                  "zero_point": "harmonic", "dvr_points": 81, "dvr_half_width": None,
                  "dvr_spacing": None, "hessian_displacement": 5e-3},
     # on_invalid = "stop": a model whose path or bath gate fails is not solved;
@@ -162,6 +166,11 @@ def load_rate_run(directory) -> RateRun:
                    int(config["beads"]), xi_star)
 
 
+def _rigid(run) -> bool:
+    """Atomic Cartesians with rigid-body modes (rate runs), or abstract model coordinates."""
+    return bool(getattr(run, "rigid_body", True))
+
+
 def _harmonic_bead_width(omega, beta):
     """sqrt(2) x RMS bead spread about the centroid of a harmonic mode (P -> inf)."""
     omega = max(float(omega), 1e-12)
@@ -183,7 +192,7 @@ def _static_curvature_width(run, path, threshold):
         t /= np.linalg.norm(t)
         a = (mw[k + 1] - mw[k]) / max(chord[k + 1] - chord[k], 1e-12) - (mw[k] - mw[k - 1]) / max(chord[k] - chord[k - 1], 1e-12)
         a = a - (a @ t) * t
-        rigid = rigid_body_modes(path[k].reshape(-1, 3), run.system.masses)
+        rigid = rigid_modes(path[k], masses, _rigid(run))
         a = a - rigid @ (rigid.T @ a)
         if np.linalg.norm(a) == 0:
             continue
@@ -408,7 +417,10 @@ def _instanton_core(run, core, options):
     return folded, details
 
 
-# Where the core of the reaction path comes from (``path.source``).
+# Where the core of the reaction path comes from (``path.source``).  The
+# default is the minimum-energy path: the normal-cut adiabatic model and the
+# reaction-path Hamiltonian assume one, and a centroid core is a thermal
+# average, not a geometry (before 0.2.x the default was "centroid").
 PATH_SOURCES = frozenset({"centroid", "centroid_all", "bead_weighted", "least_action", "instanton",
                           "mep", "pmf_minimum"})
 
@@ -429,7 +441,7 @@ def build_path(run: RateRun, options: Mapping[str, Any]):
     continuation end in a well that deep below the barrier top.
     """
     options = dict(options or {})
-    source = str(options.get("source", "centroid")).lower()
+    source = str(options.get("source", "mep")).lower()
     if source not in PATH_SOURCES:
         raise ValueError(f"path.source must be one of {sorted(PATH_SOURCES)}")
     mean = mean_path_from_rate_run(run.root)
@@ -505,7 +517,7 @@ def _assemble(run, core, options, sampled):
     drop_kt = options.get("product_drop_kt")
     path, info = assemble_reaction_path(
         core, run.energy, run.gradient, run.cartesian_masses, step=float(options.get("step", 10.0)),
-        max_steps=None if options.get("max_steps") is None else int(options["max_steps"]), rigid_body=True,
+        max_steps=None if options.get("max_steps") is None else int(options["max_steps"]), rigid_body=_rigid(run),
         asymptote_tolerance=float(options.get("asymptote_tolerance", 1e-6)),
         patience=int(options.get("asymptote_patience", 50)),
         product_well_drop=None if drop_kt is None else float(drop_kt) / run.beta,
@@ -586,7 +598,7 @@ def path_model(run: RateRun, path, options: Mapping[str, Any], *, path_source: s
     environment = options.get("environment", "adiabatic")
     model = project_path_subspace(
         run.energy, run.gradient, path, masses, axis, environment=environment,
-        dividing_surface=None, rigid_body=True,
+        dividing_surface=None, rigid_body=_rigid(run),
         beta=run.beta if environment == "free_energy" else None,
         curvature=options.get("curvature", "none"),
         provenance=_model_provenance(path_info, validity, path_source=str(path_source)),
@@ -725,6 +737,8 @@ def _saved_model_matches_options(saved: SubspaceCorrection, dimension: int,
                     return False
     elif construction.get("environment", "adiabatic") != subspace_options.get("environment", "adiabatic"):
         return False
+    elif construction.get("model_2d", "plane") != subspace_options.get("model_2d", "rph"):
+        return False
     return True
 
 
@@ -765,7 +779,7 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
     masses = run.cartesian_masses
     sqrt_m = np.sqrt(masses)
     ts = np.asarray(run.system.geometry, dtype=float).ravel()
-    rigid = rigid_body_modes(ts.reshape(-1, 3), run.system.masses)
+    rigid = rigid_modes(ts, masses, _rigid(run))
     e0 = run.xi_gradient(ts) / sqrt_m
     e0 -= rigid @ (rigid.T @ e0)
     e0 /= np.linalg.norm(e0)
@@ -784,7 +798,7 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
     candidate_overlap = float(abs(candidate @ e1) / max(np.linalg.norm(candidate), 1e-300))
     plane = np.column_stack([mw_path @ e0, mw_path @ e1])
     off_plane = mw_path - plane @ np.vstack([e0, e1])
-    off_plane = np.array([v - (r := rigid_body_modes(p.reshape(-1, 3), run.system.masses)) @ (r.T @ v)
+    off_plane = np.array([v - (r := rigid_modes(p, masses, _rigid(run))) @ (r.T @ v)
                           for v, p in zip(off_plane, path)])
     residual = np.linalg.norm(off_plane, axis=1)
     arc = _arc(path, masses)
@@ -849,12 +863,13 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
     skip = (floor_guess + 2.0 * _truncation_offset(options, run.beta) + 0.05)
     environment = options.get("environment", "adiabatic")
     fine_model = project_linear_subspace(run.energy, run.gradient, ts, masses, np.column_stack([e0, e1]), axes,
-                                         environment=environment, dividing_surface=0.0, rigid_body=True,
+                                         environment=environment, dividing_surface=0.0, rigid_body=_rigid(run),
                                          skip_above=skip, wall_energy=skip + 1.0,
                                          finite_difference_step=_hessian_step(options, masses),
                                          beta=run.beta if environment == "free_energy" else None)
     reference_point = np.array([np.interp(reference_arc, arc, plane[:, 0]), np.interp(reference_arc, arc, plane[:, 1])])
-    provenance = dict(fine_model.provenance, plane_basis=[e0.tolist(), e1.tolist()], refinement=refinement,
+    reference_point[0] = _grid_reference(fine_model.axes[0][::refinement], reference_point[0])
+    provenance = dict(fine_model.provenance, plane_basis=[e0.tolist(), e1.tolist()], refinement=refinement, model_2d="plane",
                       **_model_provenance(path_info, validity))
     rpmd_model = type(fine_model)(fine_model.axes, fine_model.values, fine_model.masses, 0.0, "asymptotic",
                                   float(reference_point[0]), provenance)
@@ -897,6 +912,174 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
             "absorber_arc": [float(absorb_lo), float(absorb_hi)], "box_arc": [float(box_lo), float(box_hi)],
             "reference_arc": reference_arc, "reactant_reference": float(reference_point[0]),
             "channel_thresholds": thresholds, "energy_floor": floor, "truncation_energy": truncation}
+    return model, quantum, info, rpmd_model
+
+
+def _grid_reference(axis0, reference):
+    """The axis-0 node of the quantum (DVR) grid nearest ``reference``.
+
+    The quantum rate is normalized on the DVR grid line nearest the reference
+    slice and the ring-polymer TI starts exactly at the reference.  Unless
+    the reference is a node, the two normalize on different slices, which
+    matters wherever the channel is only flat to ``reference_kt``.  The RPMD
+    grid is ``refinement`` times finer and contains every DVR node.
+    """
+    axis0 = np.asarray(axis0, dtype=float)
+    return float(axis0[int(np.argmin(np.abs(axis0 - float(reference))))])
+
+
+def _rph_product_start(energies, k_top, beta, drop_kt, reference_kt):
+    """First path index where products are committed (as for the 2D plane model, issue #195).
+
+    The earlier of: ``drop_kt`` below the barrier top, or settled within
+    ``reference_kt`` of the product end; the last point if neither.
+    """
+    energies = np.asarray(energies, dtype=float)
+    top, end = float(energies[k_top]), float(energies[-1])
+    index = np.arange(len(energies))
+    found = {}
+    dropped = np.flatnonzero((index > k_top) & (energies < top - float(drop_kt) / beta))
+    if len(dropped):
+        found["product_drop"] = int(dropped[0])
+    unsettled = np.flatnonzero(np.abs(energies - end) > float(reference_kt) / beta)
+    settled = int(unsettled[-1]) + 1 if len(unsettled) else 0
+    if k_top < settled < len(energies):
+        found["product_asymptote"] = settled
+    criterion = min(found, key=found.get) if found else "path_end"
+    return found.get(criterion, len(energies) - 1), criterion
+
+
+def rph_model(run: RateRun, path, options: Mapping[str, Any]):
+    """2D reaction-path Hamiltonian on the MEP: arc length x the curvature normal (:mod:`.subspace_rph`).
+
+    The ribbon ``x(s, q) = w(s) + q n(s)`` around the path, with ``n`` a
+    Bishop normal chosen to carry the curvature near the barrier, is unrolled
+    into a plane, where the reaction-path kinetic energy is flat; corner
+    cutting is then an ordinary 2D tunnelling path.  The box runs from the
+    reactant reference slice -- the end of the flat channel that starts at
+    the reactant end, judged on the path potential within ``reference_kt`` --
+    to two de Broglie wavelengths past the product absorber (products are
+    committed ``product_drop_kt`` below the barrier, or where the channel has
+    settled).  Absorbers are keyed to arc length; the rates are normalized on
+    the reference slice, and the dividing line passes through the barrier
+    top.  The developed plane is turned so that axis 0 bisects the path
+    direction at the reference slice and at the barrier; the path must
+    advance along axis 0 through the whole box.
+    """
+    from .subspace_rph import develop_path, project_rph_values, rph_bath
+
+    path_info, validity = options.get("path_info"), dict(options.get("validity") or {})
+    masses = run.cartesian_masses
+    beta = run.beta
+    rigid = _rigid(run)
+    environment = options.get("environment", "adiabatic")
+    arc = _arc(path, masses)
+    energies = np.array([run.energy(p) for p in path])
+    k_top = int(np.argmax(energies))
+    if not 0 < k_top < len(path) - 1:
+        raise ValueError("the RPH model needs a barrier inside the path")
+    tolerance = float(options.get("reference_kt", 0.3)) / beta
+    flat = np.abs(energies[:k_top] - energies[0]) <= tolerance
+    k_ref = (int(np.argmin(flat)) - 1) if not flat.all() else k_top - 1
+    reference_arc, top_arc = float(arc[k_ref]), float(arc[k_top])
+    k_p, product_rule = _rph_product_start(energies, k_top, beta, float(options.get("product_drop_kt", 15.0)),
+                                           float(options.get("reference_kt", 0.3)))
+    thermal_wavelength = 2.0 * np.pi / np.sqrt(2.0 / beta)
+    product_wavelength = 2.0 * np.pi / np.sqrt(2.0 * max(energies[k_top] - energies[-1], 1.0 / beta))
+    absorb_lo = reference_arc - 0.25 * thermal_wavelength
+    box_lo = absorb_lo - 2.0 * thermal_wavelength
+    absorb_hi = float(arc[k_p])
+    box_hi = absorb_hi + 2.0 * product_wavelength
+    padding = float(options.get("padding") or 40.0)
+    extend = max(0.0, -box_lo, box_hi - float(arc[-1])) + padding
+    weights = np.exp(-beta * np.maximum(energies[k_top] - energies, 0.0))
+    development = develop_path(path, masses, rigid_body=rigid, weights=weights, extend=extend)
+    # Axis 0 bisects the path direction at the reference slice and at the barrier.
+    _, t_ref, _ = development.point(reference_arc)
+    _, t_top, _ = development.point(top_arc)
+    axis = t_ref[0] + t_top[0]
+    if np.linalg.norm(axis) < 1e-6:
+        raise ValueError("the path turns back by 180 degrees between the reference slice and the barrier")
+    development.orient(top_arc, axis)
+    inside = (development.s >= box_lo) & (development.s <= box_hi)
+    advance = development.tangent2[inside, 0]
+    if advance.min() <= 0.05:
+        raise ValueError("the developed path does not advance along axis 0 through the box (it turns by "
+                         f"{development.record['turn_angle_degrees']:.0f} degrees); the RPH model needs a "
+                         "smaller box or the plane model")
+    # Bath on the path, at most ~200 Hessians.
+    count = int(min(200, max(20, (box_hi - box_lo) / 2.0)))
+    bath_arcs = np.linspace(box_lo, box_hi, count)
+    bath = rph_bath(run.gradient, development, bath_arcs, masses, rigid_body=rigid, environment=environment,
+                    beta=beta, displacement=float(options.get("hessian_displacement", 5e-3)),
+                    soft_mode_frequency=float(validity.get("soft_mode_frequency", 2.3e-4)))
+    positive = bath["normal_curvature"][bath["normal_curvature"] > 0]
+    sigma = float(np.min(1.0 / np.sqrt(2.0 * np.sqrt(positive)))) if positive.size else 5.0
+    half_width = max(padding, 6.0 * float(np.max(1.0 / np.sqrt(2.0 * np.sqrt(positive)))) if positive.size else padding)
+    emax = float(np.ptp(energies[(arc >= box_lo) & (arc <= box_hi)])) + _truncation_offset(options, beta)
+    spacing = options.get("spacing_2d")
+    if spacing is None:
+        # A third of the narrowest width of the n mode on both axes: in the
+        # developed plane the axes mix the path and the n mode wherever the
+        # path bends, and a de Broglie spacing along axis 0 (as in the plane
+        # model) left the curved-valley test model 15% off its full rate.
+        spacing = [min(sigma / 3.0, 0.5 * np.pi / np.sqrt(2.0 * emax))] * 2
+    spacing = np.broadcast_to(np.asarray(spacing, dtype=float), (2,))
+    edge = development.s[inside]
+    c, _, normal = development.point(edge)
+    corners = np.vstack([c + half_width * normal, c - half_width * normal])
+    lo, hi = corners.min(axis=0), corners.max(axis=0)
+    refinement = max(1, int(options.get("refinement", 3)))
+    fine = spacing / refinement
+    counts = [int(np.ceil((hi[i] - lo[i]) / spacing[i])) * refinement + 1 for i in range(2)]
+    axes = [lo[i] + fine[i] * np.arange(counts[i]) for i in range(2)]
+    reference_point, _, _ = development.point(reference_arc)
+    surface_point, _, _ = development.point(top_arc)
+    reference_point[0, 0] = _grid_reference(axes[0][::refinement], reference_point[0, 0])
+    floor_guess = float(max(energies[k_ref], energies[-1]))
+    skip = floor_guess + 2.0 * _truncation_offset(options, beta) + 0.05
+    values = project_rph_values(run.energy, development, axes, bath, arc_range=(box_lo, box_hi),
+                                half_width=half_width, wall_energy=skip + 1.0)
+    provenance = dict(environment=environment, model_2d="rph", refinement=refinement,
+                      bath_stable=bath["bath_stable"], significant_unstable=bath["significant_unstable"],
+                      unstable_characters=bath["unstable_characters"],
+                      minimum_complement_curvature=bath["minimum_complement_curvature"],
+                      soft_complement_points=bath["soft_complement_points"],
+                      captured_curvature=development.captured_curvature,
+                      **_model_provenance(path_info, validity))
+    rpmd_model = SubspaceModel(tuple(axes), values, (1.0, 1.0), float(surface_point[0, 0]), "asymptotic",
+                               float(reference_point[0, 0]), provenance)
+    model = SubspaceModel(tuple(a[::refinement] for a in axes), values[::refinement, ::refinement], (1.0, 1.0),
+                          float(surface_point[0, 0]), "asymptotic", float(reference_point[0, 0]), provenance)
+    width_lo, width_hi = absorb_lo - box_lo, box_hi - absorb_hi
+    strength = 30.0 * np.sqrt(2.0 / beta)
+
+    def absorber(points):
+        s_point, _ = development.locate(points)
+        eps = np.zeros(len(points))
+        left, right = s_point < absorb_lo, s_point > absorb_hi
+        eps[left] = strength / width_lo * np.minimum((absorb_lo - s_point[left]) / width_lo, 1.0) ** 2
+        eps[right] = strength / width_hi * np.minimum((s_point[right] - absorb_hi) / width_hi, 1.0) ** 2
+        return eps
+
+    thresholds = []
+    product_reference = min(absorb_hi + product_wavelength, float(arc[-1]))
+    for at in (reference_arc, product_reference):
+        center, _, normal_at = development.point(at)
+        thresholds.append(_in_plane_threshold(rpmd_model, center[0], normal_at[0]))
+    floor = max(thresholds) - float(options["threshold_margin"]) / beta
+    truncation = floor + _truncation_offset(options, beta)
+    quantum = {"absorber": absorber, "normalization": "slice", "energy_floor": floor,
+               "truncation_energy": truncation, "dense_limit": int(options["dense_limit"])}
+    info = {"model_2d": "rph", "shape": list(model.shape), "spacing": spacing.tolist(),
+            "retained_points": int(np.sum(model.values <= truncation)), "rpmd_grid_shape": list(rpmd_model.shape),
+            "refinement": refinement, "development": development.record,
+            "captured_curvature": development.captured_curvature, "half_width": half_width,
+            "absorber_arc": [float(absorb_lo), float(absorb_hi)], "box_arc": [float(box_lo), float(box_hi)],
+            "product_absorber": product_rule, "reference_arc": reference_arc, "barrier_arc": top_arc,
+            "reactant_reference": float(reference_point[0, 0]), "dividing_surface": float(surface_point[0, 0]),
+            "channel_thresholds": thresholds, "energy_floor": floor, "truncation_energy": truncation,
+            "model_construction": {k: v for k, v in provenance.items() if k != "significant_unstable"}}
     return model, quantum, info, rpmd_model
 
 
@@ -1042,7 +1225,7 @@ def _build_cases(run, out_dir, options, base, reuse_key):
                        ("environment", "curvature", "zero_point", "dvr_points", "dvr_half_width", "dvr_spacing")}
         model1, quantum1, info1 = path_model(
             run, path, {**options["quantum"], **environment, **gating},
-            path_source=path_info.get("source", "centroid"),
+            path_source=path_info.get("source", "mep"),
         )
         gates1 = admit(1, dict(model=model1, beta=run.beta, nbeads=nbeads, quantum_options=quantum1,
                                rpmd_options=rpmd_options), info1)
@@ -1059,8 +1242,11 @@ def _build_cases(run, out_dir, options, base, reuse_key):
         if candidate is None:
             candidate = np.asarray(static_cw["candidate_direction"])
         environment = {"environment": options["subspace"].get("environment", "adiabatic")}
-        model2, quantum2, info2, rpmd_model2 = plane_model(run, path, candidate,
-                                                           {**options["quantum"], **environment, **gating})
+        if options["subspace"].get("model_2d", "rph") == "rph":
+            model2, quantum2, info2, rpmd_model2 = rph_model(run, path, {**options["quantum"], **environment, **gating})
+        else:
+            model2, quantum2, info2, rpmd_model2 = plane_model(run, path, candidate,
+                                                               {**options["quantum"], **environment, **gating})
         admit(2, dict(model=model2, beta=run.beta, nbeads=nbeads, quantum_options=quantum2,
                       rpmd_options=rpmd_options, rpmd_model=rpmd_model2), info2)
     execution = options.get("execution")
