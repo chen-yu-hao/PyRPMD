@@ -89,6 +89,8 @@ def main() -> int:
     parser.add_argument("--full-reference", type=float, default=100.0)
     parser.add_argument("--full-cap", type=float, default=40.0)
     parser.add_argument("--truncation-kt", type=float, default=30.0)
+    parser.add_argument("--reference-density-tolerance", type=float, default=None,
+                        help="quantum.reference_density_tolerance (default: the pipeline's, 1e-2)")
     parser.add_argument("--truncation-min", type=float, default=0.055,
                         help="hartree; about six quanta of the stiffest transverse mode (2000 cm^-1)")
     parser.add_argument("--models", nargs="+", default=["1d", "1d_sct", "plane", "rph"])
@@ -106,7 +108,8 @@ def main() -> int:
                         seed=args.seed)
     report = {"model": args.model, "dimension": potential.dimension, "temperature_K": args.temperature,
               "nbeads": args.nbeads, "beta": run.beta, "rpmd_options": rpmd_options, "spacing_2d": args.spacing_2d,
-              "truncation_kt": args.truncation_kt, "truncation_min": args.truncation_min, "subspace": {}}
+              "truncation_kt": args.truncation_kt, "truncation_min": args.truncation_min,
+              "reference_density_tolerance": args.reference_density_tolerance, "subspace": {}}
     if args.merge and args.out.is_file():
         previous = json.loads(args.out.read_text())
         report["subspace"].update({k: v for k, v in previous.get("subspace", {}).items() if k not in args.models})
@@ -121,6 +124,8 @@ def main() -> int:
                       "reactant": info["reactant_termination"]["status"],
                       "product": info["product_termination"]["status"]}
     extra = {"truncation_kt": args.truncation_kt, "truncation_min": args.truncation_min, "dense_limit": 12000}
+    if args.reference_density_tolerance is not None:
+        extra["reference_density_tolerance"] = args.reference_density_tolerance
     if args.spacing_2d is not None:
         extra["spacing_2d"] = list(args.spacing_2d)
     original = dict(QUANTUM)

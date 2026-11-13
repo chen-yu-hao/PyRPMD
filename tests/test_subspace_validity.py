@@ -333,6 +333,7 @@ def pipeline_spec(monkeypatch, directory, *, termination, model=None, plane=None
                         lambda *args: {"maximum": 0.0, "candidate_direction": [0.0, 1.0]})
     monkeypatch.setattr(pipeline, "path_model", path_model)
     monkeypatch.setattr(pipeline, "plane_model", plane_model)
+    monkeypatch.setattr(pipeline, "rph_model", lambda run, path, options: plane_model(run, path, None, options))
     monkeypatch.setattr(pipeline, "correct_rate_run",
                         lambda root, correction, **kwargs: {"factor": correction.factor})
     return dict(source={"rate_run": str(directory)}, subspace={"dimension": dimension}, rpmd=RPMD,
