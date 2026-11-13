@@ -794,7 +794,9 @@ def exact_quantum_rate(
     widths = _pair(0.2 * length if cap_width is None else cap_width)
     if not all(0 < w < 0.5 * length for w in widths):
         raise ValueError("cap_width must be positive and below half the reaction-coordinate range")
-    if not axis0[0] + widths[0] < model.dividing_surface < axis0[-1] - widths[1]:
+    # A supplied absorber replaces the axis-0 end caps; it is checked on the
+    # dividing surface itself below, not against widths it does not use.
+    if absorber is None and not axis0[0] + widths[0] < model.dividing_surface < axis0[-1] - widths[1]:
         raise ValueError("the dividing surface must lie between the absorbing regions")
     velocity = np.sqrt(2.0 / (beta * model.masses[0]))
     strengths = tuple(30.0 * velocity / w for w in widths) if cap_strength is None else _pair(cap_strength)
@@ -811,6 +813,9 @@ def exact_quantum_rate(
         eps = np.asarray(values, dtype=float).reshape(model.shape)
         if not np.isfinite(eps).all() or np.any(eps < 0):
             raise ValueError("absorber must return finite nonnegative values")
+        surface_line = int(np.argmin(np.abs(axis0 - model.dividing_surface)))
+        if np.any(eps[surface_line] > 0):
+            raise ValueError("the dividing surface must lie between the absorbing regions")
     if normalization not in ("default", "slice"):
         raise ValueError("normalization must be 'default' or 'slice'")
     keep = None

@@ -175,3 +175,20 @@ def test_path_model_gives_a_terminal_product_well_its_own_absorber(monkeypatch):
     # default absorber, which is then kept unchanged.
     model, quantum, info = pipeline.path_model(run, path, dict(pipeline.DEFAULTS["quantum"]))
     assert info["product_absorber"]["rule"] == "default" and quantum["cap_width"] == pytest.approx(2.0)
+
+
+def test_a_supplied_absorber_is_checked_on_the_dividing_surface_not_against_end_caps():
+    # Barrier 15% of the box from the product end: the default 20% end caps
+    # would cover it, but a supplied absorber that vanishes there is valid.
+    model = eckart(-10.0, 2.0)
+    beta = 1.0 / 9.5e-4
+    axis = model.axes[0]
+    absorber = lambda points: np.where(points[:, 0] > 1.2, 0.05 * (points[:, 0] - 1.2), 0.0) + \
+        np.where(points[:, 0] < -8.0, 0.05 * (-8.0 - points[:, 0]), 0.0)
+    assert exact_quantum_rate(model, beta, absorber=absorber).rate > 0
+    with pytest.raises(ValueError, match="between the absorbing regions"):
+        exact_quantum_rate(model, beta)
+    covering = lambda points: np.where(points[:, 0] > -0.5, 0.05, 0.0)
+    with pytest.raises(ValueError, match="between the absorbing regions"):
+        exact_quantum_rate(model, beta, absorber=covering)
+    assert axis[0] < 0.0 < axis[-1]
