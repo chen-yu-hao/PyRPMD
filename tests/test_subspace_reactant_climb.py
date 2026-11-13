@@ -236,9 +236,11 @@ def test_path_model_moves_a_sloped_reference_slice_into_the_free_channel(monkeyp
                           xi=lambda x: float(x[0]))
     model, quantum, info = pipeline.path_model(run, path, dict(pipeline.DEFAULTS["quantum"]))
     reference = model.provenance["reactant_reference"]
-    # The channel is flat to 0.3 kT a little past the start of the slope at 1.8.
-    assert reference["rule"] == "free_channel" and model.reactant_reference == pytest.approx(1.85, abs=0.1)
+    # The channel is flat to 0.3 kT a little past the start of the slope at
+    # 1.8, but the kink there is not quantum-free: the slice stops before it.
+    assert reference["rule"] == "free_channel" and 1.6 <= model.reactant_reference <= 1.8
     assert reference["offset_kt"] <= reference["reference_kt"]
+    assert reference["density_mismatch"] <= reference["density_tolerance"]
     assert quantum["cap_width"][0] == pytest.approx(reference["width"])
     assert info["reactant_reference"] == model.reactant_reference
     assert info["model_construction"]["reactant_reference"]["rule"] == "free_channel"

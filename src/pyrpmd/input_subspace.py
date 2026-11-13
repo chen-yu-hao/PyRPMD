@@ -18,7 +18,8 @@ _PATH = {"source", "step", "max_steps", "spread_factor", "asymptote_tolerance", 
          "reactant_xi", "mep_displacement", "ts_gradient_tolerance", "pmf_constraint_tolerance",
          "least_action_points", "instanton_beads", "instanton_max_iterations", "crossover_temperature"}
 _QUANTUM = {"spacing_1d", "spacing_2d", "refinement", "absorber_fraction", "threshold_margin",
-            "truncation_kt", "truncation_min", "padding", "dense_limit", "reference_kt", "product_drop_kt"}
+            "truncation_kt", "truncation_min", "padding", "dense_limit", "reference_kt",
+            "reference_density_tolerance", "product_drop_kt"}
 _RPMD = {"windows", "walkers", "burn_in", "sweeps", "leapfrog_steps", "hmc_dt", "trajectories",
          "md_dt", "md_time", "plateau_fraction", "bootstrap", "seed"}
 

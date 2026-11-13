@@ -83,7 +83,7 @@ DEFAULTS = {
     "quantum": {"spacing_1d": None, "spacing_2d": None, "refinement": 3, "absorber_fraction": 0.2,
                 "threshold_margin": 1.0, "truncation_kt": 30.0, "truncation_min": 0.0, "padding": None,
                 "dense_limit": 8000,
-                "reference_kt": 0.3, "product_drop_kt": 15.0},
+                "reference_kt": 0.3, "reference_density_tolerance": 1e-2, "product_drop_kt": 15.0},
     "rpmd": {"nbeads": None, "windows": 48, "walkers": 32, "burn_in": 200, "sweeps": 400,
              "trajectories": 512, "seed": 0},
     "output": {"directory": None, "reuse": False},
@@ -618,9 +618,12 @@ def path_model(run: RateRun, path, options: Mapping[str, Any], *, path_source: s
     # judged on the potential along the path: V_S also carries the zero-point
     # energy of soft fragment rotations, whose noise is of order 0.3 kT at
     # low temperature.
+    mismatch = _density_mismatch(arc, energies, run.beta)
     reactant = _reactant_reference(model_axis, np.interp(model_axis, arc, energies), surface,
                                    fraction * length, 0.05 * length, run.beta,
-                                   float(options.get("reference_kt", 0.3)))
+                                   float(options.get("reference_kt", 0.3)),
+                                   mismatch=np.interp(model_axis, arc, mismatch),
+                                   density_tolerance=float(options.get("reference_density_tolerance", 1e-2)))
     reference = reactant["reference"]
     model = type(model)(model.axes, model.values, model.masses, model.dividing_surface, model.reactant,
                         reference, dict(model.provenance, reactant_reference=reactant))
@@ -645,14 +648,43 @@ def path_model(run: RateRun, path, options: Mapping[str, Any], *, path_source: s
     return model, quantum, info
 
 
-def _reactant_reference(axis, values, surface, default_width, gap, beta, reference_kt):
+def _density_mismatch(arc, energies, beta):
+    """Leading quantum correction to the reactant density along the path.
+
+    Both rates of ``C_S`` are normalized per unit length on the reference
+    slice: the quantum rate by the quantum (or classical) density, the RPMD
+    rate by the centroid density.  They agree only where the channel is
+    free.  On a slope they differ at order hbar^2 (Wigner--Kirkwood:
+    ``rho_Q / rho_cl = 1 - beta^2 V''/12 + beta^3 V'^2/24``, the centroid
+    density has ``- beta^2 V''/24``; unit mass, hbar = 1, mass-weighted arc),
+    which does not cancel in ``C_S``.  Returns
+    ``beta^2 |V''| / 12 + beta^3 V'^2 / 24`` at the path points: at the
+    0.3 kT edge of an Eckart-like tail at 300 K it is ~0.1, a 5% error in
+    ``C_S`` on the curved-valley test model.
+    """
+    arc, energies = np.asarray(arc, dtype=float), np.asarray(energies, dtype=float)
+    first = np.gradient(energies, arc)
+    second = np.gradient(first, arc)
+    return beta**2 * np.abs(second) / 12.0 + beta**3 * first**2 / 24.0
+
+
+def _free_channel(energies, mismatch, beta, reference_kt, density_tolerance):
+    """Path points in the free reactant channel: flat to ``reference_kt`` and quantum-free."""
+    energies = np.asarray(energies, dtype=float)
+    return (np.abs(energies - energies[0]) <= float(reference_kt) / float(beta)) & \
+        (np.asarray(mismatch, dtype=float) <= float(density_tolerance))
+
+
+def _reactant_reference(axis, values, surface, default_width, gap, beta, reference_kt, *, mismatch=None,
+                        density_tolerance=1e-2):
     """Reactant absorber and reference slice of a 1D path model.
 
     The default absorber covers ``default_width`` from the reactant end and
     the reference slice lies ``gap`` beyond it.  The slice must be in the
     free reactant channel: the potential along the path (``values`` on the
     model axis) there within ``reference_kt`` (in kT) of its value at the
-    reactant end.  If the default slice is not, the slice
+    reactant end, and the quantum correction to the density (``mismatch``,
+    :func:`_density_mismatch`) below ``density_tolerance``.  If the default slice is not, the slice
     moves to the last point of the flat channel that starts at the reactant
     end and the absorber shrinks in front of it (``rule = "free_channel"``).
     With no flat channel long enough to hold an absorber
@@ -660,17 +692,21 @@ def _reactant_reference(axis, values, surface, default_width, gap, beta, referen
     rejects the model.
     """
     values = np.asarray(values, dtype=float)
-    tolerance = float(reference_kt) / float(beta)
+    mismatch = np.zeros_like(values) if mismatch is None else np.asarray(mismatch, dtype=float)
     default = float(axis[0] + default_width + gap)
+    free = _free_channel(values, mismatch, beta, reference_kt, density_tolerance) & (axis < surface)
 
     def record(reference, width, rule):
         offset = abs(float(np.interp(reference, axis, values)) - float(values[0]))
         return {"reference": float(reference), "width": float(width), "rule": rule,
-                "offset_kt": offset * float(beta), "reference_kt": float(reference_kt)}
+                "offset_kt": offset * float(beta), "reference_kt": float(reference_kt),
+                "density_mismatch": float(np.interp(reference, axis, mismatch)),
+                "density_tolerance": float(density_tolerance)}
 
-    if abs(float(np.interp(default, axis, values)) - float(values[0])) <= tolerance:
+    k_default = int(np.clip(np.searchsorted(axis, default), 0, len(axis) - 1))
+    if free[: k_default + 1].all():
         return record(default, default_width, "default")
-    flat = (np.abs(values - values[0]) <= tolerance) & (axis < surface)
+    flat = free
     last = int(np.argmin(flat)) - 1 if not flat.all() else len(axis) - 1
     width = float(axis[last] - axis[0] - gap) if last >= 0 else 0.0
     if width >= 4.0 * float(axis[1] - axis[0]):
@@ -812,9 +848,15 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
     # point, going out from the TS, within `reference_kt` of the asymptote.
     # Absorbers are two de Broglie wavelengths long; products are absorbed
     # once the path has dropped `product_drop_kt` below its maximum.
-    tolerance = float(options.get("reference_kt", 0.3)) / beta
-    reactant_side = np.flatnonzero(np.abs(energies[:k_ts] - energies[0]) <= tolerance)
-    k_ref = int(reactant_side[-1]) if len(reactant_side) else 0
+    # The free channel that starts at the reactant end (not the last flat
+    # point before the TS, which for a profile with a pre-reaction complex
+    # can lie between the complex and the TS).
+    free = _free_channel(energies[:k_ts], _density_mismatch(arc, energies, beta)[:k_ts], beta,
+                         float(options.get("reference_kt", 0.3)),
+                         float(options.get("reference_density_tolerance", 1e-2)))
+    k_ref = (int(np.argmin(free)) - 1) if not free.all() else k_ts - 1
+    if k_ref < 0:
+        raise ValueError("the path has no free reactant channel for the 2D reference slice")
     reference_arc = float(arc[k_ref])
     thermal_wavelength = 2.0 * np.pi / np.sqrt(2.0 / beta)
     absorb_lo = reference_arc - 0.25 * thermal_wavelength
@@ -978,9 +1020,12 @@ def rph_model(run: RateRun, path, options: Mapping[str, Any]):
     k_top = int(np.argmax(energies))
     if not 0 < k_top < len(path) - 1:
         raise ValueError("the RPH model needs a barrier inside the path")
-    tolerance = float(options.get("reference_kt", 0.3)) / beta
-    flat = np.abs(energies[:k_top] - energies[0]) <= tolerance
-    k_ref = (int(np.argmin(flat)) - 1) if not flat.all() else k_top - 1
+    free = _free_channel(energies[:k_top], _density_mismatch(arc, energies, beta)[:k_top], beta,
+                         float(options.get("reference_kt", 0.3)),
+                         float(options.get("reference_density_tolerance", 1e-2)))
+    k_ref = (int(np.argmin(free)) - 1) if not free.all() else k_top - 1
+    if k_ref < 0:
+        raise ValueError("the path has no free reactant channel for the 2D reference slice")
     reference_arc, top_arc = float(arc[k_ref]), float(arc[k_top])
     k_p, product_rule = _rph_product_start(energies, k_top, beta, float(options.get("product_drop_kt", 15.0)),
                                            float(options.get("reference_kt", 0.3)))

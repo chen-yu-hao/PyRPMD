@@ -178,3 +178,32 @@ def test_the_channel_stays_open_beyond_the_box(curved_2d):
     # Both grid ends are flat channels near the asymptote.
     assert floor_line[0] == pytest.approx(floor_line[-1], abs=2e-3)
     assert floor_line[0] < model_info["energy_floor"] + 0.01
+
+
+def test_the_reference_slice_lies_where_quantum_and_centroid_densities_agree():
+    """On a slope the quantum and the centroid reactant density differ at O(hbar^2).
+
+    The 0.3 kT energy rule alone put the 300 K reference slice at x = -71 on
+    the curved-valley model, where beta^2 |V''| / 12 is ~0.15: C_S came out
+    ~5% high for the RPH model, which is exact for a 2D system.
+    """
+    potential = Curved(2)
+    run = model_run(potential, 300.0, 16)
+    path, info = build_path(run)
+    arc = pipeline._arc(path, run.cartesian_masses)
+    energies = np.array([run.energy(p) for p in path])
+    mismatch = pipeline._density_mismatch(arc, energies, run.beta)
+    loose = pipeline._free_channel(energies, np.zeros_like(mismatch), run.beta, 0.3, np.inf)
+    strict = pipeline._free_channel(energies, mismatch, run.beta, 0.3, 1e-2)
+    edge = lambda free: path[int(np.argmin(free[: int(np.argmax(energies))])) - 1, 0]
+    assert edge(loose) == pytest.approx(-71.0, abs=4.0)
+    assert edge(strict) < -95.0
+    # The mismatch of the analytic tail at x: beta^2 V''/12 + beta^3 V'^2/24.
+    a, V0 = potential.a, potential.V0
+    x = -80.0
+    sech2, tanh = 1 / np.cosh(x / a) ** 2, np.tanh(x / a)
+    d1 = -2 * V0 / a * sech2 * tanh
+    d2 = 2 * V0 / a**2 * sech2 * (3 * tanh**2 - 1)
+    exact = run.beta**2 * abs(d2) / 12 + run.beta**3 * d1**2 / 24
+    k = int(np.argmin(abs(path[:, 0] - x)))
+    assert mismatch[k] == pytest.approx(exact, rel=0.2)
