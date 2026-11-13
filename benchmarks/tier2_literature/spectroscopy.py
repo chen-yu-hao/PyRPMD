@@ -584,7 +584,7 @@ def run(output, *, quick=False):
             "standard_error": float(mean_error([row[key] for row in fits])[1])}
             for key in ("frequency_mean", "heldout_force_rmse", "c0", "normalized_correlation_rmse_t15")},
         "wall_seconds": time.perf_counter() - started,
-        "physical_converged": False,
+        
         "limitations": ["1-D linear-dipole model, not a molecular water/H2/D2 or Raman/SFG validation",
             "PA-CMD approaches approximate centroid dynamics, not exact anharmonic quantum dynamics",
             "finite-P and finite-step errors, finite trajectory/seed uncertainty are reported separately",

@@ -548,7 +548,6 @@ def ring_polymer_rate(
         "grid_exit": grid_exit,
         "normalization": model.reactant,
         "units": "axis-0 length per time" if model.reactant == "asymptotic" else "per time",
-        "physical_converged": False,
     }
     return RingPolymerRateResult(beta, int(nbeads), rate, float(rate * relative), qtst, log_qtst_error,
                                  plateau, kappa_error, grid, mean_force, mean_force_error,

@@ -119,7 +119,7 @@ def test_recorded_water_pilot_replays_without_openmm():
     result = replay(path)
     assert result["artifact_integrity_passed"] and result["estimator_replay_passed"]
     assert result["diffusion_status"] == "ballistic_or_drifting"
-    assert not result["physical_converged"] and not result["literature_reproduced"]
+    assert not result["literature_reproduced"]
 
 
 def test_recorded_water_pilot_tampering_is_detected(tmp_path):

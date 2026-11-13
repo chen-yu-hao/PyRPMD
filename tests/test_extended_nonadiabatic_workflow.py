@@ -51,7 +51,7 @@ def test_public_prepare_run_and_completed_analysis_are_consistent(tmp_path, monk
     assert ready["nonadiabatic_preparation"]["matrix_gradient_check"]["max_absolute_gradient_error"] < 1e-8
     result = run(source, output=tmp_path/"run")
     assert source == original
-    assert result["completed"] and result["physical_converged"] is False
+    assert result["completed"]
     saved = arrays(tmp_path/"run/results/nonadiabatic.npz")
     metadata = json.loads(str(saved["metadata"].item()))
     np.testing.assert_array_equal(saved["steps"], [0, 2, 4, 6, 7])

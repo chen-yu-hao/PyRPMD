@@ -454,7 +454,7 @@ def summarize(run, settings, identity, parents, *, elapsed=0.):
               "settings_sha256": sha(run / "settings.json"), "chunks": chunks,
               "parent_identity": settings["parent_identity"], "elapsed_this_call_seconds": elapsed,
               "created_utc": datetime.now(timezone.utc).isoformat(),
-              "physical_converged": False, "literature_reproduced": False}
+               "literature_reproduced": False}
     write_json(run / "report.json", report)
     if kappa is not None:
         np.savetxt(run / "kappa.csv", np.column_stack((times, kappa)), delimiter=",",

@@ -112,5 +112,4 @@ def test_online_result_records_scope_and_diagnostic_provenance():
     result = _harmonic_runner(0.01).propagate(2)
     assert result.diagnostics["quantum_coordinate_count"] == 1
     assert result.diagnostics["quantum_propagator"] == "periodic_fourier_strang"
-    assert result.diagnostics["physical_converged"] is False
     assert "no generally exact flux-side rate" in result.diagnostics["rate_claim"]

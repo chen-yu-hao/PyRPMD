@@ -166,7 +166,6 @@ def test_batch_scalar_consistency_and_heat_capacity_error_report():
     assert report["heat_capacity_over_kB"] == pytest.approx(expected)
     assert report["heat_capacity_standard_error_over_kB"] > 0
     assert report["heat_capacity_kind"] == "Cv"
-    assert report["physical_converged"] is False
     json.dumps(report, allow_nan=False)
     small = suzuki_chin_thermodynamics([potential.estimators(q) for q in paths[:3]], beta, block_size=1)
     assert small["heat_capacity_standard_error_over_kB"] is None

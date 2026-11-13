@@ -488,14 +488,14 @@ def run_campaign(campaign, library, protocol_path, snapshot_path, snapshot_sha, 
                     "campaign_directory": str(campaign), "protocol": prior["protocol"], "schedule": prior["schedule"],
                     "source_sha256": prior["source_sha256"], "model_sha256": prior["model_sha256"], "seeds": rows,
                     "initial_raw_archive": prior.get("archive", prior.get("initial_raw_archive")),
-                    "prior_snapshot_sha256": snapshot_sha, "physical_converged": False}
+                    "prior_snapshot_sha256": snapshot_sha}
         completion = {"schema": COMPLETION_SCHEMA, "created_utc": now(), "production": stage,
                       "requested_seeds": list(SEEDS), "completed_seeds": list(SEEDS),
                       "protocol_sha256": prior["protocol"]["sha256"], "decision_sha256": decision_sha,
                       "prior_snapshot_sha256": snapshot_sha, "scheduler_source_sha256": plan["scheduler_source_sha256"],
                       "attempt_directory": str(attempt), "all_submitted_workers_drained": True,
                       "prior_prefix_and_state_files_unchanged": True, "snapshot": snapshot,
-                      "physical_converged": False, "analysis_recomputed": False}
+                       "analysis_recomputed": False}
         event("complete_cohort_verified", seeds=list(SEEDS))
         events.close()
         atomic_new_json(final_path, completion)

@@ -255,7 +255,7 @@ def test_joint_block_errors_match_independent_nonlinear_block_estimates():
     assert data["rate_standard_error_block_au"] == pytest.approx(np.std(block_rates, ddof=1) / 2)
     assert data["block_diagnostics"]["samples_excluded_from_block_error"] == 3
     assert result.summary(block_size=100)["rate_standard_error_block_au"] is None
-    assert data["rate_s_inv"] is None and not data["physical_converged"]
+    assert data["rate_s_inv"] is None
 
 
 @pytest.mark.parametrize("minus,plus", [([2], [3]), ([3], [1]), ([3.0], [2]),

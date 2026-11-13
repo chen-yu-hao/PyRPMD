@@ -99,7 +99,6 @@ def test_locked_ensembles_are_absent_from_fractional_observations():
     assert np.all(observations["counts"].sum(axis=1) < 3)
     assert np.all(observations["crossings"][~observations["counts"]] == 0)
     assert np.all(observations["durations"][~observations["counts"]] == 0)
-    assert coordinator.summary()["physical_converged"] is False
     assert len(coordinator.pending_intents) == 2
 
 
@@ -259,7 +258,6 @@ def test_infinite_retis_quartic_rate_matches_independent_phase_space_integral():
     assert flux_error > 0 and rate_error > 0
     assert abs(summary["flux_au"] - exact_flux) <= 5*flux_error + 0.01*exact_flux
     assert abs(summary["rate_estimate_au"] - exact_rate) <= 5*rate_error + 0.01*exact_rate
-    assert summary["physical_converged"] is False
     assert not any(summary["length_rejections"])
     print("INFINITE_RETIS_QUARTIC_REFERENCE", json.dumps({
         "exact_flux_au": exact_flux, "exact_rate_au": exact_rate,

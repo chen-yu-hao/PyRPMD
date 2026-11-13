@@ -60,7 +60,6 @@ def test_full_rate_study_separable_transverse_partition_cancels():
         assert a["orbit"]["gradient_max"] <= 1e-8
         assert a["rate"]["negative_modes"] == 1
     assert two["numerical_converged"] is True
-    assert two["physical_converged"] is False
     assert two["bead_convergence"]["required_successive_refinements"] == 2
     assert two["rows"][-1]["orbit"]["nbeads"] == 128
     assert two["crossover_temperature_kelvin"] > two["scientific_identity"]["temperature_kelvin"]
@@ -151,7 +150,6 @@ def test_splitting_duration_scan_preserves_dtau_and_matches_analytic_kink():
         np.testing.assert_allclose(dtau, dtau[0], rtol=1e-14)
     assert report["numerical_converged"]
     assert report["discretization_converged"]
-    assert not report["physical_converged"]
 
 
 def test_bad_splitting_grids_and_unasserted_wells_fail_before_pes():

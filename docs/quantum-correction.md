@@ -77,8 +77,8 @@ and must be scanned as a numerical parameter.
 The exact-reference layer is deterministic for its finite numerical model. It
 does not make the finite grid, hierarchy, exponential bath fit, or time window
 physically converged automatically. `DVRHEOMResult` and
-`QuantumCorrectionResult` therefore expose diagnostics and keep
-`physical_converged=False` until independent gates have passed.
+`QuantumCorrectionResult` therefore exposes diagnostics; independent gates
+must be checked before interpreting the result as physically validated.
 
 The hybrid response is a transfer approximation. It becomes the full quantum
 response in the algebraic test where the selected subspace is the full system,
@@ -145,9 +145,8 @@ restores the complete classical and quantum state. The implementation is a
 Python reference driver with centroid coupling and a frozen-potential
 Fourier--Strang step inside each mixed-dynamics step. It is therefore an
 online mixed quantum--classical closure, not an exact entangled
-system-plus-bath propagator. The result is always marked
-`physical_converged=False` until bead, grid, time-step, and ensemble checks are
-performed independently.
+system-plus-bath propagator. Bead, grid, time-step, and ensemble checks must
+be performed independently.
 
 ## Automatic quantum-subspace selection
 
@@ -215,5 +214,5 @@ system that can be obtained from a lower-dimensional quantum calculation. A
 physical rate still needs a converged dividing-surface measure, reactant
 normalization, a real-time plateau, independent-chain uncertainty, and an
 independent full-system quantum benchmark. The API therefore exposes
-`physical_converged=False` and `exact_general_rate_claim=False` instead of
-silently promoting the transfer approximation to a theorem.
+`exact_general_rate_claim=False` instead of silently promoting the transfer
+approximation to a theorem.

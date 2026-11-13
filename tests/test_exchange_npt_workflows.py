@@ -140,7 +140,6 @@ def test_unresolved_fermionic_npt_volume_and_enthalpy_are_withheld(tmp_path):
     assert replica["mean_volume_bohr3"] is None
     assert replica["thermodynamics"]["enthalpy_hartree"] is None
     assert replica["bosonic_sampling_mean_volume_bohr3"] > 0
-    assert result["physical_converged"] is False
 
 
 @pytest.mark.parametrize("field,value", [("winding_tolerance", 1e-10), ("winding_max_terms", 20000)])

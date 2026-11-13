@@ -160,7 +160,7 @@ def plan(config):
             "production_sweeps_per_point": production,
             "bootstrap_scope": "independent source chains and circular source blocks; MBAR refitted; conditional on frozen path",
             "dynamics_scope": "identical complete initial states at each timestep; same physical final time",
-            "source_identity": source_identity(), "physical_converged": False}
+            "source_identity": source_identity()}
 
 
 def _write_json(path, value):
@@ -303,7 +303,7 @@ def source_block_bootstrap(cv_values, signs, observables, centers, stiffness, be
             "percentile_interval": np.quantile(estimates, [0.025, 0.975], axis=0).tolist() if available else None,
             "valid_draw_estimates_diagnostic": estimates.tolist(),
             "valid_draw_average_signs_diagnostic": sign_draws,
-            "physical_converged": False}
+            }
 
 
 def matched_timestep_dynamics(parents, potential, masses, beta, beads, *, dts,
@@ -371,7 +371,7 @@ def matched_timestep_dynamics(parents, potential, masses, beta, beads, *, dts,
               "errors_against_finest_timestep": errors,
               "coarse_to_intermediate_error_ratios": ratios,
               "uncertainty_scope": "paired_numerical_error_conditional_on_same_sampled_parents",
-              "rate_constant": None, "physical_converged": False}
+              "rate_constant": None}
     arrays.update(energies=energies, signs=signs, time=np.arange(nframes)*coarse, dts=np.asarray(dts))
     return report, arrays
 
@@ -494,7 +494,7 @@ def run_case(config_dict, potential_V, beads, output_directory, *, resume=False)
                   "production_reweighting": weighted.summary(), "observable_names": OBSERVABLE_NAMES,
                   "observables": estimates, "independent_chain_results": per_chain,
                   "bootstrap": bootstrap, "units": {"length": "bohr", "energy": "hartree", "time": "atomic_time", "voltage": "volt"},
-                  "sampling_time_is_physical_time": False, "physical_converged": False,
+                  "sampling_time_is_physical_time": False, 
                   "rate_constant": None,
                   "artifacts": {"source": "source.npz"}}
         if not weighted.unavailable_reasons:
@@ -510,7 +510,7 @@ def run_case(config_dict, potential_V, beads, output_directory, *, resume=False)
                        source_flat_indices=np.asarray(parents.sampling_diagnostics["source_flat_indices"]))
         else:
             report["dynamics"] = {"available": False, "unavailable_reasons": weighted.unavailable_reasons,
-                                  "physical_converged": False}
+                                  }
         q = raw["q"].reshape(-1, 1, 3)
         charge = potential.solve(q)
         report["charge"] = {"configuration_count": len(q),
@@ -560,7 +560,7 @@ def run_study(config, output, workers=1, resume=False):
                             "dynamics_available": r["dynamics"]["available"],
                             "path_stopping_reason": r["path"]["stopping_reason"]}
                          for r in reports],
-               "physical_converged": False, "rate_constant": None,
+                "rate_constant": None,
                "reference_comparison": "Run adaptive_nrpmd_reference.py for independent finite-bead grid reference."}
     _write_json(output/"summary.json", summary)
     return summary

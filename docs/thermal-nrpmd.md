@@ -176,7 +176,7 @@ conditional on the chosen block length and one chain's mixing.
 A physical rate requires independently checked sampling, sign convergence,
 basin definitions, intermediate-time kinetic behavior, timestep, beads, and
 agreement across chains. Long-time population recurrences or relaxation are
-not automatically a rate plateau. Results retain `physical_converged=False`.
+not automatically a rate plateau.
 These APIs currently cover finite Cartesian model systems; they do not provide
 complex-phase thermal sampling, fixed-atom constraints, periodic winding,
 distributed thermal sampling, or a new general `task="rate"` input mode.

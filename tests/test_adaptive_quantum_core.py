@@ -27,7 +27,6 @@ def test_rate_defect_limits_and_failure_visibility():
     assert matched_rate_defect(2.,2.,3.,**kw)['rate']==3.
     r=matched_rate_defect(1.,3.,1.,**kw)
     assert r['rate']==-1. and r['negative_rate']
-    assert not r['physical_converged']
 
 
 def test_rate_defect_ratio_mode_limits():

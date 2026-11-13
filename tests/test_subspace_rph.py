@@ -20,9 +20,9 @@ from pyrpmd.analysis.subspace_rph import develop_path, rph_bath
 from pyrpmd.input_schema import InputError
 from pyrpmd.input_subspace import rate_subspace_options
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "benchmarks" / "subspace_rph"))
-from models import CM, Curved, Embedded, model_run  # noqa: E402
-from reference import QUANTUM, build_path  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from benchmarks.subspace_rph.models import CM, Curved, Embedded, model_run  # noqa: E402
+from benchmarks.subspace_rph.reference import QUANTUM, build_path  # noqa: E402
 
 GATING = {"validity": {}, "hessian_displacement": 5e-3}
 

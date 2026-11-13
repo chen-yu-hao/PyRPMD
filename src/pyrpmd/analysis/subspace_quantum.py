@@ -314,6 +314,101 @@ def _dense_memory_mb(model, retained, normalization="default"):
     return 64 + (192 * retained**2 + 64 * np.prod(model.shape) + 32 * transverse**2) / 2**20
 
 
+def _iterative_memory_mb(model, max_flux_states=256):
+    size = int(np.prod(model.shape))
+    states = min(size, int(max_flux_states))
+    return 64 + (256 * size * states + 64 * sum(n**2 for n in model.shape)) / 2**20
+
+
+# Options that only the dense Sylvester route implements.
+_DENSE_ONLY_OPTIONS = ("truncation_energy", "energy_floor", "slice normalization")
+
+
+class DenseRouteUnavailable(ValueError):
+    """The requested options need the dense route, but the grid does not fit it.
+
+    A ``ValueError`` for compatibility.  ``diagnostic`` is the solver plan of
+    :func:`quantum_solver_plan`: retained points, ``dense_limit``, the dense
+    memory estimate, ``required_dense_limit`` and the supported alternatives.
+    """
+
+    def __init__(self, plan):
+        self.diagnostic = dict(plan)
+        super().__init__(plan["reason"])
+
+
+def _route_plan(model, retained, *, method, dense_limit, dense_only, normalization, max_flux_states,
+                memory_limit_mb):
+    if method not in ("auto", "sylvester", "flux_eigenstates"):
+        raise ValueError("method must be 'auto', 'sylvester' or 'flux_eigenstates'")
+    if isinstance(dense_limit, bool) or not isinstance(dense_limit, (int, float, np.integer, np.floating)) \
+            or not np.isfinite(dense_limit) or dense_limit < 1:
+        raise ValueError("dense_limit must be a positive number of grid points")
+    dense_limit = int(dense_limit)
+    route = method if method != "auto" else ("sylvester" if retained <= dense_limit else "flux_eigenstates")
+    dense_mb = float(_dense_memory_mb(model, retained, normalization))
+    route_mb = dense_mb if route == "sylvester" else float(_iterative_memory_mb(model, max_flux_states))
+    plan = {
+        "grid_shape": [int(n) for n in model.shape], "grid_points": int(np.prod(model.shape)),
+        "retained_points": int(retained), "method": method, "route": route, "dense_limit": dense_limit,
+        "dense_only_options": list(dense_only), "dense_memory_mb": dense_mb, "estimated_memory_mb": route_mb,
+        "memory_limit_mb": None if memory_limit_mb is None else float(memory_limit_mb),
+        "required_dense_limit": int(retained) if dense_only else None,
+        "feasible": True, "status": "ok", "reason": None, "alternatives": [],
+    }
+    dense_gib = dense_mb / 1024.0
+    reduce = ("reduce the retained grid (a smaller box, a coarser grid or a lower truncation energy) "
+              "and check that the rate is converged with respect to it")
+    if route == "flux_eigenstates" and dense_only:
+        plan.update(
+            feasible=False, status="dense_limit_exceeded" if method == "auto" else "dense_route_required",
+            reason=(f"{', '.join(dense_only)} need the dense route, but {retained} grid points remain "
+                    f"after truncation and dense_limit is {dense_limit} (the dense route needs about "
+                    f"{dense_gib:.1f} GiB)"),
+            alternatives=[f"raise dense_limit to at least {retained} if about {dense_gib:.1f} GiB is available",
+                          reduce])
+    elif route == "sylvester" and retained > max(dense_limit, 6000):
+        plan.update(feasible=False, status="dense_limit_exceeded", required_dense_limit=int(retained),
+                    reason=(f"grid too large for the dense Sylvester route: {retained} retained points "
+                            f"exceed dense_limit={dense_limit} (about {dense_gib:.1f} GiB)"),
+                    alternatives=[f"raise dense_limit to at least {retained} if about {dense_gib:.1f} GiB "
+                                  "is available", reduce])
+    elif memory_limit_mb is not None and route_mb > float(memory_limit_mb):
+        plan.update(feasible=False, status="memory_limit_exceeded",
+                    reason=(f"the {route} route needs about {route_mb:.1f} MiB for {retained} retained points; "
+                            f"the memory budget is {float(memory_limit_mb):.1f} MiB"),
+                    alternatives=["raise the memory budget", reduce])
+    return plan
+
+
+def quantum_solver_plan(model: SubspaceModel, *, method: str = "auto", dense_limit: int = 1600,
+                        truncation_energy: Any = None, energy_floor: float | None = None,
+                        normalization: str = "default", max_flux_states: int = 256,
+                        memory_limit_mb: float | None = None, **_solver_options) -> dict:
+    """Route, size and memory of :func:`exact_quantum_rate` for ``model``, without solving it.
+
+    Takes the same keywords (other solver options are ignored) and costs one
+    comparison per grid point.  ``feasible`` is false, with ``status``
+    (``dense_limit_exceeded``, ``dense_route_required`` or
+    ``memory_limit_exceeded``), ``reason`` and ``alternatives``, exactly when
+    the solve would be refused for its route or size; ``memory_limit_mb``
+    (optional) also bounds the iterative route, as the task scheduler does.
+    """
+    if not isinstance(model, SubspaceModel):
+        raise TypeError("model must be a SubspaceModel")
+    if normalization not in ("default", "slice"):
+        raise ValueError("normalization must be 'default' or 'slice'")
+    retained = int(np.prod(model.shape))
+    if truncation_energy is not None:
+        threshold = _truncation_threshold(model, truncation_energy)
+        retained = int(np.count_nonzero(np.asarray(model.values, dtype=float) <= threshold))
+    used = (truncation_energy is not None, energy_floor is not None, normalization == "slice")
+    return _route_plan(model, retained, method=method, dense_limit=dense_limit,
+                       dense_only=[name for name, on in zip(_DENSE_ONLY_OPTIONS, used) if on],
+                       normalization=normalization, max_flux_states=max_flux_states,
+                       memory_limit_mb=memory_limit_mb)
+
+
 def _dense_rate_matrix(
     hamiltonian,
     eps,
@@ -825,12 +920,16 @@ def exact_quantum_rate(
         keep = np.flatnonzero(operators.potential.ravel() <= threshold.ravel())
         margin_info = _truncation_margin(model, operators.potential, threshold)
     retained = operators.size if keep is None else len(keep)
-    if method == "auto":
-        method = "sylvester" if retained <= dense_limit else "flux_eigenstates"
+    used = (keep is not None, energy_floor is not None, normalization != "default")
+    plan = _route_plan(model, retained, method=method, dense_limit=dense_limit,
+                       dense_only=[name for name, on in zip(_DENSE_ONLY_OPTIONS, used) if on],
+                       normalization=normalization, max_flux_states=max_flux_states, memory_limit_mb=None)
+    if not plan["feasible"]:
+        # Refused before any propagation or factorisation: a structured diagnostic, not a generic error.
+        raise DenseRouteUnavailable(plan)
+    method = plan["route"]
     if method == "sylvester":
-        if retained > max(dense_limit, 6000):
-            raise ValueError("grid too large for the dense Sylvester route")
-        estimate_mb = _dense_memory_mb(model, retained, normalization)
+        estimate_mb = plan["dense_memory_mb"]
         if memory_limit_mb is not None and (not np.isfinite(memory_limit_mb) or memory_limit_mb <= 0):
             raise ValueError("memory_limit_mb must be finite and positive")
         if memory_limit_mb is not None and estimate_mb > memory_limit_mb:
@@ -839,8 +938,6 @@ def exact_quantum_rate(
                                             energy_floor=energy_floor, normalization=normalization)
         info["estimated_peak_memory_mb"] = estimate_mb
     else:
-        if keep is not None or energy_floor is not None or normalization != "default":
-            raise ValueError("truncation_energy, energy_floor and slice normalization need the dense route")
         surface_index = int(np.searchsorted(axis0, model.dividing_surface))
         surface_energy = float(operators.potential[surface_index].min())
         reference_energy = float(np.min(model.energy(
@@ -861,6 +958,7 @@ def exact_quantum_rate(
     if not np.isfinite(flux) or not np.isfinite(partition) or partition <= 0:
         raise FloatingPointError("exact quantum rate produced a non-finite flux or partition function")
     info.update(margin_info)
+    info["solver_plan"] = plan
     info.update({
         "energy_shift": shift,
         "cap_width": width if absorber is None else None,
@@ -875,5 +973,5 @@ def exact_quantum_rate(
 
 dense_rate_matrix = _dense_rate_matrix
 
-__all__ = ["QuantumRateResult", "absorbing_potential", "exact_quantum_rate", "sinc_dvr_kinetic",
-           "dense_rate_matrix", "_dense_rate_matrix"]
+__all__ = ["DenseRouteUnavailable", "QuantumRateResult", "absorbing_potential", "exact_quantum_rate",
+           "quantum_solver_plan", "sinc_dvr_kinetic", "dense_rate_matrix", "_dense_rate_matrix"]

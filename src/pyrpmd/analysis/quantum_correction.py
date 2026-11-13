@@ -7,9 +7,8 @@ The public functions implement the controlled response-level construction
 
 The low-dimensional quantum calculation supplies a *defect* relative to a
 matched low-dimensional RPMD calculation. It does not replace full-system
-bath dynamics and is not an identity for a coupled Hamiltonian. Results carry
-``physical_converged=False`` until a caller supplies independent convergence
-evidence.
+bath dynamics and is not an identity for a coupled Hamiltonian. Results carry diagnostics only; a caller must supply independent convergence
+evidence before treating them as physically validated.
 
 All transforms use atomic units and the convention
 ``chi(w) = integral_0^infty exp((i*w-eta)*t) chi(t) dt``. For a Kubo
@@ -218,8 +217,6 @@ class QuantumCorrectionResult:
     corrected_response: np.ndarray
     diagnostics: Mapping[str, Any]
     provenance: Mapping[str, Any]
-    physical_converged: bool = False
-
     def __post_init__(self):
         object.__setattr__(self, "frequencies", _readonly(_validate_frequencies(self.frequencies), dtype=float))
         for name in ("rpmd_full_response", "rpmd_sub_response", "quantum_sub_response", "inverse_defect", "corrected_response"):
@@ -281,14 +278,12 @@ def hybrid_quantum_correction(
         "relative_inverse_defect": _norm(defect) / max(_norm(full), _EPS),
         "negative_real_fraction_full": _negative_real_fraction(full),
         "negative_real_fraction_corrected": _negative_real_fraction(corrected),
-        "physical_converged": False,
         "approximation": "matched-subspace-inverse-response-defect",
         "assumptions": "low-dimensional quantum-minus-RPMD inverse response defect is transferable; no exact full-system rate identity is assumed",
     }
     prov = {"reference_kind": "response-level-RPMD-plus-low-dimensional-quantum",
             "frequency_points": int(len(w)),
-            "observable_shape": list(full.shape[1:]) if full.ndim == 3 else [],
-            "physical_converged": False}
+            "observable_shape": list(full.shape[1:]) if full.ndim == 3 else []}
     if provenance is not None:
         if not isinstance(provenance, Mapping):
             raise TypeError("provenance must be a mapping")

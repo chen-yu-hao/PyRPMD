@@ -76,8 +76,7 @@ NRPMD 和 SM 的 `initial.initial_state` 表示固定透热初态；hopping 方�
 
 每条轨迹的状态、随机数和观测历史在同一校验断点中保存。中断后可改变轨迹进程数或
 断点块大小继续；改变物理参数需要新计算。失败轨迹不会被静默丢弃后继续发布平均结果。
-BA 的连续绝热基框架及 MASH 的采样标签也进入断点。短算例是工作流演示，输出保留
-`physical_converged=false`。
+BA 的连续绝热基框架及 MASH 的采样标签也进入断点。短算例是工作流演示。
 
 四个扩展 RPSH 选择项支持 `dboc=true` 和 `geometric_force`。DBOC 同时进入能量、
 核力和跃迁能隙；复 hopping 使用明确规定的最大实 NAC 方向与局域 Abelian Berry 力

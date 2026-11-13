@@ -144,7 +144,7 @@ def _real_time_report(parents, potential, masses, beta, beads, *, quick, min_ave
         "energy_note": "Propagation Hamiltonian diagnostic, not a thermal quantum energy estimator.",
         "charge": _charge_diagnostics(potential, np.concatenate([s.q for s in parents.states]),
                                       scope="resampled_parent_beads"),
-        "physical_converged": False, "rate_constant": None,
+         "rate_constant": None,
     }
 
 
@@ -211,7 +211,7 @@ def run(*, potential_V=-0.3, beads=2, quick=False, seed=20261101):
         "charge_at_frozen_centers": _charge_diagnostics(
             potential, center_configurations, scope="collapsed_rings_at_frozen_CV_centers"),
         "sampling_iterations_have_physical_time": False,
-        "physical_converged": False, "rate_constant": None,
+         "rate_constant": None,
     }
     unavailable = list(result.reweighted.unavailable_reasons)
     if unavailable:
@@ -219,7 +219,7 @@ def run(*, potential_V=-0.3, beads=2, quick=False, seed=20261101):
         report["real_time"] = {
             "available": False, "unavailable_reasons": unavailable,
             "note": "Production reweighting did not resolve the requested diagnostics; no parents were launched.",
-            "physical_converged": False, "rate_constant": None,
+             "rate_constant": None,
         }
     else:
         report["signed_equilibrium_CV_mean_bohr"] = result.reweighted.expectation(result.reweighted.cv_values)

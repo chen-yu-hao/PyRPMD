@@ -60,7 +60,7 @@ def run_morse(P=32,n=2048,tag='main'):
         'observable':'(q1+q2+q3)/sqrt(3)','energy_quantum':sum(r['thermal_energy'] for r in qr),'energy_pimd':float(eb.mean()),
         'energy_pimd_block_se':float(eb.std(ddof=1)/np.sqrt(32)),'classical_lowT_energy':3/8.,'means':means.tolist(),
         'quantum':qr,'errors':{k:error(v,fullQ) for k,v in curves.items()},'eta':eta,'seconds':time.perf_counter()-start,
-        'dimensional_reduction':False,'physical_converged':False})
+        'dimensional_reduction':False})
 
 def run_fermi(P=32,n=2048,tag='main'):
     start=time.perf_counter();w=np.linspace(1.65,2.4,501);eta=.04;rp={};meta={};blocks={};qs={}
@@ -84,7 +84,7 @@ def run_fermi(P=32,n=2048,tag='main'):
         berr['rpmd'].append(error(F,qs[3]));berr['inverse_d2'].append(error(1/(1/F+1/qs[2]-1/R),qs[3]))
     savejson(f'fermi_{tag}_P{P}',{'model':'xy^2 Fermi core + harmonic spectator','beta':6.,'P':P,'n':n,'observable':'x in every calculation',
         'eta':eta,'tmax':192.,'metrics':metric,'references':meta,'bootstrap95':{k:np.quantile(v,[.025,.975]).tolist() for k,v in berr.items()},
-        'seconds':time.perf_counter()-start,'physical_converged':False})
+        'seconds':time.perf_counter()-start})
 
 def run_eckart_quantum(tag='main',dq=.10,nx=10,nz=4):
     start=time.perf_counter();energy=np.arange(.02,4.001,.04);data={}

@@ -283,4 +283,3 @@ def test_zero_curvature_channel_model_retains_working_rpmd_rate():
                                burn_in=2, sweeps=2, leapfrog_steps=1, trajectories=4,
                                md_time=0.2, md_dt=0.02, bootstrap=2)
     assert np.isfinite(result.qtst_rate)
-    assert not result.diagnostics["physical_converged"]

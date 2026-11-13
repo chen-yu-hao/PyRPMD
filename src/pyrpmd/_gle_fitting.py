@@ -301,7 +301,7 @@ def fit_piglet(frequency_range_au, *, beta, beads, naux=2, grid_size=32,
         "maximum_relative_error": maximum,
         "rms_relative_error": float(np.sqrt(np.mean(check_errors**2))),
         "lyapunov_relative_residual": lyapunov_residual,
-        "tolerance": tolerance, "fit_converged": True, "physical_converged": False,
+        "tolerance": tolerance, "fit_converged": True,
         "scope": "harmonic moments on the declared band; no anharmonic, timestep, sampling or NPT convergence claim",
         "relaxation_controls": {
             "origin": "fixed PyRPMD fitting controls, not a published PIGLET parameter prescription",
@@ -396,7 +396,7 @@ def fit_optimal_gle(frequency_range_au, *, naux=2, grid_size=32, max_nfev=600):
         "validation_tau_V_au": (tau / scale).tolist(),
         "minimum_efficiency": float(np.min(1 / (heldout * tau))),
         "rms_log_objective": rms, "lyapunov_relative_residual": lyapunov_residual,
-        "fit_converged": True, "physical_converged": False,
+        "fit_converged": True,
         "scope": "canonical harmonic sampling efficiency; local fit, not a certified global optimum",
         "solver": _solver_metadata(fit, initial, lower, upper, max_nfev),
     }

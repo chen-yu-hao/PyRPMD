@@ -10,7 +10,7 @@ With Q=sigma_z, the surface-to-surface reorganization energy is 4*lambda,
 where lambda=integral J(w)/(pi*w) dw is the API's reorganization_energy.
 
 The largest computed hierarchy is a finite comparison, not an exact answer.
-This script reports every cutoff and never sets physical_converged=True.
+This script reports every cutoff and leaves interpretation to the independent convergence study.
 """
 
 import argparse
@@ -107,7 +107,7 @@ def run(*, duration=10., points=101, depths=(2, 4, 6, 8), matsubara=(0, 1, 2, 4,
     return {
         "method": "scaled_sparse_Drude_Lorentz_HEOM", "units": "atomic",
         "experiment_identity": experiment_identity, "experiment": experiment,
-        "physical_converged": False,
+        
         "interpretation": "largest finite L,K is a comparison; scans do not prove global convergence",
         "model": params, "initial_density": rho.tolist(),
         "initial_bath": "factorized_free_thermal",

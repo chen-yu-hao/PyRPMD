@@ -353,7 +353,7 @@ def correlation_bootstrap(numerators, signs, *, replicates=256, seed=0,
             "confidence_level": 0.95, "unavailable_reasons": reasons,
             "standard_error": np.std(draws, axis=0, ddof=1).tolist() if available else None,
             "percentile_interval": np.quantile(draws, [0.025, 0.975], axis=0).tolist() if available else None,
-            "physical_converged": False}
+            }
 
 
 def _jsonable(value):
@@ -582,7 +582,7 @@ def run_benchmark(config, output, *, workers=1, resume=False, published_data=Non
         "spectator_coordinates": "separable_harmonic_y_and_z_cancel_from_normalized_x_and_electronic_quantities",
         "exact_quantum_reference": reference, "results": results,
         "comparison_scope": "2013_paper_nonadiabatic_model_not_validation_of_electrochemical_reservoir_or_adaptive_sampling",
-        "physical_converged": False, "rate_constant": None}
+         "rate_constant": None}
     report["published_figure_comparison"] = (compare_published_data(published_data, reference, results)
         if published_data is not None else {"available": False, "reason": "no_digitized_published_figure_supplied"})
     _write_json(output/"summary.json", report)

@@ -97,7 +97,7 @@ def test_ibi_independent_boltzmann_reference_includes_coordinate_measure(degree)
     fitted, diagnostics = update_fqcmd_model(model, target, sampled, polynomial_degree=degree)
     for actual, want in zip(fitted.corrections, expected):
         np.testing.assert_allclose(actual, want, atol=8e-16)
-    assert not diagnostics["converged"] and not diagnostics["physical_converged"]
+    assert not diagnostics["converged"]
     assert diagnostics["comparison"] == "pre-update classical vs target marginals"
     assert diagnostics["sampled_model_sha256"] == model.fingerprint
 

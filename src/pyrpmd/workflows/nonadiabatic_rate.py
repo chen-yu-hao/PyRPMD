@@ -158,8 +158,8 @@ def run_nonadiabatic_rate(input_or_mapping, output):
     """Sample thermal parents, propagate the rate correlation and save evidence.
 
     A fresh output directory is required; there is no implicit restart or
-    overwrite. ``summary['physical_converged']`` is always false: sign, block,
-    bead, step-size and plateau studies remain separate scientific evidence.
+    overwrite. Sign, block, bead, step-size and plateau studies remain
+    separate scientific evidence.
     """
     config = (resolve_nonadiabatic_rate_config(copy.deepcopy(input_or_mapping))
               if isinstance(input_or_mapping, Mapping) else load_nonadiabatic_rate_input(input_or_mapping))

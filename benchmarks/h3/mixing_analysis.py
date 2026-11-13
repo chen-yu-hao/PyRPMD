@@ -182,7 +182,7 @@ def analyze_run(path, *, widths=(.001,.0005,.00025), time_splits=True):
         minimum_sampled_bead_pair_bohr=float(diagnostics[:,:,3].min()),
         mean_energy_per_bead_hartree=float(diagnostics[:,:,4].mean()),
         mean_acceptance_per_move=(accepted/np.maximum(proposed,1)).mean(axis=1),
-        physical_converged=False,literature_reproduced=False,
+        literature_reproduced=False,
         uncertainty_unit='independent full exchange ladder; no per-window independence assumption')
     return report,fit
 

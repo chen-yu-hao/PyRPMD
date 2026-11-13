@@ -395,8 +395,7 @@ class ABFBias:
                                                        counts=self.grid.count, min_count=min_count)
         return FESResult(self.grid.edges, free, np.full_like(free, np.nan), mask,
                          tuple(self.cv.units), "abf", "replica_spread",
-                         metadata={"beta": self.beta, "measure": "cv_density", "converged": False,
-                                   "physical_converged": False, "estimator": "projected_mean_force",
+                         metadata={"beta": self.beta, "measure": "cv_density", "converged": False, "estimator": "projected_mean_force",
                                    "projection": diagnostics},
                          extras={"counts": self.grid.count.copy(), "raw_count": self.grid.count.copy(), "mean_force": self.grid.mean.copy(),
                                  "local_force_variance": self.grid.variance},
@@ -518,8 +517,7 @@ class ExtendedABF:
                                                        counts=np.where(valid, grid.count, 0), min_count=minimum)
         return FESResult(grid.edges, free, np.full_like(free, np.nan), mask,
                          tuple(self.cv.units), "eabf", "replica_spread",
-                         metadata={"beta": self.beta, "measure": "cv_density", "converged": False,
-                                   "physical_converged": False, "estimator": "czar", "projection": diagnostics},
+                         metadata={"beta": self.beta, "measure": "cv_density", "converged": False, "estimator": "czar", "projection": diagnostics},
                          extras={"counts": grid.count.copy(), "raw_count": grid.count.copy(), "mean_force": gradient,
                                  "mean_restraint_force": grid.mean.copy(),
                                  "extended_counts": self.bias.grid.count.copy(),

@@ -165,7 +165,7 @@ def test_ba_prepare_outputs_and_completed_resume_are_consistent(tmp_path, monkey
     assert preparation["matrix_gradient_check"]["max_absolute_gradient_error"] < 1e-8
     result = run(source, output=tmp_path/"run")
     assert source == original
-    assert result["completed"] and result["physical_converged"] is False
+    assert result["completed"]
     assert result["population_basis"] == "common_bead_adiabatic"
     assert result["active_surface_basis"] == "common_bead_adiabatic"
     assert result["coherence_available"] is False
@@ -176,7 +176,6 @@ def test_ba_prepare_outputs_and_completed_resume_are_consistent(tmp_path, monkey
     assert metadata["population_basis"] == "common_bead_adiabatic"
     assert metadata["density_basis"] is None and metadata["coherence_available"] is False
     assert metadata["statistics_axis"] == "trajectory"
-    assert metadata["physical_converged"] is False
     assert "diabatic_density" not in saved and "density_mean" not in saved
     assert "adiabatic_amplitude_populations" not in saved
     np.testing.assert_array_equal(saved["steps"], [0, 2, 4, 6, 7])
@@ -222,7 +221,7 @@ def test_ba_interrupted_resume_is_bitwise_identical_for_full_ring_and_all_rngs(t
     assert set(json.loads(str(partial["metadata"].item()))["rngs"]) == {"nuclear", "electronic", "dynamics"}
     monkeypatch.setattr(RPMASHBADynamics, "step", original)
     result = resume_run(tmp_path/"interrupted", execution={"block_steps": 4, "loop_backend": "python"})
-    assert result["completed"] and result["physical_converged"] is False
+    assert result["completed"]
     for index in range(3):
         name = f"checkpoints/nonadiabatic_{index:06d}.npz"
         before, after = arrays(tmp_path/"reference"/name), arrays(tmp_path/"interrupted"/name)

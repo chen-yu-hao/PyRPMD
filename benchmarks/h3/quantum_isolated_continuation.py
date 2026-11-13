@@ -954,7 +954,7 @@ def run(adoption_path):
                     "campaign_directory": str(context["campaign"]), "protocol": prior["protocol"], "schedule": prior["schedule"],
                     "source_sha256": prior["source_sha256"], "model_sha256": prior["model_sha256"], "seeds": rows,
                     "prior_complete100000_archive": registration["archive"], "prior_snapshot_sha256": registration["prior_snapshot"]["sha256"],
-                    "physical_converged": False}
+                    }
                 completion = {"schema": COMPLETE_SCHEMA, "created_utc": now(), "production": 300000,
                     "requested_seeds": list(SEEDS), "completed_seeds": list(SEEDS), "all_owned_workers_drained": True,
                     "source_guards_unchanged": True, "prior_prefix_and_state_files_unchanged": True,
@@ -962,7 +962,7 @@ def run(adoption_path):
                     "attempt": identity(attempt/"plan.json"), "archive_ancestry": registration["archive"],
                     "worker_results": [dispatch["results"][seed]["worker_result"] for seed in SEEDS],
                     "snapshot": snapshot, "counts": counts, "scientific_analysis_performed": False,
-                    "physical_converged": False, "literature_reproduced": False, "automatic_extension": False}
+                     "literature_reproduced": False, "automatic_extension": False}
                 check(); write_new(context["campaign"]/"stage-300000.json", completion)
                 result.update(complete=True, global_completion=identity(context["campaign"]/"stage-300000.json"),
                     all_owned_workers_drained=True, all8_fixed_work_and_prefix_checks_passed=True,

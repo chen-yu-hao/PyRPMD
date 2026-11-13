@@ -142,7 +142,7 @@ def compare(*, trajectories=128, nband=63, dt=1., duration=200., seed=20261102,
             2*np.pi*nband/(model.band_max-model.band_min),
         "iesh_microseconds_per_step": iesh_seconds*1e6/(trajectories*steps),
         "ef_rpmd_p1_microseconds_per_step": friction_seconds*1e6/(trajectories*steps),
-        "physical_converged": False,
+        
         "limitations": ["finite band, fixed electron number and finite trajectory ensemble",
                         "cold initial electronic determinant; no electronic thermostat",
                         "zero-temperature continuum friction with a small finite OU bath temperature",

@@ -51,7 +51,6 @@ def test_h3_identity_matches_independent_handwritten_reference(tmp_path):
         parse_quantity(reference["reaction"]["rinf"], "length"), rel=1e-15)
     np.testing.assert_array_equal(system.geometry, expected.geometry)
     assert report["unmapped"] == []
-    assert report["physical_converged"] is False
     assert len(report["calls"]) == 11
     assert all(record["targets"] for record in report["calls"])
     assert report["potential"]["initializer"] == ""

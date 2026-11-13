@@ -249,7 +249,7 @@ def generate_optimal_gle(frequency_range, *, frequency_unit="autime^-1", naux=0,
                       "residuals": {"log_omega_tau_V": np.log(frequencies * tau).tolist(),
                                     "minimum_efficiency": float(min(efficiency)),
                                     "tau_V_au": tau.tolist()},
-                      "fit_converged": True, "physical_converged": False,
+                      "fit_converged": True,
                       "references": ["https://doi.org/10.1021/ct900563s"],
                   }}
     result["parameter_metadata"]["input_frequency_unit"] = frequency_unit
@@ -503,7 +503,7 @@ def load_gle4md(path, *, covariance_path=None, drift_unit=None,
                   "covariance_to_dimensionless": cfactor, "target_covariance": "C / (P/beta)"},
         "frequency_range_au": [headers.get("omega_min_au"), headers.get("omega_max_au")],
         "objective": "external calibration; see preserved source comments",
-        "residuals": None, "fit_converged": None, "physical_converged": False,
+        "residuals": None, "fit_converged": None,
         "validation": validation,
     }
     if unit_convention == "gle4md":

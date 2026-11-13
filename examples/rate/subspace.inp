@@ -126,6 +126,8 @@ smoothing = 1.5
 refinement = 3
 truncation_kt = 30.0
 # At low T, also converge truncation_min (hartree); 30 kT can be too small.
+# The retained 2D grid changes with temperature; a model that does not fit is
+# refused before solving and subspace/status.json reports the dense_limit it needs.
 dense_limit = 8000
 
 [rate.subspace_correction.rpmd]

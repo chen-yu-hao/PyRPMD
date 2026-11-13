@@ -107,7 +107,6 @@ def test_seeded_statistical_smoke_never_clips_signed_population(momentum):
     a,_=benchmark.simulate(momentum, 32, 40., 17, 2, methods)
     b,_=benchmark.simulate(momentum, 32, 40., 17, 2, methods)
     assert a == b
-    assert a["claims"]["physical_converged"] is False
     assert a["claims"]["paper_level_method_agreement_certified"] is False
     assert a["reference"]["times"][-1] == ({5: 6000, 15: 2800, 30: 1200}[momentum])
     for name, result in a["methods"].items():

@@ -255,7 +255,7 @@ def transfer_matrix_reference(
             "grid_and_domain_converged": False,
             "bead_count_converged": False,
             "real_time_dynamics_validated": False,
-            "physical_converged": False,
+            
         },
     }
 
@@ -371,7 +371,7 @@ def convergence_report(*, potentials=(-0.6, 0., 0.6), beads=(1, 2, 4), grid_shap
             "sixteen_minus_eight": differences(higher[0], higher[1]),
         },
         "scope": "Deterministic finite-P equilibrium check for the analytic model; no real-time/chemical validation.",
-        "physical_converged": False,
+        
     }
 
 

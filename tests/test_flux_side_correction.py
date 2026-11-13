@@ -24,7 +24,6 @@ def test_flux_side_rate_keeps_reactant_normalization_and_bootstraps_replicas():
     assert result.bootstrap_rate.shape == (32, len(time))
     assert result.standard_error is not None
     assert result.diagnostics["plateau_detected"]
-    assert result.physical_converged is False
 
 
 def test_flux_side_correction_has_zero_defect_and_full_subspace_limits():

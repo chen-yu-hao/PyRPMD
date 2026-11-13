@@ -66,7 +66,7 @@ def test_resume_mid_nve_preserves_state_rng_and_segment_boundaries(tmp_path):
         np.testing.assert_array_equal(first[key], second[key])
     evidence = analyze(split, tmp_path / "summary", make_plot=False)
     assert len(evidence["segments"]) == 2
-    assert not evidence["physical_converged"] and not evidence["literature_reproduced"]
+    assert not evidence["literature_reproduced"]
     assert evidence["validated_diffusion_angstrom2_ps"] is None
     assert evidence["validated_standard_error_angstrom2_ps"] is None
     assert evidence["eligibility"]["this_independent_batches"] == 0
@@ -116,7 +116,7 @@ def test_numerical_reference_evidence_has_distinct_precision_and_physics_claims(
     assert evidence["dispersion_tail"]["force_max_error_hartree_per_bohr"] == 0
     assert evidence["whole_molecule_image"]["force_max_error_hartree_per_bohr"] < 1e-12
     assert evidence["author_fortran"]["intramolecular_source_parameters"]["force_max_error_hartree_per_bohr"] < 1e-12
-    assert not evidence["physical_converged"] and not evidence["literature_reproduced"]
+    assert not evidence["literature_reproduced"]
 
 
 def test_model_defaults_match_the_independent_paper_parameter_transcription():

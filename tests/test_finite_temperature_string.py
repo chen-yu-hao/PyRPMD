@@ -64,7 +64,7 @@ def test_restrained_gaussian_samples_match_exact_multidimensional_free_energy():
     result = finite_temperature_string(images, lambda path: stats, tolerance=1e6, max_iterations=1)
     difference = result.free_energy - (exact_f - exact_f[0])
     assert np.all(np.abs(difference[1:]) < 4.5 * result.free_energy_standard_error[1:])
-    assert result.converged and not result.physical_converged
+    assert result.converged
     assert stats.correlation_resolved
 
 
@@ -112,7 +112,7 @@ def test_thermal_string_relaxes_entropic_valley_and_integrates_free_energy():
                                 np.full(len(path), 1e6), 100, True)
     result = finite_temperature_string(initial, sampled_oracle, step=.03,
                                         tolerance=1e-5, max_iterations=300)
-    assert result.converged and not result.physical_converged
+    assert result.converged
     np.testing.assert_array_equal(result.images[[0, -1]], initial[[0, -1]])
     assert np.max(np.abs(result.images[:, 1] - y0)) < 1e-5
     reference = []

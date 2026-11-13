@@ -78,7 +78,6 @@ def _czar_oracle(bins):
     model.physical_grid.mean[:] = _TILT
     result = model.fes_result(min_count=100)
     exact = -np.log(unbiased) / _BETA
-    assert not result.metadata["physical_converged"]
     assert result.metadata["estimator"] == "czar"
     assert np.isnan(result.uncertainty).all()
     assert result.mask[[0, -1], :].all() and result.mask[:, [0, -1]].all()

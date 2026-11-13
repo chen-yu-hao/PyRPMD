@@ -98,7 +98,6 @@ def test_local_rejected_moves_and_callback_keep_path_multiplicity():
     assert len(retained) == 60
     assert result.length_rejections > 0
     assert not result.accepted.all()
-    assert result.summary()["physical_converged"] is False
 
 
 def test_overlap_swap_direction_combinations_and_inverse_are_balanced():
@@ -282,7 +281,6 @@ def test_joint_block_error_does_not_discard_blocks_missing_origin_support():
     summary = result.summary(block_size=1)
     assert summary["supported_blocks"] == 0
     assert summary["crossing_probability_standard_error_block"] is None
-    assert not summary["physical_converged"]
     assert summary["memory_loss_approximation"]
     assert summary["requires_independent_flux"]
 

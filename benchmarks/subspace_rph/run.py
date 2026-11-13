@@ -19,13 +19,15 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 import time
 from pathlib import Path
 
 import numpy as np
 
-from models import CM, Curved, Embedded, model_run
-from reference import QUANTUM, build_path, subspace_models
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from benchmarks.subspace_rph.models import CM, Curved, Embedded, model_run  # noqa: E402
+from benchmarks.subspace_rph.reference import QUANTUM, build_path, subspace_models  # noqa: E402
 
 from pyrpmd.analysis.subspace_model import SubspaceModel
 from pyrpmd.analysis.subspace_quantum import exact_quantum_rate

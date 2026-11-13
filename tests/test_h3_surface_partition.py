@@ -198,7 +198,6 @@ def test_direct_reference_importance_recovers_harmonic_partition_without_chain()
     assert report["effective_fraction"] > .98
     assert np.isfinite(raw["log_weights"]).all()
     assert report["phase"] == "excluded calibration"
-    assert not report["physical_converged"]
 
 
 def test_harmonic_ratio_is_stable_in_classical_small_frequency_limit():

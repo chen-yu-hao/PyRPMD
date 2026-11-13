@@ -87,7 +87,7 @@ def validate(upstream, output):
                                "cpu_count": os.cpu_count(), "affinity_count": len(os.sched_getaffinity(0)),
                                "OMP_NUM_THREADS": os.environ.get("OMP_NUM_THREADS"),
                                "OPENBLAS_NUM_THREADS": os.environ.get("OPENBLAS_NUM_THREADS")},
-               "physical_converged": False, "PES_evaluations": 0,
+                "PES_evaluations": 0,
                "external_dynamics": "未实测 (not run)", "cases": {}}
     for name, expected in CASES.items():
         source = upstream / "examples" / name / "input.py"

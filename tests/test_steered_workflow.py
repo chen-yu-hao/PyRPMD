@@ -47,7 +47,6 @@ def test_workflow_endpoint_artifact_resume_and_reanalysis_without_pes(tmp_path, 
     assert summary["method"] == "steered"
     assert summary["target"] == "restrained_endpoint_free_energy_difference"
     assert summary["status"] == "complete"
-    assert not summary["physical_converged"]
     assert len(summary["files"]["checkpoints"]) == 4
     assert set(summary["estimates"]) == {"forward", "reverse", "crooks"}
     assert not (tmp_path / "fes.npz").exists()

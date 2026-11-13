@@ -38,7 +38,7 @@ def main():
     def check():
         assert result["status"] == "complete"
         assert result["replicas"] == 4
-        assert result["converged"] is result["physical_converged"] is False
+        assert result["converged"] is False
         print("T37 four-rank one-group-per-replica tempering: PASS", flush=True)
 
     root_call(check)

@@ -222,7 +222,7 @@ def main():
             "OPENBLAS_NUM_THREADS": os.environ.get("OPENBLAS_NUM_THREADS"),
             "native": False,
         },
-        "converged": False, "physical_converged": False,
+        "converged": False, 
         "qualification": (
             "In-basin dynamics differs from Hamiltonian RETIS: a region-conditioned "
             "Maxwell refresh makes the flux run ergodic in energy. Canonical density "

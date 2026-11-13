@@ -59,8 +59,8 @@ class WorkEstimate:
 
     Uncertainty assumes independent pulling trajectories. Bootstrap error and
     bias diagnostics cannot detect work tails absent from the supplied data.
-    ``converged`` refers only to the numerical estimator; physical convergence
-    is deliberately never inferred from a finite set of work observations.
+    ``converged`` refers only to the numerical estimator; physical validity
+    requires independent studies of the model and sampling.
     """
 
     delta_free_energy: float
@@ -69,7 +69,6 @@ class WorkEstimate:
     beta: float
     diagnostics: dict = field(default_factory=dict)
     converged: bool = True
-    physical_converged: bool = False
     energy_unit: str = "hartree"
     target: str = "restrained_endpoint_free_energy_difference"
 
@@ -480,8 +479,7 @@ class SteeredMD:
                 "propagation": {"python_steps": self.equilibrated + self.elapsed, "native_steps": 0,
                                 "native_free_ring": self.dynamics.native,
                                 "scheduling_reason": "symmetric steering and shadow-work accounting use the Python scheduler"},
-                "initial_equilibrium_declared": self.initial_equilibrium,
-                "physical_converged": False, "energy_unit": "hartree"}
+                "initial_equilibrium_declared": self.initial_equilibrium, "energy_unit": "hartree"}
 
     def save(self, path):
         """Atomically save protocol prefix, RNG, identity and physical state."""

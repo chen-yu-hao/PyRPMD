@@ -101,7 +101,6 @@ def test_noncollapsed_ring_electronic_density_matches_two_electron_fourier(beads
 def test_coupled_reference_reports_distinct_errors_without_claiming_convergence():
     result = _reference["compare"](trajectories=3, beads=4, duration=.4, dt=.2,
                                     points=48, reference_dt=.1, seed=7)
-    assert result["physical_converged"] is False
     assert result["nelectrons"] == 2 and result["population_normalization"] == 2
     np.testing.assert_allclose(result["rp_iesh_initial_mean"], [1., 1., 0.], rtol=0., atol=2e-15)
     np.testing.assert_allclose(sum(result["rp_iesh_final_mean"]), 2., rtol=0., atol=8e-13)

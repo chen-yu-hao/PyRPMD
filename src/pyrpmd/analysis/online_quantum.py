@@ -12,9 +12,8 @@ frozen potential during one split-operator step (up to the usual
 second-order time-step and finite-grid errors).  The complete coupled
 trajectory is a mixed quantum--classical approximation: it is not an exact
 entangled system+bath propagator, and it does not provide a generally exact
-reaction rate.  ``physical_converged`` is therefore always ``False`` until
-independent grid, time-step, bead, and sampling checks have been performed by
-the caller.
+reaction rate.  The caller must perform independent grid, time-step, bead, and sampling
+checks before treating the mixed trajectory as physically validated.
 
 The API intentionally takes potential/force callables instead of coupling to
 one particular PyRPMD engine.  This keeps the reference workflow useful for
@@ -103,8 +102,6 @@ class JointPropagationResult:
     total_energy: np.ndarray
     wavefunction_norm: np.ndarray
     diagnostics: Mapping[str, Any]
-    physical_converged: bool = False
-
     def __post_init__(self):
         for name in (
             "time", "positions", "momenta", "wavefunctions", "quantum_position",
@@ -118,8 +115,6 @@ class JointPropagationResult:
         if not isinstance(self.diagnostics, Mapping):
             raise TypeError("diagnostics must be a mapping")
         object.__setattr__(self, "diagnostics", dict(self.diagnostics))
-        object.__setattr__(self, "physical_converged", bool(self.physical_converged))
-
     @property
     def final_positions(self) -> np.ndarray:
         return self.positions[-1]
@@ -255,7 +250,6 @@ class OnlineQuantumRPMD:
             "quantum_mass": float(self.quantum_mass),
             "bath_masses": self.bath_masses.tolist(),
             "spring_frequency": float(self.spring_frequency),
-            "physical_converged": False,
             "exact_scope": "conditional quantum subsystem along an RPMD trajectory",
             "rate_claim": "no generally exact flux-side rate",
         }
@@ -442,7 +436,7 @@ class OnlineQuantumRPMD:
         return JointPropagationResult(
             np.asarray(times), np.asarray(positions), np.asarray(momenta), np.asarray(wavefunctions),
             np.asarray(xmean), np.asarray(xmomentum), np.asarray(qenergy), np.asarray(qforce),
-            np.asarray(total), np.asarray(norms), diagnostics, physical_converged=False,
+            np.asarray(total), np.asarray(norms), diagnostics,
         )
 
 

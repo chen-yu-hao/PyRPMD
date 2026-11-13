@@ -47,7 +47,6 @@ def test_small_bead_piglet_samples_both_quantum_energies(parameters):
         finite_p = reference["canonical_finite_bead_hartree"][index]
         assert abs(baseline["mean_hartree"] - finite_p) < 6 * baseline["sampling_standard_error_hartree"] + .01 * finite_p
     assert piglet["python_step_callbacks"] == 0
-    assert piglet["physical_converged"] is False
 
 
 def test_independent_discrete_covariance_resolves_timestep_error(parameters):

@@ -103,7 +103,7 @@ class PPTISLocalResult:
             "effective_samples_diagnostic": len(self.starts) / g,
             "length_rejections": self.length_rejections,
             "length_rejections_scope": "shooting_moves_only",
-            "converged": False, "physical_converged": False,
+            "converged": False,
         }
 
 
@@ -165,7 +165,7 @@ class PPTISResult:
             "run_identity": self.run_identity,
             "memory_loss_approximation": True,
             "requires_independent_flux": True,
-            "converged": False, "physical_converged": False,
+            "converged": False,
             "qualification": "PPTIS assumes loss of memory beyond the neighboring interfaces; "
                              "vary interface spacing and compare full TIS before interpreting rates.",
         }

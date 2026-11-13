@@ -267,7 +267,7 @@ def _analyze(streams, config, system, output, return_data):
         "replicas_per_direction": options["replicas"], "estimates": estimates,
         "sample_interval": options["sample_interval"],
         "propagation": [s["propagation"] for s in streams],
-        "converged": False, "physical_converged": False,
+        "converged": False,
         "initial_equilibrium_declared": options["initial_equilibrium"],
         "protocol": {"centers_au": options["centers"].tolist(), "stiffness_au": options["stiffness"].tolist(),
                      "timestep_au": options["dt"], "thermostat": options["thermostat"], "gamma_au": options["gamma"]},

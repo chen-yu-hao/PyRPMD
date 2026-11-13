@@ -245,6 +245,6 @@ $|\delta F|\le k_BT\log(1.10)$，在 300 K 约为 **0.0568 kcal/mol**。这个�
 [OpenMM RPMD 指南](https://docs.openmm.org/latest/userguide/library/09_rpmd_plugin.html)说明珠子数收敛，以及平衡
 路径积分和近似实时 RPMD 的区别。
 
-摘要含 `converged` 或 `physical_converged`，单次运行中保持 `false`；PCET 另报告 `numerical_convergence` 和
+摘要含任务特定的收敛诊断，单次运行不能替代完整的科学验证；PCET 另报告 `numerical_convergence` 和
 `physical_applicability_unverified`。理论、实现与方法来源见[科学约定](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/science.md)、
 [MBAR 速率 PMF](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/mbar-rate-pmf.md)和各任务专题。

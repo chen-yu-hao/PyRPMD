@@ -465,7 +465,6 @@ def test_all_bead_bzp_samples_finite_box_quantum_npt_volume_measure(
         sign_blocks = signs.reshape(-1, block_length).mean(axis=1)
         sign_error = sign_blocks.std(ddof=1) / np.sqrt(len(sign_blocks))
         assert signs.mean() == pytest.approx(reference["average_sign"], abs=5 * sign_error)
-    assert report["physical_converged"] is False
     measurements = {
         name: {"exact": expected[name], "mean": report[name], "standard_error": report[error]}
         for name, error in (("volume_bohr3", "volume_standard_error_bohr3"),

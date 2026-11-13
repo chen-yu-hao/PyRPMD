@@ -33,7 +33,6 @@ def test_thermal_rate_runs_and_retains_raw_signed_normalization(tmp_path):
     result = run_nonadiabatic_rate(config, tmp_path/"run")
     assert result["method"] == "seo_thermal_nrpmd"
     assert result["formal_rate_s_inv"] is None
-    assert result["physical_converged"] is False
     assert result["candidate_rate"] is None
     with load_checkpoint(tmp_path/"run"/"population-rate.npz",
                           expected_kind="PyRPMD.thermal-population-rate.v1", require_integrity=True) as saved:
@@ -89,7 +88,6 @@ def test_explicit_short_interval_is_not_automatically_a_physical_rate(tmp_path):
     config["rate"].update(plateau_start=0., plateau_stop=.08, block_size=2)
     result = run_nonadiabatic_rate(config, tmp_path/"pilot")
     assert result["formal_rate_s_inv"] is None
-    assert result["physical_converged"] is False
     assert result["plateau_detected"] is False
     if result["rate_curve_available"]:
         assert result["complete_blocks"] == 4

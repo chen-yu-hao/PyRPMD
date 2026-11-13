@@ -40,7 +40,6 @@ def test_arrhenius_recovers_activation_energy_and_prefactor_in_either_rate_unit(
                            rate_unit="cm^3 molecule^-1 s^-1")
     assert scaled["activation_energy_hartree"] == pytest.approx(ea, rel=1e-13)
     assert scaled["activation_energy_standard_error_hartree"] == pytest.approx(fit["activation_energy_standard_error_hartree"])
-    assert not fit["physical_converged"]
 
 
 def test_arrhenius_does_not_hide_curvature_or_invent_two_point_error():
@@ -106,7 +105,6 @@ def test_convergence_requires_equivalence_not_noisy_agreement():
     assert not noisy["numerically_converged_on_tested_grid"]
     precise = analyze_rate_study(plan, records(.1))
     assert precise["numerically_converged_on_tested_grid"]
-    assert not precise["physical_converged"]
     unsupported = records(.1)
     unsupported[0]["rate"] = None
     assert not analyze_rate_study(plan, unsupported)["numerically_converged_on_tested_grid"]
@@ -139,7 +137,6 @@ def test_real_workflow_scan_resume_and_changed_identity_guard(tmp_path):
     second = run_rate_study(study, output=output, resume=True)
     assert first == second
     assert len(first["cases"]) == 2
-    assert not first["physical_converged"]
     assert (output / "rates.csv").is_file()
     saved = json.loads((output / "study.json").read_text())
     assert len(saved["cases"]) == 2

@@ -32,7 +32,7 @@ def _spec(method):
     raw["parallel"] = {"backend": "serial"}
     raw["dynamics"].update(integrator="cayley-bcb", loop_backend="python", block_steps=7)
     raw["sampling"]["thermostat"] = "andersen"
-    umbrellas = raw.pop("umbrella")
+    umbrellas = {**raw.pop("umbrella"), "count": 22, "kappa": "1.6 hartree"}
     raw.pop("analysis", None)
     raw["recrossing"] = {
         "parent_replicas": 1, "parent_samples": 2, "child_pairs": 1,

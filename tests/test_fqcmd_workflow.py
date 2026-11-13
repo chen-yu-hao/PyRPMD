@@ -51,7 +51,7 @@ def test_fqcmd_zero_correction_matches_classical_trajectory_and_records_model(tm
     result = run_spectroscopy(config, system, tmp_path / "fqcmd")
     assert result["method"] == "f-qcmd"
     assert result["beads"] == 1
-    assert result["converged"] is result["physical_converged"] is False
+    assert result["converged"] is False
     assert result["production_centroid_thermostat"] is False
     assert "quasi-centroid" in result["property_estimator"]
     digest = file_sha256(config["spectroscopy"]["fqcmd_model_file"])
@@ -277,7 +277,6 @@ def test_fqcmd_input_and_cli_validate_run_resume_reanalysis(tmp_path, capsys):
     capsys.readouterr()
     summary = json.loads((output / "results" / "summary.json").read_text())
     assert summary["method"] == "f-qcmd"
-    assert summary["physical_converged"] is False
 
 
 @pytest.mark.parametrize("method,expected", [

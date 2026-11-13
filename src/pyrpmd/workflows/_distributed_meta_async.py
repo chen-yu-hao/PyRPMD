@@ -174,7 +174,7 @@ def _run_async(config, system, output, *, return_data=False):
                     config, system, output, cv, options, return_data=return_data)
         return {"task": "metadynamics", "status": "walker_complete_pending_merge",
                 "walkers_mode": "async-files", "walker": walker,
-                "checkpoint": str(checkpoint), "physical_converged": False,
+                "checkpoint": str(checkpoint),
                 "converged": False}
     except Exception as error:
         record_async_checkpoint_failure(
