@@ -112,11 +112,17 @@ def postprocess_rate_subspace(config, directory, *, strict=False):
         report = run_subspace_pipeline(specification, apply=options["mode"] == "apply", reuse_key=identity)
         # "invalid_model": the stage ran, but no subspace model passed its
         # validity gates, so there is no factor and no corrected rate.
+        # "solver_capacity_exceeded": a model's solves were refused before
+        # starting (route or memory); "solver_plans" says what they need.
+        # "failed": every solve that was started raised ("solve_failures").
         status.update(status=report.get("status", "complete"), reuse_key=identity,
                       validity=report.get("validity"),
                       dimensions_computed=report["dimensions_computed"],
                       selected_dimension=report["applied_dimension"],
                       correction_factors={d: c["factor"] for d, c in report["corrections"].items()},
+                      solver_plans=report.get("solver_plans", {}),
+                      solve_failures=report.get("solve_failures", {}),
+                      warnings=report.get("warnings", []),
                       report=str(target / "subspace_pipeline.json"))
         corrected = report.get("corrected_rate")
         if corrected is not None:
@@ -126,6 +132,8 @@ def postprocess_rate_subspace(config, directory, *, strict=False):
                           corrected_rate_standard_error_cm3_s=corrected["corrected_rate_standard_error_cm3_s"])
     except Exception as error:
         status.update(status="failed", error={"type": type(error).__name__, "message": str(error)})
+        if isinstance(getattr(error, "diagnostic", None), dict):
+            status["error"]["diagnostic"] = error.diagnostic
         write_json(status_path, status)
         if strict:
             raise
@@ -133,6 +141,12 @@ def postprocess_rate_subspace(config, directory, *, strict=False):
                       f"See {status_path}: {error}", RuntimeWarning, stacklevel=2)
         return status
     write_json(status_path, status)
+    if status["status"] == "failed":
+        failures = "; ".join(f"{d}D: {f['type']}: {f['message']}" for d, f in status["solve_failures"].items())
+        if strict:
+            raise RuntimeError(f"subspace stage failed ({failures}); see {status_path}")
+        warnings.warn(f"Rate subspace postprocessing failed; the uncorrected RPMD result is intact. "
+                      f"See {status_path}: {failures}", RuntimeWarning, stacklevel=2)
     return status
 
 
