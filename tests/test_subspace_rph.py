@@ -207,3 +207,28 @@ def test_the_reference_slice_lies_where_quantum_and_centroid_densities_agree():
     exact = run.beta**2 * abs(d2) / 12 + run.beta**3 * d1**2 / 24
     k = int(np.argmin(abs(path[:, 0] - x)))
     assert mismatch[k] == pytest.approx(exact, rel=0.2)
+
+
+def test_the_plane_absorber_runs_past_the_path_ends(curved_2d):
+    """The reactant absorber may start beyond the path; its ramp must not be cut there.
+
+    The arc length of grid points beyond the path start used to stop at the
+    start point, so the absorber never reached its strength and reactant
+    waves reflected off the grid edge (k_QM 22% low on this model).
+    """
+    potential, run, path, info = curved_2d
+    direction = np.asarray(pipeline._static_curvature_width(run, path, 0.5)["candidate_direction"])
+    options = {**QUANTUM, "environment": "adiabatic", **GATING, "path_info": info, "spacing_2d": [4.0, 4.0]}
+    model, quantum, model_info, rpmd_model = pipeline.plane_model(run, path, direction, options)
+    box_lo, box_hi = model_info["box_arc"]
+    arc = pipeline._arc(path, run.cartesian_masses)
+    assert box_lo < arc[0]                          # the box starts beyond the path
+    X, Y = np.meshgrid(*model.axes, indexing="ij")
+    points = np.column_stack([X.ravel(), Y.ravel()])
+    eps = quantum["absorber"](points).reshape(X.shape)
+    row = int(np.argmin(np.abs(model.axes[1])))     # through the reactant channel
+    # The reactant ramp reaches its full strength 30 v / width at the grid edge.
+    wavelength = 2.0 * np.pi / np.sqrt(2.0 / run.beta)
+    full = 30.0 * np.sqrt(2.0 / run.beta) / (2.0 * wavelength)
+    assert eps[0, row] >= 0.9 * full
+    assert eps[np.argmin(np.abs(model.axes[0] - model.dividing_surface)), row] == 0.0
