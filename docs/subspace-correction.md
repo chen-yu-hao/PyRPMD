@@ -38,6 +38,8 @@ reuse = true
 refinement = 3
 truncation_kt = 30.0
 # Converge truncation_min (hartree) for stiff modes, especially at low T.
+# The retained 2D grid depends on temperature, masses and the PES; the stage
+# plans it before solving and reports the dense_limit it needs (solver_plans).
 dense_limit = 8000
 
 [rate.subspace_correction.rpmd]
@@ -173,6 +175,7 @@ model that fails one is recorded but never applied.
 | `path` | both continuations ended with `asymptote_converged` | `path.reactant_termination`, `path.product_termination` (status, steps, arc length, trailing energy range) |
 | `bath` | no normal-plane curvature below `-soft_mode_frequency**2` along the 1D path model | `models.1.model_construction.significant_unstable` (arc length, imaginary frequency, character) |
 | `grid` | at most `max_outside_fraction` of the ring-polymer estimator saw `V_S` outside its grid | `corrections.D.rpmd.diagnostics.grid_exit` |
+| `solver` | the planned quantum route accepts the model's options and size, and the tasks fit the execution memory budget | `solver_plans.D` (also `models.D.solver_plan`) |
 
 **Path.** The continuations have no step budget. How far an asymptote lies is a
 property of the potential — an ion–dipole tail needs far more steps than a
@@ -215,15 +218,47 @@ the bead points of the accepted TI and dividing-surface samples outside the grid
 recrossing trajectories the flux share that crossed the dividing surface again
 after leaving, or whose centroid left where `V_S` still rises outwards by more
 than 0.1 kT per thermal length (`recrossing_contaminated_flux_fraction`). The
-gate uses the largest of the three (`estimator_outside_fraction`).
+gate uses the largest of the three (`estimator_outside_fraction`); its reason
+lists all three and names the dominant one (`dominant_component`), because the
+remedy differs: TI or dividing-surface samples outside the grid need a wider box
+across the channel (`padding`), contaminated recrossing flux a box or absorber
+further along it.
+
+**Solver.** Before any rate is solved, each model gets a solver plan
+(`solver_plans`): grid shape, points retained after energy truncation, the
+route the exact quantum solver will take, the dense and route memory
+estimates, and, with an `[execution]` table, the RPMD task estimate against
+`execution.memory_limit_mb`. The energy truncation, energy floor and slice
+normalization of the 2D model exist only on the dense route, so a 2D grid
+that retains more than `dense_limit` points cannot be solved; it is refused
+here with `status = "dense_limit_exceeded"`, `required_dense_limit` and
+`recommendations` (the `dense_limit` it needs and the memory that takes, or
+the keys that shrink the grid), instead of failing with a generic error after
+the rest of the stage has run. The gate cannot be overridden and also applies
+under `on_invalid = "diagnose"`. The retained grid grows with temperature at
+fixed truncation, so a `dense_limit` sized at one temperature (11500 for the
+200 K H + H₂ benchmark, 11165 retained points) is not a safe value at another;
+read it from the plan. The exact solver raises the same plan as
+`DenseRouteUnavailable` (a `ValueError`), and `quantum_solver_plan()` computes
+it without solving.
+
+Each dimension is solved independently: an exception in one is recorded in
+`solve_failures` and `validity.failed_to_solve`, and the other dimensions are
+still solved and gated. (With an `[execution]` table the task scheduler still
+stops at the first failed task; its checkpoints keep the completed ones.)
 
 When a gate fails, `C_S_Dd.json` carries `valid: false`, `factor: null`, the
 ratio as `diagnostic_factor`, the gate record in `validity` and both component
 rate results; `apply_subspace_correction` refuses it. With `on_invalid = "stop"`
 a model whose path or bath gate fails is not solved at all. If no model passes,
-the report has `status = "invalid_model"`, no corrected rate is written (a
-corrected rate left by an earlier run is removed), `status.json` of the native
-stage carries the same status, and `pyrpmd subspace-correct` exits nonzero.
+no corrected rate is written (a corrected rate left by an earlier run is
+removed), `status.json` of the native stage carries the report status, and
+`pyrpmd subspace-correct` exits nonzero. The status says why:
+`solver_capacity_exceeded` if a solver plan refused a model, `failed` if every
+solve that started raised (an explicit `--stage subspace` then also exits
+nonzero), otherwise `invalid_model`. When the applied dimension is lower than
+the curvature × width verdict because the higher one did not pass, the report
+says so in `warnings`.
 
 ## One command from a rate run
 
@@ -296,7 +331,13 @@ The command then runs:
    The box only extends to a reference slice where the reactant channel is within
    `reference_kt` (0.3 kT) of its asymptote — `C_S` needs both rates on the same slice,
    not at infinity — and products are absorbed once the path is `product_drop_kt` (15 kT)
-   below its maximum. The default grid is anisotropic: a third of the narrowest
+   below its maximum or, when the product channel cannot drop that far (a
+   thermoneutral or endothermic reaction at high temperature: H + H₂ above about 320 K),
+   once it has settled within `reference_kt` of its asymptote. The threshold
+   `max(top − product_drop_kt·kT, asymptote + reference_kt·kT)` is continuous in
+   temperature; the former fallback, the last path point, put the box (and the dense
+   grid) at the end of a path whose length is set by `asymptote_tolerance`.
+   `models.2.product_absorber` records the criterion used. The default grid is anisotropic: a third of the narrowest
    in-plane vibrational width along the transfer axis, a quarter of the shortest de
    Broglie wavelength along the path axis.
 6. **Nested sensitivity** `ln(C_2D/C_1D)` selects the dimension, and
@@ -520,6 +561,7 @@ factor `harmonic_bead_factor` for environment modes.
 | --- | --- | --- |
 | Box length and absorbing-potential width/strength | `exact_quantum_rate(cap_width=, cap_strength=)` | Reflection from the absorber; at 200 K a 16 bohr Eckart box is 0.7% high, 32 bohr 0.06% |
 | Grid spacing | model axes | Rate drifts when refined |
+| Dense route capacity | pipeline `dense_limit` | Not a convergence parameter: the 2D model is refused before solving (`solver_plans.2.status = "dense_limit_exceeded"`) when it retains more points; the plan gives `required_dense_limit` and the dense memory (about 192 N² bytes) |
 | Truncation energy (energy-truncated DVR) | `exact_quantum_rate(truncation_energy=)`, pipeline `truncation_kt` and `truncation_min` (Eh) | The removed points are hard walls. The rate converges only once the margin above the local valley floor exceeds about six quanta of the stiffest transverse mode (walls at ~5 ground-state widths). A separable 2D Eckart model (transverse 0.010 Eh) at 200 K is 12% low with 0.016 Eh above barrier + ZPE, 1% low at 0.03 Eh, and exact (1 − 4×10⁻⁶) at 0.07 Eh. The diagnostic `truncation_margin` reports the smallest margin. The 30 kT default is too small for stiff modes at low temperature: set `truncation_min` to about six quanta |
 | Propagation time and step | `max_time`, `dt` (iterative route) | `relative_extrapolation_spread` large |
 | TI windows | `ring_polymer_rate(windows=)` | `ti_quadrature_log_error` comparable to the statistical error |

@@ -80,7 +80,8 @@ from .subspace_model import (
     project_path_subspace,
     ring_polymer_mean_path,
 )
-from .subspace_quantum import QuantumRateResult, exact_quantum_rate, dense_rate_matrix
+from .subspace_quantum import (DenseRouteUnavailable, QuantumRateResult, dense_rate_matrix,
+                               exact_quantum_rate, quantum_solver_plan)
 from .subspace_channels import (
     SubspaceChannels,
     build_subspace_channels,
@@ -166,7 +167,9 @@ __all__ = [
     "project_path_subspace",
     "ring_polymer_mean_path",
     "QuantumRateResult",
+    "DenseRouteUnavailable",
     "exact_quantum_rate",
+    "quantum_solver_plan",
     "dense_rate_matrix",
     "SubspaceChannels",
     "build_subspace_channels",
