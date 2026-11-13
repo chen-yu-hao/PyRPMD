@@ -11,7 +11,7 @@ recursive-include native *.cpp *.h *.hpp *.c
 recursive-include docs *.md *.json *.csv *.png *.pdf *.py *.css *.txt *.html *.npz *.xml *.log
 exclude docs/validation/tier1-2026-10-31/*.npz
 prune docs/_build
-recursive-include examples *.inp *.toml *.py *.xyz *.json *.md *.slurm
+recursive-include examples *.inp *.toml *.py *.xyz *.json *.md *.slurm *.ipynb
 recursive-include examples/tutorials *.c
 include examples/analysis/reference-rates.csv
 recursive-include tests *.py
