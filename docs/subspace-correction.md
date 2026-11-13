@@ -268,8 +268,31 @@ The command then runs:
    `pyrpmd.instanton.optimize_instanton` below the crossover temperature and records a
    centroid fallback at or above `T_c` (or when the orbit fails to converge). `"least_action"`
    scans a one-parameter interpolation between the sampled MEP and its endpoint chord and
-   selects the smallest one-dimensional WKB action. All sources retain their selection and
-   fallback diagnostics in `subspace_pipeline.json`.
+   selects the smallest one-dimensional WKB action. `"centroid_all"` uses the mean centroids
+   of every umbrella window, over the full sampled `xi` range of the PMF.
+
+   A centroid is a thermal average, not a geometry: a librating or ring-opening coordinate
+   has a centroid shorter than any bond the ring polymer visits, and freely rotating fragments
+   have no mean geometry. Two sources are built on the potential instead
+   (`pyrpmd.analysis.subspace_paths`):
+
+   - `"mep"`: the intrinsic reaction coordinate. The rate run's transition-state geometry is
+     refined to a first-order saddle (partitioned rational-function optimization with a
+     finite-difference Hessian, rigid-body modes removed; `ts_gradient_tolerance`, 1e-5
+     Eh/bohr), displaced by `mep_displacement` (default `step / 10`, mass-weighted) along its
+     imaginary mode, and continued by steepest descent on both sides. It is a minimum-energy
+     path everywhere, which is what the normal-cut adiabatic model assumes; the gradient
+     across it is a chord error of order the step. A geometry that does not refine to a
+     saddle with exactly one negative curvature is refused.
+   - `"pmf_minimum"`: for every umbrella window, the minimum of `V` on that window's
+     `xi = const` surface, marched out from the window nearest the transition state so that
+     the points stay in one basin. It covers the full sampled range of the PMF with physical
+     bond lengths, and its point on `xi = 1` is the saddle; it is a distinguished-coordinate
+     path (`grad V` parallel to `grad xi`, not in general to the tangent).
+
+   Both are tested on a LEPS H + H2 surface, with and without ion–induced-dipole complexes
+   (`tests/test_subspace_path_cores.py`). All sources retain their selection and fallback
+   diagnostics in `subspace_pipeline.json`.
 2. **Mean path and path to both asymptotes.** For the centroid source, windows where the
    aligned centroids stay compact (spread at most twice that near the transition state) are
    kept; near the reactant asymptote the fragments rotate freely and a mean geometry has no
@@ -569,9 +592,10 @@ The native `[rate.subspace_correction]` table also accepts the path-model
 selectors `curvature = "none" | "small"` and
 `zero_point = "harmonic" | "rph" | "dvr"`, plus `dvr_points`,
 `dvr_half_width` and `dvr_spacing`. Its `[rate.subspace_correction.path]`
-table accepts `source = "centroid" | "bead_weighted" | "instanton" |
-"least_action"` and the corresponding `least_action_points`, `instanton_beads`
-and `instanton_max_iterations` controls, and `reactant_xi` (default 0, must be
+table accepts `source = "centroid" | "centroid_all" | "bead_weighted" |
+"least_action" | "instanton" | "mep" | "pmf_minimum"` and the corresponding
+`least_action_points`, `instanton_beads`, `instanton_max_iterations`,
+`mep_displacement`, `ts_gradient_tolerance` and `pmf_constraint_tolerance` controls, and `reactant_xi` (default 0, must be
 below 1): the value of `xi` at which a reactant continuation that climbed out of
 a pre-reaction complex ends. `crossover_temperature`, when supplied
 as an instanton fallback, is in kelvin. These choices enter the factor-cache

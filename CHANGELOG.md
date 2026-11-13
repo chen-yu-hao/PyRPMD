@@ -5,6 +5,16 @@ not been published as a new wheel release; no release date or DOI is assigned.
 
 ## Unreleased
 
+- Subspace correction: new path sources that do not rely on centroid
+  geometries, which are thermal averages (a librating bond's centroid is
+  shorter than the bond). `path.source = "mep"` refines the rate run's
+  transition state to a first-order saddle and follows the IRC from it;
+  `"pmf_minimum"` takes the minimum of `V` on every umbrella window's `xi`
+  surface over the full PMF range; `"centroid_all"` uses the centroids of
+  every window. New controls `mep_displacement`, `ts_gradient_tolerance` and
+  `pmf_constraint_tolerance`. Tested on LEPS H + H2 with and without
+  ion–molecule complexes.
+
 - Subspace correction: a reactant continuation that falls into a
   pre-reaction complex climbs out of it along decreasing rate coordinate `xi`
   (hyperplane steps along `-grad xi`, the minima of `V` on the umbrella

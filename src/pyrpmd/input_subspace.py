@@ -15,7 +15,7 @@ _FIELDS = {"enabled", "mode", "dimension", "environment", "threshold", "reuse", 
 _VALIDITY = {"unconverged_path", "unstable_bath", "outside_grid", "max_outside_fraction",
              "soft_mode_frequency", "on_invalid"}
 _PATH = {"source", "step", "max_steps", "spread_factor", "asymptote_tolerance", "asymptote_patience", "smoothing",
-         "reactant_xi",
+         "reactant_xi", "mep_displacement", "ts_gradient_tolerance", "pmf_constraint_tolerance",
          "least_action_points", "instanton_beads", "instanton_max_iterations", "crossover_temperature"}
 _QUANTUM = {"spacing_1d", "spacing_2d", "refinement", "absorber_fraction", "threshold_margin",
             "truncation_kt", "truncation_min", "padding", "dense_limit", "reference_kt", "product_drop_kt"}
@@ -100,8 +100,10 @@ def rate_subspace_options(config):
         for key, value in table.items():
             name = f"{_SECTION}.{group}.{key}"
             if key == "source":
-                if value not in ("centroid", "bead_weighted", "instanton", "least_action"):
-                    raise InputError(f"{name} must be centroid, bead_weighted, instanton or least_action")
+                sources = ("centroid", "centroid_all", "bead_weighted", "least_action", "instanton", "mep",
+                           "pmf_minimum")
+                if value not in sources:
+                    raise InputError(f"{name} must be one of {', '.join(sources)}")
             elif key == "reactant_xi":
                 # Any finite value: 0 is R_inf, negative values lie beyond it.
                 table[key] = finite_real(value, name, allow_strings=False, error_type=InputError)

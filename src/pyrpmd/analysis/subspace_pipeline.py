@@ -408,11 +408,21 @@ def _instanton_core(run, core, options):
     return folded, details
 
 
+# Where the core of the reaction path comes from (``path.source``).
+PATH_SOURCES = frozenset({"centroid", "centroid_all", "bead_weighted", "least_action", "instanton",
+                          "mep", "pmf_minimum"})
+
+
 def build_path(run: RateRun, options: Mapping[str, Any]):
     """Build and extend a reaction path selected by ``path.source``.
 
-    ``centroid`` preserves the historical mean-centroid path.  The other
-    sources only change the sampled core; all of them use the same
+    Centroid-based cores (thermal averages of the umbrella windows):
+    ``centroid`` (historical; orientation-locked windows only),
+    ``centroid_all`` (every window, the full sampled PMF range),
+    ``bead_weighted``, ``least_action`` and ``instanton``.  Potential-based
+    cores, free of centroid contraction (:mod:`.subspace_paths`): ``mep``
+    (IRC from the refined saddle) and ``pmf_minimum`` (minimum of ``V`` on
+    every window's ``xi`` surface).  All of them use the same
     :func:`assemble_reaction_path` continuation and therefore the same
     asymptotic reference geometry and potential.  ``options['product_drop_kt']``
     (set by the pipeline from ``quantum.product_drop_kt``) lets the product
@@ -420,19 +430,29 @@ def build_path(run: RateRun, options: Mapping[str, Any]):
     """
     options = dict(options or {})
     source = str(options.get("source", "centroid")).lower()
-    allowed = {"centroid", "bead_weighted", "instanton", "least_action"}
-    if source not in allowed:
-        raise ValueError(f"path.source must be one of {sorted(allowed)}")
+    if source not in PATH_SOURCES:
+        raise ValueError(f"path.source must be one of {sorted(PATH_SOURCES)}")
     mean = mean_path_from_rate_run(run.root)
+    # The locked mask also feeds the sampled curvature x width diagnostic.
     mask = mean.locked(factor=float(options.get("spread_factor", 2.0)))
-    indices = _ordered_locked_indices(mean, mask)
-    centroids = np.asarray(mean.mean_centroid[indices] if hasattr(mean, "mean_centroid")
-                           else mean.path(mask), dtype=float)
-    core = centroids.reshape(int(mask.sum()), -1)
-    xi_core = np.sort(mean.xi[mask])
     sampled = {"source": source, "windows": int(len(mean.xi)), "locked_windows": int(mask.sum()),
-               "locked_xi": [float(v) for v in xi_core],
-               "orientation_spread": mean.orientation_spread.tolist()}
+               "orientation_spread": np.asarray(mean.orientation_spread).tolist()}
+    if source in ("mep", "pmf_minimum"):
+        from .subspace_paths import mep_core, pmf_minimum_core
+
+        if source == "mep":
+            core, details = mep_core(run, options)
+        else:
+            core, details = pmf_minimum_core(run, mean.xi, options)
+        sampled[source] = details
+        return mean, mask, *_assemble(run, core, options, sampled)
+    selected = np.ones(len(mean.xi), dtype=bool) if source == "centroid_all" else mask
+    indices = _ordered_locked_indices(mean, selected)
+    centroids = np.asarray(mean.mean_centroid[indices] if hasattr(mean, "mean_centroid")
+                           else mean.path(selected), dtype=float)
+    core = centroids.reshape(int(selected.sum()), -1)
+    xi_core = np.sort(mean.xi[selected])
+    sampled["locked_xi" if source != "centroid_all" else "window_xi"] = [float(v) for v in xi_core]
     if len(core) < 2:
         raise ValueError("fewer than two orientation-locked windows; add umbrella windows near the transition state")
 
@@ -472,6 +492,11 @@ def build_path(run: RateRun, options: Mapping[str, Any]):
         core, details = _least_action_core(core.reshape(len(core), -1, 3), run, options)
         core = np.asarray(core).reshape(len(core), -1)
         sampled["least_action"] = details
+    return mean, mask, *_assemble(run, core, options, sampled)
+
+
+def _assemble(run, core, options, sampled):
+    """Continue a core to both ends and record where the core came from."""
     # A product continuation may end in a well once it lies as far below the
     # barrier as the quantum box absorbs products (quantum.product_drop_kt).
     # A reactant continuation that falls into a pre-reaction complex climbs
@@ -488,7 +513,7 @@ def build_path(run: RateRun, options: Mapping[str, Any]):
         reactant_target=float(options.get("reactant_xi", 0.0)),
     )
     info.update(sampled)
-    return mean, mask, path, info
+    return path, info
 
 
 def _arc(path, masses):
