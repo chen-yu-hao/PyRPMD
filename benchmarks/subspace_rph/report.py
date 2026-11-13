@@ -86,6 +86,24 @@ def embedding_table(base, embedded):
     return "\n".join(lines)
 
 
+def convergence_table(base, tolerance, plane_fine):
+    """Reference tolerance (RPH) and grid (plane) checks against the exact correction."""
+    lines = ["| check | model | T (K) | `C_S` | exact `C` | error |", "|---|---|---|---|---|---|"]
+    for name, report, key in (("RPH, `reference_density_tolerance` 1e-3", tolerance[0], "rph"),
+                              ("plane, isotropic 2.47 grid", plane_fine[0], "plane")):
+        if report is None:
+            continue
+        entry = report["subspace"][key]
+        exact = plane_fine[1] if key == "plane" else tolerance[1]
+        if exact is None or exact.get("full") is None:
+            continue
+        C = exact["full"]["C"]
+        lines.append(f"| {name} | {report['model']} | {report['temperature_K']:.0f} | "
+                     f"{entry['C_S']:.3f} ± {entry['C_S'] * entry['log_standard_error']:.3f} | {C:.3f} | "
+                     f"{100 * (entry['C_S'] / C - 1):+.1f}% |")
+    return "\n".join(lines)
+
+
 def main() -> int:
     runs = [load(name) for name in ("curved_2d_300K.json", "curved_2d_200K.json", "curved_3d_300K.json",
                                     "embedded_8d_300K.json")]
@@ -94,6 +112,8 @@ def main() -> int:
         "RATES": rate_table(runs),
         "SAME_SLICE": same_slice_table(load("same_slice_300K.json")),
         "EMBEDDING": embedding_table(runs[2], runs[3]),
+        "CONVERGENCE": convergence_table((load("curved_2d_300K_tol1e-3.json"), runs[0]),
+                                         (load("curved_3d_300K_plane_fine.json"), runs[2])),
     }
     template = Path(sys.argv[1]).read_text()
     for key, value in sections.items():

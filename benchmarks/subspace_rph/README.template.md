@@ -63,4 +63,79 @@ rate of the whole system normalized on the same slice:
 
 {{EMBEDDING}}
 
-{{NOTES}}
+### Convergence checks
+
+{{CONVERGENCE}}
+
+## Findings
+
+1. **Both 2D models are within a few percent of the exact correction; the 1D
+   models are not.** At 300 K the plane model (with its absorber fixed,
+   finding 5e) is within 1% and the RPH model within 2%, on the planar and the
+   weakly non-planar path alike. The RPH residual comes mostly from the
+   reference-slice tolerance: tightening `reference_density_tolerance` from
+   1e-2 to 1e-3 moves it towards the exact value (see Convergence checks). On
+   `curved_2d` the RPH model is the system itself, and its quantum rate
+   equals the exact rate on the same slice to 0.4%.
+2. **1D underestimates the correction** (-4% at 300 K, -14% at 200 K): it
+   cannot cut the corner. **1D + SCT overestimates at 300 K (+4 to +5%) and
+   underestimates at 200 K (-5%)**; the SCT effective mass is a one-dimensional
+   approximation of exactly what the 2D models treat.
+3. **These models do not separate plane and RPH.** Their paths stay close to
+   one plane, which is where the plane model is exact. RPH needs no plane: its
+   development follows the path, and `captured_curvature` reports how much of
+   the curvature its single normal carries (1.000 for `curved_2d`, 0.998 for
+   `curved_3d`). A path that leaves every plane (a hairpin, or curvature in
+   two directions at once) would distinguish them; no exact reference for
+   one is included here.
+4. **Embedding invariance holds** for 1D, plane and RPH within statistical
+   error. 1D + SCT differs by 2.2 standard errors (1.255 vs 1.284), which may
+   be noise or the SCT effective mass's sensitivity to the path sampling; it
+   is not resolved here.
+5. **Defects found and fixed during this validation** (each has a unit test):
+   a. the RPH model walled off the grid beyond its box: the quantum rate
+      absorbed first and never saw it, but ring polymers bounced back
+      (kappa 0.84 instead of 0.98), `C_S` +20%;
+   b. `exact_quantum_rate` checked a supplied absorber against end caps it
+      does not use, refusing the RPH model at 200 K;
+   c. the quantum rate is normalized on the DVR line nearest the reference
+      and the RPMD TI exactly at it: 2D references are now snapped to a node;
+   d. the reference slice was chosen by a 0.3 kT energy rule only; on a slope
+      the quantum and the centroid reactant densities differ at O(hbar^2)
+      (`beta^2 V''/12` etc.), ~5% at the 300 K slice of `curved_2d`. Slices
+      now also need `beta^2|V''|/12 + beta^3 V'^2/24 <= 1e-2`;
+   e. the plane model's reactant absorber stopped at the path start, so its
+      ramp never reached full strength: k_QM 22% low (4% with the former
+      reference slice).
+
+## Limits of this validation
+
+- The models are abstract mass-weighted potentials with a single barrier;
+  there are no rotations, rigid-body modes, complexes or anharmonic baths.
+  The atomistic path code is tested separately (`test_subspace_path_cores.py`,
+  `test_subspace_reactant_climb.py`).
+- `curved_3d` bends only weakly in `z` (the RPH normal captures 99.8% of the
+  weighted curvature); it mainly tests the adiabatic `z` mode, whose
+  frequency softens at the barrier. A strongly twisting path, where one normal
+  cannot carry the curvature, is not covered by an exact reference here.
+- The bead number is fixed (P = 32 at 300 K, 48 at 200 K) and enters the
+  subspace and the full RPMD rates alike; bead convergence was not checked
+  separately.
+- The exact 3D quantum rate uses the flux-eigenstate route on a 3 x 3 x 3.5
+  grid; its grid convergence was not checked separately.
+
+## Reproduce
+
+```bash
+cd benchmarks/subspace_rph
+python run.py --model curved_2d --temperature 300 --nbeads 32 --full --full-spacing 2 2 --full-reference 145 --out results/curved_2d_300K.json
+python run.py --model curved_2d --temperature 200 --nbeads 48 --full --full-spacing 2 2 --full-reference 155 --out results/curved_2d_200K.json
+python run.py --model curved_3d --temperature 300 --nbeads 32 --full --full-spacing 3 3 3.5 --full-reference 145 --out results/curved_3d_300K.json
+python run.py --model embedded_8d --temperature 300 --nbeads 32 --out results/embedded_8d_300K.json
+python run.py --model curved_2d --temperature 300 --nbeads 32 --models rph --reference-density-tolerance 1e-3 --out results/curved_2d_300K_tol1e-3.json
+python run.py --model curved_3d --temperature 300 --nbeads 32 --models plane --spacing-2d 2.47 2.47 --out results/curved_3d_300K_plane_fine.json
+python report.py README.template.md ../../docs/validation/2026-11-13-subspace-rph-2d/README.md
+```
+
+A dense 2D solve needs up to about 5 GB; run the memory-heavy cases one at a
+time on a 16 GB machine.
