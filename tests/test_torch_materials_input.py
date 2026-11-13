@@ -193,7 +193,7 @@ def test_cli_validate_run_resume_analyze(tmp_path, capsys, task):
     assert main(["run", str(source), "--output", str(output)]) == 0
     first = json.loads(capsys.readouterr().out)
     assert first["engine"] == "torch" and first["status"] == "complete"
-    assert first["converged"] is False and first["physical_converged"] is False
+    assert first["converged"] is False
     checkpoint = Path(first["batch_checkpoint"])
     before = checkpoint.read_bytes()
     assert main(["resume", str(output), "--block-steps", "3"]) == 0
@@ -341,7 +341,7 @@ def test_documented_cpu_examples_validate_and_run(tmp_path, capsys, name):
     assert main(["run", str(source), "--output", str(output)]) == 0
     result = json.loads(capsys.readouterr().out)
     assert result["status"] == "complete"
-    assert result["physical_converged"] is False and result["converged"] is False
+    assert result["converged"] is False
     if name == "torch_diffusion.inp":
         assert result["analysis_status"] == "ballistic_or_drifting"
         assert result["diffusion_m2_s"] is None

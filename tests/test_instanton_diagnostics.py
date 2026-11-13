@@ -107,5 +107,4 @@ def test_splitting_and_harmonic_preparation_use_analytic_provider_and_report_cos
     s0 = 4/3*math.sqrt(2*1822.*0.01)
     analytic = 2*omega*math.sqrt(6*s0/math.pi)*math.exp(-s0)
     assert report["splitting_hartree"] == pytest.approx(analytic, rel=0.006)
-    assert report["physical_converged"] is False
     json.dumps(report, allow_nan=False)

@@ -75,7 +75,6 @@ def test_tst_and_wigner_have_independent_closed_form(temperature):
     assert report["harmonic_tst"]["rate"] == pytest.approx(quantum)
     assert report["wigner"]["rate"] == pytest.approx(quantum*(1+(beta*barrier_omega)**2/24))
     assert report["crossover_temperature_kelvin"] == pytest.approx(barrier_omega/(2*np.pi*KB_AU))
-    assert report["physical_converged"] is False
 
 
 def test_product_zpe_convention_and_nonpositive_eckart_barriers():
@@ -186,7 +185,6 @@ def test_multidimensional_determinant_recovers_analytic_1d_instanton():
     assert ratio == pytest.approx(1, rel=0.006)
     assert output["log_prefactor_au"] == pytest.approx(exact_log_prefactor, abs=0.0002)
     assert output["negative_modes"] == 1
-    assert output["physical_converged"] is False
 
 
 def test_separable_transverse_fluctuations_cancel_and_hessian_cache_is_reused():

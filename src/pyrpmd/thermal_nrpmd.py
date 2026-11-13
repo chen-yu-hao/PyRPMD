@@ -465,7 +465,7 @@ class ThermalNRPMDSampler:
              "static_bias": self._bias is not None,
              "static_bias_identity": copy.deepcopy(self._bias_identity),
              "potential_split": "trace",
-             "independent_chains": 1, "physical_converged": False},
+             "independent_chains": 1},
         )
 
 
@@ -545,7 +545,6 @@ class ThermalRateCorrelation:
             "rate_curve_available": not self.unavailable_reasons,
             "unavailable_reasons": self.unavailable_reasons,
             "candidate_rate": None, "standard_error": None, "plateau_detected": False,
-            "physical_converged": False,
         }
         if (start is None) != (stop is None):
             raise ValueError("both plateau start and stop must be supplied")

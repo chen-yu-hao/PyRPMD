@@ -210,5 +210,4 @@ def test_example_charge_observable_and_cli_json(tmp_path):
         .3*values["x"]+.08*values["y"]+1.2*result["chemical_potential_au"], abs=1e-15,
     )
     assert target.is_file()
-    assert result["scope"]["physical_converged"] is False
     assert result["scope"]["z_partition_included"] is False

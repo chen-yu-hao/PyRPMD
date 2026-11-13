@@ -1462,7 +1462,6 @@ def _analyze(config, system, output, options, *, return_data=False):
         ),
         "status": "complete" if saved["elapsed"] == options.total else "partial",
         "converged": False,
-        "physical_converged": False,
         "replicas": options.nstates,
         "temperature_K": options.temperatures.tolist(),
         "beta_au": options.betas.tolist(),

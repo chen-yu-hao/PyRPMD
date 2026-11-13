@@ -59,7 +59,6 @@ def test_selector_is_stable_on_independent_sampling_blocks():
             target_observables=positions[:, 0] ** 2,
         )
         selections.append(result.selected_indices)
-        assert result.diagnostics["physical_converged"] is False
         assert np.isfinite(result.scores).all()
     assert selections == [(0, 1)] * len(selections)
 

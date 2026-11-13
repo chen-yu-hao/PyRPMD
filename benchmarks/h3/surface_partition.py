@@ -337,7 +337,7 @@ def importance_diagnostic(provider, reference, *, beads, mass, samples=8192,
               "first_second_half_log_ratios": [value if np.isfinite(value) else None for value in halves],
               "observation_columns": ["centroid_radius_bohr", "angle_ratio", "minimum_bead_pair_bohr",
                                       "delta_energy_hartree_nan_outside_domain"],
-              "physical_converged": False, "literature_reproduced": False,
+               "literature_reproduced": False,
               "limitations": ["Excluded from primary inference; used only for overlap and tail assessment.",
                   "Empirical importance ESS cannot exclude unsampled rare high-weight paths.",
                   "Reference centroid quadrature requires an independent refinement check."]}
@@ -400,7 +400,7 @@ def analyze_samples(delta_energy, lambdas, beta, log_reference_over_classical, d
             "diagnostic_energy_effective_samples": [float(len(samples)/statistical_inefficiency(column))
                                                       if np.ptp(column) else None for column in samples.T],
             "uncertainty_unit": "Independent seed chain; halves and autocorrelation estimates are diagnostics only.",
-            "physical_converged": False, "literature_reproduced": False}
+             "literature_reproduced": False}
 
 
 def harmonic_log_ratio(beta, omega, beads, dimensions=1):
@@ -567,7 +567,7 @@ def run(output, library=None, *, potential=None, surface="ts", beads=128, seed=3
         write_json(output/"progress.json", {"completed_sweeps": completed, "production_sweeps": count,
                    "elapsed_this_call_seconds": time.perf_counter()-started,
                    "acceptance_per_move": (accepted/np.maximum(proposed, 1)).mean(axis=1),
-                   "physical_converged": False, "literature_reproduced": False})
+                    "literature_reproduced": False})
 
     try:
         if not checkpoint.exists():
@@ -642,7 +642,7 @@ def run(output, library=None, *, potential=None, surface="ts", beads=128, seed=3
                 if ns >= 2 else None)
     report = {"schema": settings["schema"], "phase": phase, "surface": surface, "seed": seed, "beads": beads,
               "complete": completed == warmup+production, "completed_sweeps": completed,
-              "production_samples_per_lambda": ns, "physical_converged": False,
+              "production_samples_per_lambda": ns, 
               "endpoint_snapshot_count": count//snapshot_interval if snapshot_interval else 0,
               "endpoint_snapshot_interval": snapshot_interval,
               "endpoint_snapshot_source": settings["endpoint_snapshot_source"],

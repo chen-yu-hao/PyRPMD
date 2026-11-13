@@ -200,7 +200,7 @@ def simulate(momentum, n, dt, seed, replica, methods, *, retain=False):
       "execution":{"n":n,"dt":dt,"seed":seed,"replica":replica,
                    "numpy":np.__version__,"python":platform.python_version()},
       "methods":summary,
-      "claims":{"exact_quantum_propagator":False,"physical_converged":False,
+      "claims":{"exact_quantum_propagator":False,
                 "paper_level_method_agreement_certified":False,
                 "warning":"One nuclear bead; focused W differs from paper full-sphere SPM-W; no physical method error tolerance asserted"}}
     return payload, raw_data

@@ -384,8 +384,7 @@ def _instanton_core(run, core, options):
         return core, details
     details.update({"converged": bool(result.converged), "gradient_max": float(result.gradient_max),
                     "negative_modes": int(result.negative_modes),
-                    "physical_negative_modes": int(result.negative_modes),
-                    "physical_converged": False})
+                    "physical_negative_modes": int(result.negative_modes)})
     if not result.converged:
         details.update({"fallback": "centroid", "fallback_reason": "optimizer_not_converged",
                         "optimizer_message": str(result.message)})
@@ -1165,7 +1164,6 @@ def _finish_pipeline(state, computed, apply):
         "reuse_key": reuse_key,
         "correction_files": {f"C_S_{d}d.json": file_sha256(out_dir / f"C_S_{d}d.json") for d in corrections},
         "options": {k: v for k, v in options.items()},
-        "physical_converged": False,
     }
     report = _json_safe(report)
     write_json(out_dir / "subspace_pipeline.json", report)

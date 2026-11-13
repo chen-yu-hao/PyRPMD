@@ -55,7 +55,7 @@ def read_cases(path):
         key = (dimension, target)
         if key in cases:
             raise ValueError("duplicate dimension/target reference case")
-        if item["beta"] != 1.0 or item["physical_converged"] is not False:
+        if item["beta"] != 1.0:
             raise ValueError("this figure documents beta=1 toy-model validation only")
         edges = [np.asarray(edge, dtype=float) for edge in item["edges"]]
         if len(edges) != dimension or any(

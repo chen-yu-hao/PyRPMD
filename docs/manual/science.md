@@ -315,8 +315,9 @@ sets, not universal precision guarantees. See also the
 [OpenMM RPMD guide](https://docs.openmm.org/latest/userguide/library/09_rpmd_plugin.html) for bead
 convergence and the distinction between equilibrium path integrals and approximate real-time RPMD.
 
-Summaries carry `converged` or `physical_converged`, which stay `false` for a single run; PCET also
-reports `numerical_convergence` and `physical_applicability_unverified`. The
+Summaries carry task-specific convergence diagnostics; a single run does not
+certify the full scientific study. PCET also reports `numerical_convergence` and
+`physical_applicability_unverified`. The
 [scientific conventions](#free-energy-measures-and-rate-normalization),
 the [MBAR rate PMF](../rate-pmf-selection.md)
 and the task topics give the theory, implementation and method sources.

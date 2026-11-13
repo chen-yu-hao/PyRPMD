@@ -24,7 +24,7 @@ python examples/electrochemistry/adaptive_constant_potential.py \
 短预算可能正确触发符号／有效样本不足诊断。JSON 记录初始与最终路径、窗口符号、
 MBAR 重叠、电子化学势残差，以及允许发射时的无偏短轨迹和 Hamiltonian 漂移。
 该解析两态弯曲势谷使用模型原子单位，没有标定真实电极。
-`physical_converged` 始终为 `false`；它不输出已收敛的化学速率。
+它不输出已收敛的化学速率。
 
 ## 多条独立链的完整计算
 

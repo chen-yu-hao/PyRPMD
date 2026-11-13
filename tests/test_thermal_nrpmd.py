@@ -357,7 +357,6 @@ def test_rate_sign_guard_ratio_normalization_and_oscillation_rejection():
     assert summary["candidate_rate"] == pytest.approx(.4)
     assert summary["plateau_detected"]
     assert summary["standard_error"] == pytest.approx(0., abs=1e-15)
-    assert not summary["physical_converged"]
     assert not result.summarize(start=2, stop=10)["plateau_detected"]
     oscillatory = numerator*(1+.5*np.sin(times*2*np.pi))
     oscillating = ThermalRateCorrelation(times, oscillatory, denominator, np.ones(40), "test")

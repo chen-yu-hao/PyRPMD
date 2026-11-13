@@ -46,7 +46,7 @@ def validate(snapshot,output,*,lj_backend="nonbonded"):
         short_e,short_f=grouped.evaluate(q,groups=(1<<1)|(1<<3))
         full_slow=full_f-fast_f
         report={"schema":"pyrpmd.water-split-mts-audit.v1","external_experimental_reference":True,
-                "physical_converged":False,"literature_reproduced":False,"openmm":openmm.__version__,
+                "literature_reproduced":False,"openmm":openmm.__version__,
                 "platform":"CPU","threads":1,"molecules":n,"beads":beads,
                 "snapshot_sha256":sha256(snapshot),"source_sha256":identity,"split_model":metadata,
                 "full_electrostatic_split_comparison":{

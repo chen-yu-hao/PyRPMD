@@ -57,7 +57,6 @@ def harmonic_case(output, beads):
             "quantum_continuum_internal_energy_hartree": float(1.5 * omega / np.tanh(beta * omega / 2)),
             "radius_gyration_squared_bohr2": radius,
             "exact_radius_gyration_squared_bohr2": float(3 * (variance - 1 / (beta * stiffness))),
-            "workflow_physical_converged": result["summary"]["physical_converged"],
             "within_six_standard_errors": bool(np.all(np.abs(mean - target) <= 6 * sem))}
 
 

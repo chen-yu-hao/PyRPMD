@@ -441,8 +441,7 @@ def _analyze(ladders, config, system, output, return_data):
                 "sampler": vars(options["sampler"]), "ladders": diagnostics,
                 "sample_convention": "window-labelled, before coincident exchanges",
                 "uncertainty": "synchronous circular blocks across windows within each ladder",
-                "parallelism": "independent ladders; windows inside a ladder are propagated sequentially",
-                "physical_converged": False}
+                "parallelism": "independent ladders; windows inside a ladder are propagated sequentially"}
     write_json(Path(output) / "exchange.json", exchange)
     summary["replica_exchange"] = exchange
     summary["warnings"].append("Exchange acceptance and walker visits do not prove equilibration or hidden-coordinate mixing; exchanged trajectory time is not physical RPMD time.")

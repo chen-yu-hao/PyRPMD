@@ -228,7 +228,6 @@ def test_prepare_checks_full_ring_properties_without_propagation(tmp_path):
     }
     assert len(checked["pes_check"]["energy_hartree"]) == 8
     assert plan["production_centroid_thermostat"] is False
-    assert plan["physical_converged"] is False
     assert not (tmp_path / "runs").exists()
 
 

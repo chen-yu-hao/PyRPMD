@@ -623,8 +623,6 @@ def benchmark_workflow(task, atoms, beads, settings, scratch):
                         or runtime[name].get("device") != devices[name]
                         or runtime[name].get("dtype") != "float64"):
                     raise ValueError("workflow must execute the requested Torch device in float64; no fallback")
-                if result["summary"].get("physical_converged") is not False:
-                    raise ValueError("short workflow validation must not claim physical convergence")
                 del result
     total_steps = settings.equilibration_steps + settings.production_steps
     for values in timings.values():
@@ -636,7 +634,7 @@ def benchmark_workflow(task, atoms, beads, settings, scratch):
             "potential": "harmonic k=2 hartree/bohr^2" if task == "pimd" else "free",
             "model_kind": "analytic_workflow_probe",
             "workflow_config": workflow_configuration(task, beads, settings, str(target)), "mass_electron": 2.0,
-            "timings": timings, "runtime": runtime, "physical_converged": False,
+            "timings": timings, "runtime": runtime, 
             "peak_cuda_allocated_bytes": peak, "steps_per_replica": total_steps,
             "peak_cuda_reserved_bytes": reserved,
             "cpu_over_target": timings["cpu"]["median_ms"] / timings["target"]["median_ms"] if correct else None,
@@ -665,7 +663,7 @@ def run(settings=Settings(), *, manifest=None, output=None, scratch=None, progre
               "source": snapshot, "environment": hardware, "settings": asdict(settings),
               "manifest_sha256": None if manifest is None else sha256(manifest), "models": models,
               "effective_torch_threads": settings.threads,
-              "physical_converged": False, "execution_complete": False,
+               "execution_complete": False,
               "cuda_matrix_complete": False, "cases": []}
     if scratch is not None:
         scratch = Path(scratch)

@@ -91,7 +91,7 @@ def main():
               "mass_au": mass, "omega_au": omega, "sampling": settings,
               "trace_convergence_per_Cartesian_mode": table,
               "phases": phases, "fractionation": fractionation, "momentum": momentum,
-              "physical_converged": False,
+              
               "limitations": ["harmonic analytic validation only",
                               "TI accelerates closed traces, not general density observables",
                               "momentum uses primitive open paths and has kernel and finite-grid bias",

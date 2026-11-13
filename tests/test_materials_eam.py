@@ -92,5 +92,4 @@ def test_real_nickel_hydrogen_eam_adapter_and_periodic_workflow(tmp_path, pilot)
     assert result["status"] == "complete"
     assert result["pbc"] == [True, True, False]
     assert result["phase"] == "unthermostatted_rpmd_production"
-    assert result["physical_converged"] is False
     assert result["diffusion"]["diffusion_m2_s"] is None

@@ -231,7 +231,7 @@ def run(output, library, *, beads=128, seed=211013, warmup=5000, production=3000
         write_json(output/'progress.json',dict(completed_sweeps=completed,
             production_sweeps=count,elapsed_seconds=time.perf_counter()-start,
             acceptance=(accepted/np.maximum(proposed,1)).mean(axis=1),
-            xi_mean=xi.mean(),finite=True,physical_converged=False))
+            xi_mean=xi.mean(),finite=True))
         print(json.dumps({'completed':completed,'production':count,
             'elapsed_seconds':time.perf_counter()-start,
             'acceptance':(accepted/np.maximum(proposed,1)).mean(axis=1).tolist()}),flush=True)
@@ -287,7 +287,7 @@ def run(output, library, *, beads=128, seed=211013, warmup=5000, production=3000
         provider.close()
     after=provenance(library)
     report=dict(schema=settings['schema'],completed=completed==warmup+production,completed_sweeps=completed,
-        elapsed_seconds=time.perf_counter()-start,physical_converged=False,literature_reproduced=False,
+        elapsed_seconds=time.perf_counter()-start,literature_reproduced=False,
         seed=seed,beads=beads,source_unchanged=before==after,
         checkpoint_sha256=hashlib.sha256(saved.read_bytes()).hexdigest(),
         created_utc=datetime.now(timezone.utc).isoformat(),

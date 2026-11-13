@@ -52,7 +52,6 @@ def test_keyboard_interrupt_after_ffs_random_draw_replays_last_atomic_checkpoint
         assert len(saved["flux_events"]) == 5
     result = resume_run(interrupted)
     assert result["completed"] is True
-    assert result["physical_converged"] is False
     for subdirectory in ("checkpoints", "samples"):
         with load_checkpoint(uninterrupted / subdirectory / "path_sampling.npz", require_integrity=True) as expected:
             with load_checkpoint(interrupted / subdirectory / "path_sampling.npz", require_integrity=True) as actual:
@@ -109,7 +108,6 @@ def test_keyboard_interrupt_after_retis_sweep_replays_last_atomic_checkpoint(tmp
     result = resume_run(interrupted)
     assert result["completed"] is True
     assert result["samples"] == 7
-    assert result["physical_converged"] is False
     for subdirectory in ("checkpoints", "samples"):
         with load_checkpoint(uninterrupted / subdirectory / "path_sampling.npz", require_integrity=True) as expected:
             with load_checkpoint(interrupted / subdirectory / "path_sampling.npz", require_integrity=True) as actual:

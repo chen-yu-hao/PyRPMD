@@ -102,7 +102,7 @@ def _analyze_shared(bias, samples, config, system, output, options, *, mode,
         "weight_effective_sample_size": bias.effective_sample_size,
         "compression": "none", "common_support": bool((~mask).any()),
         "reference_bin": None if reference is None else list(reference),
-        "converged": False, "physical_converged": False,
+        "converged": False,
         "sample_bias_convention": (
             "physical shared V before the probability update; H_P contains P*V; "
             "synchronous log weights use the common pre-commit bias" if mode == "mpi-sync"

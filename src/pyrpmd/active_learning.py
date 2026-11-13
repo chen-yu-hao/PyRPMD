@@ -367,7 +367,7 @@ class ActiveLearningLoop:
             "uncertainty_converged": self._meta["reason"] == "uncertainty_below_threshold",
             "uncertainty_scope": "current_sampled_batch_only",
             "uncertainty_is_calibrated_error": False,
-            "converged": False, "physical_converged": False,
+            "converged": False,
         }
 
     def _committee_hash(self, hashes):

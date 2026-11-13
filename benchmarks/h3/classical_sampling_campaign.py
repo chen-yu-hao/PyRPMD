@@ -83,7 +83,7 @@ def one_seed(job):
                   'all_previous_prefixes_verified':True,
                   'checkpoint_sha256_at_stage':file_hash(checkpoint),
                   'state_snapshot_sha256':hashlib.sha256((stage/'state.npz').read_bytes()).hexdigest(),
-                  'run_report':report,'physical_converged':False,
+                  'run_report':report,
                   'campaign_source_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
     (stage/'stage.json').write_text(json.dumps(document,indent=2)+'\n')
     print(json.dumps({'event':'stage_completed','seed':seed,'production':target,
@@ -109,7 +109,7 @@ def main():
             results=list(pool.map(one_seed,jobs))
     summary={'production_stage':a.production_stage,'seeds':list(a.seeds),
              'stage_files':[str(a.output/f'seed-{seed}'/'stages'/str(a.production_stage)/'stage.json') for seed in a.seeds],
-             'all_stages_completed':len(results)==len(jobs),'physical_converged':False}
+             'all_stages_completed':len(results)==len(jobs)}
     a.output.mkdir(parents=True,exist_ok=True)
     (a.output/f'campaign-stage-{a.production_stage}.json').write_text(json.dumps(summary,indent=2)+'\n')
 

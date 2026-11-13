@@ -202,7 +202,6 @@ class FFSResult:
             "rate_standard_error_au": None,
             "rate_s_inv": None,
             "converged": False,
-            "physical_converged": False,
             "qualification": (
                 "The flux trace must be stationary. Trial errors are conditional on the "
                 "finite crossing banks; use independent complete FFS replicates for "
@@ -740,5 +739,5 @@ def combine_ffs_replicates(results, *, block_size=1):
         "rate_estimates_au": rates.tolist(),
         "rate_statistical_inefficiency_diagnostic": _correlation(rates),
         "uncertainty_method": "block_mean_of_independent_complete_ffs_runs",
-        "rate_s_inv": None, "converged": False, "physical_converged": False,
+        "rate_s_inv": None, "converged": False,
     }

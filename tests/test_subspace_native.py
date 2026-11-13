@@ -76,7 +76,6 @@ def test_seeded_rate_keeps_statistics_and_is_thread_count_independent():
     assert one.diagnostics["hmc_acceptance"] == py.diagnostics["hmc_acceptance"]
     assert many.diagnostics["native_steps"] > 0
     assert many.diagnostics["python_steps"] == many.diagnostics["python_pes_callbacks"] == 0
-    assert many.diagnostics["physical_converged"] is False
 
 
 def test_native_rejects_callbacks_instead_of_changing_the_potential():

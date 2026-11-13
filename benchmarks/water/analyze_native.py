@@ -284,7 +284,7 @@ def analyze(runs, protocol_path, output):
               "paired_equivalence_preregistration_sha256":supplement_sha,
               "checkpoint_contract_revision_sha256":sha256(contract_path) if checkpoint_contract is not None else None,
               "all_predeclared_chains_complete":all_complete,"chains":chains,
-              "physical_converged":False,"literature_reproduced":False,
+              "literature_reproduced":False,
               "eligibility_checks":{},"literature_comparison":None,
               "source_sha256":analysis_sources,
               "analysis_environment":{"python":platform.python_version(),
@@ -348,7 +348,7 @@ def main():
     parser.add_argument("--output",type=Path,required=True)
     args=parser.parse_args()
     result=analyze(args.runs,args.protocol,args.output)
-    print(json.dumps({key:result[key] for key in ("all_predeclared_chains_complete","physical_converged","literature_comparison")},indent=2))
+    print(json.dumps({key:result[key] for key in ("all_predeclared_chains_complete","literature_comparison")},indent=2))
 
 
 if __name__=="__main__":

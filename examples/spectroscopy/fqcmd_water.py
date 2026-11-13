@@ -356,7 +356,7 @@ def _stretch_summary(spectrum):
             "frequency_grid_spacing_cm1": float(wave[1] - wave[0]),
             "record_resolution_cm1": float(spectrum["resolution_au"] / WAVENUMBER_TO_AU * 2 * np.pi),
             "window": spectrum["window"], "peak_interpolation": False,
-            "physical_converged": False}
+            }
 
 
 def _production(base, potential, options, *, label, beta, seed, pimd_q=None):
@@ -473,7 +473,7 @@ def run(options):
     run_digest = hashlib.sha256(json.dumps(identity, sort_keys=True).encode()).hexdigest()
     started = time.perf_counter()
     print(f"Analytic gas water pilot: T={options.temperature:g} K, P={options.beads}, "
-          f"independent molecules={options.molecules}; physical_converged=False", flush=True)
+          f"independent molecules={options.molecules}", flush=True)
     force_check = force_reference(base)
     dynamics = _new_dynamics(base, masses, beta, options.beads,
                              options.dt_fs * FS_TO_AU, options.seed)
@@ -504,7 +504,7 @@ def run(options):
     provenance = {"training": "unconstrained PIMD followed by separable IBI",
                   "run_digest": run_digest, "temperature_kelvin": options.temperature,
                   "pimd_beads": options.beads, "scientific_options": scientific_options,
-                  "physical_converged": False}
+                  }
     initial = FQCMDModel(geometry, groups, edges,
                         tuple(np.zeros(len(edge) - 1) for edge in edges),
                         beta=beta, base_identity=base_identity, provenance=provenance)
@@ -560,7 +560,7 @@ def run(options):
                         "frames_are_not_claimed_independent": True},
               "ibi": all_fit_records, "production": production, "frequency_differences": differences,
               "total_wall_seconds": time.perf_counter() - started,
-              "physical_converged": False,
+              
               "unconverged_parameters": ["PIMD bead count and timestep", "equilibration and statistical sampling",
                                          "IBI histogram grid, polynomial smoothing and regularization",
                                          "separable correction approximation and IBI iteration count",
@@ -573,7 +573,7 @@ def run(options):
                   "caveat": "This analytic model is neither PS water nor q-TIP4P/F. No exact quantum or liquid-water replication."}}
     atomic_write_text(options.output / "report.json", json.dumps(_json_safe(report), indent=2, allow_nan=False) + "\n")
     print(json.dumps(_json_safe({"frequency_differences": differences,
-                                "physical_converged": False,
+                                
                                 "total_wall_seconds": report["total_wall_seconds"]}), indent=2), flush=True)
     return report
 

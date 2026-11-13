@@ -121,7 +121,7 @@ The report's `defaults` records the selected seed, masses, integrator,
 preparation policy, symmetry factor and first-parent-draw convention. In
 PyRPMD that draw follows one full draw interval after equilibration; upstream
 draws immediately. `all_settings_mapped` concerns the supported input fields;
-`physical_converged` is always false. RPMDrate dynamics and the external PESs
+RPMDrate dynamics and the external PESs
 are **未实测 (not run)** in this conversion validation.
 
 ## Trust and import lifetime

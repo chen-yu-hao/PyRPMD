@@ -69,7 +69,7 @@ def run_demo(steps=200):
 
     return {
         "purpose": "finite synthetic-model numerical demonstration",
-        "physical_converged": False,
+        
         "chemistry_validation": False,
         "settings": {"units": "atomic", "nbeads": beads, "masses": masses,
                      "beta": beta, "dt": dt, "steps": steps, "seed": seed,

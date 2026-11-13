@@ -85,7 +85,7 @@ def plan(profile="pilot", *, temperature=1500., beads=1, dt_fs=0.1, seed=2026103
     total_samples = streams * samples_per_stream
     return {
         "schema": "pyrpmd.hho2.scan.v1", "profile": profile,
-        "physical_converged": False, "pes_status": "external_model_required",
+         "pes_status": "external_model_required",
         "atomic_order": ["H0_incoming", "H1_in_HO2", "O0", "O1"],
         "temperature_K": float(temperature), "beads": beads, "dt_fs": float(dt_fs),
         "beta": 1 / (KB_AU * temperature), "seed": int(seed),
@@ -441,7 +441,7 @@ def analyze(output, *, bootstrap=None):
                         basin_channel_names=np.asarray(list(basin_fractions)),
                         basin_channel_fractions=np.asarray(list(basin_fractions.values())).reshape((-1,) + free_energy.shape),
                         overlap=result["overlap"], components=result["components"])
-    summary = {"schema":"pyrpmd.hho2.analysis.v1", "physical_converged":False,
+    summary = {"schema":"pyrpmd.hho2.analysis.v1", 
                "temperature_K":settings["temperature_K"], "beads":settings["beads"],
                "model_reference": model["reference"], "multiplicity": model["multiplicity"],
                "model_manifest_sha256": model["manifest_sha256"],

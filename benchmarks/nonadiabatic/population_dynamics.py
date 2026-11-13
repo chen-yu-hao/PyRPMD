@@ -89,7 +89,7 @@ def run_benchmark(*, trajectories, beads, steps, dt, grid_points, half_width, sa
     maxdiff = lambda a, b: float(np.max(np.abs(a-b)))
     return {
         "schema": "pyrpmd.nonadiabatic_population_benchmark", "version": 1,
-        "physical_converged": False,
+        
         "software_versions": {"pyrpmd": __version__, "numpy": np.__version__, "scipy": scipy.__version__},
         "units": {"length": "bohr", "mass": "electron_mass", "energy": "hartree", "time": "atomic_time"},
         "configuration": {"trajectories": trajectories, "beads": beads, "steps": steps,

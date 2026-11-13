@@ -236,7 +236,7 @@ def suzuki_chin_thermodynamics(estimator_series, beta, *, volumes=None,
         "heat_capacity_kind": kind, "heat_capacity_over_kB": float(heat),
         "heat_capacity_standard_error_over_kB": error_heat,
         "heat_capacity_hartree_per_K": float(heat * KB_AU),
-        "diagnostics": diagnostics, "physical_converged": False,
+        "diagnostics": diagnostics,
         "scope": "canonical_SC_temperature_independent_PES; unconstrained_3D_particles",
     }
     if npt:

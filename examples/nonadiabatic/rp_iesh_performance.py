@@ -119,7 +119,7 @@ def benchmark(*, steps=100, repeats=5, warmups=10, native=False):
         "benchmark": "rp_iesh_complete_propagation_step",
         "method_variant": RPIESHDynamics.method_variant,
         "scope": "complete validated step and caller loop; excludes initialization, observations, checkpoint and I/O",
-        "physical_converged": False, "native_requested": native_request,
+         "native_requested": native_request,
         "seed": SEED, "steps_per_repeat": steps, "repeats": repeats, "warmup_steps": warmups,
         "model_identity": model.to_dict(),
         "dynamics": {"mass_electron_masses": [200.], "beta_inverse_hartree": 40.,

@@ -67,7 +67,6 @@ def test_flux_convention_matches_independent_trace_analysis():
     for key in ("effective_crossings", "a_history_time_au", "flux_au", "flux_s_inv"):
         assert summary[key] == reference[key]
     assert result.complete and result.status == "complete"
-    assert summary["physical_converged"] is False
     assert summary["rate_standard_error_au"] is None
     assert summary["flux_diagnostics"]["blocks"] == 10
     assert result.flux_final_state.step == 237
@@ -192,7 +191,6 @@ def test_extinct_runs_are_included_in_replicate_errors_without_selection_bias(dt
         (estimates * dt).reshape(-1, 2).mean(axis=1).std(ddof=1) / np.sqrt(10) / dt,
     )
     assert combined["overall_crossing_probability"] is None
-    assert combined["physical_converged"] is False
     json.dumps(combined, allow_nan=False)
 
 

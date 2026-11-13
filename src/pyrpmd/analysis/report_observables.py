@@ -486,7 +486,7 @@ def _diffusion(root, summary, result, prefix, label, length_factor, length_label
               kind="line", series=[_series("VACF integral / dimension", times, integral)],
               caption="A finite-time running integral is a diagnostic; it is not automatically a converged diffusion coefficient.")
     result["metrics"]["diffusion"] = {key: data.get(key) for key in (
-        "status", "diffusion_m2_s", "diffusion_tensor_m2_s", "raw_fit", "uncertainty", "input", "diagnostics", "physical_converged",
+        "status", "diffusion_m2_s", "diffusion_tensor_m2_s", "raw_fit", "uncertainty", "input", "diagnostics",
     )}
     if data.get("diffusion_m2_s") is None:
         _finding(result, "diffusion_withheld", "The saved analysis withholds the diffusion coefficient; MSD/VACF curves are diagnostic only.")

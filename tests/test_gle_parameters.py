@@ -49,7 +49,6 @@ def test_official_raw_grammar_units_and_original_source_metadata(tmp_path):
     assert metadata["frequency_range_au"] == [None, 4000 * WAVENUMBER_TO_AU]
     assert metadata["residuals"] is None
     assert metadata["fit_converged"] is None
-    assert metadata["physical_converged"] is False
     json.dumps(parameters, allow_nan=False)
 
 
@@ -180,7 +179,6 @@ def test_scalar_optimal_sampling_against_independent_harmonic_lyapunov_integral(
     assert gamma == pytest.approx(1.)
     metadata = spec["parameter_metadata"]
     assert metadata["fit_converged"] is True
-    assert metadata["physical_converged"] is False
     for frequency, reported in zip(metadata["frequency_grid_au"], metadata["residuals"]["tau_V_au"]):
         drift = np.array([[0., -1.], [frequency**2, gamma]])
         covariance = solve_continuous_lyapunov(drift, np.diag([0., 2 * gamma]))

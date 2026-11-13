@@ -98,7 +98,7 @@ def main():
         'selection': selection, 'quantum_reference': full_quantum['metadata'],
         'pilot': pilot_record, 'static_sampling': static_record,
         'rpmd': error_metrics(R_full, Q_full, frequencies), 'methods': {},
-        'physical_converged': False,
+        
         'scope': 'Closed 3D double-well q response and tunneling doublet, NOT a thermal rate',
         'uncertainty_unit': 'Independent HMC chains, not snapshots within a chain'}
     curves = {'omega': frequencies, 'quantum': Q_full, 'rpmd': R_full,
@@ -136,7 +136,7 @@ def main():
     save_json(output/'summary.json', report)
     np.savez_compressed(output/'curves.npz', **curves)
     print(json.dumps({'case': args.case, 'selected_dimension': selection['selected_dimension'],
-                     'summary': str(output/'summary.json'), 'physical_converged': False}, indent=2))
+                     'summary': str(output/'summary.json')}, indent=2))
 
 
 if __name__ == '__main__':

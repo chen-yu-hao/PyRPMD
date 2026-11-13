@@ -202,6 +202,5 @@ def solve_curvilinear(axes,geometry,potential,*,states=6,hbar=1.,max_dof=20000):
     residual=Hs@U-(Ms@U)*E[None,:]
     info=dict(matrices.diagnostics);info.pop('potential_min')
     info.update({'eigen_residual_max':float(np.linalg.norm(residual,axis=0).max()),
-                 'mass_orthogonality_error':float(np.max(abs(U.T@(Ms@U)-np.eye(states)))),
-                 'physical_converged':False,'no_bath_elimination':True})
+                 'mass_orthogonality_error':float(np.max(abs(U.T@(Ms@U)-np.eye(states)))),'no_bath_elimination':True})
     return CurvilinearEigenResult(E,U,Ms,info)

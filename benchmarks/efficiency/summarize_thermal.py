@@ -40,7 +40,7 @@ def main():
         value = row('candidate-mt-dynamics', 3, beads)['steps_per_second']/row('baseline-dynamics', 3, beads)['steps_per_second']
         gates[f'small_legacy_P{beads}'] = {'value': value, 'minimum': .98, 'passed': value >= .98}
     output = {'performance_gates': gates, 'all_performance_gates_passed': all(g['passed'] for g in gates.values()),
-              'measurements': sum(len(r['measurements']) for r in reports.values()), 'physical_converged': False}
+              'measurements': sum(len(r['measurements']) for r in reports.values())}
     # Keep the unchanged default stream visible alongside the optional-stream gates.
     output['default_mt_pile_l_over_nve'] = {
         str(atoms): row('candidate-mt-dynamics', atoms)['steps_per_second']/row('candidate-mt-dynamics', atoms, thermostat='none')['steps_per_second']

@@ -192,7 +192,7 @@ def main():
     args = parser.parse_args()
     result = {"generated_utc": datetime.now(timezone.utc).isoformat(),
         "environment": {"python": platform.python_version(), "numpy": np.__version__, "scipy": scipy.__version__},
-        "physical_converged": False, "combined_rate_available": False,
+         "combined_rate_available": False,
         "deterministic": deterministic_checks(), "pcet": pcet_archived_reference_comparison()}
     d = result["deterministic"]
     errors = [row["max_phase_space_error_vs_independent_ode"] for row in d["integrator_vs_independent_classical_ode"]]

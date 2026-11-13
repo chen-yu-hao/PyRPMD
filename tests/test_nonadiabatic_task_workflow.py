@@ -41,7 +41,6 @@ def test_public_task_and_offline_analysis(tmp_path, monkeypatch, method):
     result = run(data, output=tmp_path/"run")
     assert data == original
     assert result["task"] == "nonadiabatic" and result["completed"]
-    assert result["physical_converged"] is False
     saved = arrays(tmp_path/"run/results/nonadiabatic.npz")
     np.testing.assert_array_equal(saved["steps"], [0, 2, 4, 6, 8, 10, 11])
     assert saved["diabatic_density"].shape == (3, 7, 2, 2)

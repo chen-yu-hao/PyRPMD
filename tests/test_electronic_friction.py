@@ -229,7 +229,6 @@ def test_fixed_surface_friction_stream_restart_and_analysis(tmp_path, monkeypatc
     summary = run_materials(config, system, tmp_path / "resumed")
     assert summary["phase"] == "centroid_ef_rpmd_production"
     assert summary["nve_energy_diagnostics"] is None
-    assert not summary["physical_converged"]
     json.dumps(summary, allow_nan=False)
 
 

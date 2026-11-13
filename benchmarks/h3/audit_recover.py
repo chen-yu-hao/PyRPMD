@@ -105,7 +105,7 @@ def main():
         'source_at_start':before,'source_at_end':after,'sources_unchanged':before==after,
         'script_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         'input_checkpoints':hashes,'intermediate_mbar_bootstrap':0,'final_ui_bootstrap':100,
-        'physical_converged':False,'summary':{key:value for key,value in result.items() if key!='pmf'}})
+        'summary':{key:value for key,value in result.items() if key!='pmf'}})
     print(json.dumps({'event':'finished','elapsed_seconds':time.perf_counter()-started,
                       'qtst':pmf['k_qtst_cm3_s'],'kappa':result.get('kappa'),
                       'rate':result.get('rate_estimate_cm3_s')}),flush=True)

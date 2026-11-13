@@ -15,7 +15,7 @@ def summarize():
         'units':'hbar=m=kB=1; omega angular frequency; rates length/time',
         'basis_commit':'2800af5d128b8db270c8ad06c32bc42b2f1af2b6',
         'selector':{k:{'dimension':v['dimension'],'status':v['status'],'residual_loading':v['residual_loading']} for k,v in sel.items()},
-        'selection_uses_full_quantum_answer':False,'physical_converged':False,'morse':{},'fermi':{},'eckart':{},
+        'selection_uses_full_quantum_answer':False,'morse':{},'fermi':{},'eckart':{},
         'numerical_checks':{'fast_tests_passed':24,'morse_ground_energy_max_change':conv['morse_reference']['ground_energy_max_change'],
             'fermi_d3_basis_relative_spectrum_change':conv['fermi_d3_basis']['relative_spectrum_change'],
             'analytic_eckart_max_probability_error':conv['analytic_eckart_max_probability_error'],
@@ -37,7 +37,7 @@ def summarize():
         r={'quantum_reference':q,'rpmd':F,'rpmd_relative_error':F/q-1,'rpmd_sampling_SE':sigmaF,
            'classical_TST':float(np.exp(-beta)/np.sqrt(2*np.pi*beta)),
            'kappa_plateau_early':rr[3]['plateau_early'],'kappa_plateau_late':rr[3]['plateau_late'],
-           'PMF_quadrature_nodes':rr[3]['quadrature_nodes'],'physical_converged':False}
+           'PMF_quadrature_nodes':rr[3]['quadrature_nodes']}
         for d in (1,2):
             if d not in rr:continue
             R=rr[d]['rate'];Q=conv[f'eckart_d{d}']['rates'][str(beta)]
@@ -55,7 +55,7 @@ def summarize():
         'Fermi harmonic-reservoir embedding uses analytic bath response (equal to harmonic RPMD); it is not an arbitrary anharmonic bath solver.',
         'Eckart uses experimental matched normalized plateau-rate difference, not the bound-spectrum passive embedding formula.',
         'Eckart rate SE is delta-method sampling only; shared seeds do not establish independent full/active errors. Both independent approximation and conservative sum are reported.',
-        'Combined bead, quadrature, warmup and seed checks do not isolate all systematic errors; global physical_converged remains false.',
+        'Combined bead, quadrature, warmup and seed checks do not isolate all systematic errors; global physical validation is not certified.',
         'Quantum references are separate audits and never used to select the subspace or fit correction coefficients.'
     ]
     (OUT/'validation_summary.json').write_text(json.dumps(summary,indent=2,ensure_ascii=False))
@@ -109,7 +109,7 @@ def main():
     rows=''
     for k,r in s['eckart'].items():
         rows+=f'<tr><td>{k}</td><td>{r["quantum_reference"]:.6g}</td><td>{r["rpmd_relative_error"]:+.2%}</td><td>{r["corrected_d2"]["relative_error"]:+.2%}</td></tr>'
-    text='''<!doctype html><html lang="zh"><meta charset="utf-8"><title>PyRPMD 非谐三模型重新验证</title><style>body{max-width:1000px;margin:36px auto;padding:0 22px;font-family:system-ui,sans-serif;line-height:1.65;color:#182534}h1,h2{line-height:1.3}header,section{margin-bottom:32px}section{border-top:1px solid #ccd5df;padding-top:20px}img{max-width:100%;height:auto}table{border-collapse:collapse;width:100%}td,th{padding:9px;border-bottom:1px solid #ccd5df;text-align:left}.note{padding:16px;background:#fff4dc}pre{white-space:pre-wrap;overflow-wrap:anywhere}</style><header><h1>PyRPMD：非谐三模型重新验证</h1><p>Morse 零点能 · Fermi 共振 · 三维弯曲 Eckart 隧穿</p><div class="note">这是新的非谐计算，不沿用旧谐振子“366%／33%”表。自动选模维数为 3／2／2；所有结果保留 physical_converged=False。</div></header>'''+''.join(sections)+'<h2>Eckart 速率汇总</h2><table><tr><th>设置</th><th>量子参照</th><th>RPMD 偏差</th><th>二维修正偏差</th></tr>'+rows+'</table><h2>完整数值摘要与限制</h2><pre>'+html.escape(json.dumps(s,indent=2,ensure_ascii=False))+'</pre></html>'
+    text='''<!doctype html><html lang="zh"><meta charset="utf-8"><title>PyRPMD 非谐三模型重新验证</title><style>body{max-width:1000px;margin:36px auto;padding:0 22px;font-family:system-ui,sans-serif;line-height:1.65;color:#182534}h1,h2{line-height:1.3}header,section{margin-bottom:32px}section{border-top:1px solid #ccd5df;padding-top:20px}img{max-width:100%;height:auto}table{border-collapse:collapse;width:100%}td,th{padding:9px;border-bottom:1px solid #ccd5df;text-align:left}.note{padding:16px;background:#fff4dc}pre{white-space:pre-wrap;overflow-wrap:anywhere}</style><header><h1>PyRPMD：非谐三模型重新验证</h1><p>Morse 零点能 · Fermi 共振 · 三维弯曲 Eckart 隧穿</p><div class="note">这是新的非谐计算，不沿用旧谐振子“366%／33%”表。自动选模维数为 3／2／2；所有结果保留独立验证所需的诊断。</div></header>'''+''.join(sections)+'<h2>Eckart 速率汇总</h2><table><tr><th>设置</th><th>量子参照</th><th>RPMD 偏差</th><th>二维修正偏差</th></tr>'+rows+'</table><h2>完整数值摘要与限制</h2><pre>'+html.escape(json.dumps(s,indent=2,ensure_ascii=False))+'</pre></html>'
     (ROOT/'anharmonic_validation_report.html').write_text(text,encoding='utf-8')
     return s
 if __name__=='__main__':main()

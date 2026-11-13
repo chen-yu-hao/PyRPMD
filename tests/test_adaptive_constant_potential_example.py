@@ -26,7 +26,6 @@ def test_example_cli_classical_limit_runs_full_sampling_and_unbiased_dynamics(tm
     assert completed.returncode == 0, completed.stderr
     report = json.loads(output.read_text())
     assert report["beads"] == 1
-    assert report["physical_converged"] is False
     assert report["rate_constant"] is None
     assert report["sampling_iterations_have_physical_time"] is False
     summary = report["sampling_summary"]
@@ -41,7 +40,6 @@ def test_example_cli_classical_limit_runs_full_sampling_and_unbiased_dynamics(tm
     assert realtime["bias_applied"] is False
     assert realtime["thermostat_applied"] is False
     assert realtime["same_constant_potential_as_sampling"] is True
-    assert realtime["physical_converged"] is False
     assert realtime["time_au"][-1] == 0.12
     assert len(realtime["signed_centroid_mean_bohr"]) == 13
     assert np.isfinite(realtime["signed_MMST_population_mean"]).all()
@@ -65,7 +63,7 @@ def test_example_does_not_launch_from_unresolved_reweighting(monkeypatch):
     result = SimpleNamespace(
         centers=np.array([[-1.0, 0.0], [1.0, 0.0]]), history=[],
         reweighted=unavailable,
-        summary=lambda: {"physical_converged": False},
+        summary=lambda: {},
     )
     monkeypatch.setattr(adaptive, "run_adaptive_nrpmd_path", lambda *args, **kwargs: result)
     run = runpy.run_path(str(EXAMPLE))["run"]
@@ -73,4 +71,3 @@ def test_example_does_not_launch_from_unresolved_reweighting(monkeypatch):
     assert report["signed_equilibrium_CV_mean_bohr"] is None
     assert report["real_time"]["available"] is False
     assert report["real_time"]["unavailable_reasons"] == ["average_sign_below_threshold"]
-    assert report["physical_converged"] is False

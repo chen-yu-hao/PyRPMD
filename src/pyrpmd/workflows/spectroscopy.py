@@ -262,7 +262,6 @@ def prepare_spectroscopy(config, system, *, potential=None):
         "replicas": options["replicas"],
         "saved_frames_per_replica": options["production_steps"] // options["sample_interval"] + 1,
         "sample_timestep_au": options["dt"] * options["sample_interval"],
-        "physical_converged": False,
     }
     if options["method"] == "pa-cmd":
         result["target_angular_frequency_au"] = options["target_frequency"]
@@ -494,8 +493,7 @@ def _analyze(config, system, output, options, streams, *, trace_metadata=None):
         files[name] = str(target)
         metadata[name] = scalars
     summary = {
-        "task": "spectroscopy", "status": "complete", "method": options["method"],
-        "physical_converged": False, "converged": False,
+        "task": "spectroscopy", "status": "complete", "method": options["method"], "converged": False,
         "replicas": len(streams), "saved_frames_per_replica": len(next(iter(streams[0].values()))),
         "sample_interval_au": dt, "beta_au": config["beta"], "beads": config["beads"],
         "equilibration_steps": options["equilibration_steps"],

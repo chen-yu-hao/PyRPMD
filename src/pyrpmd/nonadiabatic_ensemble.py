@@ -391,7 +391,7 @@ def run_nonadiabatic_ensemble(parents, dynamics_factory, *, steps, sample_stride
         "integrator": first.integrator_name, "seed": seed,
         "time_unit": "atomic_time", "energy_unit": "hartree",
         "density_basis": "fixed_diabatic", "statistics_axis": "trajectory",
-        "weighting": "unweighted", "physical_converged": False,
+        "weighting": "unweighted",
         "sample_stride": stride,
     }
     if rpsh:

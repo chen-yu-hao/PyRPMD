@@ -285,8 +285,7 @@ class FQCMDPotential(Potential):
                          "thread_safety": base_metadata.get("thread_safety", "context_serial"),
                          "quasicentroid_pmf_beta_au": model.beta,
                          "fqcmd_model_sha256": model.fingerprint,
-                         "approximation": "separable-intramolecular-IBI",
-                         "physical_converged": False}
+                         "approximation": "separable-intramolecular-IBI"}
         self._group_indices = [np.nonzero(model.groups == i) for i in range(len(model.edges))]
 
     @property
@@ -410,4 +409,4 @@ def update_fqcmd_model(model, target_counts, sampled_counts, *, damping=1.,
     return updated, {"iteration": len(history), "sampled_model_sha256": model.fingerprint,
                      "updated_model_sha256": updated.fingerprint,
                      "comparison": "pre-update classical vs target marginals", "groups": diagnostics,
-                     "converged": False, "physical_converged": False}
+                     "converged": False}

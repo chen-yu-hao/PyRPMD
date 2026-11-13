@@ -36,7 +36,6 @@ def test_public_run_reanalyze_prepare_and_resume(tmp_path, method):
     summary = run(config, output=output)
     assert summary["method"] == method
     assert summary["samples"] == 23
-    assert not summary["physical_converged"]
     assert (output/"fes.npz").is_file()
     assert analyze_run(output)["method"] == method
     assert resume_run(output)["method"] == method

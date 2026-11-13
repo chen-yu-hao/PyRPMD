@@ -256,7 +256,7 @@ def run_demo(directory, *, resume=False, max_steps=None):
         "learning": outcome,
         "true_error_vs_uncertainty": comparison,
         "uncertainty_is_calibrated_error": False,
-        "physical_converged": False,
+        
         "scope": "one-dimensional fixed-box classical Metropolis pilot; y=z=0",
         "diagnostic_labels_enter_training": False,
         "diagnostic_reference_frames": 2*(len(holdout)+(0 if sampler_state is None else len(sampler_state["walkers"]))),

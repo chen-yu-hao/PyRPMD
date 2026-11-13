@@ -58,7 +58,6 @@ def test_exact_discrete_crooks_work_distribution_and_unequal_sample_counts():
         assert result.delta_free_energy == pytest.approx(3.25, abs=1e-12)
         assert result.diagnostics["overlap"] > 0.8
         assert result.standard_error > 0
-        assert not result.physical_converged
         assert jarzynski(forward, 1.0, bootstrap=bootstrap).delta_free_energy == pytest.approx(3.25)
     # Independent equilibrium MBAR on the same two-state work differences.
     joined = np.concatenate((forward, -reverse))
@@ -81,7 +80,6 @@ def test_work_estimators_stable_offsets_and_diagnostic_semantics():
     assert np.isfinite(absent_overlap.delta_free_energy)
     assert not absent_overlap.diagnostics["overlap_resolved"]
     assert np.isnan(absent_overlap.standard_error)
-    assert absent_overlap.physical_converged is False
     impossible = crooks([-1000.0, -1000.0], [-1000.0, -1000.0], 1.0, bootstrap=5)
     assert not impossible.diagnostics["overlap_resolved"]
     assert not impossible.converged

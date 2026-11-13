@@ -37,7 +37,6 @@ def test_stochastic_ves_matches_quadrature_and_independent_umbrella_mbar(dimensi
     assert result["ves_quadrature_max_sem"] < band
     assert result["ves_mbar_max_combined_sem"] < band
     assert result["mbar_quadrature_max_sem"] < 5
-    assert not result["physical_converged"]
 
 
 @pytest.mark.parametrize("dimension", [1, 2])
@@ -77,4 +76,3 @@ def test_validation_report_contains_portable_grid_and_gauge_metadata(tmp_path):
     assert saved["reference_free_energy"][reference] == 0.0
     assert saved["ves_mean"][reference] == 0.0
     assert saved["ves_sem"][reference] == 0.0
-    assert not saved["physical_converged"]

@@ -347,7 +347,6 @@ def analyze_diffusion(
     output = {
         "schema": "pyrpmd.diffusion", "schema_version": 1,
         "estimator": "centroid_einstein", "status": "insufficient_data",
-        "physical_converged": False,
         "diffusion_au": None, "diffusion_m2_s": None,
         "diffusion_tensor_au": None, "diffusion_tensor_m2_s": None,
         "raw_fit": None, "per_replica_fits": [],

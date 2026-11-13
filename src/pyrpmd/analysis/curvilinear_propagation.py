@@ -29,4 +29,4 @@ def propagate_curvilinear(reference,initial,time,*,hbar,max_projection_loss=1e-8
     norms=np.einsum('ni,in->n',states.conj(),M@states.T).real
     return {'time':t.astype(float),'wavefunctions':states,'mass_norm':norms,
             'projection_loss':loss,'norm_drift':float(np.max(np.abs(norms-captured))),
-            'hbar':float(hbar),'physical_converged':False,'bath_coupling_implemented':False}
+            'hbar':float(hbar),'bath_coupling_implemented':False}

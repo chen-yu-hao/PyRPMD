@@ -392,7 +392,7 @@ def test_summary_is_conservative_and_trajectories_are_by_state(tmp_path):
     mkdirs(tmp_path)
     result = run_tempering(config(total=10), system(), tmp_path, return_data=True)
     summary = result["summary"]
-    assert summary["converged"] is summary["physical_converged"] is False
+    assert summary["converged"] is False
     assert summary["samples_per_state"] == 4
     assert summary["mbar"]["temperature_dependence"].startswith("Each target state")
     assert "state_space_diffusion" in summary

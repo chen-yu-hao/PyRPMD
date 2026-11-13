@@ -401,7 +401,7 @@ class InfiniteRETIS:
                 "standard_errors": errors,
                 "qualification": "Joint event blocks of fractional numerators and free-ensemble counts; check block-size and independent-chain convergence.",
             },
-            "converged": False, "physical_converged": False,
+            "converged": False,
             "qualification": "Canonical shooting with exact infinite swaps; deterministic ticket commits can wait for an earlier slow move. No high-acceptance subtrajectory moves.",
         }
 

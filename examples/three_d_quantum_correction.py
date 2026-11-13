@@ -152,7 +152,7 @@ def run_three_dimensional_test(nmax=7, beta=2.0):
         "intermediate_subspace_vs_full_quantum_relative_rms": intermediate_error,
         "full_subspace_max_abs_error": full_limit_error,
         "full_subspace_inverse_defect_rms": float(full_limit.diagnostics["inverse_defect_rms"]),
-        "physical_converged": bool(result.physical_converged),
+        
     }
 
 

@@ -37,8 +37,6 @@ def test_zero_defect_recovers_full_response_exactly():
     result = hybrid_quantum_correction(frequencies, full, full, full)
     np.testing.assert_allclose(result.inverse_defect, 0.0, atol=0.0)
     np.testing.assert_allclose(result.corrected_response, full, rtol=0, atol=1e-14)
-    assert result.physical_converged is False
-    assert result.diagnostics["physical_converged"] is False
 
 
 def test_full_subspace_limit_recovers_quantum_response():

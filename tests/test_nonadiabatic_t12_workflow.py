@@ -57,7 +57,7 @@ def test_public_workflow_preserves_physical_estimator_and_completed_analysis(tmp
     assert prepared["nonadiabatic_preparation"]["matrix_gradient_check"]["max_absolute_gradient_error"] < 1e-8
     result = run(source, output=tmp_path/"run")
     assert source == original
-    assert result["completed"] and result["physical_converged"] is False
+    assert result["completed"]
     saved = arrays(tmp_path/"run/results/nonadiabatic.npz")
     metadata = json.loads(str(saved["metadata"].item()))
     np.testing.assert_array_equal(saved["steps"], [0, 2, 4, 6, 7])

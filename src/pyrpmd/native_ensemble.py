@@ -1009,7 +1009,7 @@ def main(argv=None) -> int:
         engine.save(checkpoint)
         summary = {key: value for key, value in result.items() if key not in {"samples", "centroids", "velocities", "radii_gyration_squared"}}
         summary.update(frames=len(result["samples"]), fingerprint=engine.fingerprint,
-                       checkpoint=str(checkpoint), physical_converged=False,
+                       checkpoint=str(checkpoint),
                        units={"length": "bohr", "time": "atomic", "energy": "hartree", "pressure": "hartree/bohr^3"})
         (output/"summary.json").write_text(json.dumps(summary, indent=2, allow_nan=False)+"\n")
         print(json.dumps(summary, indent=2, allow_nan=False))

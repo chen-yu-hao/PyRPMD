@@ -61,7 +61,7 @@ def test_public_run_prepare_reanalyze_and_resume(tmp_path, target, dimension):
     assert summary["observations_per_replica"] == [23]
     assert summary["pending_observations_per_replica"] == [2]
     assert summary["target_updates_per_replica"] == ([3] if target == "well_tempered" else [0])
-    assert not summary["converged"] and not summary["physical_converged"]
+    assert not summary["converged"]
     result = FESResult.read(tmp_path)
     assert result.method == "ves" and result.free_energy.shape == (8,) * dimension
     assert result.uncertainty_kind == "replica_spread"

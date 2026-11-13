@@ -187,7 +187,6 @@ def tunnelling_splitting(potential, masses, initial_path, imaginary_time_au, *,
                                           refinement_gradient_evaluations=(int(refinement.nfev)
                                                                            if refinement is not None else 0)),
             "path_bohr": path.tolist(), "numerical_converged": True,
-            "physical_converged": False,
             "limitations": ["symmetry-equivalent bound/constrained wells; one tunnelling path",
                             "ground doublet, dilute-instanton semiclassical approximation",
                             "no free-rotor, asymmetric-well or multiwell symmetry pattern",

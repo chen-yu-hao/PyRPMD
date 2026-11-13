@@ -67,7 +67,6 @@ def test_real_two_bead_native_sampling_and_non_square_analysis(real_scan):
     assert summary["beads"] == 2 and summary["samples"] == 48
     assert summary["streams"] == 4 and summary["total_bins"] == 12
     assert summary["supported_bins"] > 0
-    assert not summary["physical_converged"]
     assert summary["common_wall_retained"]
     assert summary["ring_radius_median_bohr"] > 0
     arrays = _payload(output / "fes.npz")

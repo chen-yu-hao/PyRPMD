@@ -52,7 +52,6 @@ def test_isolated_limit_has_analytic_rabi_populations(zero):
     assert model.ado_count == 1
     assert result.max_trace_error < 4e-14
     assert result.max_hermiticity_error < 4e-14
-    assert result.physical_converged is False
 
 
 def test_dissipative_dephasing_matches_full_spectral_integral_and_converges_in_k():
@@ -270,7 +269,6 @@ def test_convergence_example_has_reproducible_experiment_identity_and_honest_dia
     namespace = runpy.run_path(str(Path(__file__).parents[1]
                                    /"examples/nonadiabatic/heom_spin_boson.py"))
     result = namespace["run"](duration=.2, points=3, depths=(1, 2), matsubara=(0, 1))
-    assert result["physical_converged"] is False
     assert len(result["experiment_identity"]) == 64
     assert result["experiment"]["observation_times"] == [0., .1, .2]
     assert len(result["hierarchy_scan"]) == 2

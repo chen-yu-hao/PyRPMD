@@ -238,7 +238,7 @@ def test_correct_rate_run_writes_provenance_and_refuses_mismatches(tmp_path):
     assert result["corrected_rate_cm3_s"] == pytest.approx(3.0e-12)
     expected_error = 3.0e-12 * np.hypot(0.05, 0.04)
     assert result["corrected_rate_standard_error_cm3_s"] == pytest.approx(expected_error)
-    assert result["physical_converged"] is False and result["source_files"]
+    assert result["source_files"]
     # Re-running overwrites its own output; the wrong temperature is refused.
     correct_rate_run(tmp_path, record)
     with pytest.raises(ValueError, match="beta"):

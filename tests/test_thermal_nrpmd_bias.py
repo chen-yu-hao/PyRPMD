@@ -253,5 +253,4 @@ def test_mbar_resampled_parents_cannot_claim_independent_block_uncertainty():
     assert summary["interval_shape_stable"] is True
     assert summary["standard_error"] is None
     assert summary["plateau_detected"] is False
-    assert summary["physical_converged"] is False
     assert summary["uncertainty_reason"] == "source_chain_bootstrap_required_after_reweighting"

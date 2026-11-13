@@ -40,7 +40,6 @@ def test_bead_scan_converges_to_sci_and_preserves_exact_quantum_error():
     # Finer beads remove primitive discretization error, not the SCI approximation.
     assert abs(report["rows"][-1]["relative_error_vs_exact_quantum"]) > 0.05
     assert report["reference"]["continuum_sci_over_exact"] == pytest.approx(0.93699117, abs=1e-8)
-    assert report["physical_converged"] is False
     json.dumps(report, allow_nan=False)
 
 
@@ -138,4 +137,3 @@ def test_optional_real_bkmp2_full_cartesian_rate_matches_published_instanton():
     assert modes["projected_negative_modes"] == 1
     assert scan["numerical_converged"]
     assert not scan["discretization_converged"]
-    assert not scan["physical_converged"]

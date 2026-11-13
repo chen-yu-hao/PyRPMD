@@ -146,7 +146,7 @@ def postprocess_rate_subspace(config, directory, *, strict=False):
     target = root / "subspace"
     status_path = target / "status.json"
     status = {"schema": "pyrpmd.rate_subspace", "schema_version": 1, "mode": options["mode"],
-              "directory": str(target), "physical_converged": False}
+              "directory": str(target)}
     try:
         if (root / "results" / "extensions.json").exists():
             raise InputError("Subspace postprocessing of rate-extension generations is not supported by this stage")
@@ -228,6 +228,6 @@ def run_subspace_stage(config, system, directory):
     with RunProgress(root, {"task": "subspace", "resume": True}) as progress:
         status = postprocess_rate_subspace(config, root, strict=True)
         result = {"task": "rate", "stage": "subspace", "output": str(root),
-                  "subspace_correction": status, "physical_converged": False}
+                  "subspace_correction": status}
         progress.result = result
         return result

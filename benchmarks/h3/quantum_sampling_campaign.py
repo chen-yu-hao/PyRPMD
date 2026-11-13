@@ -75,7 +75,7 @@ def one_seed(job):
             previous_prefixes_verified=True,protocol_sha256=file_hash(protocol_file),
             checkpoint_sha256=file_hash(checkpoint),state_sha256=file_hash(destination/'state.npz'),
             driver_sha256=file_hash(__file__),elapsed_seconds_this_call=time.perf_counter()-started,
-            physical_converged=False,literature_reproduced=False)
+            literature_reproduced=False)
     (destination/'stage.json').write_text(json.dumps(receipt,indent=2)+'\n')
     return receipt
 
@@ -112,7 +112,7 @@ def main():
     (a.output/f'stage-{a.production_stage}.json').write_text(json.dumps({
         'protocol_sha256':file_hash(a.protocol),'requested_seeds':seeds,
         'completed_seeds':sorted(x['seed'] for x in receipts),'production':a.production_stage,
-        'physical_converged':False},indent=2)+'\n')
+        },indent=2)+'\n')
 
 
 if __name__=='__main__':main()

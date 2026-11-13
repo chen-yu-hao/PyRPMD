@@ -232,7 +232,7 @@ def eckart_scan(bead_counts=(32, 64, 128), *, temperature_ratio=0.5,
     return {"temperature_kelvin": temperature, "temperature_over_crossover": temperature_ratio,
             "parameters": {"height_hartree": potential.height, "width_bohr": potential.width,
                            "mass_electron": mass}, "reference": reference, "rows": rows,
-            "physical_converged": False}
+            }
 
 
 def _legacy_optimizer(reference):
@@ -420,7 +420,7 @@ def h3_scan(library=None, *, temperatures=(250., 300.), bead_counts=(32, 64, 128
                         "bead_convergence": report["bead_convergence"],
                         "numerical_converged": report["numerical_converged"],
                         "discretization_converged": report["discretization_converged"],
-                        "physical_converged": False,
+                        
                         "elapsed_seconds": time.perf_counter()-started, **counted.counters()})
     return {"stationary_points": stationary, "literature": REFERENCES["h3_rates"],
             "symmetry_convention": REFERENCES["degeneracy"], "temperatures": reports,
@@ -488,7 +488,7 @@ def main(argv=None):
         if len(beads) < 3 or any(p < 8 or p % 2 for p in beads) or any(b <= a for a, b in zip(beads, beads[1:])):
             parser.error("bead scans require at least three strictly increasing even counts >= 8")
     report = {"schema": "pyrpmd.instanton.production-validation.v1", "hardware": hardware_metadata(),
-              "references": REFERENCES, "physical_converged": False}
+              "references": REFERENCES}
     report["eckart"] = eckart_scan(args.beads, gradient_tolerance=args.gradient_tolerance)
     report["optimizer"] = optimizer_benchmark(gradient_tolerance=args.gradient_tolerance,
                                                repeats=args.repeats, baseline_ref=args.baseline_ref)
