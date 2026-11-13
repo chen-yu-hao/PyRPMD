@@ -15,6 +15,7 @@
  "spacing_2d": null,
  "truncation_kt": 30.0,
  "truncation_min": 0.055,
+ "reference_density_tolerance": null,
  "subspace": {
   "1d": {
    "shape": [
@@ -24,24 +25,116 @@
    "retained_points": null,
    "bath_stable": true,
    "quantum": {
-    "rate": 5.644295052062162e-09,
+    "rate": 5.438228291545386e-09,
     "method": "sylvester",
-    "seconds": 0.07505345344543457,
+    "seconds": 0.0752871036529541,
     "retained": 215
    },
    "rpmd": {
-    "rate": 4.87429847009996e-09,
-    "log_standard_error": 0.007263751826558,
-    "transmission": 0.991297622771829,
-    "seconds": 36.65967273712158
+    "rate": 4.658285116115127e-09,
+    "log_standard_error": 0.008011504332422308,
+    "transmission": 0.9915488441926901,
+    "seconds": 42.056496143341064
    },
-   "C_S": 1.1579707493674287,
-   "log_standard_error": 0.007263751826558
+   "C_S": 1.1674313950282005,
+   "log_standard_error": 0.008011504332422308,
+   "error_vs_full": -0.059921407684812134
+  },
+  "1d_sct": {
+   "shape": [
+    215
+   ],
+   "captured_curvature": null,
+   "retained_points": null,
+   "bath_stable": true,
+   "quantum": {
+    "rate": 1.7063723243929016e-08,
+    "method": "sylvester",
+    "seconds": 0.08825039863586426,
+    "retained": 215
+   },
+   "rpmd": {
+    "rate": 1.3199917919263696e-08,
+    "log_standard_error": 0.01213083938866724,
+    "transmission": 0.9872772865704786,
+    "seconds": 41.83047580718994
+   },
+   "C_S": 1.292714344763202,
+   "log_standard_error": 0.01213083938866724,
+   "error_vs_full": 0.040963166372004034
+  },
+  "rph": {
+   "shape": [
+    234,
+    43
+   ],
+   "captured_curvature": 1.0000000000000002,
+   "retained_points": 7184,
+   "bath_stable": true,
+   "quantum": {
+    "rate": 6.716466023067724e-09,
+    "method": "sylvester",
+    "seconds": 990.5775146484375,
+    "retained": 7184
+   },
+   "rpmd": {
+    "rate": 5.512605927485941e-09,
+    "log_standard_error": 0.007551658141563952,
+    "transmission": 0.978183403813641,
+    "seconds": 109.43850994110107
+   },
+   "C_S": 1.2183831225046067,
+   "log_standard_error": 0.007551658141563952,
+   "error_vs_full": -0.018892334416750756
+  },
+  "plane": {
+   "shape": [
+    293,
+    20
+   ],
+   "captured_curvature": null,
+   "retained_points": 4644,
+   "bath_stable": null,
+   "quantum": {
+    "rate": 6.726498799690292e-09,
+    "method": "sylvester",
+    "seconds": 129.70581722259521,
+    "retained": 4644
+   },
+   "rpmd": {
+    "rate": 5.452838953991344e-09,
+    "log_standard_error": 0.00857764992849248,
+    "transmission": 0.9765277408921643,
+    "seconds": 95.79631090164185
+   },
+   "C_S": 1.2335773816988782,
+   "log_standard_error": 0.00857764992849248,
+   "error_vs_full": -0.006657099134014688
   }
+ },
+ "full": {
+  "shape": [
+   190,
+   43
+  ],
+  "quantum": {
+   "rate": 6.611546825943241e-09,
+   "method": "sylvester",
+   "seconds": 898.0426304340363,
+   "retained": 6918
+  },
+  "rpmd": {
+   "rate": 5.32397334835126e-09,
+   "log_standard_error": 0.010246914099898344,
+   "transmission": 0.9751962529608927,
+   "seconds": 331.3264846801758
+  },
+  "C": 1.2418444634007644,
+  "log_standard_error": 0.010246914099898344
  },
  "path": {
   "points": 97,
-  "seconds": 0.06220436096191406,
+  "seconds": 0.06700468063354492,
   "saddle_iterations": 12,
   "saddle_negative_modes": 1,
   "imaginary_frequency_cm": 1501.982921339612,

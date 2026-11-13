@@ -86,7 +86,7 @@ def embedding_table(base, embedded):
     return "\n".join(lines)
 
 
-def convergence_table(base, tolerance, plane_fine):
+def convergence_table(tolerance, plane_fine):
     """Reference tolerance (RPH) and grid (plane) checks against the exact correction."""
     lines = ["| check | model | T (K) | `C_S` | exact `C` | error |", "|---|---|---|---|---|---|"]
     for name, report, key in (("RPH, `reference_density_tolerance` 1e-3", tolerance[0], "rph"),

@@ -70,14 +70,16 @@ rate of the whole system normalized on the same slice:
 ## Findings
 
 1. **Both 2D models are within a few percent of the exact correction; the 1D
-   models are not.** At 300 K the plane model (with its absorber fixed,
-   finding 5e) is within 1% and the RPH model within 2%, on the planar and the
-   weakly non-planar path alike. The RPH residual comes mostly from the
-   reference-slice tolerance: tightening `reference_density_tolerance` from
-   1e-2 to 1e-3 moves it towards the exact value (see Convergence checks). On
-   `curved_2d` the RPH model is the system itself, and its quantum rate
-   equals the exact rate on the same slice to 0.4%.
-2. **1D underestimates the correction** (-4% at 300 K, -14% at 200 K): it
+   models are not.** The plane model (with its absorber fixed, finding 5e) is
+   within 1% at 300 K and 2% at 200 K, the RPH model within 1–2% at 300 K and
+   3.3% at 200 K. Combining the statistical errors of the subspace and the exact
+   RPMD rates (about 1.3% at 300 K, 2% at 200 K), every 2D result lies within
+   1.7 standard errors of the exact value. The RPH residual comes mostly from
+   the reference-slice tolerance: tightening `reference_density_tolerance`
+   from 1e-2 to 1e-3 moves the 300 K value from -1.9% to -1.3% (Convergence
+   checks). On `curved_2d` the RPH model is the system itself, and its quantum
+   rate equals the exact rate on the same slice to 0.4%.
+2. **1D underestimates the correction** (-4 to -6% at 300 K, -14% at 200 K): it
    cannot cut the corner. **1D + SCT overestimates at 300 K (+4 to +5%) and
    underestimates at 200 K (-5%)**; the SCT effective mass is a one-dimensional
    approximation of exactly what the 2D models treat.
@@ -89,9 +91,9 @@ rate of the whole system normalized on the same slice:
    two directions at once) would distinguish them; no exact reference for
    one is included here.
 4. **Embedding invariance holds** for 1D, plane and RPH within statistical
-   error. 1D + SCT differs by 2.2 standard errors (1.255 vs 1.284), which may
-   be noise or the SCT effective mass's sensitivity to the path sampling; it
-   is not resolved here.
+   error (RPH: identical to three digits). 1D + SCT differs by 1.8 standard
+   errors (1.255 vs 1.284), which may be noise or the SCT effective mass's
+   sensitivity to the path sampling; it is not resolved here.
 5. **Defects found and fixed during this validation** (each has a unit test):
    a. the RPH model walled off the grid beyond its box: the quantum rate
       absorbed first and never saw it, but ring polymers bounced back
