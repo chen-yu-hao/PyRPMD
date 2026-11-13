@@ -119,15 +119,24 @@ def validity_gates(construction: Mapping[str, Any], rpmd_diagnostics: Mapping[st
     if exits is not None:
         limit = policy["max_outside_fraction"]
         worst = float(exits["estimator_outside_fraction"])
+        # Which estimator saw the continuation decides the remedy: TI and
+        # dividing-surface samples need a wider box across the channel, recrossing
+        # trajectories that return or leave uphill need a box (or absorber) further along it.
+        parts = {"ti": exits.get("ti_sample_outside_fraction"),
+                 "surface": exits.get("surface_sample_outside_fraction"),
+                 "recrossing": exits.get("recrossing_contaminated_flux_fraction")}
+        known = {k: float(v) for k, v in parts.items() if v is not None}
+        dominant = max(known, key=known.get) if known else None
+        components = ", ".join(f"{k} {v:.3g}" for k, v in known.items())
         gates.append(_gate("grid", worst <= limit, policy["outside_grid"],
                            f"{worst:.3g} of the ring-polymer estimator sampled V_S outside its grid "
-                           f"(limit {limit:.3g})",
+                           f"(limit {limit:.3g}; {components or 'no components'}; dominant: {dominant})",
                            {k: exits.get(k) for k in (
                                "ti_sample_outside_fraction", "surface_sample_outside_fraction",
                                "recrossing_exited_fraction", "recrossing_returned_fraction",
                                "recrossing_uphill_exit_fraction", "recrossing_contaminated_flux_fraction",
                                "recrossing_max_edge_slope", "estimator_outside_fraction")}
-                           | {"max_outside_fraction": limit}))
+                           | {"max_outside_fraction": limit, "dominant_component": dominant}))
     failures = [g["reason"] for g in gates if not g["passed"] and not g["overridden"]]
     return {"valid": not failures, "failures": failures,
             "overrides": [g["gate"] for g in gates if g["overridden"]],

@@ -35,6 +35,7 @@ include_patterns = [
     "general-coordinate-rates.md", "rate-studies.md", "instanton.md", "low-temperature.md", "vtst.md",
     "tunnelling-phase-projection.md",
     "rate-input-v2.md",
+    "automatic-rate.md",
     "rpmdrate-import.md",
     "rate_precision.md",
     "quantum-statistics.md", "quantum-correction.md", "subspace-correction.md", "subspace-transfer-theory.md", "performance-dynamics.md", "batched-dynamics.md",

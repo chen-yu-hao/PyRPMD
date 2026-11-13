@@ -42,7 +42,7 @@ from .subspace_correction import (CORRECTED_SCHEMA, SubspaceCorrection, correct_
                                   validity_policy)
 from .subspace_model import (_vibrational_complement, assemble_reaction_path, path_curvature,
                              project_linear_subspace, project_path_subspace, relaxed_path)
-from .subspace_quantum import _json_safe, sinc_dvr_kinetic
+from .subspace_quantum import _json_safe, quantum_solver_plan, sinc_dvr_kinetic
 
 
 def crossover_temperature(*args, **kwargs):
@@ -264,10 +264,11 @@ def _bead_weighted_core(mean, mask, masses):
             # A locally straight section has no curvature sign.  Keep the
             # orientation deterministic and continuous with the previous
             # selected mode when possible.
-            if k and np.dot(vector, shifts[k - 1]) < 0:
-                sign = -1.0
+            if k and np.dot(vector, shifts[k - 1]) != 0:
+                sign = -1.0 if np.dot(vector, shifts[k - 1]) < 0 else 1.0
             else:
-                sign = 1.0
+                dominant = int(np.argmax(np.abs(vector)))
+                sign = -1.0 if vector[dominant] < 0 else 1.0
         shifts[k] = sign * np.sqrt(eigenvalue) * vector
         eigenvalues.append(eigenvalue)
     shifted = (core.reshape(len(core), -1) * sqrt_m[None, :] + shifts) / sqrt_m[None, :]
@@ -639,6 +640,46 @@ def _in_plane_threshold(model, center, direction, *, window=0.05):
     return float(levels[0])
 
 
+def _product_absorber_start(energies, k_ts, beta, drop_kt, reference_kt):
+    """Path index where the 2D product absorber starts, and the criterion that placed it.
+
+    Products are absorbed once the path has dropped ``drop_kt`` kT below its
+    maximum beyond the dividing surface (``product_drop``).  A channel cannot
+    drop further than to its own asymptote: once ``drop_kt`` kT exceeds that
+    drop (a thermoneutral or endothermic reaction at high temperature; H + H2
+    on BKMP2 above about 320 K with 15 kT), the absorber starts where the
+    product channel has settled within ``reference_kt`` kT of its asymptote
+    (``product_asymptote``), the same criterion as the reactant reference
+    slice.  The former fallback, the last path point, is kept only when
+    neither criterion is met (``path_end``): the path length is set by the
+    asymptote tolerance of the continuation, not by the physics, and the box
+    (and the dense grid) jumped there discontinuously in temperature.  The
+    earlier of the two points is used, so the threshold
+    ``max(top - drop, end + tolerance)`` is continuous in temperature.
+    """
+    energies = np.asarray(energies, dtype=float)
+    n = len(energies)
+    k_ts = int(k_ts)
+    top_index = k_ts + int(np.argmax(energies[k_ts:])) if k_ts < n else int(np.argmax(energies))
+    top, end = float(energies[top_index]), float(energies[-1])
+    drop, tolerance = float(drop_kt) / beta, float(reference_kt) / beta
+    index = np.arange(n)
+    found = {}
+    dropped = np.flatnonzero((index > k_ts) & (energies < top - drop))
+    if len(dropped):
+        found["product_drop"] = int(dropped[0])
+    # First point after which the channel stays within the tolerance of its asymptote.
+    unsettled = np.flatnonzero(np.abs(energies - end) > tolerance)
+    settled = int(unsettled[-1]) + 1 if len(unsettled) else 0
+    if top_index < settled < n:
+        found["product_asymptote"] = settled
+    criterion = min(found, key=found.get) if found else "path_end"
+    k_p = found.get(criterion, n - 1)
+    return k_p, {"criterion": criterion, "index": int(k_p), "path_points": int(n),
+                 "top_energy": top, "end_energy": end, "drop": drop, "available_drop": top - end,
+                 "asymptote_tolerance": tolerance, "energy_above_end": float(energies[k_p] - end)}
+
+
 def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
     """2D plane through the TS: rate dividing-surface normal x curvature normal."""
     path_info, validity = options.get("path_info"), dict(options.get("validity") or {})
@@ -679,7 +720,9 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
     # reactant channel is (nearly) free, not at the asymptote: the first
     # point, going out from the TS, within `reference_kt` of the asymptote.
     # Absorbers are two de Broglie wavelengths long; products are absorbed
-    # once the path has dropped `product_drop_kt` below its maximum.
+    # once the path has dropped `product_drop_kt` below its maximum or, if the
+    # channel cannot drop that far, once it is within `reference_kt` of its
+    # asymptote (`_product_absorber_start`).
     tolerance = float(options.get("reference_kt", 0.3)) / beta
     reactant_side = np.flatnonzero(np.abs(energies[:k_ts] - energies[0]) <= tolerance)
     k_ref = int(reactant_side[-1]) if len(reactant_side) else 0
@@ -687,10 +730,10 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
     thermal_wavelength = 2.0 * np.pi / np.sqrt(2.0 / beta)
     absorb_lo = reference_arc - 0.25 * thermal_wavelength
     box_lo = absorb_lo - 2.0 * thermal_wavelength
-    drop = float(options.get("product_drop_kt", 15.0)) / beta
-    top = float(energies[k_ts:].max()) if k_ts < len(energies) else float(energies.max())
-    product_side = np.flatnonzero((np.arange(len(arc)) > k_ts) & (energies < top - drop))
-    k_p = int(product_side[0]) if len(product_side) else len(arc) - 1
+    k_p, product_absorber = _product_absorber_start(energies, k_ts, beta, float(options.get("product_drop_kt", 15.0)),
+                                                    float(options.get("reference_kt", 0.3)))
+    top = product_absorber["top_energy"]
+    product_absorber["arc"] = float(arc[k_p])
     product_wavelength = 2.0 * np.pi / np.sqrt(2.0 * max(top - energies[-1], 1.0 / beta))
     absorb_hi = float(arc[k_p])
     box_hi = absorb_hi + 2.0 * product_wavelength
@@ -778,7 +821,8 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
             "path_off_plane_max": float(residual.max()), "path_off_plane_rms": float(np.sqrt(np.mean(residual**2))),
             "absorber_arc": [float(absorb_lo), float(absorb_hi)], "box_arc": [float(box_lo), float(box_hi)],
             "reference_arc": reference_arc, "reactant_reference": float(reference_point[0]),
-            "channel_thresholds": thresholds, "energy_floor": floor, "truncation_energy": truncation}
+            "channel_thresholds": thresholds, "energy_floor": floor, "truncation_energy": truncation,
+            "product_absorber": product_absorber}
     return model, quantum, info, rpmd_model
 
 
@@ -874,16 +918,31 @@ def _build_cases(run, out_dir, options, base, reuse_key):
     diagnose = validity.get("on_invalid", "stop") == "diagnose"
     if validity.get("on_invalid", "stop") not in ("stop", "diagnose"):
         raise ValueError("validity.on_invalid must be 'stop' or 'diagnose'")
-    rejected, escalation = {}, None
+    rejected, escalation, capacity = {}, None, {}
     gating = {"path_info": path_info, "validity": validity,
               "hessian_displacement": options["subspace"].get("hessian_displacement", 5e-3)}
+    budget = None
+    if options.get("execution") is not None:
+        from .subspace_execution import _options as execution_options
+
+        budget = execution_options(options["execution"])["memory_limit_mb"]
 
     def admit(dimension, case, info):
-        """Gate a model on what is known before any rate is solved (path, bath)."""
+        """Gate a model on what is known before any rate is solved (path, bath, solver capacity).
+
+        A model whose solves cannot run (route or memory) is refused here,
+        with its plan, also under ``on_invalid = "diagnose"``: solving it
+        would only fail later.
+        """
         gates = validity_gates(case["model"].provenance)
+        plan = _solver_plan(dimension, case, budget)
+        info["solver_plan"] = plan
+        if not plan["feasible"]:
+            capacity[dimension] = plan
+            gates = _with_solver_gate(gates, plan)
         info["validity"] = gates
         models[dimension] = info
-        if gates["valid"] or diagnose:
+        if plan["feasible"] and (gates["valid"] or diagnose):
             cases[dimension] = case
         else:
             rejected[dimension] = gates
@@ -954,7 +1013,61 @@ def _build_cases(run, out_dir, options, base, reuse_key):
     return dict(out_dir=out_dir, nbeads=nbeads, options=options, cases=cases, execution=execution,
                 corrections=corrections, models=models, path_info=path_info, sampled_cw=sampled_cw,
                 static_cw=static_cw, verdict=verdict, reuse_key=reuse_key, rejected=rejected,
-                escalation=escalation)
+                escalation=escalation, capacity=capacity)
+
+
+def _solver_plan(dimension, case, memory_limit_mb=None):
+    """What the solves of one model will need, decided before any of them starts.
+
+    The quantum route and size come from :func:`quantum_solver_plan`.  With an
+    execution table, ``memory_limit_mb`` is its whole budget and both task
+    estimates are checked against it (the scheduler would refuse them).
+    ``recommendations`` name the input keys that change the plan.
+    """
+    from .subspace_execution import _memory_mb
+
+    quantum = dict(case.get("quantum_options") or {})
+    limits = [float(v) for v in (quantum.pop("memory_limit_mb", None), memory_limit_mb) if v is not None]
+    plan = quantum_solver_plan(case["model"], **quantum, memory_limit_mb=min(limits) if limits else None)
+    if memory_limit_mb is not None:
+        rpmd_model = case.get("rpmd_model") if case.get("rpmd_model") is not None else case["model"]
+        rpmd_mb = float(_memory_mb("rpmd", rpmd_model, case["beta"], case["nbeads"],
+                                   dict(case.get("rpmd_options") or {})))
+        plan["rpmd_estimated_memory_mb"] = rpmd_mb
+        if plan["feasible"] and rpmd_mb > float(memory_limit_mb):
+            plan.update(feasible=False, status="memory_limit_exceeded",
+                        reason=(f"the RPMD task needs about {rpmd_mb:.1f} MiB; the execution budget is "
+                                f"{float(memory_limit_mb):.1f} MiB"))
+    shrink = ("quantum.padding, quantum.spacing_2d, quantum.product_drop_kt or quantum.truncation_min"
+              if dimension == 2 else "quantum.spacing_1d")
+    recommendations = []
+    if plan["status"] in ("dense_limit_exceeded", "dense_route_required"):
+        recommendations.append(f"set quantum.dense_limit = {plan['required_dense_limit']} if about "
+                               f"{plan['dense_memory_mb'] / 1024:.1f} GiB is available for one dense solve")
+    if plan["status"] == "memory_limit_exceeded":
+        recommendations.append("raise execution.memory_limit_mb, or run the subspace stage without an "
+                               "execution table on a node with enough memory")
+    if not plan["feasible"]:
+        recommendations.append(f"or shrink the {dimension}D grid with {shrink}, then check that C_S is "
+                               "converged with respect to it (truncation_margin, box and spacing)")
+    plan["recommendations"] = recommendations
+    return plan
+
+
+def _with_solver_gate(gates, plan):
+    """Add the refused solver plan to a validity record as a gate that cannot be overridden."""
+    reason = f"solver capacity: {plan['reason']}"
+    gate = {"gate": "solver", "passed": False, "policy": "reject", "overridden": False,
+            "reason": reason, "detail": plan}
+    return dict(gates, valid=False, failures=list(gates.get("failures", [])) + [reason],
+                gates=list(gates.get("gates", [])) + [gate])
+
+
+def _failure_record(error):
+    record = {"type": type(error).__name__, "message": str(error)}
+    if isinstance(getattr(error, "diagnostic", None), dict):
+        record["diagnostic"] = error.diagnostic
+    return record
 
 
 def _close_run(run):
@@ -971,6 +1084,7 @@ def _finish_pipeline(state, computed, apply):
     path_info, sampled_cw, static_cw = state["path_info"], state["sampled_cw"], state["static_cw"]
     verdict, reuse_key = state["verdict"], state["reuse_key"]
     rejected, escalation = state.get("rejected", {}), state.get("escalation")
+    capacity, solve_failures = state.get("capacity", {}), state.get("solve_failures", {})
     for dimension, correction in computed.items():
         correction.write(out_dir / f"C_S_{dimension}d.json")
         corrections[dimension] = correction
@@ -980,9 +1094,14 @@ def _finish_pipeline(state, computed, apply):
     sensitivity = nested_subspace_sensitivity(list(usable.values())) if len(usable) > 1 else None
     if not usable:
         chosen, reason = None, "no subspace model passed the validity gates"
+        if capacity:
+            reason = "no subspace model passed; the solver plan refused " + ", ".join(f"{d}D" for d in sorted(capacity))
+        elif solve_failures:
+            reason = "no subspace model passed; solving failed for " + ", ".join(f"{d}D" for d in sorted(solve_failures))
     elif sensitivity is None:
         chosen = max(usable)
-        reason = "only dimension computed" if len(corrections) + len(rejected) == 1 else "only valid dimension"
+        attempted = len(corrections) + len(rejected) + len(solve_failures)
+        reason = "only dimension computed" if attempted == 1 else "only valid dimension"
     elif sensitivity["recommended_dimension"] in usable:
         chosen, reason = sensitivity["recommended_dimension"], "nested sensitivity"
     else:
@@ -1001,18 +1120,40 @@ def _finish_pipeline(state, computed, apply):
             target.unlink()
     dimension_validity = {str(d): c.validity for d, c in corrections.items()}
     dimension_validity.update({str(d): gates for d, gates in rejected.items()})
+    for d, failure in solve_failures.items():
+        dimension_validity[str(d)] = {"valid": False, "failures": [f"solve failed: {failure['type']}: {failure['message']}"],
+                                      "overrides": [], "gates": [], "solve_failure": failure}
+    if chosen is not None:
+        status = "complete"
+    elif capacity:
+        status = "solver_capacity_exceeded"
+    elif solve_failures:
+        status = "failed"
+    else:
+        status = "invalid_model"
+    warnings = []
+    attempted = set(corrections) | set(rejected) | set(solve_failures)
+    if chosen is not None and verdict > chosen and verdict in attempted:
+        warnings.append(f"curvature x width recommends a {verdict}D subspace, but only {chosen}D passed; "
+                        f"the applied factor is the {chosen}D one")
     failures = {d: v.get("failures", []) for d, v in dimension_validity.items() if v.get("failures")}
     report = {
         "schema": "pyrpmd.subspace_pipeline", "schema_version": 1,
-        "status": "complete" if chosen is not None else "invalid_model",
+        "status": status,
         "rate_run": str(run.root), "beta": run.beta, "nbeads": nbeads, "xi_star": run.xi_star,
         "path": path_info, "curvature_width_sampled": sampled_cw, "curvature_width_path": static_cw,
         "recommended_dimension_from_curvature_width": verdict, "dimensions_computed": sorted(corrections),
         "dimension_escalation": escalation,
         "validity": {"valid": chosen is not None, "valid_dimensions": sorted(usable),
                      "rejected_before_solving": sorted(rejected), "failures": failures,
+                     "refused_by_solver_plan": sorted(capacity), "failed_to_solve": sorted(solve_failures),
                      "dimensions": dimension_validity, "policy": options.get("validity")},
         "models": models,
+        # Route, retained points and memory of each model's solves, decided before solving.
+        "solver_plans": {str(d): info["solver_plan"] for d, info in models.items()
+                         if isinstance(info, dict) and "solver_plan" in info},
+        "solve_failures": {str(d): failure for d, failure in solve_failures.items()},
+        "warnings": warnings,
         # Keep the saved quantum/RPMD curves when reusing a scalar correction
         # object (SubspaceCorrection.read deliberately loads only its summary).
         "corrections": {str(d): json.loads((out_dir / f"C_S_{d}d.json").read_text()) for d in corrections},
@@ -1063,7 +1204,15 @@ def run_subspace_pipeline(specification, *, apply=True, reuse_key=None) -> dict:
             def compute():
                 if execution is not None:
                     return subspace_corrections(state["cases"], execution=execution)
-                return {key: subspace_correction(**case) for key, case in state["cases"].items()}
+                computed, failed = {}, {}
+                for key, case in state["cases"].items():
+                    try:
+                        computed[key] = subspace_correction(**case)
+                    except Exception as error:
+                        # One dimension's failure is recorded; it does not discard the others.
+                        failed[key] = _failure_record(error)
+                state["solve_failures"] = failed
+                return computed
 
             computed = call(compute)
         return call(_finish_pipeline, state, computed, apply)

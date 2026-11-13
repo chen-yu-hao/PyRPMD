@@ -622,11 +622,20 @@ def main(argv=None):
                     "status": report["status"],
                     "dimensions_computed": report["dimensions_computed"],
                     "validity_failures": report["validity"]["failures"],
+                    "solver_plans": {d: {k: p.get(k) for k in ("feasible", "status", "route", "retained_points",
+                                                                 "dense_limit", "dense_memory_mb")}
+                                     for d, p in report.get("solver_plans", {}).items()},
                     "report": "subspace_pipeline.json in the output directory",
                 })
                 if report["status"] == "invalid_model":
                     raise SystemExit("subspace-correct: no subspace model passed the validity gates; "
                                      "no correction factor was applied")
+                if report["status"] == "solver_capacity_exceeded":
+                    raise SystemExit("subspace-correct: the solver plan refused a model before solving "
+                                     "(see solver_plans in subspace_pipeline.json); no correction factor was applied")
+                if report["status"] == "failed":
+                    raise SystemExit("subspace-correct: every subspace solve failed (see solve_failures in "
+                                     "subspace_pipeline.json); no correction factor was applied")
             elif report is not None:
                 corrected = report["corrected_rate"]
                 unit = "s_inv" if corrected.get("task") == "surface_rate" else "cm3_s"

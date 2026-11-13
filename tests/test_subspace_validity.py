@@ -286,7 +286,8 @@ def test_a_ratio_that_cannot_be_formed_keeps_its_components():
 
 # --- pipeline ---------------------------------------------------------------
 
-def pipeline_spec(monkeypatch, directory, *, termination, model=None, plane=None, dimension=1, **spec):
+def pipeline_spec(monkeypatch, directory, *, termination, model=None, plane=None, dimension=1,
+                  plane_quantum=None, **spec):
     """A pipeline whose path and models are supplied; the gates are real."""
     from pyrpmd.analysis import subspace_pipeline as pipeline
 
@@ -301,7 +302,7 @@ def pipeline_spec(monkeypatch, directory, *, termination, model=None, plane=None
 
     def plane_model(run, path, direction, options):
         built[2] = plane
-        return plane, {}, {"dimension": 2}, None
+        return plane, dict(plane_quantum or {}), {"dimension": 2}, None
 
     run = SimpleNamespace(root=directory, beta=8.0, nbeads=4, xi_star=1.0, provider=SimpleNamespace())
     mean = SimpleNamespace(curvature_width=lambda *args, **kwargs: {"maximum": 0.0})

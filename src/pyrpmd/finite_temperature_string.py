@@ -423,7 +423,7 @@ def finite_temperature_string(images, sampler, *, step=0.01, tolerance=1e-3,
     free_energy, free_energy_error = _path_integral(path, statistics)
     return FiniteTemperatureStringResult(
         path.copy(), statistics, free_energy, free_energy_error, residual, error,
-        bool(residual + confidence_z * error <= tolerance), False, iteration, tuple(history),
+        bool(residual + confidence_z * error <= tolerance), iteration, tuple(history),
         {"measure": "finite-restraint smoothed centroid free energy",
          "metric": "mean mass-inverse centroid Jacobian product",
          "uncertainty": "contiguous-block errors; no finite-restraint or discretization error",

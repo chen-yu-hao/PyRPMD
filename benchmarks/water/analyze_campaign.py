@@ -286,5 +286,8 @@ def main():
     if args.output is None:
         parser.error("--output is required when analyzing raw checkpoints")
     report = analyze(args.run, args.output, make_plot=not args.no_plot)
-ain__":
+    print(json.dumps({key: report[key] for key in ("committed_steps", "complete", "segments")}, indent=2))
+
+
+if __name__ == "__main__":
     main()

@@ -7,6 +7,7 @@ task is rerun with its original seed. There are no collectives in trajectory loo
 
 from __future__ import annotations
 
+from contextlib import contextmanager
 from concurrent.futures import FIRST_COMPLETED, ProcessPoolExecutor, ThreadPoolExecutor, wait
 from dataclasses import asdict
 from functools import lru_cache
@@ -22,7 +23,7 @@ import time
 import numpy as np
 from threadpoolctl import threadpool_info, threadpool_limits
 
-from .subspace_quantum import QuantumRateResult, _dense_memory_mb, _json_safe, _truncation_threshold, exact_quantum_rate
+from .subspace_quantum import QuantumRateResult, _json_safe, exact_quantum_rate, quantum_solver_plan
 from .subspace_rpmd import RingPolymerRateResult, _thermal_frequency, ring_polymer_rate
 
 
@@ -55,14 +56,8 @@ def _options(execution):
 def _memory_mb(kind, model, beta, beads, options):
     size = int(np.prod(model.shape))
     if kind == "quantum":
-        threshold = options.get("truncation_energy")
-        n = size if threshold is None else int(np.count_nonzero(model.values <= _truncation_threshold(model, threshold)))
-        method = options.get("method", "auto")
-        dense = method == "sylvester" or (method == "auto" and n <= options.get("dense_limit", 1600))
-        if dense:
-            return _dense_memory_mb(model, n, options.get("normalization", "default"))
-        states = min(size, options.get("max_flux_states", 256))
-        return 64 + (256 * size * states + 64 * sum(n**2 for n in model.shape)) / 2**20
+        # The solver's own plan: the scheduler budgets the route the solve will take.
+        return quantum_solver_plan(model, **options)["estimated_memory_mb"]
     windows = options.get("windows", 48)
     nw = int(windows) if np.ndim(windows) == 0 else len(windows)
     walkers, trajectories = options.get("walkers", 32), options.get("trajectories", 512)
@@ -210,6 +205,24 @@ def _run_task(task, threads, memory_mb):
     return result
 
 
+@contextmanager
+def _passive_openmp():
+    """Spawned workers inherit OMP_WAIT_POLICY=PASSIVE unless the user set it.
+
+    Idle OpenMP dynamics threads then sleep during Python sampling/analysis.
+    Workers start lazily, so the variable is set for the pool's lifetime and
+    the parent's environment is restored afterwards.
+    """
+    if "OMP_WAIT_POLICY" in os.environ:
+        yield
+        return
+    os.environ["OMP_WAIT_POLICY"] = "PASSIVE"
+    try:
+        yield
+    finally:
+        os.environ.pop("OMP_WAIT_POLICY", None)
+
+
 def _local(tasks, options, checkpoints, results):
     cpus, memory = options["cpus"], options["memory_limit_mb"]
     available = len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else os.cpu_count() or 1
@@ -232,7 +245,7 @@ def _local(tasks, options, checkpoints, results):
     except (TypeError, pickle.PicklingError, AttributeError) as error:
         raise ValueError("process tasks need pickleable models; use gridded models or serial execution") from error
     pending, active = list(tasks), {}
-    with ProcessPoolExecutor(workers, mp_context=multiprocessing.get_context("spawn")) as pool:
+    with _passive_openmp(), ProcessPoolExecutor(workers, mp_context=multiprocessing.get_context("spawn")) as pool:
         while pending or active:
             reserved = sum(t["memory_mb"] for t in active.values())
             while len(active) < workers:

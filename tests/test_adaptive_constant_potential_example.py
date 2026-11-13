@@ -63,6 +63,7 @@ def test_example_does_not_launch_from_unresolved_reweighting(monkeypatch):
     result = SimpleNamespace(
         centers=np.array([[-1.0, 0.0], [1.0, 0.0]]), history=[],
         reweighted=unavailable,
+        summary=lambda: {},
     )
     monkeypatch.setattr(adaptive, "run_adaptive_nrpmd_path", lambda *args, **kwargs: result)
     run = runpy.run_path(str(EXAMPLE))["run"]

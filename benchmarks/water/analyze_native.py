@@ -348,5 +348,8 @@ def main():
     parser.add_argument("--output",type=Path,required=True)
     args=parser.parse_args()
     result=analyze(args.runs,args.protocol,args.output)
-n__":
+    print(json.dumps({key:result[key] for key in ("all_predeclared_chains_complete","literature_comparison")},indent=2))
+
+
+if __name__=="__main__":
     main()
