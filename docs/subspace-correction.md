@@ -50,7 +50,7 @@ seed = 17
 
 # Validity gates (defaults shown). "allow" is an explicit, recorded override.
 [rate.subspace_correction.validity]
-unconverged_path = "reject"   # both path continuations must reach their asymptote
+unconverged_path = "reject"   # both path continuations must end at an accepted terminus
 unstable_bath = "reject"      # the transverse Hessian of the path model must be stable
 outside_grid = "reject"       # the RPMD estimator must stay on the V_S grid
 max_outside_fraction = 0.01
@@ -172,7 +172,7 @@ model that fails one is recorded but never applied.
 
 | Gate | Passes when | Evidence in `subspace_pipeline.json` |
 | --- | --- | --- |
-| `path` | both continuations ended with `asymptote_converged` | `path.reactant_termination`, `path.product_termination` (status, steps, arc length, trailing energy range) |
+| `path` | both continuations ended at an accepted terminus — `asymptote_converged`, the reactant reference `xi <= reactant_xi` after climbing out of a complex, or a product well `product_drop_kt` below the barrier — and the 1D reactant reference slice lies in the free reactant channel | `path.reactant_termination`, `path.product_termination` (status, `accepted`, `reason`, steps, arc length, trailing energy range, end energy, drop below the barrier top, `minima`, `exit_coordinate`); `reactant_reference` |
 | `bath` | no normal-plane curvature below `-soft_mode_frequency**2` along the 1D path model | `models.1.model_construction.significant_unstable` (arc length, imaginary frequency, character) |
 | `grid` | at most `max_outside_fraction` of the ring-polymer estimator saw `V_S` outside its grid | `corrections.D.rpmd.diagnostics.grid_exit` |
 | `solver` | the planned quantum route accepts the model's options and size, and the tasks fit the execution memory budget | `solver_plans.D` (also `models.D.solver_plan`) |
@@ -189,6 +189,45 @@ coordinate, a potential leaving its fitted domain, a path that wanders — with
 `step_collapsed` when the tangent cannot be resolved at the smallest step, and
 with `potential_failure` on a failed or non-finite evaluation. `path.max_steps`
 is optional; if set, reaching it is `max_steps_exhausted` and fails the gate.
+
+A descending continuation that runs into a local minimum — a pre- or
+post-reaction complex, typical of ion–molecule reactions with a submerged
+barrier — stops there with `minimum_reached` (issue #191). Steepest descent
+cannot leave a minimum, and climbing on along the incoming tangent only climbs
+a wall: such paths used to wander for thousands of steps and end with
+`asymptote_not_approached`, or pass through the well and reach the asymptote on
+its far side. A minimum is judged per side. On the product side it is accepted
+(`accepted: "product_well"`) when it lies at least `quantum.product_drop_kt`
+(15 kT) below the highest energy on the path: products are committed there,
+which is all the correction needs, and the 1D model then absorbs products only
+inside the committed part of the well (`models.1.product_absorber`).
+
+On the reactant side a minimum is not an end: both rates are normalized on a
+slice of the *free* reactant channel, which lies beyond the complex. The
+reactant continuation records the complex (`minima`) and climbs out of it along
+decreasing rate coordinate `xi`: each point is the minimum of `V` on the
+hyperplane one step further along `-grad xi` (mass-weighted, rigid-body modes
+removed). These are, to first order, the minima of `V` on the `xi = const`
+surfaces of the umbrella windows; `xi` decreases monotonically, so the path
+cannot turn back into the well. It ends with `coordinate_target_reached`
+(`accepted: "reactant_reference"`) at `xi <= path.reactant_xi` — by default
+`xi = 0`, where the fragments are `R_inf` apart, the reactant reference of the
+rate itself — or earlier with `asymptote_converged` if the energy is already
+flat. `xi` is defined for every rate run, so the same rule serves neutral and
+ionic reactions and needs no model of the long-range tail. Called without a
+reaction coordinate (the library API), a reactant continuation that stops in a
+complex still fails the gate with the reason `bound pre-reaction complex`.
+
+The 1D model puts its reactant reference slice `absorber_fraction + 0.05` of
+the path length from the reactant end, behind the reactant absorber. As for the
+2D model, the slice must lie in the free reactant channel: the potential along
+the path there within `quantum.reference_kt` (0.3 kT) of its value at the
+reactant end. (The bare potential is used rather than `V_S`: the zero-point
+energy of soft fragment rotations is noisy at that scale.) If the default slice
+is not free, it moves to the last point of the flat channel that starts at the
+reactant end and the reactant absorber shrinks in front of it
+(`models.1.model_construction.reactant_reference.rule = "free_channel"`); if
+there is no such channel (`"not_free"`), the path gate fails.
 
 **Bath.** A vibrationally adiabatic model needs a bath that is bound in the plane
 normal to the path. A negative normal-plane curvature has no zero-point energy;
@@ -289,15 +328,40 @@ reaction path bends after the transition state.
 
 The command then runs:
 
-1. **Path source.** `[path] source = "centroid"` is the historical mean-centroid path.
+1. **Path source.** `[path] source = "mep"` (the default) is the minimum-energy path
+   described below; `"centroid"` is the historical mean-centroid path (the default before
+   this release).
    `"bead_weighted"` shifts each locked-window centroid along the transverse principal
    eigenvector of the bead covariance `Sigma(xi)` by its bead RMS `sqrt(lambda_max)`, with
    the sign chosen from the local curvature. `"instanton"` uses the folded half-ring from
    `pyrpmd.instanton.optimize_instanton` below the crossover temperature and records a
    centroid fallback at or above `T_c` (or when the orbit fails to converge). `"least_action"`
    scans a one-parameter interpolation between the sampled MEP and its endpoint chord and
-   selects the smallest one-dimensional WKB action. All sources retain their selection and
-   fallback diagnostics in `subspace_pipeline.json`.
+   selects the smallest one-dimensional WKB action. `"centroid_all"` uses the mean centroids
+   of every umbrella window, over the full sampled `xi` range of the PMF.
+
+   A centroid is a thermal average, not a geometry: a librating or ring-opening coordinate
+   has a centroid shorter than any bond the ring polymer visits, and freely rotating fragments
+   have no mean geometry. Two sources are built on the potential instead
+   (`pyrpmd.analysis.subspace_paths`):
+
+   - `"mep"`: the intrinsic reaction coordinate. The rate run's transition-state geometry is
+     refined to a first-order saddle (partitioned rational-function optimization with a
+     finite-difference Hessian, rigid-body modes removed; `ts_gradient_tolerance`, 1e-5
+     Eh/bohr), displaced by `mep_displacement` (default `step / 10`, mass-weighted) along its
+     imaginary mode, and continued by steepest descent on both sides. It is a minimum-energy
+     path everywhere, which is what the normal-cut adiabatic model assumes; the gradient
+     across it is a chord error of order the step. A geometry that does not refine to a
+     saddle with exactly one negative curvature is refused.
+   - `"pmf_minimum"`: for every umbrella window, the minimum of `V` on that window's
+     `xi = const` surface, marched out from the window nearest the transition state so that
+     the points stay in one basin. It covers the full sampled range of the PMF with physical
+     bond lengths, and its point on `xi = 1` is the saddle; it is a distinguished-coordinate
+     path (`grad V` parallel to `grad xi`, not in general to the tangent).
+
+   Both are tested on a LEPS H + H2 surface, with and without ion–induced-dipole complexes
+   (`tests/test_subspace_path_cores.py`). All sources retain their selection and fallback
+   diagnostics in `subspace_pipeline.json`.
 2. **Mean path and path to both asymptotes.** For the centroid source, windows where the
    aligned centroids stay compact (spread at most twice that near the transition state) are
    kept; near the reactant asymptote the fragments rotate freely and a mean geometry has no
@@ -307,8 +371,11 @@ The command then runs:
    of librating light atoms are shorter than the bonds. Every selected core is then continued
    by steepest-descent path following (minimum on a sphere around each point, forward hemisphere, rigid-body modes
    excluded; uphill segments use the hyperplane minimum), with step halving at sharp turns.
-   The continuation runs until the energy is flat over ten step lengths of arc; there is no
-   step budget, and each end records how it terminated (see [Validity gates](#validity-gates)).
+   The continuation runs until the energy is flat over ten step lengths of arc. A product
+   continuation may stop in a deep post-reaction complex; a reactant continuation climbs out
+   of a pre-reaction complex along decreasing `xi` to `xi = 0`. There is no step budget, and
+   each end records how it terminated and whether that end is accepted (see
+   [Validity gates](#validity-gates)).
 3. **Curvature × width.** From `Sigma(xi)` along the sampled windows
    (`rho = sqrt(2 n^T Sigma n)` along the curvature normal) and, along the whole path, with
    the harmonic bead width of the mode along the normal. Above the threshold (default 0.5)
@@ -317,7 +384,30 @@ The command then runs:
    removed) and its `C_S`. With large curvature the normal cuts cross inside the bend and
    the adiabatic potential develops a cusp; `C_S(1D)` is then not trustworthy, which is
    what the curvature test says.
-5. **2D model**: the plane through the transition state spanned by the rate dividing-surface
+5. **2D model.** `subspace.model_2d` selects it.
+
+   `"rph"` (default) is the reaction-path Hamiltonian on the MEP
+   (`pyrpmd.analysis.subspace_rph`). Axis 0 is the arc length `s` of the path, axis 1 the
+   displacement `q` along a normal `n(s)`; the rest of the bath stays adiabatic as in the
+   1D model. With `x(s, q) = w(s) + q n(s)` the kinetic energy is
+   `p_s^2 / (2 (1 - kappa q)^2) + p_q^2 / 2`, `kappa = t' . n`: on the inner side of a bend
+   the path is shorter, which is corner cutting. `n` is transported along the path without
+   rotating about it (a Bishop frame), so the ribbon has exactly this metric; it is the
+   transport of the curvature direction that carries most of the curvature weighted by
+   `exp(-beta (V_top - V))` (`captured_curvature` in the report). A ribbon with this metric
+   is isometric to a strip of the plane: it is unrolled along a plane curve with the same
+   signed curvature, where the Hamiltonian is the ordinary flat
+   `-(d^2/dX^2 + d^2/dY^2)/2 + V_S`, so the 2D solvers below apply unchanged; each grid
+   point is mapped back to `(s, q)` by its nearest point on the developed curve. For a
+   two-dimensional system the development is congruent to the system itself. A path that
+   twists (torsion) keeps only the component of its curvature along `n`; the rest couples
+   to adiabatic modes as in 1D. The box runs from the reactant reference slice (the end of
+   the flat channel that starts at the reactant end, as in 1D) to two de Broglie
+   wavelengths past the product absorber; axis 0 bisects the path direction at the
+   reference slice and at the barrier, and the path must advance along it through the box.
+   The default spacing is a third of the narrowest width of the `n` mode on both axes.
+
+   `"plane"` is the plane through the transition state spanned by the rate dividing-surface
    normal (mass-weighted `grad xi`, so the 2D dividing line is the rate's `xi = 1` surface)
    and the principal direction of the path within the complement; for a collinear atom
    transfer this is exactly the collinear plane. The curvature-normal candidate is reported
@@ -340,6 +430,22 @@ The command then runs:
    `models.2.product_absorber` records the criterion used. The default grid is anisotropic: a third of the narrowest
    in-plane vibrational width along the transfer axis, a quarter of the shortest de
    Broglie wavelength along the path axis.
+
+   **Reference slice.** All models normalize both rates per unit length on a reactant
+   reference slice: the quantum rate by the quantum (1D: classical) density, the RPMD rate
+   by the centroid density. These agree only in the free channel. On a slope they differ
+   at order `hbar^2` (Wigner–Kirkwood: `rho_Q/rho_cl = 1 - beta^2 V''/12 + beta^3 V'^2/24`,
+   the centroid density has `-beta^2 V''/24`, unit mass), which does not cancel in `C_S`.
+   The slice is therefore the end of the channel, starting at the reactant end, along
+   which the path potential is within `reference_kt` (0.3 kT) of the reactant end **and**
+   `beta^2 |V''| / 12 + beta^3 V'^2 / 24 <= quantum.reference_density_tolerance` (1e-2, a
+   bound on the relative error it introduces). The energy rule alone put the 300 K slice
+   of the curved-valley test model where this was ~0.15, and `C_S` came out 5% high.
+
+   In both 2D models the reactant reference slice is moved onto a node of the DVR grid:
+   the quantum rate is normalized on the grid line nearest the reference and the RPMD TI
+   starts exactly at the reference, so off a node the two rates were normalized on
+   different slices, which matters wherever the channel is only flat to `reference_kt`.
 6. **Nested sensitivity** `ln(C_2D/C_1D)` selects the dimension, and
    `rate_quantum_corrected.json` is written next to the run. Every intermediate result is
    in `subspace_pipeline.json`.
@@ -598,12 +704,16 @@ invariant to the subspace model's absolute rate.
 
 
 The native `[rate.subspace_correction]` table also accepts the path-model
-selectors `curvature = "none" | "small"` and
+selectors `curvature = "none" | "small"`, `model_2d = "rph" | "plane"` (the
+2D model, default `"rph"`) and
 `zero_point = "harmonic" | "rph" | "dvr"`, plus `dvr_points`,
 `dvr_half_width` and `dvr_spacing`. Its `[rate.subspace_correction.path]`
-table accepts `source = "centroid" | "bead_weighted" | "instanton" |
-"least_action"` and the corresponding `least_action_points`, `instanton_beads`
-and `instanton_max_iterations` controls. `crossover_temperature`, when supplied
+table accepts `source = "centroid" | "centroid_all" | "bead_weighted" |
+"least_action" | "instanton" | "mep" | "pmf_minimum"` and the corresponding
+`least_action_points`, `instanton_beads`, `instanton_max_iterations`,
+`mep_displacement`, `ts_gradient_tolerance` and `pmf_constraint_tolerance` controls, and `reactant_xi` (default 0, must be
+below 1): the value of `xi` at which a reactant continuation that climbed out of
+a pre-reaction complex ends. `crossover_temperature`, when supplied
 as an instanton fallback, is in kelvin. These choices enter the factor-cache
 identity; changing them requires a new factor calculation. The standalone
 `subspace-correct` entry point uses the same content-based cache checks.

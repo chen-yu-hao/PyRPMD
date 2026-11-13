@@ -9,16 +9,18 @@ from .input_schema import InputError, _integer, _unknown_fields
 from .validation import finite_real
 
 _SECTION = "rate.subspace_correction"
-_FIELDS = {"enabled", "mode", "dimension", "environment", "threshold", "reuse", "path", "quantum", "rpmd",
+_FIELDS = {"enabled", "mode", "dimension", "environment", "threshold", "reuse", "path", "quantum", "rpmd", "model_2d",
            "curvature", "zero_point", "dvr_points", "dvr_half_width", "dvr_spacing", "hessian_displacement",
            "validity", "execution"}
 _EXECUTION = {"cpus", "workers", "blas_threads", "memory_limit_mb"}
 _VALIDITY = {"unconverged_path", "unstable_bath", "outside_grid", "max_outside_fraction",
              "soft_mode_frequency", "on_invalid"}
 _PATH = {"source", "step", "max_steps", "spread_factor", "asymptote_tolerance", "asymptote_patience", "smoothing",
+         "reactant_xi", "mep_displacement", "ts_gradient_tolerance", "pmf_constraint_tolerance",
          "least_action_points", "instanton_beads", "instanton_max_iterations", "crossover_temperature"}
 _QUANTUM = {"spacing_1d", "spacing_2d", "refinement", "absorber_fraction", "threshold_margin",
-            "truncation_kt", "truncation_min", "padding", "dense_limit", "reference_kt", "product_drop_kt"}
+            "truncation_kt", "truncation_min", "padding", "dense_limit", "reference_kt",
+            "reference_density_tolerance", "product_drop_kt"}
 _RPMD = {"windows", "walkers", "burn_in", "sweeps", "leapfrog_steps", "hmc_dt", "trajectories",
          "md_dt", "md_time", "plateau_fraction", "bootstrap", "seed"}
 
@@ -58,6 +60,7 @@ def rate_subspace_options(config):
         ("environment", "adiabatic", ("frozen", "adiabatic", "free_energy")),
         ("curvature", "none", ("none", "small")),
         ("zero_point", "harmonic", ("harmonic", "rph", "dvr")),
+        ("model_2d", "rph", ("rph", "plane")),
     ):
         value = options.setdefault(key, default)
         if not isinstance(value, str) or value not in choices:
@@ -111,8 +114,15 @@ def rate_subspace_options(config):
         for key, value in table.items():
             name = f"{_SECTION}.{group}.{key}"
             if key == "source":
-                if value not in ("centroid", "bead_weighted", "instanton", "least_action"):
-                    raise InputError(f"{name} must be centroid, bead_weighted, instanton or least_action")
+                sources = ("centroid", "centroid_all", "bead_weighted", "least_action", "instanton", "mep",
+                           "pmf_minimum")
+                if value not in sources:
+                    raise InputError(f"{name} must be one of {', '.join(sources)}")
+            elif key == "reactant_xi":
+                # Any finite value: 0 is R_inf, negative values lie beyond it.
+                table[key] = finite_real(value, name, allow_strings=False, error_type=InputError)
+                if table[key] >= 1.0:
+                    raise InputError(f"{name} must lie on the reactant side of the transition state (< 1)")
             elif key in minima:
                 table[key] = _integer(value, name, minima[key])
             elif key == "spacing_2d" and isinstance(value, (list, tuple)):

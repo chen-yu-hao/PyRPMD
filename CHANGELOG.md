@@ -5,6 +5,72 @@ not been published as a new wheel release; no release date or DOI is assigned.
 
 ## Unreleased
 
+- Subspace correction: reference slices must also be quantum-free. The
+  quantum and the RPMD rate are normalized by the quantum and the centroid
+  reactant density on the slice; on a slope these differ at O(hbar^2). The
+  slice now needs `beta^2|V''|/12 + beta^3 V'^2/24` below
+  `quantum.reference_density_tolerance` (1e-2) besides the 0.3 kT energy
+  rule. The plane model also takes the free channel that starts at the
+  reactant end instead of the last flat point before the transition state.
+- Subspace correction: `exact_quantum_rate` checks a supplied absorber on
+  the dividing surface instead of against end caps it does not use; the RPH
+  model's channel stays open beyond its box for ring polymers.
+
+- **Compatibility:** the subspace correction now builds its reaction path from
+  the minimum-energy path by default (`path.source = "mep"`; previously
+  `"centroid"`), and its 2D model is the reaction-path Hamiltonian on that
+  path (`subspace.model_2d = "rph"`; previously the fixed plane through the
+  transition state, still available as `"plane"`). Corrections computed with
+  the old defaults are not reused. Set `path.source = "centroid"` and
+  `subspace.model_2d = "plane"` to reproduce them.
+- Subspace correction: new 2D reaction-path Hamiltonian model
+  (`analysis/subspace_rph.py`). Axis 0 is the MEP arc length, axis 1 the
+  displacement along a Bishop-transported normal that carries the curvature
+  near the barrier; the ribbon is unrolled into a plane where the kinetic
+  energy `p_s^2/(2(1 - kappa q)^2) + p_q^2/2` is flat, so the existing 2D
+  quantum and RPMD solvers include corner cutting. Model potentials in
+  abstract coordinates can drive the pipeline with `run.rigid_body = False`.
+- Subspace correction: both 2D models now place the reactant reference slice
+  on a DVR grid node. The quantum rate was normalized on the nearest grid line
+  and the RPMD TI at the exact reference, i.e. on different slices wherever
+  the channel is only flat to `reference_kt`.
+
+- Subspace correction: new path sources that do not rely on centroid
+  geometries, which are thermal averages (a librating bond's centroid is
+  shorter than the bond). `path.source = "mep"` refines the rate run's
+  transition state to a first-order saddle and follows the IRC from it;
+  `"pmf_minimum"` takes the minimum of `V` on every umbrella window's `xi`
+  surface over the full PMF range; `"centroid_all"` uses the centroids of
+  every window. New controls `mep_displacement`, `ts_gradient_tolerance` and
+  `pmf_constraint_tolerance`. Tested on LEPS H + H2 with and without
+  ion–molecule complexes.
+
+- Subspace correction: a reactant continuation that falls into a
+  pre-reaction complex climbs out of it along decreasing rate coordinate `xi`
+  (hyperplane steps along `-grad xi`, the minima of `V` on the umbrella
+  windows' `xi` surfaces) and ends at `xi = 0`, the rate's own `R_inf`
+  reactant reference (`coordinate_target_reached`, accepted as
+  `reactant_reference`; `path.reactant_xi` moves the target). No long-range
+  model is needed, so neutral and ionic reactions use the same rule. The 1D
+  model's reactant reference slice must lie in the free reactant channel
+  (path potential within `quantum.reference_kt` of the reactant end, as in the
+  2D model): a sloped default slice is moved into the flat channel, and a
+  model without one fails the path gate. Termination records gain `minima` and
+  `exit_coordinate` (issue #191).
+
+- Subspace correction: path continuations stop in a local minimum
+  (`minimum_reached`) instead of climbing out of it along the incoming tangent
+  (issue #191). Ion–molecule reactions with pre- and post-reaction complexes
+  previously wandered for thousands of steps and ended with
+  `asymptote_not_approached`, or passed through a well to the asymptote on its
+  far side. A product well at least `quantum.product_drop_kt` below the
+  barrier top is an accepted terminus, and the 1D model then absorbs products
+  inside it (`exact_quantum_rate` accepts a per-end `cap_width` pair); a
+  reactant complex is reported with its reason and still fails the path gate.
+  Termination records gain `accepted`, `reason`, `max_energy`,
+  `drop_below_top` and `gradient_norm`; the path gate now reads "did not
+  reach an accepted terminus".
+
 - Subspace correction: plan the solves before running them (issue #195). Each
   model's solver plan (`solver_plans` in `subspace_pipeline.json` and the
   native `status.json`) records grid shape, retained points, route and memory.

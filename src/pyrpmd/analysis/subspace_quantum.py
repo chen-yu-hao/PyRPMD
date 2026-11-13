@@ -68,15 +68,30 @@ def sinc_dvr_kinetic(axis: np.ndarray, mass: float) -> np.ndarray:
     return matrix / (2.0 * float(mass) * dx * dx)
 
 
-def absorbing_potential(axis0: np.ndarray, *, width: float, strength: float, power: int = 2) -> np.ndarray:
-    """Power-law absorbing potential over ``width`` at both ends of axis 0."""
+def absorbing_potential(axis0: np.ndarray, *, width: Any, strength: Any, power: int = 2) -> np.ndarray:
+    """Power-law absorbing potential over ``width`` at both ends of axis 0.
+
+    ``width`` and ``strength`` are one value for both ends or a pair
+    ``(low end, high end)``.
+    """
     axis0 = np.asarray(axis0, dtype=float)
-    lower, upper = axis0[0] + width, axis0[-1] - width
+    (w_lo, w_hi), (s_lo, s_hi) = _pair(width), _pair(strength)
+    lower, upper = axis0[0] + w_lo, axis0[-1] - w_hi
     eps = np.zeros_like(axis0)
     left, right = axis0 < lower, axis0 > upper
-    eps[left] = strength * ((lower - axis0[left]) / width) ** power
-    eps[right] = strength * ((axis0[right] - upper) / width) ** power
+    eps[left] = s_lo * ((lower - axis0[left]) / w_lo) ** power
+    eps[right] = s_hi * ((axis0[right] - upper) / w_hi) ** power
     return eps
+
+
+def _pair(value) -> tuple[float, float]:
+    """``value`` for both ends, or an explicit ``(low end, high end)`` pair."""
+    if np.ndim(value) == 0:
+        return float(value), float(value)
+    values = tuple(float(v) for v in np.asarray(value, dtype=float).ravel())
+    if len(values) != 2:
+        raise ValueError("an absorber width or strength is one value or a (low end, high end) pair")
+    return values
 
 
 @dataclass(frozen=True)
@@ -795,8 +810,8 @@ def exact_quantum_rate(
     *,
     method: str = "auto",
     dense_limit: int = 1600,
-    cap_width: float | None = None,
-    cap_strength: float | None = None,
+    cap_width: Any = None,
+    cap_strength: Any = None,
     cap_power: int = 2,
     potential_cutoff: float | None = None,
     flux_states: int = 16,
@@ -818,7 +833,10 @@ def exact_quantum_rate(
     grid points and thermal flux eigenstates beyond it.  The default
     absorbing potential occupies 20% of axis 0 at each end with a quadratic
     profile whose strength absorbs thermal wavepackets (``30 v_th / width``);
-    both are numerical parameters to converge.  ``potential_cutoff``
+    both are numerical parameters to converge.  ``cap_width`` (and
+    ``cap_strength``) may be a pair ``(reactant end, product end)``, e.g. for
+    a product channel that ends in a well closer to the barrier than the
+    reactant end is.  ``potential_cutoff``
     (iterative route) caps ``V`` in the Boltzmann operator only; the default
     is ``60/beta`` above the higher of the reactant reference and the lowest
     dividing-surface energy, so capped points carry less than ``exp(-30)`` of
@@ -868,16 +886,21 @@ def exact_quantum_rate(
     operators = _GridOperators(model)
     axis0 = model.axes[0]
     length = float(axis0[-1] - axis0[0])
-    width = 0.2 * length if cap_width is None else float(cap_width)
-    if not 0 < width < 0.5 * length:
+    widths = _pair(0.2 * length if cap_width is None else cap_width)
+    if not all(0 < w < 0.5 * length for w in widths):
         raise ValueError("cap_width must be positive and below half the reaction-coordinate range")
-    if not axis0[0] + width < model.dividing_surface < axis0[-1] - width:
+    # A supplied absorber replaces the axis-0 end caps; it is checked on the
+    # dividing surface itself below, not against widths it does not use.
+    if absorber is None and not axis0[0] + widths[0] < model.dividing_surface < axis0[-1] - widths[1]:
         raise ValueError("the dividing surface must lie between the absorbing regions")
     velocity = np.sqrt(2.0 / (beta * model.masses[0]))
-    strength = 30.0 * velocity / width if cap_strength is None else float(cap_strength)
-    if not np.isfinite(strength) or strength <= 0:
+    strengths = tuple(30.0 * velocity / w for w in widths) if cap_strength is None else _pair(cap_strength)
+    if not all(np.isfinite(v) and v > 0 for v in strengths):
         raise ValueError("cap_strength must be positive")
-    eps_axis = absorbing_potential(axis0, width=width, strength=strength, power=int(cap_power))
+    # A scalar request is reported as a scalar, as before.
+    width = widths[0] if widths[0] == widths[1] else list(widths)
+    strength = strengths[0] if strengths[0] == strengths[1] else list(strengths)
+    eps_axis = absorbing_potential(axis0, width=widths, strength=strengths, power=int(cap_power))
     eps = eps_axis.reshape((-1,) + (1,) * (model.dimension - 1))
     shift = float(operators.potential.min())
     if absorber is not None:
@@ -885,6 +908,9 @@ def exact_quantum_rate(
         eps = np.asarray(values, dtype=float).reshape(model.shape)
         if not np.isfinite(eps).all() or np.any(eps < 0):
             raise ValueError("absorber must return finite nonnegative values")
+        surface_line = int(np.argmin(np.abs(axis0 - model.dividing_surface)))
+        if np.any(eps[surface_line] > 0):
+            raise ValueError("the dividing surface must lie between the absorbing regions")
     if normalization not in ("default", "slice"):
         raise ValueError("normalization must be 'default' or 'slice'")
     keep = None
