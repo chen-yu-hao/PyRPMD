@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 import json
+import os
 from pathlib import Path
 import warnings
 
@@ -59,7 +60,8 @@ def validate_saved_rate(config, system, directory):
 def _source_identity(root, options):
     from ..analysis.subspace_pipeline import pipeline_identity
 
-    return pipeline_identity(root, options)
+    # Execution resources do not change factors, so they never invalidate a cache.
+    return pipeline_identity(root, {k: v for k, v in options.items() if k != "execution"})
 
 
 def _check_centroid_path(root, config):
@@ -74,6 +76,58 @@ def _check_centroid_path(root, config):
                          "output.centroid_path=true from the start, not only after a checkpoint")
     if np.count_nonzero(mean.locked()) < 2:
         raise InputError("Subspace correction needs at least two orientation-locked umbrella windows")
+
+
+def _affinity_cpus():
+    if hasattr(os, "sched_getaffinity"):
+        return len(os.sched_getaffinity(0))
+    return os.cpu_count() or 1
+
+
+def _memory_budget_mb():
+    """75% of the smaller of physical memory and a cgroup v2 limit, if readable."""
+    limits = []
+    try:
+        limits.append(os.sysconf("SC_PHYS_PAGES") * os.sysconf("SC_PAGE_SIZE"))
+    except (AttributeError, ValueError, OSError):
+        pass
+    try:
+        text = Path("/sys/fs/cgroup/memory.max").read_text().strip()
+        if text.isdigit():
+            limits.append(int(text))
+    except OSError:
+        pass
+    return 0.75 * min(limits) / 2**20 if limits else 4096.0
+
+
+def subspace_execution(config, options):
+    """Task scheduler budget for this stage, derived from the run's [parallel] table.
+
+    The CPU count is the run's own allocation: trajectory_workers x bead_workers
+    x threads_per_rank, or threads_per_rank on MPI rank zero (the only rank that
+    runs this stage). ``execution.cpus`` overrides it. The count never exceeds
+    this process's CPU affinity. One CPU returns None: the unchanged sequential
+    route. Resources do not alter factors or their cache identity.
+    """
+    user = dict(options.get("execution") or {})
+    parallel = config.get("parallel") or {}
+    mpi = parallel.get("backend") == "mpi"
+    threads = int(parallel.get("threads_per_rank", parallel.get("threads", 1)) or 1)
+    if mpi:
+        derived = threads
+    else:
+        workers = int(parallel.get("trajectory_workers", parallel.get("trajectory_groups", 1)) or 1)
+        derived = workers * int(parallel.get("bead_workers", 1) or 1) * threads
+    requested = derived if user.get("cpus", "auto") == "auto" else int(user["cpus"])
+    cpus = max(1, min(requested, _affinity_cpus()))
+    if cpus == 1:
+        return None
+    execution = {"backend": "serial" if mpi else "process", "cpus": cpus,
+                 "blas_threads": int(user.get("blas_threads", min(8, cpus))),
+                 "memory_limit_mb": float(user.get("memory_limit_mb", _memory_budget_mb()))}
+    if "workers" in user:
+        execution["workers"] = int(user["workers"])
+    return execution
 
 
 def postprocess_rate_subspace(config, directory, *, strict=False):
@@ -107,6 +161,10 @@ def postprocess_rate_subspace(config, directory, *, strict=False):
             "path": options["path"], "quantum": options["quantum"], "rpmd": options["rpmd"],
             "output": {"directory": str(target), "reuse": options["reuse"]},
         }
+        execution = subspace_execution(config, options)
+        if execution is not None:
+            specification["execution"] = execution
+        status["execution"] = execution
         write_json(target / "request.json", {"options": options, "reuse_key": identity})
         write_json(status_path, {**status, "status": "running"})
         report = run_subspace_pipeline(specification, apply=options["mode"] == "apply", reuse_key=identity)

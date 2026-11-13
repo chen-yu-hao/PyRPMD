@@ -24,6 +24,15 @@ not been published as a new wheel release; no release date or DOI is assigned.
   without discarding the other dimensions. The outside-grid gate reason lists
   the TI, surface and recrossing fractions and the dominant one.
 
+- Subspace correction in `task = "rate"` runs now uses the CPUs the input's
+  global `[parallel]` table already allocates (`trajectory_workers ×
+  bead_workers × threads_per_rank`, or `threads_per_rank` of MPI rank zero),
+  capped by CPU affinity, and runs its QM/RPMD tasks through the existing task
+  scheduler. Defaults (one CPU) keep the sequential route. The optional
+  `[rate.subspace_correction.execution]` table overrides `cpus`, `workers`,
+  `blas_threads` and `memory_limit_mb`. Resources are excluded from the
+  factor-cache identity; factors are unchanged.
+
 - Add `pyrpmd status RUN_DIR` and `--watch` with committed-step counters,
   percentages, stage ETA and stale-heartbeat detection. Runner, resume and
   extension paths atomically publish advisory `progress.json`; only the main

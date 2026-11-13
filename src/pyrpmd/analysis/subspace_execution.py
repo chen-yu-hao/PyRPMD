@@ -7,6 +7,7 @@ task is rerun with its original seed. There are no collectives in trajectory loo
 
 from __future__ import annotations
 
+from contextlib import contextmanager
 from concurrent.futures import FIRST_COMPLETED, ProcessPoolExecutor, ThreadPoolExecutor, wait
 from dataclasses import asdict
 from functools import lru_cache
@@ -204,6 +205,24 @@ def _run_task(task, threads, memory_mb):
     return result
 
 
+@contextmanager
+def _passive_openmp():
+    """Spawned workers inherit OMP_WAIT_POLICY=PASSIVE unless the user set it.
+
+    Idle OpenMP dynamics threads then sleep during Python sampling/analysis.
+    Workers start lazily, so the variable is set for the pool's lifetime and
+    the parent's environment is restored afterwards.
+    """
+    if "OMP_WAIT_POLICY" in os.environ:
+        yield
+        return
+    os.environ["OMP_WAIT_POLICY"] = "PASSIVE"
+    try:
+        yield
+    finally:
+        os.environ.pop("OMP_WAIT_POLICY", None)
+
+
 def _local(tasks, options, checkpoints, results):
     cpus, memory = options["cpus"], options["memory_limit_mb"]
     available = len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else os.cpu_count() or 1
@@ -226,7 +245,7 @@ def _local(tasks, options, checkpoints, results):
     except (TypeError, pickle.PicklingError, AttributeError) as error:
         raise ValueError("process tasks need pickleable models; use gridded models or serial execution") from error
     pending, active = list(tasks), {}
-    with ProcessPoolExecutor(workers, mp_context=multiprocessing.get_context("spawn")) as pool:
+    with _passive_openmp(), ProcessPoolExecutor(workers, mp_context=multiprocessing.get_context("spawn")) as pool:
         while pending or active:
             reserved = sum(t["memory_mb"] for t in active.values())
             while len(active) < workers:
