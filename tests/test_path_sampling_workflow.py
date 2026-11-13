@@ -124,7 +124,6 @@ def test_ffs_without_a_history_stops_without_inventing_a_rate(tmp_path):
     result = run(raw, output=tmp_path / "no-history")
     assert result["operations_completed"] == 1
     assert result["rate_estimate_au"] is None
-    assert result["physical_converged"] is False
     assert result["completed"]
     assert not result["sampling_support_complete"]
     assert result["status"] == "no_flux_crossings"

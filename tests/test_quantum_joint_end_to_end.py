@@ -87,7 +87,6 @@ def test_full_dimensional_joint_trajectory_updates_beads_and_wavefunction():
     assert result.diagnostics["environment_beads"] == 3
     assert result.diagnostics["bath_masses"] == [1.5, 2.0]
     assert result.diagnostics["quantum_force_distribution"] == "full_centroid_force_on_every_bead"
-    assert result.diagnostics["physical_converged"] is False
 
 
 @pytest.mark.parametrize("nbeads", [1, 3, 5])

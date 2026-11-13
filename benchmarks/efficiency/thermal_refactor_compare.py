@@ -121,7 +121,7 @@ def main():
     env = {**os.environ, "OPENBLAS_NUM_THREADS": "1", "MKL_NUM_THREADS": "1", "OMP_NUM_THREADS": "1",
            "OMP_DYNAMIC": "FALSE"}
     report = {"schema": "pyrpmd.thermal-refactor-comparison.v1", "complete": False,
-              "physical_converged": False, "protocol": {"rounds": args.rounds, "repeats": args.repeats,
+               "protocol": {"rounds": args.rounds, "repeats": args.repeats,
               "block_steps": args.block_steps, "warmup_steps": 8, "ordering": "alternating paired subprocesses", "small_case_calls": "fixed 256/32 for N=3 P=1/32; 16 for N=64; 4 for N=512"},
               "platform": platform.platform(),
               "processor": next((line.split(":", 1)[1].strip() for line in Path("/proc/cpuinfo").read_text().splitlines()

@@ -107,7 +107,7 @@ def run(*, steps=40, dt=1., beads=1, seed=13, initial_state=1):
 
         return {
             "configuration": config, "physics_fingerprint": fingerprint,
-            "physical_converged": False,
+            
             "validation_scope": "short molecular electronic-structure and propagation check",
             "time_au": (np.arange(steps+1)*dt).tolist(),
             "duration_fs": state.time*AU_TIME_FS,

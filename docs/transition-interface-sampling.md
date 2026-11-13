@@ -177,7 +177,8 @@ and raw production observations to `samples/path_sampling.npz`. The atomic
 checkpoint is `checkpoints/path_sampling.npz`. Raw observations include
 rejections and the complete cross-interface measurement history; FFS retains
 its flux trace and stage outcomes/ancestry. The report remains a first-order
-rate **estimate**: `converged` and `physical_converged` stay false.
+rate **estimate**: `converged` stays false until the requested numerical and
+statistical checks pass.
 
 `output.checkpoint_steps` counts completed workflow operations: a ladder sweep
 for RETIS/REPPTIS, a flux step or completed branch trial for FFS, and a committed
@@ -464,7 +465,7 @@ count it twice. `combine_pptis_rate` validates this convention. Its
 and excludes uncertainty in the supplied flux. Blocks without both origin
 populations are reported as unsupported; they are not silently discarded to
 create an error bar. `memory_loss_approximation=True` and
-`physical_converged=False` remain explicit in the result.
+the memory-loss approximation remains explicit in the result.
 
 ## Direct forward-flux sampling
 

@@ -136,7 +136,7 @@ def run_convergence(model, output, specification):
     output.mkdir(parents=True, exist_ok=True)
     # Freeze all scientific choices before the first Context/PES evaluation.
     write_json(output / "protocol.json", specification)
-    report = {"schema": "pyrpmd.materials-batch-convergence.v1", "physical_converged": False,
+    report = {"schema": "pyrpmd.materials-batch-convergence.v1", 
               "convergence_checks_passed": False, "all_arms_complete": False,
               "source_at_start": source_identity(), "arms": {}, "comparisons": {}}
     write_json(output / "report.json", report)
@@ -189,7 +189,7 @@ def main():
     result = run_convergence(model, output, protocol(**choices))
     print(json.dumps({"all_arms_complete": result["all_arms_complete"],
                       "convergence_checks_passed": result["convergence_checks_passed"],
-                      "physical_converged": False, "report": str(output / "report.json")}))
+                       "report": str(output / "report.json")}))
     # An inconclusive or failed scientific check is observable by automation.
     if not result["convergence_checks_passed"]:
         raise SystemExit(2)

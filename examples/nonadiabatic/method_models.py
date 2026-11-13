@@ -51,7 +51,7 @@ def run_demo():
     iso_state = IsomorphicEhrenfestState(nuclear.q, nuclear.p, amplitudes=[0.8, 0.6j])
     result = {"beta_hartree_inverse": beta, "beads": count,
               "timestep_atomic": dt, "propagation_steps": 20,
-              "physical_converged": False, "model_equilibrated": False}
+               "model_equilibrated": False}
     for name, dynamics, state in (("mv_rpmd", mv, mv_state),
                                   ("kc_rpmd", kc, kc_state),
                                   ("iso_ehrenfest", iso, iso_state)):

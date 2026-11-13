@@ -161,7 +161,7 @@ def main():
     identity={name:sha256(ROOT/name) for name in names}
     report={"schema":"pyrpmd.native-water-optimization-audit.v1","source_sha256":identity,
             "checkpoint_probes":checkpoint_probe(),"source_size_timing":[],
-            "physical_converged":False,"literature_reproduced":False,
+            "literature_reproduced":False,
             "limitations":["External experimental reference; registered native-Verlet campaign unchanged.",
                 "Short single-configuration energy changes and timings do not establish timestep/RPC diffusion convergence.",
                 "Shared CPU scheduler changes wall throughput; process CPU time is also reported."]}

@@ -194,7 +194,6 @@ def test_exchange_energies_and_beta_dependent_sign_match_finite_p_harmonic_trace
         assert reported["virial_internal_energy_hartree"] == pytest.approx(
             energy_f, abs=5 * reported["virial_internal_energy_standard_error_hartree"])
         assert reported["sign_resolved"] is True
-        assert reported["physical_converged"] is False
     assert sampled_signs[0] > sampled_signs[1] > sampled_signs[2] > 0
 
 

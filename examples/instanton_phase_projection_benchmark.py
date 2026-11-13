@@ -77,7 +77,7 @@ def benchmark(sizes, repeats):
               "threads": 1, "repeats": repeats,
               "scope": "phase removal plus complete dense symmetric eigensolve",
               "input": "analytic quartic kink; mass=1822, height=0.01, duration=28/omega; atomic units",
-              "physical_converged": False, "results": []}
+               "results": []}
     methods = {"qr_reference": _reference_spectrum, "householder": _phase_projected_spectrum}
     with threadpool_limits(limits=1):
         report["threadpools"] = threadpool_info()

@@ -147,10 +147,10 @@ def spectral_diagnostics(chi, frequencies):
         raise ValueError('Matching scalar spectrum and increasing frequencies required')
     if not np.isfinite(response).all():
         return {'negative_absorption_fraction':float('nan'),'minimum_absorption':float('nan'),
-                'finite':False,'physical_converged':False}
+                'finite':False}
     S=response.imag; denominator=trapezoid(abs(S),w)
     return {'negative_absorption_fraction':float(trapezoid(np.maximum(-S,0),w)/max(denominator,1e-30)),
-            'minimum_absorption':float(S.min()),'finite':True,'physical_converged':False}
+            'minimum_absorption':float(S.min()),'finite':True}
 
 def matched_rate_defect(full_rp, active_rp, active_q, *, beta, observable, units, mode='additive'):
     """Experimental plateau-rate defect transfer, not a general rate theorem.
@@ -176,8 +176,7 @@ def matched_rate_defect(full_rp, active_rp, active_q, *, beta, observable, units
     else:
         raise ValueError("mode must be 'additive' or 'ratio'")
     return {'rate':corrected,'negative_rate':corrected<0,'beta':float(beta),'observable':str(observable),
-            'units':str(units),'approximation':label,
-            'physical_converged':False,'exact_general_rate_claim':False}
+            'units':str(units),'approximation':label,'exact_general_rate_claim':False}
 
 __all__=['Selection','select_active_subspace','passive_reservoir_self_energy',
          'passive_embed','inverse_defect','spectral_diagnostics','matched_rate_defect']

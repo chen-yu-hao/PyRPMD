@@ -360,7 +360,7 @@ def main():
         "schema": "pyrpmd.force-engine-benchmark.v1", "environment": environment(),
         "warmup_evaluations": args.warmup, "timed_evaluations": args.repeats,
         "seed": args.seed, "timing_unit": "seconds per complete batch evaluation",
-        "physical_converged": False, "complete": False, "cases": [],
+         "complete": False, "cases": [],
         "legacy_ref": args.legacy_ref,
         "rpmd_copy_probe": args.rpmd_copy,
         "source_sha256": {str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()

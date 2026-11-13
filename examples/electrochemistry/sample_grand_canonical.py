@@ -48,7 +48,7 @@ def main(argv=None):
         report = {
             "model": "analytic slab, shared electron number; no material fit",
             "ensemble": "shared_number_grand_canonical_ring_polymer",
-            "physical_time_available": False, "physical_converged": False,
+            "physical_time_available": False, 
             "seed": args.seed, "beads": config["beads"], "temperature_K": config["temperature_K"],
             "burn_in_sweeps": args.burn_in, "saved_sweeps": args.sweeps,
             "observables": ["centroid_height_offset_bohr", "electron_number"],

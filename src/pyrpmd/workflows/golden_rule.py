@@ -264,7 +264,6 @@ def run_golden_rule_study(potential, masses, initial_path, *, bead_counts,
                           "convergence_criterion": dict(_CRITERION)}, "golden-rule scientific_identity")
     report = {"schema": _SCHEMA, "mode": "golden_rule", "scientific_identity": identity,
               "physics_fingerprint": fingerprint_payload(identity), "rows": [],
-              "physical_converged": False,
               "convergence_scope": "stationarity_and_requested_segment_discretizations_only",
               "limitations": ["constant coupling, weak-coupling golden-rule and leading semiclassical approximations",
                               "normal regime; inverted and activationless limits are unsupported",

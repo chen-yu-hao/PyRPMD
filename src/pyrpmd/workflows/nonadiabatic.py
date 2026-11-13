@@ -350,8 +350,7 @@ def prepare_nonadiabatic(config, system, *, numerical=False):
         result = {"method": config["method"], "nstates": potential.nstates,
                   "model": config["model"], "initialization": config["initial"]["kind"],
                   "state_shape": list(state.q.shape),
-                  "initial_energy_hartree": checked["energy"],
-                  "physical_converged": False}
+                  "initial_energy_hartree": checked["energy"]}
         if numerical:
             from ..potentials.diabatic import check_diabatic_potential
             result["matrix_gradient_check"] = check_diabatic_potential(potential, state.q, potential.nstates)
@@ -431,8 +430,7 @@ def analyze_nonadiabatic(config, system, directory):
         "max_abs_energy_drift_at_saved_frames_hartree": float(np.max(np.abs(result.energy_drift))),
         "max_electronic_norm_drift_at_saved_frames": float(np.max(np.abs(result.norm_drift))),
         "final_active_surface_fractions": (None if result.method == "nrpmd"
-                                           else result.active_surface_fractions[-1].tolist()),
-        "physical_converged": False, "completed": True,
+                                           else result.active_surface_fractions[-1].tolist()), "completed": True,
         "initialization": config["initial"], "physics_fingerprint": identity,
         "arrays": str(directory/"results"/"nonadiabatic.npz"),
         "time_series": str(directory/"results"/"populations.csv"),
@@ -441,8 +439,7 @@ def analyze_nonadiabatic(config, system, directory):
 
 def _write_results(directory, result, config, identity, centroid_q, centroid_p):
     metadata = {"format": "PyRPMD.nonadiabatic_ensemble.v1", "method": result.method,
-                "physics_fingerprint": identity, "independent_trajectories": result.independent,
-                "physical_converged": False, "population_basis": "fixed_diabatic",
+                "physics_fingerprint": identity, "independent_trajectories": result.independent, "population_basis": "fixed_diabatic",
                 "density_basis": "fixed_diabatic", "statistics_axis": "trajectory",
                 "population_estimator": ("signed_mmst" if result.method == "nrpmd"
                                          else "amplitude_density"),

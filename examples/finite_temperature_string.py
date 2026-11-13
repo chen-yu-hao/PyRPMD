@@ -55,7 +55,6 @@ def main():
     print("x [bohr], y [bohr], restrained free energy [hartree], block error [hartree]")
     print(np.column_stack((result.images, result.free_energy, result.free_energy_standard_error)))
     print(f"Infinite-stiffness thermal valley: y={valley:.6f} bohr")
-    print(f"Geometric convergence: {result.converged}; physical convergence: {result.physical_converged}")
     print(result.diagnostics)
 
 

@@ -242,7 +242,6 @@ def test_curved_three_dimensional_saddle_agrees_with_root_and_saves_force_calls(
     assert updated.optimizer_diagnostics["force_configurations"] == new_pes.frames
     assert updated.optimizer_diagnostics["force_calls"] < legacy.optimizer_diagnostics["force_calls"]
     assert updated.optimizer_diagnostics["hessian_updates"] > 0
-    assert updated.to_dict()["physical_converged"] is False
     # The accepted path follows a curved valley, not a frozen straight line.
     assert np.ptp(updated.path_bohr[:, 0, 1]) > 0.1
 

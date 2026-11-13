@@ -99,7 +99,6 @@ def test_matrix_inverse_defect_preserves_quantum_curve_when_full_equals_subspace
     )
     np.testing.assert_allclose(result["rate"], quantum, rtol=1e-7, atol=1e-8)
     assert result["diagnostics"]["exact_general_rate_claim"] is False
-    assert result["diagnostics"]["physical_converged"] is False
 
 
 def test_matrix_rate_and_result_validation_reject_non_square_inputs():

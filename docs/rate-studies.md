@@ -150,9 +150,9 @@ percentile intervals are not converted silently into standard errors; use
 independent study replicas for its convergence uncertainty.
 
 `numerically_converged_on_tested_grid` is true only when every requested test
-passes. `physical_converged` remains false: this grid does not by itself test
-PMF domain/bins, simulation length, recrossing time, equilibration, reaction
-classification or PES adequacy. Bead/time-step/$R_\infty$ studies are standard
+passes. This grid does not by itself test PMF domain/bins, simulation length,
+recrossing time, equilibration, reaction classification or PES adequacy.
+Bead/time-step/$R_\infty$ studies are standard
 RPMD validation requirements; see the original
 [RPMDrate paper](https://doi.org/10.1016/j.cpc.2012.10.017).
 

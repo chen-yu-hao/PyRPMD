@@ -179,7 +179,7 @@ def validate(*, modes=(4, 8), intervals=(8, 16, 32, 64), relative_tolerance=0.01
         "sources": _REFERENCE["SOURCES"], "cases": cases,
         "classical_limit_case": classical,
         "rate_unit_au": "inverse atomic time", "atomic_time_seconds": ATOMIC_TIME_S,
-        "physical_converged": False,
+        
         "scope": (
             "Normal-regime, constant weak real electronic coupling and constrained bath coordinates. "
             "Bead, bath and semiclassical errors are reported separately. The exact GR reference "

@@ -62,7 +62,6 @@ def test_real_eam_batch_oracles_exact_recovery_and_missing_replica_rejection(tmp
     pytest.importorskip("ase")
     report = run_acceptance(model, tmp_path / "acceptance", modes=("serial", "batch"), tasks=("pimd",))
     assert report["implementation_checks_passed"] is True
-    assert report["physical_converged"] is False
     assert report["oracle"]["all_nine_strain_components_max_error_eV"] < 1e-4
     reference, batched = report["cases"]
     assert batched["measurement"]["pes_calls"] < reference["measurement"]["pes_calls"]

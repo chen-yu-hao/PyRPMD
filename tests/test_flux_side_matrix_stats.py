@@ -48,8 +48,6 @@ def test_matrix_flux_side_preserves_shapes_and_reports_bootstrap_ci():
     assert bootstrap_neff.shape == (192,)
     assert np.all(bootstrap_neff >= 1.0)
     assert np.all(bootstrap_neff <= len(weights))
-    assert result.physical_converged is False
-    assert result.diagnostics["physical_converged"] is False
 
     # A scalar side indicator is broadcast over matrix elements, which is the
     # common flux-side convention for a matrix-valued response operator.

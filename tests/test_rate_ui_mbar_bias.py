@@ -125,13 +125,13 @@ def test_prepare_exposes_width_and_nearest_center_spacing():
     entrance = next(w for w in window_plan if w["source"] == "entrance")
     barrier = next(w for w in window_plan if w["source"] == "barrier")
     assert entrance["thermal_sigma_xi"] == pytest.approx(
-        np.sqrt(KB_AU / 0.0016)
+        np.sqrt(KB_AU / 0.1)
     )
     assert barrier["thermal_sigma_xi"] == pytest.approx(
-        np.sqrt(KB_AU / 0.0032)
+        np.sqrt(KB_AU / 0.1)
     )
-    assert entrance["nearest_center_spacing_xi"] == pytest.approx(0.02)
-    assert barrier["nearest_center_spacing_xi"] == pytest.approx(0.01)
+    assert entrance["nearest_center_spacing_xi"] == pytest.approx(0.005)
+    assert barrier["nearest_center_spacing_xi"] == pytest.approx(0.005)
 
 
 def test_implicit_rate_windows_use_narrow_gaussian_width(tmp_path):
@@ -139,7 +139,9 @@ def test_implicit_rate_windows_use_narrow_gaussian_width(tmp_path):
     from pyrpmd.workflows.rate_pmf import _prepare
 
     source = Path(__file__).resolve().parents[1] / 'examples/rate/minimal.inp'
-    config, system = JobSpec.from_file(source).resolve()
+    spec = JobSpec.from_file(source)
+    spec.data.pop('umbrella', None)
+    config, system = spec.resolve()
     assert config['umbrella']['kappa'] * config['beta'] == pytest.approx(500.)
     stage = _prepare(config, system, tmp_path, _write=False)
     assert stage['beta'] * stage['umbrella']['kappa'] == pytest.approx(500.)

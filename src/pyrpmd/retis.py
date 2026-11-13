@@ -110,7 +110,7 @@ def estimate_retis_flux(minus_frames, plus_frames, *, dt, basin_a, basin_b,
         "mean_plus_time_au": float(times[:, 1].mean()),
         "flux_au": flux, "flux_s_inv": flux / ATOMIC_TIME_S,
         "flux_standard_error_block_au": diagnostic["standard_errors"][0],
-        "block_diagnostics": diagnostic, "converged": False, "physical_converged": False,
+        "block_diagnostics": diagnostic, "converged": False,
     }
 
 
@@ -168,7 +168,7 @@ class MinusTISResult:
             "acceptance_fraction": float(np.mean(self.accepted)),
             "statistical_inefficiency": float(statistical_inefficiency(self.path_frames)),
             "length_rejections": self.length_rejections,
-            "converged": False, "physical_converged": False,
+            "converged": False,
         }
 
 
@@ -197,7 +197,7 @@ class RETISResult:
                 "conditional_probabilities": probabilities.tolist(),
                 "crossing_probability_product": product, "overall_crossing_probability": product,
                 "requires_independent_flux": self.minus is None, "run_identity": self.run_identity,
-                "rate_s_inv": None, "converged": False, "physical_converged": False}
+                "rate_s_inv": None, "converged": False}
         if self.minus is None:
             result["block_diagnostics"] = _block_diagnostics(
                 crossings, lambda x: np.prod(x.mean(axis=0)), block_size)

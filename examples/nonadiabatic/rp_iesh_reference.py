@@ -272,7 +272,7 @@ def compare(*, trajectories=128, beads=8, seed=20261103, dt=.2, duration=20.,
         "rp_iesh_elapsed_seconds": elapsed,
         "rp_iesh_microseconds_per_step": elapsed*1e6/(trajectories*steps),
         "platform": platform.platform(), "processor": platform.processor(),
-        "physical_converged": False,
+        
         "limitations": [
             "finite isolated two-electron, three-orbital bath; no metallic continuum limit",
             "finite-bead harmonic nuclear preparation; initially factorized diabatic determinant",

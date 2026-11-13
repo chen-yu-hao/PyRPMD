@@ -256,7 +256,6 @@ def test_public_npt_input_prepare_run_resume_and_summary(tmp_path):
     assert result["ensemble"] == "npt"
     assert result["barostat"]["target_pressure_bar"] == pytest.approx(1.)
     assert result["trajectory_storage"] == ["stream"]
-    assert not result["physical_converged"]
     resumed = resume_run(tmp_path / "public")
     assert result["barostat"] == resumed["barostat"]
     assert result["estimators"] == resumed["estimators"]

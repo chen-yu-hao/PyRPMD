@@ -119,7 +119,7 @@ def main():
             "beads":16,"child_time_fs":a.child_fs,"parent_configurations":nparent,
             "child_trajectories":2*nparent,"kappa_side_candidate":estimate,
             "kappa_side_curve_plateau_start_fs":a.child_fs*.75,
-            "kappa_physical_converged":False,"normalized_2d_rate_cm3_s":None,
+            "normalized_2d_rate_cm3_s":None,
             "status":"diagnostic_only__no_physical_entrance_bridge_or_complete_products",
             "maximum_endpoint_energy_error_kbt":max(d["energy_error_kbt"] for d in diagnostics),
             "parent_topology_valid_count":sum(d["third_bond_longest_at_parent"] for d in diagnostics),

@@ -30,7 +30,7 @@ def test_real_validation_case_separates_three_errors_and_preserves_costs():
     result = module["run_case"](2, (4, 8, 16), relative_tolerance=0.2)
     study = result["study"]
     assert study["number_of_optimizations"] == 7
-    assert study["numerical_converged"] and not study["physical_converged"]
+    assert study["numerical_converged"]
     assert result["finite_bath_analytic_sci"]["exact_quantum_rate"] is None
     assert abs(result["bead_error_vs_finite_bath_sci"]) < 0.03
     product = np.prod([1+result[name] for name in (

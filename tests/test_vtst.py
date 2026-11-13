@@ -143,7 +143,6 @@ def test_straight_path_sct_reduces_exactly_to_zct_and_cvt_is_symmetric():
     for row in result.temperatures:
         assert row["zct"]["kappa"] == row["sct"]["kappa"]
         assert row["cvt_zct"]["rate"] == row["cvt_sct"]["rate"]
-    assert result.physical_converged is False
 
 
 def test_sct_saddle_mass_uses_nonuniform_linear_interpolation(monkeypatch):
@@ -332,7 +331,6 @@ def test_workflow_publishes_versioned_identity_and_complete_bundle(monkeypatch, 
     second = tmp_path / "second"
     summary = workflow.run_vtst("unused.inp", output=first, tunnelling_quadrature_points=16)
     workflow.run_vtst("unused.inp", output=second, tunnelling_quadrature_points=32)
-    assert summary["physical_converged"] is False
     assert summary["numerical_converged"] is False
     for relative in (
         "manifest.json",
@@ -368,7 +366,7 @@ def test_cli_dispatches_vtst_options(monkeypatch, tmp_path, capsys):
     def fake_run(job, **options):
         captured["job"] = job
         captured.update(options)
-        return {"task": "vtst", "physical_converged": False}
+        return {"task": "vtst"}
 
     monkeypatch.setattr(workflow, "run_vtst", fake_run)
     output = tmp_path / "vtst"
@@ -394,4 +392,3 @@ def test_cli_dispatches_vtst_options(monkeypatch, tmp_path, capsys):
     assert captured["temperatures_kelvin"] == ["250 K", "500 K"]
     assert captured["mep_step"] == "0.03 bohr"
     assert captured["tunnelling_quadrature_points"] == 48
-    assert json.loads(capsys.readouterr().out)["physical_converged"] is False

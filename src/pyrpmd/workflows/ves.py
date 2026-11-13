@@ -488,7 +488,7 @@ def _analyze(streams, config, system, output, return_data):
         "estimator": options["method"], "measure": "cv_density", "beta": config["beta"],
         "dimension": cv.dimension, "units": list(cv.units), "energy_unit": "hartree",
         "status": "finite_time_estimate" if all(stream["complete"] for stream in streams) else "partial_finite_time_estimate",
-        "converged": False, "physical_converged": False,
+        "converged": False,
         "target": options["bias_kwargs"]["target"], "bias_factor": options["bias_kwargs"]["bias_factor"],
         "basis": "tensor_product_legendre_without_constant", "orders": list(biases[0].basis.orders),
         "ranges_au": options["ranges"].tolist(), "replicas": len(streams),

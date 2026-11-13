@@ -43,7 +43,6 @@ def test_sampler_consumes_only_explicit_rng_and_state(example):
 
 def test_multiple_rounds_reduce_error_and_disagreement_on_sampled_distribution(example, tmp_path):
     report = example["run_demo"](tmp_path / "pilot")
-    assert report["physical_converged"] is False
     assert report["uncertainty_is_calibrated_error"] is False
     assert report["diagnostic_labels_enter_training"] is False
     assert report["diagnostic_reference_frames"] == 2*(1024+128)

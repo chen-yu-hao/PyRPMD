@@ -245,7 +245,7 @@ def make_figure(summary_path, published_path, output_directory):
         "interval_scope": "pointwise_95_percent_source_chain_circular_block_joint_ratio_bootstrap_conditional_on_source_mixing_and_block_lengths",
         "published_error_bar_scope": "conservative_graphic_readout_bound_not_author_sampling_error",
         "published_extraction_provenance": provenance,
-        "original_pdf_or_image_embedded": False, "physical_converged": False,
+        "original_pdf_or_image_embedded": False, 
         "artifacts": {suffix: {"file": stem.with_suffix(suffix).name,
                                "sha256": _sha256(stem.with_suffix(suffix))} for suffix in (".svg", ".png")},
     }

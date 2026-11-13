@@ -102,7 +102,7 @@ def run_validation(beads=(32, 64, 128)):
         "quantum_quadrature_relative_error_estimate": integral_error / abs(integral),
         "continuum_instanton_relative_semiclassical_error": analytic_rate / exact_rate - 1,
         "cases": cases,
-        "physical_converged": False,
+        
         "scope": "Analytic numerical validation; not a real-reaction rate or exact-dynamics replacement",
         "references": ["https://doi.org/10.1063/1.4943866",
                        "https://arxiv.org/html/2509.01454v1#A3"],

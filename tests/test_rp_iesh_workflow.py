@@ -57,13 +57,13 @@ def test_public_rp_workflow_retains_electron_count_and_reports_hop_energy(tmp_pa
     original = copy.deepcopy(source)
     checked = prepare(source, numerical=True)
     info = checked["nonadiabatic_preparation"]
-    assert checked["ready"] and info["physical_converged"] is False
+    assert checked["ready"]
     assert info["state_shape"] == [4, 1, 3]
     assert info["electronic_state_class"] == "RPIESHState"
     assert info["matrix_gradient_check"]["max_absolute_gradient_error"] < 1e-8
     result = run(source, output=tmp_path/"run")
     assert source == original
-    assert result["completed"] and result["physical_converged"] is False
+    assert result["completed"]
     saved = arrays(tmp_path/"run/results/nonadiabatic.npz")
     metadata = json.loads(str(saved["metadata"].item()))
     assert metadata["method_variant"] == "gardner-2023-centroid"

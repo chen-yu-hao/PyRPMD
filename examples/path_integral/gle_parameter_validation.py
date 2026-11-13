@@ -198,7 +198,7 @@ def sample_harmonics(thermostat, *, beta, beads, frequencies, dt, natoms=16,
         "fingerprint": engine.fingerprint, "final_state_digest": engine.state()["digest"],
         "rng_abi": getattr(engine._native, "rng_abi", "unavailable"),
         "python_step_callbacks": result["python_step_callbacks"], "cases": cases,
-        "physical_converged": False,
+        
     }
 
 
@@ -243,7 +243,7 @@ def run_validation(*, natoms=16, burn_time=100., production_time=300., dt=.01,
                                                 burn_time=burn_time, production_time=production_time, seed=9109),
                 }
     return {
-        "schema": "pyrpmd.generated-gle-validation.v1", "physical_converged": False,
+        "schema": "pyrpmd.generated-gle-validation.v1", 
         "scope": "generated harmonic matrices, independent Lyapunov references and finite native trajectories only",
         "reference_energy_order": ["potential", "kinetic_centroid_virial"],
         "units": "atomic: bohr, hartree, electron mass, atomic time; beta in inverse hartree",

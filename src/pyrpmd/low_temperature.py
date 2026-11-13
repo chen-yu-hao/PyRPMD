@@ -366,7 +366,7 @@ def harmonic_cross_checks(temperature_kelvin, transition_state, reactants, *,
         raise InstantonError("positive forward electronic barrier required")
     report = {"temperature_kelvin": temperature, "tunnelling_baseline": tunnelling_baseline,
               "crossover_temperature_kelvin": omega / (2*math.pi*KB_AU),
-              "imaginary_frequency_au": omega, "physical_converged": False,
+              "imaginary_frequency_au": omega,
               "warnings": ["harmonic wells and classical rigid rotors; not a recrossing calculation"]}
     for key, classical in (("classical_tst", True), ("harmonic_tst", False)):
         logq = ts.log_partition(beta, classical=classical, saddle=True)
@@ -495,7 +495,7 @@ def instanton_rate(action: RingPolymerAction, result, reactants, *, rigid_body=F
                 partition_convention=("isolated_gas_number_density_classical_rigid_rotors"
                                       if rigid_body else "bound_or_constrained_cartesian"),
                 phase_mode_relative_residual=phase_residual, negative_modes=1,
-                numerical_converged=True, physical_converged=False,
+                numerical_converged=True,
                 limitations=["semiclassical; nonuniform near crossover",
                              "bead, Hessian-step, PES and reactant-partition convergence required",
                              "classical rigid rotors for isolated gas molecules; no hindered rotors"])

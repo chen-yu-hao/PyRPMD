@@ -167,7 +167,7 @@ def run(output, *, snapshot=None, author_source=None, dynamics=True):
                                              "relative_difference": (AUTHOR_PARAMETERS[k] - v) / v}
                                        for k, v in PARAMETERS.items()},
               "cluster_oracle": verify_cluster(), "electrostatics": [],
-              "literature_reproduced": False, "physical_converged": False}
+              "literature_reproduced": False}
     reference = make_system(molecules=n, box_angstrom=box, ewald_tolerance=1e-9)
     reference.getForce(2).setNonbondedMethod(openmm.NonbondedForce.Ewald)
     e0, f0, seconds = evaluate(reference, q, box)
@@ -244,7 +244,7 @@ def main():
                  dynamics=not args.skip_dynamics)
     print(json.dumps({"electrostatic_cases": len(report["electrostatics"]),
                       "cluster_oracle_passed": report["cluster_oracle"]["passed"],
-                      "physical_converged": False}, indent=2))
+                      }, indent=2))
 
 
 if __name__ == "__main__":

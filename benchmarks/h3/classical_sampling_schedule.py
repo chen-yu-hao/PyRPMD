@@ -71,7 +71,7 @@ def build(reference, output, *, minimum_overlap=.60):
                             'production_sweeps':20000,'independent_seeds':[2026110101,2026110102,2026110103,2026110104]},
         'reference':str(reference),'reference_sha256':hashlib.sha256(reference.read_bytes()).hexdigest(),
         'source_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-        'physical_converged':False}
+        }
     output.parent.mkdir(parents=True,exist_ok=True)
     output.write_text(json.dumps(document,indent=2)+'\n')
     print(json.dumps({key:document[key] for key in ['windows','minimum_adjacent_bhattacharyya_overlap',

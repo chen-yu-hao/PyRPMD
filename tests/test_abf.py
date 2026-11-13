@@ -181,7 +181,6 @@ def test_double_well_abf_matches_exact_bin_quadrature():
     exact = -.5*np.log(density)
     exact -= exact[0]
     np.testing.assert_allclose(result.free_energy, exact, atol=.002)
-    assert not result.metadata["physical_converged"]
     assert np.isnan(result.uncertainty).all()
 
 

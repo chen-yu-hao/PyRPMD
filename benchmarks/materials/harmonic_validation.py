@@ -77,7 +77,7 @@ def build_report(statistics, elapsed_seconds):
         "schema_version": 1,
         "command": COMMAND,
         "description": "Four independent PIMD streams for a synthetic three-dimensional harmonic oscillator.",
-        "physical_converged": False,
+        
         "environment": {
             "pyrpmd": pyrpmd.__version__, "numpy": np.__version__,
             "python": platform.python_version(),

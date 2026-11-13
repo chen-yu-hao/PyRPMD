@@ -253,7 +253,6 @@ def _run_mpi(config, system, output, *, return_data=False):
                 config, system, output, cv, options, ensemble, return_data)
             summary = result["summary"] if return_data else result
             summary["walkers_mode"] = "mpi-sync"
-            summary["physical_converged"] = False
             summary["files"]["checkpoint"] = str(checkpoint)
             summary["warnings"].append(
                 "MPI ranks commit every deposition from one rank-ordered allgather; this is the serial shared-batch algorithm.")
@@ -281,7 +280,6 @@ def reanalyze_mpi(config, system, output, cv, options, *, return_data=False):
         config, system, output, cv, options, ensemble, return_data)
     summary = result["summary"] if return_data else result
     summary["walkers_mode"] = "mpi-sync"
-    summary["physical_converged"] = False
     summary["files"]["checkpoint"] = str(
         Path(output) / "checkpoints" / "shared_metadynamics_mpi.npz")
     write_json(Path(output) / "summary.json", summary)

@@ -441,7 +441,6 @@ def test_cli_streams_and_resumes_without_python_step_loop(tmp_path, capsys):
     assert main([str(source), "--output", str(output), "--resume", str(output/"checkpoint.npz")]) == 0
     result=json.loads((output/"summary.json").read_text())
     assert result["step"] == 42 and result["python_step_callbacks"] == 0
-    assert result["physical_converged"] is False
     parts=[np.load(path) for path in sorted(output.glob("trajectory-*.npy"))]
     expected=ensemble_from_config(config).run(42, stride=4, record_centroids=True)
     np.testing.assert_array_equal(np.concatenate(parts)[:, :18], expected["samples"])

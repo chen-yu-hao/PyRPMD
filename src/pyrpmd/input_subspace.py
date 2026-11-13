@@ -11,7 +11,8 @@ from .validation import finite_real
 _SECTION = "rate.subspace_correction"
 _FIELDS = {"enabled", "mode", "dimension", "environment", "threshold", "reuse", "path", "quantum", "rpmd", "model_2d",
            "curvature", "zero_point", "dvr_points", "dvr_half_width", "dvr_spacing", "hessian_displacement",
-           "validity"}
+           "validity", "execution"}
+_EXECUTION = {"cpus", "workers", "blas_threads", "memory_limit_mb"}
 _VALIDITY = {"unconverged_path", "unstable_bath", "outside_grid", "max_outside_fraction",
              "soft_mode_frequency", "on_invalid"}
 _PATH = {"source", "step", "max_steps", "spread_factor", "asymptote_tolerance", "asymptote_patience", "smoothing",
@@ -92,6 +93,17 @@ def rate_subspace_options(config):
         elif value not in ("reject", "allow"):
             raise InputError(f"{name} must be reject or allow")
     options["validity"] = validity
+    # Execution resources only: never part of the physics or factor-cache identity.
+    execution = _table(options.get("execution", {}), _EXECUTION, f"{_SECTION}.execution")
+    for key, value in execution.items():
+        name = f"{_SECTION}.execution.{key}"
+        if key == "cpus" and value == "auto":
+            continue
+        if key == "memory_limit_mb":
+            execution[key] = _real(value, name)
+        else:
+            execution[key] = _integer(value, name, 1)
+    options["execution"] = execution
     # path.max_steps is optional: without it the continuations have no step budget.
     minima = {"max_steps": 1, "asymptote_patience": 1, "least_action_points": 2, "instanton_beads": 1,
               "instanton_max_iterations": 1, "refinement": 1, "dense_limit": 1, "windows": 4,

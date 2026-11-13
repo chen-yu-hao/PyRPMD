@@ -56,7 +56,7 @@ def main():
     with ProcessPoolExecutor(max_workers=args.workers, mp_context=context,
                              initializer=initialize, initargs=(context.Barrier(args.workers),)) as pool:
         rows = list(pool.map(measure, [options]*args.workers))
-    result = {"schema": "thermal-processes-v1", "complete": True, "physical_converged": False,
+    result = {"schema": "thermal-processes-v1", "complete": True, 
               "environment": environment(), "options": options, "workers": rows,
               "script_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
     args.output.parent.mkdir(parents=True, exist_ok=True)

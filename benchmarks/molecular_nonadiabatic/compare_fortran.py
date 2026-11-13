@@ -115,7 +115,7 @@ def compare(compiler="gfortran", count=64, step=2e-4):
     accepted = matrix_error < 3e-12 and eigenvalue_error < 3e-12 and gradient_error < 3e-8
     return {
         "format": "PyRPMD.NaH2.original_fortran_comparison.v1",
-        "passed": accepted, "physical_converged": False,
+        "passed": accepted, 
         "source": potential.to_dict()["source"],
         "compiler": subprocess.run([executable, "--version"], check=True, capture_output=True, text=True).stdout.splitlines()[0],
         "compilation_flags": ["-O2", "-fPIC", "-shared", "-std=legacy", "-ffixed-line-length-72"],

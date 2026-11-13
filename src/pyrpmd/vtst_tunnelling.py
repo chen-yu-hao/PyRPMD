@@ -288,13 +288,10 @@ class VTSTResult:
     conventions: dict[str, Any]
     endpoint_validation: dict[str, Any]
     warnings: list[str]
-    physical_converged: bool = False
-
     def to_dict(self, *, include_hessians: bool = True) -> dict[str, Any]:
         return {
             "schema": "pyrpmd.vtst-result",
             "schema_version": 1,
-            "physical_converged": bool(self.physical_converged),
             "conventions": _jsonable(self.conventions),
             "endpoint_validation": _jsonable(self.endpoint_validation),
             "warnings": list(self.warnings),
@@ -378,7 +375,7 @@ def compute_vtst(
             }
         )
     warnings = [
-        "physical_converged is false until MEP step, path extent, Hessian displacement, and tunnelling quadrature are independently converged",
+        "MEP step, path extent, Hessian displacement, and tunnelling quadrature require independent convergence checks",
         "harmonic transverse vibrations and classical rigid rotors are used",
         "ZCT/SCT use uniform semiclassical ground-state transmission with the reflected above-barrier branch; LCT and microcanonical OMT are not included",
         "Cartesian projection is used for generalized normal modes",
@@ -412,5 +409,4 @@ def compute_vtst(
         },
         endpoint_validation=endpoint_validation or {"checked": False},
         warnings=warnings,
-        physical_converged=False,
     )

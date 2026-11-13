@@ -21,7 +21,6 @@ def test_anisotropic_brownian_reference_and_independent_replica_errors():
     expected, q, time = brownian()
     result = analyze_diffusion(q, time, max_lag=64, fit_range=(1.0, 5.0), bootstrap=300, seed=55)
     assert result["status"] == "diffusive_regime_candidate"
-    assert result["physical_converged"] is False
     np.testing.assert_allclose(result["diffusion_tensor_au"], expected, atol=0.025, rtol=0.1)
     assert result["diffusion_au"] == pytest.approx(np.trace(expected) / 3, rel=0.08)
     np.testing.assert_allclose(result["diffusion_tensor_m2_s"],
@@ -123,7 +122,6 @@ def test_multiple_origins_do_not_create_independent_error_samples():
     assert batches["uncertainty"]["independent_units"] == 8
     assert batches["uncertainty"]["standard_error_au"] > 0
     assert "correlation time" in batches["uncertainty"]["reason"]
-    assert batches["physical_converged"] is False
 
 
 def test_short_saved_record_returns_diagnostic_without_a_fit():

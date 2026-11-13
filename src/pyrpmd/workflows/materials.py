@@ -1027,8 +1027,7 @@ def _analyze(streams, config, system, output, return_data=False, *, stream_data_
     streams = [s if stream_data_prepared and s["storage"] == "stream" else
                _analysis_stream(s, config, system, options, return_data=return_data) for s in streams]
     result = {
-        "task": config["task"], "status": "complete" if all(s["complete"] for s in streams) else "partial",
-        "physical_converged": False, "converged": False,
+        "task": config["task"], "status": "complete" if all(s["complete"] for s in streams) else "partial", "converged": False,
         "replicas": len(streams), "samples_per_replica": [len(s["times"]) for s in streams],
         "phase": ("centroid_ef_rpmd_production" if options["electronic_friction"] is not None else
                   "equilibrium_sampling" if config["task"] == "pimd" else "unthermostatted_rpmd_production"),

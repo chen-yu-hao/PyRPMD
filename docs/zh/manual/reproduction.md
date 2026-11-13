@@ -581,7 +581,7 @@ H + H₂ 和水已有 campaign，不要绕过原记录另以默认短输入声�
 
 **现有入口。** [examples/instanton/eckart.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/instanton/eckart.py); [examples/instanton/low_temperature.py](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/instanton/low_temperature.py); [examples/instanton/cross_checks.json](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/examples/instanton/cross_checks.json); [docs/instanton.md](https://github.com/chen-yu-hao/PyRPMD/blob/cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d/docs/instanton.md)
 
-**缺口与边界。** 优化收敛不代表物理收敛，报告仍保留 physical_converged=False；分子目标还需势面、配分函数、对称/转动因子。
+**缺口与边界。** 优化收敛不代表物理收敛；分子目标还需独立核查势面、配分函数、对称/转动因子。
 
 [实现与范围](references.md#rpi).
 

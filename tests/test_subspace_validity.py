@@ -305,7 +305,8 @@ def test_a_ratio_that_cannot_be_formed_keeps_its_components():
 
 # --- pipeline ---------------------------------------------------------------
 
-def pipeline_spec(monkeypatch, directory, *, termination, model=None, plane=None, dimension=1, **spec):
+def pipeline_spec(monkeypatch, directory, *, termination, model=None, plane=None, dimension=1,
+                  plane_quantum=None, **spec):
     """A pipeline whose path and models are supplied; the gates are real."""
     from pyrpmd.analysis import subspace_pipeline as pipeline
 
@@ -320,7 +321,7 @@ def pipeline_spec(monkeypatch, directory, *, termination, model=None, plane=None
 
     def plane_model(run, path, direction, options):
         built[2] = plane
-        return plane, {}, {"dimension": 2}, None
+        return plane, dict(plane_quantum or {}), {"dimension": 2}, None
 
     run = SimpleNamespace(root=directory, beta=8.0, nbeads=4, xi_star=1.0, provider=SimpleNamespace())
     mean = SimpleNamespace(curvature_width=lambda *args, **kwargs: {"maximum": 0.0})
@@ -333,6 +334,7 @@ def pipeline_spec(monkeypatch, directory, *, termination, model=None, plane=None
                         lambda *args: {"maximum": 0.0, "candidate_direction": [0.0, 1.0]})
     monkeypatch.setattr(pipeline, "path_model", path_model)
     monkeypatch.setattr(pipeline, "plane_model", plane_model)
+    monkeypatch.setattr(pipeline, "rph_model", lambda run, path, options: plane_model(run, path, None, options))
     monkeypatch.setattr(pipeline, "correct_rate_run",
                         lambda root, correction, **kwargs: {"factor": correction.factor})
     return dict(source={"rate_run": str(directory)}, subspace={"dimension": dimension}, rpmd=RPMD,

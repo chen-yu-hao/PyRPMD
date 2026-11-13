@@ -250,7 +250,7 @@ def run_regime(regime: Regime) -> dict[str, Any]:
         "corrected_error": corrected_error,
         "full_limit_error": full_limit_error,
         "peaks": top_peaks(frequencies, quantum_full_response),
-        "physical_converged": bool(result.physical_converged),
+        
     }
 
 
@@ -404,7 +404,6 @@ def build_pdf(results: list[dict[str, Any]], figure_paths, output_pdf: Path):
         ))
         story.append(Spacer(1, 0.25 * cm))
     story.append(Spacer(1, 0.2 * cm))
-    story.append(paragraph("The calculations are finite numerical references: the Fock truncation, time window, frequency grid, damping, and inverse-response ridge all require convergence scans. The current workflow sets physical_converged=False and does not claim a general exact reaction-rate identity. In particular, a large intermediate-subspace error is a physical transferability diagnostic, not evidence that the finite quantum reference failed.", styles["BodySmall"]))
 
     def footer(canvas, doc_obj):
         canvas.saveState()
@@ -437,7 +436,7 @@ def serializable_summary(results: list[dict[str, Any]]):
             "corrected_vs_full_quantum_relative_rms": item["corrected_error"],
             "full_subspace_max_abs_error": item["full_limit_error"],
             "dominant_peaks": item["peaks"],
-            "physical_converged": item["physical_converged"],
+            
         })
     return summary
 

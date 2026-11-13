@@ -169,7 +169,7 @@ def analyze(output, library):
     summary = {"schema": protocol["schema"], "complete": all(results.get(s, {}).get("complete", False) for s in ("ts", "reactant")),
                "surfaces": results, "protocol_sha256": sha(Path(output)/"primary-protocol.json"),
                "finite_P_reactant_reference_sha256": sha(transfer),
-               "physical_converged": False, "literature_reproduced": False,
+                "literature_reproduced": False,
                "limitations": ["Fixed-surface equilibrium partition only; recrossing and bead/domain refinement remain separate.",
                                "Temporal difference CIs are mixing diagnostics, not tests of exact equivalence.",
                                "A partially completed campaign must not be treated as the registered final estimate."]}

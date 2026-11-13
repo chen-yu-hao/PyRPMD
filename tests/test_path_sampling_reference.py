@@ -91,7 +91,7 @@ def test_toml_quartic_rates_match_equilibrium_flux_with_raw_block_errors(tmp_pat
     assert result[field] == pytest.approx(error, rel=2e-14)
     assert abs(estimate - exact) <= 5 * error
     assert result["completed"] is True
-    assert result["converged"] is False and result["physical_converged"] is False
+    assert result["converged"] is False
     assert result["rate_s_inv"] is None
     assert all(item["length_rejections"] == 0 for item in result["interfaces"])
     print("PATH_WORKFLOW_QUARTIC_REFERENCE", json.dumps({
@@ -130,7 +130,7 @@ def test_infinite_retis_quartic_rate_uses_only_free_ensemble_observations(tmp_pa
     assert result["rate_estimate_au"] == pytest.approx(estimate, rel=2e-14)
     assert result["rate_standard_error_block_au"] == pytest.approx(error, rel=2e-14)
     assert abs(estimate - exact) <= 5 * error
-    assert result["completed"] and not result["physical_converged"]
+    assert result["completed"]
     print("PATH_WORKFLOW_QUARTIC_REFERENCE", json.dumps({
         "method": "infinite-retis", "rate_estimate_au": float(estimate),
         "independent_block_se_au": error, "exact_rate_au": exact,
@@ -151,7 +151,6 @@ def test_ffs_quartic_rate_matches_reference_across_independent_complete_runs(tmp
         summary = run(config, output=directory)
         raw = observations(directory)
         assert summary["completed"]
-        assert not summary["physical_converged"]
         # Retain complete zero-event runs if they occur; never condition the
         # independent-run average on at least one success.
         flux = raw["flux_events"].sum() / (0.04 * raw["flux_a_history"].sum())

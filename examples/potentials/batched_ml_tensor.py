@@ -26,7 +26,7 @@ def main():
             "energy_hartree": out.energy.tolist(),
             "force_norm_hartree_per_bohr": out.forces.norm().item(),
             "numpy_tensor_agree": True, "trained_model": False,
-            "physical_converged": False,
+            
         }, indent=2))
 
 

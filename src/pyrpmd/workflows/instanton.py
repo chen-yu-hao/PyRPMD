@@ -231,8 +231,8 @@ def run_instanton(potential, masses, initial_path, *, bead_counts, potential_ide
     and metadata are recorded too, but cannot infer hidden external parameters.
     Every resolved numerical/scientific option enters the separate v1 identity.
     ``output`` is an optional JSON FILE, atomically replaced after success.
-    No RNG or optimizer restart state is created.  ``physical_converged`` always
-    remains false: grid convergence is not a validation of the PES, harmonic
+    No RNG or optimizer restart state is created. Grid convergence is not a
+    validation of the PES, harmonic
     reactant approximation or leading semiclassical theory.
     """
     if mode == "golden_rule":
@@ -336,7 +336,7 @@ def run_instanton(potential, masses, initial_path, *, bead_counts, potential_ide
     identity = _portable(identity, "scientific_identity")
     report = {"schema": _SCHEMA, "mode": mode,
               "physics_fingerprint": fingerprint_payload(identity), "scientific_identity": identity,
-              "rows": [], "physical_converged": False,
+              "rows": [],
               "convergence_scope": "stationarity_and_requested_discretization_only",
               "limitations": ["leading semiclassical theory; not exact quantum dynamics",
                               "PES, Hessian-step and stationary-tolerance validation remain independent",

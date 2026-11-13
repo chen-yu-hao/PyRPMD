@@ -149,7 +149,7 @@ def audit(model):
             "force_derivatives": fd, "strain_derivatives": strain,
             "periodic_force_error_hartree_per_bohr": translation_error,
             "software_checks_passed": all(maxima[k] < v for k, v in tolerances.items()) and translation_error < 1e-11,
-            "physical_converged": False, "literature_reproduced": False,
+             "literature_reproduced": False,
             "limitations": ["ASE and LAMMPS interpolate the tabulated functions differently; byte-identical floating-point forces are not expected.",
                             "No diffusivity, equilibrium sampling or match to the 2012 Ni(100) PES/lattice has been established.",
                             "Tolerance values are engineering checks for table interpolation and finite differences, not uncertainties of a literature diffusion coefficient."],

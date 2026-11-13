@@ -161,7 +161,6 @@ def _collect_async(config, system, output, cv, options, *, return_data):
         config, system, output, cv, options, ensemble, return_data)
     summary = result["summary"] if return_data else result
     summary["walkers_mode"] = "async-files"
-    summary["physical_converged"] = False
     summary["status"] = ("finite_time_async_bias_estimate" if all(
         stream["elapsed"] == options["neq"] + options["nprod"] for stream in streams)
         else "partial_async_bias_estimate")

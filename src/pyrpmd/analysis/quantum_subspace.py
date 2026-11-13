@@ -180,7 +180,7 @@ def memory_embed(spec, frequencies, damping, cross, bath,
     return result, {'minimum_dissipative_eigenvalue': float(eigenvalues.min()),
         'negative_spectral_fraction': negative,
         'denominator_condition_max': float(np.linalg.cond(denominator).max()),
-        'static_shift': shift.tolist(), 'physical_converged': False,
+        'static_shift': shift.tolist(),
         'closure': 'harmonic-memory, nonlinear quantum active response',
         'passivity_grid_passed': bool(eigenvalues.min() > -1e-10)}
 
@@ -426,7 +426,6 @@ def select_quantum_subspace(
         "budget_exhausted": bool(len(selected) >= max_dimension),
         "closure_threshold": float(coupling_threshold),
         "selection_is_error_bound": False,
-        "physical_converged": False,
         "interpretation": "automatic nonlinear-force and joint-coordinate ranking; validate by nested quantum-defect convergence",
     }
     return QuantumSubspaceSelection(selected_indices, basis, total, nonlinear, coupling, target_score, diagnostics)

@@ -1,8 +1,10 @@
 """Deterministic check: on a 2D system the RPH model's quantum rate is the full rate on the same slice."""
 import json, sys, time
+from pathlib import Path
 import numpy as np
-from models import Curved, model_run
-from reference import build_path, QUANTUM
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from benchmarks.subspace_rph.models import Curved, model_run
+from benchmarks.subspace_rph.reference import build_path, QUANTUM
 from pyrpmd.analysis import subspace_pipeline as pipeline
 from pyrpmd.analysis.subspace_model import SubspaceModel
 from pyrpmd.analysis.subspace_quantum import exact_quantum_rate

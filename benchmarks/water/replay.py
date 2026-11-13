@@ -50,10 +50,10 @@ def replay(directory):
         np.testing.assert_allclose(analysis["raw_fit"][key], old["raw_fit"][key], rtol=1e-12, atol=1e-20)
     drift = float(np.max(abs(energy - energy[0])) / report["conditions"]["beads"])
     np.testing.assert_allclose(drift, report["max_energy_drift_per_bead_hartree"], rtol=1e-13)
-    if report["physical_converged"] is not False or report["literature_reproduced"] is not False:
-        raise ValueError("a software pilot cannot assert physical/literature validation")
+    if report["literature_reproduced"] is not False:
+        raise ValueError("a software pilot cannot assert literature validation")
     return {"artifact_integrity_passed": True, "estimator_replay_passed": True,
-            "diffusion_status": analysis["status"], "physical_converged": False,
+            "diffusion_status": analysis["status"], 
             "literature_reproduced": False, "max_energy_drift_per_bead_hartree": drift,
             "scope": "Local saved-array estimator replay; no new dynamics or physical convergence claim"}
 

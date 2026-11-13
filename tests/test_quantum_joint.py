@@ -30,7 +30,6 @@ def test_online_joint_decoupled_norm_and_bath_state():
     assert np.allclose(result.momenta[:, 0, 0], 0.4)
     assert np.max(np.abs(result.wavefunction_norm - 1.0)) < 5e-10
     assert result.diagnostics["centroid_coupling"] is True
-    assert result.physical_converged is False
 
 
 def test_online_joint_linear_coupling_force_and_finite_difference():

@@ -139,7 +139,6 @@ def test_displaced_harmonic_action_trace_and_schur_converge_to_analytic_quantum_
         assert orbit.optimizer_diagnostics["force_calls"] == sum(p.calls for p in potentials)
         assert orbit.optimizer_diagnostics["force_configurations"] == sum(p.frames for p in potentials)
         assert orbit.optimizer_diagnostics["spring_preconditioner_dimension"] == 2*p
-        assert rate["physical_converged"] is False
     assert errors[0] > 3*errors[1] > 9*errors[2]
     assert errors[-1] < .005
     assert orbit.tau1_au == pytest.approx(reference["tau"], rel=.001)
