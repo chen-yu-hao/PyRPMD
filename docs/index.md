@@ -15,7 +15,7 @@ go straight to your task:
 | Quantity | `task` | Chapter |
 | --- | --- | --- |
 | Gas-phase bimolecular RPMD rate | `rate` | [Gas phase and free energy](manual/workflows.md) |
-| Automatic AUS sampling and recrossing | `rate` with `auto = true` | <a href="automatic-rate.html">Automatic rate</a> |
+| Automatic AUS sampling and recrossing | `rate` with `auto = true` | [Automatic rate](automatic-rate.md) |
 | Direct collisions and product channels | `drpmd` | [Gas phase](manual/workflows.md); [NRPMD](manual/nonadiabatic.md) |
 | Model electronic populations and coherences | `nonadiabatic` | [Population workflow](nonadiabatic-workflow.md) |
 | Collisions from selected incoming vibrational states (NE-RPMD, QCT) | `drpmd` + `[initial_ensemble]`; `state-check`, `extend` commands | [Gas phase](manual/workflows.md#selected-vibrational-initial-states) |
@@ -70,6 +70,7 @@ To create a ready input first, use `pyrpmd init my-first-run` and follow the
 pyrpmd validate job.inp --check-pes     # check input and units, construct the PES
 pyrpmd run job.inp --output runs/job    # run; results in runs/job/results/summary.json
 pyrpmd analyze runs/job                 # read the summary; FES methods, diffusion and nonadiabatic populations accept --recompute
+pyrpmd status runs/job --watch          # watch committed progress and stage ETA
 pyrpmd resume runs/job                  # continue from checkpoints without changing the science
 pyrpmd report runs/job                  # optional: figures, index.html and report.json from saved data
 ```
@@ -98,6 +99,7 @@ Installation <manual/installation>
 Quickstart <manual/quickstart>
 Input <manual/input>
 Science <manual/science>
+Converging a result <convergence>
 ```
 
 ```{toctree}
@@ -108,7 +110,7 @@ Science <manual/science>
 Gas phase <manual/workflows>
 Rate PMF selection <rate-pmf-selection>
 Explicit rate input and regional umbrellas <rate-input-v2>
-Automatic AUS rate calculations <automatic-rate.md>
+Automatic AUS rate calculations <automatic-rate>
 Transition-state search <transition-state-search>
 Materials and surfaces <manual/periodic>
 PCET <manual/pcet>
@@ -126,6 +128,7 @@ Potentials and plugins <manual/potentials>
 PES generation <manual/pes-generation>
 JaxPIP fitting and native execution <manual/jaxpip-generation>
 Execution <manual/execution>
+Progress and structured logs <manual/progress>
 Propagation stack <propagation-stack>
 Expensive potentials <performance-dynamics>
 Trajectory batching <batched-dynamics>
@@ -180,6 +183,9 @@ Paper systems and reproduction <manual/reproduction>
 Python API <manual/api>
 Troubleshooting <manual/troubleshooting>
 Developer guide <manual/development>
+Stability and compatibility <development/stability>
+Archive migration <development/archive-migration>
+Review history <development/review-history>
 Distribution and releases <distribution>
 Literature validation <literature-validation>
 Publication readiness <publication-readiness>

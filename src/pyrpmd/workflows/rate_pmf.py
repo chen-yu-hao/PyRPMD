@@ -169,6 +169,8 @@ def configure_rate_umbrella(config, system, reaction):
     if not any(k in umbrella for k in selectors):
         umbrella.update(start=-0.05, stop=1.05, count=23)
     if not any(k in umbrella for k in ("stiffness", "stiffness_au", "kappa", "force_constant", "force_matrix")):
+        # New inputs persist their stiffness during resolution; preserve the
+        # implicit value of historical resolved inputs/checkpoints here.
         umbrella["kappa"] = 50.0 / result["beta"]
     umbrella["cvs"] = ["xi"]
     result.setdefault("analysis", {}).update(measure="rate_flux")
@@ -633,10 +635,10 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options, executor=Non
                     "bootstrap_workers_source", "default"
                 ),
                 bootstrap_total_cores=pmf_options.get("bootstrap_total_cores"),
-                require_block_support=bool(config.get("rate", {}).get("auto")),
                 # This function runs on root only. A collective MPI executor
                 # requires every rank to enter map(), unlike local pools.
                 bootstrap_executor=(executor if config.get("parallel", {}).get("backend") != "mpi" else None),
+                require_block_support=bool(config.get("rate", {}).get("auto")),
                 min_weight_ess=pmf_options.get("min_weight_ess"),
                 min_endpoint_ess=pmf_options.get("min_endpoint_ess"),
                 max_center_displacement_sigma=pmf_options.get("max_center_displacement_sigma"),

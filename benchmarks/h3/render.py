@@ -137,9 +137,10 @@ def render(directory):
         if records is None:
             # Compact dRPMD summaries keep the authoritative per-trajectory
             # rows in the CSV table instead of duplicating them in JSON.
-            table = summary_path.parent / summary.get(
-                "trajectory_table", "trajectories.csv"
-            )
+            rel = Path(summary.get("trajectory_table", "trajectories.csv"))
+            table = summary_path.parent / rel
+            if not table.is_file():
+                table = summary_path.parent.parent / rel
             records = []
             with table.open(newline="", encoding="utf-8") as stream:
                 for row in csv.DictReader(stream):

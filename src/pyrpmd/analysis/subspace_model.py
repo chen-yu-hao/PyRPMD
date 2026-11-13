@@ -94,6 +94,10 @@ class GridPotential:
     polynomial blow-up for trajectories that run out of the box.  Such points
     are counted in :attr:`outside_fraction`; a ring polymer that leaves the
     grid is sampling a potential the exact quantum calculation never saw.
+    Gradient evaluations are also booked under the current :attr:`stage`
+    (:meth:`set_stage`), because an all-stage fraction mixes rejected
+    proposals, equilibration and committed trajectories that have left
+    through a flat channel end with the samples an estimator actually uses.
     """
 
     def __init__(self, axes: Sequence[np.ndarray], values: np.ndarray):
@@ -105,12 +109,16 @@ class GridPotential:
         self.upper = np.array([a[-1] for a in self.axes])
         self.evaluations = 0
         self.outside = 0
+        self.stage = "unassigned"
+        self.stages: dict[str, list[int]] = {}
         coefficients = np.asarray(values, dtype=float)
         knots = []
         for index, axis in enumerate(self.axes):
             spline = make_interp_spline(axis, coefficients, k=3, axis=index)
             knots.append(spline.t)
             coefficients = np.moveaxis(spline.c, 0, index)
+        self._native_data = (tuple(np.ascontiguousarray(t) for t in knots),
+                             np.ascontiguousarray(coefficients))
         self._fallback = None
         try:
             from scipy.interpolate import NdBSpline
@@ -137,9 +145,35 @@ class GridPotential:
     def outside_fraction(self) -> float:
         return float(self.outside / self.evaluations) if self.evaluations else 0.0
 
+    def set_stage(self, name: str) -> None:
+        """Book the following gradient evaluations under ``name``."""
+        self.stage = str(name)
+
+    def reset_counters(self) -> None:
+        self.evaluations = self.outside = 0
+        self.stage = "unassigned"
+        self.stages = {}
+
+    def record(self, evaluations: int, outside: int) -> None:
+        """Add evaluation counts (also used by the native spline) to the current stage."""
+        self.evaluations += int(evaluations)
+        self.outside += int(outside)
+        entry = self.stages.setdefault(self.stage, [0, 0])
+        entry[0] += int(evaluations)
+        entry[1] += int(outside)
+
+    def stage_report(self) -> dict:
+        return {name: {"evaluations": int(n), "outside": int(out),
+                       "outside_fraction": float(out / n) if n else 0.0}
+                for name, (n, out) in self.stages.items()}
+
+    def outside_mask(self, points: np.ndarray) -> np.ndarray:
+        """True where a point ``[..., dimension]`` lies outside the grid (not counted)."""
+        points = np.asarray(points, dtype=float)
+        return np.any((points < self.lower) | (points > self.upper), axis=-1)
+
     def _count(self, flat: np.ndarray) -> None:
-        self.evaluations += len(flat)
-        self.outside += int(np.count_nonzero(np.any((flat < self.lower) | (flat > self.upper), axis=1)))
+        self.record(len(flat), int(np.count_nonzero(self.outside_mask(flat))))
 
     def energy(self, points: np.ndarray) -> np.ndarray:
         points = np.asarray(points, dtype=float)
@@ -389,6 +423,50 @@ def _vibrational_complement(x, directions, sqrt_m, rigid_body):
     q, singular, _ = np.linalg.svd(block, full_matrices=False)
     span = q[:, singular > 1e-10 * singular.max()]
     return null_space(span.T) if span.shape[1] < len(sqrt_m) else np.zeros((len(sqrt_m), 0))
+
+
+# Imaginary normal-plane frequencies below this magnitude (hartree; 50 cm^-1)
+# are soft modes: free or weakly hindered relative rotations of separating
+# fragments, whose curvature tends to zero and whose finite-difference sign is
+# noise.  Larger ones mean the bath is not bound in the normal plane.
+SOFT_MODE_FREQUENCY = 2.3e-4
+_HARTREE_TO_WAVENUMBER = 219474.6313632
+
+
+def _unstable_bath_character(x, tangent, complement, k, sqrt_m, gradient, hessian, step, threshold):
+    """Diagnose an unstable normal-plane Hessian at one path point.
+
+    The vibrational Hessian is assembled in the basis ``[tangent, complement]``
+    (one extra gradient pair).  By eigenvalue interlacing an unstable normal
+    plane needs at least one unstable vibrational mode:
+
+    ``tangent_misaligned``
+        exactly one, the reaction mode; the path tangent is tilted away from
+        it, so part of the barrier curvature leaks into the bath.
+    ``ridge``
+        two or more; the path runs along a ridge (or near a higher-order
+        saddle) and a transverse coordinate belongs in the subspace.
+    """
+    if hessian is not None:
+        h = np.asarray(hessian(x), dtype=float) / sqrt_m[:, None] / sqrt_m[None, :]
+        column = h @ tangent
+    else:
+        dx = step * tangent / sqrt_m
+        column = (np.asarray(gradient(x + dx), float) - np.asarray(gradient(x - dx), float)) / (2 * step) / sqrt_m
+    size = complement.shape[1] + 1
+    full = np.empty((size, size))
+    full[0, 0] = tangent @ column
+    full[0, 1:] = full[1:, 0] = complement.T @ column
+    full[1:, 1:] = k
+    values, vectors = np.linalg.eigh(full)
+    negative = int(np.count_nonzero(values < -threshold))
+    overlap = float(min(abs(vectors[0, 0]), 1.0))
+    return {
+        "character": "ridge" if negative >= 2 else "tangent_misaligned",
+        "unstable_vibrational_modes": negative,
+        "lowest_vibrational_curvature": float(values[0]),
+        "tangent_to_lowest_mode_degrees": float(np.degrees(np.arccos(overlap))),
+    }
 
 
 def _bath_zero_point(k: np.ndarray) -> tuple[float, float]:
@@ -748,6 +826,8 @@ def project_path_subspace(
     dvr_points: int = 81,
     dvr_half_width: float | None = None,
     dvr_spacing: float | None = None,
+    soft_mode_frequency: float = SOFT_MODE_FREQUENCY,
+    unstable_bath: str = "record",
 ) -> SubspaceModel:
     """One-dimensional vibrationally adiabatic model along a curved path.
 
@@ -784,7 +864,25 @@ def project_path_subspace(
     finite-temperature quantum free energy when ``environment="free_energy"``).
     ``dvr_points``, ``dvr_half_width`` and ``dvr_spacing`` control the normal
     cut grids; the half-width defaults to eight oscillator lengths.
+
+    A vibrationally adiabatic model needs a bath that is bound in the normal
+    plane.  A normal-plane curvature ``lambda < -soft_mode_frequency**2`` is
+    an unstable bath mode: its zero-point term does not exist, and dropping
+    it silently lowers ``V_S`` exactly where the model has failed.  Such
+    points set ``bath_stable = False`` in the provenance, with their arc
+    lengths, imaginary frequencies and character (tangent misalignment or
+    ridge, see :func:`_unstable_bath_character`).  Curvatures of smaller
+    magnitude are soft modes (free relative rotation of separating
+    fragments); they are counted, contribute no zero-point energy when
+    negative, and ``dropped_zero_point_bound`` bounds what was omitted.
+    ``unstable_bath='error'`` raises instead of recording.
     """
+    if unstable_bath not in ("record", "error"):
+        raise ValueError("unstable_bath must be 'record' or 'error'")
+    soft_mode_frequency = float(soft_mode_frequency)
+    if not np.isfinite(soft_mode_frequency) or soft_mode_frequency < 0:
+        raise ValueError("soft_mode_frequency must be finite and nonnegative")
+    soft_curvature = soft_mode_frequency**2
     beta = _check_environment(environment, beta, ("frozen", "adiabatic", "free_energy"))
     if curvature not in ("none", "small"):
         raise ValueError("curvature must be one of ('none', 'small')")
@@ -823,6 +921,7 @@ def project_path_subspace(
     zpe = np.zeros(len(grid))
     unstable, min_curvature = 0, np.inf
     unstable_indices = []
+    significant, soft_points, dropped_bound = [], 0, 0.0
     curvature_values = np.zeros(len(grid))
     omega_perp = np.full(len(grid), np.nan)
     tbar = np.zeros(len(grid))
@@ -847,6 +946,19 @@ def project_path_subspace(
             if lowest <= 0:
                 unstable += 1
                 unstable_indices.append(int(i))
+                negative = np.linalg.eigvalsh(k)
+                negative = negative[negative < 0.0]
+                dropped_bound = max(dropped_bound, 0.5 * float(np.sum(np.sqrt(-negative))))
+                if lowest < -soft_curvature:
+                    record = {"index": int(i), "arc_length": float(grid[i]), "curvature": float(lowest),
+                              "imaginary_frequency_cm": float(np.sqrt(-lowest) * _HARTREE_TO_WAVENUMBER),
+                              "unstable_modes": int(np.count_nonzero(negative < -soft_curvature))}
+                    record.update(_unstable_bath_character(
+                        x, tangent, complement, k, sqrt_m, gradient, hessian, finite_difference_step,
+                        soft_curvature))
+                    significant.append(record)
+                else:
+                    soft_points += 1
         if curvature == "small" and n > 1:
             # Curvature vector dT/dsigma of the mass-weighted spline.
             first = spline.derivative()(lam[i])
@@ -959,6 +1071,14 @@ def project_path_subspace(
         "unstable_complement_indices": unstable_indices,
         "unstable_complement_arc_lengths": [float(grid[i]) for i in unstable_indices],
         "normal_hessian_positive": not bool(unstable),
+        "bath_stable": not significant,
+        "soft_mode_frequency": soft_mode_frequency,
+        "soft_complement_points": int(soft_points),
+        "significant_unstable_points": len(significant),
+        "significant_unstable": significant,
+        "unstable_characters": sorted({r["character"] for r in significant}),
+        "dropped_zero_point_bound": float(dropped_bound),
+        "finite_difference_step": float(finite_difference_step),
         "minimum_complement_curvature": None if not np.isfinite(min_curvature) else min_curvature,
         "zero_point_range": [float(zpe.min()), float(zpe.max())],
         "rph_max_correction": 0.0 if zero_point == "rph" else None,
@@ -995,8 +1115,17 @@ def project_path_subspace(
         })
     if provenance:
         info.update(dict(provenance))
+    if significant and unstable_bath == "error":
+        worst = min(significant, key=lambda r: r["curvature"])
+        raise ValueError(
+            f"unstable transverse Hessian at {len(significant)} path points (worst "
+            f"{worst['imaginary_frequency_cm']:.0f}i cm^-1 at arc length {worst['arc_length']:.6g}, "
+            f"{worst['character']}); an adiabatic path model is not defined there")
     return SubspaceModel((tau_grid,), total_values, np.ones(1), dividing_surface, reactant,
                          reactant_reference, info)
+
+
+PATH_CONVERGED = "asymptote_converged"
 
 
 def relaxed_path(
@@ -1007,12 +1136,14 @@ def relaxed_path(
     masses: Any,
     *,
     step: float,
-    max_steps: int = 400,
+    max_steps: int | None = None,
     max_angle_degrees: float = 20.0,
     min_step: float | None = None,
     asymptote_tolerance: float = 1e-6,
     rigid_body: bool = True,
-) -> np.ndarray:
+    patience: int = 50,
+    return_info: bool = False,
+):
     """Follow a valley from ``start`` along ``direction`` (mass-weighted).
 
     Downhill, each new point minimizes ``V`` on the sphere of radius ``step``
@@ -1023,9 +1154,34 @@ def relaxed_path(
     rises (a core path ending before the barrier top) the point is instead
     the minimum on the hyperplane ``step`` ahead.  The step is halved when
     the tangent turns by more than ``max_angle_degrees`` and grows back
-    afterwards.  The follower stops when the energy changed by less than
-    ``asymptote_tolerance`` over the last ten points or after ``max_steps``.
-    Returns the Cartesian points ``[k, n]`` including ``start``.
+    afterwards.
+
+    The follower has no step budget by default: how far an asymptote lies is
+    a property of the potential (an ion--dipole tail needs far more steps
+    than a neutral one), and a path cut short is not a path to the
+    asymptote.  It stops on one of the following statuses.
+
+    ``asymptote_converged``
+        the energy varies by less than ``asymptote_tolerance`` over the last
+        ``10 * step`` of arc length.  The window is an arc length, not a
+        point count, so halved steps cannot fake a flat tail.
+    ``asymptote_not_approached``
+        the energy range of that trailing window has not fallen by 10% during
+        ``patience`` consecutive windows: the valley is not flattening (a
+        bound coordinate climbing a wall, a potential leaving its fitted
+        domain, a path that wanders).  This bounds the work without assuming
+        a distance.
+    ``step_collapsed``
+        the tangent kept turning by more than ``max_angle_degrees`` at the
+        smallest step for ten consecutive steps.
+    ``potential_failure``
+        the potential or gradient failed or returned a non-finite value.
+    ``max_steps_exhausted``
+        only when the caller sets ``max_steps``; never a converged path.
+
+    Returns the Cartesian points ``[k, n]`` including ``start``; with
+    ``return_info=True`` also a dictionary with ``status``, ``converged``,
+    the number of steps, the arc length and the trailing energy range.
     """
     from scipy.optimize import minimize
 
@@ -1037,12 +1193,26 @@ def relaxed_path(
         raise ValueError("direction must be a finite nonzero mass-weighted vector")
     if rigid_body and n % 3:
         raise ValueError("rigid_body requires Cartesian coordinates of atoms in 3D")
+    step = float(step)
+    if not np.isfinite(step) or step <= 0:
+        raise ValueError("step must be finite and positive")
+    if max_steps is not None and (isinstance(max_steps, bool) or int(max_steps) != max_steps or max_steps < 1):
+        raise ValueError("max_steps must be a positive integer or None (no step budget)")
+    if isinstance(patience, bool) or int(patience) != patience or patience < 1:
+        raise ValueError("patience must be a positive integer")
+    asymptote_tolerance = float(asymptote_tolerance)
+    if not np.isfinite(asymptote_tolerance) or asymptote_tolerance <= 0:
+        raise ValueError("asymptote_tolerance must be finite and positive")
     t = t / np.linalg.norm(t)
     smallest = step / 64.0 if min_step is None else float(min_step)
     energy = float(potential(x))
-    points, energies = [x.copy()], [energy]
-    current = float(step)
+    points, energies, arcs = [x.copy()], [energy], [0.0]
+    current = step
     cos_limit = np.cos(np.radians(max_angle_degrees))
+    window = 10.0 * step
+    best_range, stale, next_check = np.inf, 0, window
+    tail_range, forced, forced_total = np.inf, 0, 0
+    status, message = None, None
 
     def sphere(y, w, h):
         v = t + w @ y
@@ -1057,30 +1227,80 @@ def relaxed_path(
         trial = x + (h * t + w @ y) / sqrt_m
         return float(potential(trial)), w.T @ (np.asarray(gradient(trial), float) / sqrt_m)
 
-    while len(points) <= max_steps:
+    while status is None:
+        if max_steps is not None and len(points) > max_steps:
+            status = "max_steps_exhausted"
+            break
         w = _vibrational_complement(x, t, sqrt_m, rigid_body)
-        result = minimize(sphere, np.zeros(w.shape[1]), args=(w, current), jac=True, method="BFGS",
-                          options={"gtol": 1e-10, "maxiter": 400})
-        v = t + w @ result.x
-        trial = x + current * (v / np.linalg.norm(v)) / sqrt_m
-        trial_energy = float(result.fun)
-        if trial_energy > energy:
-            result = minimize(plane, np.zeros(w.shape[1]), args=(w, current), jac=True, method="BFGS",
+        try:
+            result = minimize(sphere, np.zeros(w.shape[1]), args=(w, current), jac=True, method="BFGS",
                               options={"gtol": 1e-10, "maxiter": 400})
-            trial = x + (current * t + w @ result.x) / sqrt_m
+            v = t + w @ result.x
+            trial = x + current * (v / np.linalg.norm(v)) / sqrt_m
             trial_energy = float(result.fun)
+            if trial_energy > energy:
+                result = minimize(plane, np.zeros(w.shape[1]), args=(w, current), jac=True, method="BFGS",
+                                  options={"gtol": 1e-10, "maxiter": 400})
+                trial = x + (current * t + w @ result.x) / sqrt_m
+                trial_energy = float(result.fun)
+        except (ArithmeticError, ValueError, RuntimeError) as error:
+            status, message = "potential_failure", f"{type(error).__name__}: {error}"
+            break
+        if not np.isfinite(trial_energy) or not np.isfinite(trial).all():
+            status, message = "potential_failure", "non-finite energy or geometry on the path"
+            break
         move = (trial - x) * sqrt_m
-        new_t = move / np.linalg.norm(move)
-        if new_t @ t < cos_limit and current > smallest:
-            current *= 0.5
-            continue
+        length = float(np.linalg.norm(move))
+        new_t = move / length
+        if new_t @ t < cos_limit:
+            if current > smallest:
+                current *= 0.5
+                continue
+            forced += 1
+            forced_total += 1
+            if forced >= 10:
+                status = "step_collapsed"
+                break
+        else:
+            forced = 0
         x, t, energy = trial, new_t, trial_energy
         points.append(x.copy())
         energies.append(energy)
+        arcs.append(arcs[-1] + length)
         current = min(step, 1.5 * current)
-        if len(energies) > 10 and np.ptp(energies[-10:]) < asymptote_tolerance:
-            break
-    return np.asarray(points)
+        if arcs[-1] < window * (1.0 - 1e-9):
+            continue
+        first = int(np.searchsorted(arcs, arcs[-1] - window * (1.0 + 1e-9)))
+        tail_range = float(np.ptp(energies[first:]))
+        if tail_range < asymptote_tolerance:
+            status = PATH_CONVERGED
+        elif arcs[-1] >= next_check:
+            next_check += window
+            if tail_range < 0.9 * best_range:
+                best_range, stale = tail_range, 0
+            else:
+                stale += 1
+                if stale >= patience:
+                    status = "asymptote_not_approached"
+    path = np.asarray(points)
+    if not return_info:
+        return path
+    info = {
+        "status": status,
+        "converged": status == PATH_CONVERGED,
+        "steps": int(len(points) - 1),
+        "arc_length": float(arcs[-1]),
+        "tail_energy_range": None if not np.isfinite(tail_range) else tail_range,
+        "tail_window_arc_length": float(window),
+        "asymptote_tolerance": asymptote_tolerance,
+        "end_energy": float(energies[-1]),
+        "energy_change": float(energies[-1] - energies[0]),
+        "final_step": float(current),
+        "unresolved_turns": int(forced_total),
+        "max_steps": None if max_steps is None else int(max_steps),
+        "message": message,
+    }
+    return path, info
 
 
 def assemble_reaction_path(
@@ -1090,27 +1310,32 @@ def assemble_reaction_path(
     masses: Any,
     *,
     step: float,
-    max_steps: int = 400,
+    max_steps: int | None = None,
     rigid_body: bool = True,
     max_angle_degrees: float = 20.0,
     asymptote_tolerance: float = 1e-6,
+    patience: int = 50,
 ) -> tuple[np.ndarray, dict]:
     """Extend a sampled core path (e.g. the ring-polymer mean path) to both asymptotes.
 
     ``core`` is ordered from reactants to products, ``[points, n]`` Cartesian.
-    The ends are continued with :func:`relaxed_path` along the end tangents.
-    The returned ``info`` records which points are sampled and which are the
-    relaxed (classical valley) continuation.
+    The ends are continued with :func:`relaxed_path` along the end tangents,
+    without a step budget unless ``max_steps`` is given.  The returned
+    ``info`` records which points are sampled and which are the relaxed
+    (classical valley) continuation, and how each continuation terminated
+    (``reactant_termination``/``product_termination``);
+    ``asymptotes_converged`` is true only when both reached their asymptote.
     """
     points = np.asarray(core, dtype=float).reshape(len(core), -1)
     if len(points) < 2:
         raise ValueError("a core path needs at least two points")
     sqrt_m = np.sqrt(_positive_vector(masses, points.shape[1], "masses"))
     mw = points * sqrt_m
-    options = dict(step=step, max_steps=max_steps, rigid_body=rigid_body,
-                   max_angle_degrees=max_angle_degrees, asymptote_tolerance=asymptote_tolerance)
-    back = relaxed_path(potential, gradient, points[0], mw[0] - mw[1], masses, **options)
-    ahead = relaxed_path(potential, gradient, points[-1], mw[-1] - mw[-2], masses, **options)
+    options = dict(step=step, max_steps=max_steps, rigid_body=rigid_body, patience=patience,
+                   max_angle_degrees=max_angle_degrees, asymptote_tolerance=asymptote_tolerance,
+                   return_info=True)
+    back, reactant = relaxed_path(potential, gradient, points[0], mw[0] - mw[1], masses, **options)
+    ahead, product = relaxed_path(potential, gradient, points[-1], mw[-1] - mw[-2], masses, **options)
     path = np.concatenate([back[:0:-1], points, ahead[1:]])
     info = {
         "core_points": int(len(points)),
@@ -1119,6 +1344,9 @@ def assemble_reaction_path(
         "core_slice": [int(len(back) - 1), int(len(back) - 1 + len(points))],
         "continuation": "steepest-descent sphere (uphill: hyperplane) path following in mass-weighted coordinates",
         "step": float(step),
+        "reactant_termination": reactant,
+        "product_termination": product,
+        "asymptotes_converged": bool(reactant["converged"] and product["converged"]),
     }
     return path, info
 
@@ -1178,7 +1406,7 @@ def curvature_width_criterion(curvature: Any, width: Any, *, threshold: float = 
 
 
 __all__ = [
-    "MAX_DIMENSION", "GridPotential", "SubspaceModel", "model_from_function",
+    "MAX_DIMENSION", "PATH_CONVERGED", "SOFT_MODE_FREQUENCY", "GridPotential", "SubspaceModel", "model_from_function",
     "project_linear_subspace", "project_path_subspace", "path_curvature", "relaxed_path",
     "assemble_reaction_path",
     "ring_polymer_mean_path", "curvature_width_criterion",

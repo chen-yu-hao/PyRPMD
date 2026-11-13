@@ -1,0 +1,76 @@
+{
+  "base_commit": "f410b97807d99d429ab1b63c6b1c7ff93b424b5c",
+  "implementation_commit_before_evidence": "bf73c39714fe95d57061bb2dc850d13e415a2b8a",
+  "local_tests": {
+    "passed_node_union": 10059,
+    "skipped": 242,
+    "unresolved_failures": 0,
+    "single_final_head_full_suite": false,
+    "initial_round": {
+      "passed": 9951,
+      "failed": 108
+    },
+    "failed_node_retests": [
+      {
+        "passed": 106,
+        "failed": 2
+      },
+      {
+        "passed": 2,
+        "failed": 0
+      }
+    ],
+    "notes": "Initial invocation used stdin pytest.main and one CPU; spawn tests required the standard module entry, and two startup probes required four visible CPUs. Product compatibility fixes were applied and verified."
+  },
+  "analytic_tutorials": [
+    {
+      "name": "harmonic_pimd",
+      "passed": true,
+      "seconds": 10.197712423279881
+    },
+    {
+      "name": "periodic_site_rate",
+      "passed": true,
+      "seconds": 176.79722737148404
+    },
+    {
+      "name": "double_well_metad",
+      "passed": true,
+      "seconds": 93.95116410590708
+    },
+    {
+      "name": "free_diffusion",
+      "passed": true,
+      "seconds": 31.07225489988923
+    },
+    {
+      "name": "harmonic_spectroscopy",
+      "passed": true,
+      "seconds": 95.35987789183855
+    }
+  ],
+  "reactive_tutorial": {
+    "trajectories": 256,
+    "product": 4,
+    "failed": 0,
+    "unresolved": 0,
+    "native_steps": 316320,
+    "python_steps": 0,
+    "physical_convergence": false
+  },
+  "bkmp2": {
+    "short_workflows_passed": true,
+    "drpmd_native_steps": 10275,
+    "drpmd_python_steps": 0,
+    "physical_convergence": false
+  },
+  "cn53": {
+    "status": "pending_final_frozen_validation",
+    "completed": false
+  },
+  "publication": {
+    "wheel_built": true,
+    "release_published": false,
+    "archive_migration_published": false
+  }
+}

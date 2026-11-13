@@ -133,8 +133,6 @@ class ElectronicFrictionDynamics(Dynamics):
         super().__init__(potential, masses, beta, nbeads, dt, **kwargs)
         if self.dt <= 0:
             raise ValueError("electronic friction requires positive dt")
-        if self.loop_backend == "native":
-            raise ValueError("electronic friction uses Python OU orchestration; use auto/python")
         if not callable(getattr(friction, "evaluate", None)):
             raise TypeError("friction must implement evaluate(q) returning FrictionResult")
         self._friction = friction
@@ -148,6 +146,9 @@ class ElectronicFrictionDynamics(Dynamics):
                 and ConstantElectronicFriction.evaluate is _CONSTANT_FRICTION_EVALUATE):
             eta = friction.evaluate(np.zeros(self.integrator.shape)).tensor.mean(axis=0)
             self._constant_eigen = self._mass_weighted_eigen(eta)
+        if self.loop_backend == "native":
+            from .friction_block import native_friction_plan
+            native_friction_plan(self)
 
     @property
     def friction(self):
@@ -210,10 +211,40 @@ class ElectronicFrictionDynamics(Dynamics):
     def propagate(self, state, steps, **options):
         # The public function also owns the RNG transaction, so direct imports
         # of pyrpmd.propagation.propagate have the same failure semantics.
-        return super().propagate(state, steps, **options)
+        result = super().propagate(state, steps, **options)
+        if result.backend == "python":
+            from .friction_block import native_friction_plan
+            from .propagation import NativeUnavailableError
+            try:
+                native_friction_plan(self)
+                reason = "transactional EF propagate uses Python; native EF uses propagate_block"
+            except NativeUnavailableError as error:
+                reason = str(error)
+            reasons = self.propagation_stats["fallback_reasons"]
+            if result.fallback_reason:
+                reasons[result.fallback_reason] -= steps
+                if not reasons[result.fallback_reason]:
+                    del reasons[result.fallback_reason]
+            reasons[reason] = reasons.get(reason, 0) + steps
+            result.fallback_reason = reason
+        return result
 
     def propagate_block(self, state, steps, **options):
-        raise NotImplementedError("use step() or transactional propagate() for stochastic EF-RPMD")
+        from .friction_block import propagate_friction_block
+        return propagate_friction_block(self, state, steps, **options)
+
+    def can_fuse(self, *, bias=None, observe=None):
+        from .friction_block import native_friction_plan
+        from .propagation import NativeUnavailableError
+        try:
+            if bias is not None or observe is not None:
+                raise NativeUnavailableError("native electronic friction requires unbiased dynamics without CV callbacks")
+            native_friction_plan(self)
+            return True
+        except NativeUnavailableError:
+            if self.loop_backend == "native":
+                raise
+            return False
 
     def sample_step(self, *args, **kwargs):
         raise ValueError("use EF-RPMD step(); prepare equilibrium with a separate Dynamics sampler")
@@ -221,6 +252,14 @@ class ElectronicFrictionDynamics(Dynamics):
     def thermalize(self, *args, **kwargs):
         raise ValueError("prepare equilibrium with a separate Dynamics sampler on the same PES")
 
+
+from .dynamics import _BLOCK_DYNAMICS_METHODS
+
+_EF_FUSED_METHODS = {
+    **_BLOCK_DYNAMICS_METHODS,
+    **{name: getattr(ElectronicFrictionDynamics, name)
+       for name in ("step", "_propagate", "_centroid_ou", "_mass_weighted_eigen")},
+}
 
 _FIELDS = {"method", "provider", "gamma", "tensor", "factory", "params"}
 
@@ -238,8 +277,6 @@ def validate_electronic_friction(config, system):
         raise ValueError("electronic friction uses a scalar PES and cannot be combined with mapping dynamics")
     if spec.get("method", "centroid") != "centroid":
         raise ValueError("electronic_friction.method must be 'centroid' (Markovian EF-RPMD)")
-    if config.get("dynamics", {}).get("loop_backend", "auto") == "native":
-        raise ValueError("electronic friction requires loop_backend='auto' or 'python'")
     provider = spec.get("provider", "constant")
     if provider == "constant":
         if "factory" in spec or "params" in spec or ("gamma" in spec) == ("tensor" in spec):
@@ -247,7 +284,12 @@ def validate_electronic_friction(config, system):
         constant = (ConstantElectronicFriction.from_rates(spec["gamma"], system.masses)
                     if "gamma" in spec else ConstantElectronicFriction(spec["tensor"]))
         constant.bind_system(system)
+        if config.get("dynamics", {}).get("loop_backend") == "native" and np.any(
+                constant._tensor != np.diag(np.diag(constant._tensor))):
+            raise ValueError("native electronic friction requires a constant diagonal tensor")
     elif provider == "python":
+        if config.get("dynamics", {}).get("loop_backend") == "native":
+            raise ValueError("native electronic friction requires a constant diagonal provider")
         if "gamma" in spec or "tensor" in spec or not isinstance(spec.get("factory"), str) or ":" not in spec["factory"]:
             raise ValueError("Python electronic_friction requires factory='module:object' and optional params")
         if not isinstance(spec.get("params", {}), Mapping):

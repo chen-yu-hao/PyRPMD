@@ -244,8 +244,11 @@ def solve_mbar(
         new -= new[0]
         return new, logd, float(np.max(np.abs(new - z)))
 
-    # Retained dense L-BFGS/fixed-point reference (method="legacy").
-    for _ in range(min(200, max_iterations)):
+    # A short initialization is followed by Newton; long fixed-point mixing
+    # across narrow umbrellas was the principal cost in the previous solver.
+    warm_default = 200 if method == "legacy" else (8 if initial_free_energies is None else 2)
+    warm_steps = min(warm_default, max_iterations)
+    for _ in range(warm_steps):
         new, _, residual = equations(f)
         if residual < tolerance:
             break

@@ -12,11 +12,13 @@ recursive-include docs *.md *.json *.csv *.png *.pdf *.py *.css *.txt *.html *.n
 exclude docs/validation/tier1-2026-10-31/*.npz
 prune docs/_build
 recursive-include examples *.inp *.toml *.py *.xyz *.json *.md *.slurm
+recursive-include examples/tutorials *.c
 include examples/analysis/reference-rates.csv
 recursive-include tests *.py
 recursive-include tests/data *.json
 include benchmarks/h3/*.py benchmarks/h3/*.md benchmarks/h3/*.f90 benchmarks/h3/*.inp benchmarks/h3/source.json
 include benchmarks/h3/diatomic_switch.cpp
+recursive-include benchmarks/h3_subspace *.py *.toml *.inp
 recursive-include benchmarks/h3/convergence_inputs *.inp
 recursive-include benchmarks/h3/reproduction_results *.md *.json *.csv *.svg
 recursive-include benchmarks/h3/preparation_results *.md *.json *.csv *.svg

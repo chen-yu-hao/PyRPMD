@@ -39,7 +39,7 @@ if os.environ.get("PYRPMD_NO_NATIVE", "0") != "1":
             "pyrpmd._native",
             ["native/cayley.cpp"],
             language="c++",
-            depends=["native/ring_fft.h", "native/fused.hpp", "native/propagation.h", "native/cv_core.hpp", "native/fixed_atoms.hpp", "native/builtin_pes.hpp", "native/include/pyrpmd/pes_api_v1.h"],
+            depends=["native/ring_fft.h", "native/fused.hpp", "native/propagation.h", "native/centroid_friction.h", "native/cv_core.hpp", "native/fixed_atoms.hpp", "native/builtin_pes.hpp", "native/include/pyrpmd/pes_api_v1.h"],
             extra_compile_args=compile_args,
             extra_link_args=link_args,
         )
@@ -59,6 +59,16 @@ if os.environ.get("PYRPMD_NO_NATIVE", "0") != "1":
             "pyrpmd._electronic",
             ["native/electronic.cpp"],
             language="c++",
+            extra_compile_args=compile_args,
+            extra_link_args=link_args,
+        )
+    )
+    extensions.append(
+        Extension(
+            "pyrpmd._subspace",
+            ["native/subspace.cpp"],
+            language="c++",
+            depends=["native/ring_fft.h"],
             extra_compile_args=compile_args,
             extra_link_args=link_args,
         )

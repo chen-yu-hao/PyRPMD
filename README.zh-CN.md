@@ -1,451 +1,66 @@
 # PyRPMD
 
-**[使用手册](docs/zh/index.md)** · [安装](docs/zh/manual/installation.md) ·
-[快速入门](docs/zh/manual/quickstart.md) · [示例](docs/zh/manual/examples.md) ·
-[Python API](docs/zh/manual/api.md) · [English](README.md)
+[中文手册](docs/zh/index.md) · [English](README.md) ·
+[示例](docs/zh/manual/examples.md) · [参与开发](CONTRIBUTING.md)
 
-**一个输入文件完成环聚合物分子动力学——从过渡态到经回穿校正的速率，支持带科学指纹的检查点续跑。**
-
-给 PyRPMD 一个过渡态和一个势能，它会自动搭建完整的 Bennett–Chandler 计算：数值 Hessian 与双向下降识别反应通道，伞抽样
-给出 PMF，受约束母链发射成对回穿轨迹得到透射系数。同一套 Python 或 TOML 输入驱动这些工作流，从气相速率、直接碰撞到自由能面、
-metadynamics、PIMD、扩散、表面跃迁和电化学 PCET；积分器内核为 C++17/OpenMP，并配有 NumPy 参考实现。
-
-## 动图直观理解原理
-
-每个动图在一个玩具模型上演示 PyRPMD 某个工作流背后的核心思想。
-
-<p align="center">
-  <img src="docs/_static/gifs/ring_polymer.gif" width="62%" alt="每个量子原子核被表示成一串由弹簧相连的珠子组成的环。在过渡态（星号）附近，环沿势垒拉伸。RPMD 正是借此计入隧穿和零点能。"><br>
-  <sub>每个量子原子核被表示成一串由弹簧相连的珠子组成的环。在过渡态（星号）附近，环沿势垒拉伸。RPMD 正是借此计入隧穿和零点能。</sub>
-</p>
-
-<table>
-<tr><th colspan="2">热速率（<code>rate</code>、<code>network</code>）</th></tr>
-<tr><td width="50%" align="center"><img src="docs/_static/gifs/umbrella_pmf.gif" width="100%" alt="沿反应坐标逐个布置伞窗口（上），各窗口直方图相互重叠（下），合并后得到 PMF。"><br><sub>沿反应坐标逐个布置伞窗口（上），各窗口直方图相互重叠（下），合并后得到 PMF。</sub></td><td width="50%" align="center"><img src="docs/_static/gifs/recrossing.gif" width="100%" alt="成对轨迹从分割面（虚线）出发，回穿使透射系数 κ(t) 下降并收敛到平台值。"><br><sub>成对轨迹从分割面（虚线）出发，回穿使透射系数 κ(t) 下降并收敛到平台值。</sub></td></tr>
-<tr><th colspan="2">直接碰撞与深隧穿（<code>drpmd</code>、瞬子）</th></tr>
-<tr><td width="50%" align="center"><img src="docs/_static/gifs/drpmd_collision.gif" width="100%" alt="dRPMD 直接碰撞 A + BC → AB + C：环聚合物原子靠近，交换化学键后分离。"><br><sub>dRPMD 直接碰撞 A + BC → AB + C：环聚合物原子靠近，交换化学键后分离。</sub></td><td width="50%" align="center"><img src="docs/_static/gifs/instanton.gif" width="100%" alt="环聚合物瞬子：温度降低时，珠子沿势垒铺开（上），闭合的虚时间轨道随之变宽（下）。"><br><sub>环聚合物瞬子：温度降低时，珠子沿势垒铺开（上），闭合的虚时间轨道随之变宽（下）。</sub></td></tr>
-<tr><th colspan="2">自由能面（<code>fes</code>：metadynamics、OPES、伞抽样）</th></tr>
-<tr><td width="50%" align="center"><img src="docs/_static/gifs/metadynamics.gif" width="100%" alt="Well-tempered metadynamics：沉积的高斯偏置（橙色）逐步填平势阱，直到行走者自由跨越。负偏置（下）收敛到真实自由能面。"><br><sub>Well-tempered metadynamics：沉积的高斯偏置（橙色）逐步填平势阱，直到行走者自由跨越。负偏置（下）收敛到真实自由能面。</sub></td><td width="50%" align="center"><img src="docs/_static/gifs/fes_2d.gif" width="100%" alt="二维增强采样：行走者在势面上探索（左），重构的自由能面逐个盆地被填出（右）。"><br><sub>二维增强采样：行走者在势面上探索（左），重构的自由能面逐个盆地被填出（右）。</sub></td></tr>
-<tr><th colspan="2">路径积分采样与材料（<code>pimd</code>、<code>diffusion</code>）</th></tr>
-<tr><td width="50%" align="center"><img src="docs/_static/gifs/pimd_nqe.gif" width="100%" alt="PIMD 核量子效应：温度计下降时，轻的 H 环明显膨胀，重的 O 环基本保持紧凑。"><br><sub>PIMD 核量子效应：温度计下降时，轻的 H 环明显膨胀，重的 O 环基本保持紧凑。</sub></td><td width="50%" align="center"><img src="docs/_static/gifs/diffusion.gif" width="100%" alt="材料扩散：环聚合物粒子在周期性主体的间隙位点之间跳跃，均方位移线性增长，由此得到扩散系数 D。"><br><sub>材料扩散：环聚合物粒子在周期性主体的间隙位点之间跳跃，均方位移线性增长，由此得到扩散系数 D。</sub></td></tr>
-<tr><th colspan="2">表面与电化学（<code>surface_rate</code>、<code>site_rate</code>、<code>pcet</code>）</th></tr>
-<tr><td width="50%" align="center"><img src="docs/_static/gifs/surface_rate.gif" width="100%" alt="表面逃逸：底层原子固定（斜线）。吸附物在位点间跳跃，初始盆地的存活概率按逃逸速率指数衰减。"><br><sub>表面逃逸：底层原子固定（斜线）。吸附物在位点间跳跃，初始盆地的存活概率按逃逸速率指数衰减。</sub></td><td width="50%" align="center"><img src="docs/_static/gifs/pcet.gif" width="100%" alt="电化学 PCET：电极电势使产物自由能曲线（橙）相对反应物（蓝）移动，H 与 D 的速率曲线反映同位素效应。"><br><sub>电化学 PCET：电极电势使产物自由能曲线（橙）相对反应物（蓝）移动，H 与 D 的速率曲线反映同位素效应。</sub></td></tr>
-<tr><th colspan="2">非绝热动力学与光谱（<code>nonadiabatic</code>、<code>spectroscopy</code>）</th></tr>
-<tr><td width="50%" align="center"><img src="docs/_static/gifs/nonadiabatic.gif" width="100%" alt="避免交叉处的非绝热动力学：上态上的轨迹群分到两个态，布居（右）随之趋于稳定。"><br><sub>避免交叉处的非绝热动力学：上态上的轨迹群分到两个态，布居（右）随之趋于稳定。</sub></td><td width="50%" align="center"><img src="docs/_static/gifs/spectroscopy.gif" width="100%" alt="TRPMD / PA-CMD 光谱：对振动分子的偶极关联函数（上）做傅里叶变换，关联时间越长，光谱（下）越尖锐。"><br><sub>TRPMD / PA-CMD 光谱：对振动分子的偶极关联函数（上）做傅里叶变换，关联时间越长，光谱（下）越尖锐。</sub></td></tr>
-</table>
-
-<sub>这些都是由小型玩具模拟驱动的无文字示意动图，并非 PyRPMD 的计算结果。可用 <code>python tools/make_readme_gifs.py</code> 重新生成（需要 matplotlib）。</sub>
-
-## 为什么选择 PyRPMD
-
-- **一条命令，从 TS 到速率。** 不需要手工布置窗口或另写回穿脚本：一个输入把计算从结构带到速率，并给出不确定度。
-- **固定完整环构型的 Committor 分析。** 独立重采样环聚合物动量，发射无偏 RPMD 轨迹，并分别报告 A/B 首次命中、未决轨迹与保守概率区间（[指南](docs/committor.md)，Python API）。
-- **结果经得起推敲。** 每次运行分别报告估计值、失败或未决轨迹以及诊断信息。重叠、回穿平台或能量守恒未通过检查时，PyRPMD
-  不给出该数值，并说明原因。
-- **放心续跑。** 检查点保存完整 q/p、RNG 状态、偏置历史和科学指纹，原子写入并逐数组 SHA256 校验。续跑时可调整分块大小和
-  循环后端；改变温度、珠子数、势能等科学设置需新建运行，可用 `--init-from` 从旧运行导入构型作为起点（[热启动](docs/zh/warm-start.md)）。
-- **接入你自己的势能。** Python、RPMDrate/f2py、版本化 C ABI `.so`、由 manifest 链接的普通 `.o`、ASE、Torch 或 i-PI socket。
-- **从笔记本到集群。** 轨迹/窗口进程池、常驻珠子 PES 进程池、MPI `G × B` 分组、OpenMP，以及多张 GPU 上每卡多条轨迹。
-- **对照已发表参考验证。** BKMP2 势能面上的 H + H₂、与 pyPCET 相差不超过 0.062% 的 PCET 速率，以及与解析积分和 PyMBAR
-  对照的 PMF（见[验证](#验证)）。
-
-昂贵势能计算可使用 [worker 势能复用与批量传播](docs/performance-dynamics.md)、
-[显式 RPC/MTS Python API](docs/rpc-mts.md)和
-[TRPMD、相关函数及相对 IR 谱](docs/trpmd-spectroscopy.md)。
-[文献速率比较工具](benchmarks/published_rates/README.md)检查模型身份、统计约定和收敛证据。
-这些扩展指南目前提供英文版。
-
-## Tier 2 方法扩展
-
-[凝聚相核量子效应](docs/condensed-phase-nqe.md)现支持 Suzuki–Chin 的能量、Cv/Cp 与压力估计量、
-各向同性 SC-NPT、PIGLET-NPT 及 RPC 晶胞 virial。可复现的耦合晶体与 FCC Lennard–Jones 固体算例
-分别记录珠子数、时间步和采样误差；验证范围与参数来源见报告。
-
-[覆盖范围与限制](docs/tier2-methods.md)列出每项功能的实际入口：PA-CMD、二次质心势拟合与相对 Raman/SFG 谱，
-主引擎中的 Suzuki–Chin 力、二次复杂度玻色交换及 PIGS，更多 CV、共享 MetaD 与 OPES 变体，
-直接绝热电子结构接口、双态 MASH、热 NRPMD 速率命令，以及委员会不确定度、候选数据收集和 Δ-learning/RPC。
-文档明确区分输入工作流与 Python API；完整 QCMD/h-CMD、RETIS minus ensemble 和经过真实体系验证的量化软件桥接仍未实现。
-
-[Tier 2 文献对照与详尽测试](docs/validation/tier2-literature-2026-11-01/README.md)提供论文模型的独立量子/统计参考、
-多种子实际轨迹、珠子数与时间步收敛、统计区间，以及真实 PLUMED、TorchScript、量化软件和 MPI 测试记录。
-跨程序逐点对照发现并修复了 OPES 首核权重的初始化问题；报告保留未收敛结果，明确区分模型校验与完整论文复现。
-
-
-## 方法出处与论文复现
-
-完整的[原始论文—实现对照表](docs/zh/manual/references.md)覆盖 **111 个功能条目与 170 条文献记录**，
-逐项给出源码、原始方法和实现范围；[复现计算清单](docs/zh/manual/reproduction.md)给出原文体系、应该算什么、
-现有入口、缺口和优先级。核查版本为 `cb60679`（2026-11-02）。
-复现建议先完成 **H + H₂/BKMP2、NRPMD 2013 两态模型、q-TIP4P/F 水**三条主线。
-
-| 功能族 | 原始方法 / 模型出处 |
-| --- | --- |
-| PIMD / RPMD 关联函数 | [Chandler–Wolynes 1981](docs/zh/manual/references.md#cw81) · [Craig–Manolopoulos 2004](docs/zh/manual/references.md#rpm04) |
-| Bennett–Chandler 与双分子 RPMD 速率 | [Bennett 1977](docs/zh/manual/references.md#bennett1977) · [Chandler 1978](docs/zh/manual/references.md#chandler1978) · [Craig–Manolopoulos 2005](docs/zh/manual/references.md#rate05) · [Collepardo-Guevara et al. 2009](docs/zh/manual/references.md#bimol09) |
-| dRPMD 与初态选择散射 | [Suleimanov et al. 2018](docs/zh/manual/references.md#drpmd18) · [Marjollet et al. 2020](docs/zh/manual/references.md#state20) · [2022 extension](docs/zh/manual/references.md#state22) |
-| Cayley / BCOCB 与 PILE / PIGLET | [Cayley 2019](docs/zh/manual/references.md#cayley19) · [BCOCB 2020](docs/zh/manual/references.md#bcocb20) · [PILE 2010](docs/zh/manual/references.md#pile10) · [PIGLET 2012](docs/zh/manual/references.md#piglet12) |
-| PA-CMD / f-CMD / TRPMD 与 SFG | [PA-CMD 2006](docs/zh/manual/references.md#pacmd06) · [f-CMD 2005](docs/zh/manual/references.md#fcmd05) · [TRPMD 2014](docs/zh/manual/references.md#trpmd14) · [Morita–Hynes 2002](docs/zh/manual/references.md#sfg02) |
-| TI / Suzuki–Chin、玻色交换与 PIGS | [TI 1984](docs/zh/manual/references.md#ti84) · [SC 2016](docs/zh/manual/references.md#sc16) · [Bosons 2019](docs/zh/manual/references.md#bose19) · [Quadratic scaling 2023](docs/zh/manual/references.md#bose23) · [PIGS 2000](docs/zh/manual/references.md#pigs00) |
-| 同位素估计器与瞬子 | [Isotopes 2013](docs/zh/manual/references.md#iso13) · [Fractionation 2014](docs/zh/manual/references.md#iso14) · [RPI 2009](docs/zh/manual/references.md#rpi09) · [Splittings 2011](docs/zh/manual/references.md#split11) |
-| 伞形采样 / MBAR / UI | [Torrie–Valleau 1977](docs/zh/manual/references.md#samp-us1977) · [Shirts–Chodera 2008](docs/zh/manual/references.md#samp-mbar2008) · [Kästner–Thiel 2005](docs/zh/manual/references.md#samp-ui2005) |
-| MetaD / WT-MetaD / OPES | [Laio–Parrinello 2002](docs/zh/manual/references.md#samp-meta2002) · [Barducci et al. 2008](docs/zh/manual/references.md#samp-wt2008) · [OPES 2020](docs/zh/manual/references.md#samp-opes2020) · [Explore 2022](docs/zh/manual/references.md#samp-explore2022) |
-| REUS、TIS / RETIS 与 committor | [REUS 2000](docs/zh/manual/references.md#samp-reus2000) · [TIS 2003](docs/zh/manual/references.md#samp-tis2003) · [RETIS 2007](docs/zh/manual/references.md#samp-retis2007) · [Committor 2000](docs/zh/manual/references.md#samp-comm2000) |
-| P-RFO / CI-NEB、路径 CV 与 string | [P-RFO 1985](docs/zh/manual/references.md#samp-prfo1985) · [CI-NEB 2000](docs/zh/manual/references.md#samp-cineb2000) · [Path CV 2007](docs/zh/manual/references.md#samp-path2007) · [CV string 2006](docs/zh/manual/references.md#samp-stringcv2006) |
-| 热平衡 / focused / 自旋映射 NRPMD | [Richardson–Thoss 2013](docs/zh/manual/references.md#na-nrpmd2013) · [Chowdhury–Huo 2019](docs/zh/manual/references.md#na-focused2019) · [Bossion et al. 2021](docs/zh/manual/references.md#na-sm2021) |
-| MASH / CA-RP-MASH 与表面跳跃 | [MASH 2023](docs/zh/manual/references.md#na-mash2023) · [CA-RP-MASH v1 2025](docs/zh/manual/references.md#na-carp2025) · [Tully 1990](docs/zh/manual/references.md#na-tully1990) · [RPSH 2017](docs/zh/manual/references.md#na-rpsh2017) · [BA/DM 2023](docs/zh/manual/references.md#na-rpshdm2023) · [DBOC 2025](docs/zh/manual/references.md#na-dboc2025) |
-| MV-RPMD / KC-RPMD / isomorphic / QD | [MV 2013](docs/zh/manual/references.md#na-mv2013) · [KC 2014](docs/zh/manual/references.md#na-kc2014) · [Isomorphic 2018](docs/zh/manual/references.md#na-iso2018) · [QD 2018](docs/zh/manual/references.md#na-qd2018) |
-| 恒压、材料扩散与表面速率 | [BZP 2009](docs/zh/manual/references.md#bzp2009) · [MTK 1994](docs/zh/manual/references.md#mtk1994) · [SCR 2020](docs/zh/manual/references.md#scr2020) · [H/Ni(100) 2012](docs/zh/manual/references.md#ni2012) · [Surface rates 2025](docs/zh/manual/references.md#sds2025) |
-| PCET、恒电位模型与电子摩擦 | [PCET 2008](docs/zh/manual/references.md#pcet2008) · [Au/TEAH+ 2019](docs/zh/manual/references.md#gold2019) · [GC approach 2025](docs/zh/manual/references.md#gc2025) · [EF-RPMD 2024](docs/zh/manual/references.md#efrpmd2024) |
-| QMDFF / dE-EVB / TREQ / PIP-NN / JaxPIP | [QMDFF 2014](docs/zh/manual/references.md#qmdff2014) · [dE-EVB 2015](docs/zh/manual/references.md#deevb2015) · [TREQ 2019](docs/zh/manual/references.md#treq2019) · [PIP-NN 2013](docs/zh/manual/references.md#pipnn2013) · [JaxPIP 2026](docs/zh/manual/references.md#jaxpip2026) |
-| ML 工作流与受力引擎接口 | [Committee 2020](docs/zh/manual/references.md#committee2020) · [Delta 2015](docs/zh/manual/references.md#delta2015) · [ASE 2017](docs/zh/manual/references.md#ase2017) · [OpenMM 2017](docs/zh/manual/references.md#openmm2017) · [i-PI 2014](docs/zh/manual/references.md#ipi2014) |
-
-引用方法时，还要引用实际使用的势能面、参数数据和上游软件，并记录 PyRPMD 提交。
-软件论文、综述、接口支持和短时回归不能替代原始算法引用或收敛复现证据。
-自适应 umbrella、signed NRPMD/电极等组合流程分别引用其组成方法；工程辅助功能不虚构唯一原论文。
-SM-NRPMD 的 focused 实现、正界面 RETIS、当前 isomorphic 动力学消费者等范围差别详见逐项目录。
-可下载 [BibTeX](docs/references.bib) 和 [结构化目录](docs/method-references.json)。
+PyRPMD 通过 TOML 或 Python 输入执行环聚合物动力学，包括反应速率、直接散射、
+自由能、平衡 PIMD、输运与光谱。C++17/OpenMP 内核和 NumPy 参考实现提供明确的
+单位、checkpoint 续算以及计算诊断。
 
 ## 安装
 
+使用已有 Python 3.11+ 环境与 C++17 编译器：
+
 ```bash
-git clone https://github.com/chen-yu-hao/PyRPMD.git PyRPMD
+git clone https://github.com/chen-yu-hao/PyRPMD.git
 cd PyRPMD
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -e .
-pyrpmd --version
+python -m pip install .
 pyrpmd info
 ```
 
-PyRPMD 需要 Python 3.11+、NumPy、SciPy、h5py、threadpoolctl 和 C++17 编译器；Linux 上编译 OpenMP。用 `CC`/`CXX`
-指定编译器。没有编译器时安装 NumPy 路径：
-
-```bash
-PYRPMD_NO_NATIVE=1 python -m pip install -e .
-```
-
-| 可选功能 | 安装 |
-| --- | --- |
-| MPI | 站点 MPI 与匹配的 mpi4py，再安装 `.[mpi]` |
-| ASE | `.[ase]` |
-| Torch / GPU | 与节点 CUDA 匹配的 PyTorch，再安装 `.[gpu]` |
-
-`native='required'` 要求编译内核；没有 OpenMP 时请求多个 dynamics 线程会报错。MPI 支持静态分组和显式启用的动态轨迹队列，后者使用一个协调 rank；测试覆盖
-单机四个 rank 的静态分组、五个 rank 的动态调度、Torch CPU 执行和多 GPU 分配。见[执行](docs/zh/manual/execution.md)。
+NumPy 路径使用 `PYRPMD_NO_NATIVE=1 python -m pip install .`。
+MPI、GPU 与外部势能接口按需安装，见[安装手册](docs/zh/manual/installation.md)。
+后续 0.2.x 二进制发布正在准备。
 
 ## 第一次运行
 
-在内置谐振势上做一次可续跑的一维自由能短测试。安装完成后可在任意工作目录开始；`init` 提供输入文件，
-无需依赖源码目录中的示例或下载外部模型：
-
 ```bash
-pyrpmd init my-first-run
-pyrpmd validate my-first-run/quickstart.inp --check-pes --output my-first-run/run
-pyrpmd run my-first-run/quickstart.inp --output my-first-run/run
-pyrpmd analyze my-first-run/run
-pyrpmd resume my-first-run/run
+pyrpmd init first-run
+pyrpmd validate first-run/quickstart.inp --check-pes
+pyrpmd run first-run/quickstart.inp --output first-run/run
+pyrpmd analyze first-run/run
 ```
 
-所有任务都使用同样的 `validate` → `run` → `analyze` → `resume` 流程。`--check-pes` 还会评估势能，对只给 TS 的速率输入还会
-执行数值准备。每个新计算使用新的输出目录；`resume`（或对原输入使用 `run --resume`）继续已有运行。
-入门例子产生 3 个窗口、6 条采样流和 120 个保存样本，摘要位于 `my-first-run/run/results/summary.json`。
-这个小样本用于检查工作流，不代表物理结果已收敛。`init` 拒绝写入非空目录。若 shell 找不到 `pyrpmd`，
-可以用 `python -m pyrpmd` 加相同参数。[快速入门](docs/zh/manual/quickstart.md)逐行讲解输入、输出与离线重分析。
+starter 在几秒内算出谐振子的质心自由能，其精确解为 $F(x)=\tfrac12 kx^2$；
+[快速入门](docs/zh/manual/quickstart.md)给出了对比方法，结果与精确解相差约 0.1 $k_BT$。
+下面的教程对其他任务做同样的对照。
+使用 `pyrpmd resume first-run/run` 可恢复已有计算。
 
-## 可以计算什么
+![势垒附近的环聚合物示意图](docs/_static/gifs/ring_polymer.gif)
 
-所有示例都使用解析模型势，单核即可运行。时间为 `OMP_NUM_THREADS=1` 下的实际耗时。
+这是环聚合物表示的示意图，不是 starter 的计算结果。
 
-| 任务 | `task` | 示例 | 时间 |
-| --- | --- | --- | --- |
-| 从 TS 出发的双分子 RPMD 速率 | `rate` | `pyrpmd prepare examples/rate/research.inp --pilot`，再 `pyrpmd run examples/rate/research.inp` | — |
-| 直接碰撞（dRPMD） | `drpmd` | `examples/drpmd/free_scattering.inp` | ~2 s |
-| 多入口多 TS 速率矩阵 | `network` | `examples/network/two_entrances.py` | ~25 s |
-| 一至三维伞形自由能面 | `fes` | `examples/fes/harmonic2d.inp` | ~6 s |
-| 自适应伞窗口 | `fes` | `examples/fes/adaptive_harmonic.inp` | ~4 s |
-| Standard 或 well-tempered metadynamics | `fes`，method 为 `metadynamics` | `examples/metadynamics/well_tempered_2d.inp` | ~2 s |
-| OPES 概率增强采样 | `fes`，method 为 `opes` | `examples/opes/harmonic_2d.inp` | — |
-| 固定晶胞 PIMD 与能量估计量 | `pimd` | `examples/materials/pimd.inp` | ~2 s |
-| RPMD 自扩散、MSD、VACF | `diffusion` | `examples/materials/diffusion.inp` | ~3 s |
-| 材料中的有向位点跃迁 | `site_rate` | `examples/materials/site_rate.inp` | ~25 s |
-| 固定基底上的有向逃逸 | `surface_rate` | `examples/surface/diffusion.inp` | ~1.5 min |
-| 电化学 PCET，H/D、电势与温度扫描 | `pcet` | `examples/pcet/harmonic_scan.inp` | ~2 s |
-| 态选择非绝热散射（NRPMD，实验性） | `drpmd` | `examples/nonadiabatic/exchange.inp` | ~15 s |
-| 布居系综（NRPMD、SM-NRPMD、CA-RP-MASH、BA/DM/SOC RPSH） | `nonadiabatic` | `examples/nonadiabatic/extensions/` | — |
-| 已发表的真实 NaH2 双态分子势能面 | `nonadiabatic` | `examples/nonadiabatic/extensions/nah2_sm_nrpmd.inp` | — |
+## 稳定工作流入口
 
-用 `pyrpmd run INPUT --output runs/NAME` 运行其中任意一个。FES 在 `[fes]` 中选择方法；
-省略 `method` 时默认使用 `umbrella`。旧的 `metadynamics` 和 `opes` 任务名作为弃用别名保留，
-现有算例仍可运行。方法子表、共享 walkers 和统一结果文件见[统一 FES 指南](docs/zh/enhanced-sampling.md)。
-另外两种常用方式：
-
-```bash
-# 用不同分块大小续跑；科学设置保持运行身份。
-pyrpmd resume runs/meta --loop-backend auto --block-steps 128
-# 改变科学设置：新建运行，从旧运行的构型热启动（可选导入元动力学偏置）。
-pyrpmd run high.inp --output runs/meta-high --init-from runs/meta --init-bias
-pyrpmd checkpoint runs/meta/checkpoints/metadynamics_0000.npz --require-integrity
-
-# 2 个轨迹组 × 每组 2 个珠子 PES rank。
-mpiexec -n 4 pyrpmd run examples/drpmd/mpi.py --output runs/mpi
-```
-
-[示例索引](docs/zh/manual/examples.md)给出学习路径，以及从示例走向研究计算的步骤。
-
-## 功能
-
-| 方面 | PyRPMD 提供 |
+| task | 计算内容与入口 |
 | --- | --- |
-| 输入 | Python `build()` 返回 `JobSpec` 或字典，或 TOML，严格检查字段、单位、原子索引和路径；命令行可覆盖 PES、温度、珠子数和 worker 数 |
-| RPMD 速率 | TS + PES → 数值 Hessian 与双向下降 → 通道识别 → PMF → 受约束母链 → 成对回穿子轨迹；可选伞形 UI/MBAR、冻结偏置 MetaD/OPES 重加权或兼容的外部 PMF（[选择指南](docs/zh/rate-pmf-selection.md)） |
-| 等价通道 | 由原子置换得到等价 TS，按 RPMDrate 的 `min_bond(max_TS(s1))` 组合；区分 H + H₂ 的两个交换出口 |
-| 反应网络 | 同一原子与同位素组成下的不同入口、TS 和 PES；每条路径填入速率矩阵，按入口、通道和 TS 分别报告 |
-| dRPMD | 两个反应物 XYZ 和初始质心距离；常驻母链按设定间隔发射碰撞 |
-| 核初态选择 | 固定碰撞能下近似振动态选择 NE-RPMD / 单珠子 QCT，独立初态采样、碰撞前检查与未决轨迹延长续跑（[方法](docs/state-selected.md)、[示例](examples/state_selected/README.md)） |
-| 自由能 | 带完整 CV Jacobian 的一至三维伞抽样、MBAR、重叠图、相关块 bootstrap、未采样区域 mask 与离线重分析；一至三维可依据 MBAR 重叠、有效样本数及可选覆盖目标自适应插入窗口 |
-| Metadynamics | Standard 与 well-tempered，1–3 维 CV、周期/固定层体系、NHC/PILE-L/Andersen、软墙、可选 1D/2D 偏置网格、独立历史或同步共享偏置 multiple-walker、统一 FESResult 与有限时间 FES |
-| 副本交换伞抽样 | 同温固定窗口 REUS、PILE-L 或 Andersen、同步集合续跑与跨窗口联合 bootstrap（[指南](docs/replica-exchange.md)） |
-| OPES | OPES_METAD / explore、可选自适应宽度、冻结偏置重加权与可续跑的独立历史；变体与 PLUMED 的差别见指南（[指南](docs/opes.md)） |
-| PLUMED 与路径抽样 | 可选的质心偏置 PLUMED 桥接；无偏双向 shooting 的跃迁界面集合与独立通量归一化（[PLUMED](docs/plumed.md)、[TIS](docs/transition-interface-sampling.md)） |
-| 速率后处理 | 离线二维分界面通量积分与带符号的通道贡献，显式归一化与严格平台检查（[指南](docs/rate-postprocessing.md)） |
-| 材料与表面 | 固定晶胞或各向同性 BZP 恒压 PIMD、固定层、primitive 与 centroid-virial 估计量、流式轨迹；普通或质心电子摩擦扩散；盆地归一化的位点/表面速率与源 FES 投影（[详情](docs/surface-catalysis.md)） |
-| 电化学 PCET | 局域复合物、单质子、宽带金属与经典 Gaussian 环境下的 golden-rule 正反向速率（s⁻¹）；H/D KIE 与振动态贡献（[方法](docs/pcet.md)） |
-| 积分器 | `cayley-bcb`、`normal-mode-bab`、`velocity-verlet`，均支持原生分段传播、Andersen 母链和质心 RATTLE |
-| 续跑 | v2 原子检查点逐数组 SHA256 校验（仍可读取 v1）；续跑时可调整分块和后端 |
+| `pimd` | 平衡能量：[有限珠数谐振子教程](examples/tutorials/harmonic_pimd/README.md) |
+| `fes` | 伞抽样与冻结 WT-MetaD 自由能：[双势阱教程](examples/tutorials/double_well_metad/README.md) |
+| `rate` | 气相 PMF 与 recrossing 速率：[速率示例](examples/rate/) |
+| `drpmd` | 热单势能面直接碰撞：[散射指南](examples/drpmd/README.md) |
+| `site_rate` | 单位点逃逸：[周期势垒教程](examples/tutorials/periodic_site_rate/README.md) |
+| `diffusion` | 物理质心输运：[自由扩散教程](examples/tutorials/free_diffusion/README.md) |
+| `spectroscopy` | RPMD/TRPMD 相对光谱：[谐振 IR 教程](examples/tutorials/harmonic_spectroscopy/README.md) |
 
-[原生集合传播器](docs/native-ensembles.md)提供显式启用的 C++ 恒温/恒压轨迹、常驻状态与编译 PES 回调。
-[势能适配器](docs/potential-adapters.md)涵盖 C ABI v2、周期 Torch、具名机器学习计算器、tblite、PySCF 与多客户端 i-PI。
-[离线 PES 生成流程](docs/manual/pes-generation.md)将 PySCF 参考数据连接到固定源码版本的 Caracal QMDFF/EVB/TREQ，
-并要求先完成试算与验证。
+[稳定级别与兼容政策](docs/development/stability.md)列出适用范围及 beta/research 方法。
+软件稳定与单个计算的科学收敛分别判断；参考[如何使结果收敛](docs/convergence.md)
+及运行产物中的诊断。教程说明解析参考和验收标准，实测结果以对应计算产物为准。
 
-PIMD 与固定晶胞扩散支持冻结基底原子；各向同性 BZP 恒压 PIMD 要求三维完全周期、全部原子可动及物理势能 virial。
-材料轨迹默认按带校验的分块流式保存。质子导体需要适合其组成、电荷与机理的周期势。输入、单位、周期 CV 与统计见
-[材料说明](docs/materials.md)。本版本的新内容见 [0.2.0 发行说明](docs/releases/0.2.0.md)。
+## 引用
 
-[周期材料实现审查与 TODO 清单](docs/periodic-materials-audit.md)记录代码与指南审查、开源实现对照、
-已修复问题和周期材料/表面催化仍需完成的验证。[周期体系指南](docs/zh/manual/periodic.md)区分默认材料工作流与
-显式原生 PIMD 引擎及其晶胞控制方式。
+按 [CITATION.cff](CITATION.cff) 引用软件的确切版本或 Git commit，并引用实际使用的
+方法与势能论文；见[方法出处](docs/manual/references.md)及 [BibTeX](docs/references.bib)。
+当前 checkout 未分配软件 DOI。
 
-## 最小输入
-
-速率研究建议从 [research.inp](examples/rate/research.inp) 开始：显式给出反应物片段与成断键，
-独立控制 TS 检查，用分区表指定窗口密度和力常数，并分别设置伞采样、母链和子轨迹。
-[输入指南](docs/zh/rate-input-v2.md)说明 RPMDrate 风格的 `k/T` 力常数约定及旧输入兼容规则。
-
-也可以显式选择自动推断的便捷模式，只提供 TS 结构和势能：
-
-```toml
-schema_version = 2
-task = "rate"
-
-[system]
-transition_state = "ts.xyz"
-
-[potential]
-provider = "cabi"
-library = "libpes.so"
-
-[reaction]
-definition = "infer"
-
-[preparation]
-ts_action = "validate"
-check_channel = true
-```
-
-`validate` 检查驻点和一阶鞍点而不移动坐标；需要 P-RFO 细化时改为 `ts_action="refine"`。
-反应定义、鞍点有效性和双向下降的通道一致性分别记录。
-
-`[potential]` 也可以在命令行用 `--pes ./libpes.so` 给出。`.so` 实现 PyRPMD PES v1 ABI；f2py 模块使用
-`provider='rpmdrate'`，普通 `.o` 另加 `--pes-manifest`，写明编译器、wrapper 和链接依赖。
-
-两个反应物和一个间距就是完整的 dRPMD 输入：
-
-```toml
-task = "drpmd"
-
-[system]
-reactants = ["A.xyz", "B.xyz"]
-separation = "12 angstrom"
-
-[potential]
-provider = "cabi"
-library = "libpes.so"
-```
-
-两者都使用 `pilot` 预设：300 K、32 个珠子、0.1 fs 步长。在此基础上，每添加一项设置就多得到一项结果：
-
-- 给出经过截断检验的 `bmax`，得到 dRPMD 热速率（不给时碰撞从 `R0/4` 开始，不报告热速率）；
-- 给出分类规则，得到化学速率和截面（不给时 PyRPMD 按共价半径推断连通性，把结果标为候选）；
-- 异构化和交换通道使用自定义分类器。
-
-## Python 扩展
-
-Python 输入可以计算参数、加载模型并构造任意静态可微 CV。把 factory 放在可导入模块中；每个进程或 MPI rank 构造自己的势能上下文：
-
-```python
-# job.py
-from pyrpmd import JobSpec
-
-def build():
-    return JobSpec.from_mapping({
-        "task": "drpmd",
-        "temperature": "500 K",
-        "beads": 32,
-        "system": {
-            "reactants": ["A.xyz", "B.xyz"],
-            "separation": "12 angstrom",
-        },
-        "potential": {
-            "provider": "python",
-            "factory": "my_pes.py:build_pes",
-            "params": {"model": "model.dat"},
-        },
-        "collision": {"bmax": "4 angstrom", "trajectories": 1000},
-        "parallel": {"backend": "process", "mode": "serial", "trajectory_workers": 8},
-    })
-```
-
-PES 接收原子单位的 `float64[B,N,3]` 坐标，返回 `[B]` 能量和 `[B,N,3]` 力（负梯度）。自定义 CV 返回 `value[D]` 和完整的
-`jacobian[D,P,N,3]`。可运行的例子见 [Python PES](examples/drpmd/python_pes.py) 和[自定义二维 CV](examples/fes/custom_input.py)。
-Python 输入作为普通的受信任代码执行。
-
-## 验证
-
-**BKMP2 上的 H + H₂。** [`benchmarks/h3`](benchmarks/h3/README.md) 在已发表的 BKMP2 势能面上、1500 K 与 16 个珠子下运行
-dRPMD、二维质心 FES、伞抽样 PMF 和回穿。构建时按 commit 和 SHA256 固定势能源码，并在任何传播之前验证作者给出的能量/梯度参考值、
-H₂ 平衡结构和一阶鞍点。四组使用 MBAR 速率 PMF 的独立随机种子重复覆盖 848,000 个样本和 1,024 条新回穿轨迹：四组均通过，同一
-分割面上 UI/MBAR 势垒差的每个配对区间都包含零，速率的联合相对标准误为 20–23%
-（[记录](docs/validation/h3-pmf-refinement-2026-10-29/README.md)、[方法](docs/mbar-rate-pmf.md)、
-[估计器审查](docs/h3-pmf-estimator-audit.md)）。
-
-**PCET。** 在谐振模型上，PyRPMD 与固定 commit 的 pyPCET 在 12 个正反向速率上相差不超过 0.062%
-（[记录](docs/validation/pcet-model-2026-10-30/README.md)）。
-
-**PMF 数值。** 一维/二维 PMF 在不同珠子数、积分器、周期 CV 和相关误差下与解析积分和 PyMBAR 一致
-（[记录](docs/validation/pmf-accuracy-2026-10-30/README.md)）。
-
-**材料。** [Ni–H EAM pilot](benchmarks/materials/README.md) 在固定来源的 EAM 模型上，以 1 和 4 个珠子运行 Ni(100) slab 上的
-H 和 D（[记录](docs/validation/materials-2026-10-30.md)）。
-
-GitHub Actions 的 **Real H3 BKMP2 validation** 与 **H3 PMF independent-seed study** 工作流重新运行这些研究，并保存输入、
-样本、检查点、PMF、κ(t)、诊断与图表。
-
-<details>
-<summary>复现 BKMP2 基准</summary>
-
-```bash
-# 需要 GNU Fortran；图表需要 matplotlib。
-python -m pip install matplotlib
-python benchmarks/h3/build_pes.py
-python benchmarks/h3/pes.py --check --output runs/h3/pes-check.json
-python benchmarks/h3/numerics.py --output runs/h3/numerics.json
-python benchmarks/h3/drpmd.py --output runs/h3/drpmd --workers 2
-python benchmarks/h3/rpmd.py --stage fes2d --output runs/h3/fes2d --workers 2
-python benchmarks/h3/rpmd.py --stage rate --output runs/h3/rate --workers 2
-```
-
-独立随机种子研究（case 为 `k400-a`、`k400-b`、`k800-a`、`k800-b`；`--smoke` 只运行简短检查）：
-
-```bash
-python -m pip install -e '.[analysis]' matplotlib
-python benchmarks/h3/convergence.py plan
-python benchmarks/h3/convergence.py run --case k400-a --output runs/h3-pmf/k400-a
-python benchmarks/h3/solver_check.py --run runs/h3-pmf/k400-a/run \
-  --stride 10 --reference-pymbar --output runs/h3-pmf/k400-a/solver-check.json
-```
-
-</details>
-
-[H + HO₂ 二维扫描](benchmarks/hho2/README.md)可直接用于全维反应性 H + HO₂ 势能面，提供多起始几何、共同的有限距离墙、
-六键长通道分类和连通分析。
-
-开展正式研究前，请阅读[使结果收敛](docs/zh/manual/science.md#使结果收敛)，其中说明如何把计算从 pilot 推进到正式生产。
-
-[自适应伞抽样可靠性审查](docs/validation/umbrella-reliability-2026-10-31/README.md)记录了可复现的重叠与误差报告缺陷、对应修复、实际默认预算，以及仍须针对具体体系完成的收敛检查。pilot 达标不代表精度已经得到保证。
-
-## 原生传播
-
-`Dynamics.propagate()` 以整块为单位原子提交；`Dynamics.propagate_block()` 逐步提交，提供观测 mask、完整 q/p 快照和原生质心
-RATTLE，数值失败时保留成功的前缀。两者都支持三种积分器。内置连通图分类器与 H3 交换分类器在 C++ 块内运行并提前结束碰撞；
-融合的 C++ PILE-L 内核以及正常模 BAB 在 2 的幂次 `P>=32` 时使用的原生 FFT 加速带恒温器和大珠子数的运行。缺省为
-`loop_backend="auto"`、`block_steps=256`。详见[原生传播](docs/native-propagation.md)、
-[分段 API 与故障处理](docs/block-propagation.md)、[积分器](docs/integrators.md)、
-[优化记录](docs/validation/audit-optimization-2026-10-30/README.md)。
-
-态选择碰撞复用同一 C++ 生产传播路径。可选原生观测记录每珠子势能、质心动能、内部 bead 动能、弹簧能和每原子环尺寸，
-不增加 PES 调用。`pyrpmd state-check` 在生产块外将稀疏保存的状态投影到分子参考模式；
-谐振初态近似、辅助 beta 与固定能量统计的适用条件见[态选择说明](docs/state-selected.md)。
-
-[BKMP2 态选择对照](benchmarks/h3/STATE_SELECTED_REPRODUCTION.md)及其
-[初态制备研究](benchmarks/h3/STATE_PREPARATION_STUDY.md)区分论文的质心筛选、全势作用量 QCT
-与实验性平滑切换，并给出配对轨迹统计和孤立双原子能量诊断。
-
-## 文档
-
-使用手册涵盖安装、快速入门、全部受支持工作流的指南、API 与开发说明，有[英文](docs/index.md)和[中文](docs/zh/index.md)两个版本，
-章节一一对应。构建带搜索的 HTML 手册（中文版输出到 `zh/`）：
-
-```bash
-python -m pip install -e '.[docs]'
-python -m sphinx -W --keep-going -b html docs docs/_build/html
-python -m sphinx -W --keep-going -b html docs/zh docs/_build/html/zh
-```
-
-GitHub **Documentation** 工作流构建两个版本、运行入门示例，并上传 `pyrpmd-manual-html` 产物。
-
-[用户体验审查与 to-do list](docs/ux-review-2026-10-31.md)记录当前上手流程的审查结果及后续工作。
-
-运行目录包含 `manifest.json`、`input/`、`checkpoints/`、工作流数据和 `results/summary.json`。三种 FES 方法统一写出
-`fes.npz`、`fes.csv`、`fes.json` 和 `summary.json`；伞形采样另存 `fes.h5` 诊断。dRPMD 保存每条轨迹的初态、
-碰撞轨迹和分类记录。不同 MPI rank 不共同写一个 HDF5 文件。
-
-参考规范：
-
-- [输入规范](docs/input.md)
-- [连接势能](docs/potentials.md)与 [C ABI](native/ABI.md)
-- [并行与多节点运行](docs/parallel.md)
-- [科学约定](docs/science.md)
-- [开发与验证](docs/development.md)、[验证记录](docs/validation.md)
-- [多入口与多 TS](docs/reaction-networks.md)
-- [实验性 NRPMD 与态分辨碰撞](docs/nonadiabatic.md)
-- [非绝热布居工作流](docs/nonadiabatic-workflow.md)、[模型库](docs/nonadiabatic-models.md)、[系综 API](docs/nonadiabatic-ensembles.md)、[实现对比与剩余缺口](docs/nonadiabatic-comparison.md)
-- [SM-NRPMD 与 CA-RP-MASH](docs/nonadiabatic-spin-methods.md)、[BA/DM RPSH、DBOC 和复 SOC](docs/nonadiabatic-hopping-extensions.md)、[真实分子多态 PES](docs/molecular-nonadiabatic.md)、[原生／批量／Torch 电子传播](docs/nonadiabatic-performance.md)
-- [电子摩擦](docs/electronic-friction.md)、[热 NRPMD](docs/thermal-nrpmd.md)、[KC/MV/isomorphic 模型](docs/nonadiabatic-methods.md)、[SOC 与 RPSH](docs/nonadiabatic-soc-rpsh.md)
-- [BZP 恒压 PIMD](docs/materials-npt.md)、[网格 metadynamics](docs/grid-metadynamics.md)、[流式轨迹](docs/streaming-trajectories.md)
-- [恒电位电极模型与 HER 后处理](docs/electrochemistry.md)
-- [自适应受限反应路径、恒电势矩阵与有符号热 NRPMD](docs/zh/manual/adaptive-nrpmd.md)
-- [统一 FES、自适应伞抽样与共享偏置 metadynamics](docs/zh/enhanced-sampling.md)
-- [速率 PMF 方法选择与独立采样设置](docs/zh/rate-pmf-selection.md)
-- [电化学 PCET 模型](docs/pcet.md)、[可运行 PCET 示例](examples/pcet/README.md)
-- [固定晶胞、PIMD、材料扩散与位点速率](docs/materials.md)
-- [表面催化与周期 slab](docs/surface-catalysis.md)
-- [公共接口](docs/interfaces.md)、[检查点与续跑](docs/checkpoints.md)
-
-| 路径 | 职责 |
-| --- | --- |
-| `src/pyrpmd/input.py`、`units.py`、`system.py`、`geometry.py` | 输入、单位、原子/同位素体系与固定晶胞几何 |
-| `src/pyrpmd/dynamics.py`、`native/` | 三种环积分器、动量采样、恒温器、C++/OpenMP |
-| `src/pyrpmd/potentials/` | 势能接口及其适配器 |
-| `src/pyrpmd/cv.py`、`bias.py` | CV、完整 Jacobian、伞势、速率通量度量、历史 Gaussian 偏置 |
-| `src/pyrpmd/workflows/`、`reactions.py` | rate、dRPMD、PIMD、扩散、位点/表面速率、PCET、FES、自适应窗口、metadynamics、多 TS 组织与准备 |
-| `src/pyrpmd/analysis/` | MBAR、umbrella integration、metadynamics 偏置 FES、MSD/VACF/扩散张量、统计诊断 |
-| `src/pyrpmd/checkpoint.py`、`runner.py` | 原子状态容器、完整性校验、运行身份与公共入口 |
-| `src/pyrpmd/parallel/` | 轨迹池、珠子池、MPI、GPU 放置 |
-| `examples/`、`tests/`、`docs/` | 可运行示例、数值/集成测试、规范 |
-
-## 测试与来源
-
-```bash
-python -m pytest -q
-mpiexec -n 4 python tests/mpi_integration.py
-```
-
-Cayley 积分器、反应坐标与速率算法改编自 [RPMDrate](https://github.com/GreenGroup/RPMDrate) 及作者的
-[Cayley/thermal-dRPMD 分支](https://github.com/chen-yu-hao/RPMDrate/tree/9a44d6b378d8bf835d67e1b3b7f78b27bdc84a78)；速率工作流
-还参照了 [Caracal](https://github.com/Trebonius91/Caracal/tree/7f95ce9818b7f6d81d7cb3b634f360373c090820) 的伞抽样/回穿组织方式。
-适配器、输入规范和调度是新增的层。来源 commit、作者、MIT 声明和论文 DOI 记录在 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
-不包含 Caracal 的 QMDFF、xTB 和机器学习模型。
-
-许可证：[MIT](LICENSE)。
+[更新记录](CHANGELOG.md) · [开发与验证历史](docs/development/stability.md#developer-and-validation-records) ·
+[许可证](LICENSE) · [第三方声明](THIRD_PARTY_NOTICES.md)

@@ -31,11 +31,24 @@ class RuntimeOptions:
     integrator: str
 
 
-def _steps(table, key, duration_key, default, dt, *, allow_zero=False):
+def _steps(table, key, duration_key, default, dt, *, allow_zero=False,
+           section="sampling", timestep=None):
     # Do not evaluate a duration which the caller has replaced with exact steps.
     if key in table:
         return _integer(table[key], key, 0 if allow_zero else 1)
-    return time_steps(table.get(duration_key, default), dt, allow_zero=allow_zero)
+    value = table.get(duration_key, default)
+    try:
+        return time_steps(value, dt, allow_zero=allow_zero)
+    except ValueError as error:
+        origin = repr(value) if duration_key in table else f"default {value!r}"
+        source = timestep or f"dynamics.timestep = {dt:g} autime"
+        raise InputError(f"{section}.{duration_key} ({origin}); {source} ({dt:g} autime): {error}") from error
+
+
+def _timestep_source(d):
+    table = d.get("dynamics", {})
+    value = table.get("timestep", "0.1 fs")
+    return f"dynamics.timestep = {value!r}" + (" (default)" if "timestep" not in table else "")
 
 
 
@@ -106,6 +119,18 @@ def resolve_sampling(d, runtime, *, selected, materials, native_pimd):
     method = fes_method(d) if task in ("fes", "metadynamics", "opes") else None
     dt, integrator, dyn, notes = runtime.dt, runtime.integrator, runtime.dynamics, runtime.notes
     sampling = deepcopy(d.get("sampling", {}))
+    if "monitor_pair_distances" in sampling:
+        if not isinstance(sampling["monitor_pair_distances"], (bool, np.bool_)):
+            raise InputError("sampling.monitor_pair_distances must be boolean")
+        if sampling["monitor_pair_distances"] and method not in ("metadynamics", "opes"):
+            raise InputError("sampling.monitor_pair_distances requires metadynamics or opes")
+        bias = d.get(method, {})
+        if sampling["monitor_pair_distances"] and (
+            bias.get("shared_walkers") or bias.get("multiple_walkers")
+            or bias.get("walkers_mode", "serial") != "serial"
+        ):
+            raise InputError("sampling.monitor_pair_distances currently requires independent histories")
+        sampling["monitor_pair_distances"] = bool(sampling["monitor_pair_distances"])
     if selected:
         if set(sampling) - {"parents"}:
             raise InputError("State-selected initial_ensemble allows only sampling.parents; thermal equilibration and thermostat settings do not apply")
@@ -214,7 +239,7 @@ def resolve_sampling(d, runtime, *, selected, materials, native_pimd):
             "equilibration",
             "100 fs",
             dt,
-            allow_zero=True,
+            allow_zero=True, timestep=_timestep_source(d),
         )
         adaptive_table = d.get("adaptive_umbrella", {})
         enhanced_sampling = method == "metadynamics" or (
@@ -225,13 +250,13 @@ def resolve_sampling(d, runtime, *, selected, materials, native_pimd):
         if enhanced_sampling and not any(k in sampling for k in ("production_steps", "production")):
             notes.append("Enhanced-sampling default production: 1000 fs; inspect production ESS and CV coverage before increasing the budget or interpreting the FES.")
         sampling["production_steps"] = _steps(
-            sampling, "production_steps", "production", default_production, dt
+            sampling, "production_steps", "production", default_production, dt, timestep=_timestep_source(d)
         )
         interval = sampling.get("interval_steps", sampling.get("sample_interval"))
         if interval is None:
-            interval = time_steps(
-                sampling.get("interval", sampling.get("save_interval", "1 fs")), dt
-            )
+            duration_key = "interval" if "interval" in sampling else "save_interval"
+            interval = _steps(sampling, "interval_steps", duration_key, "1 fs", dt,
+                              timestep=_timestep_source(d))
         sampling["interval_steps"] = sampling["sample_interval"] = _integer(
             interval, "sampling.interval_steps"
         )
@@ -318,7 +343,8 @@ def resolve_output(d, base, dt, *, selected, original_task=None):
     output = deepcopy(d.get("output", {}))
     output["directory"] = _path(base, output.get("directory", f"runs/{task}"))
     output["checkpoint_steps"] = _steps(
-        output, "checkpoint_steps", "checkpoint_interval", "10 fs", dt
+        output, "checkpoint_steps", "checkpoint_interval", "10 fs", dt,
+        section="output", timestep=_timestep_source(d)
     )
     if "trajectory_stride" in output:
         output["trajectory_stride"] = _integer(

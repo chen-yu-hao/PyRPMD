@@ -370,7 +370,9 @@ class CABIPotential(Potential):
                         key in payload
                         and self.metadata.get("state", {}).get(key) != payload[key]
                     ):
-                        raise PotentialError(f"PES {key} mismatch")
+                        raise PotentialError(
+                            f"PES {key} mismatch: system/config declares {payload[key]!r}, "
+                            f"provider declares {self.metadata.get('state', {}).get(key)!r}")
                 if system is not None:
                     # Validate against the actual System too: user config may
                     # not override its composition or electronic state.
@@ -406,7 +408,9 @@ class CABIPotential(Potential):
             raise PotentialError("PES element ordering mismatch")
         for key in ("charge", "multiplicity"):
             if get(key) is not None and get(key) != self.metadata.get("state", {}).get(key):
-                raise PotentialError(f"PES {key} mismatch")
+                raise PotentialError(
+                    f"PES {key} mismatch: system declares {get(key)!r}, "
+                    f"provider declares {self.metadata.get('state', {}).get(key)!r}")
         with self._lock:
             if self.closed:
                 raise PotentialError("PES context is closed")

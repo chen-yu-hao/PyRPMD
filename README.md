@@ -1,546 +1,76 @@
 # PyRPMD
 
-**[User manual](docs/index.md)** · [Installation](docs/manual/installation.md) ·
-[Quickstart](docs/manual/quickstart.md) · [Examples](docs/manual/examples.md) ·
-[Python API](docs/manual/api.md) · [中文](README.zh-CN.md)
+[English manual](docs/index.md) · [中文](README.zh-CN.md) ·
+[Examples](docs/manual/examples.md) · [Contributing](CONTRIBUTING.md)
 
-**Ring-polymer molecular dynamics from a single input file — from a transition state to a
-recrossing-corrected rate, with fingerprinted checkpoint restart.**
+PyRPMD runs ring-polymer molecular dynamics from TOML or Python inputs: reaction
+rates, direct scattering, free energies, equilibrium PIMD, transport and spectra.
+C++17/OpenMP kernels and a NumPy reference implementation share explicit units,
+checkpoint restart and calculation diagnostics.
 
-Give PyRPMD a transition state and a potential, and it builds the whole Bennett–Chandler
-calculation for you: a numerical Hessian and two-sided descent identify the reaction channel,
-umbrella sampling gives the PMF, and constrained parent chains launch paired recrossing
-trajectories for the transmission coefficient. The same Python or TOML input drives the workflows,
-from gas-phase rates and direct collisions to free-energy surfaces, metadynamics, PIMD, diffusion,
-surface hops and electrochemical PCET, on C++17/OpenMP integrator kernels with a NumPy reference
-implementation alongside.
+## Install
 
-## How it works, in motion
-
-Each animation shows one idea behind a PyRPMD workflow on a toy model.
-
-<p align="center">
-  <img src="docs/_static/gifs/ring_polymer.gif" width="62%" alt="Each quantum nucleus is a ring of beads joined by springs. Near the transition state (star) the ring stretches across the barrier, which is how RPMD captures tunnelling and zero-point energy."><br>
-  <sub>Each quantum nucleus is a ring of beads joined by springs. Near the transition state (star) the ring stretches across the barrier, which is how RPMD captures tunnelling and zero-point energy.</sub>
-</p>
-
-<table>
-<tr><th colspan="2">Thermal rates (<code>rate</code>, <code>network</code>)</th></tr>
-<tr><td width="50%" align="center"><img src="docs/_static/gifs/umbrella_pmf.gif" width="100%" alt="Umbrella windows along the reaction coordinate (top) give overlapping histograms (bottom), which are combined into the PMF."><br><sub>Umbrella windows along the reaction coordinate (top) give overlapping histograms (bottom), which are combined into the PMF.</sub></td><td width="50%" align="center"><img src="docs/_static/gifs/recrossing.gif" width="100%" alt="Paired trajectories start on the dividing surface (dashed). Recrossings pull the transmission coefficient κ(t) down to its plateau."><br><sub>Paired trajectories start on the dividing surface (dashed). Recrossings pull the transmission coefficient κ(t) down to its plateau.</sub></td></tr>
-<tr><th colspan="2">Collisions and deep tunnelling (<code>drpmd</code>, instantons)</th></tr>
-<tr><td width="50%" align="center"><img src="docs/_static/gifs/drpmd_collision.gif" width="100%" alt="Direct dRPMD collision A + BC → AB + C: ring-polymer atoms approach, exchange a bond and fly apart."><br><sub>Direct dRPMD collision A + BC → AB + C: ring-polymer atoms approach, exchange a bond and fly apart.</sub></td><td width="50%" align="center"><img src="docs/_static/gifs/instanton.gif" width="100%" alt="Ring-polymer instanton: as the temperature drops, the beads spread along the barrier (top) and the closed imaginary-time orbit widens (bottom)."><br><sub>Ring-polymer instanton: as the temperature drops, the beads spread along the barrier (top) and the closed imaginary-time orbit widens (bottom).</sub></td></tr>
-<tr><th colspan="2">Free-energy surfaces (<code>fes</code>: metadynamics, OPES, umbrella)</th></tr>
-<tr><td width="50%" align="center"><img src="docs/_static/gifs/metadynamics.gif" width="100%" alt="Well-tempered metadynamics: deposited Gaussians (orange) fill the wells until the walker crosses freely. The negative bias (bottom) converges to the true FES."><br><sub>Well-tempered metadynamics: deposited Gaussians (orange) fill the wells until the walker crosses freely. The negative bias (bottom) converges to the true FES.</sub></td><td width="50%" align="center"><img src="docs/_static/gifs/fes_2d.gif" width="100%" alt="2D enhanced sampling: the walker explores the surface (left) while the reconstructed FES fills in basin by basin (right)."><br><sub>2D enhanced sampling: the walker explores the surface (left) while the reconstructed FES fills in basin by basin (right).</sub></td></tr>
-<tr><th colspan="2">Path-integral sampling and materials (<code>pimd</code>, <code>diffusion</code>)</th></tr>
-<tr><td width="50%" align="center"><img src="docs/_static/gifs/pimd_nqe.gif" width="100%" alt="PIMD nuclear quantum effects: as the thermometer falls, the light H rings swell while the heavy O ring stays compact."><br><sub>PIMD nuclear quantum effects: as the thermometer falls, the light H rings swell while the heavy O ring stays compact.</sub></td><td width="50%" align="center"><img src="docs/_static/gifs/diffusion.gif" width="100%" alt="Materials diffusion: ring-polymer particles hop between interstitial sites of a periodic host; the MSD grows linearly, giving D."><br><sub>Materials diffusion: ring-polymer particles hop between interstitial sites of a periodic host; the MSD grows linearly, giving D.</sub></td></tr>
-<tr><th colspan="2">Surfaces and electrochemistry (<code>surface_rate</code>, <code>site_rate</code>, <code>pcet</code>)</th></tr>
-<tr><td width="50%" align="center"><img src="docs/_static/gifs/surface_rate.gif" width="100%" alt="Surface escape on a slab with a fixed bottom layer (hatched). The basin survival probability decays exponentially at the escape rate."><br><sub>Surface escape on a slab with a fixed bottom layer (hatched). The basin survival probability decays exponentially at the escape rate.</sub></td><td width="50%" align="center"><img src="docs/_static/gifs/pcet.gif" width="100%" alt="Electrochemical PCET: the electrode potential shifts the product free-energy curves (orange) against the reactant (blue). The H and D rate curves show the KIE."><br><sub>Electrochemical PCET: the electrode potential shifts the product free-energy curves (orange) against the reactant (blue). The H and D rate curves show the KIE.</sub></td></tr>
-<tr><th colspan="2">Nonadiabatic dynamics and spectroscopy (<code>nonadiabatic</code>, <code>spectroscopy</code>)</th></tr>
-<tr><td width="50%" align="center"><img src="docs/_static/gifs/nonadiabatic.gif" width="100%" alt="Nonadiabatic dynamics at an avoided crossing: a swarm on the upper surface splits between the two states, and the populations (right) settle."><br><sub>Nonadiabatic dynamics at an avoided crossing: a swarm on the upper surface splits between the two states, and the populations (right) settle.</sub></td><td width="50%" align="center"><img src="docs/_static/gifs/spectroscopy.gif" width="100%" alt="TRPMD / PA-CMD spectroscopy: the vibrating molecule's dipole correlation function (top) is Fourier-transformed, and the spectrum (bottom) sharpens as it lengthens."><br><sub>TRPMD / PA-CMD spectroscopy: the vibrating molecule's dipole correlation function (top) is Fourier-transformed, and the spectrum (bottom) sharpens as it lengthens.</sub></td></tr>
-</table>
-
-<sub>These are text-free schematics driven by small toy simulations, not PyRPMD results. Regenerate them with <code>python tools/make_readme_gifs.py</code> (needs matplotlib).</sub>
-
-## Why PyRPMD
-
-- **From TS to rate in one command.** No hand-staged windows or separate recrossing scripts: one
-  input carries a calculation from structure to rate, with uncertainties.
-- **Fixed-ring committor analysis.** Launch independent unbiased RPMD shots from a complete ring configuration, distinguish A/B first hits from unresolved shots, and report conservative probability intervals ([guide](docs/committor.md), Python API).
-- **Results you can defend.** Every run reports estimates, failed or unresolved trajectories and
-  diagnostics separately. When overlap, the recrossing plateau or energy conservation fails a
-  check, PyRPMD withholds the number and tells you why.
-- **Restart with confidence.** Checkpoints hold full q/p, RNG state, bias history and a physics
-  fingerprint, written atomically with per-array SHA256. Change the block size or loop backend
-  on restart; changes to the science are refused for a restart. To change temperature, beads or
-  potential, start a new run from the old configuration with `--init-from`
-  ([warm start](docs/checkpoints.md#warm-start-a-new-run-from-an-old-configuration)).
-- **Bring your own potential.** Python, RPMDrate/f2py, a versioned C ABI `.so`, a plain `.o`
-  linked from a manifest, ASE, Torch, OpenMM, LAMMPS as a library, or an i-PI socket.
-- **Laptop to cluster.** Trajectory and window process pools, persistent bead-PES pools, MPI
-  `G × B` groups, OpenMP and several trajectories per GPU across multiple cards.
-- **Checked against published references.** H + H₂ on the BKMP2 surface, PCET rates within
-  0.062% of pyPCET, and PMFs against analytic integrals and PyMBAR ([Validation](#validation)).
-
-Expensive-potential workflows can use [provider reuse and trajectory batching](docs/performance-dynamics.md),
-[explicit RPC/MTS Python APIs](docs/rpc-mts.md), and
-[TRPMD, correlation functions and relative IR spectra](docs/trpmd-spectroscopy.md).
-The [common propagation stack](docs/propagation-stack.md) composes integrators,
-thermostats, barostats and force splitting through `Dynamics`, with complete
-operator checkpoints and independent trajectory batching.
-The [published-rate comparison tools](benchmarks/published_rates/README.md) check model identity,
-statistical conventions and convergence evidence.
-
-[Standard trajectory export](docs/trajectory-export.md) writes extxyz, H5MD and ASE `.traj`
-with explicit units, cells and isotope masses. [Bond constraints](docs/bond-constraints.md)
-add per-bead SHAKE/RATTLE for fixed-cell velocity-Verlet/Andersen calculations.
-The [literature validation inventory](docs/literature-validation.md) and
-[q-TIP4P/F water pilot](benchmarks/water/README.md) distinguish tested software and short
-physical-model checks from completed, converged literature reproductions.
-
-
-## Additional scientific methods
-
-- [Condensed-phase nuclear quantum effects](docs/condensed-phase-nqe.md): Suzuki–Chin energy, Cv/Cp and pressure estimators, isotropic SC-NPT and PIGLET-NPT, and RPC cell virials. Reproducible coupled-crystal and FCC Lennard–Jones solid benchmarks retain finite-bead and sampling errors explicitly.
-- [Tier 2 coverage and boundaries](docs/tier2-methods.md): PA-CMD and fitted-centroid spectroscopy, Raman/SFG and property models; force-based Suzuki–Chin, quadratic bosonic exchange and PIGS; extended CVs, shared MetaD and OPES variants; on-the-fly nonadiabatic data and ML lifecycle tools. The guide distinguishes working input workflows from Python APIs and explicitly lists QCMD/h-CMD and other remaining gaps.
-- [Tier 2 literature validation](docs/validation/tier2-literature-2026-11-01/README.md): published-model comparisons with independent quantum/statistical references, actual seeded trajectories, convergence and uncertainty, real PLUMED/TorchScript/quantum-chemistry/MPI tests, and the OPES initialization correction found by direct cross-code comparison. Short-run statistical agreement is distinguished from publication-level convergence.
-- [General-coordinate rates](docs/general-coordinate-rates.md): smooth nonlinear centroid coordinates with constrained-parent mass-metric and correlated-bootstrap corrections.
-- [Temperature, isotope and convergence studies](docs/rate-studies.md): `pyrpmd study` with Arrhenius fits, KIEs and explicit numerical equivalence checks.
-- [Ring-polymer instantons](docs/instanton.md): stationary paths and one-dimensional rates. [Low-temperature cross-checks](docs/low-temperature.md) add multidimensional Gaussian fluctuation prefactors with explicit harmonic-reactant normalization, bound/constrained-well tunnelling splittings, and TST/Wigner/Eckart estimates. These results retain `physical_converged=False`; finite prefactors do not establish physical convergence.
-- [Quantum statistics](docs/quantum-statistics.md): primitive/Takahashi–Imada equilibrium sampling, heat capacities, kinetic energies, fractionation and single-component open-path momentum distributions. Fourth-order TI accuracy applies to thermodynamic traces.
-
-These model examples test the numerical implementation; physical and sampling convergence require a separate system-specific study.
-
-## Method papers and reproduction
-
-The [original-paper / implementation catalog](docs/manual/references.md) covers **111 feature entries and 170 bibliographic records**,
-with code paths and implementation limits. The [reproduction checklist](docs/manual/reproduction.md) gives each source paper's
-system, observables, existing entry, missing ingredients and priority. The audit targets `cb60679` (2026-11-02).
-Start with **H + H2/BKMP2, the 2013 NRPMD two-state model, and q-TIP4P/F water**.
-
-| Feature family | Original method / model sources |
-| --- | --- |
-| PIMD / RPMD correlations | [Chandler–Wolynes 1981](docs/manual/references.md#cw81) · [Craig–Manolopoulos 2004](docs/manual/references.md#rpm04) |
-| Bennett–Chandler and bimolecular RPMD rates | [Bennett 1977](docs/manual/references.md#bennett1977) · [Chandler 1978](docs/manual/references.md#chandler1978) · [Craig–Manolopoulos 2005](docs/manual/references.md#rate05) · [Collepardo-Guevara et al. 2009](docs/manual/references.md#bimol09) |
-| dRPMD and state-selected scattering | [Suleimanov et al. 2018](docs/manual/references.md#drpmd18) · [Marjollet et al. 2020](docs/manual/references.md#state20) · [2022 extension](docs/manual/references.md#state22) |
-| Cayley / BCOCB and PILE / PIGLET | [Cayley 2019](docs/manual/references.md#cayley19) · [BCOCB 2020](docs/manual/references.md#bcocb20) · [PILE 2010](docs/manual/references.md#pile10) · [PIGLET 2012](docs/manual/references.md#piglet12) |
-| PA-CMD / f-CMD / TRPMD and SFG | [PA-CMD 2006](docs/manual/references.md#pacmd06) · [f-CMD 2005](docs/manual/references.md#fcmd05) · [TRPMD 2014](docs/manual/references.md#trpmd14) · [Morita–Hynes 2002](docs/manual/references.md#sfg02) |
-| TI / Suzuki–Chin, bosons and PIGS | [TI 1984](docs/manual/references.md#ti84) · [SC 2016](docs/manual/references.md#sc16) · [Bosons 2019](docs/manual/references.md#bose19) · [Quadratic scaling 2023](docs/manual/references.md#bose23) · [PIGS 2000](docs/manual/references.md#pigs00) |
-| Isotope estimators and instantons | [Isotopes 2013](docs/manual/references.md#iso13) · [Fractionation 2014](docs/manual/references.md#iso14) · [RPI 2009](docs/manual/references.md#rpi09) · [Splittings 2011](docs/manual/references.md#split11) |
-| Umbrella sampling / MBAR / UI | [Torrie–Valleau 1977](docs/manual/references.md#samp-us1977) · [Shirts–Chodera 2008](docs/manual/references.md#samp-mbar2008) · [Kästner–Thiel 2005](docs/manual/references.md#samp-ui2005) |
-| MetaD / WT-MetaD / OPES | [Laio–Parrinello 2002](docs/manual/references.md#samp-meta2002) · [Barducci et al. 2008](docs/manual/references.md#samp-wt2008) · [OPES 2020](docs/manual/references.md#samp-opes2020) · [Explore 2022](docs/manual/references.md#samp-explore2022) |
-| REUS, TIS / RETIS and committor analysis | [REUS 2000](docs/manual/references.md#samp-reus2000) · [TIS 2003](docs/manual/references.md#samp-tis2003) · [RETIS 2007](docs/manual/references.md#samp-retis2007) · [Committor 2000](docs/manual/references.md#samp-comm2000) |
-| P-RFO / CI-NEB, path CV and string | [P-RFO 1985](docs/manual/references.md#samp-prfo1985) · [CI-NEB 2000](docs/manual/references.md#samp-cineb2000) · [Path CV 2007](docs/manual/references.md#samp-path2007) · [CV string 2006](docs/manual/references.md#samp-stringcv2006) |
-| Thermal / focused / spin-mapping NRPMD | [Richardson–Thoss 2013](docs/manual/references.md#na-nrpmd2013) · [Chowdhury–Huo 2019](docs/manual/references.md#na-focused2019) · [Bossion et al. 2021](docs/manual/references.md#na-sm2021) |
-| MASH / CA-RP-MASH and surface hopping | [MASH 2023](docs/manual/references.md#na-mash2023) · [CA-RP-MASH v1 2025](docs/manual/references.md#na-carp2025) · [Tully 1990](docs/manual/references.md#na-tully1990) · [RPSH 2017](docs/manual/references.md#na-rpsh2017) · [BA/DM 2023](docs/manual/references.md#na-rpshdm2023) · [DBOC 2025](docs/manual/references.md#na-dboc2025) |
-| MV-RPMD / KC-RPMD / isomorphic / QD | [MV 2013](docs/manual/references.md#na-mv2013) · [KC 2014](docs/manual/references.md#na-kc2014) · [Isomorphic 2018](docs/manual/references.md#na-iso2018) · [QD 2018](docs/manual/references.md#na-qd2018) |
-| Pressure, material diffusion and surface rates | [BZP 2009](docs/manual/references.md#bzp2009) · [MTK 1994](docs/manual/references.md#mtk1994) · [SCR 2020](docs/manual/references.md#scr2020) · [H/Ni(100) 2012](docs/manual/references.md#ni2012) · [Surface rates 2025](docs/manual/references.md#sds2025) |
-| PCET, constant-potential models and electronic friction | [PCET 2008](docs/manual/references.md#pcet2008) · [Au/TEAH+ 2019](docs/manual/references.md#gold2019) · [GC approach 2025](docs/manual/references.md#gc2025) · [EF-RPMD 2024](docs/manual/references.md#efrpmd2024) |
-| QMDFF / dE-EVB / TREQ / PIP-NN / JaxPIP | [QMDFF 2014](docs/manual/references.md#qmdff2014) · [dE-EVB 2015](docs/manual/references.md#deevb2015) · [TREQ 2019](docs/manual/references.md#treq2019) · [PIP-NN 2013](docs/manual/references.md#pipnn2013) · [JaxPIP 2026](docs/manual/references.md#jaxpip2026) |
-| ML lifecycle and force-engine interfaces | [Committee 2020](docs/manual/references.md#committee2020) · [Delta 2015](docs/manual/references.md#delta2015) · [ASE 2017](docs/manual/references.md#ase2017) · [OpenMM 2017](docs/manual/references.md#openmm2017) · [i-PI 2014](docs/manual/references.md#ipi2014) |
-
-Cite the actual PES, parameters and upstream software as well as the method and PyRPMD commit.
-Software papers, reviews, adapter support and short regressions do not establish a full algorithm
-implementation or converged reproduction. Composed workflows cite their separate ingredients; engineering
-utilities have no invented single originating paper. The catalog records the focused SM-NRPMD subset,
-positive-interface RETIS, the isomorphic dynamics consumer and other material limitations.
-[BibTeX](docs/references.bib) and the [structured catalog](docs/method-references.json) are also available.
-
-## Installation
+Use Python 3.11+ and a C++17 compiler:
 
 ```bash
-git clone https://github.com/chen-yu-hao/PyRPMD.git PyRPMD
+git clone https://github.com/chen-yu-hao/PyRPMD.git
 cd PyRPMD
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -e .
-pyrpmd --version
+python -m pip install .
 pyrpmd info
 ```
 
-PyRPMD needs Python 3.11+, NumPy, SciPy, h5py, threadpoolctl and a C++17 compiler; OpenMP is built
-on Linux. Set `CC`/`CXX` to choose the compiler. Without a compiler, install the NumPy path:
+For the NumPy implementation use `PYRPMD_NO_NATIVE=1 python -m pip install .`.
+MPI, GPU and external potential adapters are optional; see the
+[installation guide](docs/manual/installation.md). The next 0.2.x binary release
+is being prepared.
+
+## First run
 
 ```bash
-PYRPMD_NO_NATIVE=1 python -m pip install -e .
+pyrpmd init first-run
+pyrpmd validate first-run/quickstart.inp --check-pes
+pyrpmd run first-run/quickstart.inp --output first-run/run
+pyrpmd analyze first-run/run
 ```
 
-| Extra | Install |
+The starter computes the centroid free energy of a harmonic oscillator in a few
+seconds. Its exact answer is $F(x)=\tfrac12 kx^2$, and the
+[Quickstart](docs/manual/quickstart.md) shows how to compare: the result agrees to
+about 0.1 $k_BT$. The tutorials below do the same for the other tasks. Resume a
+saved run with `pyrpmd resume first-run/run`. In another terminal, use
+`pyrpmd status first-run/run --watch` to inspect committed progress and stage ETA.
+[Monitoring and structured logs](docs/manual/progress.md) explains coverage,
+unknown budgets and MPI/process behavior.
+
+![Schematic ring polymer near a barrier](docs/_static/gifs/ring_polymer.gif)
+
+The figure illustrates the ring-polymer representation; it is a schematic,
+not a computed result from the starter.
+
+## Stable workflow entry points
+
+| Task | Observable and starting point |
 | --- | --- |
-| MPI | Site MPI with a matching mpi4py, then `.[mpi]` |
-| ASE | `.[ase]` |
-| OpenMM force engine | `.[openmm]` |
-| LAMMPS force engine | `.[lammps]` with a compatible MPI/shared-library runtime |
-| Torch / GPU | The PyTorch build matching the node's CUDA, then `.[gpu]` |
-
-`native='required'` demands the compiled kernels, and requesting several dynamics threads without
-OpenMP raises an error. MPI supports static groups and an opt-in dynamic trajectory queue with
-one coordinator rank. Tests exercise four-rank static and five-rank dynamic execution on one
-host, Torch on CPU and multi-GPU placement. See [Execution](docs/manual/execution.md).
-
-## Your first run
-
-A restartable 1D free-energy calculation on a built-in harmonic potential takes only a short
-pilot run. After installation, start in any working directory; `init` supplies the input without
-needing a source checkout or an external model:
-
-```bash
-pyrpmd init my-first-run
-pyrpmd validate my-first-run/quickstart.inp --check-pes --output my-first-run/run
-pyrpmd run my-first-run/quickstart.inp --output my-first-run/run
-pyrpmd analyze my-first-run/run
-pyrpmd resume my-first-run/run
-```
-
-Most input workflows use this `validate` → `run` → `analyze` → `resume` cycle. The PLUMED input
-workflow owns external kernel history and explicitly rejects automatic resume; the thermal
-nonadiabatic rate workflow has a separate command and input schema. `--check-pes` also
-evaluates the potential and, for a TS-guess or endpoint rate input, runs the numerical preparation. Give each
-new calculation its own output directory; `resume` (or `run --resume` on the original input)
-continues an existing one. The starter produces 3 windows, 6 streams and 120 saved samples in
-`my-first-run/run/results/summary.json`; its small sample is a workflow check, not a converged
-physical prediction. `init` refuses a nonempty destination. If `pyrpmd` is not on your shell's
-path, use `python -m pyrpmd` with the same arguments. The [Quickstart](docs/manual/quickstart.md)
-explains the input, output and offline reanalysis.
-
-## What you can compute
-
-All examples use analytic model potentials and run on one core. Times are wall time with
-`OMP_NUM_THREADS=1`.
-
-| Task | `task` | Example | Time |
-| --- | --- | --- | --- |
-| Bimolecular RPMD rate from a TS | `rate` | `pyrpmd prepare examples/rate/research.inp --pilot` then `pyrpmd run examples/rate/research.inp` | — |
-| Direct collisions (dRPMD) | `drpmd` | `examples/drpmd/free_scattering.inp` | ~2 s |
-| Rate matrix over several entrances and TSs | `network` | `examples/network/two_entrances.py` | ~25 s |
-| 1D–3D umbrella free-energy surface | `fes` | `examples/fes/harmonic2d.inp` | ~6 s |
-| Adaptive umbrella windows | `fes` | `examples/fes/adaptive_harmonic.inp` | ~4 s |
-| Standard or well-tempered metadynamics | `fes`, method `metadynamics` | `examples/metadynamics/well_tempered_2d.inp` | ~2 s |
-| OPES probability-based enhanced sampling | `fes`, method `opes` | `examples/opes/harmonic_2d.inp` | — |
-| PA-CMD and relative IR/Raman/SFG | `spectroscopy` | `examples/spectroscopy/pacmd.inp` | — |
-| Force-based Suzuki–Chin, bosons or PIGS | `pimd` + `[path_integral]` | `examples/path_integral/suzuki_chin.inp` | — |
-| Fixed-cell PIMD and energy estimators | `pimd` | `examples/materials/pimd.inp` | ~2 s |
-| RPMD self-diffusion, MSD, VACF | `diffusion` | `examples/materials/diffusion.inp` | ~3 s |
-| Directed site-to-site hop in a material | `site_rate` | `examples/materials/site_rate.inp` | ~25 s |
-| Directed escape on a fixed substrate | `surface_rate` | `examples/surface/diffusion.inp` | ~1.5 min |
-| Electrochemical PCET, H/D, potential and temperature scans | `pcet` | `examples/pcet/harmonic_scan.inp` | ~2 s |
-| State-selected nonadiabatic scattering (NRPMD, experimental) | `drpmd` | `examples/nonadiabatic/exchange.inp` | ~15 s |
-| Model population/coherence ensembles (NRPMD, SM-NRPMD, CA-RP-MASH, BA/DM/SOC RPSH) | `nonadiabatic` | `examples/nonadiabatic/extensions/` | — |
-| Published molecular NaH2 two-state PES | `nonadiabatic` | `examples/nonadiabatic/extensions/nah2_sm_nrpmd.inp` | — |
-
-Run any of them with `pyrpmd run INPUT --output runs/NAME`. FES selects its method in `[fes]`;
-omitting `method` defaults to `umbrella`. The old `metadynamics` and `opes` task names remain
-deprecated aliases, so the existing examples still run. See the
-[unified FES guide](docs/enhanced-sampling.md) for method subtables, shared walkers and result files.
-Two more patterns worth knowing:
-
-```bash
-# Restart with a different block size; the scientific settings keep the run identity.
-pyrpmd resume runs/meta --loop-backend auto --block-steps 128
-# Changed scientific settings: a new run warm-started from the old configuration
-# (optionally importing the metadynamics bias). See docs/checkpoints.md.
-pyrpmd run high.inp --output runs/meta-high --init-from runs/meta --init-bias
-pyrpmd checkpoint runs/meta/checkpoints/metadynamics_0000.npz --require-integrity
-
-# 2 trajectory groups × 2 bead-PES ranks.
-mpiexec -n 4 pyrpmd run examples/drpmd/mpi.py --output runs/mpi
-```
-
-The [example index](docs/manual/examples.md) gives a learning path and the steps from an example
-to a research calculation.
-
-## Capabilities
-
-| Area | What PyRPMD provides |
-| --- | --- |
-| Inputs | Python `build()` returning a `JobSpec` or dict, or TOML with strict checks on fields, units, atom indices and paths; command-line overrides for PES, temperature, beads and workers |
-| RPMD rates | TS + PES → numerical Hessian and two-sided descent → channel identification → PMF → constrained parents → paired recrossing children; choose umbrella UI/MBAR, frozen-bias MetaD/OPES reweighting or a compatible external PMF ([selection guide](docs/rate-pmf-selection.md)) |
-| Equivalent channels | Equivalent TSs from atom permutations, combined as RPMDrate's `min_bond(max_TS(s1))`; the two H + H₂ exchange exits are distinguished |
-| Reaction networks | Separate entrances, TSs and PESs for one atom and isotope inventory; each path fills a rate matrix, reported per entrance, channel and TS |
-| dRPMD | Two reactant XYZ files and an initial COM distance; persistent parent chains launch collisions at a set interval |
-| Selected nuclear initial states | Approximate vibrational NE-RPMD and P=1 QCT at fixed collision energy, independent initial-state draws, precollision checks and unresolved-trajectory extension ([guide](docs/state-selected.md), [examples](examples/state_selected/README.md)) |
-| Free energy | 1D–3D umbrella sampling with full CV Jacobians, MBAR, overlap graphs, correlated-block bootstrap, masks for unsampled regions and offline reanalysis; adaptive 1D–3D window insertion from MBAR overlap, effective sample size and optional coverage targets |
-| Metadynamics | Standard and well-tempered on 1D–3D CVs, periodic/fixed-layer systems, NHC/PILE-L/Andersen sampling, soft walls and optional 1D/2D bias grids; independent histories or synchronized shared-bias multiple walkers; common FESResult and finite-time bias FES |
-| Replica-exchange umbrellas | Same-temperature fixed-window REUS, PILE-L or Andersen, synchronized ensemble restart and joint window bootstrap ([guide](docs/replica-exchange.md)) |
-| OPES | OPES_METAD / explore, optional adaptive widths, frozen-bias reweighting and restartable independent histories; variant/PLUMED differences are documented ([guide](docs/opes.md)) |
-| PLUMED and path sampling | Optional centroid-bias PLUMED bridge; unbiased two-way shooting transition-interface ensembles with separate flux normalization ([PLUMED](docs/plumed.md), [TIS](docs/transition-interface-sampling.md)) |
-| Rate postprocessing | Offline 2D dividing-surface flux integration and signed channel contributions with explicit normalization and strict plateau checks ([guide](docs/rate-postprocessing.md)) |
-| Materials and surfaces | Fixed-cell or isotropic BZP NPT PIMD, fixed layers, primitive and centroid-virial estimators, streamed trajectories; ordinary or centroid electronic-friction diffusion; basin-normalized site/surface rates and source-FES projection ([details](docs/surface-catalysis.md)) |
-| Electrochemical PCET | Golden-rule forward/reverse rates in s⁻¹ for a local complex with one proton, a wide-band metal and a classical Gaussian environment; H/D KIE and vibronic contributions ([method](docs/pcet.md)) |
-| Integrators | `cayley-bcb`, `normal-mode-bab`, `velocity-verlet`, each with native block propagation, Andersen parents and centroid RATTLE |
-| Restart | v2 atomic checkpoints with per-array SHA256 (v1 still readable); block size and backend adjustable on restart |
-
-The [native ensemble driver](docs/native-ensembles.md) provides the persistent C++
-thermostat/barostat backend of the [common stack](docs/propagation-stack.md),
-including native Nosé–Hoover chains. Its existing direct API and checkpoint
-format remain available. The [potential adapters](docs/potential-adapters.md)
-cover C ABI v2, periodic Torch, named ML calculators, tblite, PySCF and multi-client i-PI.
-The [offline PES-generation workflow](docs/manual/pes-generation.md) connects PySCF references
-to source-pinned Caracal QMDFF/EVB/TREQ, with explicit pilot and validation requirements.
-
-PIMD and fixed-cell diffusion support frozen substrate atoms. Isotropic BZP NPT PIMD requires
-fully periodic all-mobile cells and physical PES virials; materials trajectories stream to
-checked chunks by default. A proton conductor needs a periodic potential suited to its
-composition, charge and mechanism. Inputs, units, periodic CVs and
-statistics are in the [materials notes](docs/materials.md). What's new in this release is in the
-[0.2.0 release notes](docs/releases/0.2.0.md).
-
-The [periodic-materials implementation audit and TODO list](docs/periodic-materials-audit.md)
-records the code and guide review, open-source comparisons, fixes and remaining validation work
-for periodic materials and surface catalysis. The [periodic guide](docs/manual/periodic.md)
-distinguishes the default materials workflow from the opt-in native PIMD engine and its cell controls.
-
-## Minimal inputs
-
-For rate studies, start with [research.inp](examples/rate/research.inp): explicit reactant
-fragments and bond changes, independent TS checks, regional window density/force constants,
-and separate umbrella/parent/child stages. The [input guide](docs/rate-input-v2.md) explains
-the RPMDrate-style `k/T` force-constant convention and schema-1 compatibility.
-
-A TS structure and potential can also be used with explicitly selected channel inference:
-
-```toml
-schema_version = 2
-task = "rate"
-
-[system]
-transition_state = "ts.xyz"
-
-[potential]
-provider = "cabi"
-library = "libpes.so"
-
-[reaction]
-definition = "infer"
-
-[preparation]
-ts_action = "validate"
-check_channel = true
-```
-
-You can also start from complete, atom-mapped reactant and product geometries:
-
-```toml
-task = "rate"
-
-[system]
-reactant = "reactant.xyz"
-product = "product.xyz"
-
-[potential]
-provider = "cabi"
-library = "libpes.so"
-```
-
-With `ts_action="refine"`, numerical preparation refines imperfect TS guesses with P-RFO.
-The legacy endpoint example searches with CI-NEB before P-RFO refinement. Final force, saddle-index
-and connectivity checks must pass before sampling uses the optimized TS. See
-[transition-state search](docs/transition-state-search.md) for controls, limits
-and the runnable [endpoint example](examples/rate/from_endpoints.inp).
-
-The `[potential]` section can also come from the command line as `--pes ./libpes.so`. The `.so`
-implements the PyRPMD PES v1 ABI; f2py modules use `provider='rpmdrate'`, and a plain `.o` adds
-`--pes-manifest` naming the compiler, wrapper and link dependencies.
-
-Two reactants and a separation are a complete dRPMD input:
-
-```toml
-task = "drpmd"
-
-[system]
-reactants = ["A.xyz", "B.xyz"]
-separation = "12 angstrom"
-
-[potential]
-provider = "cabi"
-library = "libpes.so"
-```
-
-Both use the `pilot` preset: 300 K, 32 beads and a 0.1 fs step. From there, each setting you add
-unlocks a result:
-
-- add a `bmax` checked for truncation to get a thermal dRPMD rate (without it, collisions start at
-  `R0/4` and no thermal rate is reported);
-- add classification rules to get chemical rates and cross sections (without them, PyRPMD infers
-  connectivity from covalent radii and labels outcomes as candidates);
-- add a custom classifier for isomerization and exchange channels.
-
-## Python extensions
-
-Python inputs can compute parameters, load models and build any static, differentiable CV. Put
-factories in importable modules; each process or MPI rank constructs its own potential context:
-
-```python
-# job.py
-from pyrpmd import JobSpec
-
-def build():
-    return JobSpec.from_mapping({
-        "task": "drpmd",
-        "temperature": "500 K",
-        "beads": 32,
-        "system": {
-            "reactants": ["A.xyz", "B.xyz"],
-            "separation": "12 angstrom",
-        },
-        "potential": {
-            "provider": "python",
-            "factory": "my_pes.py:build_pes",
-            "params": {"model": "model.dat"},
-        },
-        "collision": {"bmax": "4 angstrom", "trajectories": 1000},
-        "parallel": {"backend": "process", "mode": "serial", "trajectory_workers": 8},
-    })
-```
-
-A PES receives `float64[B,N,3]` coordinates in atomic units and returns `[B]` energies and `[B,N,3]`
-forces (negative gradients). A custom CV returns `value[D]` and the full `jacobian[D,P,N,3]`. See the
-runnable [Python PES](examples/drpmd/python_pes.py) and [custom 2D CV](examples/fes/custom_input.py)
-examples. Python inputs run as ordinary, trusted code.
-
-## Validation
-
-**H + H₂ on BKMP2.** [`benchmarks/h3`](benchmarks/h3/README.md) runs dRPMD, a 2D centroid FES, an
-umbrella PMF and recrossing on the published BKMP2 surface at 1500 K with 16 beads. The build pins
-the potential source by commit and SHA256, and verifies the authors' energy/gradient reference
-values, the H₂ equilibrium structure and the first-order saddle before any propagation. Four
-independent-seed repeats with an MBAR rate PMF cover 848,000 samples and 1,024 new recrossing
-trajectories: all four pass, every paired interval for the UI/MBAR barrier difference on the same
-dividing surface includes zero, and the joint relative standard error of the rate is 20–23%
-([record](docs/validation/h3-pmf-refinement-2026-10-29/README.md),
-[method](docs/mbar-rate-pmf.md), [estimator audit](docs/h3-pmf-estimator-audit.md)).
-
-**State-selected scattering.** The [32-bead NE-RPMD / QCT reproduction](benchmarks/h3/STATE_SELECTED_REPRODUCTION.md)
-compares H + H₂ cross sections with the literature. The subsequent
-[initial-state preparation study](benchmarks/h3/STATE_PREPARATION_STUDY.md) separates centroid
-conditioning, full-PES action QCT and experimental smooth preparation. Its
-[paired results](benchmarks/h3/preparation_results/README.md) retain unresolved outcomes and the
-remaining low-energy discrepancy, alongside isolated-diatom stability and energy diagnostics.
-
-**PCET.** On the harmonic model, PyRPMD matches a pinned pyPCET commit to within 0.062% across 12
-forward and reverse rates ([record](docs/validation/pcet-model-2026-10-30/README.md)).
-
-**PMF numerics.** 1D/2D PMFs agree with analytic integrals and PyMBAR across bead numbers,
-integrators, periodic CVs and correlated errors
-([record](docs/validation/pmf-accuracy-2026-10-30/README.md)).
-
-**Multichannel and sampling controls.** The [H + BrCl benchmark](benchmarks/brhcl/README.md) compares a historical LEPS-model PMF with an independent classical reference and records hidden-coordinate mixing. The [sampling-method study](docs/validation/fes-methods-2026-10-30/README.md) and [coverage follow-up](docs/validation/fes-optimization-2026-10-30/README.md) retain finite-sampling limitations. Projected PMF connectivity alone does not establish rates or branching fractions.
-
-**Materials.** The [Ni–H EAM pilot](benchmarks/materials/README.md) runs H and D on a Ni(100) slab
-with 1 and 4 beads on a source-pinned EAM model
-([record](docs/validation/materials-2026-10-30.md)).
-
-The **Real H3 BKMP2 validation** and **H3 PMF independent-seed study** GitHub Actions workflows
-rerun these studies and store inputs, samples, checkpoints, PMF, κ(t), diagnostics and figures.
-
-<details>
-<summary>Reproduce the BKMP2 benchmark</summary>
-
-```bash
-# Needs GNU Fortran; figures need matplotlib.
-python -m pip install matplotlib
-python benchmarks/h3/build_pes.py
-python benchmarks/h3/pes.py --check --output runs/h3/pes-check.json
-python benchmarks/h3/numerics.py --output runs/h3/numerics.json
-python benchmarks/h3/drpmd.py --output runs/h3/drpmd --workers 2
-python benchmarks/h3/rpmd.py --stage fes2d --output runs/h3/fes2d --workers 2
-python benchmarks/h3/rpmd.py --stage rate --output runs/h3/rate --workers 2
-```
-
-The independent-seed study (cases `k400-a`, `k400-b`, `k800-a`, `k800-b`; `--smoke` runs a short
-check):
-
-```bash
-python -m pip install -e '.[analysis]' matplotlib
-python benchmarks/h3/convergence.py plan
-python benchmarks/h3/convergence.py run --case k400-a --output runs/h3-pmf/k400-a
-python benchmarks/h3/solver_check.py --run runs/h3-pmf/k400-a/run \
-  --stride 10 --reference-pymbar --output runs/h3-pmf/k400-a/solver-check.json
-```
-
-</details>
-
-The [H + HO₂ 2D scan](benchmarks/hho2/README.md) is ready for a full-dimensional reactive H + HO₂
-PES, with multiple starting geometries, a shared finite-distance wall, six-bond channel
-classification and connectivity analysis.
-
-Before a production study, read [Converging a result](docs/manual/science.md#converging-a-result),
-which takes a calculation from pilot to production.
-
-The [adaptive umbrella reliability audit](docs/validation/umbrella-reliability-2026-10-31/README.md)
-records reproducible overlap and uncertainty fixes, actual default budgets, and the remaining
-system-specific convergence checks. Passing adaptive pilot criteria is not a precision guarantee.
-
-## Native propagation
-
-`Dynamics.propagate()` commits whole blocks atomically; `Dynamics.propagate_block()` commits step
-by step with observation masks, full q/p snapshots and native centroid RATTLE, and keeps the
-successful prefix on a numerical failure. Both support all three integrators. Built-in
-connectivity and H3 exchange classifiers run inside the C++ blocks and stop collisions early; a
-fused C++ PILE-L kernel and a native FFT for normal-mode BAB at power-of-two `P>=32` accelerate
-thermostatted and large-bead runs. Defaults are `loop_backend="auto"` and `block_steps=256`.
-Details: [native propagation](docs/native-propagation.md),
-[block API and failure handling](docs/block-propagation.md), [integrators](docs/integrators.md),
-[optimization record](docs/validation/audit-optimization-2026-10-30/README.md).
-
-State-selected collisions use the same C++ production path. Optional native observations
-record potential, centroid kinetic, internal-bead kinetic and spring energy per bead, plus
-per-atom ring radii, without additional PES calls. `pyrpmd state-check` projects sparse saved
-states onto the molecular reference outside the production block. See the
-[state-selected guide](docs/state-selected.md) for the harmonic-preparation approximation,
-the auxiliary beta parameter and fixed-energy statistical eligibility rules.
-
-## Documentation
-
-The user manual covers installation, a quickstart, guides for all supported workflows, the API and developer
-notes, in [English](docs/index.md) and [Chinese](docs/zh/index.md) with matching chapters. Build
-the searchable HTML manual (the Chinese edition goes to `zh/`):
-
-```bash
-python -m pip install -e '.[docs]'
-python -m sphinx -W --keep-going -b html docs docs/_build/html
-python -m sphinx -W --keep-going -b html docs/zh docs/_build/html/zh
-```
-
-The GitHub **Documentation** workflow builds both editions, runs the getting-started examples and
-uploads the `pyrpmd-manual-html` artifact.
-
-See the [user-experience review and to-do list](docs/ux-review-2026-10-31.md) for the current
-onboarding audit and follow-up work.
-
-A run directory holds `manifest.json`, `input/`, `checkpoints/`, workflow data and
-`results/summary.json`. Every FES method adds `fes.npz`, `fes.csv`, `fes.json` and `summary.json`;
-umbrella sampling also saves `fes.h5` diagnostics. dRPMD stores each initial state,
-collision trajectory and classification record. MPI ranks never share one HDF5 file.
-
-Reference specifications (some in Chinese):
-
-- [Input specification](docs/input.md)
-- [Connecting potentials](docs/potentials.md) and the [C ABI](native/ABI.md)
-- [Parallel and multi-node runs](docs/parallel.md)
-- [Scientific conventions](docs/science.md)
-- [Development and validation](docs/development.md), [validation record](docs/validation.md)
-- [Multiple entrances and TSs](docs/reaction-networks.md)
-- [Experimental NRPMD and state-resolved collisions](docs/nonadiabatic.md)
-- [Nonadiabatic population workflow](docs/nonadiabatic-workflow.md), [model library](docs/nonadiabatic-models.md), [ensemble API](docs/nonadiabatic-ensembles.md), [comparison and remaining gaps](docs/nonadiabatic-comparison.md)
-- [SM-NRPMD and CA-RP-MASH](docs/nonadiabatic-spin-methods.md), [BA/DM RPSH, DBOC and complex SOC](docs/nonadiabatic-hopping-extensions.md), [published molecular PES](docs/molecular-nonadiabatic.md), [native/batched/Torch electronics](docs/nonadiabatic-performance.md)
-- [Electronic friction](docs/electronic-friction.md), [thermal NRPMD](docs/thermal-nrpmd.md), [KC/MV/isomorphic methods](docs/nonadiabatic-methods.md), [SOC and RPSH](docs/nonadiabatic-soc-rpsh.md)
-- [BZP constant-pressure PIMD](docs/materials-npt.md), [grid metadynamics](docs/grid-metadynamics.md), [streaming trajectories](docs/streaming-trajectories.md)
-- [Constant-potential electrode models and HER postprocessing](docs/electrochemistry.md)
-- [Adaptive restrained paths, constant-potential matrices and signed thermal NRPMD](docs/manual/adaptive-nrpmd.md)
-- [Unified FES, adaptive umbrellas and shared-bias metadynamics](docs/enhanced-sampling.md)
-- [Rate PMF selection and independent sampling settings](docs/rate-pmf-selection.md)
-- [Electrochemical PCET model](docs/pcet.md), [runnable PCET example](examples/pcet/README.md)
-- [Fixed cells, PIMD, materials diffusion and site rates](docs/materials.md)
-- [Surface catalysis and periodic slabs](docs/surface-catalysis.md)
-- [Public interfaces](docs/interfaces.md), [checkpoints and restart](docs/checkpoints.md)
-
-| Path | Responsibility |
-| --- | --- |
-| `src/pyrpmd/input.py`, `units.py`, `system.py`, `geometry.py` | Input, units, atom/isotope systems and fixed-cell geometry |
-| `src/pyrpmd/dynamics.py`, `native/` | Three ring integrators, momentum sampling, thermostats, C++/OpenMP |
-| `src/pyrpmd/potentials/` | The potential interface and its adapters |
-| `src/pyrpmd/cv.py`, `bias.py` | CVs, full Jacobians, umbrellas, rate flux metric, history-dependent Gaussian bias |
-| `src/pyrpmd/workflows/`, `reactions.py` | rate, dRPMD, PIMD, diffusion, site/surface rates, PCET, FES, adaptive windows, metadynamics, multi-TS organization and preparation |
-| `src/pyrpmd/analysis/` | MBAR, umbrella integration, metadynamics bias FES, MSD/VACF/diffusion tensor, statistical diagnostics |
-| `src/pyrpmd/checkpoint.py`, `runner.py` | Atomic state containers, integrity checks, run identity and public entry points |
-| `src/pyrpmd/parallel/` | Trajectory pools, bead pools, MPI, GPU placement |
-| `examples/`, `tests/`, `docs/` | Runnable examples, numerical/integration tests, specifications |
-
-## Tests and provenance
-
-```bash
-python -m pytest -q
-mpiexec -n 4 python tests/mpi_integration.py
-```
-
-The Cayley integrator, reaction coordinate and rate algorithms are adapted from
-[RPMDrate](https://github.com/GreenGroup/RPMDrate) and the author's
-[Cayley/thermal-dRPMD branch](https://github.com/chen-yu-hao/RPMDrate/tree/9a44d6b378d8bf835d67e1b3b7f78b27bdc84a78);
-the rate workflow also follows the umbrella/recrossing organization of
-[Caracal](https://github.com/Trebonius91/Caracal/tree/7f95ce9818b7f6d81d7cb3b634f360373c090820).
-Adapters, the input specification and scheduling are new layers. Source commits, authors, MIT
-notices and paper DOIs are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Caracal's
-QMDFF, xTB and machine-learning models are not bundled.
-
-License: [MIT](LICENSE).
+| `pimd` | Equilibrium energies — [finite-P harmonic tutorial](examples/tutorials/harmonic_pimd/README.md) |
+| `fes` | Umbrella and frozen WT-MetaD free energies — [double-well tutorial](examples/tutorials/double_well_metad/README.md) |
+| `rate` | Gas-phase PMF and recrossing rate — [rate examples](examples/rate/) |
+| `drpmd` | Thermal single-surface collision outcomes — [direct-scattering guide](examples/drpmd/README.md) |
+| `site_rate` | Basin-normalized escape — [periodic barrier tutorial](examples/tutorials/periodic_site_rate/README.md) |
+| `diffusion` | Physical centroid transport — [free diffusion tutorial](examples/tutorials/free_diffusion/README.md) |
+| `spectroscopy` | RPMD/TRPMD relative spectra — [harmonic IR tutorial](examples/tutorials/harmonic_spectroscopy/README.md) |
+
+The [stability registry and policy](docs/development/stability.md) define these
+scopes and label beta/research methods. Software stability and a calculation's
+convergence are separate: use [How to converge a result](docs/convergence.md)
+and the diagnostics saved with each run. Tutorial inputs state their analytic
+reference and acceptance criteria; measured results belong to their run artifacts.
+
+## Cite
+
+Cite the exact release or Git commit using [CITATION.cff](CITATION.cff), together
+with the method and PES papers used in your calculation. The
+[method reference catalog](docs/manual/references.md) and [BibTeX](docs/references.bib)
+provide those sources. PyRPMD has no software DOI assigned in this checkout.
+
+[Changelog](CHANGELOG.md) · [Development and validation history](docs/development/stability.md#developer-and-validation-records) ·
+[License](LICENSE) · [Third-party notices](THIRD_PARTY_NOTICES.md)

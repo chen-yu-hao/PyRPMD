@@ -1,13 +1,15 @@
 """Optional, root-only postprocessing of a native gas-phase rate run.
 
-Only RUN/subspace is written. Source rates and their publication gates stay
-unchanged; a failed correction cannot invalidate or overwrite a completed rate.
+Scientific output is written only under RUN/subspace. The explicit stage also
+updates advisory progress/log files at the run root. Source rates and their
+publication gates stay unchanged; a failed correction cannot overwrite a rate.
 """
 
 from __future__ import annotations
 
 from copy import deepcopy
 import json
+import os
 from pathlib import Path
 import warnings
 
@@ -58,7 +60,8 @@ def validate_saved_rate(config, system, directory):
 def _source_identity(root, options):
     from ..analysis.subspace_pipeline import pipeline_identity
 
-    return pipeline_identity(root, options)
+    # Execution resources do not change factors, so they never invalidate a cache.
+    return pipeline_identity(root, {k: v for k, v in options.items() if k != "execution"})
 
 
 def _check_centroid_path(root, config):
@@ -73,6 +76,58 @@ def _check_centroid_path(root, config):
                          "output.centroid_path=true from the start, not only after a checkpoint")
     if np.count_nonzero(mean.locked()) < 2:
         raise InputError("Subspace correction needs at least two orientation-locked umbrella windows")
+
+
+def _affinity_cpus():
+    if hasattr(os, "sched_getaffinity"):
+        return len(os.sched_getaffinity(0))
+    return os.cpu_count() or 1
+
+
+def _memory_budget_mb():
+    """75% of the smaller of physical memory and a cgroup v2 limit, if readable."""
+    limits = []
+    try:
+        limits.append(os.sysconf("SC_PHYS_PAGES") * os.sysconf("SC_PAGE_SIZE"))
+    except (AttributeError, ValueError, OSError):
+        pass
+    try:
+        text = Path("/sys/fs/cgroup/memory.max").read_text().strip()
+        if text.isdigit():
+            limits.append(int(text))
+    except OSError:
+        pass
+    return 0.75 * min(limits) / 2**20 if limits else 4096.0
+
+
+def subspace_execution(config, options):
+    """Task scheduler budget for this stage, derived from the run's [parallel] table.
+
+    The CPU count is the run's own allocation: trajectory_workers x bead_workers
+    x threads_per_rank, or threads_per_rank on MPI rank zero (the only rank that
+    runs this stage). ``execution.cpus`` overrides it. The count never exceeds
+    this process's CPU affinity. One CPU returns None: the unchanged sequential
+    route. Resources do not alter factors or their cache identity.
+    """
+    user = dict(options.get("execution") or {})
+    parallel = config.get("parallel") or {}
+    mpi = parallel.get("backend") == "mpi"
+    threads = int(parallel.get("threads_per_rank", parallel.get("threads", 1)) or 1)
+    if mpi:
+        derived = threads
+    else:
+        workers = int(parallel.get("trajectory_workers", parallel.get("trajectory_groups", 1)) or 1)
+        derived = workers * int(parallel.get("bead_workers", 1) or 1) * threads
+    requested = derived if user.get("cpus", "auto") == "auto" else int(user["cpus"])
+    cpus = max(1, min(requested, _affinity_cpus()))
+    if cpus == 1:
+        return None
+    execution = {"backend": "serial" if mpi else "process", "cpus": cpus,
+                 "blas_threads": int(user.get("blas_threads", min(8, cpus))),
+                 "memory_limit_mb": float(user.get("memory_limit_mb", _memory_budget_mb()))}
+    if "workers" in user:
+        execution["workers"] = int(user["workers"])
+    return execution
 
 
 def postprocess_rate_subspace(config, directory, *, strict=False):
@@ -100,17 +155,32 @@ def postprocess_rate_subspace(config, directory, *, strict=False):
         specification = {
             "source": {"rate_run": str(root)},
             "subspace": {k: options[k] for k in ("dimension", "threshold", "environment", "curvature",
-                         "zero_point", "dvr_points", "dvr_half_width", "dvr_spacing") if k in options},
+                         "zero_point", "dvr_points", "dvr_half_width", "dvr_spacing",
+                         "hessian_displacement") if k in options},
+            "validity": options.get("validity", {}),
             "path": options["path"], "quantum": options["quantum"], "rpmd": options["rpmd"],
             "output": {"directory": str(target), "reuse": options["reuse"]},
         }
+        execution = subspace_execution(config, options)
+        if execution is not None:
+            specification["execution"] = execution
+        status["execution"] = execution
         write_json(target / "request.json", {"options": options, "reuse_key": identity})
         write_json(status_path, {**status, "status": "running"})
         report = run_subspace_pipeline(specification, apply=options["mode"] == "apply", reuse_key=identity)
-        status.update(status="complete", reuse_key=identity,
+        # "invalid_model": the stage ran, but no subspace model passed its
+        # validity gates, so there is no factor and no corrected rate.
+        # "solver_capacity_exceeded": a model's solves were refused before
+        # starting (route or memory); "solver_plans" says what they need.
+        # "failed": every solve that was started raised ("solve_failures").
+        status.update(status=report.get("status", "complete"), reuse_key=identity,
+                      validity=report.get("validity"),
                       dimensions_computed=report["dimensions_computed"],
                       selected_dimension=report["applied_dimension"],
                       correction_factors={d: c["factor"] for d, c in report["corrections"].items()},
+                      solver_plans=report.get("solver_plans", {}),
+                      solve_failures=report.get("solve_failures", {}),
+                      warnings=report.get("warnings", []),
                       report=str(target / "subspace_pipeline.json"))
         corrected = report.get("corrected_rate")
         if corrected is not None:
@@ -120,6 +190,8 @@ def postprocess_rate_subspace(config, directory, *, strict=False):
                           corrected_rate_standard_error_cm3_s=corrected["corrected_rate_standard_error_cm3_s"])
     except Exception as error:
         status.update(status="failed", error={"type": type(error).__name__, "message": str(error)})
+        if isinstance(getattr(error, "diagnostic", None), dict):
+            status["error"]["diagnostic"] = error.diagnostic
         write_json(status_path, status)
         if strict:
             raise
@@ -127,6 +199,12 @@ def postprocess_rate_subspace(config, directory, *, strict=False):
                       f"See {status_path}: {error}", RuntimeWarning, stacklevel=2)
         return status
     write_json(status_path, status)
+    if status["status"] == "failed":
+        failures = "; ".join(f"{d}D: {f['type']}: {f['message']}" for d, f in status["solve_failures"].items())
+        if strict:
+            raise RuntimeError(f"subspace stage failed ({failures}); see {status_path}")
+        warnings.warn(f"Rate subspace postprocessing failed; the uncorrected RPMD result is intact. "
+                      f"See {status_path}: {failures}", RuntimeWarning, stacklevel=2)
     return status
 
 
@@ -145,6 +223,11 @@ def run_subspace_stage(config, system, directory):
     if options is None or not options["enabled"]:
         raise InputError("--stage subspace requires rate.subspace_correction.enabled=true")
     root = validate_saved_rate(config, system, directory)
-    status = postprocess_rate_subspace(config, root, strict=True)
-    return {"task": "rate", "stage": "subspace", "output": str(root),
-            "subspace_correction": status, "physical_converged": False}
+    from ..progress import RunProgress
+
+    with RunProgress(root, {"task": "subspace", "resume": True}) as progress:
+        status = postprocess_rate_subspace(config, root, strict=True)
+        result = {"task": "rate", "stage": "subspace", "output": str(root),
+                  "subspace_correction": status, "physical_converged": False}
+        progress.result = result
+        return result

@@ -6,6 +6,7 @@ convergence. Existing subspace solver tests cover the underlying estimators.
 
 from copy import deepcopy
 import json
+import os
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -66,6 +67,11 @@ def test_native_input_enables_moments_and_preserves_physics():
     ({"rpmd": {"plateau_fraction": 2}}, "plateau_fraction"),
     ({"source": {"rate_run": "elsewhere"}}, "Unknown"),
     ({"quantum": {"refinment": 3}}, "Did you mean"),
+    ({"execution": {"cpus": 0}}, "cpus"),
+    ({"execution": {"cpus": "all"}}, "cpus"),
+    ({"execution": {"workers": 1.5}}, "workers"),
+    ({"execution": {"memory_limit_mb": -1}}, "memory_limit_mb"),
+    ({"execution": {"threads": 4}}, "Unknown"),
 ])
 def test_bad_options_fail_during_resolution(options, message, monkeypatch):
     job = spec()
@@ -118,7 +124,8 @@ def saved_run(tmp_path, *, mode="apply"):
 
 def source_hashes(root):
     return {str(p.relative_to(root)): file_sha256(p) for p in root.rglob("*")
-            if p.is_file() and "subspace" not in p.relative_to(root).parts}
+            if p.is_file() and "subspace" not in p.relative_to(root).parts
+            and p.relative_to(root).as_posix() not in {"progress.json", "run.log.jsonl"}}
 
 
 def fake_report(apply=True):
@@ -147,6 +154,10 @@ def test_stage_routes_shared_pipeline_and_preserves_sources(tmp_path, monkeypatc
     assert result["subspace_correction"]["status"] == "complete"
     assert ("corrected_rate_cm3_s" in result["subspace_correction"]) == (mode == "apply")
     assert source_hashes(root) == before
+    progress = json.loads((root / "progress.json").read_text())
+    assert progress["status"] == "completed"
+    assert progress["stage"] == "subspace"
+    assert progress["total_steps"] is None
     assert calls[0][0]["source"]["rate_run"] == str(root)
     assert calls[0][1]["apply"] == (mode == "apply")
     assert len(calls[0][1]["reuse_key"]) == 64
@@ -368,7 +379,11 @@ def test_standalone_reuse_identity_tracks_path_and_source(tmp_path, monkeypatch)
     closed, identities = [], []
     fake_run = SimpleNamespace(root=root, provider=SimpleNamespace(close=lambda: closed.append(True)))
     monkeypatch.setattr(pipe, "load_rate_run", lambda *a: fake_run)
-    monkeypatch.setattr(pipe, "_run_pipeline", lambda *a, **k: identities.append(k["reuse_key"]) or {})
+    # The pipeline prepares cases, solves them and writes a report; replace
+    # the model building and the report so only the identity binding runs.
+    monkeypatch.setattr(pipe, "_build_cases", lambda run, out, options, base, key: (
+        identities.append(key) or {"execution": None, "cases": {}}))
+    monkeypatch.setattr(pipe, "_finish_pipeline", lambda state, computed, apply: {})
     request = {"source": {"rate_run": str(root)}, "output": {"reuse": True}}
     pipe.run_subspace_pipeline(request, apply=False)
     pipe.run_subspace_pipeline(request, apply=False)
@@ -462,3 +477,73 @@ def test_parent_counters_survive_enabled_postprocessing(tmp_path, monkeypatch):
     result = rate.run_rate(config, system, root)
     assert result["propagation"] == counters
     assert result["subspace_correction"]["status"] == "complete"
+
+
+@pytest.mark.parametrize("parallel, user, expected", [
+    ({}, {}, None),
+    ({"trajectory_workers": 1, "threads_per_rank": 1}, {}, None),
+    ({"backend": "process", "trajectory_workers": 4, "threads_per_rank": 2}, {},
+     {"backend": "process", "cpus": 8, "blas_threads": 8}),
+    ({"backend": "process", "trajectory_workers": 2, "bead_workers": 3}, {},
+     {"backend": "process", "cpus": 6, "blas_threads": 6}),
+    # MPI: the stage runs on rank zero only, with that rank's threads.
+    ({"backend": "mpi", "trajectory_workers": 16, "threads_per_rank": 4}, {},
+     {"backend": "serial", "cpus": 4, "blas_threads": 4}),
+    # Never more than this process's affinity.
+    ({"backend": "process", "trajectory_workers": 64, "threads_per_rank": 4}, {},
+     {"backend": "process", "cpus": 32, "blas_threads": 8}),
+    ({"trajectory_workers": 8}, {"cpus": 1}, None),
+    ({}, {"cpus": 6, "workers": 2, "blas_threads": 3, "memory_limit_mb": 1000.},
+     {"backend": "process", "cpus": 6, "blas_threads": 3, "memory_limit_mb": 1000., "workers": 2}),
+])
+def test_execution_budget_follows_global_parallel_table(parallel, user, expected, monkeypatch):
+    monkeypatch.setattr(stage, "_affinity_cpus", lambda: 32)
+    monkeypatch.setattr(stage, "_memory_budget_mb", lambda: 2048.)
+    result = stage.subspace_execution({"parallel": parallel}, {"execution": user})
+    if expected is None:
+        assert result is None
+    else:
+        assert result == {"memory_limit_mb": 2048., **expected}
+
+
+def test_resolved_input_parallel_reaches_the_pipeline(tmp_path, monkeypatch):
+    job = spec().with_overrides(output=tmp_path / "run")
+    job.data["parallel"] = {"trajectory_workers": 2, "threads_per_rank": 2}
+    config, system = job.resolve()
+    assert config["rate"]["subspace_correction"]["execution"] == {}
+    monkeypatch.setattr(stage, "_affinity_cpus", lambda: 64)
+    monkeypatch.setattr(stage, "_check_centroid_path", lambda *a: None)
+    root = Path(config["output"]["directory"])
+    _initialize_output(config, system, root)
+    calls = []
+    monkeypatch.setattr("pyrpmd.analysis.subspace_pipeline.run_subspace_pipeline",
+                        lambda specification, **k: calls.append(specification) or fake_report())
+    status = stage.postprocess_rate_subspace(config, root, strict=True)
+    assert calls[0]["execution"]["backend"] == "process"
+    assert calls[0]["execution"]["cpus"] == 4
+    assert status["execution"]["cpus"] == 4
+    # The default single-CPU allocation keeps the sequential route unchanged.
+    config["parallel"].update(trajectory_workers=1, trajectory_groups=1, threads_per_rank=1)
+    stage.postprocess_rate_subspace(config, root, strict=True)
+    assert "execution" not in calls[1]
+
+
+def test_execution_settings_do_not_change_factor_cache_identity(tmp_path):
+    config, _, root = saved_run(tmp_path)
+    options = rate_subspace_options(config)
+    original = stage._source_identity(root, options)
+    options["execution"] = {"cpus": 16, "workers": 2, "blas_threads": 4, "memory_limit_mb": 1e4}
+    assert stage._source_identity(root, options) == original
+
+
+def test_spawned_workers_inherit_passive_openmp_only_while_pool_lives(monkeypatch):
+    from pyrpmd.analysis.subspace_execution import _passive_openmp
+
+    monkeypatch.delenv("OMP_WAIT_POLICY", raising=False)
+    with _passive_openmp():
+        assert os.environ["OMP_WAIT_POLICY"] == "PASSIVE"
+    assert "OMP_WAIT_POLICY" not in os.environ
+    monkeypatch.setenv("OMP_WAIT_POLICY", "ACTIVE")
+    with _passive_openmp():
+        assert os.environ["OMP_WAIT_POLICY"] == "ACTIVE"
+    assert os.environ["OMP_WAIT_POLICY"] == "ACTIVE"

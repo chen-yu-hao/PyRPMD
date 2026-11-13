@@ -38,6 +38,8 @@ reuse = true
 refinement = 3
 truncation_kt = 30.0
 # Converge truncation_min (hartree) for stiff modes, especially at low T.
+# The retained 2D grid depends on temperature, masses and the PES; the stage
+# plans it before solving and reports the dense_limit it needs (solver_plans).
 dense_limit = 8000
 
 [rate.subspace_correction.rpmd]
@@ -45,6 +47,14 @@ walkers = 32
 sweeps = 800
 trajectories = 1024
 seed = 17
+
+# Validity gates (defaults shown). "allow" is an explicit, recorded override.
+[rate.subspace_correction.validity]
+unconverged_path = "reject"   # both path continuations must reach their asymptote
+unstable_bath = "reject"      # the transverse Hessian of the path model must be stable
+outside_grid = "reject"       # the RPMD estimator must stay on the V_S grid
+max_outside_fraction = 0.01
+on_invalid = "stop"           # or "diagnose": solve a rejected model anyway, never apply it
 ```
 
 ```bash
@@ -61,6 +71,38 @@ A complete teaching input is [examples/rate/subspace.inp](../examples/rate/subsp
 the existing native rate executor and its ordinary backends. The subsequent
 subspace solve runs once on the root rank, using the existing SciPy/NumPy quantum
 and subspace RPMD implementations; this does not claim a new C++/MPI solver.
+
+### CPUs for the stage
+
+The stage uses the CPU allocation the same input already gives the rate run;
+no extra setting is needed:
+
+| Global `[parallel]` | CPUs used by the subspace stage |
+| --- | --- |
+| absent / defaults (1 worker, 1 thread) | 1: the unchanged sequential route |
+| `backend = "serial"` or `"process"` | `trajectory_workers × bead_workers × threads_per_rank` |
+| `backend = "mpi"` | `threads_per_rank` of rank zero, the only rank running the stage |
+
+The count is capped by this process's CPU affinity (for example `taskset`, or a
+Slurm/cgroup CPU set). With more than one CPU the QM and RPMD tasks of each
+dimension run concurrently in separate processes (threads only, under MPI),
+each with OpenMP RPMD threads and at most eight BLAS threads; see
+[Hybrid CPU and MPI execution](#hybrid-cpu-and-mpi-execution) below. The memory budget defaults to 75%
+of the smaller of physical memory and a cgroup v2 limit. Spawned workers get
+`OMP_WAIT_POLICY=PASSIVE` unless it is already set. Optional overrides:
+
+```toml
+[rate.subspace_correction.execution]
+cpus = 16                 # default "auto": derived from [parallel] as above; 1 = sequential
+# workers = 4             # concurrent tasks; default: number of unfinished tasks
+# blas_threads = 8        # default min(8, cpus)
+# memory_limit_mb = 32000 # set explicitly when the job's memory limit is not a cgroup v2 limit
+```
+
+These settings never change factors or the factor-cache identity: native RPMD
+results are independent of the thread count, and a later `--stage subspace` on
+a different allocation reuses completed tasks from `subspace/tasks/`.
+`subspace/status.json` records the budget that was used.
 
 `mode="apply"` computes the factor and multiplies the saved RPMD estimate.
 `mode="factor_only"` computes the same quantum/RPMD ratio without requiring a
@@ -122,6 +164,102 @@ Unpublishable source rates remain unpublished, and all corrected results retain
 The standalone `pyrpmd subspace-correct correct.toml` command is retained for
 compatibility and calls the same numerical pipeline.
 
+### Validity gates
+
+A positive `k_QM(H_S) / k_RPMD(H_S)` is not yet a correction factor: the ratio
+is only meaningful if `H_S` is a valid model. Three gates are evaluated, and a
+model that fails one is recorded but never applied.
+
+| Gate | Passes when | Evidence in `subspace_pipeline.json` |
+| --- | --- | --- |
+| `path` | both continuations ended with `asymptote_converged` | `path.reactant_termination`, `path.product_termination` (status, steps, arc length, trailing energy range) |
+| `bath` | no normal-plane curvature below `-soft_mode_frequency**2` along the 1D path model | `models.1.model_construction.significant_unstable` (arc length, imaginary frequency, character) |
+| `grid` | at most `max_outside_fraction` of the ring-polymer estimator saw `V_S` outside its grid | `corrections.D.rpmd.diagnostics.grid_exit` |
+| `solver` | the planned quantum route accepts the model's options and size, and the tasks fit the execution memory budget | `solver_plans.D` (also `models.D.solver_plan`) |
+
+**Path.** The continuations have no step budget. How far an asymptote lies is a
+property of the potential — an ion–dipole tail needs far more steps than a
+neutral one — and a path that stops at a count is not a path to the asymptote.
+A continuation ends when the energy varies by less than `asymptote_tolerance`
+over the last `10 * step` of arc length. The window is an arc length rather than
+ten points, so halved steps at a bend cannot imitate a flat tail. It ends
+unconverged with `asymptote_not_approached` when that trailing energy range has
+not fallen by 10% during `asymptote_patience` (50) consecutive windows — a bound
+coordinate, a potential leaving its fitted domain, a path that wanders — with
+`step_collapsed` when the tangent cannot be resolved at the smallest step, and
+with `potential_failure` on a failed or non-finite evaluation. `path.max_steps`
+is optional; if set, reaching it is `max_steps_exhausted` and fails the gate.
+
+**Bath.** A vibrationally adiabatic model needs a bath that is bound in the plane
+normal to the path. A negative normal-plane curvature has no zero-point energy;
+the term is omitted, which lowers `V_S` exactly where the model has failed.
+Imaginary frequencies below `soft_mode_frequency` (2.3e-4 Eh, 50 cm⁻¹) are soft
+modes — free relative rotations of separating fragments, whose curvature tends
+to zero with either sign; they are counted (`soft_complement_points`) and
+`dropped_zero_point_bound` bounds the omitted energy. Larger ones fail the gate
+and are classified from the vibrational Hessian in the basis of the tangent and
+the normal plane: `tangent_misaligned` (one unstable vibrational mode, the
+reaction mode, leaking into the bath because the path tangent is tilted away
+from it by `tangent_to_lowest_mode_degrees`) or `ridge` (two or more: a
+transverse coordinate is not a bath mode). Either way that coordinate belongs in
+`S`, so `dimension = "auto"` then also builds the 2D model
+(`dimension_escalation`). The finite-difference Hessian displaces the lightest
+atom by `hessian_displacement` (5e-3 bohr); the former fixed mass-weighted step
+moved hydrogen by 2e-5 bohr, where the gradient difference of a soft mode is
+comparable to the evaluation noise of a fitted potential.
+
+**Grid.** Outside its grid a gridded `V_S` is a constant with zero force.
+`spline_outside_fraction` counts every gradient evaluation — rejected HMC
+proposals, equilibration, and recrossing trajectories that left through a flat
+channel end and are simply committed — so it cannot say how much of the
+estimator was affected. `grid_exit` resolves it: per-stage counts (`stages`),
+the bead points of the accepted TI and dividing-surface samples outside the grid
+(`ti_sample_outside_fraction`, `surface_sample_outside_fraction`), and for the
+recrossing trajectories the flux share that crossed the dividing surface again
+after leaving, or whose centroid left where `V_S` still rises outwards by more
+than 0.1 kT per thermal length (`recrossing_contaminated_flux_fraction`). The
+gate uses the largest of the three (`estimator_outside_fraction`); its reason
+lists all three and names the dominant one (`dominant_component`), because the
+remedy differs: TI or dividing-surface samples outside the grid need a wider box
+across the channel (`padding`), contaminated recrossing flux a box or absorber
+further along it.
+
+**Solver.** Before any rate is solved, each model gets a solver plan
+(`solver_plans`): grid shape, points retained after energy truncation, the
+route the exact quantum solver will take, the dense and route memory
+estimates, and, with an `[execution]` table, the RPMD task estimate against
+`execution.memory_limit_mb`. The energy truncation, energy floor and slice
+normalization of the 2D model exist only on the dense route, so a 2D grid
+that retains more than `dense_limit` points cannot be solved; it is refused
+here with `status = "dense_limit_exceeded"`, `required_dense_limit` and
+`recommendations` (the `dense_limit` it needs and the memory that takes, or
+the keys that shrink the grid), instead of failing with a generic error after
+the rest of the stage has run. The gate cannot be overridden and also applies
+under `on_invalid = "diagnose"`. The retained grid grows with temperature at
+fixed truncation, so a `dense_limit` sized at one temperature (11500 for the
+200 K H + H₂ benchmark, 11165 retained points) is not a safe value at another;
+read it from the plan. The exact solver raises the same plan as
+`DenseRouteUnavailable` (a `ValueError`), and `quantum_solver_plan()` computes
+it without solving.
+
+Each dimension is solved independently: an exception in one is recorded in
+`solve_failures` and `validity.failed_to_solve`, and the other dimensions are
+still solved and gated. (With an `[execution]` table the task scheduler still
+stops at the first failed task; its checkpoints keep the completed ones.)
+
+When a gate fails, `C_S_Dd.json` carries `valid: false`, `factor: null`, the
+ratio as `diagnostic_factor`, the gate record in `validity` and both component
+rate results; `apply_subspace_correction` refuses it. With `on_invalid = "stop"`
+a model whose path or bath gate fails is not solved at all. If no model passes,
+no corrected rate is written (a corrected rate left by an earlier run is
+removed), `status.json` of the native stage carries the report status, and
+`pyrpmd subspace-correct` exits nonzero. The status says why:
+`solver_capacity_exceeded` if a solver plan refused a model, `failed` if every
+solve that started raised (an explicit `--stage subspace` then also exits
+nonzero), otherwise `invalid_model`. When the applied dimension is lower than
+the curvature × width verdict because the higher one did not pass, the report
+says so in `warnings`.
+
 ## One command from a rate run
 
 ```bash
@@ -169,6 +307,8 @@ The command then runs:
    of librating light atoms are shorter than the bonds. Every selected core is then continued
    by steepest-descent path following (minimum on a sphere around each point, forward hemisphere, rigid-body modes
    excluded; uphill segments use the hyperplane minimum), with step halving at sharp turns.
+   The continuation runs until the energy is flat over ten step lengths of arc; there is no
+   step budget, and each end records how it terminated (see [Validity gates](#validity-gates)).
 3. **Curvature × width.** From `Sigma(xi)` along the sampled windows
    (`rho = sqrt(2 n^T Sigma n)` along the curvature normal) and, along the whole path, with
    the harmonic bead width of the mode along the normal. Above the threshold (default 0.5)
@@ -191,7 +331,13 @@ The command then runs:
    The box only extends to a reference slice where the reactant channel is within
    `reference_kt` (0.3 kT) of its asymptote — `C_S` needs both rates on the same slice,
    not at infinity — and products are absorbed once the path is `product_drop_kt` (15 kT)
-   below its maximum. The default grid is anisotropic: a third of the narrowest
+   below its maximum or, when the product channel cannot drop that far (a
+   thermoneutral or endothermic reaction at high temperature: H + H₂ above about 320 K),
+   once it has settled within `reference_kt` of its asymptote. The threshold
+   `max(top − product_drop_kt·kT, asymptote + reference_kt·kT)` is continuous in
+   temperature; the former fallback, the last path point, put the box (and the dense
+   grid) at the end of a path whose length is set by `asymptote_tolerance`.
+   `models.2.product_absorber` records the criterion used. The default grid is anisotropic: a third of the narrowest
    in-plane vibrational width along the transfer axis, a quarter of the shortest de
    Broglie wavelength along the path axis.
 6. **Nested sensitivity** `ln(C_2D/C_1D)` selects the dimension, and
@@ -273,6 +419,122 @@ corr.write("C_S_300K.json")
 correct_rate_run("runs/rate-300K", corr)
 ```
 
+## Hybrid CPU and MPI execution
+
+The gridded RPMD solver uses a C++17 extension by default when available. It
+copies SciPy's cubic B-spline knots and coefficients and evaluates the same
+potential and analytic gradient in C++. HMC proposal trajectories and paired
+recrossing trajectories release the GIL and run without Python callbacks.
+OpenMP distributes independent ring polymers across threads; SIMD covers the
+normal-mode updates. Free ring propagation uses the existing FFT implementation
+(direct Fourier transforms for non-power-of-two bead counts).
+
+Python still owns the NumPy random stream, randomized proposal lengths, the
+Metropolis test, shared burn-in step-size adaptation, walker statistics, TI,
+and paired-trajectory bootstrap. Thread count does not change random draws or
+reduction order. The FFT and spline arithmetic can differ slightly from the
+Python reference; long chaotic trajectories need statistical comparison as
+well as short trajectory comparisons. The physical definitions, error formulas
+and existing result fields are retained.
+
+For a single calculation, pass `threads=32` to `ring_polymer_rate`. Select
+`backend="python"` for the reference implementation or `backend="native"` to
+require the compiled kernel. `backend="auto"` reports a fallback reason if the
+extension is missing or a model has Python potential callbacks. Callbacks are
+never silently replaced by an interpolated potential: use an explicit
+`SubspaceModel` containing the intended grid to enable native propagation.
+
+The quantum solver retains SciPy eigensolvers and complex Schur decomposition.
+Dense DVR assembly avoids full Kronecker temporaries. The Sylvester equation is
+solved in triangular blocks with LAPACK `ztrsyl` and BLAS matrix updates;
+LAPACK scaling or near-degeneracy triggers the original full solve. A dense
+memory estimate is checked before allocation. This changes neither the DVR
+grid nor the flux operator, absorbing potential or reactant normalization.
+
+Add an execution section to a pipeline TOML to overlap QM/RPMD and, when both
+dimensions are requested, all four stages of `C_S(1D)` and `C_S(2D)`:
+
+```toml
+[execution]
+backend = "process"
+cpus = 32
+workers = 4
+blas_threads = 8
+memory_limit_mb = 8192
+resume = true
+# checkpoint_dir = "subspace-tasks"  # default: output directory / tasks
+
+[rpmd]
+backend = "native"
+```
+
+`cpus` is the total CPU budget and `workers` the maximum number of concurrent
+tasks. Each process receives `floor(cpus / workers)` OpenMP threads
+(using fewer workers if there are fewer unfinished tasks). Memory estimates
+include dense linear algebra or RPMD state, side histories and bootstrap
+temporaries; tasks are admitted only while their combined estimates fit the
+budget. BLAS uses at most `blas_threads` (default 8) and never exceeds that
+process's CPU allocation. Large thread teams can slow the sequential stages
+of complex Schur decomposition; the cap is independently adjustable for the
+installed BLAS and matrix size. Set `OMP_WAIT_POLICY=PASSIVE` before launching
+mixed Python/OpenMP workloads so idle dynamics threads sleep during sampling
+and analysis. These are conservative working-memory estimates, not OS memory limits.
+Set the budget below the job's memory allocation to leave room for Python,
+loaded libraries and the coordinator. BLAS thread limits are scoped inside
+separate processes, avoiding conflicting thread limits in Python thread pools.
+
+The same scheduler is available through Python:
+
+```python
+from pyrpmd.analysis import subspace_correction, subspace_corrections
+
+# Guard process-spawning code with if __name__ == "__main__" in a script.
+corr = subspace_correction(model, beta, 32,
+    execution={"backend": "process", "cpus": 32, "workers": 2})
+corrections = subspace_corrections({
+    "1d": {"model": model1, "beta": beta, "nbeads": 32},
+    "2d": {"model": model2, "beta": beta, "nbeads": 32},
+}, execution={"cpus": 32, "workers": 4, "memory_limit_mb": 8192})
+```
+
+For multiple nodes, install the existing `mpi` extra and set
+`execution.backend = "mpi"`. Launch the same command on all ranks, for example
+with two ranks per node on two nodes:
+
+```bash
+mpiexec -n 4 --map-by ppr:2:node:PE=16 pyrpmd subspace-correct correct.toml
+```
+
+The launcher example uses Open MPI; use the equivalent binding options for
+your MPI implementation and scheduler. `cpus` and `memory_limit_mb` are
+**per-node** budgets in MPI mode. Each shared-memory node divides them among
+its ranks; `workers` applies only to the local process backend. Rank zero
+builds models and writes the pipeline report, dynamically dispatches tasks,
+and also computes. Only gridded models and quantum grid arrays travel between
+ranks; no live PES object or pipeline closure is sent. All ranks must call
+the Python API. Rank zero alone supplies `cases` to `subspace_corrections`;
+other ranks may pass `None`. There are no MPI collectives inside time steps.
+A single correction currently supplies two distributed tasks; two dimensions
+supply four. This is task-level scaling, not distributed dense linear algebra.
+
+Each completed quantum or RPMD result is atomically checkpointed, including
+the RPMD time series. Identity includes the grids, masses, temperature,
+beads, potential metadata, sampled absorber/truncation arrays, numerical and
+sampling settings, seed, solver implementation and NumPy/SciPy versions.
+Changing thread counts or rank placement can reuse results. Changed physical
+or sampling inputs cannot. With an execution section the task cache replaces
+the older `output.reuse` shortcut, which checked temperature alone. A failed
+or interrupted task reruns from its original seed; completed tasks survive a
+job/launcher restart. This is restart between tasks, not continuation within
+an unfinished HMC chain or recovery of a failed MPI rank inside a live job.
+
+Diagnostics include actual OpenMP team size, native/Python polymer-step
+counts, Python potential callbacks, fallback reasons, per-task CPU/wall time,
+BLAS limits, memory estimates and checkpoint reuse. `physical_converged`
+remains false. The reproducible H+H2 benchmark is
+`benchmarks/h3_subspace/parallel.py`; its fixed 300 K/P32 budget tests execution
+and numerical compatibility, and does not establish a converged reaction rate.
+
 ## Choosing the subspace
 
 `S` must contain the RPMD defect, not merely the strongly coupled modes. The research behind
@@ -299,14 +561,18 @@ factor `harmonic_bead_factor` for environment modes.
 | --- | --- | --- |
 | Box length and absorbing-potential width/strength | `exact_quantum_rate(cap_width=, cap_strength=)` | Reflection from the absorber; at 200 K a 16 bohr Eckart box is 0.7% high, 32 bohr 0.06% |
 | Grid spacing | model axes | Rate drifts when refined |
+| Dense route capacity | pipeline `dense_limit` | Not a convergence parameter: the 2D model is refused before solving (`solver_plans.2.status = "dense_limit_exceeded"`) when it retains more points; the plan gives `required_dense_limit` and the dense memory (about 192 N² bytes) |
 | Truncation energy (energy-truncated DVR) | `exact_quantum_rate(truncation_energy=)`, pipeline `truncation_kt` and `truncation_min` (Eh) | The removed points are hard walls. The rate converges only once the margin above the local valley floor exceeds about six quanta of the stiffest transverse mode (walls at ~5 ground-state widths). A separable 2D Eckart model (transverse 0.010 Eh) at 200 K is 12% low with 0.016 Eh above barrier + ZPE, 1% low at 0.03 Eh, and exact (1 − 4×10⁻⁶) at 0.07 Eh. The diagnostic `truncation_margin` reports the smallest margin. The 30 kT default is too small for stiff modes at low temperature: set `truncation_min` to about six quanta |
 | Propagation time and step | `max_time`, `dt` (iterative route) | `relative_extrapolation_spread` large |
 | TI windows | `ring_polymer_rate(windows=)` | `ti_quadrature_log_error` comparable to the statistical error |
 | Beads | `nbeads` | `C_S` should correct the same finite-`P` estimator as the full run |
 | Sampling | `walkers`, `sweeps`, `trajectories` | `log_standard_error` |
 
-Ring polymers that leave the model grid sample an extrapolated spline; this is reported as
-`spline_outside_fraction` and must be zero for a gridded (projected) model.
+Ring polymers that leave the model grid sample a constant continuation of the spline.
+`spline_outside_fraction` counts all such evaluations, including committed recrossing
+trajectories that have left through a flat channel end; the part that reaches the estimator
+is `grid_exit.estimator_outside_fraction`, which must stay below `max_outside_fraction`
+(see [Validity gates](#validity-gates)). Enlarge the grid if it does not.
 
 ## Validation
 

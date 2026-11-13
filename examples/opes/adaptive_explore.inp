@@ -1,8 +1,12 @@
+# Smoke test: validates workflow execution, not sampling convergence.
 # Numerical reference pilot; inspect convergence before interpreting free energies.
-task = "opes"
+task = "fes"
 temperature = "300 K"
 beads = 4
 seed = 811
+
+[fes]
+method = "opes"
 
 [system]
 symbols = ["H"]

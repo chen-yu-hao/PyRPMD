@@ -14,6 +14,8 @@ from .common import fingerprint_matches
 from .sampling import checkpoint_cv_config
 from .opes import resolve_opes, _distributed_fes_sampler as fes_sampler
 from ..warm_start import initial_ring
+from .biased_sampling import supersede_failure
+from ._walker_failures import record_walker_failure, walker_failure_path
 
 MPI_KIND = "PyRPMD.shared-opes.mpi.v1"
 ASYNC_KIND = "PyRPMD.shared-opes.async-walker.v1"
@@ -206,8 +208,15 @@ def _run_mpi(config, system, output, *, return_data=False):
                 if old_operator is not None:
                     dynamics.load_operator_state_dict(old_operator)
                 save()
-                raise RuntimeError("MPI OPES walker failed: " + "; ".join(
+                failure = RuntimeError("MPI OPES walker failed: " + "; ".join(
                     error for error in errors if error is not None))
+                record_walker_failure(
+                    output, "opes", "mpi-sync", rank, dynamics, cv, failure,
+                    state=state, elapsed=elapsed,
+                    samples=[row[rank] for row in saved["samples"]] if rank == 0 else [],
+                    options=options, checkpoint=checkpoint,
+                    bias_state=lambda: {"kernel_count": len(bias.state_dict()["centers"])})
+                raise failure
             if record:
                 values = np.asarray(comm.allgather(value), dtype=np.float64)
                 observations = np.asarray(comm.allgather(observed), dtype=np.float64)
@@ -225,6 +234,11 @@ def _run_mpi(config, system, output, *, return_data=False):
             if elapsed % config.get("output", {}).get("checkpoint_steps", 1000) == 0:
                 save()
         save()
+        _root_collective(
+            comm, lambda: [supersede_failure(
+                walker_failure_path(output, "opes", "mpi-sync", index),
+                checkpoint=checkpoint, elapsed_steps=elapsed) for index in range(walkers)],
+            "opes failure recovery record")
         return _root_collective(
             comm, lambda: _analyze_shared(
                 bias, saved["samples"], config, system, output, options,

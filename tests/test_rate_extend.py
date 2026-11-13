@@ -92,19 +92,21 @@ def read_json(path):
     return json.loads(Path(path).read_text())
 
 
-def file_hashes(directory):
+def file_hashes(directory, *, include_progress=True):
     directory = Path(directory)
     return {
         path.relative_to(directory).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
         for path in sorted(directory.rglob("*"))
         if path.is_file() and path.suffix not in (".lock", ".tmp")
+        and (include_progress or path.relative_to(directory).as_posix()
+             not in {"progress.json", "run.log.jsonl"})
     }
 
 
 def immutable_original(directory):
     return {
         name: digest for name, digest in file_hashes(directory).items()
-        if name != "results/summary.json"
+        if name not in {"results/summary.json", "progress.json", "run.log.jsonl"}
         and not name.startswith("umbrella/checkpoints/")
         and not name.startswith("extensions/")
         and name != "results/extensions.json"
@@ -276,9 +278,10 @@ def test_mbar_extension_matches_continuous_supported_pmf_and_recrossing(tmp_path
                                          "reference": reference}, result)
 
 
-def test_same_budget_and_ordinary_resume_are_read_only(saved_run):
+def test_same_budget_and_ordinary_resume_leave_scientific_artifacts_unchanged(saved_run):
     result = extend_run(saved_run, production_steps=LONG)
-    before = file_hashes(saved_run)
+    before = file_hashes(saved_run, include_progress=False)
+    attempt = read_json(saved_run / "progress.json")["run_id"]
     with (
         patch.object(Dynamics, "step", side_effect=AssertionError("propagated an idempotent request")),
         patch.object(Dynamics, "propagate_block", side_effect=AssertionError("propagated an idempotent request")),
@@ -286,7 +289,10 @@ def test_same_budget_and_ordinary_resume_are_read_only(saved_run):
         repeated = extend_run(saved_run, production_steps=LONG)
         resumed = resume_run(saved_run)
     assert repeated == resumed == result
-    assert file_hashes(saved_run) == before
+    assert file_hashes(saved_run, include_progress=False) == before
+    status = read_json(saved_run / "progress.json")
+    assert status["run_id"] != attempt and status["status"] == "completed"
+    assert status["percent"] == 100
 
 
 def test_direct_original_resume_cannot_silently_use_an_extended_budget(saved_run, baseline):

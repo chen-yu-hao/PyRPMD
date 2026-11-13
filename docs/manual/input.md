@@ -149,7 +149,7 @@ The gas-phase `rate` workflow supplies these additional starting values when omi
 These are not the RPMDrate manual's production examples. The initial window spacing and stiffness
 need system-specific checks, especially with the default Gaussian UI model. Adaptive placement
 can add centers. `adaptive_umbrella.adapt_stiffness=true` also tunes each
-window's spring from pilot moments. <a href="../automatic-rate.html">Automatic rates</a>
+window's spring from pilot moments. [Automatic rates](../automatic-rate.md)
 enable both and default to the MBAR estimator.
 
 For enabled `[adaptive_umbrella]`, the following are **pilot selection criteria and resource

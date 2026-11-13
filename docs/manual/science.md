@@ -51,7 +51,7 @@ cell row is a lattice vector, with `r = s @ cell`; see [Periodic structures](per
 A potential returns the **physical potential energy and forces** of each bead. The propagator adds
 the ring springs, the bead scaling and any bias. Units, error handling and the optional virial are
 specified in the
-[potential interface specification](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/potentials.md) *(partly Chinese)*.
+[potential interface specification](potentials.md).
 
 ## The ring-polymer Hamiltonian
 
@@ -317,6 +317,6 @@ convergence and the distinction between equilibrium path integrals and approxima
 
 Summaries carry `converged` or `physical_converged`, which stay `false` for a single run; PCET also
 reports `numerical_convergence` and `physical_applicability_unverified`. The
-[scientific conventions](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/science.md) *(Chinese)*,
-the [MBAR rate PMF](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/mbar-rate-pmf.md) *(Chinese)*
+[scientific conventions](#free-energy-measures-and-rate-normalization),
+the [MBAR rate PMF](../rate-pmf-selection.md)
 and the task topics give the theory, implementation and method sources.

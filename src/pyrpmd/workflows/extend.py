@@ -331,7 +331,15 @@ def extend_drpmd(directory, *, max_time):
     root_call(_lock, path)
     try:
         prepared = root_call(_prepare_extension, path, max_time)
-        results = run_tasks(_extend_parent, prepared["tasks"], prepared["config"].get("parallel"))
-        return root_call(_finish_extension, prepared, results)
+        from ..progress import RunProgress
+
+        reporting = copy.deepcopy(prepared["config"])
+        reporting["resume"] = True
+        reporting["collision"]["max_steps"] = prepared["ledger"]["requests"][-1]["max_steps"]
+        with RunProgress(path, reporting) as progress:
+            results = run_tasks(_extend_parent, prepared["tasks"], prepared["config"].get("parallel"))
+            result = root_call(_finish_extension, prepared, results)
+            progress.result = result
+            return result
     finally:
         root_call(_unlock, path)

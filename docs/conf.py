@@ -29,11 +29,13 @@ root_doc = "index"
 include_patterns = [
     "index.md", "manual/*.md", "enhanced-sampling.md", "replica-exchange.md", "opes.md", "mlcolvar.md", "finite-temperature-string.md",
     "rate-pmf-selection.md",
+    "convergence.md", "development/*.md",
     "data-archive-plan.md",
     "plumed.md", "committor.md", "transition-interface-sampling.md", "transition-state-search.md", "rate-postprocessing.md",
     "general-coordinate-rates.md", "rate-studies.md", "instanton.md", "low-temperature.md", "vtst.md",
     "tunnelling-phase-projection.md",
     "rate-input-v2.md",
+    "automatic-rate.md",
     "rpmdrate-import.md",
     "rate_precision.md",
     "quantum-statistics.md", "quantum-correction.md", "subspace-correction.md", "subspace-transfer-theory.md", "performance-dynamics.md", "batched-dynamics.md",

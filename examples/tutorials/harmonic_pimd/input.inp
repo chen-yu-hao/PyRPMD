@@ -1,0 +1,35 @@
+# Tutorial with a finite-P analytic reference; run compare.py after sampling.
+task = "pimd"
+temperature = "300 K"
+beads = 16
+seed = 16501
+
+[system]
+symbols = ["H"]
+masses = [1837.15264744]
+geometry = [[0.0, 0.0, 0.0]]
+
+[potential]
+provider = "harmonic"
+params = {k = 0.02}
+
+[dynamics]
+integrator = "cayley-bcb"
+timestep = "0.1 fs"
+
+[sampling]
+engine = "native"
+thermostat = "pile-l"
+gamma_centroid = "0.01 fs^-1"
+equilibration = "2 ps"
+production = "40 ps"
+interval = "2 fs"
+replicas = 4
+
+[parallel]
+backend = "serial"
+threads_per_rank = 1
+
+[output]
+directory = "run"
+checkpoint_interval = "2 ps"

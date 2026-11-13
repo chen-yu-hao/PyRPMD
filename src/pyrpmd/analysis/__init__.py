@@ -80,7 +80,8 @@ from .subspace_model import (
     project_path_subspace,
     ring_polymer_mean_path,
 )
-from .subspace_quantum import QuantumRateResult, exact_quantum_rate, dense_rate_matrix
+from .subspace_quantum import (DenseRouteUnavailable, QuantumRateResult, dense_rate_matrix,
+                               exact_quantum_rate, quantum_solver_plan)
 from .subspace_channels import (
     SubspaceChannels,
     build_subspace_channels,
@@ -94,6 +95,7 @@ from .subspace_channels import (
 from .subspace_rpmd import RingPolymerRateResult, ring_polymer_rate
 from .centroid_path import CentroidAccumulator, RingPolymerMeanPath, mean_path_from_rate_run
 from .subspace_pipeline import run_subspace_pipeline
+from .subspace_execution import subspace_corrections
 from .subspace_correction import (
     SubspaceCorrection,
     apply_subspace_correction,
@@ -165,7 +167,9 @@ __all__ = [
     "project_path_subspace",
     "ring_polymer_mean_path",
     "QuantumRateResult",
+    "DenseRouteUnavailable",
     "exact_quantum_rate",
+    "quantum_solver_plan",
     "dense_rate_matrix",
     "SubspaceChannels",
     "build_subspace_channels",
@@ -183,6 +187,7 @@ __all__ = [
     "correct_rate_run",
     "nested_subspace_sensitivity",
     "subspace_correction",
+    "subspace_corrections",
     "CentroidAccumulator",
     "RingPolymerMeanPath",
     "mean_path_from_rate_run",

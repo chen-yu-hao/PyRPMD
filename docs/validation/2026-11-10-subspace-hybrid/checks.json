@@ -1,0 +1,21 @@
+{
+  "python1_1d_relative_factor_difference": 0.0,
+  "python1_2d_relative_factor_difference": 0.0,
+  "native1_1d_relative_factor_difference": 3.552713678800501e-15,
+  "native1_2d_relative_factor_difference": 8.770761894538737e-15,
+  "native32_1d_relative_factor_difference": 7.37188088351104e-14,
+  "native32_2d_relative_factor_difference": 2.441158386545794e-12,
+  "tasks32_1d_relative_factor_difference": 7.37188088351104e-14,
+  "tasks32_2d_relative_factor_difference": 2.441158386545794e-12,
+  "mpi32_1d_relative_factor_difference": 7.37188088351104e-14,
+  "mpi32_2d_relative_factor_difference": 2.441158386545794e-12,
+  "mpi32-resume_1d_relative_factor_difference": 7.37188088351104e-14,
+  "mpi32-resume_2d_relative_factor_difference": 2.441158386545794e-12,
+  "native32-unrestricted_1d_relative_factor_difference": 3.441691376337985e-14,
+  "native32-unrestricted_2d_relative_factor_difference": 3.7692071686024065e-13,
+  "native_statistics_thread_independent": true,
+  "all_mpi_tasks_reused": true,
+  "python_to_process_speedup": 4.142567920564463,
+  "native_single_to_process_speedup": 3.3275957632199753,
+  "physical_converged": false
+}

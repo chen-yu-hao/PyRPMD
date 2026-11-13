@@ -43,8 +43,10 @@ symmetry_factor = 1.0
 [umbrella]
 start = -0.05
 stop = 1.10
-count = 47
-kappa = "1.900086938 hartree"
+count = 231
+# RPMDrate H+H2 convention: k = 0.1*T = 150 hartree at 1500 K.
+# The 0.005 spacing is comparable to sigma_xi ~= 0.00563.
+kappa = "150 hartree"
 
 [analysis]
 bins = 100

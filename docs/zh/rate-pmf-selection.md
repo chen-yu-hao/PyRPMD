@@ -120,7 +120,7 @@ replicas = 2
 start = -0.05
 stop = 1.10
 count = 47
-kappa = "0.16 hartree"
+force_constant = 0.1
 
 [rate.pmf.analysis]
 bins = 80

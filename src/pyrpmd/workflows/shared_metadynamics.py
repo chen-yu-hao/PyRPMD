@@ -21,6 +21,8 @@ from ..units import parse_quantity
 from .common import _fingerprint, fingerprint_matches, write_json
 from .metadynamics import resolve_metadynamics, resolve_walls
 from .sampling import legacy_metadynamics_sampling, validate_andersen_schedule
+from .biased_sampling import supersede_failure
+from ._walker_failures import record_walker_failure, walker_failure_path
 
 
 KIND = "PyRPMD.shared-metadynamics.v1"
@@ -226,12 +228,19 @@ def run_shared_metadynamics(config, system, output, *, return_data=False):
                 before = np.asarray(bias.physical_energy(values)) if record else None
                 if deposit:
                     bias.deposit_walkers(values,step=states[0].step,time=states[0].time)
-            except BaseException:
+            except BaseException as error:
                 states=previous
                 for dyn,state_rng in zip(dynamics,rng):
                     dyn.rng.bit_generator.state=state_rng
                 bias.truncate_history(count)
                 save()
+                for walker, (dyn, state) in enumerate(zip(dynamics, states)):
+                    record_walker_failure(
+                        output, "metadynamics", "serial", walker, dyn, cv, error,
+                        state=state, elapsed=elapsed,
+                        samples=[row[walker] for row in saved["samples"]],
+                        options=options, checkpoint=path,
+                        bias_state=lambda: {"hill_count": bias.hill_count})
                 raise
             elapsed+=1
             if record:
@@ -243,6 +252,10 @@ def run_shared_metadynamics(config, system, output, *, return_data=False):
             if elapsed % config.get("output",{}).get("checkpoint_steps",1000) == 0:
                 save()
         save()
+        for walker in range(walkers):
+            supersede_failure(
+                walker_failure_path(output, "metadynamics", "serial", walker),
+                checkpoint=path, elapsed_steps=elapsed)
     saved=_read(config,system,output,cv,options)
     return _analyze(config,system,output,cv,options,saved,return_data)
 

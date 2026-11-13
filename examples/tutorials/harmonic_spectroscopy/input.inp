@@ -1,0 +1,44 @@
+# Harmonic TRPMD: the centroid frequency is analytically exact for a linear dipole.
+task = "spectroscopy"
+temperature = "300 K"
+beads = 8
+seed = 16505
+
+[system]
+symbols = ["H"]
+masses = [1837.15264744]
+geometry = [[0.1, 0.0, 0.0]]
+
+[potential]
+provider = "harmonic"
+params = {k = 0.05}
+
+[dynamics]
+integrator = "normal-mode-bab"
+timestep = "0.1 fs"
+
+[sampling]
+equilibration_steps = 5000
+production_steps = 40000
+sample_interval = 2
+replicas = 4
+gamma_centroid = "0.05 fs^-1"
+
+[spectroscopy]
+method = "trpmd"
+friction_scale = 0.5
+spectra = ["ir"]
+window = "hann"
+normalize = false
+
+[properties]
+provider = "python"
+factory = "../../spectroscopy/harmonic_properties.py:build"
+
+[parallel]
+backend = "serial"
+threads_per_rank = 1
+
+[output]
+directory = "run"
+checkpoint_steps = 5000

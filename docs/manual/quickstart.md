@@ -1,8 +1,9 @@
 # Quickstart: a restartable free-energy calculation
 
 In a few seconds you will go through the full PyRPMD cycle that every task shares: validate an
-input, run umbrella sampling, read the results, restart and reanalyze without rerunning dynamics.
-The built-in harmonic potential means no external model is needed.
+input, run umbrella sampling, read the results, compare them with an exact answer, restart and
+reanalyze without rerunning dynamics. The built-in harmonic potential means no external model is
+needed, and its centroid free energy is known analytically, so you can check the number you get.
 
 ## 1. Run your first task
 
@@ -45,9 +46,10 @@ directory, so pick a new `--output` each time you start over.
 
 ## 2. The input
 
-The example computes the **x-component centroid probability density** of one H nucleus in a 3D
-harmonic potential. Three umbrella windows each run two independent replicas: 20 equilibration
-steps, then 100 production steps with a sample every 5 steps, using four beads and a 0.1 fs step.
+The example computes the **free energy along the x component of the ring-polymer centroid** of one
+H nucleus in a 3D harmonic potential at 300 K. Five umbrella windows each run two independent
+replicas: 0.5 ps of equilibration, then 25 ps of production with a sample every 12.5 fs, using
+four beads and a 0.5 fs step. The whole calculation takes about 4 s on one core.
 
 ```{literalinclude} ../../src/pyrpmd/templates/quickstart.inp
 :language: toml
@@ -62,8 +64,10 @@ Source file: [bundled quickstart.inp](https://github.com/chen-yu-hao/PyRPMD/blob
 | `potential.params.k=0.002` | Force constant of $V=\tfrac12 k\lvert q\rvert^2$ in atomic units |
 | `cvs.estimator="centroid"` | The CV is evaluated at the ring centroid |
 | `umbrella.stiffness` | Force constant of the physical umbrella; PyRPMD applies the bead scaling |
+| `sampling.andersen_interval=50` | All momenta are resampled every 50 steps (25 fs) |
 | `sampling.replicas=2` | Independent random streams per window |
-| `analysis.bootstrap=0` | No bootstrap error bars for this run |
+| `analysis.bootstrap=20` | Block-bootstrap draws for the error bars |
+| `analysis.min_count=20` | Bins with fewer samples are masked instead of reported |
 
 Write temperatures, lengths, times and force constants as strings with units. Atom indices start
 at 0. The full rules are in [Input](input.md) and [Scientific conventions](science.md).
@@ -81,18 +85,61 @@ for key in ("task", "dimension", "windows", "streams", "samples",
     print(key, summary.get(key))
 ```
 
-The summary reports `task="fes"`, a one-dimensional CV, 3 windows, 6 sampling streams and 120
-saved samples; `effective_samples_per_stream` gives the number of statistically independent ones.
-`overlap_connected=true` means all windows share one global normalization. `warnings` flags
-windows with too few effective samples and unsampled grid cells. `converged` stays `false` for a
-single run by design: convergence is established across the series of runs described in
-[Scientific conventions](science.md).
+The summary reports `task="fes"`, a one-dimensional CV, 5 windows, 10 sampling streams and 20000
+saved samples; `effective_samples_per_stream` gives the number of statistically independent ones
+(several hundred per stream here). `overlap_connected=true` means all windows share one global
+normalization. `warnings` flags windows with too few effective samples and unsampled grid cells;
+it is empty for this run. `converged` stays `false` for a single run by design: PyRPMD never
+certifies bead, time-step or sampling convergence from one run. Those are established across the
+series of runs described in [Scientific conventions](science.md), and in step 4 below you make
+the simplest such check yourself.
 
 `summary["files"]` holds the paths of the data files. In the FES table, `free_energy_hartree` is a
 relative free energy, `raw_count` the number of samples per cell, and `masked` marks cells without
 sampling support, which hold NaN. See [Output and analysis](results.md).
 
-## 4. Restart and reanalyze
+## 4. Compare with the exact result
+
+For a harmonic potential the centroid of the ring polymer decouples from the internal ring modes,
+so the centroid free energy is the classical one for every bead number:
+$F(x)=\tfrac12 k x^2$ plus a constant. This makes the starter a real test of the sampling, the
+bead scaling of the umbrella and the MBAR reconstruction:
+
+```python
+import json
+from pathlib import Path
+
+import numpy as np
+
+run_dir = Path("my-first-run/run")
+beta = json.loads((run_dir / "results/summary.json").read_text())["beta"]  # 1/(kB T), hartree^-1
+table = np.genfromtxt(run_dir / "fes.csv", delimiter=",", names=True)
+x = table["cv0_bohr"]
+exact = 0.5 * 0.002 * x**2
+difference = table["free_energy_hartree"] - exact
+difference -= difference.mean()            # a free energy has an arbitrary zero
+print("x / bohr   F - F_exact (kBT)   1 SE (kBT)")
+for row in zip(x, difference * beta, table["uncertainty_hartree"] * beta):
+    print("%8.3f %14.3f %14.3f" % row)
+print("largest deviation: %.2f kBT" % (np.abs(difference).max() * beta))
+```
+
+The largest deviation is about 0.1 $k_BT$ (0.06 kcal/mol at 300 K), consistent with the reported
+block-bootstrap standard errors, which grow towards the edge bins where fewer samples fall. The
+uncertainty of the reference bin (the free-energy zero) is 0 by construction.
+
+Three experiments show what controls the accuracy; give each a new `--output` directory:
+
+- **Less sampling.** Set `production_steps = 500`. The curve becomes noisy and `warnings` reports
+  streams with fewer than 20 independent samples: the error bars, not the curve, are what you
+  can trust.
+- **More beads.** Run with `--beads 16`. The centroid free energy is unchanged within the errors,
+  as the theory above requires. This is special to the harmonic centroid: an anharmonic potential
+  or an energy estimator needs a bead-convergence series.
+- **Larger time step.** `timestep = "2 fs"` still works for this soft model; a real molecule with
+  stiff bonds needs the time-step check described in [Scientific conventions](science.md).
+
+## 5. Restart and reanalyze
 
 ```bash
 pyrpmd resume my-first-run/run
@@ -107,7 +154,7 @@ overwrites `fes.*` and `results/summary.json`; copy them first if you want to ke
 The saved input defines the run identity. To change the bead number, temperature, potential, time
 step or sampling, start a new run directory.
 
-## 5. The same task from Python
+## 6. The same task from Python
 
 Save as `my_first_run.py` in the working directory containing `my-first-run/`:
 

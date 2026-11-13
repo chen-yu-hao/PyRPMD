@@ -15,6 +15,7 @@ from . import __version__
 from .input import JobSpec, InputError, fes_method, normalize_fes_task
 from .io import write_json, referenced_files, fingerprint, jsonable, _windows_drive_files
 from .system import System
+from .stability import classify_stability
 
 
 def _planned_propagation_steps(config):
@@ -162,11 +163,39 @@ def propagation_backend_plan(config, system, *, potential=None):
             add("umbrella", f"CV/bias plan unavailable: {exc}", backend="unknown")
     elif task == "diffusion" and config.get("electronic_friction") is not None:
         provider_kind = config.get("electronic_friction", {}).get("provider", "constant")
-        add("production", (
-            "constant electronic friction uses Python OU centroid orchestration"
-            if provider_kind == "constant" else
-            "electronic friction provider callbacks require the Python loop"
-        ))
+        if provider_kind != "constant":
+            add("production", "electronic friction provider callbacks require the Python loop")
+        elif dynamics is None or base_backend != "native":
+            add("production")
+        else:
+            # Constant scalar or diagonal centroid friction has a fused native
+            # block; ask the same eligibility check that execution uses.
+            friction = None
+            try:
+                from .electronic_friction import ElectronicFrictionDynamics, make_electronic_friction
+                from .friction_block import native_friction_plan
+                from .propagation import NativeUnavailableError
+                friction = make_electronic_friction(config, system)
+                driver = ElectronicFrictionDynamics(
+                    provider, system.masses, config["beta"], config["beads"], config["dt_au"], friction,
+                    native=config.get("native", options.get("native", True)),
+                    threads=config.get("parallel", {}).get("threads_per_rank", 1),
+                    fixed_atoms=getattr(system, "fixed_atoms", ()),
+                    fixed_positions=system.geometry if getattr(system, "fixed_atoms", ()) else None,
+                    **{key: options[key] for key in ("loop_backend", "block_steps", "integrator")
+                       if key in options},
+                )
+                try:
+                    native_friction_plan(driver)
+                    add("production")
+                except NativeUnavailableError as exc:
+                    add("production", str(exc))
+            except Exception as exc:
+                add("production", f"electronic-friction plan could not be inspected: {exc}",
+                    backend="unknown")
+            finally:
+                if callable(getattr(friction, "close", None)):
+                    friction.close()
     elif task != "diffusion":
         add("propagation")
 
@@ -552,6 +581,11 @@ def run_resolved(config, system, *, output=None, resume=False, init_from=None, i
     config["resume"] = bool(resume)
     from .parallel import root_call, is_root
 
+    maturity = classify_stability(config)
+    if is_root() and maturity["level"] == "research":
+        import warnings
+
+        warnings.warn(f"Research-level workflow: {maturity['scope']}", UserWarning, stacklevel=2)
     # Reject before initialization can migrate a legacy manifest bound by the ledger.
     if (resume and config["task"] == "rate"
             and (Path(target) / "results" / "extensions.json").is_file()):
@@ -574,85 +608,90 @@ def run_resolved(config, system, *, output=None, resume=False, init_from=None, i
     _append_backend_warnings(config, backend_plan)
 
     root_call(_initialize_output, config, system, target, resume, parent_run)
-    if config["task"] == "path_sampling":
-        from .workflows.path_sampling import run_path_sampling
+    from .progress import RunProgress
 
-        result = run_path_sampling(config, system, Path(target))
-    elif "tempering" in config:
-        from .workflows.tempering import run_tempering
+    with RunProgress(target, config, backend_plan) as progress:
+        if config["task"] == "path_sampling":
+            from .workflows.path_sampling import run_path_sampling
 
-        result = run_tempering(config, system, Path(target))
-    elif config["task"] == "spectroscopy":
-        from .workflows.spectroscopy import run_spectroscopy
+            result = run_path_sampling(config, system, Path(target))
+        elif "tempering" in config:
+            from .workflows.tempering import run_tempering
 
-        result = run_spectroscopy(config, system, Path(target))
-    elif config["task"] == "plumed":
-        from .workflows.plumed import run_plumed
+            result = run_tempering(config, system, Path(target))
+        elif config["task"] == "spectroscopy":
+            from .workflows.spectroscopy import run_spectroscopy
 
-        result = run_plumed(config, system, Path(target))
-    elif config["task"] == "pcet":
-        from .workflows.pcet import run_pcet
+            result = run_spectroscopy(config, system, Path(target))
+        elif config["task"] == "plumed":
+            from .workflows.plumed import run_plumed
 
-        result = run_pcet(config, system, Path(target))
-    elif config["task"] == "nonadiabatic":
-        from .workflows.nonadiabatic import run_nonadiabatic
+            result = run_plumed(config, system, Path(target))
+        elif config["task"] == "pcet":
+            from .workflows.pcet import run_pcet
 
-        result = run_nonadiabatic(config, system, Path(target))
-    elif config["task"] == "drpmd":
-        from .workflows.drpmd import run_drpmd
+            result = run_pcet(config, system, Path(target))
+        elif config["task"] == "nonadiabatic":
+            from .workflows.nonadiabatic import run_nonadiabatic
 
-        result = run_drpmd(config, system, Path(target))
-    elif config["task"] == "fes":
-        from .workflows.fes_dispatch import run_fes
+            result = run_nonadiabatic(config, system, Path(target))
+        elif config["task"] == "drpmd":
+            from .workflows.drpmd import run_drpmd
 
-        result = run_fes(config, system, Path(target))
-    elif config["task"] == "rate":
-        from .workflows.rate import run_rate
+            result = run_drpmd(config, system, Path(target))
+        elif config["task"] == "fes":
+            from .workflows.fes_dispatch import run_fes
 
-        result = run_rate(config, system, Path(target))
-    elif config["task"] == "surface_rate":
-        from .workflows.surface import run_surface_rate
+            result = run_fes(config, system, Path(target))
+        elif config["task"] == "rate":
+            from .workflows.rate import run_rate
 
-        result = run_surface_rate(config, system, Path(target))
-    elif config["task"] == "network":
-        from .workflows.network import run_network
+            result = run_rate(config, system, Path(target))
+        elif config["task"] == "surface_rate":
+            from .workflows.surface import run_surface_rate
 
-        result = run_network(config, system, Path(target))
-    elif config["task"] == "pimd" and "path_integral" in config:
-        from .workflows.path_integral import run_path_integral
+            result = run_surface_rate(config, system, Path(target))
+        elif config["task"] == "network":
+            from .workflows.network import run_network
 
-        result = run_path_integral(config, system, Path(target))
-    elif config["task"] in ("pimd", "diffusion"):
-        from .workflows.materials import run_materials
+            result = run_network(config, system, Path(target))
+        elif config["task"] == "pimd" and "path_integral" in config:
+            from .workflows.path_integral import run_path_integral
 
-        result = run_materials(config, system, Path(target))
-    elif config["task"] == "site_rate":
-        from .workflows.site_rate import run_site_rate
+            result = run_path_integral(config, system, Path(target))
+        elif config["task"] in ("pimd", "diffusion"):
+            from .workflows.materials import run_materials
 
-        result = run_site_rate(config, system, Path(target))
-    else:
-        raise InputError("Unknown workflow")
-    if is_root() and result is not None:
-        result = _summary_propagation(result)
-        result = {
-            **result,
-            "software": "PyRPMD",
-            "version": __version__,
-            "output": target,
-            "preset": config.get("preset", "pilot"),
-            "input_warnings": config.get("_warnings", []),
-            "propagation_plan": backend_plan,
-        }
-        if config.get("warm_start"):
-            from .warm_start import report
+            result = run_materials(config, system, Path(target))
+        elif config["task"] == "site_rate":
+            from .workflows.site_rate import run_site_rate
 
-            result["warm_start"] = report(config)
-        # dRPMD returns records for API compatibility, but persists the full
-        # table separately so the run's summary stays bounded in size.
-        stored = ({key: value for key, value in result.items() if key != "records"}
-                  if config["task"] == "drpmd" else result)
-        write_json(Path(target) / "results" / "summary.json", stored)
-    return result
+            result = run_site_rate(config, system, Path(target))
+        else:
+            raise InputError("Unknown workflow")
+        if is_root() and result is not None:
+            result = _summary_propagation(result)
+            result = {
+                **result,
+                "software": "PyRPMD",
+                "version": __version__,
+                "output": target,
+                "preset": config.get("preset", "pilot"),
+                "input_warnings": config.get("_warnings", []),
+                "stability": classify_stability(config),
+                "propagation_plan": backend_plan,
+            }
+            if config.get("warm_start"):
+                from .warm_start import report
+
+                result["warm_start"] = report(config)
+            # dRPMD returns records for API compatibility, but persists the full
+            # table separately so the run's summary stays bounded in size.
+            stored = ({key: value for key, value in result.items() if key != "records"}
+                      if config["task"] == "drpmd" else result)
+            write_json(Path(target) / "results" / "summary.json", stored)
+        progress.result = result
+        return result
 
 
 def _resume_parallel(current, overrides):
@@ -809,10 +848,19 @@ def extend_run(directory, *, max_time=None, production_steps=None):
 def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffusion=None):
     """Read results or reanalyze saved FES/transport data without new trajectories."""
     path = Path(directory).resolve()
+    if not path.is_dir():
+        raise InputError(
+            f"No run directory at {path}; pass the --output directory of a finished 'pyrpmd run'"
+        )
     if not recompute and bins is None and bootstrap is None and diffusion is None:
         summary = path / "results" / "summary.json"
         if not summary.is_file():
             summary = path / "summary.json"
+        if not summary.is_file():
+            raise InputError(
+                f"No saved summary in {path}; the run has not finished. Continue it with "
+                f"'pyrpmd resume {path}', or pass the directory of a completed run"
+            )
         result = json.loads(summary.read_text())
         if "rate_extension" in result:
             from .rate_artifacts import active_rate_directory
@@ -824,6 +872,11 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
             if (path / "fes.npz").is_file():
                 return FESResult.read(path, summary=result).summary()
         return result
+    if not (path / "input" / "resolved.json").is_file():
+        raise InputError(
+            f"No saved input in {path}; reanalysis needs the run directory written by "
+            "'pyrpmd run' (it contains manifest.json and input/resolved.json)"
+        )
     config = json.loads((path / "input" / "resolved.json").read_text())
     if "tempering" in config:
         if bins is not None or bootstrap is not None or diffusion is not None:
@@ -840,6 +893,7 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
             **result, "software": "PyRPMD", "version": __version__,
             "output": str(path), "preset": config.get("preset", "pilot"),
             "input_warnings": config.get("_warnings", []),
+            "stability": classify_stability(config),
         }
         root_call(write_json, path / "results" / "summary.json", result)
         return result
@@ -853,7 +907,7 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
         result = analyze_nonadiabatic(config, system, path)
         result.update(software="PyRPMD", version=__version__, output=str(path),
                       preset=config.get("preset", "pilot"),
-                      input_warnings=config.get("_warnings", []))
+                      input_warnings=config.get("_warnings", []), stability=classify_stability(config))
         write_json(path / "results" / "summary.json", result)
         return result
     if config["task"] not in ("fes", "metadynamics", "opes", "diffusion", "spectroscopy"):
@@ -898,6 +952,7 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
             **result, "software": "PyRPMD", "version": __version__,
             "output": str(path), "preset": config.get("preset", "pilot"),
             "input_warnings": config.get("_warnings", []),
+            "stability": classify_stability(config),
         }
         root_call(write_json, path / "results" / "summary.json", result)
         return result
@@ -936,14 +991,27 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
         "preset": config.get("preset", "pilot"),
         "analysis_settings": analysis,
         "input_warnings": config.get("_warnings", []),
+        "stability": classify_stability(config),
     }
     root_call(write_json, path / "results" / "summary.json", result)
     return result
 
 
 def prepare(job, *, numerical=False):
+    from .resources import resource_report
+
     spec = _spec(job)
     config, system = spec.resolve()
+    resources = resource_report(config)
+    result = _prepare(spec, numerical=numerical and resources["available"], _resolved=(config, system))
+    result.update(resources=resources, ready=bool(result.get("ready", True) and resources["available"]),
+                  stability=classify_stability(config))
+    return result
+
+
+def _prepare(job, *, numerical=False, _resolved=None):
+    spec = _spec(job)
+    config, system = spec.resolve() if _resolved is None else _resolved
     backend_plan = []
     if config["task"] == "nonadiabatic":
         from .workflows.nonadiabatic import prepare_nonadiabatic

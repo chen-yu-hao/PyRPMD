@@ -12,6 +12,8 @@ from ..propagation import loop_options
 from ..walker_exchange import AsyncWalkerStore, make_record
 from .opes import resolve_opes, _distributed_fes_sampler as fes_sampler
 from ..warm_start import initial_ring
+from .biased_sampling import supersede_failure
+from ._walker_failures import walker_failure_path, record_async_checkpoint_failure
 
 MPI_KIND = "PyRPMD.shared-opes.mpi.v1"
 ASYNC_KIND = "PyRPMD.shared-opes.async-walker.v1"
@@ -31,6 +33,7 @@ def _run_async(config, system, output, *, return_data=False):
     restored = (_read_async(config, system, output, walker, cv, options)
                 if checkpoint.exists() else None)
     provider = make_task_potential(config["potential"], system)
+    dynamics = None
     try:
         dynamics = Dynamics(
             provider, system.masses, config["beta"], config["beads"],
@@ -154,6 +157,9 @@ def _run_async(config, system, output, *, return_data=False):
                     save()
             bias.merge_records(exchange.poll().records)
             save()
+        supersede_failure(
+            walker_failure_path(output, "opes", "async-files", walker),
+            checkpoint=checkpoint, elapsed_steps=elapsed)
         if all(_async_path(output, index).exists() for index in range(walkers)):
             streams = [_read_async(config, system, output, index, cv, options)
                        for index in range(walkers)]
@@ -165,6 +171,11 @@ def _run_async(config, system, output, *, return_data=False):
                 "walkers_mode": "async-files", "walker": walker,
                 "checkpoint": str(checkpoint), "converged": False,
                 "physical_converged": False}
+    except Exception as error:
+        record_async_checkpoint_failure(
+            output, "opes", walker, dynamics, cv, error,
+            options=options, checkpoint=checkpoint)
+        raise
     finally:
         if hasattr(provider, "close"):
             provider.close()
