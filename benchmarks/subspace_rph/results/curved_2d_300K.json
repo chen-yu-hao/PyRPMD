@@ -1,0 +1,51 @@
+{
+ "model": "curved_2d",
+ "dimension": 2,
+ "temperature_K": 300.0,
+ "nbeads": 32,
+ "beta": 1052.5834160132904,
+ "rpmd_options": {
+  "windows": 48,
+  "walkers": 32,
+  "burn_in": 200,
+  "sweeps": 800,
+  "trajectories": 1024,
+  "seed": 11
+ },
+ "spacing_2d": null,
+ "truncation_kt": 30.0,
+ "truncation_min": 0.055,
+ "subspace": {
+  "1d": {
+   "shape": [
+    215
+   ],
+   "captured_curvature": null,
+   "retained_points": null,
+   "bath_stable": true,
+   "quantum": {
+    "rate": 5.644295052062162e-09,
+    "method": "sylvester",
+    "seconds": 0.07505345344543457,
+    "retained": 215
+   },
+   "rpmd": {
+    "rate": 4.87429847009996e-09,
+    "log_standard_error": 0.007263751826558,
+    "transmission": 0.991297622771829,
+    "seconds": 36.65967273712158
+   },
+   "C_S": 1.1579707493674287,
+   "log_standard_error": 0.007263751826558
+  }
+ },
+ "path": {
+  "points": 97,
+  "seconds": 0.06220436096191406,
+  "saddle_iterations": 12,
+  "saddle_negative_modes": 1,
+  "imaginary_frequency_cm": 1501.982921339612,
+  "reactant": "asymptote_converged",
+  "product": "asymptote_converged"
+ }
+}

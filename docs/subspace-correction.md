@@ -619,7 +619,8 @@ invariant to the subspace model's absolute rate.
 
 
 The native `[rate.subspace_correction]` table also accepts the path-model
-selectors `curvature = "none" | "small"` and
+selectors `curvature = "none" | "small"`, `model_2d = "rph" | "plane"` (the
+2D model, default `"rph"`) and
 `zero_point = "harmonic" | "rph" | "dvr"`, plus `dvr_points`,
 `dvr_half_width` and `dvr_spacing`. Its `[rate.subspace_correction.path]`
 table accepts `source = "centroid" | "centroid_all" | "bead_weighted" |
