@@ -112,8 +112,11 @@ def postprocess_rate_subspace(config, directory, *, strict=False):
         report = run_subspace_pipeline(specification, apply=options["mode"] == "apply", reuse_key=identity)
         # "invalid_model": the stage ran, but no subspace model passed its
         # validity gates, so there is no factor and no corrected rate.
+        # "capacity_exceeded": likewise, and at least one model was too large
+        # for the exact solver; `capacity` holds its structured plan.
         status.update(status=report.get("status", "complete"), reuse_key=identity,
                       validity=report.get("validity"),
+                      capacity=(report.get("validity") or {}).get("capacity_exceeded") or None,
                       dimensions_computed=report["dimensions_computed"],
                       selected_dimension=report["applied_dimension"],
                       correction_factors={d: c["factor"] for d, c in report["corrections"].items()},

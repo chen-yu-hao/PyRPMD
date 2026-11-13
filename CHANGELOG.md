@@ -5,6 +5,21 @@ not been published as a new wheel release; no release date or DOI is assigned.
 
 ## Unreleased
 
+- Subspace correction (issue #195): the 2D box absorbs products where the path
+  has dropped `product_drop_kt` below its maximum *or* come within
+  `reference_kt` of the product asymptote, whichever is first. A barrier below
+  15 kT (H + H2 on BKMP2 above 322 K) used to send the box to the end of the
+  path continuation, so the grid grew with the path length and exceeded the
+  dense route; boxes where the drop criterion comes first are unchanged. Every
+  model is now planned before solving (`models.D.quantum_plan`: retained
+  points, route, `dense_limit`, estimated dense memory), and a model the exact
+  solver cannot carry fails a new `capacity` gate, is never solved, and leaves
+  `status = "capacity_exceeded"` with `validity.capacity_exceeded`.
+  `exact_quantum_rate` raises `SubspaceCapacityError` (a `ValueError`;
+  `DenseMemoryError` is also a `MemoryError`) with a structured `diagnostic`
+  instead of the generic "need the dense route" error, and
+  `quantum_route_plan` returns the same decision without solving.
+
 - Add `pyrpmd status RUN_DIR` and `--watch` with committed-step counters,
   percentages, stage ETA and stale-heartbeat detection. Runner, resume and
   extension paths atomically publish advisory `progress.json`; only the main

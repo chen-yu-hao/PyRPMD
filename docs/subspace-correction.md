@@ -133,14 +133,15 @@ compatibility and calls the same numerical pipeline.
 ### Validity gates
 
 A positive `k_QM(H_S) / k_RPMD(H_S)` is not yet a correction factor: the ratio
-is only meaningful if `H_S` is a valid model. Three gates are evaluated, and a
-model that fails one is recorded but never applied.
+is only meaningful if `H_S` is a valid model. Three validity gates and one solver-capacity
+check are evaluated, and a model that fails one is recorded but never applied.
 
 | Gate | Passes when | Evidence in `subspace_pipeline.json` |
 | --- | --- | --- |
 | `path` | both continuations ended with `asymptote_converged` | `path.reactant_termination`, `path.product_termination` (status, steps, arc length, trailing energy range) |
 | `bath` | no normal-plane curvature below `-soft_mode_frequency**2` along the 1D path model | `models.1.model_construction.significant_unstable` (arc length, imaginary frequency, character) |
 | `grid` | at most `max_outside_fraction` of the ring-polymer estimator saw `V_S` outside its grid | `corrections.D.rpmd.diagnostics.grid_exit` |
+| `capacity` | the exact solver can carry the model with its options (checked before any rate is solved) | `models.D.quantum_plan`, `validity.capacity_exceeded` |
 
 **Path.** The continuations have no step budget. How far an asymptote lies is a
 property of the potential — an ion–dipole tail needs far more steps than a
@@ -192,6 +193,25 @@ a model whose path or bath gate fails is not solved at all. If no model passes,
 the report has `status = "invalid_model"`, no corrected rate is written (a
 corrected rate left by an earlier run is removed), `status.json` of the native
 stage carries the same status, and `pyrpmd subspace-correct` exits nonzero.
+
+**Capacity.** Every model is planned with the exact solver's own routing rule
+(`pyrpmd.analysis.subspace_quantum.quantum_route_plan`) before anything is solved:
+grid shape, points retained by the energy truncation, route, `dense_limit` and the
+estimated dense peak memory (`models.D.quantum_plan`). The 2D model uses the energy
+truncation, the energy floor and slice normalization, which only the dense Sylvester route
+supports, so it needs `retained_points <= quantum.dense_limit` and, with an execution
+table, the estimated memory within `execution.memory_limit_mb`. A model that does not fit
+fails the `capacity` gate with `dense_limit_exceeded`, `dense_memory_exceeded` or
+`dense_route_required`; it is never solved, whatever `on_invalid` says, and there is no
+`allow` override. The plan lists `required_dense_limit` and the alternatives (raise
+`dense_limit` if the memory is available, lower `truncation_kt` or `refinement`, coarsen
+the spacing). If no model passes and at least one was rejected for capacity, the report
+and `status.json` have `status = "capacity_exceeded"` and `validity.capacity_exceeded`
+holds the plans. Direct calls of `exact_quantum_rate` raise `SubspaceCapacityError`
+(a `ValueError`; `DenseMemoryError` is also a `MemoryError`) carrying the same plan
+in `.diagnostic`, before any dense matrix is built. The dense route needs about
+`192 N²` bytes for `N` retained points (12 GiB at 8000, 25 GiB at 11500), so
+`dense_limit` is a memory decision, not a convergence parameter.
 
 ## One command from a rate run
 
@@ -264,7 +284,10 @@ The command then runs:
    The box only extends to a reference slice where the reactant channel is within
    `reference_kt` (0.3 kT) of its asymptote — `C_S` needs both rates on the same slice,
    not at infinity — and products are absorbed once the path is `product_drop_kt` (15 kT)
-   below its maximum. The default grid is anisotropic: a third of the narrowest
+   below its maximum or within `reference_kt` of the product asymptote, whichever comes
+   first. The second criterion matters when the barrier is below 15 kT (H + H₂ on BKMP2
+   above 322 K): the box then ends where the product channel is nearly free instead of at
+   the end of the path continuation (`models.2.product_absorber_criterion`). The default grid is anisotropic: a third of the narrowest
    in-plane vibrational width along the transfer axis, a quarter of the shortest de
    Broglie wavelength along the path axis.
 6. **Nested sensitivity** `ln(C_2D/C_1D)` selects the dimension, and

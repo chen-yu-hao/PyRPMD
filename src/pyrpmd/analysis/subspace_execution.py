@@ -22,7 +22,7 @@ import time
 import numpy as np
 from threadpoolctl import threadpool_info, threadpool_limits
 
-from .subspace_quantum import QuantumRateResult, _dense_memory_mb, _json_safe, _truncation_threshold, exact_quantum_rate
+from .subspace_quantum import QuantumRateResult, _json_safe, exact_quantum_rate, quantum_route_plan
 from .subspace_rpmd import RingPolymerRateResult, _thermal_frequency, ring_polymer_rate
 
 
@@ -55,12 +55,11 @@ def _options(execution):
 def _memory_mb(kind, model, beta, beads, options):
     size = int(np.prod(model.shape))
     if kind == "quantum":
-        threshold = options.get("truncation_energy")
-        n = size if threshold is None else int(np.count_nonzero(model.values <= _truncation_threshold(model, threshold)))
-        method = options.get("method", "auto")
-        dense = method == "sylvester" or (method == "auto" and n <= options.get("dense_limit", 1600))
-        if dense:
-            return _dense_memory_mb(model, n, options.get("normalization", "default"))
+        # The solver's own routing rule; an infeasible plan fails in the solver
+        # with its structured diagnostic before allocating.
+        plan = quantum_route_plan(model, **options)
+        if plan["route"] == "sylvester":
+            return plan["estimated_dense_memory_mb"]
         states = min(size, options.get("max_flux_states", 256))
         return 64 + (256 * size * states + 64 * sum(n**2 for n in model.shape)) / 2**20
     windows = options.get("windows", 48)

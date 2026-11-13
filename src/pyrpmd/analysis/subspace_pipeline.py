@@ -42,7 +42,7 @@ from .subspace_correction import (CORRECTED_SCHEMA, SubspaceCorrection, correct_
                                   validity_policy)
 from .subspace_model import (_vibrational_complement, assemble_reaction_path, path_curvature,
                              project_linear_subspace, project_path_subspace, relaxed_path)
-from .subspace_quantum import _json_safe, sinc_dvr_kinetic
+from .subspace_quantum import _json_safe, quantum_route_plan, sinc_dvr_kinetic
 
 
 def crossover_temperature(*args, **kwargs):
@@ -640,6 +640,46 @@ def _in_plane_threshold(model, center, direction, *, window=0.05):
     return float(levels[0])
 
 
+def _path_box(arc, energies, k_ts, beta, options):
+    """Reference slice, absorbers and box along the path (arc length, mass weighted).
+
+    C_S needs the quantum and RPMD rates normalized on the same reference
+    slice, so the slice only has to lie where the reactant channel is (nearly)
+    free, not at the asymptote: the first point, going out from the TS, within
+    `reference_kt` of the reactant asymptote.  Absorbers are two de Broglie
+    wavelengths long.  Products are absorbed at the first point beyond the TS
+    that has dropped `product_drop_kt` below the maximum or come within
+    `reference_kt` of the product asymptote, whichever is first.  The second
+    criterion bounds the box when the barrier is lower than `product_drop_kt`
+    -- a thermoneutral reaction above V_barrier/(15 k_B), issue #195 -- where
+    the first alone ran the box to the end of the path continuation, whose
+    length is a numerical setting and not a property of the channel.
+    """
+    arc, energies = np.asarray(arc, dtype=float), np.asarray(energies, dtype=float)
+    tolerance = float(options.get("reference_kt", 0.3)) / beta
+    reactant_side = np.flatnonzero(np.abs(energies[:k_ts] - energies[0]) <= tolerance)
+    k_ref = int(reactant_side[-1]) if len(reactant_side) else 0
+    reference_arc = float(arc[k_ref])
+    thermal_wavelength = 2.0 * np.pi / np.sqrt(2.0 / beta)
+    absorb_lo = reference_arc - 0.25 * thermal_wavelength
+    box_lo = absorb_lo - 2.0 * thermal_wavelength
+    drop = float(options.get("product_drop_kt", 15.0)) / beta
+    top = float(energies[k_ts:].max()) if k_ts < len(energies) else float(energies.max())
+    beyond = np.arange(len(arc)) > k_ts
+    dropped = beyond & (energies < top - drop)
+    asymptotic = beyond & (np.abs(energies - energies[-1]) <= tolerance)
+    product_side = np.flatnonzero(dropped | asymptotic)
+    k_p = int(product_side[0]) if len(product_side) else len(arc) - 1
+    criterion = ("path_end" if not len(product_side) else
+                 "product_drop_kt" if dropped[k_p] else "reference_kt")
+    product_wavelength = 2.0 * np.pi / np.sqrt(2.0 * max(top - energies[-1], 1.0 / beta))
+    absorb_hi = float(arc[k_p])
+    return {"reference_index": k_ref, "reference_arc": reference_arc, "product_index": k_p,
+            "absorber_arc": [float(absorb_lo), absorb_hi],
+            "box_arc": [float(box_lo), float(absorb_hi + 2.0 * product_wavelength)],
+            "product_wavelength": float(product_wavelength), "product_absorber_criterion": criterion}
+
+
 def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
     """2D plane through the TS: rate dividing-surface normal x curvature normal."""
     path_info, validity = options.get("path_info"), dict(options.get("validity") or {})
@@ -675,26 +715,10 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
     surface_arc, _ = _dividing_arc(run, path, arc)
     k_ts = int(np.argmin(abs(arc - surface_arc)))
     beta = run.beta
-    # Box along the path.  C_S needs the quantum and RPMD rates normalized on
-    # the same reference slice, so the slice only has to lie where the
-    # reactant channel is (nearly) free, not at the asymptote: the first
-    # point, going out from the TS, within `reference_kt` of the asymptote.
-    # Absorbers are two de Broglie wavelengths long; products are absorbed
-    # once the path has dropped `product_drop_kt` below its maximum.
-    tolerance = float(options.get("reference_kt", 0.3)) / beta
-    reactant_side = np.flatnonzero(np.abs(energies[:k_ts] - energies[0]) <= tolerance)
-    k_ref = int(reactant_side[-1]) if len(reactant_side) else 0
-    reference_arc = float(arc[k_ref])
-    thermal_wavelength = 2.0 * np.pi / np.sqrt(2.0 / beta)
-    absorb_lo = reference_arc - 0.25 * thermal_wavelength
-    box_lo = absorb_lo - 2.0 * thermal_wavelength
-    drop = float(options.get("product_drop_kt", 15.0)) / beta
-    top = float(energies[k_ts:].max()) if k_ts < len(energies) else float(energies.max())
-    product_side = np.flatnonzero((np.arange(len(arc)) > k_ts) & (energies < top - drop))
-    k_p = int(product_side[0]) if len(product_side) else len(arc) - 1
-    product_wavelength = 2.0 * np.pi / np.sqrt(2.0 * max(top - energies[-1], 1.0 / beta))
-    absorb_hi = float(arc[k_p])
-    box_hi = absorb_hi + 2.0 * product_wavelength
+    box = _path_box(arc, energies, k_ts, beta, options)
+    k_ref, reference_arc = box["reference_index"], box["reference_arc"]
+    (absorb_lo, absorb_hi), (box_lo, box_hi) = box["absorber_arc"], box["box_arc"]
+    product_wavelength, product_criterion = box["product_wavelength"], box["product_absorber_criterion"]
     inside = (arc >= box_lo) & (arc <= box_hi)
     padding = options.get("padding")
     if padding is None:
@@ -778,6 +802,7 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
             "curvature_normal_in_plane_overlap": candidate_overlap,
             "path_off_plane_max": float(residual.max()), "path_off_plane_rms": float(np.sqrt(np.mean(residual**2))),
             "absorber_arc": [float(absorb_lo), float(absorb_hi)], "box_arc": [float(box_lo), float(box_hi)],
+            "product_absorber_criterion": product_criterion,
             "reference_arc": reference_arc, "reactant_reference": float(reference_point[0]),
             "channel_thresholds": thresholds, "energy_floor": floor, "truncation_energy": truncation}
     return model, quantum, info, rpmd_model
@@ -849,6 +874,26 @@ def _prepare_pipeline(options, base, reuse_key):
         raise
 
 
+def _with_capacity_gate(gates, plan):
+    """Add the exact-solver capacity of a model to its validity gates.
+
+    Capacity is not a validity override: an infeasible solve has no
+    ``allow`` policy, because there is no rate to keep for diagnosis.
+    """
+    gates = dict(gates, gates=list(gates["gates"]), failures=list(gates["failures"]))
+    reason = None if plan["feasible"] else f"{plan['code']}: {plan['message']}"
+    gates["gates"].append({"gate": "capacity", "passed": bool(plan["feasible"]), "policy": "reject",
+                           "overridden": False, "reason": reason,
+                           "detail": {k: plan[k] for k in (
+                               "code", "route", "requested_method", "retained_points", "grid_shape",
+                               "dense_limit", "required_dense_limit", "estimated_dense_memory_mb",
+                               "memory_limit_mb", "dense_only_features", "alternatives")}})
+    if reason is not None:
+        gates["failures"].append(reason)
+        gates["valid"] = False
+    return gates
+
+
 def _build_cases(run, out_dir, options, base, reuse_key):
     """Build the path and subspace models and list the corrections still to solve."""
     from ..io import file_sha256
@@ -879,12 +924,28 @@ def _build_cases(run, out_dir, options, base, reuse_key):
     gating = {"path_info": path_info, "validity": validity,
               "hessian_displacement": options["subspace"].get("hessian_displacement", 5e-3)}
 
+    # The task scheduler's per-solve memory budget (a node-wide upper bound
+    # under MPI); the ordinary sequential route has none.
+    budget = None
+    if options.get("execution") is not None:
+        from .subspace_execution import _options as _execution_options
+
+        budget = _execution_options(options["execution"])["memory_limit_mb"]
+
     def admit(dimension, case, info):
-        """Gate a model on what is known before any rate is solved (path, bath)."""
+        """Gate a model on what is known before any rate is solved (path, bath, solver capacity)."""
         gates = validity_gates(case["model"].provenance)
+        # The solver's own routing rule on the model it would solve: a case the
+        # exact solver cannot carry is never started, whatever `on_invalid` says.
+        quantum = dict(case["quantum_options"])
+        if budget is not None:
+            quantum["memory_limit_mb"] = min(budget, quantum.get("memory_limit_mb") or budget)
+        plan = quantum_route_plan(case["model"], **quantum)
+        info["quantum_plan"] = plan
+        gates = _with_capacity_gate(gates, plan)
         info["validity"] = gates
         models[dimension] = info
-        if gates["valid"] or diagnose:
+        if plan["feasible"] and (gates["valid"] or diagnose):
             cases[dimension] = case
         else:
             rejected[dimension] = gates
@@ -1003,15 +1064,24 @@ def _finish_pipeline(state, computed, apply):
     dimension_validity = {str(d): c.validity for d, c in corrections.items()}
     dimension_validity.update({str(d): gates for d, gates in rejected.items()})
     failures = {d: v.get("failures", []) for d, v in dimension_validity.items() if v.get("failures")}
+    # Models the exact solver could not carry, with retained points, limits,
+    # memory and alternatives; never solved, never applied.
+    capacity = {str(d): models[d]["quantum_plan"] for d in sorted(rejected)
+                if isinstance(models.get(d), dict) and not models[d].get("quantum_plan", {}).get("feasible", True)}
+    if chosen is not None:
+        status = "complete"
+    else:
+        status = "capacity_exceeded" if capacity else "invalid_model"
     report = {
         "schema": "pyrpmd.subspace_pipeline", "schema_version": 1,
-        "status": "complete" if chosen is not None else "invalid_model",
+        "status": status,
         "rate_run": str(run.root), "beta": run.beta, "nbeads": nbeads, "xi_star": run.xi_star,
         "path": path_info, "curvature_width_sampled": sampled_cw, "curvature_width_path": static_cw,
         "recommended_dimension_from_curvature_width": verdict, "dimensions_computed": sorted(corrections),
         "dimension_escalation": escalation,
         "validity": {"valid": chosen is not None, "valid_dimensions": sorted(usable),
                      "rejected_before_solving": sorted(rejected), "failures": failures,
+                     "capacity_exceeded": capacity,
                      "dimensions": dimension_validity, "policy": options.get("validity")},
         "models": models,
         # Keep the saved quantum/RPMD curves when reusing a scalar correction
