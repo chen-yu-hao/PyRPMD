@@ -70,6 +70,38 @@ the existing native rate executor and its ordinary backends. The subsequent
 subspace solve runs once on the root rank, using the existing SciPy/NumPy quantum
 and subspace RPMD implementations; this does not claim a new C++/MPI solver.
 
+### CPUs for the stage
+
+The stage uses the CPU allocation the same input already gives the rate run;
+no extra setting is needed:
+
+| Global `[parallel]` | CPUs used by the subspace stage |
+| --- | --- |
+| absent / defaults (1 worker, 1 thread) | 1: the unchanged sequential route |
+| `backend = "serial"` or `"process"` | `trajectory_workers × bead_workers × threads_per_rank` |
+| `backend = "mpi"` | `threads_per_rank` of rank zero, the only rank running the stage |
+
+The count is capped by this process's CPU affinity (for example `taskset`, or a
+Slurm/cgroup CPU set). With more than one CPU the QM and RPMD tasks of each
+dimension run concurrently in separate processes (threads only, under MPI),
+each with OpenMP RPMD threads and at most eight BLAS threads; see
+[Hybrid CPU and MPI execution](#hybrid-cpu-and-mpi-execution) below. The memory budget defaults to 75%
+of the smaller of physical memory and a cgroup v2 limit. Spawned workers get
+`OMP_WAIT_POLICY=PASSIVE` unless it is already set. Optional overrides:
+
+```toml
+[rate.subspace_correction.execution]
+cpus = 16                 # default "auto": derived from [parallel] as above; 1 = sequential
+# workers = 4             # concurrent tasks; default: number of unfinished tasks
+# blas_threads = 8        # default min(8, cpus)
+# memory_limit_mb = 32000 # set explicitly when the job's memory limit is not a cgroup v2 limit
+```
+
+These settings never change factors or the factor-cache identity: native RPMD
+results are independent of the thread count, and a later `--stage subspace` on
+a different allocation reuses completed tasks from `subspace/tasks/`.
+`subspace/status.json` records the budget that was used.
+
 `mode="apply"` computes the factor and multiplies the saved RPMD estimate.
 `mode="factor_only"` computes the same quantum/RPMD ratio without requiring a
 full-system rate estimate or writing a corrected rate. It still needs the saved
