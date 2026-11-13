@@ -5,6 +5,17 @@ not been published as a new wheel release; no release date or DOI is assigned.
 
 ## Unreleased
 
+- Subspace correction: reference slices must also be quantum-free. The
+  quantum and the RPMD rate are normalized by the quantum and the centroid
+  reactant density on the slice; on a slope these differ at O(hbar^2). The
+  slice now needs `beta^2|V''|/12 + beta^3 V'^2/24` below
+  `quantum.reference_density_tolerance` (1e-2) besides the 0.3 kT energy
+  rule. The plane model also takes the free channel that starts at the
+  reactant end instead of the last flat point before the transition state.
+- Subspace correction: `exact_quantum_rate` checks a supplied absorber on
+  the dividing surface instead of against end caps it does not use; the RPH
+  model's channel stays open beyond its box for ring polymers.
+
 - **Compatibility:** the subspace correction now builds its reaction path from
   the minimum-energy path by default (`path.source = "mep"`; previously
   `"centroid"`), and its 2D model is the reaction-path Hamiltonian on that

@@ -358,6 +358,17 @@ The command then runs:
    in-plane vibrational width along the transfer axis, a quarter of the shortest de
    Broglie wavelength along the path axis.
 
+   **Reference slice.** All models normalize both rates per unit length on a reactant
+   reference slice: the quantum rate by the quantum (1D: classical) density, the RPMD rate
+   by the centroid density. These agree only in the free channel. On a slope they differ
+   at order `hbar^2` (Wigner–Kirkwood: `rho_Q/rho_cl = 1 - beta^2 V''/12 + beta^3 V'^2/24`,
+   the centroid density has `-beta^2 V''/24`, unit mass), which does not cancel in `C_S`.
+   The slice is therefore the end of the channel, starting at the reactant end, along
+   which the path potential is within `reference_kt` (0.3 kT) of the reactant end **and**
+   `beta^2 |V''| / 12 + beta^3 V'^2 / 24 <= quantum.reference_density_tolerance` (1e-2, a
+   bound on the relative error it introduces). The energy rule alone put the 300 K slice
+   of the curved-valley test model where this was ~0.15, and `C_S` came out 5% high.
+
    In both 2D models the reactant reference slice is moved onto a node of the DVR grid:
    the quantum rate is normalized on the grid line nearest the reference and the RPMD TI
    starts exactly at the reference, so off a node the two rates were normalized on
