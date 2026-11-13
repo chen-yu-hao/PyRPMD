@@ -11,9 +11,24 @@ from .units import parse_quantity
 
 
 _PRECISION = {
-    "loose": (.10, .02, .02, .05),
-    "normal": (.05, .01, .01, .02),
-    "tight": (.02, .005, .005, .01),
+    "loose": {
+        "target_relative_error": .10, "pmf_relative_error": .02,
+        "kappa_relative_error": .02, "plateau_tolerance": .05,
+        "target_overlap": .02, "min_effective_samples": 10.,
+        "target_coverage": .95,
+    },
+    "normal": {
+        "target_relative_error": .05, "pmf_relative_error": .01,
+        "kappa_relative_error": .01, "plateau_tolerance": .02,
+        "target_overlap": .03, "min_effective_samples": 20.,
+        "target_coverage": .98,
+    },
+    "tight": {
+        "target_relative_error": .02, "pmf_relative_error": .005,
+        "kappa_relative_error": .005, "plateau_tolerance": .01,
+        "target_overlap": .05, "min_effective_samples": 50.,
+        "target_coverage": 1.,
+    },
 }
 
 
@@ -66,8 +81,8 @@ def normalize_auto_rate_input(config, *, original=None):
     if not isinstance(precision, str) or precision not in _PRECISION:
         raise InputError("rate.auto.precision must be loose, normal or tight")
     controls = {"precision": precision}
-    for key, default in zip(("target_relative_error", "pmf_relative_error", "kappa_relative_error"),
-                            _PRECISION[precision][:3]):
+    for key in ("target_relative_error", "pmf_relative_error", "kappa_relative_error"):
+        default = _PRECISION[precision][key]
         target = raw.get(key, default)
         if (isinstance(target, bool) or not isinstance(target, (int, float))
                 or not math.isfinite(target) or not 0 < target < 1):
@@ -170,10 +185,10 @@ def normalize_auto_rate_input(config, *, original=None):
         adaptive[key] = True
     adaptive.setdefault("pilot_steps", _default_steps("200 fs", dt))
     adaptive.setdefault("pilot_equilibration_steps", _default_steps("100 fs", dt))
-    adaptive.setdefault("target_overlap", 0.03)
-    adaptive.setdefault("min_effective_samples", 20.0)
+    adaptive.setdefault("target_overlap", _PRECISION[precision]["target_overlap"])
+    adaptive.setdefault("min_effective_samples", _PRECISION[precision]["min_effective_samples"])
     adaptive.setdefault("min_bin_effective_samples", 5.0)
-    adaptive.setdefault("target_coverage", 1.0)
+    adaptive.setdefault("target_coverage", _PRECISION[precision]["target_coverage"])
     if "coverage_bins" not in adaptive and "coverage_ranges" not in adaptive:
         adaptive.update(coverage_bins=[int(math.ceil(upper / spacing))],
                         coverage_ranges=[[0.0, upper]])
@@ -206,7 +221,7 @@ def normalize_auto_rate_input(config, *, original=None):
     ):
         if key not in recrossing and duration not in recrossing:
             recrossing[key] = _default_steps(default, parent_dt)
-    recrossing.setdefault("plateau_tolerance", _PRECISION[precision][3])
+    recrossing.setdefault("plateau_tolerance", _PRECISION[precision]["plateau_tolerance"])
     recrossing.setdefault("bootstrap", 200)
     _integer(recrossing["bootstrap"], "automatic recrossing.bootstrap", 100)
     reaction = config.setdefault("reaction", {})

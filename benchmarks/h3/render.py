@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 from pathlib import Path
 
@@ -130,8 +131,32 @@ def render(directory):
         )
         figures.append((fig, "fes2d"))
     elif report.get("task") == "drpmd":
-        summary = json.loads(next(directory.rglob("results/summary.json")).read_text())
-        records = summary["records"]
+        summary_path = next(directory.rglob("results/summary.json"))
+        summary = json.loads(summary_path.read_text())
+        records = summary.get("records")
+        if records is None:
+            # Compact dRPMD summaries keep the authoritative per-trajectory
+            # rows in the CSV table instead of duplicating them in JSON.
+            rel = Path(summary.get("trajectory_table", "trajectories.csv"))
+            table = summary_path.parent / rel
+            if not table.is_file():
+                table = summary_path.parent.parent / rel
+            records = []
+            with table.open(newline="", encoding="utf-8") as stream:
+                for row in csv.DictReader(stream):
+                    record = {}
+                    for key, value in row.items():
+                        try:
+                            record[key] = json.loads(value) if value else None
+                        except json.JSONDecodeError:
+                            record[key] = value
+                    for key in ("trajectory_id", "parent_id", "steps"):
+                        if key in record and record[key] is not None:
+                            record[key] = int(record[key])
+                    for key in ("max_energy_drift_per_bead",):
+                        if key in record and record[key] is not None:
+                            record[key] = float(record[key])
+                    records.append(record)
         fig, axes = plt.subplots(1, 3, figsize=(15, 4.3), layout="constrained")
         colors = {
             "product": "#C74B43",

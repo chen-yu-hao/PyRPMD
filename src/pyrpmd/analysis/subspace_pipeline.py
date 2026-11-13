@@ -264,10 +264,11 @@ def _bead_weighted_core(mean, mask, masses):
             # A locally straight section has no curvature sign.  Keep the
             # orientation deterministic and continuous with the previous
             # selected mode when possible.
-            if k and np.dot(vector, shifts[k - 1]) < 0:
-                sign = -1.0
+            if k and np.dot(vector, shifts[k - 1]) != 0:
+                sign = -1.0 if np.dot(vector, shifts[k - 1]) < 0 else 1.0
             else:
-                sign = 1.0
+                dominant = int(np.argmax(np.abs(vector)))
+                sign = -1.0 if vector[dominant] < 0 else 1.0
         shifts[k] = sign * np.sqrt(eigenvalue) * vector
         eigenvalues.append(eigenvalue)
     shifted = (core.reshape(len(core), -1) * sqrt_m[None, :] + shifts) / sqrt_m[None, :]
