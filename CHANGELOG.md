@@ -5,6 +5,19 @@ not been published as a new wheel release; no release date or DOI is assigned.
 
 ## Unreleased
 
+- Subspace correction: a reactant continuation that falls into a
+  pre-reaction complex climbs out of it along decreasing rate coordinate `xi`
+  (hyperplane steps along `-grad xi`, the minima of `V` on the umbrella
+  windows' `xi` surfaces) and ends at `xi = 0`, the rate's own `R_inf`
+  reactant reference (`coordinate_target_reached`, accepted as
+  `reactant_reference`; `path.reactant_xi` moves the target). No long-range
+  model is needed, so neutral and ionic reactions use the same rule. The 1D
+  model's reactant reference slice must lie in the free reactant channel
+  (path potential within `quantum.reference_kt` of the reactant end, as in the
+  2D model): a sloped default slice is moved into the flat channel, and a
+  model without one fails the path gate. Termination records gain `minima` and
+  `exit_coordinate` (issue #191).
+
 - Subspace correction: path continuations stop in a local minimum
   (`minimum_reached`) instead of climbing out of it along the incoming tangent
   (issue #191). Ion–molecule reactions with pre- and post-reaction complexes

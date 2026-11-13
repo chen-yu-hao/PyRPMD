@@ -62,9 +62,11 @@ DEFAULTS = {
     "source": {"rate_run": None},
     # max_steps = None: the continuations run until the asymptote criterion
     # is met.  A finite value is a hard budget whose exhaustion fails the path gate.
+    # reactant_xi: where a reactant continuation that climbs out of a
+    # pre-reaction complex ends (xi = 0 is the rate's R_inf reference).
     "path": {"source": "centroid", "step": 10.0, "max_steps": None, "spread_factor": 2.0,
              "asymptote_tolerance": 1e-6, "asymptote_patience": 50, "smoothing": 1.5,
-             "least_action_points": 9},
+             "least_action_points": 9, "reactant_xi": 0.0},
     # hessian_displacement (bohr) is the largest Cartesian displacement of the
     # lightest atom in the finite-difference normal-plane Hessian.
     "subspace": {"dimension": "auto", "threshold": 0.5, "environment": "adiabatic", "curvature": "none",
@@ -125,6 +127,10 @@ class RateRun:
 
     def xi_gradient(self, x):
         return np.asarray(self.coordinate.centroid_value_gradient(np.asarray(x).reshape(-1, 3))[1]).ravel()
+
+    def xi_value_gradient(self, x):
+        value, derivative = self.coordinate.centroid_value_gradient(np.asarray(x).reshape(-1, 3))[:2]
+        return float(np.asarray(value)), np.asarray(derivative, dtype=float).ravel()
 
 
 def load_rate_run(directory) -> RateRun:
@@ -468,6 +474,9 @@ def build_path(run: RateRun, options: Mapping[str, Any]):
         sampled["least_action"] = details
     # A product continuation may end in a well once it lies as far below the
     # barrier as the quantum box absorbs products (quantum.product_drop_kt).
+    # A reactant continuation that falls into a pre-reaction complex climbs
+    # out along decreasing xi, to the rate's own reactant reference xi = 0
+    # (fragments R_inf apart) unless path.reactant_xi says otherwise.
     drop_kt = options.get("product_drop_kt")
     path, info = assemble_reaction_path(
         core, run.energy, run.gradient, run.cartesian_masses, step=float(options.get("step", 10.0)),
@@ -475,6 +484,8 @@ def build_path(run: RateRun, options: Mapping[str, Any]):
         asymptote_tolerance=float(options.get("asymptote_tolerance", 1e-6)),
         patience=int(options.get("asymptote_patience", 50)),
         product_well_drop=None if drop_kt is None else float(drop_kt) / run.beta,
+        reactant_coordinate=lambda x: run.xi_value_gradient(x),
+        reactant_target=float(options.get("reactant_xi", 0.0)),
     )
     info.update(sampled)
     return mean, mask, path, info
@@ -565,18 +576,26 @@ def path_model(run: RateRun, path, options: Mapping[str, Any], *, path_source: s
     fraction = float(options["absorber_fraction"])
     model_axis = model.axes[0]
     length = model_axis[-1] - model_axis[0]
-    reference = model_axis[0] + (fraction + 0.05) * length
+    # Both rates are normalized per unit length on the reference slice, which
+    # must lie in the free reactant channel.  As for the 2D model this is
+    # judged on the potential along the path: V_S also carries the zero-point
+    # energy of soft fragment rotations, whose noise is of order 0.3 kT at
+    # low temperature.
+    reactant = _reactant_reference(model_axis, np.interp(model_axis, arc, energies), surface,
+                                   fraction * length, 0.05 * length, run.beta,
+                                   float(options.get("reference_kt", 0.3)))
+    reference = reactant["reference"]
     model = type(model)(model.axes, model.values, model.masses, model.dividing_surface, model.reactant,
-                        reference, model.provenance)
+                        reference, dict(model.provenance, reactant_reference=reactant))
     product_cap = _product_cap(model_axis, model.values, surface, fraction * length,
                                float(options.get("product_drop_kt", 15.0)) / run.beta)
     if product_cap["width"] < fraction * length:
         # The product channel ends in a well: absorb from where it is committed.
-        cap_width = [fraction * length, product_cap["width"]]
         product_reference = model_axis[-1] - product_cap["width"]
     else:
-        cap_width = fraction * length
         product_reference = model_axis[-1] - (fraction + 0.05) * length
+    widths = (reactant["width"], product_cap["width"])
+    cap_width = widths[0] if widths[0] == widths[1] else list(widths)
     thresholds = [float(np.interp(reference, model_axis, model.values)),
                   float(np.interp(product_reference, model_axis, model.values))]
     floor = max(thresholds) - float(options["threshold_margin"]) / run.beta
@@ -587,6 +606,39 @@ def path_model(run: RateRun, path, options: Mapping[str, Any], *, path_source: s
             "product_absorber": product_cap,
             "model_construction": dict(model.provenance)}
     return model, quantum, info
+
+
+def _reactant_reference(axis, values, surface, default_width, gap, beta, reference_kt):
+    """Reactant absorber and reference slice of a 1D path model.
+
+    The default absorber covers ``default_width`` from the reactant end and
+    the reference slice lies ``gap`` beyond it.  The slice must be in the
+    free reactant channel: the potential along the path (``values`` on the
+    model axis) there within ``reference_kt`` (in kT) of its value at the
+    reactant end.  If the default slice is not, the slice
+    moves to the last point of the flat channel that starts at the reactant
+    end and the absorber shrinks in front of it (``rule = "free_channel"``).
+    With no flat channel long enough to hold an absorber
+    (``rule = "not_free"``) the default placement is kept and the path gate
+    rejects the model.
+    """
+    values = np.asarray(values, dtype=float)
+    tolerance = float(reference_kt) / float(beta)
+    default = float(axis[0] + default_width + gap)
+
+    def record(reference, width, rule):
+        offset = abs(float(np.interp(reference, axis, values)) - float(values[0]))
+        return {"reference": float(reference), "width": float(width), "rule": rule,
+                "offset_kt": offset * float(beta), "reference_kt": float(reference_kt)}
+
+    if abs(float(np.interp(default, axis, values)) - float(values[0])) <= tolerance:
+        return record(default, default_width, "default")
+    flat = (np.abs(values - values[0]) <= tolerance) & (axis < surface)
+    last = int(np.argmin(flat)) - 1 if not flat.all() else len(axis) - 1
+    width = float(axis[last] - axis[0] - gap) if last >= 0 else 0.0
+    if width >= 4.0 * float(axis[1] - axis[0]):
+        return record(axis[last], width, "free_channel")
+    return record(default, default_width, "not_free")
 
 
 def _product_cap(axis, values, surface, default, drop):

@@ -15,6 +15,7 @@ _FIELDS = {"enabled", "mode", "dimension", "environment", "threshold", "reuse", 
 _VALIDITY = {"unconverged_path", "unstable_bath", "outside_grid", "max_outside_fraction",
              "soft_mode_frequency", "on_invalid"}
 _PATH = {"source", "step", "max_steps", "spread_factor", "asymptote_tolerance", "asymptote_patience", "smoothing",
+         "reactant_xi",
          "least_action_points", "instanton_beads", "instanton_max_iterations", "crossover_temperature"}
 _QUANTUM = {"spacing_1d", "spacing_2d", "refinement", "absorber_fraction", "threshold_margin",
             "truncation_kt", "truncation_min", "padding", "dense_limit", "reference_kt", "product_drop_kt"}
@@ -101,6 +102,11 @@ def rate_subspace_options(config):
             if key == "source":
                 if value not in ("centroid", "bead_weighted", "instanton", "least_action"):
                     raise InputError(f"{name} must be centroid, bead_weighted, instanton or least_action")
+            elif key == "reactant_xi":
+                # Any finite value: 0 is R_inf, negative values lie beyond it.
+                table[key] = finite_real(value, name, allow_strings=False, error_type=InputError)
+                if table[key] >= 1.0:
+                    raise InputError(f"{name} must lie on the reactant side of the transition state (< 1)")
             elif key in minima:
                 table[key] = _integer(value, name, minima[key])
             elif key == "spacing_2d" and isinstance(value, (list, tuple)):

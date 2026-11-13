@@ -138,7 +138,7 @@ model that fails one is recorded but never applied.
 
 | Gate | Passes when | Evidence in `subspace_pipeline.json` |
 | --- | --- | --- |
-| `path` | both continuations ended at an accepted terminus: `asymptote_converged`, or a product well `product_drop_kt` below the barrier | `path.reactant_termination`, `path.product_termination` (status, `accepted`, `reason`, steps, arc length, trailing energy range, end energy, drop below the barrier top) |
+| `path` | both continuations ended at an accepted terminus — `asymptote_converged`, the reactant reference `xi <= reactant_xi` after climbing out of a complex, or a product well `product_drop_kt` below the barrier — and the 1D reactant reference slice lies in the free reactant channel | `path.reactant_termination`, `path.product_termination` (status, `accepted`, `reason`, steps, arc length, trailing energy range, end energy, drop below the barrier top, `minima`, `exit_coordinate`); `reactant_reference` |
 | `bath` | no normal-plane curvature below `-soft_mode_frequency**2` along the 1D path model | `models.1.model_construction.significant_unstable` (arc length, imaginary frequency, character) |
 | `grid` | at most `max_outside_fraction` of the ring-polymer estimator saw `V_S` outside its grid | `corrections.D.rpmd.diagnostics.grid_exit` |
 
@@ -165,10 +165,34 @@ its far side. A minimum is judged per side. On the product side it is accepted
 (`accepted: "product_well"`) when it lies at least `quantum.product_drop_kt`
 (15 kT) below the highest energy on the path: products are committed there,
 which is all the correction needs, and the 1D model then absorbs products only
-inside the committed part of the well (`models.1.product_absorber`). On the
-reactant side it is never accepted: both rates are normalized on a slice of the
-free reactant channel, which lies beyond the complex, so the gate fails with
-the reason `bound pre-reaction complex`.
+inside the committed part of the well (`models.1.product_absorber`).
+
+On the reactant side a minimum is not an end: both rates are normalized on a
+slice of the *free* reactant channel, which lies beyond the complex. The
+reactant continuation records the complex (`minima`) and climbs out of it along
+decreasing rate coordinate `xi`: each point is the minimum of `V` on the
+hyperplane one step further along `-grad xi` (mass-weighted, rigid-body modes
+removed). These are, to first order, the minima of `V` on the `xi = const`
+surfaces of the umbrella windows; `xi` decreases monotonically, so the path
+cannot turn back into the well. It ends with `coordinate_target_reached`
+(`accepted: "reactant_reference"`) at `xi <= path.reactant_xi` — by default
+`xi = 0`, where the fragments are `R_inf` apart, the reactant reference of the
+rate itself — or earlier with `asymptote_converged` if the energy is already
+flat. `xi` is defined for every rate run, so the same rule serves neutral and
+ionic reactions and needs no model of the long-range tail. Called without a
+reaction coordinate (the library API), a reactant continuation that stops in a
+complex still fails the gate with the reason `bound pre-reaction complex`.
+
+The 1D model puts its reactant reference slice `absorber_fraction + 0.05` of
+the path length from the reactant end, behind the reactant absorber. As for the
+2D model, the slice must lie in the free reactant channel: the potential along
+the path there within `quantum.reference_kt` (0.3 kT) of its value at the
+reactant end. (The bare potential is used rather than `V_S`: the zero-point
+energy of soft fragment rotations is noisy at that scale.) If the default slice
+is not free, it moves to the last point of the flat channel that starts at the
+reactant end and the reactant absorber shrinks in front of it
+(`models.1.model_construction.reactant_reference.rule = "free_channel"`); if
+there is no such channel (`"not_free"`), the path gate fails.
 
 **Bath.** A vibrationally adiabatic model needs a bath that is bound in the plane
 normal to the path. A negative normal-plane curvature has no zero-point energy;
@@ -255,9 +279,11 @@ The command then runs:
    of librating light atoms are shorter than the bonds. Every selected core is then continued
    by steepest-descent path following (minimum on a sphere around each point, forward hemisphere, rigid-body modes
    excluded; uphill segments use the hyperplane minimum), with step halving at sharp turns.
-   The continuation runs until the energy is flat over ten step lengths of arc, or stops in
-   a local minimum; there is no step budget, and each end records how it terminated and
-   whether that end is accepted (see [Validity gates](#validity-gates)).
+   The continuation runs until the energy is flat over ten step lengths of arc. A product
+   continuation may stop in a deep post-reaction complex; a reactant continuation climbs out
+   of a pre-reaction complex along decreasing `xi` to `xi = 0`. There is no step budget, and
+   each end records how it terminated and whether that end is accepted (see
+   [Validity gates](#validity-gates)).
 3. **Curvature × width.** From `Sigma(xi)` along the sampled windows
    (`rho = sqrt(2 n^T Sigma n)` along the curvature normal) and, along the whole path, with
    the harmonic bead width of the mode along the normal. Above the threshold (default 0.5)
@@ -545,7 +571,9 @@ selectors `curvature = "none" | "small"` and
 `dvr_half_width` and `dvr_spacing`. Its `[rate.subspace_correction.path]`
 table accepts `source = "centroid" | "bead_weighted" | "instanton" |
 "least_action"` and the corresponding `least_action_points`, `instanton_beads`
-and `instanton_max_iterations` controls. `crossover_temperature`, when supplied
+and `instanton_max_iterations` controls, and `reactant_xi` (default 0, must be
+below 1): the value of `xi` at which a reactant continuation that climbed out of
+a pre-reaction complex ends. `crossover_temperature`, when supplied
 as an instanton fallback, is in kelvin. These choices enter the factor-cache
 identity; changing them requires a new factor calculation. The standalone
 `subspace-correct` entry point uses the same content-based cache checks.

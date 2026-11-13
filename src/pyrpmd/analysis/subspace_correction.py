@@ -85,8 +85,11 @@ def validity_gates(construction: Mapping[str, Any], rpmd_diagnostics: Mapping[st
 
     ``path``   both continuations of an assembled reaction path ended at an
                accepted terminus (``path_termination``, set by the pipeline):
-               an asymptote, or on the product side a well deep enough below
-               the barrier to commit products;
+               an asymptote, the reactant reference ``xi = 0`` after climbing
+               out of a pre-reaction complex, or on the product side a well
+               deep enough below the barrier to commit products; and the
+               reactant reference slice of a 1D model lies in the free
+               reactant channel (``reactant_reference``);
     ``bath``   the normal-plane Hessian of a path projection is stable
                (``bath_stable``);
     ``grid``   the ring-polymer estimator did not sample the constant
@@ -101,14 +104,21 @@ def validity_gates(construction: Mapping[str, Any], rpmd_diagnostics: Mapping[st
     policy = validity_policy(policy if policy is not None else construction.get("validity_policy"))
     gates = []
     termination = construction.get("path_termination")
+    reference = construction.get("reactant_reference")
     if termination is not None:
         ends = {side: dict(termination.get(side) or {}) for side in ("reactant", "product")}
         bad = [f"{side}: {end.get('status', 'no termination record')}"
                + (f" -- {end['reason']}" if end.get("reason") else "")
                for side, end in ends.items() if not end.get("converged")]
+        detail = {side: _path_evidence(end) for side, end in ends.items()}
+        if reference is not None:
+            detail["reactant_reference"] = dict(reference)
+            if reference.get("rule") == "not_free":
+                bad.append(f"reactant reference slice: V lies {reference['offset_kt']:.3g} kT from the "
+                           f"reactant end (limit {reference['reference_kt']:.3g} kT) -- no free reactant channel")
         gates.append(_gate("path", not bad, policy["unconverged_path"],
                            "reaction path did not reach an accepted terminus (" + "; ".join(bad) + ")",
-                           {side: _path_evidence(end) for side, end in ends.items()}))
+                           detail))
     if "bath_stable" in construction and construction.get("environment") != "frozen":
         unstable = list(construction.get("significant_unstable") or [])
         worst = min(unstable, key=lambda r: r["curvature"]) if unstable else None
