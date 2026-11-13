@@ -269,15 +269,20 @@ def project_rph_values(potential: Callable[[np.ndarray], float], development: Pa
                        wall_energy: float) -> np.ndarray:
     """``V_S`` on the developed tensor grid ``axes`` (``indexing='ij'``).
 
-    Points whose nearest path point lies outside ``arc_range`` or farther than
-    ``half_width`` from the path are walls (``wall_energy``); so is any value
-    above it, and a failed or non-finite potential.
+    Points farther than ``half_width`` from the path are walls
+    (``wall_energy``); so is any value above it, and a failed or non-finite
+    potential.  Along the path the channel is never closed: beyond
+    ``arc_range`` (the box) the potential continues on the straight extension
+    of the development.  A wall there would send ring polymers that left
+    through a channel end back across the dividing surface, which the
+    quantum rate, absorbing them first, never sees.  ``arc_range`` only
+    limits where the bath term is interpolated (it is held constant beyond).
     """
     X, Y = np.meshgrid(*[np.asarray(a, dtype=float) for a in axes], indexing="ij")
     points = np.column_stack([X.ravel(), Y.ravel()])
     s, q = development.locate(points)
     values = np.full(len(points), float(wall_energy))
-    inside = (s >= arc_range[0]) & (s <= arc_range[1]) & (np.abs(q) <= half_width)
+    inside = np.abs(q) <= half_width
     configurations = development.configuration(s[inside], q[inside])
     extra = np.interp(s[inside], bath["arc"], bath["energy"])
     computed = np.empty(len(configurations))

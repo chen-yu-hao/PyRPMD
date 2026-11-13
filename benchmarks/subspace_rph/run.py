@@ -96,6 +96,8 @@ def main() -> int:
     parser.add_argument("--trajectories", type=int, default=1024)
     parser.add_argument("--seed", type=int, default=11)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--merge", action="store_true",
+                        help="keep the entries of an existing --out report that are not recomputed")
     args = parser.parse_args()
 
     potential = MODELS[args.model]()
@@ -105,6 +107,11 @@ def main() -> int:
     report = {"model": args.model, "dimension": potential.dimension, "temperature_K": args.temperature,
               "nbeads": args.nbeads, "beta": run.beta, "rpmd_options": rpmd_options, "spacing_2d": args.spacing_2d,
               "truncation_kt": args.truncation_kt, "truncation_min": args.truncation_min, "subspace": {}}
+    if args.merge and args.out.is_file():
+        previous = json.loads(args.out.read_text())
+        report["subspace"].update({k: v for k, v in previous.get("subspace", {}).items() if k not in args.models})
+        if "full" in previous and not args.full:
+            report["full"] = previous["full"]
     t0 = time.time()
     path, info = build_path(run)
     record = info["mep"]
@@ -146,6 +153,9 @@ def main() -> int:
         for entry in report["subspace"].values():
             entry["error_vs_full"] = entry["C_S"] / full["C"] - 1.0
         print("full", full["C"], "+-", full["log_standard_error"], flush=True)
+    if "full" in report:
+        for entry in report["subspace"].values():
+            entry["error_vs_full"] = entry["C_S"] / report["full"]["C"] - 1.0
     args.out.write_text(json.dumps(report, indent=1))
     return 0
 

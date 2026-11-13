@@ -159,3 +159,22 @@ def test_saved_two_dimensional_factors_are_reused_only_for_the_same_model():
     assert pipeline._saved_model_matches_options(saved, 2, {"environment": "adiabatic", "model_2d": "plane"})
     saved.model["construction"]["model_2d"] = "rph"
     assert pipeline._saved_model_matches_options(saved, 2, {"environment": "adiabatic"})
+
+
+def test_the_channel_stays_open_beyond_the_box(curved_2d):
+    """No wall across the channel ends: ring polymers that leave must not bounce back.
+
+    The quantum rate absorbs products before the box ends, so a wall there was
+    invisible to it but sent recrossing ring polymers back across the
+    dividing surface (kappa 0.84 instead of 0.98 on this model).
+    """
+    potential, run, path, info = curved_2d
+    model, quantum, model_info, rpmd_model = rph(run, path, info, spacing_2d=[4.0, 3.0])
+    wall = rpmd_model.values.max()
+    # Along the path, from one end of the grid to the other, nothing reaches the wall.
+    X, Y = np.meshgrid(*rpmd_model.axes, indexing="ij")
+    floor_line = rpmd_model.values.min(axis=1)
+    assert floor_line.max() < 0.5 * wall
+    # Both grid ends are flat channels near the asymptote.
+    assert floor_line[0] == pytest.approx(floor_line[-1], abs=2e-3)
+    assert floor_line[0] < model_info["energy_floor"] + 0.01
