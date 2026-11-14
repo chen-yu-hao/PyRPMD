@@ -55,6 +55,29 @@ def test_mpi_gpu_slots_keep_node_local_contiguous_layout():
     assert result == ["cuda:0"] * 3 + ["cuda:2"] * 3
 
 
+@pytest.mark.parametrize("provider", ["cabi", "native"])
+def test_gpu_cabi_routes_scheduler_device_into_nested_params(provider):
+    plan = execution_plan({"mode": "gpu", "devices": [2], "trajectories_per_gpu": 2})
+    seen = []
+
+    class Provider:
+        def __init__(self, spec):
+            seen.append(spec)
+            self.metadata = {"execution_device": spec["params"]["device"]}
+
+    with patch("pyrpmd.potentials.make_potential",
+               side_effect=lambda spec, system: Provider(spec)):
+        with _context(plan, 1):
+            potential = make_task_potential({
+                "provider": provider,
+                "library": "libpyrpmd_onnx.so",
+                "params": {"model": "model.onnx", "device": "cpu"},
+            }, None)
+
+    assert potential.metadata["execution_device"] == "cuda:2"
+    assert seen[0]["params"]["device"] == "cuda:2"
+
+
 class ParallelTests(unittest.TestCase):
     def test_spawn_tasks_order(self):
         self.assertEqual(

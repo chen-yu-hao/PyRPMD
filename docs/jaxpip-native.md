@@ -33,10 +33,16 @@ float64 能量和负梯度；angstrom/eV 与 bohr/hartree 成套转换；严格�
 这些兼容措施不放宽 float64、动态形状、多 batch 能量/力一致性或有限差分
 验证；任何检查失败时，不会发布待运行的 ONNX 文件。
 
-## 不应由架构图推断为已经实现的功能
+## GPU 与跨轨迹批处理
 
-- 插件接受 `B=K*P`，但现有轨迹调度器不会自动把 K 条轨迹打包成一次推理。
-- OpenMP 测试验证独立 context 的并发正确性，不是新增了一个多轨迹 RPMD 驱动。
+- 插件接受 `B=K*P`，PyRPMD 的合资格工作流可通过
+  `parallel.trajectory_batch_size=K` 将 K 条独立轨迹打包成一次推理。
+- GPU 模式下每个 worker 进程拥有独立的 ONNX Runtime context；同一张卡可以用
+  `trajectories_per_gpu` 运行多个 worker，也可以在每个 worker 内使用
+  `trajectory_batch_size` 合并多条轨迹。
+- 跨轨迹 batch 要求 `bead_workers=1`、固定晶胞和
+  `dynamics.loop_backend="auto"` 或 `"python"`。每条轨迹的积分器、恒温器、随机数流和
+  checkpoint 仍然独立，只有物理 PES 请求合并为 `[K*P,N,3]`。
 - C ABI v1 仍使用 host memory，GPU 路径仍有主机/设备传输；不是全 GPU 积分器。
 - 不包含 OpenVINO、周期性晶胞、virial 或非绝热耦合；也不附送真实化学体系的拟合势能面。
 

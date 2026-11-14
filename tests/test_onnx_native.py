@@ -31,6 +31,8 @@ from pyrpmd.constants import BOHR_ANGSTROM, EV_TO_AU
 from pyrpmd.dynamics import Dynamics, State, native_capabilities
 from pyrpmd.potentials import CABIPotential, PotentialError, check_potential
 from pyrpmd.potentials import cabi
+from pyrpmd.potentials.base import validate_result
+from pyrpmd.trajectory_batch import make_trajectory_potential, run_trajectory_batch
 
 
 def make_model(path, k=0.2, length="angstrom", energy="eV", *, dtype=TensorProto.DOUBLE,
@@ -106,6 +108,27 @@ def test_batch_is_independent_and_not_scaled_by_bead_count(model):
         keep = np.arange(32) != 7
         np.testing.assert_array_equal(got.energy[keep], changed.energy[keep])
         np.testing.assert_array_equal(got.forces[keep], changed.forces[keep])
+
+
+def test_cabi_cross_trajectory_batch_uses_one_shared_frame_batch(model):
+    def worker(task):
+        provider = make_trajectory_potential(task)
+        result = validate_result(provider.evaluate(task["q"]), task["q"].shape)
+        return result.energy.copy(), result.forces.copy()
+
+    tasks = [
+        {"q": data(4), "steps": 1},
+        {"q": data(4) + 0.2, "steps": 1},
+    ]
+    with potential(model) as pes:
+        assert pes.metadata["trajectory_batch_safe"] is True
+        stats = {}
+        values = run_trajectory_batch(worker, tasks, pes, stats=stats)
+        assert stats == {"pes_calls": 1, "pes_frames": 8}
+        for task, (energy, forces) in zip(tasks, values):
+            expected = pes.evaluate(task["q"])
+            np.testing.assert_allclose(energy, expected.energy, rtol=1e-14, atol=1e-14)
+            np.testing.assert_allclose(forces, expected.forces, rtol=1e-14, atol=1e-14)
 
 
 def test_independent_models_and_load_once(tmp_path):

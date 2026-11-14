@@ -81,6 +81,17 @@ def test_torch_probe_checks_requested_device_without_allocating(monkeypatch, dev
     assert report["available"] is available
 
 
+def test_native_gpu_probe_does_not_require_python_torch_or_onnx(monkeypatch):
+    def fail(name):
+        raise AssertionError("unexpected optional import " + name)
+    monkeypatch.setattr(resources.importlib, "import_module", fail)
+    report = resources.resource_report({
+        "potential": {"provider": "cabi", "params": {"device": "cuda:0"}},
+    })
+    assert report["available"] is True
+    assert report["checks"]["native_gpu"]["deferred"] is True
+
+
 def test_validate_valid_but_not_ready_and_prepare_skips_numerical_work(tmp_path, monkeypatch, capsys):
     starter = init_project(tmp_path / "project")
     unavailable = {"available": False, "checks": {"mpi": {"available": False, "hint": "launch with MPI"}}}

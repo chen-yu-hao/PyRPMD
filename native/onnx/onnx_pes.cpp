@@ -176,6 +176,7 @@ struct pyrpmd_pes_context_v1 {
             {"layout","B,N,3:C"}, {"dtype","float64"}, {"position_unit","bohr"},
             {"energy_unit","hartree"}, {"force_unit","hartree/bohr"},
             {"boundary_conditions","nonperiodic"}, {"execution_device",device},
+            {"trajectory_batch_safe",true}, {"batch_independent",true},
             {"thread_safety","context_serial"}, {"model_spec",spec},
             {"capabilities",{{"stateful",false}, {"native_batch",true},
                 {"independent_contexts",true}, {"host_memory",true},

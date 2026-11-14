@@ -632,7 +632,15 @@ def make_task_potential(spec, system):
         ]
         spec["device"] = device
         # Device choice is process-local. It does not modify visible device IDs.
-        if spec.get("provider", spec.get("type")) not in (
+        kind = spec.get("provider", spec.get("type"))
+        if kind in ("cabi", "native"):
+            # C ABI providers receive runtime options through the opaque params
+            # mapping. The scheduler's placement must be authoritative for
+            # JaxPIP/ONNX contexts created by GPU workers.
+            params = dict(spec.get("params", {}))
+            params["device"] = device
+            spec["params"] = params
+        if kind not in (
             "torch",
             "python",
             "ase",
@@ -642,6 +650,7 @@ def make_task_potential(spec, system):
             "fairchem",
             "mace-batched", "nequip-batched", "fairchem-batched", "deepmd-batched", "metatomic",
             "openmm",
+            "cabi", "native",
         ):
             raise ValueError(
                 "GPU execution requires a provider with an actual GPU implementation"
