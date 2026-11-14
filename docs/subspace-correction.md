@@ -406,6 +406,9 @@ The command then runs:
    wavelengths past the product absorber; axis 0 bisects the path direction at the
    reference slice and at the barrier, and the path must advance along it through the box.
    The default spacing is a third of the narrowest width of the `n` mode on both axes.
+   Validated against exact full-dimensional quantum and RPMD rates on 2D, 3D and rotated 8D
+   model potentials ([report](validation/2026-11-13-subspace-rph-2d/README.md)): both 2D
+   models are within 3.3% of the exact correction, the 1D model 4–14% below it.
 
    `"plane"` is the plane through the transition state spanned by the rate dividing-surface
    normal (mass-weighted `grad xi`, so the 2D dividing line is the rate's `xi = 1` surface)
