@@ -458,7 +458,12 @@ def make_named_potential(kind, *, symbols, model=None, device="cpu", params=None
     else:
         raise ValueError(f"unknown named provider {kind!r}")
     try:
-        provider = ModelASEPotential(calculator=calculator, provider=kind, device=device, **common)
+        if kind == "mace":
+            from .mace_derivatives import MACEASEPotential
+            provider_type = MACEASEPotential
+        else:
+            provider_type = ModelASEPotential
+        provider = provider_type(calculator=calculator, provider=kind, device=device, **common)
         if kind == "fairchem" and options["task_name"] != "omol":
             # UMA's nonmolecular tasks use a zero spin embedding, not the
             # molecular singlet multiplicity of one. System identity remains
