@@ -15,14 +15,16 @@ from __future__ import annotations
 import json
 import sys
 import time
+from pathlib import Path
 
 import numpy as np
 from scipy.interpolate import CubicSpline
 
-from greens import barrier_rates, valley_rates
-from instanton import find_instanton, steepest_descent_factor
-from models import family
-from reductions import barrier_frequency, minimum_energy_path, reductions
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from benchmarks.subspace_instanton.greens import barrier_rates, valley_rates  # noqa: E402
+from benchmarks.subspace_instanton.instanton import find_instanton, steepest_descent_factor  # noqa: E402
+from benchmarks.subspace_instanton.models import family  # noqa: E402
+from benchmarks.subspace_instanton.reductions import barrier_frequency, minimum_energy_path, reductions  # noqa: E402
 
 RATIOS = [1.5, 1.25, 1.0, 0.8, 0.65, 0.55, 0.45]
 NAMES = ("mep", "fe", "fe+sct", "bare")

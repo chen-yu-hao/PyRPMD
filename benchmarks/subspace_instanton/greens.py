@@ -19,6 +19,7 @@ package ``subspace_rpmd_code`` supplied for comparison, re-implemented here.
 from __future__ import annotations
 
 import numpy as np
+from scipy.integrate import trapezoid
 
 
 def _lead_self_energy(energies, onsite, t):
@@ -91,7 +92,7 @@ def valley_channels(model, size):
 def thermal_rate(energies, probability, beta, threshold, reactant_partition):
     """``k = (1 / 2 pi) int N(E) exp(-beta (E - threshold)) dE / Q_r`` with ``Q_r`` measured from ``threshold``."""
     weight = probability * np.exp(-beta * (energies - threshold))
-    return float(np.trapezoid(weight, energies) / (2.0 * np.pi) / reactant_partition)
+    return float(trapezoid(weight, x=energies) / (2.0 * np.pi) / reactant_partition)
 
 
 def valley_rates(model, betas, *, size=30, half_length=14.0, ds=0.02, points=600):

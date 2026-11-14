@@ -13,11 +13,13 @@ from __future__ import annotations
 import json
 import sys
 import time
+from pathlib import Path
 
 import numpy as np
 
-from models import family
-from reductions import minimum_energy_path, reductions
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from benchmarks.subspace_instanton.models import family  # noqa: E402
+from benchmarks.subspace_instanton.reductions import minimum_energy_path, reductions  # noqa: E402
 
 from pyrpmd.analysis.subspace_correction import harmonic_bead_factor
 from pyrpmd.analysis.subspace_model import SubspaceModel

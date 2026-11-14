@@ -12,11 +12,13 @@ from __future__ import annotations
 
 import json
 import sys
+from pathlib import Path
 
-from models import family
-from reductions import minimum_energy_path, reductions
-from run_qm import tabulated_instanton
-from instanton import steepest_descent_factor
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from benchmarks.subspace_instanton.instanton import steepest_descent_factor  # noqa: E402
+from benchmarks.subspace_instanton.models import family  # noqa: E402
+from benchmarks.subspace_instanton.reductions import minimum_energy_path, reductions  # noqa: E402
+from benchmarks.subspace_instanton.run_qm import tabulated_instanton  # noqa: E402
 
 SKELETON = {"mep": "mep", "fe": "mep", "fe+sct": "mep+sct", "bare": "bare"}
 
