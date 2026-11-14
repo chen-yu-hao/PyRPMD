@@ -24,6 +24,9 @@ C++ propagation blocks. No change to PyRPMD's integrator mathematics is needed.
 - ABI v1 is host-memory, fixed-composition, nonperiodic, single-surface. CUDA
   still transfers coordinates/results between host and device each call. This
   is **not** a GPU-resident integrator or a device-pointer/zero-copy ABI.
+- The exported model is frame-independent and accepts cross-trajectory batches.
+  With `P` beads and `K` independent trajectories, PyRPMD can submit one
+  `[K*P,N,3]` request through the same context.
 
 ## Build separately from PyRPMD
 
@@ -118,21 +121,42 @@ counts, config, dtype or model metadata fail explicitly. Nonfinite outputs
 produce failed frame status and NaN data; they are not replaced by zero forces.
 A nonzero global return invalidates the entire batch, as required by ABI v1.
 
-## Batching and concurrency: implemented versus future work
+## Batching and concurrency
 
 `B=P` evaluates all beads of one trajectory at once. The PES also accepts
-`B=K*P` when a caller supplies K independent trajectories. **This PR does not
-add a cross-trajectory integrator/scheduler that packs K trajectories for you.**
-The existing workflow trajectory/process scheduling and native integrators are
-reused, including their existing OpenMP kernels.
+`B=K*P` for K independent trajectories. Eligible PyRPMD workflows can request
+that packing with:
+
+```toml
+[parallel]
+backend = "process"
+mode = "gpu"
+devices = [0]
+trajectories_per_gpu = 1
+trajectory_batch_size = 8
+bead_workers = 1
+
+[dynamics]
+loop_backend = "auto"
+```
+
+Each worker keeps its own ORT context and trajectory states; the live scalar
+workers rendezvous their physical force requests and the provider receives one
+`[K*P,N,3]` call. Per-trajectory clocks, random streams, checkpoints and
+failure status remain independent. `trajectory_batch_size > 1` uses the Python
+orchestration layer, so a forced `loop_backend="native"` is incompatible with
+this option. The free-ring substeps can still use the compiled kernel when the
+workflow selects it through `loop_backend="auto"`.
 
 Each C++ context has its own ORT session, reusable buffers and mutex. Separate
 contexts can run concurrently from a native/OpenMP caller; same-context calls
 serialize. `context_test.cpp` checks that property using two models, eight
-contexts and four OpenMP threads. It is a PES concurrency test, **not** a new
-OpenMP multi-trajectory RPMD driver. The existing Python CABIPotential lock
-remains conservative and serializes one shared library within each process.
-Context destruction must not race evaluation, as specified by ABI v1.
+contexts and four OpenMP threads. PyRPMD's trajectory batch layer deliberately
+uses one provider call per rendezvous, so the context mutex does not serialize
+the individual trajectories inside that batch. Multiple processes per GPU are
+also supported through `trajectories_per_gpu`; each process has its own model
+and context, so GPU memory scales with that setting. Context destruction must
+not race evaluation, as specified by ABI v1.
 
 ## Validation
 

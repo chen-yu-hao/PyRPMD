@@ -85,6 +85,26 @@ def _torch(devices):
     return report
 
 
+def _native_gpu(devices):
+    """Describe native GPU availability without importing a Python ORT wheel.
+
+    The native ONNX provider is loaded by the C ABI library and may be built
+    against a different ONNX Runtime installation than Python.  Resource
+    probing therefore cannot validate its CUDA execution provider without
+    constructing the user's native PES; that check remains explicit during
+    provider initialization.
+    """
+    return {
+        "available": True,
+        "devices": list(devices),
+        "deferred": True,
+        "hint": (
+            "The native provider will validate its CUDA/ONNX Runtime SDK "
+            "when the PES context is created."
+        ),
+    }
+
+
 def resource_report(config):
     """Check selected resources without constructing a potential or launching MPI."""
     from .parallel import execution_plan
@@ -97,14 +117,27 @@ def resource_report(config):
         checks["plumed"] = _plumed(config)
     sampling, potential = config.get("sampling", {}), config.get("potential", {})
     provider = potential.get("provider", potential.get("type", ""))
-    if (sampling.get("engine") == "torch" or provider in ("torch", "mace", "nequip", "fairchem")
-            or str(provider).endswith("-batched") or str(potential.get("device", "")).startswith("cuda")
-            or parallel.get("mode") == "gpu"):
+    params = potential.get("params", {}) if isinstance(potential, dict) else {}
+    native_gpu = provider in ("cabi", "native") and (
+        parallel.get("mode") == "gpu"
+        or str(potential.get("device", "")).startswith("cuda")
+        or isinstance(params, dict) and str(params.get("device", "")).startswith("cuda")
+    )
+    torch_gpu = (
+        sampling.get("engine") == "torch"
+        or provider in ("torch", "mace", "nequip", "fairchem")
+        or str(provider).endswith("-batched")
+        or str(potential.get("device", "")).startswith("cuda")
+        or parallel.get("mode") == "gpu"
+    ) and not native_gpu
+    if native_gpu or torch_gpu:
         devices = [sampling.get("device", potential.get("device", "cpu"))]
         if parallel.get("mode") == "gpu":
             devices = [str(value) if str(value).startswith("cuda") else f"cuda:{value}"
                        for value in parallel.get("devices", [0])]
-        checks["torch"] = _torch(devices)
+        checks["native_gpu" if native_gpu else "torch"] = (
+            _native_gpu(devices) if native_gpu else _torch(devices)
+        )
     return {"available": all(item["available"] for item in checks.values()), "checks": checks}
 
 

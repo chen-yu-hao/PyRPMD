@@ -5,6 +5,12 @@ not been published as a new wheel release; no release date or DOI is assigned.
 
 ## Unreleased
 
+- JaxPIP/ONNX GPU execution now participates in PyRPMD GPU placement and
+  cross-trajectory batching. Native C ABI workers route their assigned CUDA
+  device into the ONNX context, and eligible workflows can combine K
+  trajectories into one `[K*P,N,3]` force request while retaining independent
+  clocks, RNG streams and checkpoints.
+
 - Subspace correction: reference slices must also be quantum-free. The
   quantum and the RPMD rate are normalized by the quantum and the centroid
   reactant density on the slice; on a slope these differ at O(hbar^2). The
