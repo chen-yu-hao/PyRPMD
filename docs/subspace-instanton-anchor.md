@@ -211,12 +211,12 @@ exact; `results/qm.json`, `results/skeleton.json`):
 | | 0.55 | −0.655 | +0.059 | −1.489 | −3.96 | 0.481 | +0.008 | −0.136 | −0.198 |
 
 - The free-energy model reproduces the exact rate to 2% for M1 and 6% for the slow bath M4,
-  but is 18–35% low on the curved paths M2 and M3, where the transverse frequency is only 1.5
-  times the barrier frequency.
-- The SCT mass overshoots by a factor 2 to 4 on every curved model: its adiabatic assumption
-  does not hold at these frequency ratios.
+  but is 17–29% low on the curved paths M2 and M3 (transverse frequency 1.1 to 1.8 times the
+  barrier frequency).
+- The SCT mass overshoots the rate by a factor of about 2 at $0.8\,T_c$ and 4 at $0.55\,T_c$ on
+  every curved model: its adiabatic assumption does not hold at these frequency ratios.
 - The skeleton on the minimum-energy path has the steepest-descent factor of the full system
-  to 0.03 or better on all four models; the SCT and bare-mass skeletons do not, mostly because
+  to 0.04 or better on all four models at every temperature computed; the SCT and bare-mass skeletons do not, mostly because
   their crossover temperatures differ from that of $H$.
 
 **Not yet tested** (RPMD runs in progress): the exact $\varepsilon(H)$ of M1–M4 and with it
