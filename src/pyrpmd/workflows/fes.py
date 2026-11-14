@@ -1079,6 +1079,7 @@ def reanalyze_fes(config, system, output, return_data=False, *, _postprocess=Non
                 "samples": saved["values"], "energies": saved["energies"],
                 "last_q": saved["state"].q, "last_p": saved["state"].p,
                 "checkpoint": str(_window_checkpoint(task)),
+                "propagation": dict(saved["propagation"] or {}),
             })
         return _analyze_streams(streams, config, system, str(output), return_data, _postprocess)
 
