@@ -16,6 +16,8 @@ EXPECTED_NOTEBOOKS = (
     "02_reaction_rate.ipynb",
     "03_solid_state_materials.ipynb",
     "04_gpu_acceleration.ipynb",
+    "05_jaxpip_cpp_cpu.ipynb",
+    "06_jaxpip_jax_gpu.ipynb",
 )
 
 
@@ -54,6 +56,13 @@ def test_notebook_index_and_schema():
 def test_notebook_executes_end_to_end(name: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     if name == "04_gpu_acceleration.ipynb":
         pytest.importorskip("torch")
+    if name == "05_jaxpip_cpp_cpu.ipynb":
+        pytest.importorskip("fcntl", reason="JaxPIP dataset/export locks require POSIX fcntl")
+        for pkg in ("jax", "equinox", "jaxpip", "jax2onnx", "onnx", "onnxruntime"):
+            pytest.importorskip(pkg)
+    if name == "06_jaxpip_jax_gpu.ipynb":
+        for pkg in ("jax", "equinox", "jaxpip", "torch"):
+            pytest.importorskip(pkg)
     if name == "01_pes_potentials.ipynb":
         cc = shutil.which("cc") or shutil.which("gcc") or shutil.which("clang")
         if cc is None:
