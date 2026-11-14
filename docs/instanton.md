@@ -122,6 +122,33 @@ rate postprocessor. This caches the final action Hessian without additional PES
 calls and leaves the path diagnostic JSON unchanged; see
 [Hessian reuse](low-temperature.md#multidimensional-thermal-instanton-rate).
 
+### Steepest-descent RPMD defect
+
+Below the crossover temperature the RPMD rate and the instanton rate differ, to
+steepest-descent order, only in the factor of the unstable mode
+(Richardson and Althorpe, J. Chem. Phys. 131, 214106 (2009)):
+
+```python
+from pyrpmd.instanton import steepest_descent_rpmd_defect
+
+defect = steepest_descent_rpmd_defect(orbit)
+defect["log_defect"]             # ln[2 pi / (beta hbar eta_1)]
+defect["unstable_frequency_au"]  # eta_1
+```
+
+`-eta_1^2` is the negative eigenvalue of the mass-weighted Hessian of the
+ring-polymer potential at the orbit; it is read from `orbit.hessian_eigenvalues`,
+so no further PES call is made. `eta_1` equals the barrier frequency at the
+crossover, where the factor is one, and lies below the first Matsubara frequency
+`2 pi / (beta hbar)` under it. The orbit must be converged with exactly one
+negative mode; anything else raises `InstantonError`.
+
+`log_defect` is the leading part of `ln(k_QM / k_RPMD)` and not the whole of it:
+anharmonic fluctuations about the instanton, and the entire difference above the
+crossover, are missing. It is a diagnostic of how far an RPMD rate lies from the
+quantum rate and of what a [subspace correction](subspace-instanton-anchor.md)
+has to carry; it is not applied to any rate by PyRPMD.
+
 ### Hessian providers and optimizer choice
 
 A potential may additionally implement:

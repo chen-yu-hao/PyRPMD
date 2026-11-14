@@ -6,7 +6,7 @@ import pytest
 from pyrpmd.constants import ATOMIC_TIME_S, BOHR_M, KB_AU
 from pyrpmd.instanton import (
     InstantonError, RingPolymerAction, crossover_temperature, instanton_rate_1d,
-    instanton_seed, optimize_instanton,
+    instanton_seed, optimize_instanton, steepest_descent_rpmd_defect,
 )
 from pyrpmd.potentials.base import PESResult, Potential
 from pyrpmd.potentials.builtin import HarmonicPotential
@@ -155,6 +155,87 @@ def test_multidimensional_path_preserves_separable_action_but_is_not_a_rate():
     assert result.action_hbar == pytest.approx(expected.action_hbar, abs=1e-10)
     assert result.to_dict()["scope"] == "stationary_action_path_not_a_multidimensional_rate"
     assert "rate" not in result.to_dict()
+
+
+def ring_polymer_unstable_frequency(pes, mass, temperature, path):
+    """Lowest mode of the mass-weighted ring-polymer potential Hessian, assembled bead by bead."""
+    nbeads = len(path)
+    omega_n = nbeads * KB_AU * temperature
+    step = 1e-4
+    shifted = lambda d: pes.evaluate(path + np.array([[[d, 0.0, 0.0]]])).forces[:, 0, 0]
+    curvature = -(shifted(step) - shifted(-step)) / (2 * step) / mass
+    hessian = np.diag(curvature + 2 * omega_n**2)
+    index = np.arange(nbeads)
+    hessian[index, (index + 1) % nbeads] -= omega_n**2
+    hessian[index, (index - 1) % nbeads] -= omega_n**2
+    return np.sqrt(-np.linalg.eigvalsh(hessian)[0])
+
+
+def test_steepest_descent_rpmd_defect_is_the_unstable_ring_polymer_mode():
+    pes, temperature, q = eckart_setup(64, ratio=0.8)
+    result = optimize_instanton(pes, MASS, temperature, q, active_mask=MASK, transition_state=TS)
+    defect = steepest_descent_rpmd_defect(result)
+    beta = 1 / (KB_AU * temperature)
+    eta = ring_polymer_unstable_frequency(pes, MASS[0], temperature, result.path_bohr)
+    assert defect["unstable_frequency_au"] == pytest.approx(eta, rel=1e-6)
+    assert defect["matsubara_frequency_au"] == pytest.approx(2 * np.pi / beta)
+    assert defect["log_defect"] == pytest.approx(np.log(2 * np.pi / (beta * eta)), abs=1e-6)
+    assert defect["defect"] == pytest.approx(np.exp(defect["log_defect"]))
+    assert defect["nbeads"] == 64 and defect["temperature_kelvin"] == temperature
+    assert defect["scope"] == "steepest_descent_part_of_ln_k_qm_over_k_rpmd"
+
+
+def test_steepest_descent_rpmd_defect_vanishes_at_the_crossover_and_grows_below_it():
+    """eta_1 leaves the barrier frequency at T_c; 0.2110 and 0.5179 are the values of an
+    independent Newton solver for the symmetric Eckart barrier (benchmarks/subspace_instanton)."""
+    values = []
+    for ratio in (0.99, 0.9, 0.8, 0.55):
+        pes, temperature, q = eckart_setup(128, ratio=ratio)
+        if ratio == 0.99:                                    # a small orbit needs a small seed
+            q = instanton_seed(TS, [[1.0, 0.0, 0.0]], 128, 0.3)
+        result = optimize_instanton(pes, MASS, temperature, q, active_mask=MASK, transition_state=TS)
+        values.append(steepest_descent_rpmd_defect(result))
+    barrier = Eckart().a * np.sqrt(2 * Eckart().height / MASS[0])
+    assert values[0]["unstable_frequency_au"] == pytest.approx(barrier, rel=0.04)
+    assert 0 < values[0]["log_defect"] < 0.02
+    logs = [value["log_defect"] for value in values]
+    assert logs[0] < logs[1] < logs[2] < logs[3]
+    assert logs[2] == pytest.approx(0.2110, abs=3e-4)
+    assert logs[3] == pytest.approx(0.5179, abs=3e-4)
+
+
+def test_steepest_descent_rpmd_defect_depends_on_beta_hbar_omega_only():
+    """Height, width and mass of a symmetric Eckart barrier scale out at fixed T / T_c."""
+    reference = None
+    for height, inverse_width, mass in ((0.01, 0.5, 1822.0), (0.03, 0.8, 3644.0), (0.004, 0.3, 918.0)):
+        pes = Eckart(height=height, inverse_width=inverse_width)
+        masses = np.array([mass])
+        temperature = 0.7 * inverse_width * np.sqrt(2 * height / mass) / (2 * np.pi * KB_AU)
+        seed = instanton_seed(TS, [[1.0, 0.0, 0.0]], 64, 1.25 / inverse_width)
+        result = optimize_instanton(pes, masses, temperature, seed, active_mask=MASK, transition_state=TS)
+        value = steepest_descent_rpmd_defect(result)["log_defect"]
+        reference = value if reference is None else reference
+        assert value == pytest.approx(reference, abs=1e-7)
+
+
+def test_steepest_descent_rpmd_defect_ignores_a_separable_bath_and_rejects_bad_orbits():
+    class EckartWithBath(Eckart):
+        def evaluate(self, q):
+            value = super().evaluate(q)
+            value.energy += 0.005 * q[:, 0, 1]**2
+            value.forces[:, 0, 1] = -0.01 * q[:, 0, 1]
+            return value
+    pes, temperature, q = eckart_setup(32)
+    bare = optimize_instanton(pes, MASS, temperature, q, active_mask=MASK)
+    bath = optimize_instanton(EckartWithBath(), MASS, temperature, q, active_mask=np.array([[True, True, False]]))
+    assert steepest_descent_rpmd_defect(bath)["log_defect"] == pytest.approx(
+        steepest_descent_rpmd_defect(bare)["log_defect"], abs=1e-8)
+    failed = optimize_instanton(pes, MASS, temperature, q, active_mask=MASK, max_iterations=1,
+                                raise_on_failure=False)
+    with pytest.raises(InstantonError, match="converged instanton"):
+        steepest_descent_rpmd_defect(failed)
+    with pytest.raises(TypeError, match="InstantonResult"):
+        steepest_descent_rpmd_defect(bare.to_dict())
 
 
 def test_one_dimensional_rate_matches_analytic_instanton_prefactor():

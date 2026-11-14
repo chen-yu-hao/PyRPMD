@@ -631,6 +631,47 @@ def optimize_instanton(potential, masses, temperature_kelvin, initial_path, *,
     return result
 
 
+def steepest_descent_rpmd_defect(result):
+    """Steepest-descent ratio of the instanton rate to the RPMD rate.
+
+    Below the crossover temperature both rates can be evaluated by steepest
+    descent about the instanton.  Every factor is common to the two except
+    that of the unstable mode (Richardson & Althorpe, JCP 131, 214106), so
+
+        k_instanton / k_RPMD = 2 pi / (beta hbar eta_1),
+
+    where ``-eta_1^2`` is the negative eigenvalue of the mass-weighted Hessian
+    of the ring-polymer potential at the instanton.  ``eta_1`` reaches the
+    barrier frequency at the crossover, where the ratio is one, and falls
+    below the first Matsubara frequency ``2 pi / (beta hbar)`` under it.
+
+    ``result`` is a converged :class:`InstantonResult` with one negative mode;
+    its ``hessian_eigenvalues`` belong to the mass-weighted action Hessian,
+    which is ``beta / P`` times that of the ring-polymer potential.  The
+    returned ``log_defect`` is the leading part of ``ln(k_QM / k_RPMD)`` only:
+    anharmonic fluctuations about the instanton, and everything above the
+    crossover, are not in it (docs/subspace-instanton-anchor.md).  It is a
+    diagnostic of the RPMD rate, not a correction to apply on its own.
+    """
+    if not isinstance(result, InstantonResult):
+        raise TypeError("result must be an InstantonResult")
+    if not result.converged or result.negative_modes != 1:
+        raise InstantonError("the steepest-descent RPMD defect requires a converged instanton "
+                             "with exactly one negative mode")
+    lowest = float(result.hessian_eigenvalues[0])
+    if not lowest < 0:
+        raise InstantonError("the lowest action-Hessian eigenvalue is not negative")
+    beta = 1.0 / (KB_AU * result.temperature_kelvin)
+    nbeads = len(result.path_bohr)
+    unstable = math.sqrt(-lowest * nbeads / beta)
+    matsubara = 2 * math.pi / beta
+    log_defect = math.log(matsubara / unstable)
+    return {"unstable_frequency_au": unstable, "matsubara_frequency_au": matsubara,
+            "log_defect": log_defect, "defect": math.exp(log_defect), "nbeads": nbeads,
+            "temperature_kelvin": float(result.temperature_kelvin),
+            "scope": "steepest_descent_part_of_ln_k_qm_over_k_rpmd"}
+
+
 def instanton_rate_1d(potential, masses, temperature_kelvin, initial_path, *,
                      active_mask, reactant_partition, normalization="dimensionless",
                      beta_relative_step=0.01, **optimizer_options):
