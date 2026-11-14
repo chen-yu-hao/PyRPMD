@@ -11,6 +11,10 @@ potentials on a uniform grid that tend to zero at both ends:
 ``fe+sct``     the same on the small-curvature coordinate ``d tau = sqrt(mu_eff) d sigma``;
 ``bare``       ``V0 sech^2(s/a)`` with the bare mass along ``s``: the bath relaxed
                statically and given no inertia.
+
+Every reduction has a *skeleton*: the same path and mass with the bare
+potential, i.e. without the transverse free energy.  ``mep`` is the skeleton
+of ``fe``, ``mep+sct`` that of ``fe+sct``, and ``bare`` is its own.
 """
 
 from __future__ import annotations
@@ -32,11 +36,18 @@ def minimum_energy_path(model, *, s_max=13.0, spacing=0.01, start=1e-3):
     reached.terminal = True
     solution = solve_ivp(direction, [0.0, 80.0], saddle + start * mode, method="LSODA", rtol=1e-10, atol=1e-12,
                          events=reached, dense_output=True, max_step=0.05)
-    sigma = np.arange(0.0, solution.t[-1], spacing)
-    points = np.vstack([saddle, solution.sol(sigma).T])
-    sigma = np.concatenate([[0.0], sigma + start])
-    # Mirror through the saddle so that derivatives at sigma = 0 are two-sided.
-    mirrored = 2.0 * saddle - points[:0:-1]
+    # Uniform arc-length grid that contains the saddle (the integration starts ``start``
+    # along the unstable mode): an uneven first interval makes the spline curvature ring.
+    sigma = np.arange(spacing, solution.t[-1] + start, spacing)
+    points = np.vstack([saddle, solution.sol(sigma - start).T])
+    sigma = np.concatenate([[0.0], sigma])
+    # Continue through the saddle by the symmetry of the model, so that derivatives at
+    # sigma = 0 are two-sided: V(-s, Q) = V(s, Q) for an even valley floor (a mirror),
+    # V(-s, -Q) = V(s, Q) for the odd "tanh" floor (an inversion through the saddle).
+    if model.bend == "tanh":
+        mirrored = 2.0 * saddle - points[:0:-1]
+    else:
+        mirrored = points[:0:-1] * np.array([-1.0, 1.0])
     spline = CubicSpline(np.concatenate([-sigma[:0:-1], sigma]), np.vstack([mirrored, points]))
     tangent = spline(sigma, 1)
     tangent /= np.linalg.norm(tangent, axis=1, keepdims=True)
@@ -69,6 +80,8 @@ def reductions(model, beta, path=None):
     mass = np.minimum(1.0, np.exp(-2.0 * a_bar - a_bar**2 + np.gradient(width, sigma) ** 2))
     tau = np.concatenate([[0.0], np.cumsum(0.5 * (np.sqrt(mass[1:]) + np.sqrt(mass[:-1])) * np.diff(sigma))])
     out["fe+sct"] = _symmetric_grid(tau, free)
+    # Skeleton of "fe+sct": the same coordinate with the bare potential (see run_skeleton.py).
+    out["mep+sct"] = _symmetric_grid(tau, energy - energy[-1])
     x = np.arange(-18.0, 18.005, 0.01)
     out["bare"] = (x, model.barrier(x))
     return out, mass

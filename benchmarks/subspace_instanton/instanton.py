@@ -69,7 +69,9 @@ def find_instanton(gradient, hessian, saddle, mode, barrier_frequency, beta, *, 
     if spread < 1e-3:
         return None
     values = np.linalg.eigvalsh(ring_hessian(hessian, x, omega_n))
-    return {"x": x, "eta1": float(np.sqrt(-values[0])), "negative_modes": int(np.sum(values < -1e-8)),
+    # The cyclic-permutation mode is exactly zero only for an analytic potential and many
+    # beads; on a tabulated potential it is tiny and of either sign, so it is not counted.
+    return {"x": x, "eta1": float(np.sqrt(-values[0])), "negative_modes": int(np.sum(values < -1e-4 * abs(values[0]))),
             "zero_mode": float(values[1]), "spread": spread, "converged": converged,
             "gradient_max": float(np.abs(g).max()), "nbeads": int(nbeads), "beta": float(beta)}
 

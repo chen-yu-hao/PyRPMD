@@ -12,6 +12,10 @@ of the full-dimensional instanton that needs neither a reaction path nor samplin
 that into a correction that is right to leading order for any subspace. The tests are in
 `benchmarks/subspace_instanton`. Nothing here marks a rate as physically converged.
 
+> **Status: draft.** The steepest-descent factor is checked against independent rates
+> (below). The anchored corrections are predictions; their RPMD tests on the valley models are
+> still running and are not reported here. See [Status of the tests](#status-of-the-tests).
+
 Units: $\hbar=1$ and mass-weighted coordinates unless a formula shows them.
 
 ## Two regimes of the RPMD defect
@@ -86,26 +90,46 @@ through the instanton itself.
 For a subspace model $H_S$ with its own instanton,
 
 $$
-\Delta=\underbrace{A_H-A_S}_{\Delta_{\mathrm{SD}}}+\,(R_H-R_S),\qquad
-\Delta_{\mathrm{SD}}=\ln\frac{\eta_1^{S}}{\eta_1^{H}}\quad(T<T_c\text{ of both}).
+\Delta=(A_H-A_S)+(R_H-R_S),\qquad A_H-A_S=\ln\frac{\eta_1^{S}}{\eta_1^{H}}\quad(T<T_c\text{ of both}).
 $$
 
-$\Delta_{\mathrm{SD}}$ is computable before any rate is solved. It is a prediction of the
-transfer error, and removing it gives the **instanton-anchored correction**
+The first term is computable before any rate is solved. Removing it would give a correction
+that is right to steepest-descent order for any subspace. But which instanton of $H_S$ has to
+be compared with that of $H$ needs care.
+
+**Dressing and skeleton.** $A_H$ belongs to the saddle of the *bare* ring-polymer potential.
+A transverse zero-point or free energy is not in that saddle: it enters both rates through
+fluctuation factors, which cancel in $\varepsilon_{\mathrm{SD}}$. A reduction that adds the
+transverse free energy $F_E(s)$ to its potential (`fe`, the adiabatic projection) moves its own
+instanton by that term, so $A_H-A_S$ then contains a first-order effect of the frequency
+coupling. The [first-order coupling theorem](subspace-transfer-theory.md) says the opposite:
+the free-energy projection transfers exactly to first order, for the quantum and the RPMD rate
+alike. Model M1 shows the conflict in its purest form: the transverse mode decouples from the
+instanton at quadratic order, $A_H$ is exactly that of the bare barrier, and
+$A_H-A_{\texttt{fe}}=+0.07$ to $+0.08$ below $T_c$ although the theorem predicts no first-order
+transfer error. The steepest-descent expansion treats $F_E\propto\hbar$ as a higher-order term; a
+zero-point change of several $k_BT$ is not small in that sense.
+
+The consistent comparison is therefore with the **skeleton** $S^0$ of the reduction: the same
+path and mass with the bare potential, without the transverse free energy. This gives two
+candidate corrections,
 
 $$
-\boxed{\;\ln C_{\mathrm{anch}}=\ln C_S+A_H(\beta)-A_S(\beta)\;}
+\ln C_{\mathrm{anch}}^{\mathrm{skel}}=\ln C_S+A_H-A_{S^0},\qquad
+\ln C_{\mathrm{anch}}^{\mathrm{naive}}=\ln C_S+A_H-A_{S},
 $$
 
-- If $H_S$ is exact, $A_S=A_H$ and nothing changes.
-- Below both crossovers $C_{\mathrm{anch}}$ is correct to steepest-descent order **for any
-  subspace**, including one whose path, mass or bath treatment is wrong. The subspace then only
-  has to transfer the remainder, $R_S\approx R_H$.
-- Above both crossovers $A_H=A_S=0$ and $C_{\mathrm{anch}}=C_S$.
-- If the two crossover temperatures differ, the kinks of $A_H$ and $A_S$ sit at different
-  temperatures and the anchor is uncontrolled between them. A subspace built on the
-  minimum-energy path has the right crossover for the bare potential (the path leaves the
-  saddle along the unstable mode); a zero-point or free-energy term and the SCT mass shift it.
+of which the first is the one consistent with the first-order theorem: the dressing transfers
+by the theorem, and the anchor corrects the skeleton, i.e. the path, the mass and the crossover
+temperature of the reduction. Which of the two the measured transfer error follows is what the
+RPMD tests decide.
+
+- If $H_S$ is exact, both anchors vanish.
+- Above both crossovers every $A$ is zero and $C_{\mathrm{anch}}=C_S$.
+- If the crossover temperatures of $H$ and of the skeleton differ, the kinks of the two $A$
+  sit at different temperatures and the anchor is uncontrolled between them. The bare potential
+  on the minimum-energy path has the crossover of $H$ (the path leaves the saddle along the
+  unstable mode); an SCT mass raises it, a bare-mass model of a dressed coordinate shifts it.
 
 ## The remainder and the symmetric Eckart barrier
 
@@ -155,3 +179,47 @@ action is non-local and no one-dimensional potential model represents it. The in
 contains all three cases, so $A_H$ does; a subspace model on the minimum-energy path contains
 only the first. The ratio $\omega_k/\lambda^\ddagger$ therefore classifies the modes: well above
 one, fold into $V_S$; near or below one, put in $S$ or rely on the anchor.
+
+## Status of the tests
+
+`benchmarks/subspace_instanton` re-implements the model family and the exact reference of a
+code package supplied for comparison (2D valley models M1–M4; a recursive Green's-function
+$N(E)$ with exact leads) and uses this repository's RPMD solver.
+
+**Checked**
+
+| Statement | Test | Result |
+| --- | --- | --- |
+| Exact reference | Green's-function rate vs the analytic Eckart transmission, 5 points | relative difference $10^{-6}$ to $4\times10^{-4}$ |
+| RPMD solver | $\varepsilon$ of the Eckart barrier vs the package's independent C kernel | $(u,v)=(6,2.1)$: $1.185\pm0.007$ vs 1.184; $(9,1.2)$: $1.512\pm0.012$ vs 1.512 |
+| $\varepsilon_{\mathrm{SD}}=2\pi/\beta\hbar\eta_1$ | package's table of $\varepsilon(u,v)$ vs $\eta_1$ computed here | $v=2.1$, $u=10.5,12,13.5$: $\ln\varepsilon=0.459,0.558,0.641$ vs $A=0.453,0.555,0.640$ |
+| $A_{\mathrm{Eck}}$ depends on $u$ only | $v=0.8$ to 3.6 | identical to four digits |
+| $R_{\mathrm{Eck}}$ shrinks with $1/v$ | same table | $u=3$: $R\,v=0.12$ to 0.14; $u=9$: $R=0.13$ ($v=0.8$) to 0.01 ($v=3.6$) |
+
+**Deterministic results for the valley models** ($G=\ln[k_{\mathrm{QM}}(H)/k_{\mathrm{QM}}(H_S)]$,
+exact; `results/qm.json`, `results/skeleton.json`):
+
+| model | $T/T_c$ | $G$: `mep` | `fe` | `fe+sct` | `bare` | $A_H$ | $A_H-A_{S^0}$: `mep` | `mep+sct` | `bare` |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| M1 (zero-point change) | 0.8 | +2.09 | −0.013 | – | – | 0.211 | 0.000 | – | – |
+| | 0.55 | +2.28 | −0.019 | – | – | 0.518 | 0.000 | – | – |
+| M2 (curved path) | 0.8 | −0.063 | +0.184 | −0.870 | – | 0.212 | +0.021 | −0.150 | – |
+| | 0.55 | −0.048 | +0.301 | −1.475 | – | 0.492 | +0.024 | −0.016 | – |
+| M3 (both) | 0.8 | +2.09 | +0.195 | −0.731 | – | 0.219 | +0.025 | −0.197 | – |
+| | 0.55 | +2.33 | +0.347 | −1.351 | – | 0.496 | +0.033 | −0.053 | – |
+| M4 (slow bath) | 0.8 | −0.585 | +0.037 | −0.652 | −2.48 | 0.200 | 0.000 | −0.089 | −0.199 |
+| | 0.55 | −0.655 | +0.059 | −1.489 | −3.96 | 0.481 | +0.008 | −0.136 | −0.198 |
+
+- The free-energy model reproduces the exact rate to 2% for M1 and 6% for the slow bath M4,
+  but is 18–35% low on the curved paths M2 and M3, where the transverse frequency is only 1.5
+  times the barrier frequency.
+- The SCT mass overshoots by a factor 2 to 4 on every curved model: its adiabatic assumption
+  does not hold at these frequency ratios.
+- The skeleton on the minimum-energy path has the steepest-descent factor of the full system
+  to 0.03 or better on all four models; the SCT and bare-mass skeletons do not, mostly because
+  their crossover temperatures differ from that of $H$.
+
+**Not yet tested** (RPMD runs in progress): the exact $\varepsilon(H)$ of M1–M4 and with it
+every statement about transfer errors and the two anchors; the Eckart remainder as a
+path-free estimate. Two SCT instantons at $0.45\,T_c$ (M2, M3) have a second unstable mode and
+are not used.

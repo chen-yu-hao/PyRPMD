@@ -1,6 +1,7 @@
 """Deterministic half: exact quantum rates, reductions and instantons of the valley models.
 
     python run_qm.py results/qm.json
+    python run_qm.py results/qm.json --reductions-only     # keep the 2D rates, redo the reductions
 
 For every model and temperature (in units of the crossover temperature
 ``T_c = lambda / 2 pi`` of the full saddle) this writes the exact 2D rate, the
@@ -37,7 +38,47 @@ def tabulated_instanton(x, potential, beta, nbeads):
     return find_instanton(gradient, hessian, [0.0], [1.0], frequency, beta, nbeads=nbeads), frequency
 
 
+def reduction_entries(name, model, beta, full_rate, full_ln_eps_sd, path):
+    """Exact rate and steepest-descent factor of every reduction at one temperature."""
+    reduced, mass = reductions(model, beta, path)
+    entries = {}
+    for key in NAMES:
+        if key == "bare" and name != "M4":
+            continue
+        x, potential = reduced[key]
+        rate = barrier_rates(x, potential, [beta])[beta]
+        inst, frequency = tabulated_instanton(x, potential, beta, 256)
+        item = {"k_qm": rate, "g_qm": float(np.log(full_rate / rate)), "top": float(potential.max()),
+                "barrier_frequency": barrier_frequency(x, potential),
+                "ln_eps_sd": steepest_descent_factor(beta, frequency, inst)}
+        if inst is not None:
+            item["instanton"] = {"eta1": inst["eta1"], "negative_modes": inst["negative_modes"],
+                                 "converged": inst["converged"]}
+        item["delta_sd"] = full_ln_eps_sd - item["ln_eps_sd"]
+        entries[key] = item
+    return entries, float(mass[0])
+
+
+def update_reductions(path_json) -> int:
+    """Recompute only the 1D reductions of an existing result file (the 2D rates are kept)."""
+    out = json.load(open(path_json))
+    for name, model in family().items():
+        path = minimum_energy_path(model)
+        record = out["models"][name]
+        record["path_max_curvature"] = float(path["curvature"].max())
+        record["path_curvature_at_saddle"] = float(path["curvature"][0])
+        for ratio, entry in record["temperatures"].items():
+            entry["reductions"], entry["sct_mass_at_saddle"] = reduction_entries(
+                name, model, entry["beta"], entry["k_qm"], entry["ln_eps_sd"], path)
+        print(name, "reductions updated", flush=True)
+        with open(path_json, "w") as handle:
+            json.dump(out, handle, indent=1)
+    return 0
+
+
 def main() -> int:
+    if len(sys.argv) > 2 and sys.argv[2] == "--reductions-only":
+        return update_reductions(sys.argv[1])
     out = {"temperature_ratios": RATIOS, "models": {}}
     for name, model in family().items():
         started = time.time()
@@ -64,22 +105,8 @@ def main() -> int:
                                       "spread": finer["spread"]}
                 instanton = finer
             entry["ln_eps_sd"] = steepest_descent_factor(beta, unstable, instanton)
-            reduced, mass = reductions(model, beta, path)
-            for key in NAMES:
-                if key == "bare" and name != "M4":
-                    continue
-                x, potential = reduced[key]
-                rate = barrier_rates(x, potential, [beta])[beta]
-                inst, frequency = tabulated_instanton(x, potential, beta, 256)
-                item = {"k_qm": rate, "g_qm": float(np.log(fine[beta] / rate)), "top": float(potential.max()),
-                        "barrier_frequency": barrier_frequency(x, potential),
-                        "ln_eps_sd": steepest_descent_factor(beta, frequency, inst)}
-                if inst is not None:
-                    item["instanton"] = {"eta1": inst["eta1"], "negative_modes": inst["negative_modes"],
-                                         "converged": inst["converged"]}
-                item["delta_sd"] = entry["ln_eps_sd"] - item["ln_eps_sd"]
-                entry["reductions"][key] = item
-            entry["sct_mass_at_saddle"] = float(mass[0])
+            entry["reductions"], entry["sct_mass_at_saddle"] = reduction_entries(name, model, beta, fine[beta],
+                                                                                   entry["ln_eps_sd"], path)
             record["temperatures"][str(ratio)] = entry
         out["models"][name] = record
         print(name, f"lambda={unstable:.4f} omega={stable:.4f} [{time.time() - started:.0f} s]", flush=True)
