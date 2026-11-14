@@ -1,0 +1,1 @@
+{"trajectories":2048,"dt_au":4,"tmax_au":400000,"launch_R_bohr":14,"exit_radius_bohr":16,"bmax_bohr":6,"hmc_cycles":1000,"proposal_temperature_ratio":2,"temperature_K":600,"beads":16,"seed":2026100601}

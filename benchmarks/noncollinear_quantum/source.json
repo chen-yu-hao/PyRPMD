@@ -1,0 +1,23 @@
+{
+  "repository": "shuyinan/chempotpy",
+  "commit": "4716d22e87ae01770cad9ec995c4a02a8e479296",
+  "file": "chempotpy/BrHCl/BrHCl_LEPS1.f",
+  "sha256": "55df493416823e16ea26309b474353381e36b982aea95dcc4aaf39097ba02f5e",
+  "length_bytes": 58274,
+  "upstream_distribution_license": "Apache-2.0",
+  "implementation": "independent energy/gradient evaluation of the same LEPS formula and legacy parameters; original binary NOT executed in this session",
+  "parameters": {
+    "D_kcal_mol": [90.24, 106.4, 52.09],
+    "r_eq_angstrom": [1.414, 1.275, 2.136],
+    "alpha_inv_angstrom": [1.851, 1.867, 1.923],
+    "Sato": 0.154
+  },
+  "legacy_conversions": {
+    "kcal_per_hartree": 627.5095,
+    "angstrom_per_bohr": 0.529177106,
+    "sqrt_two": 1.41421356
+  },
+  "atom_order": ["79Br", "1H", "35Cl"],
+  "electronic_weight": 1.0,
+  "fine_structure": "not included"
+}
