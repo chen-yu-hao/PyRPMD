@@ -1,0 +1,241 @@
+{
+  "input": {
+    "benchmark": "physical_1d_Eckart_in_shared_RPMDrate_xi",
+    "units": "hbar=m=1; atomic units",
+    "beta": 4.0,
+    "V0": 1.0,
+    "a": 1.0,
+    "mass": 1.0,
+    "box_half_width": 12.0,
+    "grid_nodes": [
+      161,
+      321,
+      481
+    ],
+    "time_start": 0.0,
+    "time_stop": 7.0,
+    "time_points": 281,
+    "primary_window": [
+      2.0,
+      4.0
+    ],
+    "sensitivity_windows": [
+      [
+        1.0,
+        3.0
+      ],
+      [
+        2.0,
+        4.0
+      ],
+      [
+        3.0,
+        5.0
+      ],
+      [
+        4.0,
+        6.0
+      ],
+      [
+        5.0,
+        7.0
+      ]
+    ],
+    "coordinate_geometry_heavy_position": 18.0,
+    "coordinate_rinf": 80.0,
+    "coordinate_atomic_masses": [
+      10.0,
+      1.0,
+      10.0
+    ],
+    "P1_flux_launches": 1024,
+    "P1_time_step": 0.002,
+    "seed": 713,
+    "scope": "constrained one-dimensional core validation, not a gas-phase reaction"
+  },
+  "coordinate_definition": {
+    "format": "PyRPMD.shared-rpmdrate-coordinate.v1",
+    "formula": "xi=s0/(s0-s1)",
+    "s0": "rinf-COM_distance",
+    "s1": "min_bond(max_equivalent_path(reference_forming-reference_breaking-r_forming+r_breaking))",
+    "estimator": "xi(mean_bead_positions)",
+    "index_base": 0,
+    "length_unit": "bohr",
+    "mass_unit": "electron_mass",
+    "masses": [
+      10.0,
+      1.0,
+      10.0
+    ],
+    "com_weights": [
+      1.0,
+      -0.09090909090909091,
+      -0.9090909090909091
+    ],
+    "fragments": [
+      [
+        0
+      ],
+      [
+        1,
+        2
+      ]
+    ],
+    "rinf": 80.0,
+    "reference_difference": [
+      0.0
+    ],
+    "paths": [
+      [
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            1,
+            2
+          ]
+        ]
+      ]
+    ]
+  },
+  "coordinate_implementation": "independent formula oracle",
+  "test_scope": "constrained 1D barrier quantum kernel in nonlinear xi; NOT a bimolecular rate or environment validation",
+  "beta_au": 4.0,
+  "barrier_height": 1.0,
+  "barrier_inverse_width": 1.0,
+  "active_mass": 1.0,
+  "PMF_used_as_quantum_potential": false,
+  "P1_independent_flux_launches": 1024,
+  "P1_min_transmission_on_test_window": 1.0,
+  "results": [
+    {
+      "nodes": 161,
+      "beta_au": 4.0,
+      "box_half_width": 12.0,
+      "quantum_flux_window": [
+        2.0,
+        4.0
+      ],
+      "finite_box_reactant_partition": 1.7963728369897891,
+      "quantum_rate_window": 0.0013380049365860581,
+      "independent_scattering_reference_rate": 0.0013713507717582787,
+      "relative_flux_error": -0.024316050903202657,
+      "classical_flux_reference_rate": 0.0004056819949906595,
+      "quantum_flux_over_classical_positive_reference": 3.298161991677409,
+      "canonical_flux_at_t0": 0.0,
+      "xi_roundtrip_max": 0.0,
+      "nonlinear_coordinate_error_vs_native": 8.881784197001252e-16,
+      "physical_converged": false,
+      "fixed_window_sensitivity": {
+        "1.0-3.0": {
+          "relative_error": -0.09364024210998789,
+          "peak_to_peak_over_reference": 0.22826412324282305
+        },
+        "2.0-4.0": {
+          "relative_error": -0.024316050903202657,
+          "peak_to_peak_over_reference": 0.09856483224013213
+        },
+        "3.0-5.0": {
+          "relative_error": -0.005019911021112433,
+          "peak_to_peak_over_reference": 0.052528346256893184
+        },
+        "4.0-6.0": {
+          "relative_error": -0.0020923904086578293,
+          "peak_to_peak_over_reference": 0.05194283171224885
+        },
+        "5.0-7.0": {
+          "relative_error": -0.0022556155879954742,
+          "peak_to_peak_over_reference": 0.03052206893318952
+        }
+      }
+    },
+    {
+      "nodes": 321,
+      "beta_au": 4.0,
+      "box_half_width": 12.0,
+      "quantum_flux_window": [
+        2.0,
+        4.0
+      ],
+      "finite_box_reactant_partition": 1.7912549835802603,
+      "quantum_rate_window": 0.0013398090541756529,
+      "independent_scattering_reference_rate": 0.0013752689030613247,
+      "relative_flux_error": -0.02578393854957306,
+      "classical_flux_reference_rate": 0.0004068410823346051,
+      "quantum_flux_over_classical_positive_reference": 3.2932000045013434,
+      "canonical_flux_at_t0": 0.0,
+      "xi_roundtrip_max": 0.0,
+      "nonlinear_coordinate_error_vs_native": 8.881784197001252e-16,
+      "physical_converged": false,
+      "fixed_window_sensitivity": {
+        "1.0-3.0": {
+          "relative_error": -0.09597341840003737,
+          "peak_to_peak_over_reference": 0.2404926111495001
+        },
+        "2.0-4.0": {
+          "relative_error": -0.02578393854957306,
+          "peak_to_peak_over_reference": 0.09678211571069498
+        },
+        "3.0-5.0": {
+          "relative_error": -0.005564129015456221,
+          "peak_to_peak_over_reference": 0.05014758007718055
+        },
+        "4.0-6.0": {
+          "relative_error": -0.0026568202368996152,
+          "peak_to_peak_over_reference": 0.045888002078283356
+        },
+        "5.0-7.0": {
+          "relative_error": -0.002770382678068506,
+          "peak_to_peak_over_reference": 0.022765729335753736
+        }
+      }
+    },
+    {
+      "nodes": 481,
+      "beta_au": 4.0,
+      "box_half_width": 12.0,
+      "quantum_flux_window": [
+        2.0,
+        4.0
+      ],
+      "finite_box_reactant_partition": 1.7904348185925272,
+      "quantum_rate_window": 0.0013402931966309101,
+      "independent_scattering_reference_rate": 0.0013758988882421848,
+      "relative_flux_error": -0.02587813095536673,
+      "classical_flux_reference_rate": 0.00040702744868977047,
+      "quantum_flux_over_classical_positive_reference": 3.2928816003572754,
+      "canonical_flux_at_t0": 0.0,
+      "xi_roundtrip_max": 0.0,
+      "nonlinear_coordinate_error_vs_native": 8.881784197001252e-16,
+      "physical_converged": false,
+      "fixed_window_sensitivity": {
+        "1.0-3.0": {
+          "relative_error": -0.09625601470103717,
+          "peak_to_peak_over_reference": 0.24610548162508725
+        },
+        "2.0-4.0": {
+          "relative_error": -0.02587813095536673,
+          "peak_to_peak_over_reference": 0.08164677666275051
+        },
+        "3.0-5.0": {
+          "relative_error": -0.005252099778135233,
+          "peak_to_peak_over_reference": 0.043576263159349364
+        },
+        "4.0-6.0": {
+          "relative_error": -0.002709169135930889,
+          "peak_to_peak_over_reference": 0.03046825425531848
+        },
+        "5.0-7.0": {
+          "relative_error": -0.0031554081023644764,
+          "peak_to_peak_over_reference": 0.02749461631129299
+        }
+      }
+    }
+  ],
+  "native_run_rate_executed": false,
+  "physical_converged": false
+}

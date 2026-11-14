@@ -1,0 +1,22 @@
+{
+  "benchmark": "physical_1d_Eckart_in_shared_RPMDrate_xi",
+  "units": "hbar=m=1; atomic units",
+  "beta": 4.0,
+  "V0": 1.0,
+  "a": 1.0,
+  "mass": 1.0,
+  "box_half_width": 12.0,
+  "grid_nodes": [161, 321, 481],
+  "time_start": 0.0,
+  "time_stop": 7.0,
+  "time_points": 281,
+  "primary_window": [2.0, 4.0],
+  "sensitivity_windows": [[1.0, 3.0], [2.0, 4.0], [3.0, 5.0], [4.0, 6.0], [5.0, 7.0]],
+  "coordinate_geometry_heavy_position": 18.0,
+  "coordinate_rinf": 80.0,
+  "coordinate_atomic_masses": [10.0, 1.0, 10.0],
+  "P1_flux_launches": 1024,
+  "P1_time_step": 0.002,
+  "seed": 713,
+  "scope": "constrained one-dimensional core validation, not a gas-phase reaction"
+}
