@@ -16,7 +16,7 @@ import time
 
 import numpy as np
 
-from models import eckart, family
+from models import family
 from reductions import minimum_energy_path, reductions
 
 from pyrpmd.analysis.subspace_correction import harmonic_bead_factor
@@ -28,11 +28,15 @@ WINDOWS = np.r_[np.linspace(REFERENCE, -8.0, 4)[:-1], np.linspace(-8.0, 0.0, 45)
 BEADS_FULL = {"M1": {1.25: 32, 0.8: 64, 0.55: 128}, "M2": {1.25: 32, 0.8: 64, 0.55: 96},
               "M3": {1.25: 32, 0.8: 64, 0.55: 128}, "M4": {1.25: 32, 0.8: 64, 0.55: 96}}
 BEADS_REDUCED = {1.25: 32, 0.8: 48, 0.55: 64}
+# Reductions that differ from one another for each model: without curvature the SCT
+# coordinate is the arc length, and with a constant transverse frequency "fe" is "mep".
+REDUCTIONS = {"M1": ("mep", "fe"), "M2": ("mep", "fe", "fe+sct"), "M3": ("mep", "fe", "fe+sct"),
+              "M4": ("mep", "fe", "fe+sct", "bare")}
 
 
-def solve(model, beta, nbeads, *, seed, md_time=None, sweeps=1200, trajectories=2048):
+def solve(model, beta, nbeads, *, seed, md_time=None, walkers=32, sweeps=600, trajectories=2048):
     started = time.time()
-    result = ring_polymer_rate(model, beta, nbeads, windows=WINDOWS, walkers=32, burn_in=300, sweeps=sweeps,
+    result = ring_polymer_rate(model, beta, nbeads, windows=WINDOWS, walkers=walkers, burn_in=200, sweeps=sweeps,
                                trajectories=trajectories, md_time=md_time, seed=seed)
     return {"rate": result.rate, "relative_error": result.rate_standard_error / result.rate,
             "qtst": result.qtst_rate, "kappa": result.transmission, "nbeads": int(nbeads),
@@ -53,7 +57,7 @@ def tabulated_model(x, potential, name):
 
 def main() -> int:
     name, ratio, qm_path, out_path = sys.argv[1], float(sys.argv[2]), sys.argv[3], sys.argv[4]
-    only = sys.argv[5:]                                  # optional subset: "full", reduction names, "eckart"
+    only = sys.argv[5:]                                  # optional subset: "full" and reduction names
     qm = json.load(open(qm_path))["models"][name]
     entry = qm["temperatures"][str(ratio)]
     beta = entry["beta"]
@@ -81,36 +85,17 @@ def main() -> int:
               f"kappa = {full['kappa']:.3f} B_P = {full['bead_factor']:.4f} [{full['seconds']:.0f} s]", flush=True)
         save()
     reduced, _ = reductions(valley, beta, minimum_energy_path(valley))
-    for key, item in entry["reductions"].items():
+    for key in REDUCTIONS[name]:
         if only and key not in only:
             continue
+        item = entry["reductions"][key]
         x, potential = reduced[key]
-        record = solve(tabulated_model(x, potential, key), beta, BEADS_REDUCED[ratio], seed=5)
+        record = solve(tabulated_model(x, potential, key), beta, BEADS_REDUCED[ratio], seed=5, walkers=16, sweeps=800)
         record["k_qm"] = item["k_qm"]
         record["eps"] = item["k_qm"] / record["rate"]
         report["reductions"][key] = record
         print(f"   {key:7s}: eps_S = {record['eps']:.4f} +- {record['eps'] * record['relative_error']:.4f} "
               f"kappa = {record['kappa']:.3f} [{record['seconds']:.0f} s]", flush=True)
-        save()
-    if not only or "eckart" in only:
-        # Symmetric Eckart barrier with the crossover temperature of the full saddle and the
-        # vibrationally adiabatic barrier height: the remainder of the path-free estimate.
-        from greens import barrier_rates
-
-        frequency = qm["unstable_frequency"]
-        height = valley.V0 + 0.5 * (qm["stable_frequency"] - valley.omega_inf)
-        v = height / frequency
-        potential, _, _, a = eckart(v, frequency)
-        x = np.arange(-18.0, 18.005, 0.01)
-        values = potential(x)
-        record = solve(tabulated_model(x, values, "eckart"), beta, BEADS_REDUCED[ratio], seed=7)
-        record["k_qm"] = barrier_rates(x, values, [beta])[beta]
-        record["eps"] = record["k_qm"] / record["rate"]
-        record["v"] = v
-        record["u"] = beta * frequency
-        report["eckart"] = record
-        print(f"   eckart(u={record['u']:.2f}, v={v:.3f}): eps = {record['eps']:.4f} +- "
-              f"{record['eps'] * record['relative_error']:.4f} [{record['seconds']:.0f} s]", flush=True)
         save()
     return 0
 
