@@ -914,8 +914,18 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
     padding = options.get("padding")
     if padding is None:
         padding = 40.0
-    lo = plane[inside].min(axis=0) - padding
-    hi = plane[inside].max(axis=0) + padding
+    # The absorbers run to box_lo / box_hi, which can lie beyond the ends of
+    # the path (a reference slice near the reactant end): continue the path
+    # straight along its end directions, for the box and for the arc length
+    # the absorber is keyed to.
+    out_start = plane[0] - plane[1]
+    out_start /= np.linalg.norm(out_start)
+    out_end = plane[-1] - plane[-2]
+    out_end /= np.linalg.norm(out_end)
+    ends = np.vstack([plane[0] + max(arc[0] - box_lo, 0.0) * out_start,
+                      plane[-1] + max(box_hi - arc[-1], 0.0) * out_end])
+    lo = np.vstack([plane[inside], ends]).min(axis=0) - padding
+    hi = np.vstack([plane[inside], ends]).max(axis=0) + padding
     spacing = options.get("spacing_2d")
     floor_guess = float(max(energies[k_ref], energies[-1]))
     if spacing is None:
@@ -966,7 +976,14 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
 
     def absorber(points):
         _, index = tree.query(points)
-        s = arc[index]
+        s = arc[index].copy()
+        # Beyond the path ends the arc length continues along the end directions
+        # (it used to stop at the end point, cutting the absorber ramp short:
+        # reactant waves reflected off the grid edge, k_QM 22% low on the
+        # curved-valley test model).
+        first, last = index == 0, index == len(arc) - 1
+        s[first] = arc[0] - np.maximum((points[first] - plane[0]) @ out_start, 0.0)
+        s[last] = arc[-1] + np.maximum((points[last] - plane[-1]) @ out_end, 0.0)
         eps = np.zeros(len(points))
         left, right = s < absorb_lo, s > absorb_hi
         eps[left] = strength / width_lo * ((absorb_lo - s[left]) / width_lo) ** 2

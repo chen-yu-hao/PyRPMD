@@ -1,0 +1,145 @@
+{
+ "model": "curved_3d",
+ "dimension": 3,
+ "temperature_K": 300.0,
+ "nbeads": 32,
+ "beta": 1052.5834160132904,
+ "rpmd_options": {
+  "windows": 48,
+  "walkers": 32,
+  "burn_in": 200,
+  "sweeps": 800,
+  "trajectories": 1024,
+  "seed": 11
+ },
+ "spacing_2d": null,
+ "truncation_kt": 30.0,
+ "truncation_min": 0.055,
+ "reference_density_tolerance": null,
+ "subspace": {
+  "1d": {
+   "shape": [
+    215
+   ],
+   "captured_curvature": null,
+   "retained_points": null,
+   "bath_stable": true,
+   "quantum": {
+    "rate": 1.0614356894717778e-08,
+    "method": "sylvester",
+    "seconds": 0.08046150207519531,
+    "retained": 215
+   },
+   "rpmd": {
+    "rate": 9.096130057125638e-09,
+    "log_standard_error": 0.008831131499276418,
+    "transmission": 0.9890835477830412,
+    "seconds": 40.715903520584106
+   },
+   "C_S": 1.1669090951929393,
+   "log_standard_error": 0.008831131499276418,
+   "error_vs_full": -0.04249777183701842
+  },
+  "1d_sct": {
+   "shape": [
+    215
+   ],
+   "captured_curvature": null,
+   "retained_points": null,
+   "bath_stable": true,
+   "quantum": {
+    "rate": 2.989688975896447e-08,
+    "method": "sylvester",
+    "seconds": 0.08921217918395996,
+    "retained": 215
+   },
+   "rpmd": {
+    "rate": 2.328714652416144e-08,
+    "log_standard_error": 0.009380141509399973,
+    "transmission": 0.9845370429500129,
+    "seconds": 42.08939504623413
+   },
+   "C_S": 1.28383654596518,
+   "log_standard_error": 0.009380141509399973,
+   "error_vs_full": 0.05344654388478709
+  },
+  "rph": {
+   "shape": [
+    234,
+    43
+   ],
+   "captured_curvature": 0.9982868575831241,
+   "retained_points": 7186,
+   "bath_stable": true,
+   "quantum": {
+    "rate": 1.2869372466276453e-08,
+    "method": "sylvester",
+    "seconds": 524.9149861335754,
+    "retained": 7186
+   },
+   "rpmd": {
+    "rate": 1.0690366230317532e-08,
+    "log_standard_error": 0.007545237207377357,
+    "transmission": 0.9778623858519686,
+    "seconds": 97.95558190345764
+   },
+   "C_S": 1.2038289604877455,
+   "log_standard_error": 0.007545237207377357,
+   "error_vs_full": -0.012203335510417412
+  },
+  "plane": {
+   "shape": [
+    293,
+    20
+   ],
+   "captured_curvature": null,
+   "retained_points": 4646,
+   "bath_stable": null,
+   "quantum": {
+    "rate": 1.3397464054261643e-08,
+    "method": "sylvester",
+    "seconds": 122.71685910224915,
+    "retained": 4646
+   },
+   "rpmd": {
+    "rate": 1.1071510012295892e-08,
+    "log_standard_error": 0.007679126721528207,
+    "transmission": 0.9770898199243951,
+    "seconds": 95.90567922592163
+   },
+   "C_S": 1.2100846261605305,
+   "log_standard_error": 0.007679126721528207,
+   "error_vs_full": -0.007070276007317022
+  }
+ },
+ "full": {
+  "shape": [
+   128,
+   29,
+   26
+  ],
+  "quantum": {
+   "rate": 1.2877528890071518e-08,
+   "method": "flux_eigenstates",
+   "seconds": 841.6314113140106,
+   "retained": null
+  },
+  "rpmd": {
+   "rate": 1.0566600822866954e-08,
+   "log_standard_error": 0.008621073672376287,
+   "transmission": 0.9621175230413505,
+   "seconds": 236.5757610797882
+  },
+  "C": 1.2187011798726732,
+  "log_standard_error": 0.008621073672376287
+ },
+ "path": {
+  "points": 97,
+  "seconds": 0.12504363059997559,
+  "saddle_iterations": 12,
+  "saddle_negative_modes": 1,
+  "imaginary_frequency_cm": 1490.8087052942528,
+  "reactant": "asymptote_converged",
+  "product": "asymptote_converged"
+ }
+}
