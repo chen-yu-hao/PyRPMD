@@ -23,10 +23,12 @@ class MACEBatchedPotential(_TensorBatchPotential):
     """
 
     def __init__(self, symbols, model, *, device="cpu", dtype="float64", cell=None,
-                 pbc=None, charge=0, multiplicity=1, virial=False, head=None):
+                 pbc=None, charge=0, multiplicity=1, virial=False, head=None,
+                 max_batch_frames=None):
         self._setup(symbols, "mace-batched", device=device, dtype=dtype, cell=cell,
                     pbc=pbc, charge=charge, multiplicity=multiplicity, virial=virial,
-                    length_factor=1 / BOHR_ANGSTROM, energy_factor=EV_HARTREE)
+                    length_factor=1 / BOHR_ANGSTROM, energy_factor=EV_HARTREE,
+                    max_batch_frames=max_batch_frames)
         if self.charge != 0 or self.multiplicity != 1:
             raise ValueError("mace-batched energy models do not select charge/spin; require charge=0, multiplicity=1")
         modules = _optional("mace.modules", "mace-batched")
@@ -68,21 +70,29 @@ class MACEBatchedPotential(_TensorBatchPotential):
                                          dtype=self.torch.long, device=self.device)
         self._neighbors = neighbors.NeighborList(self.cutoff, full_list=True, sorted=True,
                                                 algorithm="cell_list", skin=0.0)
-        self._batch_cache = None
-        self.metadata.update(model_version=version("mace-torch"), head=self.head,
-                             neighbor_backend="vesin-cell-list", model_calls_per_batch=1)
+        self._batch_cache = {}
+        self.metadata.update(
+            model_version=version("mace-torch"),
+            head=self.head,
+            neighbor_backend="vesin-cell-list",
+            **({"model_calls_per_batch": 1} if self.max_batch_frames is None else {}),
+        )
 
     def _template(self, frames):
-        if self._batch_cache is None or self._batch_cache[0] != frames:
+        template = self._batch_cache.get(frames)
+        if template is None:
+            if len(self._batch_cache) >= 4:
+                self._batch_cache.pop(next(iter(self._batch_cache)))
             torch, atoms = self.torch, len(self.symbols)
-            self._batch_cache = (frames, {
+            template = {
                 "batch": torch.arange(frames, device=self.device).repeat_interleave(atoms),
                 "ptr": torch.arange(frames + 1, device=self.device) * atoms,
                 "node_attrs": self._node_attributes.repeat(frames, 1),
                 "atomic_numbers": self._numbers.repeat(frames),
                 "head": torch.full((frames,), self._head_index, dtype=torch.long, device=self.device),
-            })
-        return dict(self._batch_cache[1])
+            }
+            self._batch_cache[frames] = template
+        return dict(template)
 
     def _graph(self, q):
         """Build one disconnected graph with owned neighbor tensors."""
@@ -143,15 +153,18 @@ class MACEBatchedPotential(_TensorBatchPotential):
                             compute_virials=self.virial, compute_stress=False)
         if not isinstance(output, dict) or output.get("energy") is None or output.get("forces") is None:
             raise PotentialError("MACE energy model must return energy and energy-gradient forces")
-        virial = output.get("virials") if self.virial else None
-        return TensorPESResult(
-            output["energy"] * self.energy_factor,
-            output["forces"].reshape(frames, atoms, 3) * (self.energy_factor / self.length_factor),
-            None if virial is None else virial * self.energy_factor,
+        energy = output["energy"].detach() * self.energy_factor
+        forces = output["forces"].detach().reshape(frames, atoms, 3) * (
+            self.energy_factor / self.length_factor
         )
+        virial = output.get("virials") if self.virial else None
+        if virial is not None:
+            virial = virial.detach() * self.energy_factor
+        del output, graph
+        return TensorPESResult(energy, forces, virial)
 
     def _reset_engine(self):
-        self._batch_cache = None
+        self._batch_cache.clear()
 
     def close(self):
         super().close()

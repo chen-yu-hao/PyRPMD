@@ -108,6 +108,26 @@ def _jax(devices):
     return report
 
 
+def _native_gpu(devices):
+    """Describe native GPU availability without importing a Python ORT wheel.
+
+    The native ONNX provider is loaded by the C ABI library and may be built
+    against a different ONNX Runtime installation than Python.  Resource
+    probing therefore cannot validate its CUDA execution provider without
+    constructing the user's native PES; that check remains explicit during
+    provider initialization.
+    """
+    return {
+        "available": True,
+        "devices": list(devices),
+        "deferred": True,
+        "hint": (
+            "The native provider will validate its CUDA/ONNX Runtime SDK "
+            "when the PES context is created."
+        ),
+    }
+
+
 def resource_report(config):
     """Check selected resources without constructing a potential or launching MPI."""
     from .parallel import execution_plan
@@ -120,14 +140,22 @@ def resource_report(config):
         checks["plumed"] = _plumed(config)
     sampling, potential = config.get("sampling", {}), config.get("potential", {})
     provider = potential.get("provider", potential.get("type", ""))
+    params = potential.get("params", {}) if isinstance(potential, dict) else {}
+    native_gpu = provider in ("cabi", "native") and sampling.get("engine") != "torch" and (
+        parallel.get("mode") == "gpu"
+        or str(potential.get("device", "")).startswith("cuda")
+        or isinstance(params, dict) and str(params.get("device", "")).startswith("cuda")
+    )
     default_device = "cuda" if provider == "jaxpip" else "cpu"
-    devices = [sampling.get("device", potential.get("device", default_device))]
+    devices = [sampling.get("device", potential.get("device", params.get("device", default_device) if isinstance(params, dict) else default_device))]
     if parallel.get("mode") == "gpu":
         devices = [str(value) if str(value).startswith("cuda") else f"cuda:{value}"
                    for value in parallel.get("devices", [0])]
     if provider in ("jaxpip", "jax-dlpack"):
         checks["jax"] = _jax(devices)
-    if (sampling.get("engine") == "torch"
+    if native_gpu:
+        checks["native_gpu"] = _native_gpu(devices)
+    elif (sampling.get("engine") == "torch"
             or provider in ("torch", "mace", "nequip", "fairchem", "metatomic")
             or str(provider).endswith("-batched")
             or (provider not in ("jaxpip", "jax-dlpack")

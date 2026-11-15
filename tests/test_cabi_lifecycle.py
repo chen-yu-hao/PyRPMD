@@ -148,3 +148,31 @@ def test_batched_messages_copy_buffer_once_preserving_order_and_failed_frames(mo
     np.testing.assert_array_equal(result.status, [0, 0, 2, 2, 0, 0, 0])
     assert np.isnan(result.energy[[2, 3]]).all()
     np.testing.assert_array_equal(result.energy[[0, 1, 4, 5, 6]], [.25, 1.25, 4.25, 5.25, 6.25])
+
+
+def test_windows_close_and_failed_init_unload_cdll_handle(monkeypatch, tmp_path):
+    import _ctypes
+
+    events = []
+    pes, _ = _fake_potential()
+    pes._destroy = lambda context: events.append(("destroy", context.value, pes.closed))
+    pes.lib = SimpleNamespace(_handle=0xBEEF)
+    monkeypatch.setattr(cabi, "_IS_WINDOWS", True)
+    monkeypatch.setattr(
+        _ctypes,
+        "FreeLibrary",
+        lambda handle: events.append(("free", handle, pes.closed)),
+        raising=False,
+    )
+    pes.close()
+    pes.close()
+    assert events == [("destroy", 0x1234, False), ("free", 0xBEEF, True)]
+    assert pes.lib is None
+
+    events.clear()
+    dummy = tmp_path / "libpes.so"
+    dummy.write_bytes(b"placeholder")
+    monkeypatch.setattr(cabi.C, "CDLL", lambda path: SimpleNamespace(_handle=0xCAFE))
+    with pytest.raises(cabi.PotentialError, match="Unknown .so ABI"):
+        cabi.CABIPotential(dummy)
+    assert events == [("free", 0xCAFE, True)]

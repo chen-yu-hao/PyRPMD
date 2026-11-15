@@ -359,3 +359,60 @@ def test_verified_legacy_windows_extension_preserves_authenticated_bytes(
     assert calls == [(directory / "checkpoints", expected)]
     assert _bytes(directory) == before
     assert json.loads((directory / "manifest.json").read_text())["schema_version"] == 1
+
+
+def test_rate_subspace_validates_recorded_windows_inp_and_refuses_omitted(
+    tmp_path, monkeypatch, drive_inputs,
+):
+    from pyrpmd.workflows import rate_subspace
+
+    inp_file = tmp_path / "assets" / "calculation.inp"
+    inp_file.write_bytes(b"# original native rate input\n")
+    inp_ref = (
+        str(inp_file)
+        if os.name == "nt"
+        else r"C:\pyrpmd-inputs\calculation.inp"
+    )
+    if "/" in drive_inputs["plugin"]:
+        inp_ref = inp_ref.replace("\\", "/")
+    if os.name != "nt":
+        original_resolve = io.Path.resolve
+        monkeypatch.setattr(
+            io.Path,
+            "resolve",
+            lambda path, *a, **k: (
+                inp_file.resolve()
+                if str(path) == inp_ref
+                else original_resolve(path, *a, **k)
+            ),
+        )
+
+    config, system = _config(drive_inputs, kind="both", task="rate")
+    config["_input_path"] = inp_ref
+    config["rate"] = {"subspace_correction": {"enabled": True, "quantum": {"truncation_min": 0.05}}}
+    directory = tmp_path / "rate-run"
+    runner._initialize_output(config, system, directory)
+    manifest_path = directory / "manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest["platform"] = "Windows-10-10.0.20348-SP0"
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    # Editing the .inp postprocessing wrapper is permitted when Windows recorded it.
+    inp_file.write_bytes(b"# edited subspace numerical settings\n")
+    changed = copy.deepcopy(config)
+    changed["rate"]["subspace_correction"]["quantum"]["truncation_min"] = 0.12
+    assert rate_subspace.validate_saved_rate(changed, system, directory) == directory.resolve()
+
+    # Modifying a recorded PES/model dependency is still rejected.
+    original_model = drive_inputs["model_file"].read_bytes()
+    drive_inputs["model_file"].write_bytes(b'{"stiffness": 0.99}\n')
+    with pytest.raises(InputError, match="Input/model file changed or is missing"):
+        rate_subspace.validate_saved_rate(changed, system, directory)
+    drive_inputs["model_file"].write_bytes(original_model)
+
+    # Pre-f9e85b4 Windows manifests that omitted drive-path hashes are still refused.
+    manifest["files"] = {}
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    with pytest.raises(InputError) as error:
+        rate_subspace.validate_saved_rate(changed, system, directory)
+    _assert_diagnostic(error, [inp_file, drive_inputs["plugin_file"], drive_inputs["model_file"]])

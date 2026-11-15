@@ -32,7 +32,8 @@ class NequIPBatchedPotential(_TensorBatchPotential):
                  cell=None, pbc=None, charge=0, multiplicity=1, virial=False,
                  chemical_species_to_atom_type_map=True,
                  energy_units_to_eV=1.0, length_units_to_A=1.0,
-                 neighborlist_backend=None, neighborlist_backend_kwargs=None):
+                 neighborlist_backend=None, neighborlist_backend_kwargs=None,
+                 max_batch_frames=None):
         energy_scale = positive_number(energy_units_to_eV, "energy_units_to_eV")
         length_scale = positive_number(length_units_to_A, "length_units_to_A")
         self._setup(
@@ -40,6 +41,7 @@ class NequIPBatchedPotential(_TensorBatchPotential):
             pbc=pbc, charge=charge, multiplicity=multiplicity, virial=virial,
             length_factor=length_scale / BOHR_ANGSTROM,
             energy_factor=energy_scale * EV_HARTREE,
+            max_batch_frames=max_batch_frames,
         )
         if self.charge != 0 or self.multiplicity != 1:
             raise ValueError("NequIP batched models do not accept charge/spin inputs; "
@@ -107,7 +109,7 @@ class NequIPBatchedPotential(_TensorBatchPotential):
             backend=backend, backend_kwargs=dict(neighborlist_backend_kwargs or {}),
         ).to(device=self.device)
         self.model = self._prepare_module(self.model)
-        self._layout = None
+        self._layout = {}
         self.metadata.update(neighborlist_backend=backend, force_consistent_energy=True)
 
     def _load_model(self, model):
@@ -231,16 +233,20 @@ class NequIPBatchedPotential(_TensorBatchPotential):
             self._check_aoti_runtime()
         torch = self.torch
         batch, natoms, _ = q.shape
-        if self._layout is None or self._layout[0] != batch:
-            self._layout = (batch, {
+        layout = self._layout.get(batch)
+        if layout is None:
+            if len(self._layout) >= 4:
+                self._layout.pop(next(iter(self._layout)))
+            layout = {
                 "atom_types": self._types.repeat(batch),
                 "batch": torch.arange(batch, device=self.device).repeat_interleave(natoms),
                 self._keys.NUM_NODES_KEY: torch.full((batch,), natoms, dtype=torch.long, device=self.device),
-            })
+            }
+            self._layout[batch] = layout
         cell = self._cell_tensor()
         if cell is None:
             cell = torch.zeros((3, 3), dtype=self.dtype, device=self.device)
-        data = dict(self._layout[1])
+        data = dict(layout)
         data.update(
             pos=(q / self.length_factor).reshape(-1, 3),
             cell=cell.expand(batch, 3, 3).contiguous(),
@@ -276,4 +282,4 @@ class NequIPBatchedPotential(_TensorBatchPotential):
     def close(self):
         super().close()
         self.model = None
-        self._layout = None
+        self._layout.clear()
