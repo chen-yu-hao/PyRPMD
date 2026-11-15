@@ -46,10 +46,17 @@ One-dimensional reductions along the minimum-energy path (`reductions.py`):
   beads; `eta_1` changes by less than 1e-3 from 128 to 256 beads.
 - **RPMD rates** (`run_rpmd.py`): `pyrpmd.analysis.subspace_rpmd.ring_polymer_rate`, the
   solver of the subspace pipeline. The full models use their analytic potential, the
-  reductions a tabulated one. 47 thermodynamic-integration windows from `s = -14` to the
-  barrier, 32 walkers (16 for the reductions), 2048 recrossing trajectories. The full RPMD
-  rate is divided by the harmonic finite-bead factor `B_P` of the transverse mode
+  reductions a tabulated one. 48 thermodynamic-integration windows from `s = -14` to the
+  barrier and 2048 recrossing trajectories per run. Full models: two independent runs of
+  32 walkers and 600 sweeps, averaged in the logarithm with inverse-variance weights.
+  Reductions and Eckart barriers: one run of 32 walkers and 1600 sweeps. The full RPMD rate
+  is divided by the harmonic finite-bead factor `B_P` of the transverse mode
   (`harmonic_bead_factor`).
+- **Beads**: 32 at `1.25 T_c`, 64 at `0.8 T_c`, 96 (M2, M4) or 128 (M1, M3) at `0.55 T_c`;
+  the reductions use the power of two at or above the number of the full model. The bead
+  error of the instanton action, the leading factor of the rate, is below 0.003 at these
+  numbers (`tests/test_subspace_instanton.py`), and the Eckart defect at `u = 11.4` agrees
+  within errors between 64 and 128 beads (table below).
 - **Errors** are one standard error of the RPMD rates; the quantum rates and the instantons
   are deterministic. `chi²` is the mean of `(value / error)^2`: about one when a quantity
   vanishes within the statistical error.
@@ -76,7 +83,8 @@ Root-mean-square errors over the temperatures below `T_c` (0.8 and 0.55):
 
 ## Transfer errors above the crossover temperature
 
-At `1.25 T_c` there is no instanton and every anchor is zero.
+At `1.25 T_c` the full models have no instanton and the anchors are zero, except −0.004 for
+the SCT skeleton of M2, which is just below its own crossover.
 
 {{ABOVE}}
 
@@ -100,11 +108,62 @@ Difference `ln eps(H) − ln C_Eck`: {{PATH_FREE_SUMMARY}}.
 
 ## Findings
 
-FINDINGS
+1. **The steepest-descent factor is the leading part of the RPMD defect below `T_c`.** On the
+   four valley models `ln eps` is 0.21 to 0.53 at 0.8 and 0.55 `T_c`, and the remainder
+   `R_H = ln eps − A_H` lies between −0.04 and +0.04. For the Eckart barrier the remainder
+   is 0.02 to 0.05 for `u` of 10.5 to 13.5, where `A` is 0.45 to 0.64. Near the crossover it
+   is not small: 0.04 to 0.09 at `0.8 T_c` and 0.11 to 0.18 just above `T_c`, where `A` is
+   zero. `A` is the leading term well below `T_c` only.
+2. **The naive anchor is wrong; the skeleton anchor holds for the free-energy reduction.**
+   With a zero-point change along the path (M1, M3) the naive anchor of `fe` is +0.07 to
+   +0.14, and the naive-anchored correction is off by −0.066 ± 0.017 to −0.100 ± 0.008 in all
+   four cases. The skeleton-anchored correction of `fe` has no detectable error below `T_c`
+   on any model (rms 0.010 over eight points, `chi²` 0.4).
+3. **For the free-energy reduction the anchor is a small correction.** The plain `C_S` of
+   `fe` is already within 0.054 of the exact defect at all twelve points (rms 0.025), where
+   the quantum rate of `fe` on its own is off by up to 0.35 (`G`). The transfer error is
+   +0.02 to +0.05 on the curved paths (M2, M3) and zero within errors on M1 and M4. Below
+   `T_c` the skeleton anchor (+0.02 to +0.03) accounts for it. Above `T_c` there is no
+   anchor and errors of the same size remain: +0.025 ± 0.005 (M2) and +0.036 ± 0.005 (M3).
+   The agreement below `T_c` therefore does not show that the anchor is the whole transfer
+   error of a curved path.
+4. **A skeleton with a different crossover temperature is not anchored reliably near `T_c`.**
+   The SCT mass raises the barrier frequency of the skeleton by 25% (M2) and 20% (M3). At
+   `0.8 T_c` the skeleton anchor of `fe+sct` (−0.15, −0.20) is twice the measured transfer
+   error (−0.088 ± 0.011, −0.084 ± 0.009); at `0.55 T_c` and on M4, where the SCT skeleton
+   keeps the crossover temperature, it agrees within 0.05. The bare-mass model of M4, with a
+   barrier frequency 25% above that of the saddle, is anchored within errors at both
+   temperatures (transfer errors −0.185 ± 0.016 and −0.219 ± 0.020, anchors −0.199 and −0.198)
+   but has an unanchored error of −0.067 ± 0.011 at `1.25 T_c`, which is its own crossover.
+5. **`C_S` is far less sensitive to the reduction than the quantum rate of the reduction.**
+   The SCT mass overshoots the quantum rate by factors of 2 to 4 (`G` of −0.65 to −1.49
+   below `T_c`), but `C_S` of `fe+sct` is off by 0.06 to 0.12. The bare potential on the
+   path (`mep`) leaves out the zero-point change altogether (`G` up to 2.3 on M1 and M3) and
+   its `C_S` is within 0.07. The SCT mass is still the worst of the
+   path-based reductions: on every curved model `C_S` of `fe+sct` is too large below `T_c`,
+   and `fe` without the SCT mass is closer to the exact defect at all six of those points.
+6. **The path-free Eckart estimate is not better than `C_S`.** It reproduces the defect of M2
+   (at two of three temperatures) and of M4 within 0.01, but is 0.02 to 0.10 too large
+   wherever the zero-point energy changes along the path (M1, M3): rms 0.050 over twelve
+   points, against 0.025 for `C_S` of `fe`. The remainder of those models is not that of an
+   Eckart barrier with the adiabatic barrier height.
+7. **Checks of the method.** The `mep` reduction of M1 is the Eckart barrier with `v = 2.1`;
+   `run_rpmd.py` and `run_eckart.py` agree on its defect within 1.8 combined standard errors
+   at the three temperatures. The two independent runs of each full model differ by less
+   than one combined standard error in ten of twelve cases and by 2.1 at most.
 
 ## Limits
 
-LIMITS
+- Two-dimensional models with one symmetric Eckart barrier, harmonic transverse mode, no
+  wells, no rotations. Three temperatures; the lowest is `0.55 T_c`.
+- Statistical errors of the transfer errors are 0.005 to 0.02. Differences below about 0.02
+  between corrections are not resolved at `0.55 T_c`.
+- The exact rates use a finite-difference grid and a truncated oscillator basis; their
+  convergence (below 3e-3) is recorded in `qm.json` but not folded into the errors.
+- Only the instanton action was checked for bead convergence at every bead number; the
+  RPMD defect itself at one point (`u = 11.4`).
+- The anchors are not used by any correction in PyRPMD. This report does not mark any rate
+  as physically converged.
 
 ## Reproduce
 
@@ -113,11 +172,17 @@ cd benchmarks/subspace_instanton
 python run_qm.py results/qm.json                       # exact rates and instantons, about 45 min
 python run_skeleton.py results/qm.json results/skeleton.json
 for m in M1 M2 M3 M4; do for t in 1.25 0.8 0.55; do
-  python run_rpmd.py $m $t results/qm.json results/rpmd_${m}_${t}.json
+  python run_rpmd.py $m $t results/qm.json results/rpmd_${m}_${t}.json        # full model and reductions
+  python run_rpmd.py $m $t results/qm.json results/rpmd_${m}_${t}.json full   # second run of the full model
 done; done
-python run_eckart.py 2pi/0.8 1.75 results/eckart_u7.854_v1.750.json     # one per (u, v) of the table
-python run_eckart.py 2pi/0.55 2.1 results/eckart_u11.424_v2.100_P128.json --nbeads 128
+for u in 2pi/1.25 2pi/0.8 2pi/0.55; do for v in 1.75 2.1 2.702; do
+  python run_eckart.py $u $v results/eckart_u<u>_v<v>.json                    # file names as in results/
+done; done
+python run_eckart.py 2pi/0.55 2.1 results/eckart_u11.424_v2.100_P64.json --nbeads 64
 python report.py
 ```
 
-`OMP_NUM_THREADS=1`; the RPMD jobs take 4 minutes (32 beads) to about TIMING on one core.
+The remaining Eckart points are `(u, v)` = (6, 2.1), (9, 1.2), (10.5, 2.1), (12, 2.1) and
+(13.5, 2.1). With `OMP_NUM_THREADS=1`, one run of a full model takes 3 minutes with 32
+beads, 10 with 64 and 30 to 55 with 96 or 128 on one core; a reduction or an Eckart point
+takes 2 to 7 minutes.

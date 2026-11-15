@@ -9,12 +9,17 @@ $$
 is $\Delta=\ln\varepsilon(H)-\ln\varepsilon(H_S)$ and that only RPMD's *dynamical* error enters it.
 This page derives the leading part of $\ln\varepsilon$ in closed form, shows that it is a property
 of the full-dimensional instanton that needs neither a reaction path nor sampling, and turns
-that into a correction that is right to leading order for any subspace. The tests are in
+that into a candidate correction, the *anchor*. The tests are in
 `benchmarks/subspace_instanton`. Nothing here marks a rate as physically converged.
 
-> **Status: draft.** The steepest-descent factor is checked against independent rates
-> (below). The anchored corrections are predictions; their RPMD tests on the valley models are
-> still running and are not reported here. See [Status of the tests](#status-of-the-tests).
+> **Status: tested on model potentials, not used by any correction.** On four
+> two-dimensional valley models with exact quantum and RPMD rates
+> ([report](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/2026-11-14-subspace-instanton-anchor/README.md)) the steepest-descent factor is the leading part of the RPMD defect below
+> the crossover temperature, and the skeleton anchor derived below agrees with the
+> transfer error of the free-energy reduction where the naive anchor fails. The anchor is not
+> quantitative near the crossover temperature for reductions that change it, and a path-free
+> estimate is less accurate than the subspace correction itself.
+> See [What the tests show](#what-the-tests-show).
 
 Units: $\hbar=1$ and mass-weighted coordinates unless a formula shows them.
 
@@ -121,8 +126,8 @@ $$
 
 of which the first is the one consistent with the first-order theorem: the dressing transfers
 by the theorem, and the anchor corrects the skeleton, i.e. the path, the mass and the crossover
-temperature of the reduction. Which of the two the measured transfer error follows is what the
-RPMD tests decide.
+temperature of the reduction. The measured transfer errors follow the skeleton anchor and
+not the naive one ([What the tests show](#what-the-tests-show)).
 
 - If $H_S$ is exact, both anchors vanish.
 - Above both crossovers every $A$ is zero and $C_{\mathrm{anch}}=C_S$.
@@ -154,7 +159,9 @@ $$
 $$
 
 It needs the saddle, its frequencies and the instanton, and one 1D calculation (or a table of
-$R_{\mathrm{Eck}}$). It assumes a symmetric barrier.
+$R_{\mathrm{Eck}}$). It assumes a symmetric barrier. On the valley models it is less accurate
+than the subspace correction of the free-energy reduction
+([What the tests show](#what-the-tests-show)).
 
 ## Which coordinates the instanton involves
 
@@ -180,46 +187,110 @@ contains all three cases, so $A_H$ does; a subspace model on the minimum-energy 
 only the first. The ratio $\omega_k/\lambda^\ddagger$ therefore classifies the modes: well above
 one, fold into $V_S$; near or below one, put in $S$ or rely on the anchor.
 
-## Status of the tests
+## What the tests show
 
-`benchmarks/subspace_instanton` re-implements the model family and the exact reference of a
-code package supplied for comparison (2D valley models M1–M4; a recursive Green's-function
-$N(E)$ with exact leads) and uses this repository's RPMD solver.
+`benchmarks/subspace_instanton` has four two-dimensional valley models (M1: the transverse
+zero-point energy changes along a straight path; M2: a curved path; M3: both; M4: a slow bath
+displaced between reactants and products), an exact reference (a recursive Green's-function
+$N(E)$ with exact leads) and this repository's RPMD solver. The model family and the reference
+method re-implement those of a code package supplied for comparison. Tables, errors and
+commands are in the [validation report](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/2026-11-14-subspace-instanton-anchor/README.md); temperatures are 1.25, 0.8 and 0.55 $T_c$.
+Reductions: `fe` is the free-energy (adiabatic) projection on the minimum-energy path, `mep`
+its skeleton, `fe+sct` the same with the small-curvature mass, `bare` the bare barrier with
+the bare mass (M4).
 
-**Checked**
+**The steepest-descent factor.** Below $T_c$ the measured $\ln\varepsilon(H)$ is 0.21 to 0.53
+and the remainder $R_H$ lies between $-0.04$ and $+0.04$. For the symmetric Eckart barrier:
 
-| Statement | Test | Result |
-| --- | --- | --- |
-| Exact reference | Green's-function rate vs the analytic Eckart transmission, 5 points | relative difference $10^{-6}$ to $4\times10^{-4}$ |
-| RPMD solver | $\varepsilon$ of the Eckart barrier vs the package's independent C kernel | $(u,v)=(6,2.1)$: $1.185\pm0.007$ vs 1.184; $(9,1.2)$: $1.512\pm0.012$ vs 1.512 |
-| $\varepsilon_{\mathrm{SD}}=2\pi/\beta\hbar\eta_1$ | package's table of $\varepsilon(u,v)$ vs $\eta_1$ computed here | $v=2.1$, $u=10.5,12,13.5$: $\ln\varepsilon=0.459,0.558,0.641$ vs $A=0.453,0.555,0.640$ |
-| $A_{\mathrm{Eck}}$ depends on $u$ only | $v=0.8$ to 3.6 | identical to four digits |
-| $R_{\mathrm{Eck}}$ shrinks with $1/v$ | same table | $u=3$: $R\,v=0.12$ to 0.14; $u=9$: $R=0.13$ ($v=0.8$) to 0.01 ($v=3.6$) |
+| $u=\beta\hbar\omega_b$ | $v$ | $\ln\varepsilon$ (RPMD here) | $A(u)$ | $R$ |
+| --- | --- | --- | --- | --- |
+| 5.03 ($1.25\,T_c$) | 1.75, 2.1, 2.70 | 0.146, 0.125, 0.107 | 0 | 0.146, 0.125, 0.107 (±0.004) |
+| 6.0 | 2.1 | 0.175 | 0 | 0.175 ± 0.005 |
+| 7.85 ($0.8\,T_c$) | 1.75, 2.1, 2.70 | 0.305, 0.287, 0.251 | 0.211 | 0.094, 0.076, 0.040 (±0.008) |
+| 10.5 | 2.1 | 0.481 | 0.453 | 0.028 ± 0.010 |
+| 11.4 ($0.55\,T_c$) | 1.75, 2.1, 2.70 | 0.554, 0.543, 0.542 | 0.518 | 0.036, 0.026, 0.024 (±0.013) |
+| 12.0 | 2.1 | 0.607 | 0.555 | 0.052 ± 0.012 |
+| 13.5 | 2.1 | 0.658 | 0.640 | 0.018 ± 0.014 |
 
-**Deterministic results for the valley models** ($G=\ln[k_{\mathrm{QM}}(H)/k_{\mathrm{QM}}(H_S)]$,
-exact; `results/qm.json`, `results/skeleton.json`):
+- $A$ is the leading term well below $T_c$ only. The remainder is largest near the crossover
+  (0.18 at $u=6$) and still 0.04 to 0.09 at $0.8\,T_c$, where $A$ is 0.21.
+- $A_{\mathrm{Eck}}$ depends on $u$ only (identical to nine digits for $v=0.8$ and 3.6), and
+  the remainder shrinks with $v$ at fixed $u$, as the scaling argument requires.
+- The comparison package's independent table gives $\varepsilon=1.184$ at $(u,v)=(6,2.1)$ and
+  1.512 at $(9,1.2)$; the runs here give $1.192\pm0.006$ and $1.514\pm0.011$. Its values of
+  $\ln\varepsilon$ at $v=2.1$, $u=10.5$, 12 and 13.5 are 0.459, 0.558 and 0.641, which is 0.02,
+  0.05 and 0.02 below the runs here (errors 0.010 to 0.014; those of the table are not known).
 
-| model | $T/T_c$ | $G$: `mep` | `fe` | `fe+sct` | `bare` | $A_H$ | $A_H-A_{S^0}$: `mep` | `mep+sct` | `bare` |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| M1 (zero-point change) | 0.8 | +2.09 | −0.013 | – | – | 0.211 | 0.000 | – | – |
-| | 0.55 | +2.28 | −0.019 | – | – | 0.518 | 0.000 | – | – |
-| M2 (curved path) | 0.8 | −0.063 | +0.184 | −0.870 | – | 0.212 | +0.021 | −0.150 | – |
-| | 0.55 | −0.048 | +0.301 | −1.475 | – | 0.492 | +0.024 | −0.016 | – |
-| M3 (both) | 0.8 | +2.09 | +0.195 | −0.731 | – | 0.219 | +0.025 | −0.197 | – |
-| | 0.55 | +2.33 | +0.347 | −1.351 | – | 0.496 | +0.033 | −0.053 | – |
-| M4 (slow bath) | 0.8 | −0.585 | +0.037 | −0.652 | −2.48 | 0.200 | 0.000 | −0.089 | −0.199 |
-| | 0.55 | −0.655 | +0.059 | −1.489 | −3.96 | 0.481 | +0.008 | −0.136 | −0.198 |
+**Naive and skeleton anchor.** Transfer errors $\Delta=\ln\varepsilon(H)-\ln C_S$ of the
+free-energy reduction and what is left after each anchor (one standard error):
 
-- The free-energy model reproduces the exact rate to 2% for M1 and 6% for the slow bath M4,
-  but is 17–29% low on the curved paths M2 and M3 (transverse frequency 1.1 to 1.8 times the
-  barrier frequency).
-- The SCT mass overshoots the rate by a factor of about 2 at $0.8\,T_c$ and 4 at $0.55\,T_c$ on
-  every curved model: its adiabatic assumption does not hold at these frequency ratios.
-- The skeleton on the minimum-energy path has the steepest-descent factor of the full system
-  to 0.04 or better on all four models at every temperature computed; the SCT and bare-mass skeletons do not, mostly because
-  their crossover temperatures differ from that of $H$.
+| model | $T/T_c$ | $\Delta$ (`fe`) | skeleton anchor | $\Delta-$anchor | naive anchor | $\Delta-$anchor |
+| --- | --- | --- | --- | --- | --- | --- |
+| M1 | 0.8 | −0.001 ± 0.008 | 0.000 | −0.001 | +0.083 | −0.085 |
+| | 0.55 | +0.004 ± 0.017 | 0.000 | +0.004 | +0.070 | −0.066 |
+| M2 | 0.8 | +0.020 ± 0.010 | +0.021 | −0.001 | +0.077 | −0.056 |
+| | 0.55 | +0.033 ± 0.019 | +0.024 | +0.009 | +0.033 | 0.000 |
+| M3 | 0.8 | +0.034 ± 0.008 | +0.025 | +0.009 | +0.134 | −0.100 |
+| | 0.55 | +0.054 ± 0.017 | +0.033 | +0.021 | +0.143 | −0.089 |
+| M4 | 0.8 | +0.004 ± 0.015 | 0.000 | +0.004 | +0.008 | −0.004 |
+| | 0.55 | −0.007 ± 0.021 | +0.008 | −0.015 | +0.022 | −0.029 |
 
-**Not yet tested** (RPMD runs in progress): the exact $\varepsilon(H)$ of M1–M4 and with it
-every statement about transfer errors and the two anchors; the Eckart remainder as a
-path-free estimate. Two SCT instantons at $0.45\,T_c$ (M2, M3) have a second unstable mode and
-are not used.
+- The naive anchor fails wherever the zero-point energy changes along the path (M1, M3), by
+  4 to 12 standard errors. The skeleton-anchored correction has no detectable error at any
+  of the eight points (root mean square 0.010).
+- For this reduction the anchor is small, because the skeleton on the minimum-energy path has
+  the steepest-descent factor of the full system to 0.04. The plain $C_S$ is already within
+  0.054 of the exact defect at all twelve points (root mean square 0.025), where the quantum
+  rate of the reduction on its own is off by up to 0.35.
+- Above $T_c$ there is no anchor, and the curved paths keep a transfer error of the same size:
+  $+0.025\pm0.005$ (M2) and $+0.036\pm0.005$ (M3) at $1.25\,T_c$. The agreement below $T_c$
+  therefore does not show that the anchor is the whole transfer error of a curved path.
+
+**Skeletons with another crossover temperature.** The small-curvature mass raises the barrier
+frequency of the skeleton by 25% (M2) and 20% (M3); the bare-mass model of M4 has one 25%
+above that of the saddle.
+
+| model | $T/T_c$ | reduction | $\Delta$ | skeleton anchor | $\Delta-$anchor |
+| --- | --- | --- | --- | --- | --- |
+| M2 | 0.8 | `fe+sct` | −0.088 ± 0.011 | −0.150 | +0.063 |
+| | 0.55 | | −0.064 ± 0.018 | −0.016 | −0.048 |
+| M3 | 0.8 | `fe+sct` | −0.084 ± 0.009 | −0.197 | +0.113 |
+| | 0.55 | | −0.075 ± 0.018 | −0.053 | −0.022 |
+| M4 | 0.8 | `fe+sct` | −0.065 ± 0.015 | −0.089 | +0.024 |
+| | 0.55 | | −0.124 ± 0.019 | −0.136 | +0.012 |
+| M4 | 0.8 | `bare` | −0.185 ± 0.016 | −0.199 | +0.014 |
+| | 0.55 | | −0.219 ± 0.020 | −0.198 | −0.021 |
+
+- Where the skeleton has a higher crossover temperature and the system is near its own, the
+  anchor overshoots: at $0.8\,T_c$ it is twice the measured transfer error for M2 and M3. The
+  two models sit at different reduced temperatures there, and near a crossover the
+  remainder, which the anchor neglects, is as large as the steepest-descent factor.
+- The bare-mass model is anchored within errors at both temperatures. At $1.25\,T_c$, its own
+  crossover, its transfer error is $-0.067\pm0.011$ and no anchor exists.
+- The small-curvature mass overshoots the quantum rate by factors of 2 to 4, but $C_S$ of
+  `fe+sct` is off by 0.06 to 0.12 only: $C_S$ is far less sensitive to the reduction than the
+  rate of the reduction is. It is still too large on every curved model below $T_c$, and `fe`
+  without that mass is closer to the exact defect at all six of those points.
+
+**Path-free estimate.** $\ln C_{\mathrm{Eck}}$ agrees with the exact defect within 0.01 for
+M4 and for M2 at two of three temperatures, and is 0.02 to 0.10 too large for M1 and M3:
+root mean square 0.050 over twelve points, against 0.025 for $C_S$ of `fe`. Where the
+zero-point energy changes along the path, the remainder is not that of an Eckart barrier with
+the adiabatic barrier height.
+
+**What follows for the subspace correction.**
+
+- The free-energy projection on the minimum-energy path is the reduction to use; its $C_S$
+  needs no anchor at the accuracy of these tests (0.02 to 0.05 on curved paths).
+- An anchor has to compare with the skeleton. Comparing the instanton of the full system with
+  that of a model dressed with zero-point energy is wrong by the size of the dressing.
+- $A_H$ is a cheap diagnostic of how large the RPMD defect is well below $T_c$;
+  `pyrpmd.instanton.steepest_descent_rpmd_defect` returns it for an optimized
+  [instanton](instanton.md#steepest-descent-rpmd-defect). It is not a correction: the
+  remainder is as large as $A_H$ near the crossover.
+- No correction in PyRPMD uses an anchor.
+
+**Limits of the tests.** Two-dimensional models, one symmetric barrier, a harmonic transverse
+mode, no wells or rotations; three temperatures down to $0.55\,T_c$; statistical errors of the
+transfer errors 0.005 to 0.02. Two SCT instantons at $0.45\,T_c$ (M2, M3) have a second
+unstable mode; that temperature has no RPMD rates.

@@ -5,6 +5,20 @@ not been published as a new wheel release; no release date or DOI is assigned.
 
 ## Unreleased
 
+- Instantons: `pyrpmd.instanton.steepest_descent_rpmd_defect(result)` returns
+  `ln[2 pi / (beta hbar eta_1)]`, the steepest-descent part of
+  `ln(k_QM / k_RPMD)` below the crossover temperature, from the eigenvalues an
+  optimized instanton already stores. It is a diagnostic and is not applied to
+  any rate. On four 2D valley models with exact quantum and RPMD rates it is
+  the leading part of the RPMD defect below the crossover (logarithm of the
+  defect 0.21 to 0.53, remainder within 0.04 of zero), and a correction
+  anchored on it has to compare with
+  the bare-potential skeleton of a reduction, not with the reduction dressed
+  with zero-point energy:
+  [theory](docs/subspace-instanton-anchor.md),
+  [report](docs/validation/2026-11-14-subspace-instanton-anchor/README.md).
+  No subspace correction uses the anchor.
+
 - Subspace correction: the 2D plane model's reactant absorber now continues
   past the start of the path. When the reference slice lies near the reactant
   end, the absorber region reaches beyond the path; grid points there took the
