@@ -168,7 +168,8 @@ def make_workflow_torch_pes(provider, *, device=None):
     built-in class and its original evaluator. Harmonic parameters may broadcast
     over atoms/Cartesian axes but cannot select individual frames. Other models
     need an open module-backed :class:`TorchPotential`, or an explicit
-    ``as_torch_pes()`` bridge such as the T04 batched ML providers. Both source
+    ``as_torch_pes()`` bridge such as the T04 batched ML providers or CUDA
+    device-pointer :class:`CABIPotential` plugins. Both source
     and returned adapter must declare independent, stateless frames.
 
     ``device`` selects the device for analytic snapshots. For borrowed providers

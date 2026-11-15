@@ -21,9 +21,17 @@ C++ propagation blocks. No change to PyRPMD's integrator mathematics is needed.
   `allow_cpu_fallback=false` (default) rejects unsupported GPU graph partitioning;
   setting it true permits mixed CPU/GPU execution. It does not turn a missing
   CUDA provider into a silent CPU-only run.
-- ABI v1 is host-memory, fixed-composition, nonperiodic, single-surface. CUDA
-  still transfers coordinates/results between host and device each call. This
-  is **not** a GPU-resident integrator or a device-pointer/zero-copy ABI.
+- ABI v1 (`pyrpmd_pes_evaluate_v1`) uses contiguous host memory for the CPU/C++
+  `Dynamics` engine (`loop_backend="native"`).
+- When built with CUDA Toolkit headers/runtime (`PYRPMD_ONNX_CUDA=AUTO` or `ON`)
+  and configured with `device="cuda:<index>"`, `libpyrpmd_onnx.so` also exports
+  the companion CUDA device-memory ABI (`include/pyrpmd/pes_api_cuda_v1.h`:
+  `pyrpmd_pes_cuda_abi_version_v1` and `pyrpmd_pes_evaluate_cuda_v1`). Using
+  `Ort::IoBinding` over `Cuda` device memory plus stream-ordered CUDA kernels
+  for unit scaling and finiteness checks, it evaluates directly on PyTorch's
+  active `cudaStream_t` (`CABIPotential.as_torch_pes()` / `make_workflow_torch_pes()`)
+  with zero intermediate host `std::vector<double>` copies or per-step host
+  synchronizations inside `TorchDynamics`.
 
 ## Build separately from PyRPMD
 
@@ -33,9 +41,17 @@ On Debian/Ubuntu install `nlohmann-json3-dev`, then:
 
 ```sh
 cmake -S native/onnx -B build/onnx -DCMAKE_BUILD_TYPE=Release \
-  -DONNXRUNTIME_ROOT=/absolute/path/to/onnxruntime-sdk
+  -DONNXRUNTIME_ROOT=/absolute/path/to/onnxruntime-sdk \
+  -DPYRPMD_ONNX_CUDA=AUTO
 cmake --build build/onnx --parallel 2
 ```
+
+`PYRPMD_ONNX_CUDA` defaults to `AUTO`: when `nvcc` and `CUDAToolkit` are present,
+CMake compiles `onnx_cuda.cu` and enables zero-copy CUDA device-pointer
+evaluation (`capabilities.cuda_device_memory=true` for `device="cuda:<index>"`);
+on CPU-only machines without CUDA Toolkit it builds cleanly with
+`PYRPMD_ONNX_HAS_CUDA=0`. Pass `-DPYRPMD_ONNX_CUDA=ON` to require CUDA at
+configure time or `-DPYRPMD_ONNX_CUDA=OFF` to force a host-only build.
 
 CMake locates `onnxruntime_cxx_api.h` and `libonnxruntime` below that directory.
 Keep the matching runtime libraries installed and on the dynamic-loader search
@@ -101,6 +117,26 @@ metadata. `loop_backend="native"` requests the native route explicitly and must
 not be used with unsupported custom Python CVs/biases expecting a fallback.
 Each process constructs its own context. Avoid nested oversubscription: start
 with one ORT intra-op thread per independently scheduled trajectory worker.
+
+For GPU-resident `TorchDynamics` or `sampling.engine="torch"` (`pimd` /
+`diffusion`) workflows without host coordinate/force round-trips, set both the
+sampling engine and the ONNX plugin to the same CUDA device (or call
+`pes.as_torch_pes()` / `make_workflow_torch_pes(pes, device="cuda:0")` in Python):
+
+```toml
+[potential]
+provider = "cabi"
+library = "/absolute/path/PyRPMD/build/onnx/libpyrpmd_onnx.so"
+
+[potential.params]
+model = "/absolute/path/model.onnx"
+device = "cuda:0"
+
+[sampling]
+engine = "torch"
+device = "cuda:0"
+replicas = 16
+```
 
 ## Model contract and errors
 

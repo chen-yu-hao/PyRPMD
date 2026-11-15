@@ -150,7 +150,10 @@ def resolve_sampling(d, runtime, *, selected, materials, native_pimd):
             # The Torch workflow's equilibration map is explicitly BCOCB,
             # independently of the selected deterministic production map.
             sampler = "bcocb"
-            sampling.setdefault("device", d.get("potential", {}).get("device", "cpu"))
+            sampling.setdefault(
+                "device",
+                d.get("potential", {}).get("device", d.get("potential", {}).get("params", {}).get("device", "cpu")),
+            )
             sampling.setdefault("normal_mode_layout", "rfft")
         if native_pimd and sampling["thermostat"] == "nhc" and sampler is not None:
             from .workflows.native_pimd import sampling_splitting

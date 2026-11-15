@@ -74,6 +74,13 @@ observations, result arrays and exception payloads.
 The existing **v1** C ABI and its header remain compatible. **v2** adds explicit
 per-structure cells/PBC and optional physical virials while retaining synchronous
 host-memory batching and the same create/metadata/evaluate/destroy lifecycle.
+An optional companion CUDA device-memory extension
+([`pes_api_cuda_v1.h`](../native/include/pyrpmd/pes_api_cuda_v1.h)) allows v1
+and v2 libraries with `capabilities.cuda_device_memory=true` and
+`execution_device="cuda:<index>"` (such as `libpyrpmd_onnx.so` built with CUDA)
+to evaluate float64 device pointers on the caller's `cudaStream_t` via
+`CABIPotential.as_torch_pes()` without host round-trips; host-only C ABI
+libraries continue unchanged and fail fast if `as_torch_pes()` is requested.
 See [the versioned ABI specification](../native/ABI.md) and
 [`pes_api_v2.h`](../native/include/pyrpmd/pes_api_v2.h). Potential
 evaluation receives atomic-unit `float64[B,N,3]` coordinates and returns

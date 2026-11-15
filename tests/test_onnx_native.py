@@ -90,8 +90,11 @@ def test_batch_units_forces_and_resize(tmp_path, length, energy):
             assert not got.status.any()
         check = check_potential(pes, data(), epsilon=1e-5)
         assert check["max_absolute_force_error"] < 1e-9
+        assert pes.metadata["batch_independent"] is True
         assert pes.metadata["capabilities"]["stateful"] is False
         assert pes.metadata["capabilities"]["host_memory"] is True
+        assert pes.metadata["capabilities"]["cuda_device_memory"] is False
+        assert pes.device == "cpu"
 
 
 def test_batch_is_independent_and_not_scaled_by_bead_count(model):
@@ -146,6 +149,16 @@ def test_cuda_request_never_silently_becomes_cpu(model):
         pytest.skip("test requires the CPU-only runtime used by CI")
     with pytest.raises(PotentialError, match="CUDA"):
         potential(model, device="cuda:0")
+
+
+def test_cpu_onnx_rejects_torch_pes_bridge_without_fallback(model):
+    with potential(model, device="cpu") as pes:
+        assert pes.device == "cpu"
+        assert pes.metadata["capabilities"]["cuda_device_memory"] is False
+        with pytest.raises(PotentialError, match="CUDA device-pointer"):
+            pes.as_torch_pes()
+        with pytest.raises(PotentialError, match="CUDA device-pointer"):
+            pes.evaluate_tensor(data())
 
 
 def test_nonfinite_output_is_explicit_failure(tmp_path):
