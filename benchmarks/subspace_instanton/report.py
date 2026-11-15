@@ -64,6 +64,7 @@ def transfer_rows(results: dict) -> list[dict]:
         full = result["full"]
         row = {"model": name, "ratio": ratio, "beta": result["beta"], "u": result["beta"] * record["unstable_frequency"],
                "v": adiabatic_height(record, family()[name]), "nbeads": full["nbeads"], "kappa": full["kappa"],
+               "runs": len(full["runs"]),
                "bead_factor": full["bead_factor"], "eps": full["eps"], "ln_eps": float(np.log(full["eps"])),
                "error": full["relative_error"], "anchor": entry["ln_eps_sd"], "reductions": {}}
         row["remainder"] = row["ln_eps"] - row["anchor"]
@@ -97,10 +98,10 @@ def _pm(value: float, error: float, digits: int = 3) -> str:
 
 
 def defect_table(rows) -> str:
-    lines = ["| model | T/T_c | P | kappa | B_P | eps(H) | ln eps(H) | A_H | R_H = ln eps − A_H |",
-             "|---|---|---|---|---|---|---|---|---|"]
+    lines = ["| model | T/T_c | P | runs | kappa | B_P | eps(H) | ln eps(H) | A_H | R_H = ln eps − A_H |",
+             "|---|---|---|---|---|---|---|---|---|---|"]
     for r in rows:
-        lines.append(f"| {r['model']} ({MODELS[r['model']]}) | {r['ratio']} | {r['nbeads']} | {r['kappa']:.3f} | "
+        lines.append(f"| {r['model']} ({MODELS[r['model']]}) | {r['ratio']} | {r['nbeads']} | {r['runs']} | {r['kappa']:.3f} | "
                      f"{r['bead_factor']:.4f} | {r['eps']:.3f} ± {r['eps'] * r['error']:.3f} | "
                      f"{_pm(r['ln_eps'], r['error'])} | {r['anchor']:.3f} | {_pm(r['remainder'], r['error'])} |")
     return "\n".join(lines)

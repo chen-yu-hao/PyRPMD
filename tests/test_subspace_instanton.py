@@ -19,7 +19,7 @@ from pyrpmd.analysis.subspace_rpmd import free_ring_frequencies
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from benchmarks.subspace_instanton import greens, report  # noqa: E402
+from benchmarks.subspace_instanton import greens, report, run_rpmd  # noqa: E402
 from benchmarks.subspace_instanton.instanton import (  # noqa: E402
     find_instanton, ring_hessian, steepest_descent_factor)
 from benchmarks.subspace_instanton.models import Valley, eckart, family  # noqa: E402
@@ -186,6 +186,30 @@ def test_the_unstable_frequency_converges_as_the_inverse_square_of_the_bead_numb
     assert eta[2] == pytest.approx(eta[1], rel=2e-4)
 
 
+def instanton_action(v, u, nbeads):
+    """``S = beta_N U_N`` of the Eckart instanton."""
+    potential, _, _, _ = eckart(v)
+    x = eckart_instanton(v, u, nbeads)["x"][:, 0]
+    return u / nbeads * (potential(x).sum() + 0.5 * (nbeads / u) ** 2 * ((x - np.roll(x, 1)) ** 2).sum())
+
+
+def test_the_bead_numbers_of_the_rpmd_runs_resolve_the_instanton_action():
+    """``exp(-S)`` is the leading factor of the RPMD rate below the crossover.
+
+    Its bead error is far below the statistical errors (1 to 2%) at the bead
+    numbers of ``run_rpmd.py`` and ``run_eckart.py``: 64 at 0.8 T_c, 96 or 128
+    at 0.55 T_c.  It grows in proportion to ``v`` and as ``1 / P^2``.
+    """
+    for u, nbeads, bound in ((2.0 * np.pi / 0.8, 64, 2.5e-3), (2.0 * np.pi / 0.55, 96, 3e-3),
+                             (2.0 * np.pi / 0.55, 128, 1.6e-3), (13.5, 128, 2.2e-3)):
+        error = instanton_action(2.1, u, 1024) - instanton_action(2.1, u, nbeads)
+        assert 0.0 < error < bound
+    coarse = instanton_action(2.1, 9.0, 1024) - instanton_action(2.1, 9.0, 32)
+    fine = instanton_action(2.1, 9.0, 1024) - instanton_action(2.1, 9.0, 64)
+    assert coarse / fine == pytest.approx(4.0, rel=0.05)
+    assert (instanton_action(3.6, 9.0, 1024) - instanton_action(3.6, 9.0, 64)) / fine == pytest.approx(3.6 / 2.1, rel=1e-6)
+
+
 def test_a_transverse_mode_on_a_straight_path_does_not_move_the_instanton():
     """M1: the valley is straight, so the instanton and its unstable mode are those of the bare barrier."""
     model = family()["M1"]
@@ -347,20 +371,70 @@ def test_the_committed_full_instanton_is_reproduced(qm):
 
 # --- committed RPMD results and the report ------------------------------------------------------
 
+def test_independent_runs_are_averaged_in_the_logarithm_with_inverse_variance_weights():
+    run = lambda rate, error, seed: {"rate": rate, "relative_error": error, "qtst": 2.0 * rate, "kappa": 0.5,
+                                     "nbeads": 32, "seed": seed, "walkers": 32, "sweeps": 600, "seconds": 1.0}
+    one = run_rpmd.combine([run(2.0, 0.02, 11)])
+    assert one["rate"] == pytest.approx(2.0) and one["relative_error"] == pytest.approx(0.02)
+    both = run_rpmd.combine([run(2.0, 0.02, 11), run(8.0, 0.02, 1011)])
+    assert both["rate"] == pytest.approx(4.0) and both["qtst"] == pytest.approx(8.0)
+    assert both["relative_error"] == pytest.approx(0.02 / np.sqrt(2.0))
+    weighted = run_rpmd.combine([run(2.0, 0.01, 11), run(8.0, 0.02, 1011)])
+    assert np.log(weighted["rate"]) == pytest.approx(0.8 * np.log(2.0) + 0.2 * np.log(8.0))
+    assert weighted["seconds"] == 2.0 and len(weighted["runs"]) == 2
+    # Only runs with the same beads and sampling are averaged with a new one.
+    record = {"runs": [run(2.0, 0.02, 11), dict(run(2.0, 0.02, 5), nbeads=64)]}
+    assert [r["seed"] for r in run_rpmd.earlier_runs(record, 32, run_rpmd.FULL)] == [11]
+    assert run_rpmd.earlier_runs(None, 32, run_rpmd.FULL) == []
+
+
 def test_every_rpmd_result_uses_the_committed_exact_rate(qm):
     files = sorted(RESULTS.glob("rpmd_*.json"))
     assert len(files) == 12
     for path in files:
         result = json.loads(path.read_text())
-        entry = qm["models"][result["model"]]["temperatures"][str(result["temperature_ratio"])]
+        name, ratio = result["model"], result["temperature_ratio"]
+        entry = qm["models"][name]["temperatures"][str(ratio)]
         full = result["full"]
         assert result["beta"] == entry["beta"] and full["k_qm"] == entry["k_qm"]
         assert full["eps"] == pytest.approx(entry["k_qm"] * full["bead_factor"] / full["rate"], rel=1e-12)
         assert 0.0 < full["relative_error"] < 0.03 and 0.5 < full["kappa"] <= 1.0 + 3 * full["relative_error"]
+        assert set(result["reductions"]) == set(run_rpmd.REDUCTIONS[name])
+        for record in (full, *result["reductions"].values()):
+            runs = record["runs"]
+            assert len({run["seed"] for run in runs}) == len(runs) >= 1
+            assert {run["nbeads"] for run in runs} == {run_rpmd.BEADS[name][ratio]}
+            assert record["rate"] == pytest.approx(run_rpmd.combine(runs)["rate"], rel=1e-12)
+            assert record["relative_error"] == pytest.approx(run_rpmd.combine(runs)["relative_error"], rel=1e-12)
+            # Independent runs of one rate agree within their errors.
+            logs = np.log([run["rate"] for run in runs])
+            errors = np.array([run["relative_error"] for run in runs])
+            assert np.all(abs(logs - np.log(record["rate"])) < 4.0 * errors)
         for key, item in result["reductions"].items():
             assert item["k_qm"] == entry["reductions"][key]["k_qm"]
             assert item["eps"] == pytest.approx(item["k_qm"] / item["rate"], rel=1e-12)
             assert 0.0 < item["relative_error"] < 0.03
+
+
+def test_the_bare_reduction_of_m1_is_the_eckart_barrier():
+    """M1 is straight: its ``mep`` reduction and ``run_eckart.py`` at ``v = 2.1`` solve one problem."""
+    results = report.load_results()
+    for row in report.transfer_rows(results):
+        if row["model"] == "M1":
+            eckart_run = report.eckart_entry(results, row["u"], 2.1)
+            item = row["reductions"]["mep"]
+            difference = item["ln_eps"] - np.log(eckart_run["eps"])
+            assert abs(difference) < 3.5 * np.hypot(item["error_reduction"], eckart_run["relative_error"])
+
+
+def test_the_eckart_runs_carry_their_steepest_descent_factor():
+    results = report.load_results()
+    assert len(results["eckart"]) == 15
+    for run in results["eckart"]:
+        found = eckart_instanton(run["v"], run["u"], 256) if run["u"] > 2.0 * np.pi else None
+        assert run["ln_eps_sd"] == pytest.approx(steepest_descent_factor(run["u"], 1.0, found), abs=1e-9)
+        assert run["remainder"] == pytest.approx(np.log(run["eps"]) - run["ln_eps_sd"], abs=1e-12)
+        assert run["eps"] == pytest.approx(run["k_qm"] / run["rate"], rel=1e-12)
 
 
 def test_the_anchors_vanish_above_the_crossover_and_for_an_exact_skeleton():
@@ -368,6 +442,7 @@ def test_the_anchors_vanish_above_the_crossover_and_for_an_exact_skeleton():
     assert {(r["model"], r["ratio"]) for r in rows} == {(m, t) for m in ("M1", "M2", "M3", "M4")
                                                          for t in (1.25, 0.8, 0.55)}
     for row in rows:
+        assert "eckart" in row
         for key, item in row["reductions"].items():
             if row["ratio"] > 1.0 and key != "fe+sct":
                 assert item["anchor_skeleton"] == 0.0 and item["anchor_naive"] == 0.0
@@ -377,6 +452,26 @@ def test_the_anchors_vanish_above_the_crossover_and_for_an_exact_skeleton():
             assert item["error"] == pytest.approx(np.hypot(row["error"], item["error_reduction"]), rel=1e-12)
 
 
+def test_the_naive_anchor_fails_where_the_skeleton_anchor_holds():
+    """The finding of the report, with the statistics of the committed runs.
+
+    A zero-point change (M1, M3) moves the instanton of the free-energy model
+    but not the transfer error: the anchor that compares with that instanton
+    is off by its whole size, the one that compares with the skeleton is not.
+    """
+    rows = report.transfer_rows(report.load_results())
+    items = [r["reductions"]["fe"] for r in rows if r["model"] in ("M1", "M3") and r["ratio"] < 1.0]
+    assert len(items) == 4
+    for item in items:
+        assert item["anchor_naive"] - item["anchor_skeleton"] > 0.06
+        assert item["residual_naive"] < -2.5 * item["error"]
+        assert abs(item["residual_skeleton"]) < 2.5 * item["error"]
+    stats = report.summary(rows)["fe"]
+    assert stats["skeleton"]["rms"] < stats["naive"]["rms"] / 2.0
+
+
 def test_the_validation_report_is_the_generated_one():
     committed = ROOT / "docs" / "validation" / "2026-11-14-subspace-instanton-anchor" / "README.md"
-    assert committed.read_text() == report.render()
+    text = report.render()
+    assert committed.read_text() == text
+    assert "{{" not in text and "FINDINGS" not in text and "LIMITS" not in text
