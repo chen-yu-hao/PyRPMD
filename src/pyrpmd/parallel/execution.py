@@ -634,6 +634,8 @@ def make_task_potential(spec, system):
         # Device choice is process-local. It does not modify visible device IDs.
         if spec.get("provider", spec.get("type")) not in (
             "torch",
+            "jaxpip",
+            "jax-dlpack",
             "python",
             "ase",
             "deepmd",

@@ -5,7 +5,7 @@ from __future__ import annotations
 from copy import deepcopy
 from pathlib import Path
 
-from .input_paths import _path, _nested_potential_paths
+from .input_paths import _path, _nested_potential_paths, _resolve_potential_files
 from .input_schema import InputError
 from .system import System, system_from_config
 from .units import parse_quantity
@@ -70,28 +70,12 @@ def resolve_potential(d, base, system, *, beads):
     potential = deepcopy(d.get("potential", {}))
     if not potential:
         raise InputError("Specify [potential] or --pes; no PES is guessed")
-    if potential.get("provider", potential.get("type")) in ("committee", "delta"):
+    kind = potential.get("provider", potential.get("type"))
+    if kind in ("committee", "delta"):
         _nested_potential_paths(potential, base, beads)
-    for k in ("library", "manifest", "weights"):
-        if k in potential:
-            potential[k] = _path(base, potential[k])
-    if "model" in potential and potential.get(
-        "provider", potential.get("type")
-    ) not in ("builtin", "fairchem", None):
-        potential["model"] = _path(base, potential["model"])
-    elif potential.get("provider", potential.get("type")) == "fairchem" and "model" in potential:
-        # fairchem accepts registered names as well as local checkpoints.
-        # Preserve names; resolve explicit paths relative to the input.
-        model = potential["model"]
-        if isinstance(model, str) and (model.startswith((".", "~", "/"))
-                or Path(model).suffix.lower() in (".pt", ".pth", ".ckpt", ".bin")
-                or (base / model).is_file()):
-            potential["model"] = _path(base, model)
-    # Model-specific path-valued parameters can be declared relative to input.
-    for k in ("model", "weights", "reference"):
-        if isinstance(potential.get("params", {}).get(k), str):
-            potential["params"][k] = _path(base, potential["params"][k])
-    if potential.get("provider", potential.get("type")) == "lammps":
+    else:
+        _resolve_potential_files(potential, kind, base)
+    if kind == "lammps":
         assets = potential.get("params", {}).get("asset_files", [])
         if not isinstance(assets, (list, tuple)) or not all(isinstance(p, str) for p in assets):
             raise InputError("LAMMPS params.asset_files must be a list of external input-file paths")

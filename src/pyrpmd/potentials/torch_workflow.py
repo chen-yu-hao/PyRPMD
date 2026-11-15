@@ -7,6 +7,7 @@ Constructing this module does not import Torch or initialize an accelerator.
 """
 from __future__ import annotations
 
+from collections.abc import Mapping
 import numpy as np
 
 from .base import BackendUnavailableError
@@ -19,6 +20,60 @@ from .optional import TorchPotential
 
 _TORCH_EVALUATE = TorchPotential.evaluate
 _BUILTINS = (FreePotential, HarmonicPotential, PeriodicCosinePotential)
+TENSOR_WORKFLOW_ANALYTIC_MODELS = ("free", "harmonic", "periodic_cosine")
+TENSOR_WORKFLOW_BRIDGE_PROVIDERS = (
+    "jaxpip",
+    "jax-dlpack",
+    "torch",
+    "mace-batched",
+    "nequip-batched",
+    "fairchem-batched",
+    "deepmd-batched",
+    "metatomic",
+)
+
+
+def validate_workflow_torch_provider_spec(potential, *, context="sampling.engine='torch'"):
+    """Validate statically that a potential spec can bind to ``make_workflow_torch_pes``.
+
+    Runs at input preflight without importing Torch/JAX or opening model files.
+    """
+    if isinstance(potential, Mapping):
+        if not potential:
+            raise ValueError(f"{context} requires an explicit [potential] specification")
+        provider = potential.get("provider", potential.get("type", "builtin"))
+        if provider == "builtin" or provider in TENSOR_WORKFLOW_ANALYTIC_MODELS:
+            model = potential.get(
+                "name",
+                potential.get("model", "harmonic" if provider == "builtin" else provider),
+            )
+            if model not in TENSOR_WORKFLOW_ANALYTIC_MODELS:
+                raise ValueError(
+                    f"{context} builtin potential must be free, harmonic or periodic_cosine"
+                )
+            return
+        if provider in TENSOR_WORKFLOW_BRIDGE_PROVIDERS:
+            params = potential.get("params")
+            dtype = potential.get(
+                "dtype", params.get("dtype") if isinstance(params, Mapping) else None
+            )
+            if dtype is not None and dtype != "float64":
+                raise ValueError(f"{context} requires float64 potential precision")
+            return
+        raise ValueError(
+            f"{context} requires a supported tensor workflow potential provider "
+            "(free, harmonic, periodic_cosine, jax-dlpack, jaxpip, torch, or batched ML), "
+            f"got {provider!r}"
+        )
+    if potential is not None and (
+        type(potential) in _BUILTINS
+        or type(potential) is TorchPotential
+        or callable(getattr(potential, "as_torch_pes", None))
+    ):
+        return
+    raise ValueError(
+        f"{context} requires a supported analytic, Torch, JAX DLPack, or batched ML potential"
+    )
 
 
 def _independent(metadata, *, explicit):

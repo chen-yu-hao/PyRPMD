@@ -1,0 +1,10 @@
+# Colab T4 runtime for the device-resident JaxPIP rate route.
+# This matches the tested 2026-11-14 Colab image: JAX 0.11.1/CUDA 13 and
+# PyTorch 2.14.1+cu130. Keep it separate from requirements-jaxpip-export.txt:
+# ONNX export uses a CPU JAX wheel and is not part of production GPU dynamics.
+jax[cuda13]==0.11.1
+jaxlib==0.11.1
+equinox==0.13.2
+flax==0.12.3
+torch>=2.14,<2.15
+jaxpip @ git+https://github.com/CQPES/JaxPIP.git@a18c8cca1e795202194d4082919ebd71722df125
