@@ -4,6 +4,8 @@
  */
 #include "pyrpmd/pes_api_v1.h"
 #include "pyrpmd/pes_api_cuda_v1.h"
+#include "onnx_proto_rewrite.h"
+#include "scatter_nd_cuda.h"
 #if PYRPMD_ONNX_HAS_CUDA
 #include "onnx_cuda.hpp"
 #endif
@@ -14,6 +16,7 @@
 #include <cmath>
 #include <cstring>
 #include <filesystem>
+#include <fstream>
 #include <limits>
 #include <memory>
 #include <mutex>
@@ -91,6 +94,10 @@ void tensor_contract(const Ort::TypeInfo& type, const std::vector<int64_t>& expe
 struct pyrpmd_pes_context_v1 {
     Ort::Env env{ORT_LOGGING_LEVEL_WARNING, "pyrpmd-onnx"};
     Ort::MemoryInfo memory{Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault)};
+#if PYRPMD_ONNX_HAS_CUDA_KERNELS
+    // Declared before session so ORT destroys custom-op kernels before this domain.
+    std::unique_ptr<pyrpmd_onnx::ScatterNDCudaRegistration> scatter_nd_cuda;
+#endif
 #if PYRPMD_ONNX_HAS_CUDA
     // Declared before session so session tears down while ort_stream is alive.
     std::unique_ptr<pyrpmd_onnx_cuda::CudaExecState> cuda;
@@ -128,6 +135,12 @@ struct pyrpmd_pes_context_v1 {
         options.SetInterOpNumThreads(1);
         options.SetExecutionMode(ExecutionMode::ORT_SEQUENTIAL);
         options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
+        const auto providers = Ort::GetAvailableProviders();
+        const bool has_cuda_provider =
+            std::find(providers.begin(), providers.end(), "CUDAExecutionProvider") != providers.end();
+        const bool float64_cuda_scatter_nd = (PYRPMD_ONNX_HAS_CUDA_KERNELS != 0) && has_cuda_provider;
+        const std::filesystem::path model_path(model);
+        pyrpmd_onnx::ScatterNDRewriteResult cuda_rewrite;
         bool cuda_device_memory_enabled = false;
         if (device != "cpu") {
             require(device.rfind("cuda:", 0) == 0 && device.size() > 5,
@@ -138,9 +151,36 @@ struct pyrpmd_pes_context_v1 {
             require(index.size() < 10 && (index == "0" || index[0] != '0'),
                     "invalid CUDA device index", PYRPMD_INVALID_CONFIG_V1);
             const int cuda_device_id = std::stoi(index);
-            const auto providers = Ort::GetAvailableProviders();
-            require(std::find(providers.begin(), providers.end(), "CUDAExecutionProvider") != providers.end(),
+            require(has_cuda_provider,
                     "CUDA requested but this ONNX Runtime has no CUDA provider", PYRPMD_BACKEND_FAILURE_V1);
+            std::ifstream model_stream(model_path, std::ios::binary | std::ios::ate);
+            require(model_stream.is_open(), "cannot open ONNX model file", PYRPMD_INVALID_CONFIG_V1);
+            const auto stream_end = model_stream.tellg();
+            require(stream_end > 0, "empty or unreadable ONNX model file", PYRPMD_INVALID_CONFIG_V1);
+            std::vector<uint8_t> raw_bytes(static_cast<size_t>(stream_end));
+            model_stream.seekg(0, std::ios::beg);
+            require(static_cast<bool>(model_stream.read(
+                        reinterpret_cast<char*>(raw_bytes.data()),
+                        static_cast<std::streamsize>(raw_bytes.size()))),
+                    "failed to read ONNX model file", PYRPMD_INVALID_CONFIG_V1);
+            cuda_rewrite = pyrpmd_onnx::rewrite_float64_scatter_nd_for_cuda(
+                raw_bytes.data(), raw_bytes.size(),
+                PYRPMD_ONNX_HAS_CUDA_KERNELS != 0,
+                pyrpmd_onnx::kScatterNDCudaDomain);
+#if PYRPMD_ONNX_HAS_CUDA_KERNELS
+            try {
+                scatter_nd_cuda = std::make_unique<pyrpmd_onnx::ScatterNDCudaRegistration>(cuda_device_id);
+            } catch (const std::exception& ex) {
+                throw Error(PYRPMD_BACKEND_FAILURE_V1, ex.what());
+            }
+            scatter_nd_cuda->Attach(options);
+#else
+            if (cuda_rewrite.valid_wire && cuda_rewrite.has_float64_scatter_nd && !cpu_fallback) {
+                throw Error(PYRPMD_BACKEND_FAILURE_V1,
+                            "model uses float64 ScatterND on CUDA; rebuild libpyrpmd_onnx with "
+                            "-DPYRPMD_ONNX_CUDA_KERNELS=ON");
+            }
+#endif
             OrtCUDAProviderOptionsV2* raw = nullptr;
             const auto& api = Ort::GetApi();
             Ort::ThrowOnError(api.CreateCUDAProviderOptions(&raw));
@@ -168,8 +208,12 @@ struct pyrpmd_pes_context_v1 {
             options.AppendExecutionProvider_CUDA_V2(*ort_cuda_opts);
             if (!cpu_fallback) options.AddConfigEntry("session.disable_cpu_ep_fallback", "1");
         }
-        const std::filesystem::path model_path(model);
-        session = std::make_unique<Ort::Session>(env, model_path.c_str(), options);
+        if (cuda_rewrite.rewritten) {
+            session = std::make_unique<Ort::Session>(
+                env, cuda_rewrite.model_bytes.data(), cuda_rewrite.model_bytes.size(), options);
+        } else {
+            session = std::make_unique<Ort::Session>(env, model_path.c_str(), options);
+        }
 #if PYRPMD_ONNX_HAS_CUDA
         if (cuda) {
             io_binding = std::make_unique<Ort::IoBinding>(*session);
@@ -225,7 +269,8 @@ struct pyrpmd_pes_context_v1 {
                 {"independent_contexts",true}, {"host_memory",true},
                 {"cuda_device_memory",cuda_device_memory_enabled},
                 {"execution_device",device},
-                {"allow_cpu_fallback",cpu_fallback}}}}.dump();
+                {"allow_cpu_fallback",cpu_fallback},
+                {"float64_cuda_scatter_nd",float64_cuda_scatter_nd}}}}.dump();
     }
     void buffers(int64_t b, size_t n) {
         if (cached_batch == b) return;
@@ -302,9 +347,16 @@ int32_t pyrpmd_pes_evaluate_v1(pyrpmd_pes_context_v1* c, const pyrpmd_pes_input_
         const char* input_names[] = {c->input_name.c_str()};
         const char* output_names[] = {c->energy_name.c_str(), c->force_name.c_str()};
         // Synchronous host evaluation with preallocated host outputs.
+#if PYRPMD_ONNX_HAS_CUDA_KERNELS
+        if (c->scatter_nd_cuda) c->scatter_nd_cuda->ResetOutOfBoundsFlag();
+#endif
         c->session->Run(Ort::RunOptions{nullptr}, input_names, &c->input, 1, output_names, c->outputs.data(), 2);
 #if PYRPMD_ONNX_HAS_CUDA
         if (c->cuda) c->cuda->sync_ort_stream();
+#endif
+#if PYRPMD_ONNX_HAS_CUDA_KERNELS
+        if (c->scatter_nd_cuda && c->scatter_nd_cuda->ConsumeOutOfBoundsFlag())
+            throw Error(PYRPMD_BACKEND_FAILURE_V1, "CUDA ScatterND index out of bounds");
 #endif
         const double ff = c->energy_factor * c->coordinate_factor;
         for (int64_t k=0; k<b; ++k) {

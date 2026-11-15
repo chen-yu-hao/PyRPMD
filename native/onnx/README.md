@@ -54,10 +54,29 @@ on CPU-only machines without CUDA Toolkit it builds cleanly with
 configure time or `-DPYRPMD_ONNX_CUDA=OFF` to force a host-only build.
 
 CMake locates `onnxruntime_cxx_api.h` and `libonnxruntime` below that directory.
-Keep the matching runtime libraries installed and on the dynamic-loader search
-path. Linux CPU CI targets SDK/Python runtime 1.24.1, verifies the publisher's
-SDK archive SHA256, and saves the Python dependency environment as an artifact.
-GPU execution is not covered by hosted CPU CI. OpenVINO is not implemented.
+CPU-only builds remain free of CUDA Toolkit (`nvcc` / `cudart`) dependencies
+(`PYRPMD_ONNX_CUDA_KERNELS=OFF` by default). When building against a CUDA-enabled
+ONNX Runtime C/C++ SDK for exported float64 JaxPIP force graphs, enable the
+custom float64 CUDA `ScatterND` kernel (`reduction` modes `none`, `add`, `mul`,
+`max`, `min`, with `atomicAdd(double*, double)` force accumulation):
+
+```sh
+cmake -S native/onnx -B build/onnx-cuda -DCMAKE_BUILD_TYPE=Release \
+  -DONNXRUNTIME_ROOT=/absolute/path/to/onnxruntime-gpu-sdk \
+  -DPYRPMD_ONNX_CUDA_KERNELS=ON
+cmake --build build/onnx-cuda --parallel 2
+```
+
+At session creation on `device="cuda:<index>"`, `libpyrpmd_onnx` binds float64
+`ScatterND` nodes to its `CUDAExecutionProvider` custom operator domain while
+leaving `float32`/`int64` `ai.onnx::ScatterND` schemas and on-disk `.onnx` files
+unchanged. Provider metadata reports availability in
+`capabilities.float64_cuda_scatter_nd`. Keep the matching runtime libraries
+installed and on the dynamic-loader search path. Linux CPU CI targets SDK/Python
+runtime 1.24.1, verifies the publisher's SDK archive SHA256, and saves the
+Python dependency environment as an artifact. GPU execution is not covered by
+hosted CPU CI (see `docs/validation/onnx-cuda-scatternd-2026-11-15/README.md`
+for Tesla T4 hardware validation). OpenVINO is not implemented.
 
 ## Export a real model once
 
@@ -86,7 +105,9 @@ from 1 to 3. A successful single-frame export is **not** sufficient validation.
 `validation.npy` is a numeric array `[M>=2,N,3]` in the model's length unit.
 The example atomic numbers specify H,H,O **in that order**, not a generic model
 for every molecule. Use the trained model's actual ordered elements and state.
-The exporter checks dynamic float64 I/O, JAX/ORT energy+force agreement at batch
+The exporter checks dynamic float64 I/O, canonicalizes dynamic-batch `int64`/`bool`
+shape helpers so `CUDAExecutionProvider` keeps 100% of graph nodes on GPU under
+`allow_cpu_fallback=false`, verifies JAX/ORT energy+force agreement at batch
 sizes 1/3/32, batch-versus-single independence on those samples, and force
 finite differences. It writes the model atomically only after validation. Such
 checks verify the interface, not the PES's chemical training domain or accuracy.

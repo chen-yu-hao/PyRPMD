@@ -34,6 +34,16 @@ not been published as a new wheel release; no release date or DOI is assigned.
 - Subspace correction: `exact_quantum_rate` checks a supplied absorber on
   the dividing surface instead of against end caps it does not use; the RPH
   model's channel stays open beyond its box for ring polymers.
+- Native ONNX PES (`native/onnx`): add optional `-DPYRPMD_ONNX_CUDA_KERNELS=ON`
+  custom float64 CUDA `ScatterND` operator (`none`, `add`, `mul`, `max`, `min`
+  reductions with `atomicAdd(double*, double)` accumulation and out-of-bounds
+  index detection) bound to `CUDAExecutionProvider` via a load-time custom
+  domain rewrite for float64 `ScatterND` nodes, keeping CPU builds free of CUDA
+  Toolkit dependencies and reporting `capabilities.float64_cuda_scatter_nd` in
+  provider metadata. `tools/export_jaxpip_onnx.py` also canonicalizes dynamic
+  batch shape helpers so exported `PolynomialLinearModel` and
+  `PolynomialNeuralNetwork` graphs execute on `cuda:<id>` with
+  `allow_cpu_fallback=false` and zero CPU fallback nodes (issue #202).
 
 - **Compatibility:** the subspace correction now builds its reaction path from
   the minimum-energy path by default (`path.source = "mep"`; previously
