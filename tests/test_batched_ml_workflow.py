@@ -106,3 +106,29 @@ def test_public_pimd_batches_isotopes_and_resumes_regrouped(model_path, periodic
         run(batched, output=tmp_path / "resumed", resume=True)
     assert 24 in frames and set(frames) <= {8, 16, 24}
     _assert_streams_equal(resolved, system, reference, tmp_path / "resumed")
+
+    # Sub-batch frame chunking via potential.params.max_batch_frames bounds per-call
+    # graph sizes while preserving identical trajectories and checkpoint resume.
+    chunked = copy.deepcopy(config)
+    chunked["parallel"]["trajectory_batch_size"] = 2
+    chunked["potential"]["params"] = {"max_batch_frames": 5}
+    frames.clear()
+    with monkeypatch.context() as patch:
+        patch.setattr(MACEBatchedPotential, "_evaluate_tensor", counted)
+        run(chunked, output=tmp_path / "chunked")
+    assert max(frames) == 5 and set(frames) <= {1, 3, 5}
+    _assert_streams_equal(resolved, system, reference, tmp_path / "chunked")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(Dynamics, "sample_step", interrupt)
+        with pytest.raises(RuntimeError, match="interrupt scalar ML trajectory"):
+            run(config, output=tmp_path / "resumed_chunked")
+    chunked_resume = copy.deepcopy(config)
+    chunked_resume["parallel"]["trajectory_batch_size"] = 3
+    chunked_resume["potential"]["params"] = {"max_batch_frames": 5}
+    frames.clear()
+    with monkeypatch.context() as patch:
+        patch.setattr(MACEBatchedPotential, "_evaluate_tensor", counted)
+        run(chunked_resume, output=tmp_path / "resumed_chunked", resume=True)
+    assert max(frames) == 5 and set(frames) == {1, 4, 5}
+    _assert_streams_equal(resolved, system, reference, tmp_path / "resumed_chunked")

@@ -27,11 +27,13 @@ class FairchemBatchedPotential(_TensorBatchPotential):
     """
 
     def __init__(self, symbols, model, *, task_name, device="cpu", dtype="float64",
-                 cell=None, pbc=None, charge=0, multiplicity=1, virial=False):
+                 cell=None, pbc=None, charge=0, multiplicity=1, virial=False,
+                 max_batch_frames=None):
         self._setup(
             symbols, "fairchem-batched", device=device, dtype=dtype, cell=cell,
             pbc=pbc, charge=charge, multiplicity=multiplicity, virial=virial,
             length_factor=1.0 / BOHR_ANGSTROM, energy_factor=EV_HARTREE,
+            max_batch_frames=max_batch_frames,
         )
         # UMA/eSCN reduce_node_to_system sums native per-atom predictions
         # in float64 even when the neural network and forces are float32.
@@ -117,7 +119,7 @@ class FairchemBatchedPotential(_TensorBatchPotential):
             raise TypeError("fairchem model must be a local MLIPPredictUnit or inference checkpoint")
         self.predictor = model
         self._check_predictor()
-        self._layout = None
+        self._layout = {}
         self.metadata.update(task_name=task_name, force_consistent_energy=True,
                              inference_settings="general-batch-ieee")
 
@@ -191,10 +193,13 @@ class FairchemBatchedPotential(_TensorBatchPotential):
         from ..torch_backend import TensorPESResult
         torch = self.torch
         batch, natoms, _ = q.shape
-        if self._layout is None or self._layout[0] != batch:
+        layout = self._layout.get(batch)
+        if layout is None:
+            if len(self._layout) >= 4:
+                self._layout.pop(next(iter(self._layout)))
             numbers = torch.tensor([_Z[s] for s in self.symbols],
                                    dtype=torch.long, device=self.device)
-            self._layout = (batch, dict(
+            layout = dict(
                 atomic_numbers=numbers.repeat(batch),
                 natoms=torch.full((batch,), natoms, dtype=torch.long, device=self.device),
                 batch=torch.arange(batch, device=self.device).repeat_interleave(natoms),
@@ -207,7 +212,8 @@ class FairchemBatchedPotential(_TensorBatchPotential):
                 spin=torch.full((batch,), self.multiplicity if self.task_name == "omol" else 0,
                                 dtype=torch.long, device=self.device),
                 sid=[""] * batch, dataset=[self.task_name] * batch,
-            ))
+            )
+            self._layout[batch] = layout
         cell = self._cell_tensor()
         if self.cell is None:
             # Match ASE's complete_cell for molecules; PBC stays false.
@@ -221,7 +227,7 @@ class FairchemBatchedPotential(_TensorBatchPotential):
             pos=positions.reshape(-1, 3),
             cell=cell.expand(batch, 3, 3).contiguous(),
             pbc=self._pbc_tensor().expand(batch, 3).contiguous(),
-            **self._layout[1],
+            **layout,
         )
         # Public predictor API includes trained normalization and element
         # references. Calling the raw neural network would omit both.
@@ -247,4 +253,4 @@ class FairchemBatchedPotential(_TensorBatchPotential):
     def close(self):
         super().close()
         self.predictor = None
-        self._layout = None
+        self._layout.clear()

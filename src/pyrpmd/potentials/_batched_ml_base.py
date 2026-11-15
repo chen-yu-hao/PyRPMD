@@ -36,12 +36,18 @@ class _TensorBatchPotential(_BoundPotential):
 
     def _setup(self, symbols, provider, *, device="cpu", dtype="float64", cell=None,
                pbc=None, charge=0, multiplicity=1, virial=False,
-               length_factor=1.0, energy_factor=1.0):
+               length_factor=1.0, energy_factor=1.0, max_batch_frames=None):
         torch = _optional("torch", provider)
         if dtype not in ("float32", "float64"):
             raise ValueError("dtype must explicitly be 'float32' or 'float64'")
         if not isinstance(virial, (bool, np.bool_)):
             raise ValueError("virial must be a boolean")
+        if max_batch_frames is not None:
+            if (isinstance(max_batch_frames, (bool, np.bool_))
+                    or not isinstance(max_batch_frames, (int, np.integer))
+                    or int(max_batch_frames) < 1):
+                raise ValueError("max_batch_frames must be a positive integer or None")
+            max_batch_frames = int(max_batch_frames)
         self.torch, self.dtype = torch, getattr(torch, dtype)
         self.energy_dtype = self.dtype
         self.virial_dtype = self.dtype
@@ -62,11 +68,13 @@ class _TensorBatchPotential(_BoundPotential):
                 raise ValueError(f"{name} must be positive and finite")
         self.length_factor, self.energy_factor = float(length_factor), float(energy_factor)
         self.virial = bool(virial)
+        self.max_batch_frames = max_batch_frames
         self._cached_cell = self._cached_pbc = None
         self._bind(symbols, cell, pbc, charge, multiplicity)
         self.metadata = {
             "provider": provider, "execution_device": str(self.device),
             "dtype": dtype, "energy_dtype": dtype, "virial_dtype": dtype,
+            "max_batch_frames": self.max_batch_frames,
             "native_batch": True, "batch_independent": True,
             "trajectory_batch_safe": True, "stateful": False,
             "thread_safety": "context_serial", "supports_pbc": True,
@@ -134,6 +142,62 @@ class _TensorBatchPotential(_BoundPotential):
             virial=None if result.virial is None else result.virial.detach().cpu().numpy(),
         ), x.shape)
 
+    def _evaluate_chunk(self, chunk):
+        from ..torch_backend import TensorPESResult
+
+        torch = self.torch
+        with torch.enable_grad():
+            result = self._evaluate_tensor(chunk)
+        if not isinstance(result, TensorPESResult):
+            raise PotentialError("batched ML backend must return TensorPESResult")
+        energy = result.energy
+        forces = result.forces
+        virial = result.virial
+        del result
+        fields = [(energy, "energy", (len(chunk),), self.energy_dtype),
+                  (forces, "forces", tuple(chunk.shape), self.dtype)]
+        if self.virial and virial is None:
+            raise PotentialError("virial was requested but the model did not return it")
+        if virial is not None:
+            fields.append((virial, "virial", (len(chunk), 3, 3), self.virial_dtype))
+        for value, name, shape, dtype in fields:
+            if (not isinstance(value, torch.Tensor) or tuple(value.shape) != shape
+                    or value.dtype != dtype or value.device != self.device):
+                raise PotentialError(f"{name} must be {dtype} {shape} on {self.device}")
+        return TensorPESResult(
+            energy.detach(),
+            forces.detach(),
+            None if virial is None else virial.detach(),
+        )
+
+    def _oom_hint(self, exc, frames):
+        torch = self.torch
+        oom_types = tuple(
+            cls for cls in (
+                getattr(torch, "OutOfMemoryError", None),
+                getattr(getattr(torch, "cuda", None), "OutOfMemoryError", None),
+            ) if isinstance(cls, type)
+        )
+        is_oom = (bool(oom_types) and isinstance(exc, oom_types)) or (
+            "out of memory" in str(exc).lower()
+        )
+        if not is_oom:
+            return ""
+        if self.max_batch_frames is None:
+            return (
+                f" (hint: set potential.params.max_batch_frames, e.g. 1..8, to chunk "
+                f"{frames}-frame batches deterministically without silent retry)"
+            )
+        if self.max_batch_frames > 1:
+            return (
+                f" (hint: reduce potential.params.max_batch_frames below "
+                f"{self.max_batch_frames}, e.g. 1)"
+            )
+        return (
+            " (single-frame evaluation exceeded device memory; "
+            "potential.params.max_batch_frames is already 1)"
+        )
+
     def evaluate_tensor(self, positions):
         """Evaluate AU coordinates on the declared device, returning AU tensors.
 
@@ -141,8 +205,11 @@ class _TensorBatchPotential(_BoundPotential):
         Explicit float32 models retain their native result precision here
         (see ``energy_dtype`` and ``virial_dtype`` metadata for native reductions).
         The current float64 dynamics backend must not consume float32 forces.
-        No model retry, precision change, device fallback, or frame splitting is
-        performed after a backend failure, including CUDA out-of-memory errors.
+        When ``max_batch_frames`` is configured, ``positions`` is partitioned
+        deterministically into contiguous frame slices along axis 0 before model
+        evaluation. No model retry, precision change, device fallback, or dynamic
+        post-failure frame splitting is performed after a backend failure,
+        including CUDA out-of-memory errors.
         """
         from ..torch_backend import TensorPESResult
 
@@ -164,29 +231,40 @@ class _TensorBatchPotential(_BoundPotential):
             raise PotentialError("TF32 must be disabled for float32 batched ML evaluation; reduced precision is not implicit")
         if not torch.isfinite(positions).all().item():
             raise PotentialError("PES coordinates contain NaN/Inf")
+        frames = len(positions)
         try:
-            with torch.enable_grad():
-                result = self._evaluate_tensor(positions)
-            if not isinstance(result, TensorPESResult):
-                raise PotentialError("batched ML backend must return TensorPESResult")
-            fields = [(result.energy, "energy", (len(positions),), self.energy_dtype),
-                      (result.forces, "forces", tuple(positions.shape), self.dtype)]
-            if self.virial and result.virial is None:
-                raise PotentialError("virial was requested but the model did not return it")
+            if self.max_batch_frames is None or frames <= self.max_batch_frames:
+                result = self._evaluate_chunk(positions)
+            else:
+                energies, forces, virials = [], [], []
+                for start in range(0, frames, self.max_batch_frames):
+                    part = self._evaluate_chunk(positions[start:start + self.max_batch_frames])
+                    energies.append(part.energy)
+                    forces.append(part.forces)
+                    if part.virial is not None:
+                        virials.append(part.virial)
+                    del part
+                if virials and len(virials) != len(energies):
+                    raise PotentialError("batched ML backend returned inconsistent virial across chunks")
+                result = TensorPESResult(
+                    torch.cat(energies, dim=0),
+                    torch.cat(forces, dim=0),
+                    torch.cat(virials, dim=0) if virials else None,
+                )
+                del energies, forces, virials
+            checked = [result.energy, result.forces]
             if result.virial is not None:
-                fields.append((result.virial, "virial", (len(positions), 3, 3), self.virial_dtype))
-            for value, name, shape, dtype in fields:
-                if (not isinstance(value, torch.Tensor) or tuple(value.shape) != shape
-                        or value.dtype != dtype or value.device != self.device):
-                    raise PotentialError(f"{name} must be {dtype} {shape} on {self.device}")
-            if not torch.stack([torch.isfinite(v).all() for v, _, _, _ in fields]).all().item():
+                checked.append(result.virial)
+            if not torch.stack([torch.isfinite(v).all() for v in checked]).all().item():
                 raise PotentialError("batched ML model returned nonfinite energy/forces/virial")
-            return TensorPESResult(result.energy.detach(), result.forces.detach(),
-                                   None if result.virial is None else result.virial.detach())
+            return result
         except PotentialError:
             raise
         except Exception as exc:
-            raise PotentialError(f"{self.metadata['provider']} batch evaluation failed: {exc}") from exc
+            hint = self._oom_hint(exc, frames)
+            raise PotentialError(
+                f"{self.metadata['provider']} batch evaluation failed: {exc}{hint}"
+            ) from exc
 
     def as_torch_pes(self):
         """Borrow this float64 provider through the existing ``TorchPES`` type.

@@ -26,7 +26,7 @@ import numpy as np
 _PHYSICAL_SPEC_FIELDS = frozenset(
     "provider type name library manifest factory module function initializer initializer_params "
     "with_dimensions model weights device dtype units derivative params abi_version periodic virial "
-    "trajectory_batch_safe".split()
+    "trajectory_batch_safe max_batch_frames".split()
 )
 _LIFECYCLE_SPEC_FIELDS = {
     "committee": frozenset({"provider", "type", "members"}),
@@ -101,17 +101,28 @@ def validate_periodic_spec(config, system=None, *, _nested=False):
             raise PotentialError("Torch periodic must be a boolean")
         if config.get("virial", "auto") not in ("auto", "autograd", "provided", "none"):
             raise PotentialError("Torch virial must be auto, autograd, provided, or none")
+    if "max_batch_frames" in config and kind not in _BATCHED_ML_PROVIDERS:
+        raise PotentialError(
+            "potential.max_batch_frames is supported only for batched ML providers"
+        )
     if kind in _BATCHED_ML_PROVIDERS:
         params = config.get("params", {})
         if not isinstance(params, dict):
             raise PotentialError("batched ML params must be a mapping")
-        for key in ("dtype", "virial"):
+        for key in ("dtype", "virial", "max_batch_frames"):
             if key in config and key in params:
                 raise PotentialError(f"Specify {key} in potential.{key} or params.{key}, not both")
         if config.get("dtype", params.get("dtype", "float64")) not in ("float32", "float64"):
             raise PotentialError("batched ML dtype must be float32 or float64")
         if not isinstance(config.get("virial", params.get("virial", False)), (bool, np.bool_)):
             raise PotentialError("batched ML virial must be a boolean")
+        max_batch_frames = config.get("max_batch_frames", params.get("max_batch_frames"))
+        if max_batch_frames is not None and (
+            isinstance(max_batch_frames, (bool, np.bool_))
+            or not isinstance(max_batch_frames, (int, np.integer))
+            or int(max_batch_frames) < 1
+        ):
+            raise PotentialError("batched ML max_batch_frames must be a positive integer")
     if periodic and kind in ("rpmdrate", "f2py", "diabatic_python", "pyscf"):
         raise PotentialError(
             f"Provider {kind!r} has no periodic cell/PBC contract"
@@ -330,7 +341,7 @@ def _make_potential(config, system=None):
                 raise ValueError("Specify DeePMD units in potential.units or params.units, not both")
             params["units"] = spec["units"]
         if kind in _BATCHED_ML_PROVIDERS:
-            for key in ("dtype", "virial"):
+            for key in ("dtype", "virial", "max_batch_frames"):
                 if key in spec:
                     params[key] = spec[key]
         return make_named_potential(

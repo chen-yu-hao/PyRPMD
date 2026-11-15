@@ -263,3 +263,117 @@ def test_mace_cuda_tensor_matches_cpu_without_changing_device(custom_stream, dty
     np.testing.assert_allclose(result.energy.cpu().numpy(), expected.energy, **tolerance)
     np.testing.assert_allclose(result.forces.cpu().numpy(), expected.forces, **tolerance)
     np.testing.assert_allclose(result.virial.cpu().numpy(), expected.virial, **virial_tolerance)
+
+
+@pytest.mark.parametrize("bad", [0, -1, True, False, 1.5, 2.0, "2"])
+def test_mace_rejects_invalid_max_batch_frames(mace_model, bad):
+    dtype, model = mace_model
+    with pytest.raises(ValueError, match="max_batch_frames"):
+        MACEBatchedPotential(["D", "H"], deepcopy(model), dtype=dtype, max_batch_frames=bad)
+
+
+@pytest.mark.parametrize("batch,expected_chunks", [(1, [1]), (2, [2]), (5, [2, 2, 1]), (7, [2, 2, 2, 1])])
+@pytest.mark.parametrize("virial", [False, True])
+@pytest.mark.parametrize("pbc", [[False, False, False], [True, True, True], [True, False, True]])
+def test_mace_chunked_batch_matches_unchunked_within_1e13_au(batch, expected_chunks, virial, pbc):
+    model = make_random_mace(dtype="float64")
+    q, cell = _geometry(batch)
+    symbols = ["D", "T", "H", "O"]
+    chunk_calls = []
+    chunked_model = deepcopy(model)
+    hook = chunked_model.register_forward_pre_hook(
+        lambda _, args: chunk_calls.append(len(args[0]["ptr"]) - 1)
+    )
+    try:
+        with MACEBatchedPotential(symbols, deepcopy(model), dtype="float64",
+                                  cell=cell, pbc=pbc, virial=virial) as unchunked, \
+             MACEBatchedPotential(symbols, chunked_model, dtype="float64",
+                                  cell=cell, pbc=pbc, virial=virial,
+                                  max_batch_frames=2) as chunked:
+            assert unchunked.metadata["max_batch_frames"] is None
+            assert unchunked.metadata["model_calls_per_batch"] == 1
+            assert chunked.metadata["max_batch_frames"] == 2
+            assert "model_calls_per_batch" not in chunked.metadata
+
+            expected = unchunked.evaluate(q)
+            actual = chunked.evaluate(q)
+            assert chunk_calls == expected_chunks
+            assert np.max(np.abs(actual.energy - expected.energy)) < 1e-13
+            assert np.max(np.abs(actual.forces - expected.forces)) < 1e-13
+            if virial:
+                assert actual.virial is not None
+                assert np.max(np.abs(actual.virial - expected.virial)) < 1e-13
+            else:
+                assert actual.virial is None
+
+            # Second call hits cached templates for both full and remainder chunks.
+            chunk_calls.clear()
+            tensor_in = torch.as_tensor(q, dtype=torch.float64)
+            t_expected = unchunked.evaluate_tensor(tensor_in)
+            t_actual = chunked.evaluate_tensor(tensor_in)
+            assert chunk_calls == expected_chunks
+            assert torch.max(torch.abs(t_actual.energy - t_expected.energy)).item() < 1e-13
+            assert torch.max(torch.abs(t_actual.forces - t_expected.forces)).item() < 1e-13
+            if virial:
+                assert torch.max(torch.abs(t_actual.virial - t_expected.virial)).item() < 1e-13
+    finally:
+        hook.remove()
+
+
+def test_mace_chunking_handles_empty_edge_chunks_and_strided_inputs():
+    model = make_random_mace(dtype="float64")
+    q, cell = _changing_topology_geometry()
+    symbols = ["D", "T", "H", "O"] * 2
+    pbc = [True, True, True]
+    storage = torch.zeros((4, 8, 6), dtype=torch.float64)
+    storage[..., ::2] = torch.as_tensor(q, dtype=torch.float64)
+    strided = storage[..., ::2].requires_grad_(True)
+    before = strided.detach().clone()
+
+    with MACEBatchedPotential(symbols, deepcopy(model), cell=cell, pbc=pbc, virial=True) as full, \
+         MACEBatchedPotential(symbols, deepcopy(model), cell=cell, pbc=pbc, virial=True,
+                              max_batch_frames=1) as per_frame:
+        expected = full.evaluate_tensor(strided)
+        actual = per_frame.evaluate_tensor(strided)
+    assert torch.max(torch.abs(actual.energy - expected.energy)).item() < 1e-13
+    assert torch.max(torch.abs(actual.forces - expected.forces)).item() < 1e-13
+    assert torch.max(torch.abs(actual.virial - expected.virial)).item() < 1e-13
+    assert torch.equal(strided.detach(), before)
+    assert not strided.is_contiguous() and strided.requires_grad and strided.grad is None
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is unavailable")
+@pytest.mark.parametrize("custom_stream", [False, True])
+def test_mace_cuda_chunking_matches_unchunked_and_preserves_stream(custom_stream):
+    model = make_random_mace(dtype="float64")
+    q, cell = _geometry(5)
+    symbols = ["D", "T", "H", "O"]
+    pbc = [True, True, True]
+    with MACEBatchedPotential(symbols, deepcopy(model), device="cuda:0", dtype="float64",
+                              cell=cell, pbc=pbc, virial=True) as full, \
+         MACEBatchedPotential(symbols, model, device="cuda:0", dtype="float64",
+                              cell=cell, pbc=pbc, virial=True, max_batch_frames=2) as chunked:
+        outer_stream = torch.cuda.current_stream("cuda:0")
+        stream = torch.cuda.Stream(device="cuda:0") if custom_stream else outer_stream
+        stream.wait_stream(outer_stream)
+        seen_streams, seen_sizes = [], []
+
+        def record(_, args):
+            seen_streams.append(torch.cuda.current_stream("cuda:0"))
+            seen_sizes.append(len(args[0]["ptr"]) - 1)
+
+        hook = chunked.model.register_forward_pre_hook(record)
+        try:
+            with torch.cuda.stream(stream):
+                tensor = torch.as_tensor(q, dtype=torch.float64, device="cuda:0")
+                expected = full.evaluate_tensor(tensor)
+                actual = chunked.evaluate_tensor(tensor)
+                assert torch.cuda.current_stream("cuda:0") == stream
+            stream.synchronize()
+        finally:
+            hook.remove()
+    assert seen_sizes == [2, 2, 1]
+    assert seen_streams == [stream] * 3
+    assert torch.max(torch.abs(actual.energy - expected.energy)).item() < 1e-13
+    assert torch.max(torch.abs(actual.forces - expected.forces)).item() < 1e-13
+    assert torch.max(torch.abs(actual.virial - expected.virial)).item() < 1e-13

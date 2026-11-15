@@ -89,8 +89,15 @@ from floating-point reduction rounding.
 `trajectory_batch_size` controls the number of independent tasks sharing a
 call. Increase it only after measuring throughput and memory on the actual
 model. Do not reduce the physical bead count merely to fit a performance
-target. There is no automatic microbatching, per-frame inference retry or
-CPU fallback after an out-of-memory or model error.
+target. When a full `K * P` batch exceeds device memory (for example, `float64`
+equivariant MACE evaluation on dense periodic condensed-phase cells on 16 GiB
+GPUs), configure `potential.params.max_batch_frames` (or `max_batch_frames=...`
+in Python) to a positive integer upfront. The provider deterministically
+partitions `[F,N,3]` inputs along axis 0 into contiguous slices of at most
+`max_batch_frames` frames, releases per-chunk intermediate autograd graphs
+immediately, and concatenates the device results. There is no automatic
+post-failure microbatching, per-frame inference retry or CPU fallback after an
+out-of-memory or model error.
 
 The complete example input is
 [`examples/potentials/batched_ml.inp`](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/potentials/batched_ml.inp).

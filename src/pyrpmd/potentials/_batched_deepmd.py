@@ -27,7 +27,8 @@ class DeepMDBatchedPotential(_TensorBatchPotential):
     """
 
     def __init__(self, symbols, model, *, device="cpu", dtype="float64", cell=None,
-                 pbc=None, charge=0, multiplicity=1, virial=False, units=None):
+                 pbc=None, charge=0, multiplicity=1, virial=False, units=None,
+                 max_batch_frames=None):
         length_factor, energy_factor = unit_factors(
             {"positions": "angstrom", "energy": "eV"} if units is None else units
         )
@@ -35,6 +36,7 @@ class DeepMDBatchedPotential(_TensorBatchPotential):
             symbols, "deepmd-batched", device=device, dtype=dtype, cell=cell, pbc=pbc,
             charge=charge, multiplicity=multiplicity, virial=virial,
             length_factor=length_factor, energy_factor=energy_factor,
+            max_batch_frames=max_batch_frames,
         )
         if self.charge != 0 or self.multiplicity != 1:
             raise ValueError("deepmd-batched supports neutral, multiplicity-one models only")
@@ -109,8 +111,9 @@ class DeepMDBatchedPotential(_TensorBatchPotential):
         )
         self.metadata = dict(
             self.metadata, neighbor_backend="vesin-cell-list",
-            model_calls_per_batch=1, neighbor_selection="trained-nearest-sel",
+            neighbor_selection="trained-nearest-sel",
             geometry_dtype="float64", energy_dtype="float64", virial_dtype="float64",
+            **({"model_calls_per_batch": 1} if self.max_batch_frames is None else {}),
         )
 
     def _check_precision_metadata(self, value):
