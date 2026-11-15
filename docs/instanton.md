@@ -145,9 +145,11 @@ negative mode; anything else raises `InstantonError`.
 
 `log_defect` is the leading part of `ln(k_QM / k_RPMD)` and not the whole of it:
 anharmonic fluctuations about the instanton, and the entire difference above the
-crossover, are missing. It is a diagnostic of how far an RPMD rate lies from the
-quantum rate and of what a [subspace correction](subspace-instanton-anchor.md)
-has to carry; it is not applied to any rate by PyRPMD.
+crossover, are missing. `steepest_descent_rpmd_defect` is a standalone diagnostic
+of how far an RPMD rate lies from the quantum rate and of what a
+[subspace correction](subspace-instanton-anchor.md) has to carry; opt-in skeleton
+anchoring of subspace corrections is configured separately via
+`rate.subspace_correction.anchor = "skeleton"`.
 
 ### Hessian providers and optimizer choice
 

@@ -182,8 +182,9 @@ one, fold into $V_S$; near or below one, put in $S$ or rely on the anchor.
 
 `benchmarks/subspace_instanton` re-implements the model family and the exact reference of a
 code package supplied for comparison (2D valley models M1–M4; a recursive Green's-function
-$N(E)$ with exact leads) and uses this repository's RPMD solver across 95 sharded full,
-reduced and Eckart RPMD tasks (`results/rpmd.json`, `report.py`).
+$N(E)$ with exact leads) and uses this repository's RPMD solver across multi-seed runs
+([validation report](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/2026-11-14-subspace-instanton-anchor/README.md))
+and 95 sharded full, reduced and Eckart RPMD tasks (`results/rpmd.json`, `report.py`).
 
 **Checked**
 
@@ -344,9 +345,10 @@ cases (`results/complex_pes.json`, `report.py`) spanning four complex reaction t
 ## API and workflow usage
 
 - `pyrpmd.instanton.steepest_descent_defect(result, *, beta=None, temperature_kelvin=None)`
-  evaluates $\varepsilon_{\mathrm{SD}} = 2\pi/(\beta\hbar\eta_1)$ from a converged
-  `InstantonResult` below $T_c$ (and returns `factor = 1.0, log_factor = 0.0` for `result=None`
-  at or above $T_c$).
+  (and `pyrpmd.instanton.steepest_descent_rpmd_defect(result)`) evaluates
+  $\varepsilon_{\mathrm{SD}} = 2\pi/(\beta\hbar\eta_1)$ from a converged `InstantonResult`
+  below $T_c$ (`steepest_descent_defect` also returns `factor = 1.0, log_factor = 0.0` for
+  `result=None` at or above $T_c$).
 - `SubspaceModel.skeleton()` returns a bare-potential `SubspaceModel` on the same axes, masses
   and dividing surface (`bare_values` is recorded with zero extra PES evaluations by
   `project_linear_subspace`, `project_path_subspace` and `project_rph_values(..., return_bare=True)`).

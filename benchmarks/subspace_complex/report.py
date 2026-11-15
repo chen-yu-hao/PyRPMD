@@ -163,7 +163,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("results_json", type=Path)
     args = parser.parse_args(argv)
-    data = json.loads(args.results_json.read_text())
+    data = json.loads(args.results_json.read_text(encoding="utf-8"))
     sys.stdout.write(format_complex_report(data))
     return 0
 

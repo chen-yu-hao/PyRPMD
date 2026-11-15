@@ -254,7 +254,7 @@ class SubspaceCorrection:
     def write(self, path) -> Path:
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps(self.to_dict(), indent=2, sort_keys=True))
+        path.write_text(json.dumps(self.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
         return path
 
     @classmethod
@@ -275,7 +275,7 @@ class SubspaceCorrection:
 
     @classmethod
     def read(cls, path) -> "SubspaceCorrection":
-        return cls.from_dict(json.loads(Path(path).read_text()))
+        return cls.from_dict(json.loads(Path(path).read_text(encoding="utf-8")))
 
 
 def subspace_correction(
@@ -577,7 +577,7 @@ def correct_rate_run(directory, correction, *, output=None, beta_rtol: float = 1
         raise ValueError("the corrected rate must not overwrite a source scientific file")
     if target.exists():
         try:
-            previous = json.loads(target.read_text())
+            previous = json.loads(target.read_text(encoding="utf-8"))
         except (OSError, ValueError) as exc:
             raise ValueError("refusing to overwrite an unrelated file") from exc
         if not isinstance(previous, dict) or previous.get("schema") != CORRECTED_SCHEMA:

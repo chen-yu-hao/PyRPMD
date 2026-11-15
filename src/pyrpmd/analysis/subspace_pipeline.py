@@ -152,9 +152,13 @@ def load_rate_run(directory) -> RateRun:
     from .rate_io import _root
 
     root = _root(directory, "input/resolved.json")
-    config = json.loads((root / "input" / "resolved.json").read_text())
-    system = System.from_dict(json.loads((root / "input" / "system.json").read_text()))
-    preparation = json.loads((root / "preparation.json").read_text()) if (root / "preparation.json").is_file() else {}
+    config = json.loads((root / "input" / "resolved.json").read_text(encoding="utf-8"))
+    system = System.from_dict(json.loads((root / "input" / "system.json").read_text(encoding="utf-8")))
+    preparation = (
+        json.loads((root / "preparation.json").read_text(encoding="utf-8"))
+        if (root / "preparation.json").is_file()
+        else {}
+    )
     from ..workflows.prepare import prepared_system
 
     system = prepared_system(system, preparation)
@@ -168,7 +172,7 @@ def load_rate_run(directory) -> RateRun:
     xi_star = 1.0
     pmf_path = root / "rate_pmf.json"
     if pmf_path.is_file():
-        xi_star = float(json.loads(pmf_path.read_text()).get("xi_star") or 1.0)
+        xi_star = float(json.loads(pmf_path.read_text(encoding="utf-8")).get("xi_star") or 1.0)
     return RateRun(root, config, system, reaction, coordinate, provider, float(config["beta"]),
                    int(config["beads"]), xi_star)
 
@@ -1262,7 +1266,7 @@ def pipeline_identity(root, options):
 
     names = ("input/resolved.json", "input/system.json", "preparation.json", "centroid_path.npz", "rate_pmf.json")
     files = {name: file_sha256(root / name) for name in names if (root / name).is_file()}
-    saved = json.loads((root / "input" / "resolved.json").read_text())
+    saved = json.loads((root / "input" / "resolved.json").read_text(encoding="utf-8"))
     numerical = {k: v for k, v in options.items()
                  if k not in {"enabled", "mode", "reuse", "output", "source"}}
     # Hash the implementations too: a source checkout can change without a
@@ -1281,7 +1285,7 @@ def _read_specification(specification):
     base = None
     if isinstance(specification, (str, Path)):
         path = Path(specification)
-        text = path.read_text()
+        text = path.read_text(encoding="utf-8")
         if path.suffix.lower() == ".json":
             spec = json.loads(text)
         else:
@@ -1389,16 +1393,19 @@ def _build_cases(run, out_dir, options, base, reuse_key):
     # With an execution table the task scheduler owns reuse through its own
     # identity-checked checkpoints; saved C_S records are reused only on the
     # ordinary sequential route.
+    previous_anchor = None
     if options["output"].get("reuse") and options.get("execution") is None:
         previous = {}
         report_path = out_dir / "subspace_pipeline.json"
         if report_path.is_file():
             try:
-                loaded = json.loads(report_path.read_text())
+                loaded = json.loads(report_path.read_text(encoding="utf-8"))
                 previous = loaded if isinstance(loaded, dict) else {}
             except (OSError, ValueError):
                 pass  # A damaged report is not reusable evidence.
         matched = reuse_key is None or previous.get("reuse_key") == reuse_key
+        if matched and isinstance(previous.get("instanton_anchor"), Mapping):
+            previous_anchor = previous["instanton_anchor"]
         for d in list(dimensions) if matched else []:
             record = out_dir / f"C_S_{d}d.json"
             if not record.is_file():
@@ -1454,7 +1461,7 @@ def _build_cases(run, out_dir, options, base, reuse_key):
     return dict(out_dir=out_dir, nbeads=nbeads, options=options, cases=cases, execution=execution,
                 corrections=corrections, models=models, path=path, path_info=path_info, sampled_cw=sampled_cw,
                 static_cw=static_cw, verdict=verdict, reuse_key=reuse_key, rejected=rejected,
-                escalation=escalation, capacity=capacity)
+                escalation=escalation, capacity=capacity, previous_anchor=previous_anchor)
 
 
 def _solver_plan(dimension, case, memory_limit_mb=None):
@@ -1602,6 +1609,10 @@ def _finish_pipeline(state, computed, apply):
             anchored = instanton_anchor(correction, full_defect, ref_model, nbeads=max(anchor_beads, 128))
             computed[dimension] = anchored["anchored_correction"]
             by_dimension[str(dimension)] = {k: v for k, v in anchored.items() if k != "anchored_correction"}
+        if full_defect is None and isinstance(state.get("previous_anchor"), Mapping):
+            prev_full = state["previous_anchor"].get("full_defect")
+            if isinstance(prev_full, Mapping):
+                full_defect = dict(prev_full)
         anchor_report = {"mode": anchor_mode, "nbeads": anchor_beads, "full_defect": full_defect,
                          "dimensions": by_dimension}
     for dimension, correction in computed.items():
@@ -1632,7 +1643,7 @@ def _finish_pipeline(state, computed, apply):
     if chosen is None and target.is_file():
         # A corrected rate from an earlier run must not outlive the model it came from.
         try:
-            stale = json.loads(target.read_text()).get("schema") == CORRECTED_SCHEMA
+            stale = json.loads(target.read_text(encoding="utf-8")).get("schema") == CORRECTED_SCHEMA
         except (OSError, ValueError, AttributeError):
             stale = False
         if stale:
@@ -1675,7 +1686,7 @@ def _finish_pipeline(state, computed, apply):
         "warnings": warnings,
         # Keep the saved quantum/RPMD curves when reusing a scalar correction
         # object (SubspaceCorrection.read deliberately loads only its summary).
-        "corrections": {str(d): json.loads((out_dir / f"C_S_{d}d.json").read_text()) for d in corrections},
+        "corrections": {str(d): json.loads((out_dir / f"C_S_{d}d.json").read_text(encoding="utf-8")) for d in corrections},
         "nested_sensitivity": sensitivity,
         "applied_dimension": None if chosen is None else int(chosen), "applied_dimension_reason": reason,
         "corrected_rate": corrected,

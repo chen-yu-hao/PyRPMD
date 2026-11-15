@@ -30,7 +30,7 @@ SKELETON = {"mep": "mep", "fe": "mep", "fe+sct": "mep+sct", "bare": "bare"}
 
 
 def load_results(directory: Path = RESULTS) -> dict:
-    read = lambda path: json.loads(path.read_text())
+    read = lambda path: json.loads(path.read_text(encoding="utf-8"))
     return {"qm": read(directory / "qm.json"), "skeleton": read(directory / "skeleton.json"),
             "rpmd": [read(path) for path in sorted(directory.glob("rpmd_*.json"))],
             "eckart": [read(path) for path in sorted(directory.glob("eckart_*.json"))]}
@@ -195,7 +195,7 @@ def render(results: dict | None = None) -> str:
     sections = {"DEFECT": defect_table(rows), "TRANSFER": transfer_table(rows), "SUMMARY": summary_table(rows),
                 "ABOVE": above_table(rows), "ECKART": eckart_table(results), "PATH_FREE": path_free_table(rows),
                 "PATH_FREE_SUMMARY": path_free_summary(rows)}
-    text = TEMPLATE.read_text()
+    text = TEMPLATE.read_text(encoding="utf-8")
     for key, value in sections.items():
         text = text.replace("{{" + key + "}}", value)
     return text
@@ -387,17 +387,17 @@ def format_report(rpmd: dict, *, transfer_ratios=(1.0, 0.8, 0.65, 0.55)) -> str:
 def main(argv=None) -> int:
     args_list = list(sys.argv[1:] if argv is None else argv)
     if args_list and not args_list[0].startswith("-"):
-        rpmd = json.loads(Path(args_list[0]).read_text())
+        rpmd = json.loads(Path(args_list[0]).read_text(encoding="utf-8"))
         sys.stdout.write(format_report(rpmd))
         return 0
     text = render()
     if "--check" in args_list:
-        if not OUTPUT.is_file() or OUTPUT.read_text() != text:
+        if not OUTPUT.is_file() or OUTPUT.read_text(encoding="utf-8") != text:
             print(f"{OUTPUT} is not the generated report; run report.py", file=sys.stderr)
             return 1
         return 0
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT.write_text(text)
+    OUTPUT.write_text(text, encoding="utf-8")
     return 0
 
 

@@ -15,7 +15,8 @@ predict the RPMD defect and the transfer error of a subspace model? The results 
 | `run_skeleton.py` | deterministic: steepest-descent factors of the skeletons -> `results/skeleton.json` |
 | `run_rpmd.py` | RPMD rates of a valley model and its reductions with `pyrpmd.analysis.subspace_rpmd.ring_polymer_rate` -> `results/rpmd_<model>_<T/Tc>.json`; every invocation adds one independent run |
 | `run_eckart.py` | RPMD defect of a symmetric Eckart barrier `eps(u, v)` -> `results/eckart_u<u>_v<v>.json` |
-| `report.py`, `README.template.md` | the validation report, generated from `results/` |
+| `run_shard.py` | sharded 95-task RPMD campaign runner & merger across five `T/T_c` ratios -> `results/rpmd.json` |
+| `report.py`, `README.template.md` | generates the validation report from `results/rpmd_*.json` + `eckart_*.json` (or renders 95-task Markdown tables when given `results/rpmd.json`) |
 
 ```bash
 python run_qm.py results/qm.json              # about 45 min, mostly the 2D rates of M4

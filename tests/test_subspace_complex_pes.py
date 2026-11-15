@@ -125,9 +125,9 @@ def test_full_instanton_defect_molecular_9d_rotation_invariance_and_sparse_branc
         run_leps.saddle.reshape(3, 3),
         np.array([[0.0, 0.0, 1.0], [0.0, 0.0, -2.0], [0.0, 0.0, 1.0]]),
         32,
-        0.6,
+        0.35,
     )
-    opt = optimize_instanton(_LepsPot(), leps.masses_au, 220.0, seed_9d)
+    opt = optimize_instanton(_LepsPot(), leps.masses_au, 220.0, seed_9d, method="bofill")
     ref_9d = steepest_descent_defect(opt, temperature_kelvin=220.0)
     assert defect_9d["factor"] == pytest.approx(ref_9d["factor"], rel=2e-3)
 
@@ -161,7 +161,7 @@ def test_full_instanton_defect_molecular_9d_rotation_invariance_and_sparse_branc
 
 def test_curved_2d_saved_benchmark_and_nonplanar_twisted_10d_hierarchy():
     saved_path = Path(__file__).resolve().parents[1] / "benchmarks" / "subspace_rph" / "results" / "curved_2d_200K.json"
-    saved = json.loads(saved_path.read_text())
+    saved = json.loads(saved_path.read_text(encoding="utf-8"))
     beta = float(saved["beta"])
     c_exact = float(saved["full"]["C"])
 
@@ -340,7 +340,7 @@ def test_complex_pes_merged_benchmark_and_report():
 
     json_path = Path(__file__).resolve().parents[1] / "benchmarks" / "subspace_complex" / "results" / "complex_pes.json"
     assert json_path.is_file()
-    data = json.loads(json_path.read_text())
+    data = json.loads(json_path.read_text(encoding="utf-8"))
     assert data["schema"] == "pyrpmd.benchmark.subspace_complex"
     assert data["exact_general_rate_claim"] is False
     expected_keys = [spec["key"] for spec in CASE_SPECS]

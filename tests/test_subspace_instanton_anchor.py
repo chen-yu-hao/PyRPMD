@@ -34,6 +34,7 @@ from pyrpmd.instanton import (
     instanton_seed,
     optimize_instanton,
     steepest_descent_defect,
+    steepest_descent_rpmd_defect,
 )
 from pyrpmd.potentials.base import PESResult
 from pyrpmd.workflows import rate_subspace as stage
@@ -65,6 +66,7 @@ class _Eckart1DPotential:
 
 def test_steepest_descent_defect_matches_subspace_solver_and_universal_u_scaling():
     assert pyrpmd.steepest_descent_defect is steepest_descent_defect
+    assert pyrpmd.steepest_descent_rpmd_defect is steepest_descent_rpmd_defect
 
     # Above crossover: result=None gives factor=1, log_factor=0 and validates temperature inputs.
     with pytest.raises(ValueError, match="beta or temperature_kelvin"):
@@ -94,7 +96,10 @@ def test_steepest_descent_defect_matches_subspace_solver_and_universal_u_scaling
         seed = instanton_seed(ts, np.array([[1.0, 0.0, 0.0]]), 64, 0.4 * width)
         inst = optimize_instanton(pot, [mass], temp_k, seed, active_mask=active, transition_state=ts)
         defect = steepest_descent_defect(inst, beta=beta)
+        rpmd_defect = steepest_descent_rpmd_defect(inst)
         assert defect["valid"] is True and defect["below_crossover"] is True
+        assert math.isclose(defect["log_factor"], rpmd_defect["log_defect"], abs_tol=1e-12)
+        assert math.isclose(defect["eta1"], rpmd_defect["unstable_frequency_au"], rel_tol=1e-12)
         defects.append(defect)
 
         # Compare against subspace_instanton_defect on the same non-unit-mass 1D SubspaceModel.
@@ -260,22 +265,25 @@ def test_subspace_instanton_defect_2d_and_invalid_ridge_detection():
 
 
 def test_instanton_anchor_respects_first_order_theorem_and_flags_crossover_kink_mismatch():
-    from benchmarks.subspace_instanton.models import family
-    from benchmarks.subspace_instanton.reductions import minimum_energy_path, reductions
+    # 1) Pure transverse frequency coupling (M1-type): V_bare(x) = V0 sech^2(x/a),
+    #    transverse frequency w(x) = w_inf + (w_ts - w_inf) sech^2(x/a).
+    #    The full 2D instanton lies on y = 0 with the exact bare 1D instanton defect,
+    #    so skeleton shift == 0 while naive shift (against dressed F(x)) != 0.
+    v0, width = 2.1, math.sqrt(4.2)  # unit mass, omega_b = 1.0
+    w_inf, w_ts = 1.8, 1.1
+    beta_m1 = 2.0 * math.pi / 0.65
+    x_grid = np.linspace(-18.0, 18.0, 1801)
+    sech2 = 1.0 / np.cosh(x_grid / width) ** 2
+    v_bare = v0 * sech2
+    w_x = w_inf + (w_ts - w_inf) * sech2
+    f_perp = (np.log(2.0 * np.sinh(0.5 * beta_m1 * w_x)) - math.log(2.0 * math.sinh(0.5 * beta_m1 * w_inf))) / beta_m1
+    v_fe = v_bare + f_perp
 
-    qm = json.loads((ROOT / "benchmarks" / "subspace_instanton" / "results" / "qm.json").read_text())
-
-    # 1) M1 at 0.65 T_c: pure transverse frequency coupling -> skeleton shift == 0, naive shift != 0.
-    m1 = family()["M1"]
-    e_m1 = qm["models"]["M1"]["temperatures"]["0.65"]
-    beta_m1 = float(e_m1["beta"])
-    red_m1, _ = reductions(m1, beta_m1, minimum_energy_path(m1))
-    x_fe, v_fe = red_m1["fe"]
-    _, v_mep = red_m1["mep"]
-    sub_m1 = SubspaceModel((x_fe,), v_fe, [1.0], 0.0, reactant_reference=-8.0, bare_values=v_mep)
+    sub_m1 = SubspaceModel((x_grid,), v_fe, [1.0], 0.0, reactant_reference=-12.0, bare_values=v_bare)
+    sub_m1_bare = SubspaceModel((x_grid,), v_bare, [1.0], 0.0, reactant_reference=-12.0)
+    full_m1 = subspace_instanton_defect(sub_m1_bare, beta_m1, nbeads=128)
+    assert full_m1["valid"] is True and full_m1["below_crossover"] is True
     base_corr = SubspaceCorrection(beta_m1, 1, 1.45, 0.02, 1.45e-4, 1.0e-4, 64, sub_m1.describe())
-    full_m1 = {"beta": beta_m1, "below_crossover": True, "log_factor": float(e_m1["ln_eps_sd"]),
-               "factor": math.exp(float(e_m1["ln_eps_sd"])), "valid": True}
 
     anchored_m1 = instanton_anchor(base_corr, full_m1, sub_m1, naive_defect=sub_m1, nbeads=128)
     assert anchored_m1["valid"] is True
@@ -283,21 +291,17 @@ def test_instanton_anchor_respects_first_order_theorem_and_flags_crossover_kink_
     assert abs(anchored_m1["naive_log_shift"]) > 0.05
     assert math.isclose(anchored_m1["anchored_factor"], base_corr.factor, rel_tol=1e-3)
 
-    # 2) M4 bare reduction at 0.65 T_c: slow bath shifts instanton -> nonzero skeleton shift, clean serialization.
-    m4 = family()["M4"]
-    e_m4 = qm["models"]["M4"]["temperatures"]["0.65"]
-    beta_m4 = float(e_m4["beta"])
-    red_m4, _ = reductions(m4, beta_m4, minimum_energy_path(m4))
-    x_b, v_b = red_m4["bare"]
-    sub_b = SubspaceModel((x_b,), v_b, [1.0], 0.0, reactant_reference=-8.0)
-    corr_b = SubspaceCorrection(beta_m4, 1, 1.60, 0.03, 1.6e-4, 1.0e-4, 64, sub_b.describe())
-    full_m4 = {"beta": beta_m4, "below_crossover": True, "log_factor": float(e_m4["ln_eps_sd"]),
-               "factor": math.exp(float(e_m4["ln_eps_sd"])), "valid": True}
-    anchored_b = instanton_anchor(corr_b, full_m4, sub_b, nbeads=128)
+    # 2) Slow-bath reduction where a frozen-bath bare barrier has higher omega_b = 1.25 > omega_full = 1.0:
+    #    at beta = 2*pi / 0.65 (below both crossovers), skeleton shift A_H - A_{S^0} < -0.15.
+    width_stiff = math.sqrt(2.0 * v0 / 1.25**2)
+    v_stiff = v0 / np.cosh(x_grid / width_stiff) ** 2
+    sub_b = SubspaceModel((x_grid,), v_stiff, [1.0], 0.0, reactant_reference=-12.0)
+    corr_b = SubspaceCorrection(beta_m1, 1, 1.60, 0.03, 1.6e-4, 1.0e-4, 64, sub_b.describe())
+    anchored_b = instanton_anchor(corr_b, full_m1, sub_b, nbeads=128)
     assert anchored_b["valid"] is True
     assert anchored_b["log_shift"] < -0.15
     ac = anchored_b["anchored_correction"]
-    assert ac.exact_general_rate_claim if hasattr(ac, "exact_general_rate_claim") else ac.to_dict()["exact_general_rate_claim"] is False
+    assert ac.to_dict()["exact_general_rate_claim"] is False
     reloaded = SubspaceCorrection.from_dict(ac.to_dict())
     assert math.isclose(reloaded.factor, ac.factor, rel_tol=1e-12)
     assert "instanton-anchored" in ac.to_dict()["approximation"]
@@ -309,10 +313,9 @@ def test_instanton_anchor_respects_first_order_theorem_and_flags_crossover_kink_
     assert math.isclose(applied_direct["corrected_rate_standard_error"],
                         applied_obj["corrected_rate_standard_error"], rel_tol=1e-12)
 
-    # 3) Between-crossovers rejection: M4 at T = T_c(H) is above full crossover (below=False)
-    # while bare barrier (higher omega_b) is already below its own crossover (below=True)!
-    e_m4_tc = qm["models"]["M4"]["temperatures"]["1.0"]
-    beta_tc = float(e_m4_tc["beta"])
+    # 3) Between-crossovers rejection: at beta_tc = 2*pi / 1.0, full system is at T_c(H) (below=False)
+    #    while sub_b (omega_b = 1.25, beta_c = 2*pi / 1.25 < beta_tc) is already below its own crossover!
+    beta_tc = 2.0 * math.pi
     corr_tc = SubspaceCorrection(beta_tc, 1, 1.25, 0.02, 1.25e-3, 1.0e-3, 64, sub_b.describe())
     full_tc = {"beta": beta_tc, "below_crossover": False, "log_factor": 0.0, "factor": 1.0, "valid": True}
     between = instanton_anchor(corr_tc, full_tc, sub_b, nbeads=128)
@@ -413,10 +416,18 @@ def test_pipeline_skeleton_anchor_shifts_factor_and_invalidates_unanchored_cache
         rep_none["corrections"]["1"]["factor"] * math.exp(shift),
         rel_tol=1e-6,
     )
-    # Reusing the anchored record preserves its anchor summary without recomputing subspace_correction.
+    # Reusing the anchored record preserves its anchor summary and full_defect without recomputing subspace_correction.
     monkeypatch.setattr(pipe, "subspace_correction", lambda *a, **k: pytest.fail("recomputed anchored cache"))
+    monkeypatch.setattr(pipe, "_full_instanton_defect", lambda *a, **k: pytest.fail("recomputed full_defect on reuse"))
     rep_reused = pipe.run_subspace_pipeline(anch_req, apply=False, reuse_key="k1")
     assert rep_reused["instanton_anchor"]["dimensions"]["1"]["valid"] is True
+    assert rep_reused["instanton_anchor"]["full_defect"] is not None
+    assert rep_reused["instanton_anchor"]["full_defect"]["valid"] is True
+    assert math.isclose(
+        rep_reused["instanton_anchor"]["full_defect"]["log_factor"],
+        rep_anch["instanton_anchor"]["full_defect"]["log_factor"],
+        rel_tol=1e-12,
+    )
     assert math.isclose(rep_reused["corrections"]["1"]["factor"], rep_anch["corrections"]["1"]["factor"], rel_tol=1e-12)
 
     legacy_stub = SimpleNamespace(dimension=2, model={"construction": {"environment": "adiabatic", "model_2d": "rph"}})
@@ -461,29 +472,3 @@ def test_subspace_docs_are_included_and_free_of_broken_relative_validation_links
                 f"{doc_name} contains unindexed relative link {rel!r}; use a full GitHub URL"
             )
 
-
-def test_subspace_instanton_merged_rpmd_and_report_metrics():
-    from benchmarks.subspace_instanton.report import format_report, summarize_metrics
-
-    rpmd_path = ROOT / "benchmarks" / "subspace_instanton" / "results" / "rpmd.json"
-    assert rpmd_path.is_file()
-    rpmd = json.loads(rpmd_path.read_text(encoding="utf-8"))
-    assert set(rpmd["models"]) == {"M1", "M2", "M3", "M4"}
-
-    metrics = summarize_metrics(rpmd)
-    overall = metrics["overall_below_tc"]
-    assert overall["count"] == 36
-    assert overall["rms_skeleton"] < overall["rms_unanchored"] - 0.02
-    assert overall["rms_skeleton"] < overall["rms_naive"] - 0.015
-    assert overall["max_skeleton"] < 0.55 * overall["max_unanchored"]
-
-    m1_fe = metrics["m1_fe_below_tc"]
-    assert m1_fe["count"] == 3
-    assert m1_fe["rms_skeleton"] == pytest.approx(m1_fe["rms_unanchored"], abs=1e-3)
-    assert m1_fe["rms_naive"] > 3.0 * m1_fe["rms_skeleton"]
-
-    bare = metrics["by_reduction_below_tc"]["bare"]
-    assert bare["rms_skeleton"] < 0.35 * bare["rms_unanchored"]
-
-    md = format_report(rpmd)
-    assert "## 1." in md and "## 2." in md and "## 3." in md

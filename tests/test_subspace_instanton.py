@@ -51,12 +51,12 @@ def paths():
 
 @pytest.fixture(scope="module")
 def qm():
-    return json.loads((RESULTS / "qm.json").read_text())
+    return json.loads((RESULTS / "qm.json").read_text(encoding="utf-8"))
 
 
 @pytest.fixture(scope="module")
 def skeleton():
-    return json.loads((RESULTS / "skeleton.json").read_text())
+    return json.loads((RESULTS / "skeleton.json").read_text(encoding="utf-8"))
 
 
 # --- exact reference: N(E) with exact leads -----------------------------------------
@@ -393,7 +393,7 @@ def test_every_rpmd_result_uses_the_committed_exact_rate(qm):
     files = sorted(RESULTS.glob("rpmd_*.json"))
     assert len(files) == 12
     for path in files:
-        result = json.loads(path.read_text())
+        result = json.loads(path.read_text(encoding="utf-8"))
         name, ratio = result["model"], result["temperature_ratio"]
         entry = qm["models"][name]["temperatures"][str(ratio)]
         full = result["full"]
@@ -475,5 +475,72 @@ def test_the_naive_anchor_fails_where_the_skeleton_anchor_holds():
 def test_the_validation_report_is_the_generated_one():
     committed = ROOT / "docs" / "validation" / "2026-11-14-subspace-instanton-anchor" / "README.md"
     text = report.render()
-    assert committed.read_text() == text
+    assert committed.read_text(encoding="utf-8") == text
     assert "{{" not in text and "FINDINGS" not in text and "LIMITS" not in text
+
+
+def test_instanton_anchor_on_benchmark_valley_models(qm, paths):
+    from pyrpmd.analysis import SubspaceCorrection, SubspaceModel, instanton_anchor
+
+    m1 = family()["M1"]
+    e_m1 = qm["models"]["M1"]["temperatures"]["0.65"]
+    beta_m1 = float(e_m1["beta"])
+    red_m1, _ = reductions(m1, beta_m1, paths["M1"])
+    x_fe, v_fe = red_m1["fe"]
+    _, v_mep = red_m1["mep"]
+    sub_m1 = SubspaceModel((x_fe,), v_fe, [1.0], 0.0, reactant_reference=-8.0, bare_values=v_mep)
+    base_corr = SubspaceCorrection(beta_m1, 1, 1.45, 0.02, 1.45e-4, 1.0e-4, 64, sub_m1.describe())
+    full_m1 = {
+        "beta": beta_m1,
+        "below_crossover": True,
+        "log_factor": float(e_m1["ln_eps_sd"]),
+        "factor": float(np.exp(float(e_m1["ln_eps_sd"]))),
+        "valid": True,
+    }
+    anchored_m1 = instanton_anchor(base_corr, full_m1, sub_m1, naive_defect=sub_m1, nbeads=128)
+    assert anchored_m1["valid"] is True
+    assert abs(anchored_m1["log_shift"]) < 5e-4
+    assert abs(anchored_m1["naive_log_shift"]) > 0.05
+
+    m4 = family()["M4"]
+    e_m4 = qm["models"]["M4"]["temperatures"]["0.65"]
+    beta_m4 = float(e_m4["beta"])
+    red_m4, _ = reductions(m4, beta_m4, paths["M4"])
+    x_b, v_b = red_m4["bare"]
+    sub_b = SubspaceModel((x_b,), v_b, [1.0], 0.0, reactant_reference=-8.0)
+    corr_b = SubspaceCorrection(beta_m4, 1, 1.60, 0.03, 1.6e-4, 1.0e-4, 64, sub_b.describe())
+    full_m4 = {
+        "beta": beta_m4,
+        "below_crossover": True,
+        "log_factor": float(e_m4["ln_eps_sd"]),
+        "factor": float(np.exp(float(e_m4["ln_eps_sd"]))),
+        "valid": True,
+    }
+    anchored_b = instanton_anchor(corr_b, full_m4, sub_b, nbeads=128)
+    assert anchored_b["valid"] is True
+    assert anchored_b["log_shift"] < -0.15
+
+
+def test_subspace_instanton_merged_rpmd_and_report_metrics():
+    rpmd_path = RESULTS / "rpmd.json"
+    assert rpmd_path.is_file()
+    rpmd = json.loads(rpmd_path.read_text(encoding="utf-8"))
+    assert set(rpmd["models"]) == {"M1", "M2", "M3", "M4"}
+
+    metrics = report.summarize_metrics(rpmd)
+    overall = metrics["overall_below_tc"]
+    assert overall["count"] == 36
+    assert overall["rms_skeleton"] < overall["rms_unanchored"] - 0.02
+    assert overall["rms_skeleton"] < overall["rms_naive"] - 0.015
+    assert overall["max_skeleton"] < 0.55 * overall["max_unanchored"]
+
+    m1_fe = metrics["m1_fe_below_tc"]
+    assert m1_fe["count"] == 3
+    assert m1_fe["rms_skeleton"] == pytest.approx(m1_fe["rms_unanchored"], abs=1e-3)
+    assert m1_fe["rms_naive"] > 3.0 * m1_fe["rms_skeleton"]
+
+    bare = metrics["by_reduction_below_tc"]["bare"]
+    assert bare["rms_skeleton"] < 0.35 * bare["rms_unanchored"]
+
+    md = report.format_report(rpmd)
+    assert "## 1." in md and "## 2." in md and "## 3." in md
