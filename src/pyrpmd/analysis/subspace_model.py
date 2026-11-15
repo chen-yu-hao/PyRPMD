@@ -237,6 +237,7 @@ class SubspaceModel:
     function: Callable[[np.ndarray], np.ndarray] | None = None
     gradient: Callable[[np.ndarray], np.ndarray] | None = None
     metric: Callable[[np.ndarray], np.ndarray] | np.ndarray | None = None
+    bare_values: np.ndarray | None = None
 
     def __post_init__(self):
         axes = tuple(_axis(a, f"axes[{i}]") for i, a in enumerate(self.axes))
@@ -247,6 +248,12 @@ class SubspaceModel:
         if values.shape != shape or not np.isfinite(values).all():
             raise ValueError(f"values must be finite with grid shape {shape}")
         values.flags.writeable = False
+        bare_values = self.bare_values
+        if bare_values is not None:
+            bare_values = np.array(bare_values, dtype=float, copy=True)
+            if bare_values.shape != shape or not np.isfinite(bare_values).all():
+                raise ValueError(f"bare_values must be finite with grid shape {shape}")
+            bare_values.flags.writeable = False
         masses = _positive_vector(self.masses, len(axes), "masses")
         surface = float(self.dividing_surface)
         axis0 = axes[0]
@@ -272,6 +279,7 @@ class SubspaceModel:
             metric.flags.writeable = False
         object.__setattr__(self, "axes", axes)
         object.__setattr__(self, "values", values)
+        object.__setattr__(self, "bare_values", bare_values)
         object.__setattr__(self, "masses", masses)
         object.__setattr__(self, "dividing_surface", surface)
         object.__setattr__(self, "reactant_reference", reference)
@@ -340,6 +348,35 @@ class SubspaceModel:
             raise ValueError("inverse metric returned invalid values")
         return value
 
+    def skeleton(self) -> "SubspaceModel":
+        """Return the bare-potential skeleton ``S^0`` of this subspace model.
+
+        The skeleton keeps the same subspace axes, coordinate masses, metric
+        and dividing surface as ``self`` while replacing a dressed potential
+        (``adiabatic`` zero-point energy or ``free_energy``) with the bare
+        potential ``V(x(s))`` recorded in :attr:`bare_values`.  Models without
+        transverse dressing (``bare_values is None``) are their own skeleton
+        and return ``self``.
+        """
+        if self.bare_values is None:
+            return self
+        provenance = dict(self.provenance)
+        provenance["skeleton_of"] = provenance.get("environment", "dressed")
+        provenance["environment"] = "bare_skeleton"
+        return SubspaceModel(
+            self.axes,
+            self.bare_values,
+            self.masses,
+            self.dividing_surface,
+            self.reactant,
+            self.reactant_reference,
+            provenance,
+            None,
+            None,
+            self.metric,
+            None,
+        )
+
     def describe(self) -> dict:
         """JSON-safe summary of the Hamiltonian, without the grid values."""
         return {
@@ -353,6 +390,7 @@ class SubspaceModel:
             "potential_minimum": float(self.values.min()),
             "potential_source": "callable" if self.function is not None else "cubic spline of the grid",
             "position_dependent_metric": self.metric is not None,
+            "has_bare_skeleton": self.bare_values is not None,
             "construction": dict(self.provenance),
         }
 
@@ -651,8 +689,9 @@ def project_linear_subspace(
         "zero_point_range": [float(zpe.min()), float(zpe.max())],
         "beta": beta,
     }
+    bare = values if environment in ("adiabatic", "free_energy") else None
     return SubspaceModel(grids, values + zpe, np.ones(d), dividing_surface, reactant,
-                         reactant_reference, info)
+                         reactant_reference, info, bare_values=bare)
 
 
 def _arc_length_spline(path_mass_weighted: np.ndarray, samples: int = 4001):
@@ -994,9 +1033,17 @@ def project_path_subspace(
                     omega_perp[i] = np.sqrt(float(np.min(positive)))
                     tbar[i] = np.sqrt(1.0 / omega_perp[i])
     xi, path_kappa = path_curvature(points, mass)
-    if dividing_surface is None:
-        dividing_surface = float(grid[np.argmax(values + zpe)])
     total_values = values + zpe
+    if dividing_surface is None:
+        prom = total_values - np.maximum(
+            np.minimum.accumulate(total_values),
+            np.minimum.accumulate(total_values[::-1])[::-1],
+        )
+        if len(grid) >= 5 and float(np.max(prom[2:-2])) > 0.0:
+            dividing_surface = float(grid[2 + int(np.argmax(prom[2:-2]))])
+        else:
+            dividing_surface = float(grid[np.argmax(total_values)])
+    bare_values = values.copy() if environment in ("adiabatic", "free_energy") else None
     transformed = False
     mass_ratio = np.ones(len(grid))
     tau_grid = grid.copy()
@@ -1051,6 +1098,8 @@ def project_path_subspace(
                 0.5 * (np.sqrt(mass_ratio[1:]) + np.sqrt(mass_ratio[:-1])) * np.diff(grid))]
             tau_grid = np.linspace(tau_raw[0], tau_raw[-1], len(grid))
             total_values = np.interp(tau_grid, tau_raw, total_values)
+            if bare_values is not None:
+                bare_values = np.interp(tau_grid, tau_raw, bare_values)
             dividing_surface = float(np.interp(dividing_surface, grid, tau_raw))
             reactant_reference = float(np.interp(reactant_reference, grid, tau_raw))
         transformed = True
@@ -1122,7 +1171,7 @@ def project_path_subspace(
             f"{worst['imaginary_frequency_cm']:.0f}i cm^-1 at arc length {worst['arc_length']:.6g}, "
             f"{worst['character']}); an adiabatic path model is not defined there")
     return SubspaceModel((tau_grid,), total_values, np.ones(1), dividing_surface, reactant,
-                         reactant_reference, info)
+                         reactant_reference, info, bare_values=bare_values)
 
 
 PATH_CONVERGED = "asymptote_converged"

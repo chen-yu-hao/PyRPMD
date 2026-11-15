@@ -10,7 +10,7 @@ from .validation import finite_real
 
 _SECTION = "rate.subspace_correction"
 _FIELDS = {"enabled", "mode", "dimension", "environment", "threshold", "reuse", "path", "quantum", "rpmd", "model_2d",
-           "curvature", "zero_point", "dvr_points", "dvr_half_width", "dvr_spacing", "hessian_displacement",
+           "anchor", "curvature", "zero_point", "dvr_points", "dvr_half_width", "dvr_spacing", "hessian_displacement",
            "validity", "execution"}
 _EXECUTION = {"cpus", "workers", "blas_threads", "memory_limit_mb"}
 _VALIDITY = {"unconverged_path", "unstable_bath", "outside_grid", "max_outside_fraction",
@@ -61,6 +61,7 @@ def rate_subspace_options(config):
         ("curvature", "none", ("none", "small")),
         ("zero_point", "harmonic", ("harmonic", "rph", "dvr")),
         ("model_2d", "rph", ("rph", "plane")),
+        ("anchor", "none", ("none", "skeleton")),
     ):
         value = options.setdefault(key, default)
         if not isinstance(value, str) or value not in choices:

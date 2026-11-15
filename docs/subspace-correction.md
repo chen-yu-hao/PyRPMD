@@ -662,7 +662,11 @@ a few percent. Two checks decide:
 (zero-point energy, imaginary-time corner cutting), which curvature × width measures, cancel from
 the transfer error; what remains is the environment's influence on RPMD's dynamical error. It
 also gives the first-order-exact `environment="free_energy"` projection and the finite-bead
-factor `harmonic_bead_factor` for environment modes.
+factor `harmonic_bead_factor` for environment modes. [The instanton anchor](subspace-instanton-anchor.md)
+derives the closed-form steepest-descent part $\varepsilon_{\mathrm{SD}}=2\pi/(\beta\hbar\eta_1)$
+of the RPMD defect and anchors $C_S$ to the full-system instanton relative to the bare-potential
+skeleton $S^0$ (`SubspaceModel.skeleton()`, `subspace_instanton_defect`, `instanton_anchor`, and
+`anchor = "skeleton"` in the pipeline).
 
 ## Numerical parameters to converge
 
@@ -708,7 +712,7 @@ invariant to the subspace model's absolute rate.
 
 The native `[rate.subspace_correction]` table also accepts the path-model
 selectors `curvature = "none" | "small"`, `model_2d = "rph" | "plane"` (the
-2D model, default `"rph"`) and
+2D model, default `"rph"`), `anchor = "none" | "skeleton"` (default `"none"`) and
 `zero_point = "harmonic" | "rph" | "dvr"`, plus `dvr_points`,
 `dvr_half_width` and `dvr_spacing`. Its `[rate.subspace_correction.path]`
 table accepts `source = "centroid" | "centroid_all" | "bead_weighted" |

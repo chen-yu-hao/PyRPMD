@@ -455,6 +455,29 @@ def ring_polymer_rate(
         normal = offset[new] / distance[new, None]
         delta = float(np.min(model.spacing))
         slope = (spline.energy(inside[new]) - spline.energy(inside[new] - delta * normal)) / delta
+        if model.dimension == 2:
+            # An open channel crossing a rectangular boundary at an oblique angle
+            # has nonzero transverse gradient dV/dq along the axis normal when a
+            # trajectory oscillates around the valley floor; compare the local
+            # channel-floor minima on the boundary and one step inside.
+            tangent = np.column_stack([-normal[:, 1], normal[:, 0]])
+            face_span = np.abs(tangent @ (spline.upper - spline.lower))
+            window = np.maximum(12.0 * float(np.max(model.spacing)), 0.15 * face_span)
+            unit_shifts = np.linspace(-1.0, 1.0, 401)
+            shifts = window[:, None] * unit_shifts[None, :]
+            pts_out = np.clip(
+                inside[new][:, None, :] + shifts[:, :, None] * tangent[:, None, :],
+                spline.lower,
+                spline.upper,
+            )
+            pts_in = np.clip(
+                (inside[new] - delta * normal)[:, None, :] + shifts[:, :, None] * tangent[:, None, :],
+                spline.lower,
+                spline.upper,
+            )
+            v_out = spline.energy(pts_out.reshape(-1, 2)).reshape(len(new), -1).min(axis=1)
+            v_in = spline.energy(pts_in.reshape(-1, 2)).reshape(len(new), -1).min(axis=1)
+            slope = np.minimum(slope, (v_out - v_in) / delta)
         thermal_length = np.sqrt(beta * np.sum(normal**2 / model.masses[None, :], axis=1))
         edge_slope[new] = beta * slope * thermal_length
 

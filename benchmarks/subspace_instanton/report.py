@@ -201,9 +201,197 @@ def render(results: dict | None = None) -> str:
     return text
 
 
-def main() -> int:
+MODEL_NAMES = ("M1", "M2", "M3", "M4")
+REDUCTION_ORDER = ("mep", "fe", "fe+sct", "bare")
+
+
+def _rms(values) -> float:
+    arr = np.asarray(values, dtype=float)
+    return float(np.sqrt(np.mean(arr**2))) if arr.size else float("nan")
+
+
+def _max_abs(values) -> float:
+    arr = np.asarray(values, dtype=float)
+    return float(np.max(np.abs(arr))) if arr.size else float("nan")
+
+
+def summarize_metrics(rpmd: dict, *, below_ratios=(0.8, 0.65, 0.55)) -> dict:
+    """Compute aggregate RMS and max-abs log-rate residuals from merged RPMD results."""
+    below_set = {float(r) for r in below_ratios}
+    by_reduction = {key: {"unanchored": [], "skeleton": [], "naive": []} for key in REDUCTION_ORDER}
+    all_below = {"unanchored": [], "skeleton": [], "naive": []}
+    m1_fe = {"unanchored": [], "skeleton": [], "naive": []}
+    between_crossovers = []
+    eckart_all = []
+    eckart_below = []
+
+    for model in MODEL_NAMES:
+        m_entry = rpmd["models"][model]
+        for r_str, t_entry in m_entry["temperatures"].items():
+            ratio = float(r_str)
+            eck_err = float(t_entry["eckart_estimate"]["error"])
+            eckart_all.append(eck_err)
+            if ratio in below_set:
+                eckart_below.append(eck_err)
+            a_h = float(t_entry["full"]["ln_eps_sd"])
+            for key, red in t_entry["reductions"].items():
+                unanch = float(red["transfer_error"])
+                skel = float(red["anchored_skeleton_error"])
+                naive = float(red["anchored_naive_error"])
+                a_s0 = float(red["ln_eps_sd_skeleton"])
+                if (a_h > 0.0) != (a_s0 > 0.0):
+                    between_crossovers.append({
+                        "model": model,
+                        "ratio": ratio,
+                        "reduction": key,
+                        "skeleton": red["skeleton"],
+                        "transfer_error": unanch,
+                        "anchored_skeleton_error": skel,
+                    })
+                if ratio in below_set:
+                    by_reduction[key]["unanchored"].append(unanch)
+                    by_reduction[key]["skeleton"].append(skel)
+                    by_reduction[key]["naive"].append(naive)
+                    all_below["unanchored"].append(unanch)
+                    all_below["skeleton"].append(skel)
+                    all_below["naive"].append(naive)
+                    if model == "M1" and key == "fe":
+                        m1_fe["unanchored"].append(unanch)
+                        m1_fe["skeleton"].append(skel)
+                        m1_fe["naive"].append(naive)
+
+    def _pack(bucket):
+        return {
+            "count": len(bucket["unanchored"]),
+            "rms_unanchored": _rms(bucket["unanchored"]),
+            "rms_skeleton": _rms(bucket["skeleton"]),
+            "rms_naive": _rms(bucket["naive"]),
+            "max_unanchored": _max_abs(bucket["unanchored"]),
+            "max_skeleton": _max_abs(bucket["skeleton"]),
+            "max_naive": _max_abs(bucket["naive"]),
+        }
+
+    return {
+        "below_ratios": [float(r) for r in below_ratios],
+        "overall_below_tc": _pack(all_below),
+        "by_reduction_below_tc": {k: _pack(v) for k, v in by_reduction.items()},
+        "m1_fe_below_tc": _pack(m1_fe),
+        "eckart": {
+            "count_all": len(eckart_all),
+            "rms_all": _rms(eckart_all),
+            "max_all": _max_abs(eckart_all),
+            "count_below_tc": len(eckart_below),
+            "rms_below_tc": _rms(eckart_below),
+            "max_below_tc": _max_abs(eckart_below),
+        },
+        "between_crossovers": between_crossovers,
+    }
+
+
+def _fmt_signed(val: float, digits: int = 3) -> str:
+    return "nan" if np.isnan(val) else f"{val:+.{digits}f}"
+
+
+def format_report(rpmd: dict, *, transfer_ratios=(1.0, 0.8, 0.65, 0.55)) -> str:
+    """Render Markdown summary tables for full defects, Eckart estimates, and anchored transfers."""
+    metrics = summarize_metrics(rpmd)
+    lines: list[str] = []
+    lines.append("## 1. Full 2D RPMD defect, steepest-descent factor and matched Eckart estimate")
+    lines.append("")
+    lines.append(
+        "| Model | $T/T_c$ | $\\varepsilon(H)$ | $\\ln\\varepsilon(H)$ | $A_H$ | "
+        "$R_H=\\ln\\varepsilon(H)-A_H$ | $\\ln C_{\\mathrm{Eck}}$ | $\\ln\\varepsilon(H)-\\ln C_{\\mathrm{Eck}}$ |"
+    )
+    lines.append("| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |")
+    for model in MODEL_NAMES:
+        temps = rpmd["models"][model]["temperatures"]
+        for idx, ratio in enumerate(rpmd["temperature_ratios"]):
+            t_entry = temps[str(ratio)]
+            full = t_entry["full"]
+            eck = t_entry["eckart_estimate"]
+            eps = float(full["eps"])
+            eps_err = eps * float(full["relative_error"])
+            ln_eps = float(full["ln_eps"])
+            ln_err = float(full["relative_error"])
+            a_h = float(full["ln_eps_sd"])
+            rem = float(full["remainder"])
+            ln_eck = float(eck["ln_c_eckart"])
+            eck_err = float(eck["error"])
+            eck_se = float(eck["standard_error"])
+            label = model if idx == 0 else ""
+            lines.append(
+                f"| {label} | {ratio:.2f} | {eps:.3f} ± {eps_err:.3f} | "
+                f"{_fmt_signed(ln_eps)} ± {ln_err:.3f} | {a_h:.3f} | {_fmt_signed(rem)} | "
+                f"{_fmt_signed(ln_eck)} | {_fmt_signed(eck_err)} ± {eck_se:.3f} |"
+            )
+
+    lines.append("")
+    lines.append("## 2. Subspace transfer error and instanton-anchored residuals")
+    lines.append("")
+    lines.append(
+        "| Model | $T/T_c$ | $S$ | $S^0$ | $\\Delta=\\ln\\varepsilon(H)-\\ln C_S$ | "
+        "$A_H-A_{S^0}$ | $\\Delta-(A_H-A_{S^0})$ (skel) | $A_H-A_S$ | $\\Delta-(A_H-A_S)$ (naive) |"
+    )
+    lines.append("| --- | ---: | --- | --- | ---: | ---: | ---: | ---: | ---: |")
+    for model in MODEL_NAMES:
+        temps = rpmd["models"][model]["temperatures"]
+        first_model = True
+        for ratio in transfer_ratios:
+            t_entry = temps[str(ratio)]
+            first_temp = True
+            for key in REDUCTION_ORDER:
+                if key not in t_entry["reductions"]:
+                    continue
+                red = t_entry["reductions"][key]
+                se = float(red["transfer_standard_error"])
+                m_col = model if first_model else ""
+                t_col = f"{ratio:.2f}" if first_temp else ""
+                first_model = False
+                first_temp = False
+                lines.append(
+                    f"| {m_col} | {t_col} | `{key}` | `{red['skeleton']}` | "
+                    f"{_fmt_signed(float(red['transfer_error']))} ± {se:.3f} | "
+                    f"{_fmt_signed(float(red['delta_sd_skeleton']))} | "
+                    f"{_fmt_signed(float(red['anchored_skeleton_error']))} ± {se:.3f} | "
+                    f"{_fmt_signed(float(red['delta_sd_naive']))} | "
+                    f"{_fmt_signed(float(red['anchored_naive_error']))} ± {se:.3f} |"
+                )
+
+    lines.append("")
+    lines.append("## 3. Aggregate log-rate residuals below $T_c$ ($T/T_c \\in \\{0.8, 0.65, 0.55\\}$)")
+    lines.append("")
+    lines.append(
+        "| Subset | $N$ | RMS $|\\Delta|$ | RMS skel | RMS naive | "
+        "Max $|\\Delta|$ | Max skel | Max naive |"
+    )
+    lines.append("| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |")
+    rows = [("All reductions", metrics["overall_below_tc"]), ("M1 `fe` (1st-order coupling)", metrics["m1_fe_below_tc"])]
+    for key in REDUCTION_ORDER:
+        rows.append((f"`{key}`", metrics["by_reduction_below_tc"][key]))
+    for title, item in rows:
+        lines.append(
+            f"| {title} | {item['count']} | {item['rms_unanchored']:.3f} | "
+            f"{item['rms_skeleton']:.3f} | {item['rms_naive']:.3f} | "
+            f"{item['max_unanchored']:.3f} | {item['max_skeleton']:.3f} | {item['max_naive']:.3f} |"
+        )
+    eck = metrics["eckart"]
+    lines.append("")
+    lines.append(
+        f"Matched Eckart estimate $\\ln C_{{\\mathrm{{Eck}}}}$: "
+        f"RMS error {eck['rms_all']:.3f} (max {eck['max_all']:.3f}) across all {eck['count_all']} points; "
+        f"RMS {eck['rms_below_tc']:.3f} (max {eck['max_below_tc']:.3f}) across {eck['count_below_tc']} points below $T_c$."
+    )
+    return "\n".join(lines) + "\n"
+
+
+def main(argv=None) -> int:
+    args_list = list(sys.argv[1:] if argv is None else argv)
+    if args_list and not args_list[0].startswith("-"):
+        rpmd = json.loads(Path(args_list[0]).read_text())
+        sys.stdout.write(format_report(rpmd))
+        return 0
     text = render()
-    if "--check" in sys.argv[1:]:
+    if "--check" in args_list:
         if not OUTPUT.is_file() or OUTPUT.read_text() != text:
             print(f"{OUTPUT} is not the generated report; run report.py", file=sys.stderr)
             return 1
@@ -211,6 +399,7 @@ def main() -> int:
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text(text)
     return 0
+
 
 
 if __name__ == "__main__":
