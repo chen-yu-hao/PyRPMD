@@ -185,7 +185,11 @@ In between ($\omega\approx2\pi/\beta\hbar$, i.e. $\omega\approx\lambda^\ddagger$
 action is non-local and no one-dimensional potential model represents it. The instanton of $H$
 contains all three cases, so $A_H$ does; a subspace model on the minimum-energy path contains
 only the first. The ratio $\omega_k/\lambda^\ddagger$ therefore classifies the modes: well above
-one, fold into $V_S$; near or below one, put in $S$ or rely on the anchor.
+one, fold into $V_S$; near or below one, the one-dimensional model is not justified by this
+argument and has to be tested. In the tests the classification was not decisive: the
+free-energy reduction transfers within errors for the slow bath of M4
+($\omega/\lambda^\ddagger=0.6$ at the reactants), and its largest transfer errors (0.02 to 0.05)
+are on the curved paths of M2 and M3 with ratios of 1.5 and 1.1 to 1.8.
 
 ## What the tests show
 
