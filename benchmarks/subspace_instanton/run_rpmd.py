@@ -5,8 +5,8 @@
     python run_rpmd.py M2 0.8 results/qm.json results/rpmd_M2_0.8.json mep fe    # ... of two reductions
 
 Uses ``pyrpmd.analysis.subspace_rpmd.ring_polymer_rate``: the full system with
-its analytic potential, each reduction as a tabulated 1D model with the same
-number of beads.  Both are normalized per unit length at ``s = -14``, where the
+its analytic potential, each reduction as a tabulated 1D model with at least
+as many beads.  Both are normalized per unit length at ``s = -14``, where the
 barrier is below 1e-5.  The exact rates come from ``run_qm.py``.
 
 Every invocation adds one independent run (a new seed) of the selected parts
@@ -35,6 +35,17 @@ REFERENCE = -14.0
 WINDOWS = np.r_[np.linspace(REFERENCE, -8.0, 4)[:-1], np.linspace(-8.0, 0.0, 45)]
 BEADS = {"M1": {1.25: 32, 0.8: 64, 0.55: 128}, "M2": {1.25: 32, 0.8: 64, 0.55: 96},
          "M3": {1.25: 32, 0.8: 64, 0.55: 128}, "M4": {1.25: 32, 0.8: 64, 0.55: 96}}
+
+
+def reduced_beads(nbeads: int) -> int:
+    """Beads of the 1D reductions: the power of two at or above those of the full model.
+
+    The native ring-polymer solver is several times slower for other bead
+    numbers (48 against 64, 96 against 128), which the cheap 1D runs avoid.
+    """
+    return 1 << (int(nbeads) - 1).bit_length()
+
+
 # Sampling per run.  The statistical error is that of the thermodynamic integration over
 # the barrier top; the 1D reductions are cheap and get twice the walkers and sweeps.
 FULL = {"walkers": 32, "sweeps": 600, "seed": 11}
@@ -104,14 +115,15 @@ def main() -> int:
         with open(out_path, "w") as handle:
             json.dump(report, handle, indent=1)
 
-    def add_run(record, model, settings, **options):
+    def add_run(record, model, settings, nbeads, **options):
         runs = earlier_runs(record, nbeads, settings)
         runs.append(solve(model, beta, nbeads, seed=settings["seed"] + 1000 * len(runs), walkers=settings["walkers"],
                           sweeps=settings["sweeps"], **options))
         return combine(runs)
 
     if not only or "full" in only:
-        full = add_run(report.get("full"), full_model(valley), FULL, md_time=50.0 if name == "M4" else None)
+        full = add_run(report.get("full"), full_model(valley), FULL, nbeads,
+                       md_time=50.0 if name == "M4" else None)
         # Finite-bead error of the transverse mode (harmonic, TST level): exact for harmonic modes.
         full["bead_factor"] = harmonic_bead_factor([qm["stable_frequency"]], [valley.omega_inf], beta, nbeads)["factor"]
         full["rate_bead_corrected"] = full["rate"] / full["bead_factor"]
@@ -127,7 +139,8 @@ def main() -> int:
         if only and key not in only:
             continue
         x, potential = reduced[key]
-        record = add_run(report["reductions"].get(key), tabulated_model(x, potential, key), REDUCED)
+        record = add_run(report["reductions"].get(key), tabulated_model(x, potential, key), REDUCED,
+                         reduced_beads(nbeads))
         record["k_qm"] = entry["reductions"][key]["k_qm"]
         record["eps"] = record["k_qm"] / record["rate"]
         report["reductions"][key] = record

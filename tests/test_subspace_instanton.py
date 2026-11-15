@@ -382,6 +382,7 @@ def test_independent_runs_are_averaged_in_the_logarithm_with_inverse_variance_we
     weighted = run_rpmd.combine([run(2.0, 0.01, 11), run(8.0, 0.02, 1011)])
     assert np.log(weighted["rate"]) == pytest.approx(0.8 * np.log(2.0) + 0.2 * np.log(8.0))
     assert weighted["seconds"] == 2.0 and len(weighted["runs"]) == 2
+    assert [run_rpmd.reduced_beads(n) for n in (32, 48, 64, 96, 128)] == [32, 64, 64, 128, 128]
     # Only runs with the same beads and sampling are averaged with a new one.
     record = {"runs": [run(2.0, 0.02, 11), dict(run(2.0, 0.02, 5), nbeads=64)]}
     assert [r["seed"] for r in run_rpmd.earlier_runs(record, 32, run_rpmd.FULL)] == [11]
@@ -400,10 +401,11 @@ def test_every_rpmd_result_uses_the_committed_exact_rate(qm):
         assert full["eps"] == pytest.approx(entry["k_qm"] * full["bead_factor"] / full["rate"], rel=1e-12)
         assert 0.0 < full["relative_error"] < 0.03 and 0.5 < full["kappa"] <= 1.0 + 3 * full["relative_error"]
         assert set(result["reductions"]) == set(run_rpmd.REDUCTIONS[name])
+        nbeads = run_rpmd.BEADS[name][ratio]
         for record in (full, *result["reductions"].values()):
             runs = record["runs"]
             assert len({run["seed"] for run in runs}) == len(runs) >= 1
-            assert {run["nbeads"] for run in runs} == {run_rpmd.BEADS[name][ratio]}
+            assert {run["nbeads"] for run in runs} == {nbeads if record is full else run_rpmd.reduced_beads(nbeads)}
             assert record["rate"] == pytest.approx(run_rpmd.combine(runs)["rate"], rel=1e-12)
             assert record["relative_error"] == pytest.approx(run_rpmd.combine(runs)["relative_error"], rel=1e-12)
             # Independent runs of one rate agree within their errors.
