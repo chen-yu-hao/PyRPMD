@@ -277,7 +277,8 @@ def fes_sampler(config):
     thermostat = sampling.get("thermostat", "andersen")
     if thermostat == "andersen":
         expected = scheme + "-andersen"
-        if sampling.get("integrator", expected) != expected:
+        selected = sampling.get("integrator", expected)
+        if selected != expected and not (sampling.get("engine") == "torch" and selected == "torch"):
             raise ValueError("Andersen FES sampling must match the dynamics integrator")
         if "gamma_centroid" in sampling:
             raise ValueError("sampling.gamma_centroid requires PILE-L sampling")

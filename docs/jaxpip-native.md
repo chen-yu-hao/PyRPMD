@@ -45,7 +45,7 @@ Toolkit。
 
 - 插件接受 `B=K*P`，但现有轨迹调度器不会自动把 K 条轨迹打包成一次推理。
 - OpenMP 测试验证独立 context 的并发正确性，不是新增了一个多轨迹 RPMD 驱动。
-- C ABI v1 仍使用 host memory，GPU 路径仍有主机/设备传输；不是全 GPU 积分器。
+- C ABI v1（`pyrpmd_pes_evaluate_v1`）面向 CPU/C++ 原生传播时仍使用 host memory；当启用 CUDA 工具链构建并配置 `device="cuda:<index>"` 时，插件额外导出伴随设备内存接口 `pes_api_cuda_v1.h`（通过 `Ort::IoBinding` 与 `CABIPotential.as_torch_pes()` 接入全 GPU `TorchDynamics`，消除内步 host 往返拷贝）。
 - 不包含 OpenVINO、周期性晶胞、virial 或非绝热耦合；也不附送真实化学体系的拟合势能面。
 
 PIP/FI 基组不是训练好的势能面。生产计算仍须提供对应 checkpoint，并独立验证

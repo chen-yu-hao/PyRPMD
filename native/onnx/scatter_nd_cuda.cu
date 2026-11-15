@@ -125,6 +125,7 @@ __global__ void scatter_nd_f64_kernel(double* __restrict__ output,
                 *params.oob_flag = 1;
                 __threadfence_system();
             }
+            output[s] = nan("");
             continue;
         }
         const double val = updates[tid];

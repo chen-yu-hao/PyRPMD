@@ -16,8 +16,10 @@ from .builtin import (
     DoubleWellPotential,
     PeriodicCosinePotential,
 )
-from .python import PythonPotential, RPMDratePotential, import_object
+from .python import PythonPotential, RPMDratePotential, import_object, unit_factors
 from .cabi import CABIPotential, build_object
+from .jax_dlpack import JAXDLPackPotential, _normalize_device_request
+from .jaxpip import JaxPIPPotential
 from .batched_ml import BATCHED_ML_PROVIDERS as _BATCHED_ML_PROVIDERS
 from ..geometry import validate_cell_pbc
 import numpy as np
@@ -26,7 +28,8 @@ import numpy as np
 _PHYSICAL_SPEC_FIELDS = frozenset(
     "provider type name library manifest factory module function initializer initializer_params "
     "with_dimensions model weights device dtype units derivative params abi_version periodic virial "
-    "trajectory_batch_safe".split()
+    "trajectory_batch_safe max_batch_frames model_directory basis checkpoint kind alpha position_unit energy_unit "
+    "atomic_numbers charge multiplicity max_frames_per_call allow_unvalidated batched".split()
 )
 _LIFECYCLE_SPEC_FIELDS = {
     "committee": frozenset({"provider", "type", "members"}),
@@ -101,17 +104,32 @@ def validate_periodic_spec(config, system=None, *, _nested=False):
             raise PotentialError("Torch periodic must be a boolean")
         if config.get("virial", "auto") not in ("auto", "autograd", "provided", "none"):
             raise PotentialError("Torch virial must be auto, autograd, provided, or none")
+    if "max_batch_frames" in config and kind not in _BATCHED_ML_PROVIDERS:
+        raise PotentialError(
+            "potential.max_batch_frames is supported only for batched ML providers"
+        )
     if kind in _BATCHED_ML_PROVIDERS:
         params = config.get("params", {})
         if not isinstance(params, dict):
             raise PotentialError("batched ML params must be a mapping")
-        for key in ("dtype", "virial"):
+        for key in ("dtype", "virial", "max_batch_frames"):
             if key in config and key in params:
                 raise PotentialError(f"Specify {key} in potential.{key} or params.{key}, not both")
         if config.get("dtype", params.get("dtype", "float64")) not in ("float32", "float64"):
             raise PotentialError("batched ML dtype must be float32 or float64")
         if not isinstance(config.get("virial", params.get("virial", False)), (bool, np.bool_)):
             raise PotentialError("batched ML virial must be a boolean")
+        max_batch_frames = config.get("max_batch_frames", params.get("max_batch_frames"))
+        if max_batch_frames is not None and not (
+            isinstance(max_batch_frames, str) and max_batch_frames == "auto"
+        ) and (
+            isinstance(max_batch_frames, (bool, np.bool_))
+            or not isinstance(max_batch_frames, (int, np.integer))
+            or int(max_batch_frames) < 1
+        ):
+            raise PotentialError(
+                "batched ML max_batch_frames must be a positive integer or 'auto'"
+            )
     if periodic and kind in ("rpmdrate", "f2py", "diabatic_python", "pyscf"):
         raise PotentialError(
             f"Provider {kind!r} has no periodic cell/PBC contract"
@@ -120,6 +138,74 @@ def validate_periodic_spec(config, system=None, *, _nested=False):
         raise PotentialError("C ABI v1 is nonperiodic; use a cell-aware C ABI v2 library")
     if periodic and kind == "torch" and config.get("periodic") is not True:
         raise PotentialError("Periodic Torch models require potential.periodic=true and a cell/PBC contract")
+    if kind == "jax-dlpack":
+        if not any(config.get(key) is not None for key in ("model", "factory", "function")):
+            raise PotentialError(
+                "jax-dlpack requires potential.model, potential.factory, or potential.function"
+            )
+        if config.get("factory") is not None and config.get("function") is not None:
+            raise PotentialError("Specify either potential.factory or potential.function, not both")
+        params = config.get("params", {})
+        if not isinstance(params, dict):
+            raise PotentialError("jax-dlpack params must be a mapping")
+        if "dtype" in config and "dtype" in params:
+            raise PotentialError("Specify dtype in potential.dtype or params.dtype, not both")
+        if config.get("dtype", params.get("dtype", "float64")) != "float64":
+            raise PotentialError("jax-dlpack requires float64 precision")
+        if "device" in config:
+            try:
+                _normalize_device_request(config["device"])
+            except ValueError as error:
+                raise PotentialError(str(error)) from error
+        if not isinstance(config.get("periodic", False), (bool, np.bool_)):
+            raise PotentialError("jax-dlpack periodic must be a boolean")
+        if periodic and config.get("periodic") is not True:
+            raise PotentialError(
+                "Periodic jax-dlpack models require potential.periodic=true and a cell/PBC contract"
+            )
+        if config.get("virial", "auto") not in ("auto", "autograd", "provided", "none"):
+            raise PotentialError("jax-dlpack virial must be auto, autograd, provided, or none")
+        if config.get("derivative", "force") not in ("force", "gradient"):
+            raise PotentialError("jax-dlpack derivative must be force or gradient")
+        batched = config.get("batched", "auto")
+        if not (isinstance(batched, (bool, np.bool_)) or batched == "auto"):
+            raise PotentialError("jax-dlpack batched must be a boolean or 'auto'")
+        chunk = config.get("max_frames_per_call")
+        if (chunk is not None and (isinstance(chunk, (bool, np.bool_))
+                                   or not isinstance(chunk, (int, np.integer)) or chunk < 1)):
+            raise PotentialError("jax-dlpack max_frames_per_call must be a positive integer")
+        if config.get("units") is not None and (
+            config.get("position_unit") is not None or config.get("energy_unit") is not None
+        ):
+            raise PotentialError("Specify either potential.units or position_unit/energy_unit, not both")
+        units = config.get("units")
+        if units is None and (
+            config.get("position_unit") is not None or config.get("energy_unit") is not None
+        ):
+            units = {
+                "positions": config.get("position_unit", "bohr"),
+                "energy": config.get("energy_unit", "hartree"),
+            }
+        try:
+            unit_factors(units)
+        except (ValueError, TypeError, AttributeError) as error:
+            raise PotentialError(str(error)) from error
+    if kind == "jaxpip":
+        if periodic:
+            raise PotentialError("JaxPIP production binding is nonperiodic")
+        if not (config.get("model_directory") or config.get("basis")):
+            raise PotentialError("JaxPIP requires potential.basis or potential.model_directory")
+        if not (config.get("model") or config.get("checkpoint")
+                or config.get("model_directory")):
+            raise PotentialError("JaxPIP requires potential.model/checkpoint or model_directory")
+        if config.get("kind", "linear") not in ("linear", "nn"):
+            raise PotentialError("JaxPIP kind must be linear or nn")
+        if not isinstance(config.get("allow_unvalidated", False), (bool, np.bool_)):
+            raise PotentialError("JaxPIP allow_unvalidated must be boolean")
+        chunk = config.get("max_frames_per_call")
+        if (chunk is not None and (isinstance(chunk, (bool, np.bool_))
+                                   or not isinstance(chunk, (int, np.integer)) or chunk < 1)):
+            raise PotentialError("JaxPIP max_frames_per_call must be a positive integer")
     if periodic and kind in ("deepmd", "deepmd-batched") and not pbc.all():
         raise PotentialError("DeePMD requires all or no periodic axes; partial PBC is unsupported")
     if periodic and kind == "openmm" and not pbc.all():
@@ -320,6 +406,10 @@ def _make_potential(config, system=None):
             cell=cell, pbc=pbc, periodic=spec.get("periodic", False),
             virial=spec.get("virial", "auto"),
         )
+    if kind == "jax-dlpack":
+        return JAXDLPackPotential.from_spec(spec, system=system)
+    if kind == "jaxpip":
+        return JaxPIPPotential.from_spec(spec, system=system)
     if kind in ("mace", "nequip", "deepmd", "fairchem", "tblite", "xtb", "pyscf") or kind in _BATCHED_ML_PROVIDERS:
         from .adapters import make_named_potential
 
@@ -330,7 +420,7 @@ def _make_potential(config, system=None):
                 raise ValueError("Specify DeePMD units in potential.units or params.units, not both")
             params["units"] = spec["units"]
         if kind in _BATCHED_ML_PROVIDERS:
-            for key in ("dtype", "virial"):
+            for key in ("dtype", "virial", "max_batch_frames"):
                 if key in spec:
                     params[key] = spec[key]
         return make_named_potential(
@@ -370,6 +460,8 @@ __all__ = [
     "FairchemBatchedPotential",
     "DeepMDBatchedPotential",
     "MetatomicBatchedPotential",
+    "JAXDLPackPotential",
+    "JaxPIPPotential",
 ]
 
 

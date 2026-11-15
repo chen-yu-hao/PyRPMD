@@ -60,16 +60,21 @@ def resolve_torch_materials(config, system):
     potential = config.get("potential", {})
     provider = potential.get("provider", potential.get("type", "builtin"))
     analytic = ("free", "harmonic", "periodic_cosine")
-    bridges = ("torch", "mace-batched", "nequip-batched", "fairchem-batched", "deepmd-batched", "metatomic")
+    bridges = ("jaxpip", "jax-dlpack", "torch", "mace-batched", "nequip-batched", "fairchem-batched", "deepmd-batched", "metatomic", "cabi", "native")
     if provider == "builtin" or provider in analytic:
         model = potential.get("name", potential.get("model", "harmonic" if provider == "builtin" else provider))
         if model not in analytic:
             raise ValueError("Torch materials builtin potential must be free, harmonic or periodic_cosine")
     elif provider not in (*analytic, *bridges):
         raise ValueError("Torch materials require a supported analytic, Torch or explicit batched tensor potential")
-    device = sampling.get("device", potential.get("device", "cpu"))
+    device = sampling.get("device", potential.get("device", potential.get("params", {}).get("device", "cpu")))
     if not isinstance(device, str) or not _DEVICE.fullmatch(device):
         raise ValueError("sampling.device must be cpu, cuda or cuda:<index>")
+    if provider in ("cabi", "native") and device == "cpu":
+        raise ValueError(
+            "Torch materials with C ABI / native potentials require a CUDA device "
+            "('cuda' or 'cuda:<index>'); CPU C ABI uses sampling.engine='native'"
+        )
     layout = sampling.get("normal_mode_layout", "rfft")
     if layout not in ("rfft", "rpmdrate"):
         raise ValueError("sampling.normal_mode_layout must be rfft or rpmdrate")

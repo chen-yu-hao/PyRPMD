@@ -79,6 +79,7 @@ its resolved index; use `cuda:0`, `cuda:1`, etc. to remove that ambiguity.
 | Harmonic parameters | Scalar, Cartesian and atom-axis broadcasting; no frame-dependent parameters |
 | Periodic cosine | Triclinic cells, partial PBC, atom subsets, repeats and nonperiodic confinement |
 | Module-backed `TorchPotential` | Requires `batch_independent=True`, a deterministic position-only model, float64 and matching device |
+| CUDA-capable `CABIPotential` (`provider="cabi"` / `"native"`) | Requires `pes_api_cuda_v1.h` symbols, `batch_independent=True`, `capabilities.cuda_device_memory=True`, and matching `cuda:<index>` device (`as_torch_pes()` zero-copy stream bridge; host-only libraries fail fast) |
 | T04 batched ML providers, after PR #81 is integrated | The `as_torch_pes()` bridge is borrowed without host fallback; each provider retains its own model and dependency restrictions |
 | PIMD | All-mobile Cartesian atoms, fixed cell, PILE-L with BCOCB |
 | Diffusion | Same sampling route, followed by Cayley BCB or exact normal-mode BAB with no thermostat |
