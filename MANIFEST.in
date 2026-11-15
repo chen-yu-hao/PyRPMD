@@ -8,7 +8,7 @@ include benchmarks/jaxpip_gpu_production.py
 include tools/data_manifest.py
 include tools/check_workflow_policy.py
 include tools/campaign_launch.py
-recursive-include native *.cpp *.h *.hpp *.c
+recursive-include native *.cpp *.h *.hpp *.c *.cu
 recursive-include docs *.md *.json *.csv *.png *.pdf *.py *.css *.txt *.html *.npz *.xml *.log
 exclude docs/validation/tier1-2026-10-31/*.npz
 prune docs/_build

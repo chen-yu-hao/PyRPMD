@@ -155,7 +155,9 @@ def resolve_sampling(d, runtime, *, selected, materials, native_pimd):
             if isinstance(potential_spec, Mapping):
                 kind = potential_spec.get("provider", potential_spec.get("type"))
                 fallback = "cuda" if kind in ("torch", "jaxpip") else "cpu"
-                default_device = potential_spec.get("device", fallback)
+                params = potential_spec.get("params")
+                param_device = params.get("device", fallback) if isinstance(params, Mapping) else fallback
+                default_device = potential_spec.get("device", param_device)
             sampling.setdefault("device", default_device if isinstance(default_device, str) else "cpu")
             sampling.setdefault("normal_mode_layout", "rfft")
         if native_pimd and sampling["thermostat"] == "nhc" and sampler is not None:
