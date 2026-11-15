@@ -60,8 +60,14 @@ def validate_task_sections(d):
     engine = d.get("sampling", {}).get("engine", "legacy")
     if engine not in ("legacy", "native", "torch"):
         raise InputError("sampling.engine must be legacy, native or torch")
-    if engine == "torch" and not materials:
-        raise InputError("sampling.engine='torch' requires task='pimd' or 'diffusion'")
+    if engine == "torch" and not materials and task != "rate":
+        raise InputError("sampling.engine='torch' requires task='pimd', 'diffusion' or 'rate'")
+    if engine == "torch" and task == "rate":
+        potential = d.get("potential", {})
+        provider = (potential.get("provider", potential.get("type"))
+                    if isinstance(potential, Mapping) else None)
+        if provider != "jaxpip":
+            raise InputError("sampling.engine='torch' rate workflow requires potential.provider='jaxpip'")
     if engine != "torch" and any(key in d.get("sampling", {}) for key in ("device", "normal_mode_layout")):
         raise InputError("sampling.device/normal_mode_layout require sampling.engine='torch'")
     native_pimd = engine == "native"

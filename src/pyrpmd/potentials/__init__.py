@@ -18,6 +18,7 @@ from .builtin import (
 )
 from .python import PythonPotential, RPMDratePotential, import_object
 from .cabi import CABIPotential, build_object
+from .jaxpip import JaxPIPPotential
 from .batched_ml import BATCHED_ML_PROVIDERS as _BATCHED_ML_PROVIDERS
 from ..geometry import validate_cell_pbc
 import numpy as np
@@ -26,7 +27,8 @@ import numpy as np
 _PHYSICAL_SPEC_FIELDS = frozenset(
     "provider type name library manifest factory module function initializer initializer_params "
     "with_dimensions model weights device dtype units derivative params abi_version periodic virial "
-    "trajectory_batch_safe".split()
+    "trajectory_batch_safe model_directory basis checkpoint kind alpha position_unit energy_unit "
+    "atomic_numbers charge multiplicity max_frames_per_call allow_unvalidated".split()
 )
 _LIFECYCLE_SPEC_FIELDS = {
     "committee": frozenset({"provider", "type", "members"}),
@@ -120,6 +122,22 @@ def validate_periodic_spec(config, system=None, *, _nested=False):
         raise PotentialError("C ABI v1 is nonperiodic; use a cell-aware C ABI v2 library")
     if periodic and kind == "torch" and config.get("periodic") is not True:
         raise PotentialError("Periodic Torch models require potential.periodic=true and a cell/PBC contract")
+    if kind == "jaxpip":
+        if periodic:
+            raise PotentialError("JaxPIP production binding is nonperiodic")
+        if not (config.get("model_directory") or config.get("basis")):
+            raise PotentialError("JaxPIP requires potential.basis or potential.model_directory")
+        if not (config.get("model") or config.get("checkpoint")
+                or config.get("model_directory")):
+            raise PotentialError("JaxPIP requires potential.model/checkpoint or model_directory")
+        if config.get("kind", "linear") not in ("linear", "nn"):
+            raise PotentialError("JaxPIP kind must be linear or nn")
+        if not isinstance(config.get("allow_unvalidated", False), (bool, np.bool_)):
+            raise PotentialError("JaxPIP allow_unvalidated must be boolean")
+        chunk = config.get("max_frames_per_call")
+        if (chunk is not None and (isinstance(chunk, (bool, np.bool_))
+                                   or not isinstance(chunk, (int, np.integer)) or chunk < 1)):
+            raise PotentialError("JaxPIP max_frames_per_call must be a positive integer")
     if periodic and kind in ("deepmd", "deepmd-batched") and not pbc.all():
         raise PotentialError("DeePMD requires all or no periodic axes; partial PBC is unsupported")
     if periodic and kind == "openmm" and not pbc.all():
@@ -320,6 +338,10 @@ def _make_potential(config, system=None):
             cell=cell, pbc=pbc, periodic=spec.get("periodic", False),
             virial=spec.get("virial", "auto"),
         )
+    if kind == "jaxpip":
+        from .jaxpip import JaxPIPPotential
+
+        return JaxPIPPotential.from_spec(spec, system=system)
     if kind in ("mace", "nequip", "deepmd", "fairchem", "tblite", "xtb", "pyscf") or kind in _BATCHED_ML_PROVIDERS:
         from .adapters import make_named_potential
 
@@ -370,6 +392,7 @@ __all__ = [
     "FairchemBatchedPotential",
     "DeepMDBatchedPotential",
     "MetatomicBatchedPotential",
+    "JaxPIPPotential",
 ]
 
 

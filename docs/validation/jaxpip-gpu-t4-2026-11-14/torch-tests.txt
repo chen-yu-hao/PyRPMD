@@ -1,0 +1,446 @@
+........................................................................ [ 18%]
+........................................................................ [ 37%]
+........................................................................ [ 55%]
+........................................................................ [ 74%]
+........................................................................ [ 92%]
+.............................                                            [100%]
+==================================== PASSES ====================================
+_ test_scientific_changes_get_distinct_identity_and_cannot_resume[sampling-device-cuda:0] _
+----------------------------- Captured stderr call -----------------------------
+{"event":"run.started","level":"INFO","stage":"equilibration","completed_steps":0,"total_steps":54,"percent":0.0,"stages":[{"stage":"equilibration","completed_steps":0,"total_steps":6},{"stage":"production","completed_steps":0,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"9fc2336996ff4360b7daae0b01aa96fc","task":"diffusion","output":"/tmp/pytest-of-root/pytest-1/test_scientific_changes_get_di0/run","status":"running","started_at":"2026-11-14T18:18:55.913398+00:00","updated_at":"2026-11-14T18:18:55.913614+00:00","updated_unix":1794680335.913623,"elapsed_seconds":0.00015991500004020054,"heartbeat_interval_seconds":2.0,"eta_seconds":null,"eta_scope":"current_stage","resumed":false,"pid":3973}
+{"event":"run.completed","level":"INFO","stage":"analysis","completed_steps":54,"total_steps":54,"percent":100.0,"stages":[{"stage":"equilibration","completed_steps":6,"total_steps":6},{"stage":"production","completed_steps":48,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"9fc2336996ff4360b7daae0b01aa96fc","task":"diffusion","output":"/tmp/pytest-of-root/pytest-1/test_scientific_changes_get_di0/run","status":"completed","started_at":"2026-11-14T18:18:55.913398+00:00","updated_at":"2026-11-14T18:18:56.222169+00:00","updated_unix":1794680336.2221844,"elapsed_seconds":0.308692963999988,"heartbeat_interval_seconds":2.0,"eta_seconds":0.0,"eta_scope":"current_stage","resumed":false,"pid":3973}
+_ test_scientific_changes_get_distinct_identity_and_cannot_resume[sampling-normal_mode_layout-rpmdrate] _
+----------------------------- Captured stderr call -----------------------------
+{"event":"run.started","level":"INFO","stage":"equilibration","completed_steps":0,"total_steps":54,"percent":0.0,"stages":[{"stage":"equilibration","completed_steps":0,"total_steps":6},{"stage":"production","completed_steps":0,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"da6dc63119ec41f68d91d3b2b3b8c28f","task":"diffusion","output":"/tmp/pytest-of-root/pytest-1/test_scientific_changes_get_di1/run","status":"running","started_at":"2026-11-14T18:18:56.254491+00:00","updated_at":"2026-11-14T18:18:56.254699+00:00","updated_unix":1794680336.2547078,"elapsed_seconds":0.00015549700003703038,"heartbeat_interval_seconds":2.0,"eta_seconds":null,"eta_scope":"current_stage","resumed":false,"pid":3973}
+{"event":"run.completed","level":"INFO","stage":"analysis","completed_steps":54,"total_steps":54,"percent":100.0,"stages":[{"stage":"equilibration","completed_steps":6,"total_steps":6},{"stage":"production","completed_steps":48,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"da6dc63119ec41f68d91d3b2b3b8c28f","task":"diffusion","output":"/tmp/pytest-of-root/pytest-1/test_scientific_changes_get_di1/run","status":"completed","started_at":"2026-11-14T18:18:56.254491+00:00","updated_at":"2026-11-14T18:18:56.578053+00:00","updated_unix":1794680336.5780675,"elapsed_seconds":0.32348411999998916,"heartbeat_interval_seconds":2.0,"eta_seconds":0.0,"eta_scope":"current_stage","resumed":false,"pid":3973}
+_ test_scientific_changes_get_distinct_identity_and_cannot_resume[sampling-replicas-3] _
+----------------------------- Captured stderr call -----------------------------
+{"event":"run.started","level":"INFO","stage":"equilibration","completed_steps":0,"total_steps":54,"percent":0.0,"stages":[{"stage":"equilibration","completed_steps":0,"total_steps":6},{"stage":"production","completed_steps":0,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"0059ec59b7b04b0cb80f54f290de9bc2","task":"diffusion","output":"/tmp/pytest-of-root/pytest-1/test_scientific_changes_get_di2/run","status":"running","started_at":"2026-11-14T18:18:56.615406+00:00","updated_at":"2026-11-14T18:18:56.615754+00:00","updated_unix":1794680336.615769,"elapsed_seconds":0.00024237700006324303,"heartbeat_interval_seconds":2.0,"eta_seconds":null,"eta_scope":"current_stage","resumed":false,"pid":3973}
+{"event":"run.completed","level":"INFO","stage":"analysis","completed_steps":54,"total_steps":54,"percent":100.0,"stages":[{"stage":"equilibration","completed_steps":6,"total_steps":6},{"stage":"production","completed_steps":48,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"0059ec59b7b04b0cb80f54f290de9bc2","task":"diffusion","output":"/tmp/pytest-of-root/pytest-1/test_scientific_changes_get_di2/run","status":"completed","started_at":"2026-11-14T18:18:56.615406+00:00","updated_at":"2026-11-14T18:18:56.931931+00:00","updated_unix":1794680336.9319475,"elapsed_seconds":0.31642078400000173,"heartbeat_interval_seconds":2.0,"eta_seconds":0.0,"eta_scope":"current_stage","resumed":false,"pid":3973}
+_ test_scientific_changes_get_distinct_identity_and_cannot_resume[sampling-gamma_centroid-1.1] _
+----------------------------- Captured stderr call -----------------------------
+{"event":"run.started","level":"INFO","stage":"equilibration","completed_steps":0,"total_steps":54,"percent":0.0,"stages":[{"stage":"equilibration","completed_steps":0,"total_steps":6},{"stage":"production","completed_steps":0,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"fd7c358d7cd442808555e65397c45ab9","task":"diffusion","output":"/tmp/pytest-of-root/pytest-1/test_scientific_changes_get_di3/run","status":"running","started_at":"2026-11-14T18:18:56.962718+00:00","updated_at":"2026-11-14T18:18:56.962975+00:00","updated_unix":1794680336.9629855,"elapsed_seconds":0.00018528900000092108,"heartbeat_interval_seconds":2.0,"eta_seconds":null,"eta_scope":"current_stage","resumed":false,"pid":3973}
+{"event":"run.completed","level":"INFO","stage":"analysis","completed_steps":54,"total_steps":54,"percent":100.0,"stages":[{"stage":"equilibration","completed_steps":6,"total_steps":6},{"stage":"production","completed_steps":48,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"fd7c358d7cd442808555e65397c45ab9","task":"diffusion","output":"/tmp/pytest-of-root/pytest-1/test_scientific_changes_get_di3/run","status":"completed","started_at":"2026-11-14T18:18:56.962718+00:00","updated_at":"2026-11-14T18:18:57.289062+00:00","updated_unix":1794680337.2890763,"elapsed_seconds":0.32627036700000644,"heartbeat_interval_seconds":2.0,"eta_seconds":0.0,"eta_scope":"current_stage","resumed":false,"pid":3973}
+_ test_scientific_changes_get_distinct_identity_and_cannot_resume[dynamics-timestep-0.03] _
+----------------------------- Captured stderr call -----------------------------
+{"event":"run.started","level":"INFO","stage":"equilibration","completed_steps":0,"total_steps":54,"percent":0.0,"stages":[{"stage":"equilibration","completed_steps":0,"total_steps":6},{"stage":"production","completed_steps":0,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"72a7204291b24a0dac20fef508d48cd8","task":"diffusion","output":"/tmp/pytest-of-root/pytest-1/test_scientific_changes_get_di4/run","status":"running","started_at":"2026-11-14T18:18:57.322467+00:00","updated_at":"2026-11-14T18:18:57.322696+00:00","updated_unix":1794680337.3227053,"elapsed_seconds":0.00017087999992781988,"heartbeat_interval_seconds":2.0,"eta_seconds":null,"eta_scope":"current_stage","resumed":false,"pid":3973}
+{"event":"run.completed","level":"INFO","stage":"analysis","completed_steps":54,"total_steps":54,"percent":100.0,"stages":[{"stage":"equilibration","completed_steps":6,"total_steps":6},{"stage":"production","completed_steps":48,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"72a7204291b24a0dac20fef508d48cd8","task":"diffusion","output":"/tmp/pytest-of-root/pytest-1/test_scientific_changes_get_di4/run","status":"completed","started_at":"2026-11-14T18:18:57.322467+00:00","updated_at":"2026-11-14T18:18:57.662622+00:00","updated_unix":1794680337.6626418,"elapsed_seconds":0.3400528829999985,"heartbeat_interval_seconds":2.0,"eta_seconds":0.0,"eta_scope":"current_stage","resumed":false,"pid":3973}
+_ test_scientific_changes_get_distinct_identity_and_cannot_resume[dynamics-integrator-normal-mode-bab] _
+----------------------------- Captured stderr call -----------------------------
+{"event":"run.started","level":"INFO","stage":"equilibration","completed_steps":0,"total_steps":54,"percent":0.0,"stages":[{"stage":"equilibration","completed_steps":0,"total_steps":6},{"stage":"production","completed_steps":0,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"a951abb85c20435491b46cf92f45af4e","task":"diffusion","output":"/tmp/pytest-of-root/pytest-1/test_scientific_changes_get_di5/run","status":"running","started_at":"2026-11-14T18:18:57.697974+00:00","updated_at":"2026-11-14T18:18:57.698206+00:00","updated_unix":1794680337.6982157,"elapsed_seconds":0.00017585400007646967,"heartbeat_interval_seconds":2.0,"eta_seconds":null,"eta_scope":"current_stage","resumed":false,"pid":3973}
+{"event":"run.completed","level":"INFO","stage":"analysis","completed_steps":54,"total_steps":54,"percent":100.0,"stages":[{"stage":"equilibration","completed_steps":6,"total_steps":6},{"stage":"production","completed_steps":48,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"a951abb85c20435491b46cf92f45af4e","task":"diffusion","output":"/tmp/pytest-of-root/pytest-1/test_scientific_changes_get_di5/run","status":"completed","started_at":"2026-11-14T18:18:57.697974+00:00","updated_at":"2026-11-14T18:18:58.014457+00:00","updated_unix":1794680338.0144722,"elapsed_seconds":0.31640833100004784,"heartbeat_interval_seconds":2.0,"eta_seconds":0.0,"eta_scope":"current_stage","resumed":false,"pid":3973}
+______ test_rejected_thermostat_still_cannot_alias_a_scientific_identity _______
+----------------------------- Captured stderr call -----------------------------
+{"event":"run.started","level":"INFO","stage":"equilibration","completed_steps":0,"total_steps":54,"percent":0.0,"stages":[{"stage":"equilibration","completed_steps":0,"total_steps":6},{"stage":"production","completed_steps":0,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"e093b82916fb4144ab1511ab8c5a771c","task":"pimd","output":"/tmp/pytest-of-root/pytest-1/test_rejected_thermostat_still0/run","status":"running","started_at":"2026-11-14T18:18:58.047558+00:00","updated_at":"2026-11-14T18:18:58.047777+00:00","updated_unix":1794680338.0477862,"elapsed_seconds":0.000164026999982525,"heartbeat_interval_seconds":2.0,"eta_seconds":null,"eta_scope":"current_stage","resumed":false,"pid":3973}
+{"event":"run.completed","level":"INFO","stage":"analysis","completed_steps":54,"total_steps":54,"percent":100.0,"stages":[{"stage":"equilibration","completed_steps":6,"total_steps":6},{"stage":"production","completed_steps":48,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"e093b82916fb4144ab1511ab8c5a771c","task":"pimd","output":"/tmp/pytest-of-root/pytest-1/test_rejected_thermostat_still0/run","status":"completed","started_at":"2026-11-14T18:18:58.047558+00:00","updated_at":"2026-11-14T18:18:58.369262+00:00","updated_unix":1794680338.3692753,"elapsed_seconds":0.32163599499995144,"heartbeat_interval_seconds":2.0,"eta_seconds":0.0,"eta_scope":"current_stage","resumed":false,"pid":3973}
+________ test_public_interrupted_resume_accepts_block_and_chunk_changes ________
+----------------------------- Captured stderr call -----------------------------
+{"event":"run.started","level":"INFO","stage":"equilibration","completed_steps":0,"total_steps":54,"percent":0.0,"stages":[{"stage":"equilibration","completed_steps":0,"total_steps":6},{"stage":"production","completed_steps":0,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"e36d1377a376465697542c3be3615ae5","task":"diffusion","output":"/tmp/pytest-of-root/pytest-1/test_public_interrupted_resume0/reference","status":"running","started_at":"2026-11-14T18:18:58.396187+00:00","updated_at":"2026-11-14T18:18:58.396395+00:00","updated_unix":1794680338.3964038,"elapsed_seconds":0.00015238099990710907,"heartbeat_interval_seconds":2.0,"eta_seconds":null,"eta_scope":"current_stage","resumed":false,"pid":3973}
+{"event":"run.completed","level":"INFO","stage":"analysis","completed_steps":54,"total_steps":54,"percent":100.0,"stages":[{"stage":"equilibration","completed_steps":6,"total_steps":6},{"stage":"production","completed_steps":48,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"e36d1377a376465697542c3be3615ae5","task":"diffusion","output":"/tmp/pytest-of-root/pytest-1/test_public_interrupted_resume0/reference","status":"completed","started_at":"2026-11-14T18:18:58.396187+00:00","updated_at":"2026-11-14T18:18:58.721730+00:00","updated_unix":1794680338.7217445,"elapsed_seconds":0.32546990299999834,"heartbeat_interval_seconds":2.0,"eta_seconds":0.0,"eta_scope":"current_stage","resumed":false,"pid":3973}
+{"event":"run.started","level":"INFO","stage":"equilibration","completed_steps":0,"total_steps":54,"percent":0.0,"stages":[{"stage":"equilibration","completed_steps":0,"total_steps":6},{"stage":"production","completed_steps":0,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"5a1546fa570d4bf8a5386f908b10886a","task":"diffusion","output":"/tmp/pytest-of-root/pytest-1/test_public_interrupted_resume0/resumed","status":"running","started_at":"2026-11-14T18:18:58.746108+00:00","updated_at":"2026-11-14T18:18:58.746316+00:00","updated_unix":1794680338.7463248,"elapsed_seconds":0.000153540000042085,"heartbeat_interval_seconds":2.0,"eta_seconds":null,"eta_scope":"current_stage","resumed":false,"pid":3973}
+{"event":"run.failed","level":"ERROR","stage":"production","completed_steps":8,"total_steps":54,"percent":14.814814814814815,"stages":[{"stage":"equilibration","completed_steps":6,"total_steps":6},{"stage":"production","completed_steps":2,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"5a1546fa570d4bf8a5386f908b10886a","task":"diffusion","output":"/tmp/pytest-of-root/pytest-1/test_public_interrupted_resume0/resumed","status":"failed","started_at":"2026-11-14T18:18:58.746108+00:00","updated_at":"2026-11-14T18:18:58.808926+00:00","updated_unix":1794680338.8089492,"elapsed_seconds":0.0626956800000471,"heartbeat_interval_seconds":2.0,"eta_seconds":null,"eta_scope":"current_stage","resumed":false,"pid":3973,"error":{"type":"RuntimeError","message":"Root stage failed: RuntimeError: public interruption"}}
+{"event":"run.started","level":"INFO","stage":"production","completed_steps":8,"total_steps":54,"percent":14.814814814814815,"stages":[{"stage":"equilibration","completed_steps":6,"total_steps":6},{"stage":"production","completed_steps":2,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"39a68593978f496b840001d84dcc07ce","task":"diffusion","output":"/tmp/pytest-of-root/pytest-1/test_public_interrupted_resume0/resumed","status":"running","started_at":"2026-11-14T18:18:58.818297+00:00","updated_at":"2026-11-14T18:18:58.818816+00:00","updated_unix":1794680338.818842,"elapsed_seconds":0.0004380420000416052,"heartbeat_interval_seconds":2.0,"eta_seconds":null,"eta_scope":"current_stage","resumed":true,"pid":3973}
+{"event":"run.completed","level":"INFO","stage":"analysis","completed_steps":54,"total_steps":54,"percent":100.0,"stages":[{"stage":"equilibration","completed_steps":6,"total_steps":6},{"stage":"production","completed_steps":48,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"39a68593978f496b840001d84dcc07ce","task":"diffusion","output":"/tmp/pytest-of-root/pytest-1/test_public_interrupted_resume0/resumed","status":"completed","started_at":"2026-11-14T18:18:58.818297+00:00","updated_at":"2026-11-14T18:18:59.019671+00:00","updated_unix":1794680339.019686,"elapsed_seconds":0.20130895700003748,"heartbeat_interval_seconds":2.0,"eta_seconds":0.0,"eta_scope":"current_stage","resumed":true,"pid":3973}
+_____ test_changed_real_model_source_is_rejected_on_resume_and_reanalysis ______
+----------------------------- Captured stderr call -----------------------------
+{"event":"run.started","level":"INFO","stage":"equilibration","completed_steps":0,"total_steps":54,"percent":0.0,"stages":[{"stage":"equilibration","completed_steps":0,"total_steps":6},{"stage":"production","completed_steps":0,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"7155fe60aa3c4c98b4f13025a64bf096","task":"diffusion","output":"/tmp/pytest-of-root/pytest-1/test_changed_real_model_source0/run","status":"running","started_at":"2026-11-14T18:18:59.052055+00:00","updated_at":"2026-11-14T18:18:59.052299+00:00","updated_unix":1794680339.052309,"elapsed_seconds":0.000180902000010974,"heartbeat_interval_seconds":2.0,"eta_seconds":null,"eta_scope":"current_stage","resumed":false,"pid":3973}
+{"event":"run.completed","level":"INFO","stage":"analysis","completed_steps":54,"total_steps":54,"percent":100.0,"stages":[{"stage":"equilibration","completed_steps":6,"total_steps":6},{"stage":"production","completed_steps":48,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"7155fe60aa3c4c98b4f13025a64bf096","task":"diffusion","output":"/tmp/pytest-of-root/pytest-1/test_changed_real_model_source0/run","status":"completed","started_at":"2026-11-14T18:18:59.052055+00:00","updated_at":"2026-11-14T18:18:59.373103+00:00","updated_unix":1794680339.373118,"elapsed_seconds":0.32096070799991594,"heartbeat_interval_seconds":2.0,"eta_seconds":0.0,"eta_scope":"current_stage","resumed":false,"pid":3973}
+_________________ test_cuda_public_run_and_resume_are_explicit _________________
+----------------------------- Captured stderr call -----------------------------
+{"event":"run.started","level":"INFO","stage":"equilibration","completed_steps":0,"total_steps":54,"percent":0.0,"stages":[{"stage":"equilibration","completed_steps":0,"total_steps":6},{"stage":"production","completed_steps":0,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"694170396b5149aa91574ec55664c6aa","task":"pimd","output":"/tmp/pytest-of-root/pytest-1/test_cuda_public_run_and_resum0/run","status":"running","started_at":"2026-11-14T18:18:59.412022+00:00","updated_at":"2026-11-14T18:18:59.412273+00:00","updated_unix":1794680339.4122815,"elapsed_seconds":0.00018534200000885903,"heartbeat_interval_seconds":2.0,"eta_seconds":null,"eta_scope":"current_stage","resumed":false,"pid":3973}
+{"event":"run.completed","level":"INFO","stage":"analysis","completed_steps":54,"total_steps":54,"percent":100.0,"stages":[{"stage":"equilibration","completed_steps":6,"total_steps":6},{"stage":"production","completed_steps":48,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"694170396b5149aa91574ec55664c6aa","task":"pimd","output":"/tmp/pytest-of-root/pytest-1/test_cuda_public_run_and_resum0/run","status":"completed","started_at":"2026-11-14T18:18:59.412022+00:00","updated_at":"2026-11-14T18:18:59.806535+00:00","updated_unix":1794680339.8065498,"elapsed_seconds":0.3944301840000435,"heartbeat_interval_seconds":2.0,"eta_seconds":0.0,"eta_scope":"current_stage","resumed":false,"pid":3973}
+{"event":"run.started","level":"INFO","stage":"analysis","completed_steps":54,"total_steps":54,"percent":100.0,"stages":[{"stage":"equilibration","completed_steps":6,"total_steps":6},{"stage":"production","completed_steps":48,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"c202b4d41a284a41a8cae631ee599c19","task":"pimd","output":"/tmp/pytest-of-root/pytest-1/test_cuda_public_run_and_resum0/run","status":"running","started_at":"2026-11-14T18:18:59.811358+00:00","updated_at":"2026-11-14T18:18:59.811803+00:00","updated_unix":1794680339.811813,"elapsed_seconds":0.00038576700001158315,"heartbeat_interval_seconds":2.0,"eta_seconds":null,"eta_scope":"current_stage","resumed":true,"pid":3973}
+{"event":"run.completed","level":"INFO","stage":"analysis","completed_steps":54,"total_steps":54,"percent":100.0,"stages":[{"stage":"equilibration","completed_steps":6,"total_steps":6},{"stage":"production","completed_steps":48,"total_steps":48}],"scope":"planned integration steps; excludes setup and analysis","warnings":[],"schema":"pyrpmd.progress","schema_version":1,"run_id":"c202b4d41a284a41a8cae631ee599c19","task":"pimd","output":"/tmp/pytest-of-root/pytest-1/test_cuda_public_run_and_resum0/run","status":"completed","started_at":"2026-11-14T18:18:59.811358+00:00","updated_at":"2026-11-14T18:18:59.859823+00:00","updated_unix":1794680339.8598344,"elapsed_seconds":0.04841262000002189,"heartbeat_interval_seconds":2.0,"eta_seconds":0.0,"eta_scope":"current_stage","resumed":true,"pid":3973}
+=========================== short test summary info ============================
+PASSED tests/test_torch_backend.py::test_pes_units_gradients_and_single_call[False]
+PASSED tests/test_torch_backend.py::test_pes_units_gradients_and_single_call[True]
+PASSED tests/test_torch_backend.py::test_model_parameters_do_not_accumulate_gradients
+PASSED tests/test_torch_backend.py::test_batch_independence_is_not_inferred[metadata0]
+PASSED tests/test_torch_backend.py::test_batch_independence_is_not_inferred[metadata1]
+PASSED tests/test_torch_backend.py::test_batch_independence_is_not_inferred[metadata2]
+PASSED tests/test_torch_backend.py::test_batch_independence_is_not_inferred[metadata3]
+PASSED tests/test_torch_backend.py::test_explicit_independence_and_legacy_provider_bridge
+PASSED tests/test_torch_backend.py::test_bad_model_results_fail[detached]
+PASSED tests/test_torch_backend.py::test_bad_model_results_fail[shape]
+PASSED tests/test_torch_backend.py::test_bad_model_results_fail[dtype]
+PASSED tests/test_torch_backend.py::test_bad_model_results_fail[force_shape]
+PASSED tests/test_torch_backend.py::test_bad_model_results_fail[disconnected]
+PASSED tests/test_torch_backend.py::test_periodic_autograd_virial_and_stress_units
+PASSED tests/test_torch_backend.py::test_normal_modes_match_numpy_reference[normal-mode-bab-1]
+PASSED tests/test_torch_backend.py::test_normal_modes_match_numpy_reference[normal-mode-bab-2]
+PASSED tests/test_torch_backend.py::test_normal_modes_match_numpy_reference[normal-mode-bab-5]
+PASSED tests/test_torch_backend.py::test_normal_modes_match_numpy_reference[normal-mode-bab-8]
+PASSED tests/test_torch_backend.py::test_normal_modes_match_numpy_reference[cayley-bcb-1]
+PASSED tests/test_torch_backend.py::test_normal_modes_match_numpy_reference[cayley-bcb-2]
+PASSED tests/test_torch_backend.py::test_normal_modes_match_numpy_reference[cayley-bcb-5]
+PASSED tests/test_torch_backend.py::test_normal_modes_match_numpy_reference[cayley-bcb-8]
+PASSED tests/test_torch_backend.py::test_reversibility_and_finite_energy[normal-mode-bab-1]
+PASSED tests/test_torch_backend.py::test_reversibility_and_finite_energy[normal-mode-bab-5]
+PASSED tests/test_torch_backend.py::test_reversibility_and_finite_energy[normal-mode-bab-8]
+PASSED tests/test_torch_backend.py::test_reversibility_and_finite_energy[cayley-bcb-1]
+PASSED tests/test_torch_backend.py::test_reversibility_and_finite_energy[cayley-bcb-5]
+PASSED tests/test_torch_backend.py::test_reversibility_and_finite_energy[cayley-bcb-8]
+PASSED tests/test_torch_backend.py::test_classical_limit_is_velocity_verlet
+PASSED tests/test_torch_backend.py::test_rpc_energy_force_chain_rule_and_centroid[1-1]
+PASSED tests/test_torch_backend.py::test_rpc_energy_force_chain_rule_and_centroid[5-1]
+PASSED tests/test_torch_backend.py::test_rpc_energy_force_chain_rule_and_centroid[5-2]
+PASSED tests/test_torch_backend.py::test_rpc_energy_force_chain_rule_and_centroid[5-3]
+PASSED tests/test_torch_backend.py::test_rpc_energy_force_chain_rule_and_centroid[8-4]
+PASSED tests/test_torch_backend.py::test_rpc_energy_force_chain_rule_and_centroid[8-8]
+PASSED tests/test_torch_backend.py::test_regional_components_keep_environment_coupling_explicit
+PASSED tests/test_torch_backend.py::test_batch_equivalence_and_one_call_per_endpoint
+PASSED tests/test_torch_backend.py::test_mts_endpoint_counts_and_full_resolution_limit
+PASSED tests/test_torch_backend.py::test_thermostat_stationary_variance_and_centroid[pile-l-1]
+PASSED tests/test_torch_backend.py::test_thermostat_stationary_variance_and_centroid[pile-l-7]
+PASSED tests/test_torch_backend.py::test_thermostat_stationary_variance_and_centroid[pile-l-8]
+PASSED tests/test_torch_backend.py::test_thermostat_stationary_variance_and_centroid[trpmd-1]
+PASSED tests/test_torch_backend.py::test_thermostat_stationary_variance_and_centroid[trpmd-7]
+PASSED tests/test_torch_backend.py::test_thermostat_stationary_variance_and_centroid[trpmd-8]
+PASSED tests/test_torch_backend.py::test_thermostat_reproducible_per_engine_and_block_boundaries
+PASSED tests/test_torch_backend.py::test_failed_block_rolls_back_coordinates_clock_and_rng[exception]
+PASSED tests/test_torch_backend.py::test_failed_block_rolls_back_coordinates_clock_and_rng[nan_energy]
+PASSED tests/test_torch_backend.py::test_no_hot_loop_host_copies_and_one_scalar_read
+PASSED tests/test_torch_backend.py::test_state_upload_snapshot_and_no_shared_storage
+PASSED tests/test_torch_backend.py::test_invalid_bead_counts[0]
+PASSED tests/test_torch_backend.py::test_invalid_bead_counts[-1]
+PASSED tests/test_torch_backend.py::test_invalid_bead_counts[True]
+PASSED tests/test_torch_backend.py::test_invalid_bead_counts[1.5]
+PASSED tests/test_torch_backend.py::test_invalid_configuration_and_mutation_rejected
+PASSED tests/test_torch_backend.py::test_cuda_parity_and_device_residency[normal-mode-bab]
+PASSED tests/test_torch_backend.py::test_cuda_parity_and_device_residency[cayley-bcb]
+PASSED tests/test_torch_backend.py::test_energy_error_is_second_order_in_timestep[normal-mode-bab]
+PASSED tests/test_torch_backend.py::test_energy_error_is_second_order_in_timestep[cayley-bcb]
+PASSED tests/test_torch_backend.py::test_lossy_input_conversions_rejected[True]
+PASSED tests/test_torch_backend.py::test_lossy_input_conversions_rejected[(1+2j)]
+PASSED tests/test_torch_backend.py::test_external_aliases_are_rejected_without_modifying_state
+PASSED tests/test_torch_backend.py::test_malformed_capabilities_and_conflicting_provider_metadata
+PASSED tests/test_torch_backend.py::test_no_stale_endpoint_force_after_external_coordinate_edit
+PASSED tests/test_torch_backend.py::test_pure_spring_energy_exactly_preserved[3]
+PASSED tests/test_torch_backend.py::test_pure_spring_energy_exactly_preserved[4]
+PASSED tests/test_torch_backend.py::test_zero_steps_do_not_call_model_or_consume_rng
+PASSED tests/test_torch_backend.py::test_contracted_mts_time_reversal[normal-mode-bab]
+PASSED tests/test_torch_backend.py::test_contracted_mts_time_reversal[cayley-bcb]
+PASSED tests/test_torch_backend.py::test_python_float_inputs_do_not_round_through_float32
+PASSED tests/test_torch_backend.py::test_cuda_rpc_mts_thermostat_has_no_array_host_copies
+PASSED tests/test_torch_backend.py::test_full_checkout_provider_and_kernel_parity
+PASSED tests/test_torch_backend.py::test_external_overlapping_view_rejected_before_atomic_commit[q]
+PASSED tests/test_torch_backend.py::test_external_overlapping_view_rejected_before_atomic_commit[p]
+PASSED tests/test_torch_backend.py::test_constructor_owns_contiguous_storage_for_transposed_inputs
+PASSED tests/test_torch_backend.py::test_pile_sampling_preserves_harmonic_configurational_variance[3]
+PASSED tests/test_torch_backend.py::test_pile_sampling_preserves_harmonic_configurational_variance[4]
+PASSED tests/test_torch_bcocb.py::test_principal_square_root_not_half_timestep_cayley[0.02-1.0-1-0]
+PASSED tests/test_torch_bcocb.py::test_principal_square_root_not_half_timestep_cayley[0.02-1.0-5-1]
+PASSED tests/test_torch_bcocb.py::test_principal_square_root_not_half_timestep_cayley[0.02-1.0-8-4]
+PASSED tests/test_torch_bcocb.py::test_principal_square_root_not_half_timestep_cayley[0.02-1.0-16-7]
+PASSED tests/test_torch_bcocb.py::test_principal_square_root_not_half_timestep_cayley[0.02-7.0-1-0]
+PASSED tests/test_torch_bcocb.py::test_principal_square_root_not_half_timestep_cayley[0.02-7.0-5-1]
+PASSED tests/test_torch_bcocb.py::test_principal_square_root_not_half_timestep_cayley[0.02-7.0-8-4]
+PASSED tests/test_torch_bcocb.py::test_principal_square_root_not_half_timestep_cayley[0.02-7.0-16-7]
+PASSED tests/test_torch_bcocb.py::test_principal_square_root_not_half_timestep_cayley[0.5-1.0-1-0]
+PASSED tests/test_torch_bcocb.py::test_principal_square_root_not_half_timestep_cayley[0.5-1.0-5-1]
+PASSED tests/test_torch_bcocb.py::test_principal_square_root_not_half_timestep_cayley[0.5-1.0-8-4]
+PASSED tests/test_torch_bcocb.py::test_principal_square_root_not_half_timestep_cayley[0.5-1.0-16-7]
+PASSED tests/test_torch_bcocb.py::test_principal_square_root_not_half_timestep_cayley[0.5-7.0-1-0]
+PASSED tests/test_torch_bcocb.py::test_principal_square_root_not_half_timestep_cayley[0.5-7.0-5-1]
+PASSED tests/test_torch_bcocb.py::test_principal_square_root_not_half_timestep_cayley[0.5-7.0-8-4]
+PASSED tests/test_torch_bcocb.py::test_principal_square_root_not_half_timestep_cayley[0.5-7.0-16-7]
+PASSED tests/test_torch_bcocb.py::test_exact_conditional_mean_and_noise_location[0.3-1.0-1-0]
+PASSED tests/test_torch_bcocb.py::test_exact_conditional_mean_and_noise_location[0.3-1.0-5-1]
+PASSED tests/test_torch_bcocb.py::test_exact_conditional_mean_and_noise_location[0.3-1.0-8-4]
+PASSED tests/test_torch_bcocb.py::test_exact_conditional_mean_and_noise_location[0.3-1.0-16-7]
+PASSED tests/test_torch_bcocb.py::test_exact_conditional_mean_and_noise_location[0.3-7.0-1-0]
+PASSED tests/test_torch_bcocb.py::test_exact_conditional_mean_and_noise_location[0.3-7.0-5-1]
+PASSED tests/test_torch_bcocb.py::test_exact_conditional_mean_and_noise_location[0.3-7.0-8-4]
+PASSED tests/test_torch_bcocb.py::test_exact_conditional_mean_and_noise_location[0.3-7.0-16-7]
+PASSED tests/test_torch_bcocb.py::test_exact_conditional_mean_and_noise_location[2.7-1.0-1-0]
+PASSED tests/test_torch_bcocb.py::test_exact_conditional_mean_and_noise_location[2.7-1.0-5-1]
+PASSED tests/test_torch_bcocb.py::test_exact_conditional_mean_and_noise_location[2.7-1.0-8-4]
+PASSED tests/test_torch_bcocb.py::test_exact_conditional_mean_and_noise_location[2.7-1.0-16-7]
+PASSED tests/test_torch_bcocb.py::test_exact_conditional_mean_and_noise_location[2.7-7.0-1-0]
+PASSED tests/test_torch_bcocb.py::test_exact_conditional_mean_and_noise_location[2.7-7.0-5-1]
+PASSED tests/test_torch_bcocb.py::test_exact_conditional_mean_and_noise_location[2.7-7.0-8-4]
+PASSED tests/test_torch_bcocb.py::test_exact_conditional_mean_and_noise_location[2.7-7.0-16-7]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.025-0.0-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.025-0.0-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.025-0.0-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.025-0.7-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.025-0.7-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.025-0.7-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.025-3.0-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.025-3.0-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.025-3.0-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.025-17.0-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.025-17.0-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.025-17.0-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.025-100.0-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.025-100.0-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.025-100.0-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.17-0.0-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.17-0.0-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.17-0.0-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.17-0.7-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.17-0.7-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.17-0.7-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.17-3.0-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.17-3.0-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.17-3.0-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.17-17.0-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.17-17.0-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.17-17.0-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.17-100.0-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.17-100.0-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.17-100.0-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.5-0.0-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.5-0.0-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.5-0.0-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.5-0.7-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.5-0.7-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.5-0.7-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.5-3.0-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.5-3.0-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.5-3.0-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.5-17.0-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.5-17.0-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.5-17.0-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.5-100.0-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.5-100.0-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[0.3-0.5-100.0-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.025-0.0-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.025-0.0-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.025-0.0-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.025-0.7-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.025-0.7-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.025-0.7-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.025-3.0-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.025-3.0-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.025-3.0-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.025-17.0-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.025-17.0-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.025-17.0-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.025-100.0-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.025-100.0-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.025-100.0-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.17-0.0-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.17-0.0-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.17-0.0-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.17-0.7-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.17-0.7-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.17-0.7-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.17-3.0-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.17-3.0-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.17-3.0-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.17-17.0-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.17-17.0-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.17-17.0-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.17-100.0-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.17-100.0-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.17-100.0-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.5-0.0-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.5-0.0-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.5-0.0-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.5-0.7-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.5-0.7-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.5-0.7-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.5-3.0-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.5-3.0-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.5-3.0-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.5-17.0-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.5-17.0-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.5-17.0-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.5-100.0-1.0-0.5]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.5-100.0-1.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_published_configuration_and_momentum_covariance[2.7-0.5-100.0-7.0-2.0]
+PASSED tests/test_torch_bcocb.py::test_cold_start_full_covariance_not_preloaded_equilibrium[1.0-1]
+PASSED tests/test_torch_bcocb.py::test_cold_start_full_covariance_not_preloaded_equilibrium[1.0-5]
+PASSED tests/test_torch_bcocb.py::test_cold_start_full_covariance_not_preloaded_equilibrium[1.0-16]
+PASSED tests/test_torch_bcocb.py::test_cold_start_full_covariance_not_preloaded_equilibrium[7.0-1]
+PASSED tests/test_torch_bcocb.py::test_cold_start_full_covariance_not_preloaded_equilibrium[7.0-5]
+PASSED tests/test_torch_bcocb.py::test_cold_start_full_covariance_not_preloaded_equilibrium[7.0-16]
+PASSED tests/test_torch_bcocb.py::test_no_thermostat_is_exactly_existing_bcb_with_no_rng_consumption[1]
+PASSED tests/test_torch_bcocb.py::test_no_thermostat_is_exactly_existing_bcb_with_no_rng_consumption[5]
+PASSED tests/test_torch_bcocb.py::test_no_thermostat_is_exactly_existing_bcb_with_no_rng_consumption[16]
+PASSED tests/test_torch_bcocb.py::test_block_partition_and_force_work[pile-l]
+PASSED tests/test_torch_bcocb.py::test_block_partition_and_force_work[trpmd]
+PASSED tests/test_torch_bcocb.py::test_trpmd_centroid_and_resonant_internal_mode
+PASSED tests/test_torch_bcocb.py::test_middle_noise_and_state_roll_back_on_failure[raise]
+PASSED tests/test_torch_bcocb.py::test_middle_noise_and_state_roll_back_on_failure[nan]
+PASSED tests/test_torch_bcocb.py::test_no_implicit_host_array_or_scalar_reads_in_hot_loop
+PASSED tests/test_torch_bcocb.py::test_rpc_and_split_forces_are_all_in_the_bcocb_kicks
+PASSED tests/test_torch_bcocb.py::test_bcocb_accepts_explicit_mts_but_rejects_mutation
+PASSED tests/test_torch_bcocb.py::test_no_harmonic_primitive_kinetic_divergence[8]
+PASSED tests/test_torch_bcocb.py::test_no_harmonic_primitive_kinetic_divergence[32]
+PASSED tests/test_torch_bcocb.py::test_no_harmonic_primitive_kinetic_divergence[128]
+PASSED tests/test_torch_bcocb.py::test_no_harmonic_primitive_kinetic_divergence[256]
+PASSED tests/test_torch_bcocb.py::test_cuda_bcocb_stays_on_device_and_samples
+PASSED tests/test_torch_bcocb.py::test_coupled_unequal_mass_drift_noise_and_configurational_invariant[1]
+PASSED tests/test_torch_bcocb.py::test_coupled_unequal_mass_drift_noise_and_configurational_invariant[5]
+PASSED tests/test_torch_bcocb.py::test_coupled_unequal_mass_drift_noise_and_configurational_invariant[8]
+PASSED tests/test_torch_bcocb.py::test_harmonic_stability_limit_is_not_removed_by_bcocb
+PASSED tests/test_torch_bcocb.py::test_stochastic_linear_mean_and_covariance_converge_at_second_order
+PASSED tests/test_torch_workflow_potentials.py::test_free_energy_forces_and_virial[1-1]
+PASSED tests/test_torch_workflow_potentials.py::test_free_energy_forces_and_virial[5-4]
+PASSED tests/test_torch_workflow_potentials.py::test_free_energy_forces_and_virial[32-2]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape0-k_shape0]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape0-k_shape1]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape0-k_shape2]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape0-k_shape3]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape0-k_shape4]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape0-k_shape5]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape0-k_shape6]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape1-k_shape0]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape1-k_shape1]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape1-k_shape2]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape1-k_shape3]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape1-k_shape4]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape1-k_shape5]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape1-k_shape6]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape2-k_shape0]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape2-k_shape1]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape2-k_shape2]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape2-k_shape3]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape2-k_shape4]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape2-k_shape5]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape2-k_shape6]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape3-k_shape0]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape3-k_shape1]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape3-k_shape2]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape3-k_shape3]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape3-k_shape4]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape3-k_shape5]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape3-k_shape6]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape4-k_shape0]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape4-k_shape1]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape4-k_shape2]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape4-k_shape3]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape4-k_shape4]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape4-k_shape5]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape4-k_shape6]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape5-k_shape0]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape5-k_shape1]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape5-k_shape2]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape5-k_shape3]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape5-k_shape4]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape5-k_shape5]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape5-k_shape6]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape6-k_shape0]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape6-k_shape1]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape6-k_shape2]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape6-k_shape3]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape6-k_shape4]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape6-k_shape5]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_preserves_numpy_atom_axis_broadcast[center_shape6-k_shape6]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_force_is_negative_energy_derivative
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_frame_parameters_are_explicitly_rejected[k]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_frame_parameters_are_explicitly_rejected[center]
+PASSED tests/test_torch_workflow_potentials.py::test_harmonic_incompatible_atom_broadcast_rejects
+PASSED tests/test_torch_workflow_potentials.py::test_fixed_cosine_triclinic_partial_pbc_selection_and_confinement[None-pbc0]
+PASSED tests/test_torch_workflow_potentials.py::test_fixed_cosine_triclinic_partial_pbc_selection_and_confinement[None-pbc1]
+PASSED tests/test_torch_workflow_potentials.py::test_fixed_cosine_triclinic_partial_pbc_selection_and_confinement[None-pbc2]
+PASSED tests/test_torch_workflow_potentials.py::test_fixed_cosine_triclinic_partial_pbc_selection_and_confinement[atoms1-pbc0]
+PASSED tests/test_torch_workflow_potentials.py::test_fixed_cosine_triclinic_partial_pbc_selection_and_confinement[atoms1-pbc1]
+PASSED tests/test_torch_workflow_potentials.py::test_fixed_cosine_triclinic_partial_pbc_selection_and_confinement[atoms1-pbc2]
+PASSED tests/test_torch_workflow_potentials.py::test_cosine_out_of_range_atom_is_not_dropped
+PASSED tests/test_torch_workflow_potentials.py::test_builtin_binding_owns_immutable_parameter_snapshot[provider0]
+PASSED tests/test_torch_workflow_potentials.py::test_builtin_binding_owns_immutable_parameter_snapshot[provider1]
+PASSED tests/test_torch_workflow_potentials.py::test_builtin_subclasses_and_evaluator_overrides_are_rejected[FreePotential]
+PASSED tests/test_torch_workflow_potentials.py::test_builtin_subclasses_and_evaluator_overrides_are_rejected[HarmonicPotential]
+PASSED tests/test_torch_workflow_potentials.py::test_unsupported_models_have_no_numpy_fallback[provider0]
+PASSED tests/test_torch_workflow_potentials.py::test_unsupported_models_have_no_numpy_fallback[provider1]
+PASSED tests/test_torch_workflow_potentials.py::test_unsupported_models_have_no_numpy_fallback[provider2]
+PASSED tests/test_torch_workflow_potentials.py::test_builtin_rejects_conflicting_metadata[metadata0]
+PASSED tests/test_torch_workflow_potentials.py::test_builtin_rejects_conflicting_metadata[metadata1]
+PASSED tests/test_torch_workflow_potentials.py::test_builtin_rejects_conflicting_metadata[metadata2]
+PASSED tests/test_torch_workflow_potentials.py::test_builtin_rejects_conflicting_metadata[metadata3]
+PASSED tests/test_torch_workflow_potentials.py::test_builtin_rejects_conflicting_metadata[metadata4]
+PASSED tests/test_torch_workflow_potentials.py::test_builtin_rejects_conflicting_metadata[metadata5]
+PASSED tests/test_torch_workflow_potentials.py::test_module_provider_units_one_call_and_borrowed_lifetime[None-False]
+PASSED tests/test_torch_workflow_potentials.py::test_module_provider_units_one_call_and_borrowed_lifetime[None-True]
+PASSED tests/test_torch_workflow_potentials.py::test_module_provider_units_one_call_and_borrowed_lifetime[units1-False]
+PASSED tests/test_torch_workflow_potentials.py::test_module_provider_units_one_call_and_borrowed_lifetime[units1-True]
+PASSED tests/test_torch_workflow_potentials.py::test_module_periodic_autograd_virial_matches_numpy_and_affine_derivative
+PASSED tests/test_torch_workflow_potentials.py::test_module_provider_invalid_binding_does_not_change_precision[metadata]
+PASSED tests/test_torch_workflow_potentials.py::test_module_provider_invalid_binding_does_not_change_precision[float32]
+PASSED tests/test_torch_workflow_potentials.py::test_module_provider_invalid_binding_does_not_change_precision[closed]
+PASSED tests/test_torch_workflow_potentials.py::test_module_provider_invalid_binding_does_not_change_precision[delegate]
+PASSED tests/test_torch_workflow_potentials.py::test_module_provider_invalid_binding_does_not_change_precision[override]
+PASSED tests/test_torch_workflow_potentials.py::test_explicit_ml_bridge_preserves_device_batch_and_ownership
+PASSED tests/test_torch_workflow_potentials.py::test_explicit_bridge_requires_source_declarations_before_calling[None]
+PASSED tests/test_torch_workflow_potentials.py::test_explicit_bridge_requires_source_declarations_before_calling[bad1]
+PASSED tests/test_torch_workflow_potentials.py::test_explicit_bridge_requires_source_declarations_before_calling[bad2]
+PASSED tests/test_torch_workflow_potentials.py::test_explicit_bridge_requires_source_declarations_before_calling[bad3]
+PASSED tests/test_torch_workflow_potentials.py::test_explicit_bridge_requires_source_declarations_before_calling[bad4]
+PASSED tests/test_torch_workflow_potentials.py::test_explicit_bridge_return_contract_is_checked[type]
+PASSED tests/test_torch_workflow_potentials.py::test_explicit_bridge_return_contract_is_checked[independence]
+PASSED tests/test_torch_workflow_potentials.py::test_explicit_bridge_return_contract_is_checked[precision]
+PASSED tests/test_torch_workflow_potentials.py::test_explicit_bridge_return_contract_is_checked[device]
+PASSED tests/test_torch_workflow_potentials.py::test_explicit_bridge_return_contract_is_checked[declaration]
+PASSED tests/test_torch_workflow_potentials.py::test_bridge_errors_are_not_retried_or_swallowed
+PASSED tests/test_torch_workflow_potentials.py::test_bridge_evaluation_cannot_change_result_contract[object]
+PASSED tests/test_torch_workflow_potentials.py::test_bridge_evaluation_cannot_change_result_contract[dtype]
+PASSED tests/test_torch_workflow_potentials.py::test_bridge_evaluation_cannot_change_result_contract[shape]
+PASSED tests/test_torch_workflow_potentials.py::test_bridge_evaluation_cannot_change_result_contract[virial]
+PASSED tests/test_torch_workflow_potentials.py::test_bound_source_device_mutation_rejects
+PASSED tests/test_torch_workflow_potentials.py::test_invalid_devices_do_not_select_cpu[meta]
+PASSED tests/test_torch_workflow_potentials.py::test_invalid_devices_do_not_select_cpu[mps]
+PASSED tests/test_torch_workflow_potentials.py::test_invalid_devices_do_not_select_cpu[cpu:3]
+PASSED tests/test_torch_workflow_potentials.py::test_invalid_devices_do_not_select_cpu[False]
+PASSED tests/test_torch_workflow_potentials.py::test_invalid_devices_do_not_select_cpu[invalid]
+PASSED tests/test_torch_workflow_potentials.py::test_unavailable_cuda_has_no_device_fallback
+PASSED tests/test_torch_workflow_potentials.py::test_cuda_builtin_parity_and_existing_cpu_provider_mismatch
+PASSED tests/test_torch_workflow_potentials.py::test_bound_propagation_has_no_per_step_host_transfer[provider0]
+PASSED tests/test_torch_workflow_potentials.py::test_bound_propagation_has_no_per_step_host_transfer[provider1]
+PASSED tests/test_torch_workflow_potentials.py::test_bound_propagation_has_no_per_step_host_transfer[provider2]
+PASSED tests/test_torch_workflow_potentials.py::test_bound_propagation_has_no_per_step_host_transfer[provider3]
+PASSED tests/test_torch_materials_input.py::test_public_resolution_defaults_are_explicit_for_torch_only[pimd]
+PASSED tests/test_torch_materials_input.py::test_public_resolution_defaults_are_explicit_for_torch_only[diffusion]
+PASSED tests/test_torch_materials_input.py::test_existing_inputs_retain_main_scientific_identity[pimd-None-e9a18c8abc32a747a9b1269f6550c5c8a7f0b06fef12e62c4734caffd2bf5a02]
+PASSED tests/test_torch_materials_input.py::test_existing_inputs_retain_main_scientific_identity[diffusion-None-d1527ad6d2a20effe17f7800146c8c576dd752d2a3c74728052603910c8a7fff]
+PASSED tests/test_torch_materials_input.py::test_existing_inputs_retain_main_scientific_identity[pimd-legacy-b9c6efa25cbedea5e3dba26db900c35fcdb5266ec737758133be3a6ef526b159]
+PASSED tests/test_torch_materials_input.py::test_existing_inputs_retain_main_scientific_identity[pimd-native-7ce7e8de1b9c0aa0cdc416150572ce43514f4f839077ee8ba1389aae01c40838]
+PASSED tests/test_torch_materials_input.py::test_structural_preparation_neither_imports_torch_nor_loads_provider
+PASSED tests/test_torch_materials_input.py::test_numerical_preparation_evaluates_complete_batch_without_propagation[pimd]
+PASSED tests/test_torch_materials_input.py::test_numerical_preparation_evaluates_complete_batch_without_propagation[diffusion]
+PASSED tests/test_torch_materials_input.py::test_numerical_preparation_closes_owned_provider
+PASSED tests/test_torch_materials_input.py::test_unsupported_choices_fail_before_creating_output[change0]
+PASSED tests/test_torch_materials_input.py::test_unsupported_choices_fail_before_creating_output[change1]
+PASSED tests/test_torch_materials_input.py::test_unsupported_choices_fail_before_creating_output[change2]
+PASSED tests/test_torch_materials_input.py::test_unsupported_choices_fail_before_creating_output[change3]
+PASSED tests/test_torch_materials_input.py::test_unsupported_choices_fail_before_creating_output[change4]
+PASSED tests/test_torch_materials_input.py::test_unsupported_choices_fail_before_creating_output[change5]
+PASSED tests/test_torch_materials_input.py::test_unsupported_choices_fail_before_creating_output[change6]
+PASSED tests/test_torch_materials_input.py::test_unsupported_choices_fail_before_creating_output[change7]
+PASSED tests/test_torch_materials_input.py::test_unsupported_choices_fail_before_creating_output[change8]
+PASSED tests/test_torch_materials_input.py::test_unsupported_choices_fail_before_creating_output[change9]
+PASSED tests/test_torch_materials_input.py::test_unsupported_choices_fail_before_creating_output[change10]
+PASSED tests/test_torch_materials_input.py::test_unsupported_choices_fail_before_creating_output[change11]
+PASSED tests/test_torch_materials_input.py::test_unsupported_choices_fail_before_creating_output[change12]
+PASSED tests/test_torch_materials_input.py::test_unsupported_choices_fail_before_creating_output[change13]
+PASSED tests/test_torch_materials_input.py::test_unsupported_choices_fail_before_creating_output[change14]
+PASSED tests/test_torch_materials_input.py::test_unsupported_choices_fail_before_creating_output[change15]
+PASSED tests/test_torch_materials_input.py::test_unsupported_choices_fail_before_creating_output[change16]
+PASSED tests/test_torch_materials_input.py::test_unsupported_choices_fail_before_creating_output[change17]
+PASSED tests/test_torch_materials_input.py::test_unsupported_choices_fail_before_creating_output[change18]
+PASSED tests/test_torch_materials_input.py::test_unsupported_choices_fail_before_creating_output[change19]
+PASSED tests/test_torch_materials_input.py::test_unsupported_choices_fail_before_creating_output[change20]
+PASSED tests/test_torch_materials_input.py::test_unsupported_choices_fail_before_creating_output[change21]
+PASSED tests/test_torch_materials_input.py::test_unsupported_choices_fail_before_creating_output[change22]
+PASSED tests/test_torch_materials_input.py::test_direct_resolved_validation_also_precedes_output
+PASSED tests/test_torch_materials_input.py::test_cli_validate_run_resume_analyze[pimd]
+PASSED tests/test_torch_materials_input.py::test_cli_validate_run_resume_analyze[diffusion]
+PASSED tests/test_torch_materials_input.py::test_cli_invalid_tensor_input_is_actionable_and_leaves_no_output
+PASSED tests/test_torch_materials_input.py::test_scientific_changes_get_distinct_identity_and_cannot_resume[sampling-device-cuda:0]
+PASSED tests/test_torch_materials_input.py::test_scientific_changes_get_distinct_identity_and_cannot_resume[sampling-normal_mode_layout-rpmdrate]
+PASSED tests/test_torch_materials_input.py::test_scientific_changes_get_distinct_identity_and_cannot_resume[sampling-replicas-3]
+PASSED tests/test_torch_materials_input.py::test_scientific_changes_get_distinct_identity_and_cannot_resume[sampling-gamma_centroid-1.1]
+PASSED tests/test_torch_materials_input.py::test_scientific_changes_get_distinct_identity_and_cannot_resume[dynamics-timestep-0.03]
+PASSED tests/test_torch_materials_input.py::test_scientific_changes_get_distinct_identity_and_cannot_resume[dynamics-integrator-normal-mode-bab]
+PASSED tests/test_torch_materials_input.py::test_rejected_thermostat_still_cannot_alias_a_scientific_identity
+PASSED tests/test_torch_materials_input.py::test_public_interrupted_resume_accepts_block_and_chunk_changes
+PASSED tests/test_torch_materials_input.py::test_changed_real_model_source_is_rejected_on_resume_and_reanalysis
+PASSED tests/test_torch_materials_input.py::test_unavailable_cuda_is_rejected_by_numerical_prepare_without_output
+PASSED tests/test_torch_materials_input.py::test_cuda_public_run_and_resume_are_explicit
+PASSED tests/test_torch_materials_input.py::test_documented_cpu_examples_validate_and_run[torch_pimd.inp]
+PASSED tests/test_torch_materials_input.py::test_documented_cpu_examples_validate_and_run[torch_diffusion.inp]
+389 passed in 26.16s
+
+STDERR

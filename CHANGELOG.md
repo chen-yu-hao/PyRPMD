@@ -5,6 +5,13 @@ not been published as a new wheel release; no release date or DOI is assigned.
 
 ## Unreleased
 
+- Add a checked, device-resident JaxPIP GPU rate path for US/AUS and RPMD
+  recrossing. The JAX/Torch DLPack bridge keeps q/p on the selected device,
+  warms JAX shapes before production, and supports bounded `K*P` frame chunks
+  through `potential.max_frames_per_call`.
+- Add real fitted-model validation gates and a long-block T4 benchmark that
+  reports compilation separately from steady-state throughput and memory.
+
 - JaxPIP/ONNX GPU execution now participates in PyRPMD GPU placement and
   cross-trajectory batching. Native C ABI workers route their assigned CUDA
   device into the ONNX context, and eligible workflows can combine K

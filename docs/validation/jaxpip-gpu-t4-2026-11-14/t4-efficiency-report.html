@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JaxPIP T4 效率与不足报告</title>
+<style>
+:root { color-scheme: light dark; --bg: light-dark(#f7f8fb,#111318); --fg: light-dark(#17202a,#eef2f7); --muted: light-dark(#5d6875,#a7b0bd); --line: light-dark(#d9dee6,#303743); --panel: light-dark(#fff,#191d24); --blue:#4c78a8; --orange:#f28e2b; --green:#59a14f; --red:#e15759; --purple:#9c6ade; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+* { box-sizing:border-box; } body { margin:0; background:var(--bg); color:var(--fg); line-height:1.5; } main { max-width:1080px; margin:0 auto; padding:32px 24px 56px; } h1 { font-size:28px; margin:0 0 8px; } h2 { font-size:19px; margin:28px 0 10px; } h3 { font-size:15px; margin:18px 0 6px; } p { margin:8px 0; } .subtitle,.small { color:var(--muted); } .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin:20px 0; } .metric { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px; } .metric strong { display:block; font-size:21px; } .metric span { color:var(--muted); font-size:13px; } .plots { display:grid; grid-template-columns:repeat(auto-fit,minmax(360px,1fr)); gap:18px; } .plot,.flow { margin:16px 0; } figcaption { font-weight:600; margin-bottom:4px; } svg { width:100%; height:auto; overflow:visible; } svg text { fill:var(--fg); font-size:12px; } svg .value { font-weight:600; } svg .grid { stroke:var(--line); stroke-width:1; } svg .axis { stroke:var(--fg); stroke-width:1.2; } svg .axis-title { fill:var(--muted); font-size:11px; } .flow svg { background:var(--panel); border:1px solid var(--line); border-radius:10px; } .box { stroke:none; } .b0 { fill:color-mix(in srgb,var(--blue) 22%,transparent); } .b1 { fill:color-mix(in srgb,var(--orange) 22%,transparent); } .b2 { fill:color-mix(in srgb,var(--green) 22%,transparent); } .arrow { stroke:var(--muted); stroke-width:1.4; marker-end:url(#arrowhead); } table { width:100%; border-collapse:collapse; margin:10px 0 18px; background:var(--panel); } th,td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top; } th { color:var(--muted); font-weight:500; } code { font-size:.92em; } .ok { color:var(--green); font-weight:600; } .warn { color:var(--orange); font-weight:600; } .bad { color:var(--red); font-weight:600; } .note { border-left:3px solid var(--orange); padding:10px 14px; background:var(--panel); } ul { margin:8px 0 8px 20px; } a { color:var(--blue); } @media(max-width:560px) { main { padding:22px 14px 40px; } .plots { display:block; } h1 { font-size:23px; } }
+</style></head><body><main>
+<h1>JaxPIP GPU T4 效率与不足</h1>
+<p class="subtitle">测试日期 2026-11-14 · Tesla T4 15 GiB · JAX 0.11.1 · PyTorch 2.14.1+cu130</p>
+<div class="grid">
+  <div class="metric"><strong>0</strong><span>linear/NN 能量最大误差</span></div>
+  <div class="metric"><strong>0</strong><span>linear/NN 力最大误差</span></div>
+  <div class="metric"><strong>通过</strong><span>DLPack device pointer 零拷贝</span></div>
+  <div class="metric"><strong>389</strong><span>Torch 回归测试</span></div>
+</div>
+<figure class="flow"><figcaption>What was exercised on the T4</figcaption><svg viewBox="0 0 980 160" role="img" aria-label="JaxPIP GPU to US AUS and recrossing workflow"><defs><marker id="arrowhead" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 z" fill="currentColor"/></marker></defs><rect x="18" y="48" width="104" height="54" rx="8" class="box b0"/><text x="70" y="69" text-anchor="middle"><tspan x="70" dy="0">JaxPIP
+GPU</tspan></text><path d="M122 75 H147" class="arrow"/><rect x="155" y="48" width="104" height="54" rx="8" class="box b1"/><text x="207" y="69" text-anchor="middle"><tspan x="207" dy="0">DLPack
+bridge</tspan></text><path d="M259 75 H284" class="arrow"/><rect x="292" y="48" width="104" height="54" rx="8" class="box b2"/><text x="344" y="69" text-anchor="middle"><tspan x="344" dy="0">GPU
+q/p</tspan></text><path d="M396 75 H421" class="arrow"/><rect x="429" y="48" width="104" height="54" rx="8" class="box b0"/><text x="481" y="69" text-anchor="middle"><tspan x="481" dy="0">US</tspan></text><path d="M533 75 H558" class="arrow"/><rect x="566" y="48" width="104" height="54" rx="8" class="box b1"/><text x="618" y="69" text-anchor="middle"><tspan x="618" dy="0">AUS</tspan></text><path d="M670 75 H695" class="arrow"/><rect x="703" y="48" width="104" height="54" rx="8" class="box b2"/><text x="755" y="69" text-anchor="middle"><tspan x="755" dy="0">parent
+RATTLE</tspan></text><path d="M807 75 H832" class="arrow"/><rect x="840" y="48" width="104" height="54" rx="8" class="box b0"/><text x="892" y="69" text-anchor="middle"><tspan x="892" dy="0">± child
+recrossing</tspan></text></svg></figure>
+<h2>1. 真实 JaxPIP 路径验证</h2>
+<p>linear 和 NN 模型都通过 JaxPIP 本身的模型接口，在 T4 上编译并由 JAX GPU 执行；Torch 只接收同一块 GPU 上的 DLPack 张量。误差为零表示本次桥接没有改变结果。测试模型是 JaxPIP fitted-model 对象；rate 阶段使用三原子零系数模型隔离执行路径，不能据此判断化学精度。</p>
+<table><thead><tr><th>模型</th><th>批量帧数</th><th>能量误差</th><th>力误差</th><th>3 步动力学时间</th><th>状态</th></tr></thead><tbody>
+<tr><td>linear</td><td>4</td><td>0</td><td>0</td><td>230.195 ms</td><td class="ok">通过</td></tr><tr><td>nn</td><td>4</td><td>0</td><td>0</td><td>10.656 ms</td><td class="ok">通过</td></tr>
+</tbody></table>
+<div class="plots"><figure class="plot">
+  <figcaption>T4 smoke：3 步 TorchDynamics 时间（包含首次执行影响）</figcaption>
+  <svg viewBox="0 0 760 260" role="img" aria-label="T4 smoke：3 步 TorchDynamics 时间（包含首次执行影响）">
+    <line x1="80" x2="734" y1="204.0" y2="204.0" class="grid"/><text x="70" y="208.0" text-anchor="end">0.000</text><line x1="80" x2="734" y1="152.0" y2="152.0" class="grid"/><text x="70" y="156.0" text-anchor="end">0.096</text><line x1="80" x2="734" y1="100.0" y2="100.0" class="grid"/><text x="70" y="104.0" text-anchor="end">0.192</text><line x1="80" x2="734" y1="48.0" y2="48.0" class="grid"/><text x="70" y="52.0" text-anchor="end">0.288</text>
+    <line x1="80" x2="80" y1="48" y2="204" class="axis"/>
+    <line x1="80" x2="734" y1="204" y2="204" class="axis"/>
+    <rect x="158.5" y="79.2" width="170.0" height="124.8" fill="var(--blue)" rx="4"><title>linear: 0.230195 秒</title></rect><text x="243.5" y="230" text-anchor="middle">linear</text><text x="243.5" y="71.2" text-anchor="middle" class="value">0.230</text><rect x="485.5" y="198.2" width="170.0" height="5.8" fill="var(--orange)" rx="4"><title>nn: 0.0106565 秒</title></rect><text x="570.5" y="230" text-anchor="middle">nn</text><text x="570.5" y="190.2" text-anchor="middle" class="value">0.011</text>
+    <text x="18" y="126.0" transform="rotate(-90 18 126.0)" class="axis-title">秒</text>
+  </svg>
+</figure></div>
+<p class="small">这张图不是稳态吞吐排名。linear 的首轮时间明显高于 NN，主要反映 JAX/XLA 图编译、JAX/Torch context 预热和小批量启动成本；需要长 block、多 batch 和重复测量才能得到生产吞吐。</p>
+<h2>2. 效率测试是怎样做的</h2>
+<table><thead><tr><th>测试层</th><th>测量对象</th><th>判定</th></tr></thead><tbody>
+<tr><td>设备与精度</td><td>JAX backend、Torch CUDA、float64、T4 显存</td><td class="ok">GPU / float64 可用</td></tr>
+<tr><td>桥接开销</td><td>GPU tensor → JAX → GPU tensor；比较 data pointer 和 direct JAX 结果</td><td class="ok">零拷贝、误差为零</td></tr>
+<tr><td>动力学</td><td>GPU q/p、4 beads、umbrella bias、TorchDynamics 3 steps</td><td class="ok">状态有限、能量有限</td></tr>
+<tr><td>US/AUS</td><td>固定 umbrella 2 samples；AUS 一轮 pilot 后冻结 production</td><td class="ok">checkpoint/plan 通过</td></tr>
+<tr><td>recrossing</td><td>GPU constrained parent、± momentum children、3 steps</td><td class="ok">numerator/drift 有限</td></tr>
+<tr><td>软件回归</td><td>现有 Torch backend/workflow tests</td><td class="ok">389 passed</td></tr>
+</tbody></table>
+<h3>批量效率的参考基线</h3>
+<p>下面是同一 T4 上此前 ONNX harmonic contract 模型的跨轨迹 batch scaling。它说明把 K 条轨迹合并成一次 PES 请求会降低调用启动成本，但它不是 JaxPIP 化学模型的速度结果。</p>
+<div class="plots"><figure class="plot">
+  <figcaption>参考基线：跨轨迹 GPU batching 加速比</figcaption>
+  <svg viewBox="0 0 760 260" role="img" aria-label="参考基线：跨轨迹 GPU batching 加速比">
+    <line x1="80" x2="734" y1="204.0" y2="204.0" class="grid"/><text x="70" y="208.0" text-anchor="end">0.00</text><line x1="80" x2="734" y1="152.0" y2="152.0" class="grid"/><text x="70" y="156.0" text-anchor="end">4.93</text><line x1="80" x2="734" y1="100.0" y2="100.0" class="grid"/><text x="70" y="104.0" text-anchor="end">9.86</text><line x1="80" x2="734" y1="48.0" y2="48.0" class="grid"/><text x="70" y="52.0" text-anchor="end">14.80</text>
+    <line x1="80" x2="80" y1="48" y2="204" class="axis"/>
+    <line x1="80" x2="734" y1="204" y2="204" class="axis"/>
+    <rect x="111.4" y="193.3" width="68.0" height="10.7" fill="var(--purple)" rx="4"><title>K=1: 1.013 倍</title></rect><text x="145.4" y="230" text-anchor="middle">K=1</text><text x="145.4" y="185.3" text-anchor="middle" class="value">1.01</text><rect x="242.2" y="183.0" width="68.0" height="21.0" fill="var(--purple)" rx="4"><title>K=2: 1.98841 倍</title></rect><text x="276.2" y="230" text-anchor="middle">K=2</text><text x="276.2" y="175.0" text-anchor="middle" class="value">1.99</text><rect x="373.0" y="167.3" width="68.0" height="36.7" fill="var(--purple)" rx="4"><title>K=4: 3.48177 倍</title></rect><text x="407.0" y="230" text-anchor="middle">K=4</text><text x="407.0" y="159.3" text-anchor="middle" class="value">3.48</text><rect x="503.8" y="147.2" width="68.0" height="56.8" fill="var(--purple)" rx="4"><title>K=8: 5.38667 倍</title></rect><text x="537.8" y="230" text-anchor="middle">K=8</text><text x="537.8" y="139.2" text-anchor="middle" class="value">5.39</text><rect x="634.6" y="79.2" width="68.0" height="124.8" fill="var(--purple)" rx="4"><title>K=16: 11.8361 倍</title></rect><text x="668.6" y="230" text-anchor="middle">K=16</text><text x="668.6" y="71.2" text-anchor="middle" class="value">11.84</text>
+    <text x="18" y="126.0" transform="rotate(-90 18 126.0)" class="axis-title">倍</text>
+  </svg>
+</figure></div>
+<table><thead><tr><th>轨迹数 K</th><th>标量调用</th><th>batch 调用</th><th>加速比</th></tr></thead><tbody>
+<tr><td>1</td><td>1</td><td>1</td><td>1.01×</td></tr><tr><td>2</td><td>2</td><td>1</td><td>1.99×</td></tr><tr><td>4</td><td>4</td><td>1</td><td>3.48×</td></tr><tr><td>8</td><td>8</td><td>1</td><td>5.39×</td></tr><tr><td>16</td><td>16</td><td>1</td><td>11.84×</td></tr>
+</tbody></table>
+<h2>3. US/AUS/recrossing 流程结果</h2>
+<table><thead><tr><th>阶段</th><th>实测结果</th><th>说明</th></tr></thead><tbody>
+<tr><td>US</td><td class="ok">2 samples</td><td>GPU window checkpoint 写入成功</td></tr>
+<tr><td>AUS</td><td class="ok">frozen</td><td>1 个窗口、pilot 2 samples、MBAR residual 0、target met</td></tr>
+<tr><td>parent</td><td class="ok">2 snapshots</td><td>3 个 GPU constrained steps</td></tr>
+<tr><td>children</td><td class="ok">2 pairs</td><td>± momentum recrossing，endpoint drift 约 1e-15</td></tr>
+</tbody></table>
+<h2>4. 不足之处</h2>
+<table><thead><tr><th>优先级</th><th>不足</th><th>影响</th></tr></thead><tbody>
+<tr><td class="bad">高</td><td>还没有用户实际的化学 fitted model、测试集误差和物理 rate 结果。</td><td>当前只能证明 JaxPIP GPU runtime 和流程连接正确，不能证明化学精度或发表级速率。</td></tr>
+<tr><td class="bad">高</td><td>没有做长时间、多窗口、多 parent、多 child 的稳态吞吐测试。</td><td>3 步 smoke 时间不适合估算生产成本，也不能代表显存峰值。</td></tr>
+<tr><td class="warn">中</td><td>本次 T4 预装环境是 JAX 0.11.1 / CUDA 13；仓库 GPU requirements 仍有 JAX 0.9/CUDA 12 版本约束。</td><td>需要正式锁定一套 Colab 可复现版本矩阵，避免环境漂移。</td></tr>
+<tr><td class="warn">中</td><td>动力学主循环仍由 TorchDynamics 的 Python orchestration 驱动每步 PES 调用。</td><td>q/p 和主要数值 kernel 在 GPU，但还不是一个把整段 dynamics 与 JaxPIP 融合成单个 CUDA/XLA 图的 custom C++ runtime。</td></tr>
+<tr><td class="warn">中</td><td>当前 GPU rate 路径限定固定非周期系统、内置 CV、Andersen sampling。</td><td>自定义 CV、NPT、复杂 thermostat、periodic surface 仍需单独适配。</td></tr>
+<tr><td class="warn">中</td><td>full <code>run_rate</code> 的最终 PMF+recrossing uncertainty 报告尚未用真实化学模型跑完。</td><td>本次验证覆盖了各生产阶段的直接调用和 checkpoint，不等同于完整化学 rate 收敛。</td></tr>
+</tbody></table>
+<div class="note"><strong>如何解读：</strong>这次结果足以说明“JaxPIP 不经过 ONNX ScatterND、坐标/力可以留在 T4、US/AUS/recrossing 接口可以跑通”。下一步验收应换入实际 model directory，增加 batch-size scaling、长 block、显存峰值、restart/resume 和 full rate uncertainty。</div>
+<p class="small">原始记录：<a href="jaxpip-gpu-real-report.json">JaxPIP report</a> · <a href="gpu-validation-summary.json">workflow summary</a> · <a href="torch-tests.txt">Torch tests</a></p>
+</main></body></html>

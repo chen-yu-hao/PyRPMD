@@ -30,6 +30,7 @@ Issues = "https://github.com/chen-yu-hao/PyRPMD/issues"
 [project.optional-dependencies]
 mpi = ["mpi4py>=3.1"]
 gpu = ["torch>=2.2"]
+jaxpip = ["torch>=2.14,<2.15", "jax>=0.11,<0.12", "equinox>=0.13.2,<0.14", "jaxpip @ git+https://github.com/CQPES/JaxPIP.git@a18c8cca1e795202194d4082919ebd71722df125"]
 ase = ["ase>=3.23"]
 openmm = ["openmm>=8.2"]
 lammps = ["lammps>=2024.8.29"]

@@ -1,0 +1,52 @@
+{
+  "hardware": {
+    "cuda_memory_after": 8528896,
+    "cuda_memory_before": 0,
+    "cuda_name": "Tesla T4",
+    "jax": "0.11.1",
+    "jax_backend": "gpu",
+    "jax_devices": [
+      "cuda:0"
+    ],
+    "torch": "2.14.1+cu130",
+    "torch_cuda": "13.0"
+  },
+  "models": {
+    "linear": {
+      "batch": 4,
+      "dynamics_seconds": 0.23019503499995153,
+      "dynamics_steps": 3,
+      "energy_after": [
+        2.913922235683917,
+        2.7699040384519926
+      ],
+      "energy_before": [
+        2.9139222356838785,
+        2.769904038451963
+      ],
+      "energy_finite": true,
+      "energy_max_abs_error": 0.0,
+      "force_max_abs_error": 0.0,
+      "gpu_memory_after": 8528896,
+      "zero_copy_coordinate": true
+    },
+    "nn": {
+      "batch": 4,
+      "dynamics_seconds": 0.010656466999989789,
+      "dynamics_steps": 3,
+      "energy_after": [
+        2.16131219114187,
+        2.017293993921248
+      ],
+      "energy_before": [
+        2.1613121911575828,
+        2.017293993925667
+      ],
+      "energy_finite": true,
+      "energy_max_abs_error": 0.0,
+      "force_max_abs_error": 0.0,
+      "gpu_memory_after": 8528896,
+      "zero_copy_coordinate": true
+    }
+  }
+}

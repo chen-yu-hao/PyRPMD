@@ -1,0 +1,166 @@
+{
+  "real": {
+    "hardware": {
+      "cuda_memory_after": 8528896,
+      "cuda_memory_before": 0,
+      "cuda_name": "Tesla T4",
+      "jax": "0.11.1",
+      "jax_backend": "gpu",
+      "jax_devices": [
+        "cuda:0"
+      ],
+      "torch": "2.14.1+cu130",
+      "torch_cuda": "13.0"
+    },
+    "models": {
+      "linear": {
+        "batch": 4,
+        "dynamics_seconds": 0.23019503499995153,
+        "dynamics_steps": 3,
+        "energy_after": [
+          2.913922235683917,
+          2.7699040384519926
+        ],
+        "energy_before": [
+          2.9139222356838785,
+          2.769904038451963
+        ],
+        "energy_finite": true,
+        "energy_max_abs_error": 0.0,
+        "force_max_abs_error": 0.0,
+        "gpu_memory_after": 8528896,
+        "zero_copy_coordinate": true
+      },
+      "nn": {
+        "batch": 4,
+        "dynamics_seconds": 0.010656466999989789,
+        "dynamics_steps": 3,
+        "energy_after": [
+          2.16131219114187,
+          2.017293993921248
+        ],
+        "energy_before": [
+          2.1613121911575828,
+          2.017293993925667
+        ],
+        "energy_finite": true,
+        "energy_max_abs_error": 0.0,
+        "force_max_abs_error": 0.0,
+        "gpu_memory_after": 8528896,
+        "zero_copy_coordinate": true
+      }
+    }
+  },
+  "aus_plan": {
+    "schema_version": 3,
+    "fingerprint": "15431246a442dc1941c7e0373b09ff4e9a55a4d3f1c191b512b9de2b3fb44250",
+    "status": "frozen",
+    "next_round": 1,
+    "overlap_metric": "normalized_mbar_cosine",
+    "centers": [
+      [
+        1.0
+      ]
+    ],
+    "stiffness": [
+      [
+        0.2
+      ]
+    ],
+    "options": {
+      "enabled": true,
+      "adapt_stiffness": false,
+      "pilot_steps": 2,
+      "pilot_equilibration_steps": 0,
+      "max_rounds": 1,
+      "max_windows": 1,
+      "max_pilot_steps": 2,
+      "target_overlap": 0.03,
+      "min_effective_samples": 1.0,
+      "min_spacing": 1e-06,
+      "min_bin_effective_samples": 5.0,
+      "target_coverage": 0.95
+    },
+    "next_pilot_steps": 2,
+    "rounds": [
+      {
+        "round": 0,
+        "seed": 2602836861,
+        "centers": [
+          [
+            1.0
+          ]
+        ],
+        "pilot": {
+          "equilibration_steps": 0,
+          "production_steps": 2
+        },
+        "target_met": true,
+        "overlap_metric": "normalized_mbar_cosine",
+        "overlap_connected_at_target": true,
+        "overlap_components": [
+          0
+        ],
+        "overlap": [
+          [
+            1.0
+          ]
+        ],
+        "symmetric_overlap": [
+          [
+            1.0
+          ]
+        ],
+        "spanning_overlap": 1.0,
+        "effective_samples_per_window": [
+          2.0
+        ],
+        "effective_samples_target_met": true,
+        "effective_sample_observables": "CV and nonconstant centered CV squared; periodic CVs use nonconstant first and second circular harmonics",
+        "samples_per_window": [
+          2
+        ],
+        "mbar_residual": 0.0,
+        "inserted": [],
+        "rejected_insertions": [],
+        "next_centers": [
+          [
+            1.0
+          ]
+        ]
+      }
+    ],
+    "production_seed": 22394792,
+    "pilot_samples_used_in_production": 0,
+    "checksum": "8b734087dc0cc25ffdc6127de4098465da718263c7e3126fd2867f4245c22b3a",
+    "target_met": true
+  },
+  "us_files": [
+    "/content/gpu-us-test/checkpoints/window_00000_replica_0000.npz"
+  ],
+  "recross_files": [
+    "/content/gpu-recross-test/checkpoints/child_0000_00000_0000.npz",
+    "/content/gpu-recross-test/checkpoints/parent_0000.npz",
+    "/content/gpu-recross-test/checkpoints/child_0000_00001_0000.npz"
+  ],
+  "us": [
+    {
+      "file": "/content/gpu-us-test/checkpoints/window_00000_replica_0000.npz",
+      "size": 4833
+    }
+  ],
+  "recross": [
+    {
+      "file": "/content/gpu-recross-test/checkpoints/child_0000_00000_0000.npz",
+      "size": 3151
+    },
+    {
+      "file": "/content/gpu-recross-test/checkpoints/parent_0000.npz",
+      "size": 4527
+    },
+    {
+      "file": "/content/gpu-recross-test/checkpoints/child_0000_00001_0000.npz",
+      "size": 3157
+    }
+  ]
+}

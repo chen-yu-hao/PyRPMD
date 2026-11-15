@@ -1,0 +1,471 @@
+{
+  "metadata": {
+    "device": "Tesla T4",
+    "vram_gib": 14.56317138671875,
+    "torch_version": "2.14.1+cu130",
+    "pyrpmd_version": "0.2.0",
+    "dt_fs": 0.5,
+    "timestamp": "2026-11-14 19:28:56 UTC"
+  },
+  "mace": {
+    "carbon_c6_bead_scaling": [
+      {
+        "engine": "TorchDynamics",
+        "K": 1,
+        "P": 1,
+        "steps": 12,
+        "wall_time_s": 0.8260331569999835,
+        "ms_per_step": 68.83609641666528,
+        "ns_per_day": 0.6275777135662974,
+        "throughput_fps": 14.527261888108736,
+        "vram_peak_mib": 81.55859375
+      },
+      {
+        "engine": "TorchDynamics",
+        "K": 1,
+        "P": 4,
+        "steps": 12,
+        "wall_time_s": 1.6314943549996315,
+        "ms_per_step": 135.95786291663595,
+        "ns_per_day": 0.3177455063889063,
+        "throughput_fps": 29.42088022119503,
+        "vram_peak_mib": 132.59228515625
+      },
+      {
+        "engine": "TorchDynamics",
+        "K": 1,
+        "P": 8,
+        "steps": 12,
+        "wall_time_s": 2.774633277999783,
+        "ms_per_step": 231.21943983331525,
+        "ns_per_day": 0.18683550150948655,
+        "throughput_fps": 34.59916694620121,
+        "vram_peak_mib": 196.67626953125
+      },
+      {
+        "engine": "TorchDynamics",
+        "K": 1,
+        "P": 16,
+        "steps": 12,
+        "wall_time_s": 5.209997701999782,
+        "ms_per_step": 434.1664751666485,
+        "ns_per_day": 0.09950100358029326,
+        "throughput_fps": 36.85222354825677,
+        "vram_peak_mib": 327.998046875
+      },
+      {
+        "engine": "TorchDynamics",
+        "K": 1,
+        "P": 32,
+        "steps": 12,
+        "wall_time_s": 10.271320666000065,
+        "ms_per_step": 855.9433888333388,
+        "ns_per_day": 0.050470627571388954,
+        "throughput_fps": 37.385650052880706,
+        "vram_peak_mib": 594.3037109375
+      }
+    ],
+    "carbon_c6_trajectory_scaling": [
+      {
+        "engine": "TorchDynamics",
+        "K": 1,
+        "P": 8,
+        "steps": 12,
+        "wall_time_s": 2.8239012170001843,
+        "ms_per_step": 235.32510141668203,
+        "ns_per_day": 0.18357582654774787,
+        "throughput_fps": 33.99552343476813,
+        "vram_peak_mib": 196.67626953125
+      },
+      {
+        "engine": "TorchDynamics",
+        "K": 4,
+        "P": 8,
+        "steps": 12,
+        "wall_time_s": 10.228578122999807,
+        "ms_per_step": 852.3815102499839,
+        "ns_per_day": 0.050681531075598335,
+        "throughput_fps": 37.54187487081358,
+        "vram_peak_mib": 594.30078125
+      },
+      {
+        "engine": "TorchDynamics",
+        "K": 8,
+        "P": 8,
+        "steps": 12,
+        "wall_time_s": 20.069639671000004,
+        "ms_per_step": 1672.4699725833336,
+        "ns_per_day": 0.025830060155443233,
+        "throughput_fps": 38.26675578584182,
+        "vram_peak_mib": 1118.07763671875
+      },
+      {
+        "engine": "TorchDynamics",
+        "K": 16,
+        "P": 8,
+        "steps": 12,
+        "wall_time_s": 40.17347654999958,
+        "ms_per_step": 3347.789712499965,
+        "ns_per_day": 0.012904036307507607,
+        "throughput_fps": 38.234181651874394,
+        "vram_peak_mib": 2168.85400390625
+      }
+    ],
+    "carbon_c6_host_dynamics": {
+      "engine": "Dynamics",
+      "K": 1,
+      "P": 8,
+      "steps": 10,
+      "wall_time_s": 2.3060325429996738,
+      "ms_per_step": 230.60325429996738,
+      "ns_per_day": 0.18733473701895675,
+      "throughput_fps": 34.69161796647347,
+      "vram_peak_mib": 196.66015625
+    },
+    "carbon_c6_legacy_ase": {
+      "engine": "Dynamics",
+      "K": 1,
+      "P": 4,
+      "steps": 5,
+      "wall_time_s": 0.9648594020000019,
+      "ms_per_step": 192.97188040000037,
+      "ns_per_day": 0.22386681370598238,
+      "throughput_fps": 20.72840867647985,
+      "vram_peak_mib": 124.9716796875
+    },
+    "diamond_c8": {
+      "engine": "TorchDynamics",
+      "K": 1,
+      "P": 4,
+      "steps": 10,
+      "wall_time_s": 19.21806501300034,
+      "ms_per_step": 1921.8065013000341,
+      "ns_per_day": 0.022478849962666234,
+      "throughput_fps": 2.08137499654317,
+      "vram_peak_mib": 4506.87548828125
+    },
+    "isolated_water_h2o": {
+      "engine": "TorchDynamics",
+      "K": 1,
+      "P": 8,
+      "steps": 20,
+      "wall_time_s": 2.696049948000109,
+      "ms_per_step": 134.80249740000545,
+      "ns_per_day": 0.3204688402159992,
+      "throughput_fps": 59.34608152148134,
+      "vram_peak_mib": 258.76318359375
+    },
+    "water_box_32": {
+      "error": "mace-batched batch evaluation failed: The following operation failed in the TorchScript interpreter.\nTraceback of TorchScript, serialized code (most recent call last):\n  File \"code/__torch__/torch/fx/graph_module/___torch_mangle_11.py\", line 94, in forward\n    getitem_15 = torch.slice(_11, 1, 512, 640)\n    reshape_21 = torch.reshape(getitem_15, [-1, 128, 1])\n    einsum_11 = torch.einsum(\"edb,eca->ecdab\", [reshape_7, reshape_4])\n                ~~~~~~~~~~~~ <--- HERE\n    _w3j_1_2_1 = self._w3j_1_2_1\n    mul_15 = torch.mul(_w3j_1_2_1, 1.7320508075688772)\n\nTraceback of TorchScript, original code (most recent call last):\n  File \"<eval_with_key>.127\", line 72, in forward\n    getitem_15 = reshape_2[(slice(None, None, None), slice(512, 640, None))]\n    reshape_21 = getitem_15.reshape((-1, 128, 1));  getitem_15 = None\n    einsum_11 = torch.functional.einsum('edb,eca->ecdab', reshape_7, reshape_4)\n                ~~~~~~~~~~~~~~~~~~~~~~~ <--- HERE\n    _w3j_1_2_1 = self._w3j_1_2_1\n    mul_15 = _w3j_1_2_1 * 1.7320508075688772;  _w3j_1_2_1 = None\nRuntimeError: CUDA out of memory. Tried to allocate 3.39 GiB. GPU 0 has a total capacity of 14.56 GiB of which 2.90 GiB is free. Including non-PyTorch memory, this process has 11.66 GiB memory in use. Of the allocated memory 8.51 GiB is allocated by PyTorch, and 2.98 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)\n"
+    }
+  },
+  "deepmd": {
+    "carbon_c6_bead_scaling": [
+      {
+        "engine": "TorchDynamics",
+        "K": 1,
+        "P": 1,
+        "steps": 50,
+        "wall_time_s": 0.9767283290002524,
+        "ms_per_step": 19.53456658000505,
+        "ns_per_day": 2.211464473658613,
+        "throughput_fps": 51.19130726061605,
+        "vram_peak_mib": 230.41162109375
+      },
+      {
+        "engine": "TorchDynamics",
+        "K": 1,
+        "P": 4,
+        "steps": 50,
+        "wall_time_s": 1.8983089969997309,
+        "ms_per_step": 37.96617993999462,
+        "ns_per_day": 1.1378547978300004,
+        "throughput_fps": 105.35692572500005,
+        "vram_peak_mib": 230.77685546875
+      },
+      {
+        "engine": "TorchDynamics",
+        "K": 1,
+        "P": 8,
+        "steps": 50,
+        "wall_time_s": 3.022942508000142,
+        "ms_per_step": 60.45885016000284,
+        "ns_per_day": 0.714535587191491,
+        "throughput_fps": 132.3214050354613,
+        "vram_peak_mib": 231.265625
+      },
+      {
+        "engine": "TorchDynamics",
+        "K": 1,
+        "P": 16,
+        "steps": 50,
+        "wall_time_s": 5.661011277999933,
+        "ms_per_step": 113.22022555999865,
+        "ns_per_day": 0.3815572684679653,
+        "throughput_fps": 141.31750683998717,
+        "vram_peak_mib": 232.24609375
+      },
+      {
+        "engine": "TorchDynamics",
+        "K": 1,
+        "P": 32,
+        "steps": 50,
+        "wall_time_s": 10.572888923999926,
+        "ms_per_step": 211.45777847999852,
+        "ns_per_day": 0.20429610256255587,
+        "throughput_fps": 151.330446342634,
+        "vram_peak_mib": 234.2099609375
+      }
+    ],
+    "carbon_c6_trajectory_scaling": [
+      {
+        "engine": "TorchDynamics",
+        "K": 1,
+        "P": 8,
+        "steps": 50,
+        "wall_time_s": 3.092089336999834,
+        "ms_per_step": 61.84178673999668,
+        "ns_per_day": 0.6985567894670812,
+        "throughput_fps": 129.36236841982986,
+        "vram_peak_mib": 231.265625
+      },
+      {
+        "engine": "TorchDynamics",
+        "K": 4,
+        "P": 8,
+        "steps": 50,
+        "wall_time_s": 10.278629375000037,
+        "ms_per_step": 205.57258750000074,
+        "ns_per_day": 0.2101447499657504,
+        "throughput_fps": 155.6627777524077,
+        "vram_peak_mib": 234.20703125
+      },
+      {
+        "engine": "TorchDynamics",
+        "K": 8,
+        "P": 8,
+        "steps": 50,
+        "wall_time_s": 19.48349495399998,
+        "ms_per_step": 389.6698990799996,
+        "ns_per_day": 0.1108630666674384,
+        "throughput_fps": 164.24158024805692,
+        "vram_peak_mib": 238.3896484375
+      },
+      {
+        "engine": "TorchDynamics",
+        "K": 16,
+        "P": 8,
+        "steps": 50,
+        "wall_time_s": 38.958438342000136,
+        "ms_per_step": 779.1687668400027,
+        "ns_per_day": 0.0554437008238946,
+        "throughput_fps": 164.27763207079883,
+        "vram_peak_mib": 246.23681640625
+      }
+    ],
+    "carbon_c6_host_dynamics": {
+      "engine": "Dynamics",
+      "K": 1,
+      "P": 8,
+      "steps": 20,
+      "wall_time_s": 1.1964143670002159,
+      "ms_per_step": 59.82071835001079,
+      "ns_per_day": 0.7221578274476238,
+      "throughput_fps": 133.73293100881924,
+      "vram_peak_mib": 231.24951171875
+    },
+    "carbon_c6_legacy_deeppot": {
+      "engine": "Dynamics",
+      "K": 1,
+      "P": 8,
+      "steps": 20,
+      "wall_time_s": 1.4865072880002117,
+      "ms_per_step": 74.32536440001059,
+      "ns_per_day": 0.5812282300763781,
+      "throughput_fps": 107.63485742155152,
+      "vram_peak_mib": 231.60400390625
+    },
+    "isolated_water_h2o": {
+      "engine": "TorchDynamics",
+      "K": 1,
+      "P": 8,
+      "steps": 50,
+      "wall_time_s": 3.2602059119999467,
+      "ms_per_step": 65.20411823999893,
+      "ns_per_day": 0.6625348393025168,
+      "throughput_fps": 122.69163690787349,
+      "vram_peak_mib": 231.7783203125
+    },
+    "water_box_32": {
+      "engine": "TorchDynamics",
+      "K": 1,
+      "P": 4,
+      "steps": 20,
+      "wall_time_s": 1.4409477499998502,
+      "ms_per_step": 72.04738749999251,
+      "ns_per_day": 0.5996053639003148,
+      "throughput_fps": 55.519015175955076,
+      "vram_peak_mib": 252.21435546875
+    }
+  },
+  "jaxpip": {
+    "onnx_cuda_trajectory_scaling": [
+      {
+        "K": 1,
+        "P": 8,
+        "B": 8,
+        "calls": 200,
+        "time_per_call_ms": 0.209310220000134,
+        "throughput_fps": 38220.78061928786,
+        "speedup_vs_scalar": 1.0
+      },
+      {
+        "K": 2,
+        "P": 8,
+        "B": 16,
+        "calls": 200,
+        "time_per_call_ms": 0.2109266449997449,
+        "throughput_fps": 75855.75544530826,
+        "speedup_vs_scalar": 1.9846731075667292
+      },
+      {
+        "K": 4,
+        "P": 8,
+        "B": 32,
+        "calls": 200,
+        "time_per_call_ms": 0.22878661500044473,
+        "throughput_fps": 139868.32227898383,
+        "speedup_vs_scalar": 3.659483663407969
+      },
+      {
+        "K": 8,
+        "P": 8,
+        "B": 64,
+        "calls": 200,
+        "time_per_call_ms": 0.24156544999868856,
+        "throughput_fps": 264938.5497816325,
+        "speedup_vs_scalar": 6.9317932676637435
+      },
+      {
+        "K": 16,
+        "P": 8,
+        "B": 128,
+        "calls": 200,
+        "time_per_call_ms": 0.3519453499984593,
+        "throughput_fps": 363692.82901609683,
+        "speedup_vs_scalar": 9.515578256728793
+      }
+    ],
+    "dlpack_bead_scaling": [
+      {
+        "engine": "TorchDynamics",
+        "K": 1,
+        "P": 1,
+        "steps": 50,
+        "wall_time_s": 0.15381619800018598,
+        "ms_per_step": 3.0763239600037195,
+        "ns_per_day": 14.042734302907345,
+        "throughput_fps": 325.0632940487812,
+        "vram_peak_mib": 230.44482421875
+      },
+      {
+        "engine": "TorchDynamics",
+        "K": 1,
+        "P": 4,
+        "steps": 50,
+        "wall_time_s": 0.19962370900020687,
+        "ms_per_step": 3.9924741800041375,
+        "ns_per_day": 10.82035801668108,
+        "throughput_fps": 1001.8850015445447,
+        "vram_peak_mib": 230.44482421875
+      },
+      {
+        "engine": "TorchDynamics",
+        "K": 1,
+        "P": 8,
+        "steps": 50,
+        "wall_time_s": 0.18451222300018344,
+        "ms_per_step": 3.690244460003669,
+        "ns_per_day": 11.706541522714474,
+        "throughput_fps": 2167.8780597619398,
+        "vram_peak_mib": 230.45068359375
+      },
+      {
+        "engine": "TorchDynamics",
+        "K": 1,
+        "P": 16,
+        "steps": 50,
+        "wall_time_s": 0.17733462500018504,
+        "ms_per_step": 3.546692500003701,
+        "ns_per_day": 12.180362408061855,
+        "throughput_fps": 4511.245336319205,
+        "vram_peak_mib": 230.45849609375
+      },
+      {
+        "engine": "TorchDynamics",
+        "K": 1,
+        "P": 32,
+        "steps": 50,
+        "wall_time_s": 0.18150638599990998,
+        "ms_per_step": 3.6301277199981996,
+        "ns_per_day": 11.90040773552216,
+        "throughput_fps": 8815.116841127527,
+        "vram_peak_mib": 230.47705078125
+      }
+    ],
+    "dlpack_trajectory_scaling": [
+      {
+        "engine": "TorchDynamics",
+        "K": 1,
+        "P": 8,
+        "steps": 50,
+        "wall_time_s": 0.17546406300016315,
+        "ms_per_step": 3.509281260003263,
+        "ns_per_day": 12.310213060539875,
+        "throughput_fps": 2279.669085285162,
+        "vram_peak_mib": 230.45068359375
+      },
+      {
+        "engine": "TorchDynamics",
+        "K": 4,
+        "P": 8,
+        "steps": 50,
+        "wall_time_s": 0.18008907900002669,
+        "ms_per_step": 3.6017815800005337,
+        "ns_per_day": 11.994064337458685,
+        "throughput_fps": 8884.492101821248,
+        "vram_peak_mib": 230.474609375
+      },
+      {
+        "engine": "TorchDynamics",
+        "K": 8,
+        "P": 8,
+        "steps": 50,
+        "wall_time_s": 0.1702917789998537,
+        "ms_per_step": 3.405835579997074,
+        "ns_per_day": 12.68411201460204,
+        "throughput_fps": 18791.27705866969,
+        "vram_peak_mib": 230.5068359375
+      },
+      {
+        "engine": "TorchDynamics",
+        "K": 16,
+        "P": 8,
+        "steps": 50,
+        "wall_time_s": 0.16982555599997795,
+        "ms_per_step": 3.396511119999559,
+        "ns_per_day": 12.718933774609756,
+        "throughput_fps": 37685.729702547425,
+        "vram_peak_mib": 230.5732421875
+      }
+    ]
+  },
+  "unsupported_gaps": {
+    "jaxpip_onnx_cuda_scatternd": {
+      "status": "UNSUPPORTED",
+      "technical_bottleneck": "ONNX Runtime CUDA Execution Provider lacks a CUDA kernel for double/float64 (element_type 11) ScatterND operations.",
+      "empirical_verification": "*************** EP Error ***************\nEP Error /onnxruntime_src/onnxruntime/core/providers/cuda/cuda_call.cc:154 std::conditional_t<THRW, void, onnxruntime::common::Status> onnxruntime::CudaCall(ERRTYPE, const char*, const char*, SUCCTYPE, const char*, const char*, int) [with ERRTYPE = cudaError; bool THRW = true; SUCCTYPE = cudaError; std::conditional_t<THRW, void, common::Status> = void] /onnxruntime_src/onnxruntime/core/providers/cuda/cuda_call.cc:146 std::conditional_t<THRW, void, onnxruntime::common::Status> onnxruntime::CudaCall(ERRTYPE, const char*, const char*, SUCCTYPE, const char*, const char*, int) [with ERRTYPE = cudaError; bool THRW = true; SUCCTYPE = cudaError; std::conditional_t<THRW, void, common::Status> = void] CUDA failure 2: out of memory ; GPU=0 ; hostname=f87a64dc8e63 ; file=/onnxruntime_src/onnxruntime/core/providers/cuda/cuda_execution_provider.cc ; line=390 ; expr=cudaSetDevice(info_.device_id); \n\n when using ['CUDAExecutionProvider']\nFalling back to ['CPUExecutionProvider'] and retrying.\n****************************************\nTest 1 (disable_fallback): InvalidArgument [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Conflicting session configuration: explicitly added the CPU EP to the session, but also disabled fallback to the CPU EP via session configuration options.\n*************** EP Error ***************\nEP Error /onnxruntime_src/onnxruntime/core/providers/cuda/cuda_call.cc:154 std::conditional_t<THRW, void, onnxruntime::common::Status> onnxruntime::CudaCall(ERRTYPE, const char*, const char*, SUCCTYPE, const char*, const char*, int) [with ERRTYPE = cudaError; bool THRW = true; SUCCTYPE = cudaError; std::conditional_t<THRW, void, common::Status> = void] /onnxruntime_src/onnxruntime/core/providers/cuda/cuda_call.cc:146 std::conditional_t<THRW, void, onnxruntime::common::Status> onnxruntime::CudaCall(ERRTYPE, const char*, const char*, SUCCTYPE, const char*, const char*, int) [with ERRTYPE = cudaError; bool THRW = true; SUCCTYPE = cudaError; std::conditional_t<THRW, void, common::Status> = void] CUDA failure 2: out of memory ; GPU=0 ; hostname=f87a64dc8e63 ; file=/onnxruntime_src/onnxruntime/core/providers/cuda/cuda_execution_provider.cc ; line=390 ; expr=cudaSetDevice(info_.device_id); \n\n when using ['CUDAExecutionProvider']\nFalling back to ['CPUExecutionProvider'] and retrying.\n****************************************\nExecution succeeded!\n\u001b[1;31m2026-11-14 19:34:04.245287917 [E:onnxruntime:, inference_session.cc:3303 operator()] Conflicting session configuration: explicitly added the CPU EP to the session, but also disabled fallback to the CPU EP via session configuration options.\u001b[m\n",
+      "optimization_target": "Implement custom CUDA kernel for float64 ScatterND in ORT / PyRPMD, or rewrite JaxPIP autograd graph to eliminate ScatterND, or employ float32 mixed precision, or use direct JAX DLPack bridge."
+    }
+  }
+}

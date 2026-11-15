@@ -1,0 +1,146 @@
+{
+  "correctness": {
+    "max_energy_abs_error_vs_analytic_hartree": 2.168404344971009e-19,
+    "max_energy_abs_error_vs_cpu_hartree": 2.168404344971009e-19,
+    "max_force_abs_error_vs_analytic_hartree_per_bohr": 4.336808689942018e-19,
+    "max_force_abs_error_vs_cpu_hartree_per_bohr": 0.0,
+    "status_failed_frames": 0
+  },
+  "efficiency": [
+    {
+      "batched_calls": 1,
+      "batched_frames_per_s": 40715.907805078285,
+      "batched_median_s": 0.00019648340000912867,
+      "beads_P": 8,
+      "scalar_calls": 1,
+      "scalar_frames_per_s": 40193.32991584965,
+      "scalar_median_s": 0.00019903800000520278,
+      "speedup_scalar_over_batched": 1.0130016072398758,
+      "trajectories_K": 1
+    },
+    {
+      "batched_calls": 1,
+      "batched_frames_per_s": 79167.86655432731,
+      "batched_median_s": 0.0002021022000008088,
+      "beads_P": 8,
+      "scalar_calls": 2,
+      "scalar_frames_per_s": 39814.68256083474,
+      "scalar_median_s": 0.0004018617999918206,
+      "speedup_scalar_over_batched": 1.988408834689639,
+      "trajectories_K": 2
+    },
+    {
+      "batched_calls": 1,
+      "batched_frames_per_s": 147141.32004800942,
+      "batched_median_s": 0.00021747799999047857,
+      "beads_P": 8,
+      "scalar_calls": 4,
+      "scalar_frames_per_s": 42260.5261074697,
+      "scalar_median_s": 0.0007572077999839167,
+      "speedup_scalar_over_batched": 3.481767351258831,
+      "trajectories_K": 4
+    },
+    {
+      "batched_calls": 1,
+      "batched_frames_per_s": 209706.80367992504,
+      "batched_median_s": 0.00030518799999299515,
+      "beads_P": 8,
+      "scalar_calls": 8,
+      "scalar_frames_per_s": 38930.67177273065,
+      "scalar_median_s": 0.0016439480000144612,
+      "speedup_scalar_over_batched": 5.386673132797469,
+      "trajectories_K": 8
+    },
+    {
+      "batched_calls": 1,
+      "batched_frames_per_s": 461872.0975361595,
+      "batched_median_s": 0.00027713299998595177,
+      "beads_P": 8,
+      "scalar_calls": 16,
+      "scalar_frames_per_s": 39022.19405580489,
+      "scalar_median_s": 0.0032801845999983923,
+      "speedup_scalar_over_batched": 11.836138605523951,
+      "trajectories_K": 16
+    }
+  ],
+  "gpu_metadata": {
+    "abi_version": 1,
+    "atomic_numbers": [
+      1,
+      1,
+      8
+    ],
+    "batch_independent": true,
+    "boundary_conditions": "nonperiodic",
+    "capabilities": {
+      "allow_cpu_fallback": false,
+      "host_memory": true,
+      "independent_contexts": true,
+      "native_batch": true,
+      "stateful": false
+    },
+    "dtype": "float64",
+    "energy_unit": "hartree",
+    "execution_device": "cuda:0",
+    "force_unit": "hartree/bohr",
+    "layout": "B,N,3:C",
+    "model_spec": {
+      "atomic_numbers": [
+        1,
+        1,
+        8
+      ],
+      "batch_independent": true,
+      "constants": {
+        "bohr_angstrom": 0.5291772105439999,
+        "ev_to_hartree": 0.03674932217566422
+      },
+      "derivative": "force",
+      "energy_unit": "eV",
+      "force_unit": "eV/angstrom",
+      "position_unit": "angstrom",
+      "schema": "pyrpmd.onnx/1",
+      "state": {
+        "charge": 0,
+        "multiplicity": 1
+      }
+    },
+    "natoms": 3,
+    "position_unit": "bohr",
+    "provider_name": "onnxruntime",
+    "provider_version": "1.24.1",
+    "schema": "pyrpmd.pes/1",
+    "state": {
+      "charge": 0,
+      "multiplicity": 1
+    },
+    "thread_safety": "context_serial",
+    "trajectory_batch_safe": true
+  },
+  "hardware": "Tesla T4, 580.82.07, 15360 MiB, 0 MiB",
+  "library": "/content/PyRPMD/build/onnx/libpyrpmd_onnx.so",
+  "model": "/content/pr201-t4-harmonic.onnx",
+  "onnxruntime_providers": [
+    "TensorrtExecutionProvider",
+    "CUDAExecutionProvider",
+    "CPUExecutionProvider"
+  ],
+  "onnxruntime_python": "1.24.1",
+  "settings": {
+    "allow_cpu_fallback": false,
+    "atoms": 3,
+    "beads": 8,
+    "device": "cuda:0",
+    "seed": 201,
+    "trajectories": 8
+  },
+  "trajectory_batch_correctness": {
+    "expected_pes_calls": 1,
+    "expected_pes_frames": 64,
+    "passed": true,
+    "stats": {
+      "pes_calls": 1,
+      "pes_frames": 64
+    }
+  }
+}

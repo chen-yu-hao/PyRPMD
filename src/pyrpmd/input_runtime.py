@@ -209,6 +209,10 @@ def resolve_sampling(d, runtime, *, selected, materials, native_pimd):
                 raise InputError("NHC sampling.integrator must match dynamics.integrator + '-nose-hoover-chain'")
             if "gamma_centroid" in sampling:
                 raise InputError("sampling.gamma_centroid requires PILE-L sampling")
+        elif sampling.get("engine") == "torch" and task == "rate":
+            if sampling["thermostat"] != "andersen":
+                raise InputError("Torch rate sampling currently requires thermostat='andersen'")
+            sampling["integrator"] = "torch"
         elif (materials or task == "drpmd" or (task == "fes" and method in ("umbrella", "metadynamics"))) and sampling["thermostat"] == "pile-l":
             from .workflows.sampling import middle_sampling_method
             try:

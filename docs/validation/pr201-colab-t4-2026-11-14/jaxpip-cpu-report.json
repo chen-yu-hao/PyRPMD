@@ -1,0 +1,98 @@
+{
+  "linear": {
+    "load_seconds": 0.05896838400008164,
+    "batch_errors": {
+      "1": {
+        "energy_hartree": 0.0,
+        "forces_hartree_per_bohr": 3.308722450212111e-24
+      },
+      "8": {
+        "energy_hartree": 0.0,
+        "forces_hartree_per_bohr": 6.776263578034403e-21
+      },
+      "32": {
+        "energy_hartree": 0.0,
+        "forces_hartree_per_bohr": 6.776263578034403e-21
+      },
+      "128": {
+        "energy_hartree": 0.0,
+        "forces_hartree_per_bohr": 6.776263578034403e-21
+      }
+    },
+    "force_check": {
+      "max_absolute_force_error": 4.816663357770125e-14,
+      "rms_force_error": 2.1889587425450026e-14,
+      "force_unit": "hartree/bohr",
+      "finite_difference_step_bohr": 1e-05
+    },
+    "timings": {
+      "1": {
+        "native_abi_from_python_seconds": 0.00029984846000161267,
+        "jax_jit_from_python_seconds": 0.0003221929599999385
+      },
+      "8": {
+        "native_abi_from_python_seconds": 0.00037340747999905946,
+        "jax_jit_from_python_seconds": 0.0004737571600003321
+      },
+      "32": {
+        "native_abi_from_python_seconds": 0.0004539943199984009,
+        "jax_jit_from_python_seconds": 0.0005504710600007457
+      },
+      "128": {
+        "native_abi_from_python_seconds": 0.0007243023199998788,
+        "jax_jit_from_python_seconds": 0.0006234246200006055
+      }
+    },
+    "native_block_100_steps_seconds": 0.026326855999968757,
+    "python_block_100_steps_seconds": 0.06626561899997796,
+    "energy_range_hartree": 4.520689378395559e-15
+  },
+  "nn": {
+    "load_seconds": 0.036393489000033696,
+    "batch_errors": {
+      "1": {
+        "energy_hartree": 4.0657581468206416e-20,
+        "forces_hartree_per_bohr": 1.5178830414797062e-18
+      },
+      "8": {
+        "energy_hartree": 7.318364664277155e-19,
+        "forces_hartree_per_bohr": 1.734723475976807e-17
+      },
+      "32": {
+        "energy_hartree": 7.318364664277155e-19,
+        "forces_hartree_per_bohr": 1.734723475976807e-17
+      },
+      "128": {
+        "energy_hartree": 7.318364664277155e-19,
+        "forces_hartree_per_bohr": 1.734723475976807e-17
+      }
+    },
+    "force_check": {
+      "max_absolute_force_error": 4.403483914311446e-11,
+      "rms_force_error": 1.688059633422431e-11,
+      "force_unit": "hartree/bohr",
+      "finite_difference_step_bohr": 1e-05
+    },
+    "timings": {
+      "1": {
+        "native_abi_from_python_seconds": 0.0003413808599998447,
+        "jax_jit_from_python_seconds": 0.00032509440000012547
+      },
+      "8": {
+        "native_abi_from_python_seconds": 0.0004554899999993722,
+        "jax_jit_from_python_seconds": 0.00055095202000075
+      },
+      "32": {
+        "native_abi_from_python_seconds": 0.0005266465199997583,
+        "jax_jit_from_python_seconds": 0.0005877864799981581
+      },
+      "128": {
+        "native_abi_from_python_seconds": 0.0011360010199996395,
+        "jax_jit_from_python_seconds": 0.0006579017800004294
+      }
+    },
+    "native_block_100_steps_seconds": 0.020838505000028817,
+    "python_block_100_steps_seconds": 0.07746746500004065,
+    "energy_range_hartree": 1.8609271025191165e-12
+  }
+}

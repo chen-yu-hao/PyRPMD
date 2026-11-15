@@ -1,0 +1,153 @@
+{
+  "dynamics": [
+    {
+      "beads": 8,
+      "cuda_allocated_peak_mib": 0.0263671875,
+      "cuda_reserved_peak_mib": 2.0,
+      "finite": true,
+      "force_evaluations": {
+        "fast": 274,
+        "slow": 0
+      },
+      "frames_per_second": 4302.3654363154665,
+      "seconds": 0.4760172119999879,
+      "steps": 256,
+      "steps_per_second": 537.7956795394333,
+      "trajectories": 1
+    },
+    {
+      "beads": 8,
+      "cuda_allocated_peak_mib": 0.052734375,
+      "cuda_reserved_peak_mib": 2.0,
+      "finite": true,
+      "force_evaluations": {
+        "fast": 274,
+        "slow": 0
+      },
+      "frames_per_second": 18037.99853239722,
+      "seconds": 0.4541523819999611,
+      "steps": 256,
+      "steps_per_second": 563.6874541374132,
+      "trajectories": 4
+    },
+    {
+      "beads": 8,
+      "cuda_allocated_peak_mib": 0.08251953125,
+      "cuda_reserved_peak_mib": 2.0,
+      "finite": true,
+      "force_evaluations": {
+        "fast": 274,
+        "slow": 0
+      },
+      "frames_per_second": 23258.2214767947,
+      "seconds": 0.7044390739999926,
+      "steps": 256,
+      "steps_per_second": 363.4097105749172,
+      "trajectories": 8
+    },
+    {
+      "beads": 8,
+      "cuda_allocated_peak_mib": 0.14892578125,
+      "cuda_reserved_peak_mib": 2.0,
+      "finite": true,
+      "force_evaluations": {
+        "fast": 274,
+        "slow": 0
+      },
+      "frames_per_second": 29552.65324114065,
+      "seconds": 1.1088006119999818,
+      "steps": 256,
+      "steps_per_second": 230.88010344641134,
+      "trajectories": 16
+    }
+  ],
+  "evaluation": [
+    {
+      "beads": 8,
+      "frames": 8,
+      "frames_per_second": 8428.274331979486,
+      "seconds_per_batch": 0.0009491859999911867,
+      "trajectories": 1
+    },
+    {
+      "beads": 8,
+      "frames": 32,
+      "frames_per_second": 33658.19451345615,
+      "seconds_per_batch": 0.0009507342999995671,
+      "trajectories": 4
+    },
+    {
+      "beads": 8,
+      "frames": 64,
+      "frames_per_second": 33069.690393654346,
+      "seconds_per_batch": 0.0019353069000089818,
+      "trajectories": 8
+    },
+    {
+      "beads": 8,
+      "frames": 128,
+      "frames_per_second": 37988.589652213355,
+      "seconds_per_batch": 0.0033694328000024145,
+      "trajectories": 16
+    }
+  ],
+  "limitations": [
+    "timings include JAX/Torch bridge execution after one explicit warmup",
+    "this benchmark measures runtime throughput and memory, not chemical accuracy",
+    "rate convergence still requires the real US/AUS/recrossing production input"
+  ],
+  "model_directory": "/content/fit-real",
+  "model_manifest": {
+    "contract": {
+      "atomic_numbers": [
+        1,
+        1,
+        1
+      ],
+      "charge": 0,
+      "multiplicity": 1,
+      "symbols": [
+        "H",
+        "H",
+        "H"
+      ]
+    },
+    "fingerprint": "t4-fix-fixture",
+    "settings": {
+      "alpha": 1.0,
+      "energy_unit": "hartree",
+      "kind": "linear",
+      "position_unit": "bohr"
+    },
+    "within_requested_test_bounds": true
+  },
+  "runtime": {
+    "compile_seconds": 0.47379417599995577,
+    "device": "cuda:0",
+    "device_name": "Tesla T4",
+    "dtype": "float64",
+    "jax": "0.11.1",
+    "jaxpip": "1.0.0",
+    "max_frames_per_call": 32,
+    "torch": "2.14.1+cu130",
+    "torch_cuda": "13.0"
+  },
+  "schema": "pyrpmd.jaxpip-gpu-benchmark/1",
+  "settings": {
+    "allow_unvalidated": false,
+    "batch_repeats": 10,
+    "beads": 8,
+    "device": "cuda:0",
+    "max_frames_per_call": 32,
+    "model_directory": "/content/fit-real",
+    "output": "/content/jaxpip-fix-benchmark.json",
+    "steps": 256,
+    "trajectories": [
+      1,
+      4,
+      8,
+      16
+    ],
+    "warmup_steps": 16
+  }
+}

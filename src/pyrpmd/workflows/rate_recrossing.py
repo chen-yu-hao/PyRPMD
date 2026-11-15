@@ -20,6 +20,9 @@ from .sampling import AndersenSchedule
 
 
 def _parent_task(task):
+    if task["config"].get("sampling", {}).get("engine") == "torch":
+        from .gpu_rate import parent_task
+        return parent_task(task)
     config, system = task["config"], task["system"]
     collision_clock = AndersenSchedule(*_parent_thermostat(config))
     options = task["options"]
@@ -180,6 +183,9 @@ def _parent_task(task):
 
 
 def _child_task(task):
+    if task["config"].get("sampling", {}).get("engine") == "torch":
+        from .gpu_rate import child_task
+        return child_task(task)
     config, system = task["config"], task["system"]
     nsteps = task["child_steps"]
     surface = rate_coordinate(config, system).dividing_surface(task["xi_star"])
@@ -376,6 +382,9 @@ def _child_tasks(parents, config, system, output, options, pmf):
 
 
 def _dispatch_children(tasks, config, dispatch, *, child_task=None):
+    if config.get("sampling", {}).get("engine") == "torch":
+        from .gpu_rate import dispatch_children
+        return dispatch_children(tasks, config, dispatch)
     batch_pairs = checked_integer(_recrossing_spec(config).get("child_batch_pairs", 1),
                                   "recrossing.child_batch_pairs")
     if batch_pairs == 1:
