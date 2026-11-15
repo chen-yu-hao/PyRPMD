@@ -5,6 +5,25 @@ not been published as a new wheel release; no release date or DOI is assigned.
 
 ## Unreleased
 
+- Potentials and Torch workflows: add first-class zero-copy JAX DLPack potential
+  provider (`provider = "jax-dlpack"`, `JAXDLPackPotential`) and device-resident
+  `sampling.engine = "torch"` gas-phase rate workflow (`gpu_rate.py`,
+  `torch_rate.py`, issue #205). `JAXDLPackPotential` enforces `jax_enable_x64`
+  and `float64` precision on `"cpu"` or `"cuda[:index]"` without implicit device
+  or dtype fallback, compiles scalar $E(q)$ or `(energy, forces)` / mapping
+  callables via `jax.jit` / `jax.vmap` / `jax.value_and_grad` (including
+  periodic `(positions, cell, pbc)` and JAX AD strain virials plus
+  `max_frames_per_call` chunking), and hardens PyTorch/XLA DLPack handoff across
+  non-default `torch.cuda.Stream`s (`__dlpack__(stream=...)`, `record_stream`,
+  cross-stream CUDA event ordering, and retained output buffers).
+  `JaxPIPPotential` (`provider = "jaxpip"`) delegates its NumPy and `TorchPES`
+  DLPack paths to `JAXDLPackPotential` while preserving `pyrpmd.jaxpip-fit/1`
+  manifest and bounds checks, and `sampling.engine = "torch"` under
+  `task = "rate"` and `pimd`/`diffusion` accepts `jax-dlpack`, `jaxpip`,
+  `torch`, batched ML providers (`*-batched`, `metatomic`), and analytic
+  `free`/`harmonic`/`periodic_cosine` models while rejecting host-only or
+  `float32` configurations at preflight.
+
 - Subspace correction: reference slices must also be quantum-free. The
   quantum and the RPMD rate are normalized by the quantum and the centroid
   reactant density on the slice; on a slope these differ at O(hbar^2). The

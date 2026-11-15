@@ -60,7 +60,7 @@ def resolve_torch_materials(config, system):
     potential = config.get("potential", {})
     provider = potential.get("provider", potential.get("type", "builtin"))
     analytic = ("free", "harmonic", "periodic_cosine")
-    bridges = ("torch", "mace-batched", "nequip-batched", "fairchem-batched", "deepmd-batched", "metatomic", "cabi", "native")
+    bridges = ("jaxpip", "jax-dlpack", "torch", "mace-batched", "nequip-batched", "fairchem-batched", "deepmd-batched", "metatomic", "cabi", "native")
     if provider == "builtin" or provider in analytic:
         model = potential.get("name", potential.get("model", "harmonic" if provider == "builtin" else provider))
         if model not in analytic:

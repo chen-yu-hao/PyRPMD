@@ -120,6 +120,7 @@ class CudaOutputV1(C.Structure):
 
 
 _UNSET = object()
+_IS_WINDOWS = os.name == "nt"
 _PROCESS_LOCKS = {}
 _LOCK = threading.Lock()
 
@@ -127,6 +128,16 @@ _LOCK = threading.Lock()
 def _lock_for(path):
     with _LOCK:
         return _PROCESS_LOCKS.setdefault(str(path), threading.RLock())
+
+
+def _unload_cdll(lib):
+    """Release the Windows module handle so closed temporary DLLs can be unlinked."""
+    if lib is not None and _IS_WINDOWS:
+        handle = getattr(lib, "_handle", None)
+        if handle:
+            import _ctypes
+
+            _ctypes.FreeLibrary(handle)
 
 
 def _ptr(a):
@@ -264,6 +275,15 @@ class CABIPotential(Potential):
             self.lib = C.CDLL(str(path))
         except OSError as exc:
             raise PotentialError(f"cannot load PES library {path}: {exc}") from exc
+        try:
+            self._init_loaded_library(config, system, abi_version)
+        except BaseException:
+            self.closed = True
+            lib, self.lib = self.lib, None
+            _unload_cdll(lib)
+            raise
+
+    def _init_loaded_library(self, config, system, abi_version):
         self.abi_version = abi_version or (2 if hasattr(self.lib, "pyrpmd_pes_abi_version_v2") else 1)
         version_number = self.abi_version
         prefix = "pyrpmd" if version_number == 2 or hasattr(self.lib, "pyrpmd_pes_abi_version_v1") else "nrpmd"
@@ -904,6 +924,9 @@ class CABIPotential(Potential):
                 # Publish closed before releasing the lock so its acquire()
                 # cannot admit that address after the context was destroyed.
                 self.closed = True
+                lib = getattr(self, "lib", None)
+                self.lib = None
+                _unload_cdll(lib)
 
     def __del__(self):
         try:

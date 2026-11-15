@@ -1,6 +1,7 @@
 """MBAR admission uses reclaimable RAM and respects finite job limits."""
 
 from io import StringIO
+from pathlib import PureWindowsPath
 
 import pytest
 
@@ -17,14 +18,20 @@ def memory_view(monkeypatch, available, files, free=GiB):
         return StringIO(f"MemFree: {free // 1024} kB\nMemAvailable: {available // 1024} kB\n")
 
     def read(path, *args, **kwargs):
+        key = path.as_posix() if hasattr(path, "as_posix") else str(path)
         try:
-            return files[str(path)]
+            return files[key]
         except KeyError:
             raise FileNotFoundError(str(path)) from None
 
     monkeypatch.setattr("builtins.open", meminfo)
     monkeypatch.setattr(rate_pmf.Path, "read_text", read)
-    monkeypatch.setattr(rate_pmf.os, "sysconf", lambda key: 4096 if key == "SC_PAGE_SIZE" else free // 4096)
+    monkeypatch.setattr(
+        rate_pmf.os,
+        "sysconf",
+        lambda key: 4096 if key == "SC_PAGE_SIZE" else free // 4096,
+        raising=False,
+    )
 
 
 def test_reclaimable_cache_does_not_needlessly_serialize_bootstrap(monkeypatch):
@@ -68,5 +75,31 @@ def test_exhausted_cgroup_cannot_be_hidden_by_free_host_ram(monkeypatch):
 def test_portable_fallback_without_proc(monkeypatch):
     memory_view(monkeypatch, None, {})
     assert rate_pmf._available_memory_bytes() == GiB
-    monkeypatch.setattr(rate_pmf.os, "sysconf", lambda key: -1)
+    monkeypatch.setattr(rate_pmf.os, "sysconf", lambda key: -1, raising=False)
     assert rate_pmf._available_memory_bytes() is None
+    monkeypatch.delattr(rate_pmf.os, "sysconf", raising=False)
+    assert rate_pmf._available_memory_bytes() is None
+
+
+def test_cgroup_lookup_normalizes_windows_path_separators(monkeypatch):
+    files = {
+        "/proc/self/cgroup": "0::/jobs/run\n",
+        "/sys/fs/cgroup/jobs/run/memory.max": "max\n",
+        "/sys/fs/cgroup/jobs/memory.max": str(3 * GiB),
+        "/sys/fs/cgroup/jobs/memory.current": str(GiB),
+    }
+
+    class FakeWindowsCgroupPath(PureWindowsPath):
+        def read_text(self, *args, **kwargs):
+            try:
+                return files[self.as_posix()]
+            except KeyError:
+                raise FileNotFoundError(str(self)) from None
+
+    monkeypatch.setattr(
+        "builtins.open",
+        lambda *a, **k: StringIO(f"MemFree: {GiB // 1024} kB\nMemAvailable: {8 * GiB // 1024} kB\n"),
+    )
+    monkeypatch.delattr(rate_pmf.os, "sysconf", raising=False)
+    monkeypatch.setattr(rate_pmf, "Path", FakeWindowsCgroupPath)
+    assert rate_pmf._available_memory_bytes() == 2 * GiB

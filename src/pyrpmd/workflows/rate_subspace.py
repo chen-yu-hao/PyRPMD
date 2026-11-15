@@ -7,7 +7,6 @@ publication gates stay unchanged; a failed correction cannot overwrite a rate.
 
 from __future__ import annotations
 
-from copy import deepcopy
 import json
 import os
 from pathlib import Path
@@ -47,13 +46,14 @@ def validate_saved_rate(config, system, directory):
     if manifest.get("physics_fingerprint") != expected:
         raise InputError("Saved rate inputs do not match the manifest physics fingerprint")
     # Do not weaken the generic restart contract for unrelated workflows.
-    checked = deepcopy(manifest)
-    source = stored.get("_input_path")
-    mutable_input = (source if source and Path(source).suffix.lower() in (".inp", ".toml") else None)
-    checked["files"] = {p: sha for p, sha in manifest.get("files", {}).items()
-                        if p != mutable_input}
-    _validate_resume_identity(config, system, root, checked, referenced_files(config),
-                              fingerprint(scientific_config(config), system))
+    # Pass the full manifest so recorded Windows drive-letter _input_path
+    # entries remain visible to legacy provenance checks while skipping only
+    # content-hash comparison on the mutable .inp/.toml wrapper.
+    _validate_resume_identity(
+        config, system, root, manifest, referenced_files(config),
+        fingerprint(scientific_config(config), system),
+        allow_mutable_input=True,
+    )
     return root
 
 

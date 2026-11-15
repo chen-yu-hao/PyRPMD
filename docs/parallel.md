@@ -23,7 +23,11 @@ listed in [trajectory batching](batched-dynamics.md). For example, eight
 replicas, two trajectory workers and batch size four schedule two groups of
 four replicas. This keeps eight independent trajectories; adding workers or batch
 slots does not increase that count. Cross-trajectory batching requires
-`bead_workers=1` and a provider with an independent-frame contract.
+`bead_workers=1` and a provider with an independent-frame contract. The native
+ONNX provider used by JaxPIP satisfies that contract; in GPU mode its requests
+are submitted as `[K*P,N,3]`, where `P` is the bead count and `K` is the number
+of live trajectories in the worker group. Use `loop_backend="auto"` or
+`"python"` for this path.
 
 `threads_per_rank` controls compiled OpenMP dynamics kernels and requires an actual
 OpenMP-enabled build. Local task batches use `threadpoolctl` to limit loaded BLAS

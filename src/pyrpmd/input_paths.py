@@ -57,6 +57,40 @@ def _initial_ensemble_spec(section, base):
         raise InputError(str(error)) from error
 
 
+def _resolve_potential_files(spec, kind, base):
+    for key in ("library", "manifest", "weights"):
+        if key in spec:
+            spec[key] = _path(base, spec[key])
+    for key in ("model_directory", "basis", "checkpoint"):
+        if isinstance(spec.get(key), (str, Path)):
+            spec[key] = _path(base, spec[key])
+    if "model" in spec and kind not in ("builtin", None):
+        model = spec["model"]
+        if kind == "fairchem":
+            if isinstance(model, str) and (model.startswith((".", "~", "/"))
+                    or Path(model).suffix.lower() in (".pt", ".pth", ".ckpt", ".bin")
+                    or (base / model).is_file()):
+                spec["model"] = _path(base, model)
+        elif kind == "jax-dlpack":
+            if isinstance(model, str):
+                module, separator, attribute = model.partition(":")
+                if separator:
+                    if module.endswith((".py", ".so")):
+                        spec["model"] = _path(base, module) + separator + attribute
+                else:
+                    spec["model"] = _path(base, model)
+            elif isinstance(model, Path):
+                spec["model"] = _path(base, model)
+        elif kind == "torch":
+            if isinstance(model, (str, Path)):
+                spec["model"] = _path(base, model)
+        else:
+            spec["model"] = _path(base, model)
+    for key in ("model", "weights", "reference"):
+        if isinstance(spec.get("params", {}).get(key), str):
+            spec["params"][key] = _path(base, spec["params"][key])
+
+
 def _nested_potential_paths(spec, base, nbeads):
     """Resolve model files at every level of a committee/delta specification."""
     if not isinstance(spec, dict):
@@ -82,20 +116,7 @@ def _nested_potential_paths(spec, base, nbeads):
                 raise InputError("delta potential nbeads must match the input bead count")
             spec["nbeads"] = nbeads
     else:
-        for key in ("library", "manifest", "weights"):
-            if key in spec:
-                spec[key] = _path(base, spec[key])
-        if "model" in spec and kind not in ("builtin", "fairchem"):
-            spec["model"] = _path(base, spec["model"])
-        elif "model" in spec and kind == "fairchem":
-            model = spec["model"]
-            if isinstance(model, str) and (model.startswith((".", "~", "/"))
-                    or Path(model).suffix.lower() in (".pt", ".pth", ".ckpt", ".bin")
-                    or (base / model).is_file()):
-                spec["model"] = _path(base, model)
-        for key in ("model", "weights", "reference"):
-            if isinstance(spec.get("params", {}).get(key), str):
-                spec["params"][key] = _path(base, spec["params"][key])
+        _resolve_potential_files(spec, kind, base)
 
 
 def _cv_model_paths(config, base):

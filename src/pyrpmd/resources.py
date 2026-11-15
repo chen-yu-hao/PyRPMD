@@ -85,6 +85,49 @@ def _torch(devices):
     return report
 
 
+def _jax(devices):
+    report = {"available": False, "devices": list(devices),
+              "hint": "Install the jax extra (or jaxpip extra) with a compatible CPU/CUDA JAX runtime."}
+    try:
+        jax = importlib.import_module("jax")
+        for value in devices:
+            text = str(value)
+            if text == "cpu":
+                if not list(jax.devices("cpu")):
+                    raise ValueError("JAX CPU device is unavailable")
+            elif text == "cuda" or text.startswith("cuda:"):
+                index = 0 if text == "cuda" else int(text.split(":", 1)[1])
+                gpus = list(jax.devices("gpu"))
+                if not any(getattr(d, "local_hardware_id", d.id) == index or d.id == index for d in gpus):
+                    raise ValueError(f"JAX device {value!r} is unavailable")
+            else:
+                raise ValueError(f"JAX float64 workflows require CPU or CUDA, got {value!r}")
+        report["available"] = True
+    except (ImportError, OSError, RuntimeError, ValueError) as error:
+        report["reason"] = f"{type(error).__name__}: {error}"
+    return report
+
+
+def _native_gpu(devices):
+    """Describe native GPU availability without importing a Python ORT wheel.
+
+    The native ONNX provider is loaded by the C ABI library and may be built
+    against a different ONNX Runtime installation than Python.  Resource
+    probing therefore cannot validate its CUDA execution provider without
+    constructing the user's native PES; that check remains explicit during
+    provider initialization.
+    """
+    return {
+        "available": True,
+        "devices": list(devices),
+        "deferred": True,
+        "hint": (
+            "The native provider will validate its CUDA/ONNX Runtime SDK "
+            "when the PES context is created."
+        ),
+    }
+
+
 def resource_report(config):
     """Check selected resources without constructing a potential or launching MPI."""
     from .parallel import execution_plan
@@ -97,13 +140,27 @@ def resource_report(config):
         checks["plumed"] = _plumed(config)
     sampling, potential = config.get("sampling", {}), config.get("potential", {})
     provider = potential.get("provider", potential.get("type", ""))
-    if (sampling.get("engine") == "torch" or provider in ("torch", "mace", "nequip", "fairchem")
-            or str(provider).endswith("-batched") or str(potential.get("device", "")).startswith("cuda")
-            or parallel.get("mode") == "gpu"):
-        devices = [sampling.get("device", potential.get("device", "cpu"))]
-        if parallel.get("mode") == "gpu":
-            devices = [str(value) if str(value).startswith("cuda") else f"cuda:{value}"
-                       for value in parallel.get("devices", [0])]
+    params = potential.get("params", {}) if isinstance(potential, dict) else {}
+    native_gpu = provider in ("cabi", "native") and sampling.get("engine") != "torch" and (
+        parallel.get("mode") == "gpu"
+        or str(potential.get("device", "")).startswith("cuda")
+        or isinstance(params, dict) and str(params.get("device", "")).startswith("cuda")
+    )
+    default_device = "cuda" if provider == "jaxpip" else "cpu"
+    devices = [sampling.get("device", potential.get("device", params.get("device", default_device) if isinstance(params, dict) else default_device))]
+    if parallel.get("mode") == "gpu":
+        devices = [str(value) if str(value).startswith("cuda") else f"cuda:{value}"
+                   for value in parallel.get("devices", [0])]
+    if provider in ("jaxpip", "jax-dlpack"):
+        checks["jax"] = _jax(devices)
+    if native_gpu:
+        checks["native_gpu"] = _native_gpu(devices)
+    elif (sampling.get("engine") == "torch"
+            or provider in ("torch", "mace", "nequip", "fairchem", "metatomic")
+            or str(provider).endswith("-batched")
+            or (provider not in ("jaxpip", "jax-dlpack")
+                and (str(potential.get("device", "")).startswith("cuda")
+                     or parallel.get("mode") == "gpu"))):
         checks["torch"] = _torch(devices)
     return {"available": all(item["available"] for item in checks.values()), "checks": checks}
 
