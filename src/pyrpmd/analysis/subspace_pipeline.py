@@ -37,8 +37,8 @@ from typing import Any, Mapping
 import numpy as np
 
 from .centroid_path import mean_path_from_rate_run, rigid_body_modes
-from .subspace_correction import (CORRECTED_SCHEMA, SubspaceCorrection, correct_rate_run,
-                                  nested_subspace_sensitivity, subspace_correction, validity_gates,
+from .subspace_correction import (CORRECTED_SCHEMA, SubspaceCorrection, correct_rate_run, full_instanton_defect,
+                                  instanton_anchor, nested_subspace_sensitivity, subspace_correction, validity_gates,
                                   validity_policy)
 from .subspace_model import (SubspaceModel, _vibrational_complement, assemble_reaction_path, path_curvature,
                              project_linear_subspace, project_path_subspace, relaxed_path)
@@ -59,6 +59,13 @@ def optimize_instanton(*args, **kwargs):
 
     return _optimize_instanton(*args, **kwargs)
 
+
+def steepest_descent_defect(*args, **kwargs):
+    """Lazy steepest-descent defect helper, kept patchable for pipeline tests."""
+    from ..instanton import steepest_descent_defect as _steepest_descent_defect
+
+    return _steepest_descent_defect(*args, **kwargs)
+
 DEFAULTS = {
     "source": {"rate_run": None},
     # max_steps = None: the continuations run until the asymptote criterion
@@ -73,7 +80,7 @@ DEFAULTS = {
     # model_2d: "rph" (MEP arc length x curvature normal, corner cutting) or
     # "plane" (the fixed plane through the transition state).
     "subspace": {"dimension": "auto", "threshold": 0.5, "environment": "adiabatic", "curvature": "none",
-                 "model_2d": "rph",
+                 "model_2d": "rph", "anchor": "none",
                  "zero_point": "harmonic", "dvr_points": 81, "dvr_half_width": None,
                  "dvr_spacing": None, "hessian_displacement": 5e-3},
     # on_invalid = "stop": a model whose path or bath gate fails is not solved;
@@ -145,9 +152,13 @@ def load_rate_run(directory) -> RateRun:
     from .rate_io import _root
 
     root = _root(directory, "input/resolved.json")
-    config = json.loads((root / "input" / "resolved.json").read_text())
-    system = System.from_dict(json.loads((root / "input" / "system.json").read_text()))
-    preparation = json.loads((root / "preparation.json").read_text()) if (root / "preparation.json").is_file() else {}
+    config = json.loads((root / "input" / "resolved.json").read_text(encoding="utf-8"))
+    system = System.from_dict(json.loads((root / "input" / "system.json").read_text(encoding="utf-8")))
+    preparation = (
+        json.loads((root / "preparation.json").read_text(encoding="utf-8"))
+        if (root / "preparation.json").is_file()
+        else {}
+    )
     from ..workflows.prepare import prepared_system
 
     system = prepared_system(system, preparation)
@@ -161,7 +172,7 @@ def load_rate_run(directory) -> RateRun:
     xi_star = 1.0
     pmf_path = root / "rate_pmf.json"
     if pmf_path.is_file():
-        xi_star = float(json.loads(pmf_path.read_text()).get("xi_star") or 1.0)
+        xi_star = float(json.loads(pmf_path.read_text(encoding="utf-8")).get("xi_star") or 1.0)
     return RateRun(root, config, system, reaction, coordinate, provider, float(config["beta"]),
                    int(config["beads"]), xi_star)
 
@@ -444,6 +455,12 @@ def build_path(run: RateRun, options: Mapping[str, Any]):
     source = str(options.get("source", "mep")).lower()
     if source not in PATH_SOURCES:
         raise ValueError(f"path.source must be one of {sorted(PATH_SOURCES)}")
+    if source == "mep" and (getattr(run, "root", None) is None or not (Path(run.root) / "centroid_path.npz").is_file()):
+        from .subspace_paths import mep_core
+
+        core, details = mep_core(run, options)
+        sampled = {"source": source, "mep": details}
+        return None, None, *_assemble(run, core, options, sampled)
     mean = mean_path_from_rate_run(run.root)
     # The locked mask also feeds the sampled curvature x width diagnostic.
     mask = mean.locked(factor=float(options.get("spread_factor", 2.0)))
@@ -619,15 +636,19 @@ def path_model(run: RateRun, path, options: Mapping[str, Any], *, path_source: s
     # energy of soft fragment rotations, whose noise is of order 0.3 kT at
     # low temperature.
     mismatch = _density_mismatch(arc, energies, run.beta)
+    reactant_default = min(fraction * length, 0.85 * max(float(surface - model_axis[0]), 0.0))
     reactant = _reactant_reference(model_axis, np.interp(model_axis, arc, energies), surface,
-                                   fraction * length, 0.05 * length, run.beta,
+                                   reactant_default, min(0.05 * length, 0.1 * max(float(surface - model_axis[0]), 0.0)),
+                                   run.beta,
                                    float(options.get("reference_kt", 0.3)),
                                    mismatch=np.interp(model_axis, arc, mismatch),
                                    density_tolerance=float(options.get("reference_density_tolerance", 1e-2)))
     reference = reactant["reference"]
     model = type(model)(model.axes, model.values, model.masses, model.dividing_surface, model.reactant,
-                        reference, dict(model.provenance, reactant_reference=reactant))
-    product_cap = _product_cap(model_axis, model.values, surface, fraction * length,
+                        reference, dict(model.provenance, reactant_reference=reactant),
+                        model.function, model.gradient, model.metric, model.bare_values)
+    product_default = min(fraction * length, 0.85 * max(float(model_axis[-1] - surface), 0.0))
+    product_cap = _product_cap(model_axis, model.values, surface, product_default,
                                float(options.get("product_drop_kt", 15.0)) / run.beta)
     if product_cap["width"] < fraction * length:
         # The product channel ends in a well: absorb from where it is committed.
@@ -751,6 +772,11 @@ def _saved_model_matches_options(saved: SubspaceCorrection, dimension: int,
     """
     construction = dict(saved.model.get("construction", {}))
     if int(saved.dimension) != int(dimension):
+        return False
+    expected_anchor = subspace_options.get("anchor", "none")
+    diagnostics = getattr(saved, "diagnostics", None) or {}
+    saved_anchor = "skeleton" if isinstance(diagnostics.get("instanton_anchor"), Mapping) else "none"
+    if saved_anchor != expected_anchor:
         return False
     if dimension == 1:
         expected_environment = subspace_options.get("environment", "adiabatic")
@@ -914,8 +940,18 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
     padding = options.get("padding")
     if padding is None:
         padding = 40.0
-    lo = plane[inside].min(axis=0) - padding
-    hi = plane[inside].max(axis=0) + padding
+    # The absorbers run to box_lo / box_hi, which can lie beyond the ends of
+    # the path (a reference slice near the reactant end): continue the path
+    # straight along its end directions, for the box and for the arc length
+    # the absorber is keyed to.
+    out_start = plane[0] - plane[1]
+    out_start /= np.linalg.norm(out_start)
+    out_end = plane[-1] - plane[-2]
+    out_end /= np.linalg.norm(out_end)
+    ends = np.vstack([plane[0] + max(arc[0] - box_lo, 0.0) * out_start,
+                      plane[-1] + max(box_hi - arc[-1], 0.0) * out_end])
+    lo = np.vstack([plane[inside], ends]).min(axis=0) - padding
+    hi = np.vstack([plane[inside], ends]).max(axis=0) + padding
     spacing = options.get("spacing_2d")
     floor_guess = float(max(energies[k_ref], energies[-1]))
     if spacing is None:
@@ -956,19 +992,30 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
     provenance = dict(fine_model.provenance, plane_basis=[e0.tolist(), e1.tolist()], refinement=refinement, model_2d="plane",
                       **_model_provenance(path_info, validity))
     rpmd_model = type(fine_model)(fine_model.axes, fine_model.values, fine_model.masses, 0.0, "asymptotic",
-                                  float(reference_point[0]), provenance)
+                                  float(reference_point[0]), provenance,
+                                  bare_values=fine_model.bare_values)
     model = type(fine_model)(tuple(a[::refinement] for a in fine_model.axes),
                              fine_model.values[::refinement, ::refinement], fine_model.masses, 0.0, "asymptotic",
-                             float(reference_point[0]), provenance)
+                             float(reference_point[0]), provenance,
+                             bare_values=(None if fine_model.bare_values is None
+                                          else fine_model.bare_values[::refinement, ::refinement]))
     tree = cKDTree(plane)
     width_lo, width_hi = absorb_lo - box_lo, box_hi - absorb_hi
     strength = 30.0 * np.sqrt(2.0 / run.beta)
 
     def absorber(points):
         _, index = tree.query(points)
-        s = arc[index]
+        s = arc[index].copy()
+        # Beyond the path ends the arc length continues along the end directions
+        # (it used to stop at the end point, cutting the absorber ramp short:
+        # reactant waves reflected off the grid edge, k_QM 22% low on the
+        # curved-valley test model).
+        first, last = index == 0, index == len(arc) - 1
+        s[first] = arc[0] - np.maximum((points[first] - plane[0]) @ out_start, 0.0)
+        s[last] = arc[-1] + np.maximum((points[last] - plane[-1]) @ out_end, 0.0)
         eps = np.zeros(len(points))
-        left, right = s < absorb_lo, s > absorb_hi
+        left = (s < absorb_lo) & (points[:, 0] < -float(spacing[0]))
+        right = (s > absorb_hi) & (points[:, 0] > float(spacing[0]))
         eps[left] = strength / width_lo * ((absorb_lo - s[left]) / width_lo) ** 2
         eps[right] = strength / width_hi * ((s[right] - absorb_hi) / width_hi) ** 2
         return eps
@@ -1011,6 +1058,26 @@ def _grid_reference(axis0, reference):
     """
     axis0 = np.asarray(axis0, dtype=float)
     return float(axis0[int(np.argmin(np.abs(axis0 - float(reference))))])
+
+
+def _barrier_peak_index(energies, arc=None, target_arc=None) -> int:
+    """Interior barrier index by topographic prominence (handles submerged barriers)."""
+    arr = np.asarray(energies, dtype=float)
+    if len(arr) < 3:
+        return int(np.argmax(arr))
+    prom = arr - np.maximum(np.minimum.accumulate(arr), np.minimum.accumulate(arr[::-1])[::-1])
+    peaks = [
+        i for i in range(1, len(arr) - 1)
+        if arr[i] >= arr[i - 1] and arr[i] >= arr[i + 1]
+        and (arr[i] > arr[i - 1] or arr[i] > arr[i + 1])
+    ]
+    if not peaks:
+        return int(np.argmax(arr))
+    max_prom = max(float(prom[i]) for i in peaks)
+    prominent = [i for i in peaks if float(prom[i]) >= max(1e-6, 0.05 * max_prom)] or peaks
+    if arc is not None and target_arc is not None:
+        return min(prominent, key=lambda i: abs(float(arc[i]) - float(target_arc)))
+    return max(prominent, key=lambda i: float(prom[i]))
 
 
 def _rph_product_start(energies, k_top, beta, drop_kt, reference_kt):
@@ -1060,7 +1127,11 @@ def rph_model(run: RateRun, path, options: Mapping[str, Any]):
     environment = options.get("environment", "adiabatic")
     arc = _arc(path, masses)
     energies = np.array([run.energy(p) for p in path])
-    k_top = int(np.argmax(energies))
+    try:
+        div_arc, _ = _dividing_arc(run, path, arc)
+    except Exception:
+        div_arc = None
+    k_top = _barrier_peak_index(energies, arc=arc, target_arc=div_arc)
     if not 0 < k_top < len(path) - 1:
         raise ValueError("the RPH model needs a barrier inside the path")
     free = _free_channel(energies[:k_top], _density_mismatch(arc, energies, beta)[:k_top], beta,
@@ -1104,6 +1175,12 @@ def rph_model(run: RateRun, path, options: Mapping[str, Any]):
     positive = bath["normal_curvature"][bath["normal_curvature"] > 0]
     sigma = float(np.min(1.0 / np.sqrt(2.0 * np.sqrt(positive)))) if positive.size else 5.0
     half_width = max(padding, 6.0 * float(np.max(1.0 / np.sqrt(2.0 * np.sqrt(positive)))) if positive.size else padding)
+    needed_extend = max(0.0, -box_lo, box_hi - float(arc[-1])) + 1.5 * half_width
+    if needed_extend > extend + 1e-9:
+        extend = needed_extend
+        development = develop_path(path, masses, rigid_body=rigid, weights=weights, extend=extend)
+        development.orient(top_arc, axis)
+        inside = (development.s >= box_lo) & (development.s <= box_hi)
     emax = float(np.ptp(energies[(arc >= box_lo) & (arc <= box_hi)])) + _truncation_offset(options, beta)
     spacing = options.get("spacing_2d")
     if spacing is None:
@@ -1126,8 +1203,9 @@ def rph_model(run: RateRun, path, options: Mapping[str, Any]):
     reference_point[0, 0] = _grid_reference(axes[0][::refinement], reference_point[0, 0])
     floor_guess = float(max(energies[k_ref], energies[-1]))
     skip = floor_guess + 2.0 * _truncation_offset(options, beta) + 0.05
-    values = project_rph_values(run.energy, development, axes, bath, arc_range=(box_lo, box_hi),
-                                half_width=half_width, wall_energy=skip + 1.0)
+    values, bare = project_rph_values(run.energy, development, axes, bath, arc_range=(box_lo, box_hi),
+                                      half_width=half_width, wall_energy=skip + 1.0, return_bare=True)
+    bare_used = bare if environment != "frozen" else None
     provenance = dict(environment=environment, model_2d="rph", refinement=refinement,
                       bath_stable=bath["bath_stable"], significant_unstable=bath["significant_unstable"],
                       unstable_characters=bath["unstable_characters"],
@@ -1136,16 +1214,21 @@ def rph_model(run: RateRun, path, options: Mapping[str, Any]):
                       captured_curvature=development.captured_curvature,
                       **_model_provenance(path_info, validity))
     rpmd_model = SubspaceModel(tuple(axes), values, (1.0, 1.0), float(surface_point[0, 0]), "asymptotic",
-                               float(reference_point[0, 0]), provenance)
+                               float(reference_point[0, 0]), provenance, bare_values=bare_used)
     model = SubspaceModel(tuple(a[::refinement] for a in axes), values[::refinement, ::refinement], (1.0, 1.0),
-                          float(surface_point[0, 0]), "asymptotic", float(reference_point[0, 0]), provenance)
+                          float(surface_point[0, 0]), "asymptotic", float(reference_point[0, 0]), provenance,
+                          bare_values=None if bare_used is None else bare_used[::refinement, ::refinement])
     width_lo, width_hi = absorb_lo - box_lo, box_hi - absorb_hi
     strength = 30.0 * np.sqrt(2.0 / beta)
 
+    div_x = float(surface_point[0, 0])
+
     def absorber(points):
-        s_point, _ = development.locate(points)
-        eps = np.zeros(len(points))
-        left, right = s_point < absorb_lo, s_point > absorb_hi
+        pts = np.atleast_2d(np.asarray(points, dtype=float))
+        s_point, _ = development.locate(pts)
+        eps = np.zeros(len(pts))
+        left = (s_point < absorb_lo) & (pts[:, 0] < div_x - float(spacing[0]))
+        right = (s_point > absorb_hi) & (pts[:, 0] > div_x + float(spacing[0]))
         eps[left] = strength / width_lo * np.minimum((absorb_lo - s_point[left]) / width_lo, 1.0) ** 2
         eps[right] = strength / width_hi * np.minimum((s_point[right] - absorb_hi) / width_hi, 1.0) ** 2
         return eps
@@ -1183,7 +1266,7 @@ def pipeline_identity(root, options):
 
     names = ("input/resolved.json", "input/system.json", "preparation.json", "centroid_path.npz", "rate_pmf.json")
     files = {name: file_sha256(root / name) for name in names if (root / name).is_file()}
-    saved = json.loads((root / "input" / "resolved.json").read_text())
+    saved = json.loads((root / "input" / "resolved.json").read_text(encoding="utf-8"))
     numerical = {k: v for k, v in options.items()
                  if k not in {"enabled", "mode", "reuse", "output", "source"}}
     # Hash the implementations too: a source checkout can change without a
@@ -1202,7 +1285,7 @@ def _read_specification(specification):
     base = None
     if isinstance(specification, (str, Path)):
         path = Path(specification)
-        text = path.read_text()
+        text = path.read_text(encoding="utf-8")
         if path.suffix.lower() == ".json":
             spec = json.loads(text)
         else:
@@ -1215,25 +1298,37 @@ def _read_specification(specification):
     return _merge(DEFAULTS, spec), base
 
 
-def _prepare_pipeline(options, base, reuse_key):
-    """Open the saved run and bind its reuse identity before any model is built."""
-    source = options["source"].get("rate_run")
-    if not source:
-        raise ValueError("source.rate_run is required")
-    source = Path(source)
-    if base is not None and not source.is_absolute():
-        source = base / source
-    run = load_rate_run(source)
+def _prepare_pipeline(options, base, reuse_key, run=None):
+    """Open the saved run (or bind an in-memory ``run``) before any model is built."""
+    owned = run is None
+    if owned:
+        source = options["source"].get("rate_run")
+        if not source:
+            raise ValueError("source.rate_run is required")
+        source = Path(source)
+        if base is not None and not source.is_absolute():
+            source = base / source
+        run = load_rate_run(source)
     out_dir = options["output"].get("directory")
-    out_dir = Path(out_dir) if out_dir else run.root / "subspace"
+    if out_dir:
+        out_dir = Path(out_dir)
+    elif getattr(run, "root", None) is not None:
+        out_dir = Path(run.root) / "subspace"
+    else:
+        raise ValueError("output.directory is required when running from an in-memory RateRun")
     if base is not None and not out_dir.is_absolute():
         out_dir = base / out_dir
     try:
         if reuse_key is None:
-            reuse_key = pipeline_identity(run.root, options)
-        return {"run": run, **_build_cases(run, out_dir, options, base, reuse_key)}
+            root_path = getattr(run, "root", None)
+            if root_path is not None and (Path(root_path) / "input" / "resolved.json").is_file():
+                reuse_key = pipeline_identity(Path(root_path), options)
+            else:
+                reuse_key = "in_memory_run"
+        return {"run": run, "owned_run": owned, **_build_cases(run, out_dir, options, base, reuse_key)}
     except BaseException:
-        _close_run(run)
+        if owned:
+            _close_run(run)
         raise
 
 
@@ -1247,10 +1342,11 @@ def _build_cases(run, out_dir, options, base, reuse_key):
     np.save(out_dir / "path.npy", path)
     threshold = float(options["subspace"]["threshold"])
     sampled_cw = None
-    try:
-        sampled_cw = mean.curvature_width(mask, threshold=threshold)
-    except ValueError as error:
-        sampled_cw = {"error": str(error)}
+    if mean is not None:
+        try:
+            sampled_cw = mean.curvature_width(mask, threshold=threshold)
+        except ValueError as error:
+            sampled_cw = {"error": str(error)}
     static_cw = _static_curvature_width(run, path, threshold)
     sampled_max = sampled_cw.get("maximum", 0.0) if isinstance(sampled_cw, dict) else 0.0
     verdict = 2 if max(static_cw["maximum"], sampled_max or 0.0) > threshold else 1
@@ -1297,16 +1393,19 @@ def _build_cases(run, out_dir, options, base, reuse_key):
     # With an execution table the task scheduler owns reuse through its own
     # identity-checked checkpoints; saved C_S records are reused only on the
     # ordinary sequential route.
+    previous_anchor = None
     if options["output"].get("reuse") and options.get("execution") is None:
         previous = {}
         report_path = out_dir / "subspace_pipeline.json"
         if report_path.is_file():
             try:
-                loaded = json.loads(report_path.read_text())
+                loaded = json.loads(report_path.read_text(encoding="utf-8"))
                 previous = loaded if isinstance(loaded, dict) else {}
             except (OSError, ValueError):
                 pass  # A damaged report is not reusable evidence.
         matched = reuse_key is None or previous.get("reuse_key") == reuse_key
+        if matched and isinstance(previous.get("instanton_anchor"), Mapping):
+            previous_anchor = previous["instanton_anchor"]
         for d in list(dimensions) if matched else []:
             record = out_dir / f"C_S_{d}d.json"
             if not record.is_file():
@@ -1360,9 +1459,9 @@ def _build_cases(run, out_dir, options, base, reuse_key):
             directory = base / directory
         execution["checkpoint_dir"] = str(directory)
     return dict(out_dir=out_dir, nbeads=nbeads, options=options, cases=cases, execution=execution,
-                corrections=corrections, models=models, path_info=path_info, sampled_cw=sampled_cw,
+                corrections=corrections, models=models, path=path, path_info=path_info, sampled_cw=sampled_cw,
                 static_cw=static_cw, verdict=verdict, reuse_key=reuse_key, rejected=rejected,
-                escalation=escalation, capacity=capacity)
+                escalation=escalation, capacity=capacity, previous_anchor=previous_anchor)
 
 
 def _solver_plan(dimension, case, memory_limit_mb=None):
@@ -1425,6 +1524,57 @@ def _close_run(run):
         close()
 
 
+def _full_instanton_defect(run, path, options, nbeads: int) -> dict:
+    """Compute ``eps_SD(H)`` for ``run`` at ``run.beta`` for instanton anchoring."""
+    path_opts = dict(options.get("path") or {})
+    subspace_opts = dict(options.get("subspace") or {})
+    path_info = options.get("_path_info") if isinstance(options.get("_path_info"), Mapping) else {}
+    beads = max(8, int(path_opts.get("instanton_beads") or max(int(nbeads), 64)))
+    if beads % 2:
+        beads += 1
+    pts = np.asarray(path, dtype=float)
+    if "mep" in path_info and "core_slice" in path_info:
+        saddle_guess = pts[int(path_info["core_slice"][0]) + 1]
+    elif len(pts) >= 3:
+        energies = np.array([run.energy(p) for p in pts])
+        arc = _arc(pts, run.cartesian_masses)
+        try:
+            div_arc, _ = _dividing_arc(run, pts, arc)
+        except Exception:
+            div_arc = None
+        k_peak = _barrier_peak_index(energies, arc=arc, target_arc=div_arc)
+        if 0 < k_peak < len(pts) - 1:
+            saddle_guess = pts[k_peak]
+        else:
+            saddle_guess = np.asarray(run.system.geometry, dtype=float).ravel()
+    else:
+        saddle_guess = np.asarray(run.system.geometry, dtype=float).ravel()
+
+    rigid = _rigid(run)
+    provider = getattr(run, "provider", None)
+    gradient_batch = None
+    if rigid and provider is not None and callable(getattr(provider, "evaluate", None)):
+        def gradient_batch(q_b):
+            q_arr = np.asarray(q_b, dtype=float)
+            res = provider.evaluate(q_arr.reshape(len(q_arr), -1, 3))
+            return -np.asarray(res.forces, dtype=float).reshape(len(q_arr), -1)
+
+    return full_instanton_defect(
+        run.energy,
+        run.gradient,
+        run.cartesian_masses,
+        run.beta,
+        saddle_guess,
+        rigid_body=rigid,
+        refine=True,
+        nbeads=beads,
+        gradient_batch=gradient_batch,
+        hessian_displacement=float(subspace_opts.get("hessian_displacement", 5e-3)),
+        ts_gradient_tolerance=float(path_opts.get("ts_gradient_tolerance", 1e-5)),
+        max_iterations=int(path_opts.get("instanton_max_iterations", 300)),
+    )
+
+
 def _finish_pipeline(state, computed, apply):
     from ..io import file_sha256, write_json
 
@@ -1434,6 +1584,37 @@ def _finish_pipeline(state, computed, apply):
     verdict, reuse_key = state["verdict"], state["reuse_key"]
     rejected, escalation = state.get("rejected", {}), state.get("escalation")
     capacity, solve_failures = state.get("capacity", {}), state.get("solve_failures", {})
+    anchor_mode = options["subspace"].get("anchor", "none")
+    if anchor_mode not in ("none", "skeleton"):
+        raise ValueError("subspace.anchor must be 'none' or 'skeleton'")
+    anchor_report = None
+    if anchor_mode == "skeleton":
+        anchor_beads = max(8, int((options.get("path") or {}).get("instanton_beads") or max(int(nbeads), 64)))
+        if anchor_beads % 2:
+            anchor_beads += 1
+        full_defect = None
+        by_dimension = {
+            str(d): dict(c.diagnostics["instanton_anchor"])
+            for d, c in corrections.items()
+            if isinstance(c.diagnostics.get("instanton_anchor"), Mapping)
+        }
+        cases = state.get("cases", {})
+        for dimension, correction in list(computed.items()):
+            if not correction.valid:
+                continue
+            if full_defect is None:
+                full_defect = _full_instanton_defect(run, state["path"], dict(options, _path_info=path_info), anchor_beads)
+            case = cases.get(dimension, {})
+            ref_model = case.get("rpmd_model") if case.get("rpmd_model") is not None else case.get("model")
+            anchored = instanton_anchor(correction, full_defect, ref_model, nbeads=max(anchor_beads, 128))
+            computed[dimension] = anchored["anchored_correction"]
+            by_dimension[str(dimension)] = {k: v for k, v in anchored.items() if k != "anchored_correction"}
+        if full_defect is None and isinstance(state.get("previous_anchor"), Mapping):
+            prev_full = state["previous_anchor"].get("full_defect")
+            if isinstance(prev_full, Mapping):
+                full_defect = dict(prev_full)
+        anchor_report = {"mode": anchor_mode, "nbeads": anchor_beads, "full_defect": full_defect,
+                         "dimensions": by_dimension}
     for dimension, correction in computed.items():
         correction.write(out_dir / f"C_S_{dimension}d.json")
         corrections[dimension] = correction
@@ -1462,7 +1643,7 @@ def _finish_pipeline(state, computed, apply):
     if chosen is None and target.is_file():
         # A corrected rate from an earlier run must not outlive the model it came from.
         try:
-            stale = json.loads(target.read_text()).get("schema") == CORRECTED_SCHEMA
+            stale = json.loads(target.read_text(encoding="utf-8")).get("schema") == CORRECTED_SCHEMA
         except (OSError, ValueError, AttributeError):
             stale = False
         if stale:
@@ -1505,7 +1686,7 @@ def _finish_pipeline(state, computed, apply):
         "warnings": warnings,
         # Keep the saved quantum/RPMD curves when reusing a scalar correction
         # object (SubspaceCorrection.read deliberately loads only its summary).
-        "corrections": {str(d): json.loads((out_dir / f"C_S_{d}d.json").read_text()) for d in corrections},
+        "corrections": {str(d): json.loads((out_dir / f"C_S_{d}d.json").read_text(encoding="utf-8")) for d in corrections},
         "nested_sensitivity": sensitivity,
         "applied_dimension": None if chosen is None else int(chosen), "applied_dimension_reason": reason,
         "corrected_rate": corrected,
@@ -1514,12 +1695,14 @@ def _finish_pipeline(state, computed, apply):
         "correction_files": {f"C_S_{d}d.json": file_sha256(out_dir / f"C_S_{d}d.json") for d in corrections},
         "options": {k: v for k, v in options.items()},
     }
+    if anchor_report is not None:
+        report["instanton_anchor"] = anchor_report
     report = _json_safe(report)
     write_json(out_dir / "subspace_pipeline.json", report)
     return report
 
 
-def run_subspace_pipeline(specification, *, apply=True, reuse_key=None) -> dict:
+def run_subspace_pipeline(specification, *, apply=True, reuse_key=None, run=None) -> dict:
     """Run from a mapping or TOML/JSON; ``apply=False`` writes factors only.
 
     Cached factors are tied to source data, numerical settings and solver
@@ -1538,11 +1721,11 @@ def run_subspace_pipeline(specification, *, apply=True, reuse_key=None) -> dict:
     state = {}
 
     def prepare():
-        state.update(_prepare_pipeline(options, base, reuse_key))
+        state.update(_prepare_pipeline(options, base, reuse_key, run=run))
         return state["execution"]
 
     def release():
-        if "run" in state:
+        if "run" in state and state.get("owned_run", True):
             _close_run(state["run"])
 
     try:
@@ -1564,7 +1747,8 @@ def run_subspace_pipeline(specification, *, apply=True, reuse_key=None) -> dict:
                 return computed
 
             computed = call(compute)
-        return call(_finish_pipeline, state, computed, apply)
+        effective_apply = bool(apply and (run is None or getattr(run, "root", None) is not None))
+        return call(_finish_pipeline, state, computed, effective_apply)
     finally:
         call(release)
 

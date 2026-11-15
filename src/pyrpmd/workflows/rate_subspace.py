@@ -155,7 +155,7 @@ def postprocess_rate_subspace(config, directory, *, strict=False):
         specification = {
             "source": {"rate_run": str(root)},
             "subspace": {k: options[k] for k in ("dimension", "threshold", "environment", "curvature",
-                         "zero_point", "dvr_points", "dvr_half_width", "dvr_spacing",
+                         "model_2d", "anchor", "zero_point", "dvr_points", "dvr_half_width", "dvr_spacing",
                          "hessian_displacement") if k in options},
             "validity": options.get("validity", {}),
             "path": options["path"], "quantum": options["quantum"], "rpmd": options["rpmd"],

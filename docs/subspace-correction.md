@@ -406,6 +406,9 @@ The command then runs:
    wavelengths past the product absorber; axis 0 bisects the path direction at the
    reference slice and at the barrier, and the path must advance along it through the box.
    The default spacing is a third of the narrowest width of the `n` mode on both axes.
+   Validated against exact full-dimensional quantum and RPMD rates on 2D, 3D and rotated 8D
+   model potentials ([docs/validation/2026-11-13-subspace-rph-2d](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/2026-11-13-subspace-rph-2d/README.md)): both 2D
+   models are within 3.3% of the exact correction, the 1D model 4–14% below it.
 
    `"plane"` is the plane through the transition state spanned by the rate dividing-surface
    normal (mass-weighted `grad xi`, so the 2D dividing line is the rate's `xi = 1` surface)
@@ -659,7 +662,11 @@ a few percent. Two checks decide:
 (zero-point energy, imaginary-time corner cutting), which curvature × width measures, cancel from
 the transfer error; what remains is the environment's influence on RPMD's dynamical error. It
 also gives the first-order-exact `environment="free_energy"` projection and the finite-bead
-factor `harmonic_bead_factor` for environment modes.
+factor `harmonic_bead_factor` for environment modes. [The instanton anchor](subspace-instanton-anchor.md)
+derives the closed-form steepest-descent part $\varepsilon_{\mathrm{SD}}=2\pi/(\beta\hbar\eta_1)$
+of the RPMD defect and anchors $C_S$ to the full-system instanton relative to the bare-potential
+skeleton $S^0$ (`SubspaceModel.skeleton()`, `subspace_instanton_defect`, `instanton_anchor`, and
+`anchor = "skeleton"` in the pipeline).
 
 ## Numerical parameters to converge
 
@@ -705,7 +712,7 @@ invariant to the subspace model's absolute rate.
 
 The native `[rate.subspace_correction]` table also accepts the path-model
 selectors `curvature = "none" | "small"`, `model_2d = "rph" | "plane"` (the
-2D model, default `"rph"`) and
+2D model, default `"rph"`), `anchor = "none" | "skeleton"` (default `"none"`) and
 `zero_point = "harmonic" | "rph" | "dvr"`, plus `dvr_points`,
 `dvr_half_width` and `dvr_spacing`. Its `[rate.subspace_correction.path]`
 table accepts `source = "centroid" | "centroid_all" | "bead_weighted" |

@@ -1,0 +1,56 @@
+{
+ "model": "curved_3d",
+ "dimension": 3,
+ "temperature_K": 300.0,
+ "nbeads": 32,
+ "beta": 1052.5834160132904,
+ "rpmd_options": {
+  "windows": 48,
+  "walkers": 32,
+  "burn_in": 200,
+  "sweeps": 800,
+  "trajectories": 1024,
+  "seed": 11
+ },
+ "spacing_2d": [
+  2.47,
+  2.47
+ ],
+ "truncation_kt": 30.0,
+ "truncation_min": 0.055,
+ "reference_density_tolerance": null,
+ "subspace": {
+  "plane": {
+   "shape": [
+    286,
+    38
+   ],
+   "captured_curvature": null,
+   "retained_points": 8508,
+   "bath_stable": null,
+   "quantum": {
+    "rate": 1.3365875622275063e-08,
+    "method": "sylvester",
+    "seconds": 1450.6896278858185,
+    "retained": 8508
+   },
+   "rpmd": {
+    "rate": 1.1041182224204669e-08,
+    "log_standard_error": 0.007566742753460624,
+    "transmission": 0.9775905716027301,
+    "seconds": 98.4134418964386
+   },
+   "C_S": 1.2105475075824907,
+   "log_standard_error": 0.007566742753460624
+  }
+ },
+ "path": {
+  "points": 97,
+  "seconds": 0.13552546501159668,
+  "saddle_iterations": 12,
+  "saddle_negative_modes": 1,
+  "imaginary_frequency_cm": 1490.8087052942528,
+  "reactant": "asymptote_converged",
+  "product": "asymptote_converged"
+ }
+}

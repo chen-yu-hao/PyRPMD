@@ -99,10 +99,13 @@ from .subspace_execution import subspace_corrections
 from .subspace_correction import (
     SubspaceCorrection,
     apply_subspace_correction,
+    full_instanton_defect,
     harmonic_bead_factor,
     correct_rate_run,
+    instanton_anchor,
     nested_subspace_sensitivity,
     subspace_correction,
+    subspace_instanton_defect,
 )
 
 __all__ = [
@@ -183,10 +186,13 @@ __all__ = [
     "ring_polymer_rate",
     "SubspaceCorrection",
     "apply_subspace_correction",
+    "full_instanton_defect",
     "harmonic_bead_factor",
     "correct_rate_run",
+    "instanton_anchor",
     "nested_subspace_sensitivity",
     "subspace_correction",
+    "subspace_instanton_defect",
     "subspace_corrections",
     "CentroidAccumulator",
     "RingPolymerMeanPath",

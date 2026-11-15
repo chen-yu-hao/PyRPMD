@@ -631,6 +631,39 @@ def optimize_instanton(potential, masses, temperature_kelvin, initial_path, *,
     return result
 
 
+def steepest_descent_rpmd_defect(result):
+    """Steepest-descent ratio of the instanton rate to the RPMD rate.
+
+    Below the crossover temperature both rates can be evaluated by steepest
+    descent about the instanton.  Every factor is common to the two except
+    that of the unstable mode (Richardson & Althorpe, JCP 131, 214106), so
+
+        k_instanton / k_RPMD = 2 pi / (beta hbar eta_1),
+
+    where ``-eta_1^2`` is the negative eigenvalue of the mass-weighted Hessian
+    of the ring-polymer potential at the instanton.  ``eta_1`` reaches the
+    barrier frequency at the crossover, where the ratio is one, and falls
+    below the first Matsubara frequency ``2 pi / (beta hbar)`` under it.
+    """
+    if not isinstance(result, InstantonResult):
+        raise TypeError("result must be an InstantonResult")
+    if not result.converged or result.negative_modes != 1:
+        raise InstantonError("the steepest-descent RPMD defect requires a converged instanton "
+                             "with exactly one negative mode")
+    lowest = float(result.hessian_eigenvalues[0])
+    if not lowest < 0:
+        raise InstantonError("the lowest action-Hessian eigenvalue is not negative")
+    beta = 1.0 / (KB_AU * result.temperature_kelvin)
+    nbeads = len(result.path_bohr)
+    unstable = math.sqrt(-lowest * nbeads / beta)
+    matsubara = 2 * math.pi / beta
+    log_defect = math.log(matsubara / unstable)
+    return {"unstable_frequency_au": unstable, "matsubara_frequency_au": matsubara,
+            "log_defect": log_defect, "defect": math.exp(log_defect), "nbeads": nbeads,
+            "temperature_kelvin": float(result.temperature_kelvin),
+            "scope": "steepest_descent_part_of_ln_k_qm_over_k_rpmd"}
+
+
 def instanton_rate_1d(potential, masses, temperature_kelvin, initial_path, *,
                      active_mask, reactant_partition, normalization="dimensionless",
                      beta_relative_step=0.01, **optimizer_options):
@@ -701,4 +734,103 @@ def instanton_rate_1d(potential, masses, temperature_kelvin, initial_path, *,
         "limitations": ["one active Cartesian degree of freedom",
                         "semiclassical, nonuniform near crossover",
                         "bead/PES/partition convergence must be checked separately"],
+    }
+
+
+def steepest_descent_defect(result, *, beta=None, temperature_kelvin=None, raise_on_invalid=True):
+    """Steepest-descent RPMD defect ``eps_SD = 2*pi / (beta*hbar*eta_1)`` (hbar=1).
+
+    In ``RingPolymerAction`` the mass-weighted action Hessian eigenvalues
+    ``result.hessian_eigenvalues`` equal ``(beta/P)`` times the eigenvalues of
+    the ring-polymer potential Hessian ``U_P`` (in atomic units), so the
+    unstable-mode frequency is ``eta_1 = sqrt(-(P/beta) * lambda_0)``.
+
+    Passing ``result=None`` represents ``T >= T_c`` (collapsed ring polymer),
+    where ``eps_SD = 1`` and ``ln eps_SD = 0``; either ``beta`` (hartree^-1) or
+    ``temperature_kelvin`` is then required to record the temperature.
+    """
+    if not isinstance(raise_on_invalid, (bool, np.bool_)):
+        raise ValueError("raise_on_invalid must be boolean")
+    beta_val = None if beta is None else _positive(beta, "beta")
+    temp_val = None if temperature_kelvin is None else _positive(temperature_kelvin, "temperature_kelvin")
+    if beta_val is not None and temp_val is not None:
+        if not math.isclose(beta_val, 1.0 / (KB_AU * temp_val), rel_tol=1e-9, abs_tol=0.0):
+            raise ValueError("beta and temperature_kelvin do not describe the same temperature")
+    if result is None:
+        if beta_val is None and temp_val is None:
+            raise ValueError("beta or temperature_kelvin is required when result is None")
+        if beta_val is None:
+            beta_val = 1.0 / (KB_AU * temp_val)
+        if temp_val is None:
+            temp_val = 1.0 / (KB_AU * beta_val)
+        return {
+            "regime": "above_crossover",
+            "below_crossover": False,
+            "beta": float(beta_val),
+            "temperature_kelvin": float(temp_val),
+            "factor": 1.0,
+            "log_factor": 0.0,
+            "eta1": None,
+            "nbeads": None,
+            "negative_modes": 0,
+            "valid": True,
+            "failure_reason": None,
+        }
+    if not isinstance(result, InstantonResult):
+        raise TypeError("result must be an InstantonResult or None")
+    res_temp = _positive(result.temperature_kelvin, "result.temperature_kelvin")
+    res_beta = 1.0 / (KB_AU * res_temp)
+    if beta_val is not None and not math.isclose(beta_val, res_beta, rel_tol=1e-6, abs_tol=0.0):
+        raise ValueError(f"beta {beta_val:.12g} does not match result beta {res_beta:.12g}")
+    if temp_val is not None and not math.isclose(temp_val, res_temp, rel_tol=1e-6, abs_tol=0.0):
+        raise ValueError(
+            f"temperature_kelvin {temp_val:.12g} does not match result.temperature_kelvin {res_temp:.12g}"
+        )
+    p = int(len(result.path_bohr))
+    eigs = np.asarray(result.hessian_eigenvalues, dtype=float)
+    lambda0 = float(eigs[0]) if eigs.size else float("nan")
+    reasons = []
+    if not result.converged:
+        reasons.append(result.message or "instanton orbit is not converged")
+    if int(result.negative_modes) != 1:
+        reasons.append(f"expected one physical negative mode, found {int(result.negative_modes)}")
+    if not (np.isfinite(lambda0) and lambda0 < 0.0):
+        reasons.append("lowest action-Hessian eigenvalue is not negative")
+    if reasons:
+        reason = "; ".join(reasons)
+        if raise_on_invalid:
+            raise InstantonError(reason)
+        return {
+            "regime": "below_crossover",
+            "below_crossover": True,
+            "beta": float(res_beta),
+            "temperature_kelvin": float(res_temp),
+            "factor": float("nan"),
+            "log_factor": float("nan"),
+            "eta1": float(math.sqrt(-(p / res_beta) * lambda0)) if np.isfinite(lambda0) and lambda0 < 0.0 else None,
+            "action_eigenvalue0": lambda0 if np.isfinite(lambda0) else None,
+            "nbeads": p,
+            "spread_bohr": float(result.spread_bohr),
+            "negative_modes": int(result.negative_modes),
+            "phase_mode_relative_residual": float(result.phase_mode_relative_residual),
+            "valid": False,
+            "failure_reason": reason,
+        }
+    eta1 = math.sqrt(-(p / res_beta) * lambda0)
+    factor = 2.0 * math.pi / (res_beta * eta1)
+    return {
+        "regime": "below_crossover",
+        "below_crossover": True,
+        "beta": float(res_beta),
+        "temperature_kelvin": float(res_temp),
+        "factor": float(factor),
+        "log_factor": float(math.log(factor)),
+        "eta1": float(eta1),
+        "action_eigenvalue0": float(lambda0),
+        "nbeads": p,
+        "spread_bohr": float(result.spread_bohr),
+        "negative_modes": int(result.negative_modes),
+        "phase_mode_relative_residual": float(result.phase_mode_relative_residual),
+        "valid": True,
+        "failure_reason": None,
     }

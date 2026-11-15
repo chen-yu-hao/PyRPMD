@@ -1,0 +1,20 @@
+{
+ "temperature_K": 300.0,
+ "note": "from the run log of same_slice.py; the run was killed (out of memory) during the finer full-grid comparison, so only this pair exists",
+ "rows": [
+  {
+   "rph_spacing": [
+    2.47,
+    2.47
+   ],
+   "reference": -71.40809589233783,
+   "rph_rate": 9.857748481869494e-09,
+   "full": [
+    {
+     "spacing": 2.0,
+     "rate": 9.899372720142536e-09
+    }
+   ]
+  }
+ ]
+}

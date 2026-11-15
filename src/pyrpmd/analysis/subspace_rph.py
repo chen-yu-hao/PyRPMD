@@ -266,7 +266,7 @@ def rph_bath(gradient: Callable[[np.ndarray], np.ndarray], development: PathDeve
 
 def project_rph_values(potential: Callable[[np.ndarray], float], development: PathDevelopment, axes: Sequence[Any],
                        bath: Mapping[str, Any], *, arc_range: tuple[float, float], half_width: float,
-                       wall_energy: float) -> np.ndarray:
+                       wall_energy: float, return_bare: bool = False) -> np.ndarray | tuple[np.ndarray, np.ndarray]:
     """``V_S`` on the developed tensor grid ``axes`` (``indexing='ij'``).
 
     Points farther than ``half_width`` from the path are walls
@@ -277,11 +277,14 @@ def project_rph_values(potential: Callable[[np.ndarray], float], development: Pa
     through a channel end back across the dividing surface, which the
     quantum rate, absorbing them first, never sees.  ``arc_range`` only
     limits where the bath term is interpolated (it is held constant beyond).
+    With ``return_bare=True``, also returns the bare potential grid without
+    ``bath['energy']`` for constructing the skeleton ``S^0``.
     """
     X, Y = np.meshgrid(*[np.asarray(a, dtype=float) for a in axes], indexing="ij")
     points = np.column_stack([X.ravel(), Y.ravel()])
     s, q = development.locate(points)
     values = np.full(len(points), float(wall_energy))
+    bare = np.full(len(points), float(wall_energy)) if return_bare else None
     inside = np.abs(q) <= half_width
     configurations = development.configuration(s[inside], q[inside])
     extra = np.interp(s[inside], bath["arc"], bath["energy"])
@@ -291,6 +294,11 @@ def project_rph_values(potential: Callable[[np.ndarray], float], development: Pa
             computed[i] = float(potential(x))
         except (ArithmeticError, ValueError, RuntimeError):
             computed[i] = np.inf
+    if bare is not None:
+        bare_inside = np.where(np.isfinite(computed), computed, np.inf)
+        bare[inside] = np.minimum(bare_inside, float(wall_energy))
     computed = np.where(np.isfinite(computed), computed + extra, np.inf)
     values[inside] = np.minimum(computed, float(wall_energy))
+    if bare is not None:
+        return values.reshape(X.shape), bare.reshape(X.shape)
     return values.reshape(X.shape)

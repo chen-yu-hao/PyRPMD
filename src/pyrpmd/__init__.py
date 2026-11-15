@@ -157,7 +157,8 @@ def __getattr__(name):
         from . import studies
 
         return getattr(studies, name)
-    if name in ("optimize_instanton", "instanton_rate_1d", "instanton_seed", "crossover_temperature"):
+    if name in ("optimize_instanton", "instanton_rate_1d", "instanton_seed", "crossover_temperature",
+                "steepest_descent_defect", "steepest_descent_rpmd_defect"):
         from . import instanton
 
         return getattr(instanton, name)
@@ -211,6 +212,7 @@ __all__ = [
     "estimate_effective_flux", "combine_tis_rate",
     "plan_rate_study", "run_rate_study", "arrhenius_fit", "kinetic_isotope_effect",
     "optimize_instanton", "instanton_rate_1d", "instanton_seed", "crossover_temperature",
+    "steepest_descent_defect", "steepest_descent_rpmd_defect",
     "PathIntegralAction", "PathIntegralSamples", "OpenPathAction", "OpenPathSamples", "sample_path_integral", "sample_open_path",
     "energy_heat_capacity", "quantum_kinetic_energy", "isotope_substitution_free_energy", "isotope_fractionation", "fractionation_mass_integration", "momentum_distribution_from_open_paths",
     "normalize_initial_ensemble", "prepare_initial_ensemble", "check_state_selected",

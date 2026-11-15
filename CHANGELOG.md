@@ -23,6 +23,45 @@ not been published as a new wheel release; no release date or DOI is assigned.
   `torch`, batched ML providers (`*-batched`, `metatomic`), and analytic
   `free`/`harmonic`/`periodic_cosine` models while rejecting host-only or
   `float32` configurations at preflight.
+- Subspace correction & instanton anchor: added steepest-descent RPMD defect
+  `steepest_descent_defect` and `steepest_descent_rpmd_defect` (`eps_SD = 2*pi /
+  (beta * hbar * eta_1)` below `T_c`, `1` at or above `T_c`) in
+  `pyrpmd.instanton`, bare-potential skeleton extraction
+  `SubspaceModel.skeleton()` (`bare_values` populated with zero extra PES
+  evaluations in `project_linear_subspace`, `project_path_subspace`, and
+  `project_rph_values(..., return_bare=True)`), and `subspace_instanton_defect`,
+  `full_instanton_defect`, `instanton_anchor`, plus `anchor_log_shift` in
+  `apply_subspace_correction` (`pyrpmd.analysis`). Setting
+  `rate.subspace_correction.anchor = "skeleton"` (or
+  `subspace.anchor = "skeleton"` in `run_subspace_pipeline`) anchors `C_S` to
+  the full-dimensional instanton via `ln C_S + A_H - A_{S^0}` without
+  double-counting the adiabatic zero-point / free-energy dressing, and refuses
+  uncontrolled shifts when `T` lies between the full and skeleton crossover
+  temperatures. Validated across 95 RPMD tasks on 2D valley models M1–M4
+  (`benchmarks/subspace_instanton`,
+  [report](docs/validation/2026-11-14-subspace-instanton-anchor/README.md)) and
+  across 6D–10D complex potential energy surfaces (`benchmarks/subspace_complex`);
+  see [docs/subspace-instanton-anchor.md](docs/subspace-instanton-anchor.md).
+- Subspace correction on complex and high-dimensional PESs: barrier dividing
+  surfaces and path peaks now select interior saddles by topographic prominence
+  rather than global `argmax`, supporting submerged central barriers
+  (`V_TS < V_asymptote`) flanked by pre- and post-reaction ion–dipole complexes;
+  2D saddle initialization tracks the connected valley from `(s_div, 0)` so
+  off-channel L-shaped complex wells do not pull the seed away from the barrier;
+  and `subspace_instanton_defect` / `full_instanton_defect` use dome-bounded
+  partitioned rational-function optimization (P-RFO) on the folded half-ring
+  action with Bofill Hessian updates, rigid-body translation/rotation projection,
+  and sparse `LinearOperator` + `eigsh` spectra when `nbeads * D > 2048`.
+
+- Subspace correction: the 2D plane model's reactant absorber now continues
+  past the start of the path. When the reference slice lies near the reactant
+  end, the absorber region reaches beyond the path; grid points there took the
+  arc length of the path's end point, so the absorber ramp stopped far below
+  its strength and the grid ended 40 units past the path. Reactant waves
+  reflected off the grid edge, and k_QM was 22% low on the curved-valley
+  validation model. Validation against exact rates on 2D, 3D and rotated 8D
+  model potentials:
+  [report](docs/validation/2026-11-13-subspace-rph-2d/README.md).
 
 - Subspace correction: reference slices must also be quantum-free. The
   quantum and the RPMD rate are normalized by the quantum and the centroid

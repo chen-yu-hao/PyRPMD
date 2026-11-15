@@ -1,0 +1,1528 @@
+{
+  "schema": "pyrpmd.benchmark.subspace_complex",
+  "schema_version": 1,
+  "case_count": 7,
+  "cases": {
+    "twisted_10d_220K": {
+      "key": "twisted_10d_220K",
+      "suite_key": "twisted_10d",
+      "topology": "nonplanar_curved_torsion",
+      "dimension": 10,
+      "rigid_body": false,
+      "temperature_K": 220.0,
+      "beta": 1435.341021836305,
+      "nbeads": 48,
+      "crossover_temperature_K": 320.3027257281208,
+      "t_over_tc": 0.6868502273900107,
+      "barrier_energy_eh": 0.016,
+      "barrier_submerged": false,
+      "reactant_end_energy_eh": 7.262865473448892e-08,
+      "product_end_energy_eh": 7.334882421745142e-08,
+      "path": {
+        "points": 107,
+        "seconds": 3.9012844562530518,
+        "imaginary_frequency_cm": 1398.7723786004915,
+        "reactant_status": "asymptote_converged",
+        "reactant_accepted": "asymptote",
+        "reactant_minima_climbed": 0,
+        "product_status": "asymptote_converged",
+        "product_accepted": "asymptote"
+      },
+      "full_instanton": {
+        "nbeads": 96,
+        "valid": true,
+        "below_crossover": true,
+        "factor": 1.45671857984708,
+        "log_factor": 0.37618635814331514,
+        "spread": 41.60613087109338,
+        "phase_mode_relative_residual": 1.0534833843816254e-06,
+        "seconds": 7.391531467437744,
+        "crosscheck": null
+      },
+      "full_reference": {
+        "core_dimension": 3,
+        "embedded_dimension": 10,
+        "shape": [
+          103,
+          31,
+          26
+        ],
+        "quantum": {
+          "rate": 2.468229723899569e-10,
+          "method": "flux_eigenstates",
+          "retained_points": null,
+          "seconds": 419.5405604839325
+        },
+        "rpmd": {
+          "rate": 1.7421028431786402e-10,
+          "rate_standard_error": 2.962343216618808e-12,
+          "log_standard_error": 0.01700441066506566,
+          "transmission": 0.9140395860039862,
+          "seconds": 626.1717019081116
+        },
+        "C_exact": 1.4168105709511603,
+        "ln_C_exact": 0.34840826860430485,
+        "log_standard_error": 0.01700441066506566
+      },
+      "subspace": {
+        "1d": {
+          "dimension": 1,
+          "shape": [
+            190
+          ],
+          "captured_curvature": null,
+          "bath_stable": true,
+          "quantum": {
+            "rate": 9.412197474793039e-11,
+            "method": "sylvester",
+            "retained_points": 190,
+            "seconds": 0.4860410690307617
+          },
+          "rpmd": {
+            "rate": 6.884401663226629e-11,
+            "rate_standard_error": 9.418973436507086e-13,
+            "log_standard_error": 0.013681615189333005,
+            "transmission": 0.9761176618170835,
+            "seconds": 131.68486881256104
+          },
+          "C_S": 1.3671772704763516,
+          "ln_C_S": 0.3127482278100368,
+          "log_standard_error": 0.013681615189333005,
+          "anchor_valid": true,
+          "skeleton_defect_log": 0.2599684175961049,
+          "skeleton_defect_valid": true,
+          "anchor_log_shift": 0.11621794054721024,
+          "C_S_anchored": 1.5356690793108134,
+          "ln_C_S_anchored": 0.4289661683572471,
+          "naive_defect_log": 0.24574464223232287,
+          "naive_log_shift": 0.13044171591099227,
+          "ln_C_S_naive": 0.44318994372102904,
+          "transfer_error_log": 0.035660040794268044,
+          "anchored_skeleton_error_log": -0.08055789975294225,
+          "combined_log_standard_error": 0.02182513633989915,
+          "relative_error_unanchored": -0.03503171241974001,
+          "relative_error_skeleton": 0.08389160188144196,
+          "anchored_naive_error_log": -0.0947816751167242
+        },
+        "1d_sct": {
+          "dimension": 1,
+          "shape": [
+            190
+          ],
+          "captured_curvature": null,
+          "bath_stable": true,
+          "quantum": {
+            "rate": 2.1688898848329572e-09,
+            "method": "sylvester",
+            "retained_points": 190,
+            "seconds": 0.5156338214874268
+          },
+          "rpmd": {
+            "rate": 1.2784772552256675e-09,
+            "rate_standard_error": 3.0820504936669576e-11,
+            "log_standard_error": 0.024107198474351714,
+            "transmission": 0.9528798770327587,
+            "seconds": 136.8652684688568
+          },
+          "C_S": 1.696463410645597,
+          "ln_C_S": 0.5285457374561294,
+          "log_standard_error": 0.024107198474351714,
+          "anchor_valid": false,
+          "skeleton_defect_log": null,
+          "skeleton_defect_valid": false,
+          "anchor_log_shift": null,
+          "C_S_anchored": null,
+          "ln_C_S_anchored": null,
+          "naive_defect_log": 0.5039995037647754,
+          "naive_log_shift": -0.1278131456214603,
+          "ln_C_S_naive": 0.40073259183466914,
+          "transfer_error_log": -0.18013746885182458,
+          "anchored_skeleton_error_log": null,
+          "combined_log_standard_error": 0.029500966091773745,
+          "relative_error_unanchored": 0.19738195453093965,
+          "relative_error_skeleton": null,
+          "anchored_naive_error_log": -0.05232432323036429
+        },
+        "rph": {
+          "dimension": 2,
+          "shape": [
+            218,
+            65
+          ],
+          "captured_curvature": 0.9768559234831395,
+          "bath_stable": true,
+          "quantum": {
+            "rate": 1.8441078385198965e-10,
+            "method": "sylvester",
+            "retained_points": 7661,
+            "seconds": 749.7131862640381
+          },
+          "rpmd": {
+            "rate": 1.2935194830298505e-10,
+            "rate_standard_error": 2.3459126405849163e-12,
+            "log_standard_error": 0.018135889496538646,
+            "transmission": 0.9288651691092938,
+            "seconds": 447.74023246765137
+          },
+          "C_S": 1.4256513819184122,
+          "ln_C_S": 0.35462881939579455,
+          "log_standard_error": 0.018135889496538646,
+          "anchor_valid": true,
+          "skeleton_defect_log": 0.3473314813034804,
+          "skeleton_defect_valid": true,
+          "anchor_log_shift": 0.02885487683983473,
+          "C_S_anchored": 1.4673876283115872,
+          "ln_C_S_anchored": 0.38348369623562917,
+          "naive_defect_log": 0.3109448674409786,
+          "naive_log_shift": 0.06524149070233654,
+          "ln_C_S_naive": 0.4198703100981311,
+          "transfer_error_log": -0.0062205507914896985,
+          "anchored_skeleton_error_log": -0.03507542763132432,
+          "combined_log_standard_error": 0.024860821987554224,
+          "relative_error_unanchored": 0.00623993859766081,
+          "relative_error_skeleton": 0.035697826087274676,
+          "anchored_naive_error_log": -0.07146204149382623
+        }
+      },
+      "nested_sensitivity": {
+        "unanchored_1d_to_rph": {
+          "beta": 1435.341021836305,
+          "steps": [
+            {
+              "from": 1,
+              "to": 2,
+              "log_change": 0.04188059158575774,
+              "standard_error": 0.022717770181504355,
+              "status": "settled",
+              "settled": true
+            }
+          ],
+          "factors": {
+            "1": 1.3671772704763516,
+            "2": 1.4256513819184122
+          },
+          "recommended_dimension": 1,
+          "tolerance": 0.05,
+          "full_budget_used": false
+        },
+        "skeleton_anchored_1d_to_rph": {
+          "beta": 1435.341021836305,
+          "steps": [
+            {
+              "from": 1,
+              "to": 2,
+              "log_change": -0.045482472121617934,
+              "standard_error": 0.022717770181504355,
+              "status": "settled",
+              "settled": true
+            }
+          ],
+          "factors": {
+            "1": 1.5356690793108134,
+            "2": 1.4673876283115872
+          },
+          "recommended_dimension": 1,
+          "tolerance": 0.05,
+          "full_budget_used": false
+        }
+      },
+      "exact_general_rate_claim": false,
+      "wall_seconds": 2566.058644771576
+    },
+    "prereaction_well_8d_200K": {
+      "key": "prereaction_well_8d_200K",
+      "suite_key": "prereaction_well_8d",
+      "topology": "barrier_with_prereaction_well",
+      "dimension": 8,
+      "rigid_body": false,
+      "temperature_K": 200.0,
+      "beta": 1578.8751240199356,
+      "nbeads": 48,
+      "crossover_temperature_K": 343.87069256675886,
+      "t_over_tc": 0.5816139738665634,
+      "barrier_energy_eh": 0.015990120252932314,
+      "barrier_submerged": false,
+      "reactant_end_energy_eh": 9.329325968811158e-08,
+      "product_end_energy_eh": -0.003999932747764281,
+      "path": {
+        "points": 108,
+        "seconds": 2.379863977432251,
+        "imaginary_frequency_cm": 1501.6944547530036,
+        "reactant_status": "coordinate_target_reached",
+        "reactant_accepted": "reactant_reference",
+        "reactant_minima_climbed": 1,
+        "product_status": "asymptote_converged",
+        "product_accepted": "asymptote"
+      },
+      "full_instanton": {
+        "nbeads": 96,
+        "valid": true,
+        "below_crossover": true,
+        "factor": 1.2755630145986265,
+        "log_factor": 0.24338766121995342,
+        "spread": 35.73946618893691,
+        "phase_mode_relative_residual": 2.7784968354310727e-06,
+        "seconds": 3.189939498901367,
+        "crosscheck": null
+      },
+      "full_reference": {
+        "core_dimension": 2,
+        "embedded_dimension": 8,
+        "shape": [
+          123,
+          34
+        ],
+        "quantum": {
+          "rate": 2.6197584815568857e-10,
+          "method": "sylvester",
+          "retained_points": 4119,
+          "seconds": 209.47020936012268
+        },
+        "rpmd": {
+          "rate": 1.6571757868366814e-10,
+          "rate_standard_error": 2.8470154864340307e-12,
+          "log_standard_error": 0.01717992447782856,
+          "transmission": 0.9201823919637597,
+          "seconds": 475.86482214927673
+        },
+        "C_exact": 1.580857325074512,
+        "ln_C_exact": 0.45796731068551616,
+        "log_standard_error": 0.01717992447782856
+      },
+      "subspace": {
+        "1d": {
+          "dimension": 1,
+          "shape": [
+            193
+          ],
+          "captured_curvature": null,
+          "bath_stable": true,
+          "quantum": {
+            "rate": 9.468473105024844e-11,
+            "method": "sylvester",
+            "retained_points": 193,
+            "seconds": 0.9431753158569336
+          },
+          "rpmd": {
+            "rate": 6.997362401848754e-11,
+            "rate_standard_error": 1.2470109809176056e-12,
+            "log_standard_error": 0.017821157592011187,
+            "transmission": 0.9612479576616442,
+            "seconds": 39.8715136051178
+          },
+          "C_S": 1.3531488811445873,
+          "ln_C_S": 0.3024343809358138,
+          "log_standard_error": 0.017821157592011187,
+          "anchor_valid": true,
+          "skeleton_defect_log": 0.2237221002243602,
+          "skeleton_defect_valid": true,
+          "anchor_log_shift": 0.019665560995593218,
+          "C_S_anchored": 1.3800226911985178,
+          "ln_C_S_anchored": 0.32209994193140706,
+          "naive_defect_log": 0.2742800170868635,
+          "naive_log_shift": -0.03089235586691008,
+          "ln_C_S_naive": 0.27154202506890374,
+          "transfer_error_log": 0.15553292974970234,
+          "anchored_skeleton_error_log": 0.1358673687541091,
+          "combined_log_standard_error": 0.02475365554788203,
+          "relative_error_unanchored": -0.14404111004716502,
+          "relative_error_skeleton": -0.12704159362801948,
+          "anchored_naive_error_log": 0.18642528561661242
+        },
+        "1d_sct": {
+          "dimension": 1,
+          "shape": [
+            193
+          ],
+          "captured_curvature": null,
+          "bath_stable": true,
+          "quantum": {
+            "rate": 3.943711312438639e-09,
+            "method": "sylvester",
+            "retained_points": 193,
+            "seconds": 0.4807014465332031
+          },
+          "rpmd": {
+            "rate": 2.42608190637594e-09,
+            "rate_standard_error": 4.680320183283911e-11,
+            "log_standard_error": 0.01929168249012389,
+            "transmission": 0.92154851013085,
+            "seconds": 40.927043199539185
+          },
+          "C_S": 1.625547473098186,
+          "ln_C_S": 0.48584466556340294,
+          "log_standard_error": 0.01929168249012389,
+          "anchor_valid": true,
+          "skeleton_defect_log": 0.3927133617087647,
+          "skeleton_defect_valid": true,
+          "anchor_log_shift": -0.14932570048881127,
+          "C_S_anchored": 1.4000654213632377,
+          "ln_C_S_anchored": 0.33651896507459156,
+          "naive_defect_log": null,
+          "naive_log_shift": null,
+          "ln_C_S_naive": null,
+          "transfer_error_log": -0.027877354877886784,
+          "anchored_skeleton_error_log": 0.1214483456109246,
+          "combined_log_standard_error": 0.02583251475105832,
+          "relative_error_unanchored": 0.0282695644412867,
+          "relative_error_skeleton": -0.11436320080482454,
+          "anchored_naive_error_log": null
+        },
+        "rph": {
+          "dimension": 2,
+          "shape": [
+            219,
+            52
+          ],
+          "captured_curvature": 0.9960879922176336,
+          "bath_stable": true,
+          "quantum": {
+            "rate": 2.0485727168168242e-10,
+            "method": "sylvester",
+            "retained_points": 8137,
+            "seconds": 604.4345650672913
+          },
+          "rpmd": {
+            "rate": 1.642561528999284e-10,
+            "rate_standard_error": 3.0124424213673348e-12,
+            "log_standard_error": 0.01833990610508599,
+            "transmission": 0.9232574707840849,
+            "seconds": 142.41609978675842
+          },
+          "C_S": 1.2471817223583088,
+          "ln_C_S": 0.22088638371362554,
+          "log_standard_error": 0.01833990610508599,
+          "anchor_valid": true,
+          "skeleton_defect_log": 0.24092096093432186,
+          "skeleton_defect_valid": true,
+          "anchor_log_shift": 0.0024667002856315623,
+          "C_S_anchored": 1.2502619432981923,
+          "ln_C_S_anchored": 0.22335308399925724,
+          "naive_defect_log": 0.24094701614435488,
+          "naive_log_shift": 0.0024406450755985465,
+          "ln_C_S_naive": 0.22332702878922409,
+          "transfer_error_log": 0.23708092697189062,
+          "anchored_skeleton_error_log": 0.23461422668625892,
+          "combined_log_standard_error": 0.025129702764005453,
+          "relative_error_unanchored": -0.21107256007462638,
+          "relative_error_skeleton": -0.20912411040049894,
+          "anchored_naive_error_log": 0.23464028189629207
+        }
+      },
+      "nested_sensitivity": {
+        "unanchored_1d_to_rph": {
+          "beta": 1578.8751240199356,
+          "steps": [
+            {
+              "from": 1,
+              "to": 2,
+              "log_change": -0.08154799722218828,
+              "standard_error": 0.025572364260323457,
+              "status": "changed",
+              "settled": false
+            }
+          ],
+          "factors": {
+            "1": 1.3531488811445873,
+            "2": 1.2471817223583088
+          },
+          "recommended_dimension": 2,
+          "tolerance": 0.05,
+          "full_budget_used": true
+        },
+        "skeleton_anchored_1d_to_rph": {
+          "beta": 1578.8751240199356,
+          "steps": [
+            {
+              "from": 1,
+              "to": 2,
+              "log_change": -0.09874685793214982,
+              "standard_error": 0.025572364260323457,
+              "status": "changed",
+              "settled": false
+            }
+          ],
+          "factors": {
+            "1": 1.3800226911985178,
+            "2": 1.2502619432981923
+          },
+          "recommended_dimension": 2,
+          "tolerance": 0.05,
+          "full_budget_used": true
+        }
+      },
+      "exact_general_rate_claim": false,
+      "wall_seconds": 1441.9814774990082
+    },
+    "prereaction_well_8d_175K": {
+      "key": "prereaction_well_8d_175K",
+      "suite_key": "prereaction_well_8d",
+      "topology": "barrier_with_prereaction_well",
+      "dimension": 8,
+      "rigid_body": false,
+      "temperature_K": 175.0,
+      "beta": 1804.4287131656404,
+      "nbeads": 64,
+      "crossover_temperature_K": 343.87069256675886,
+      "t_over_tc": 0.5089122271332431,
+      "barrier_energy_eh": 0.015990120252932314,
+      "barrier_submerged": false,
+      "reactant_end_energy_eh": 9.329325968811158e-08,
+      "product_end_energy_eh": -0.003999932747764281,
+      "path": {
+        "points": 108,
+        "seconds": 2.566646099090576,
+        "imaginary_frequency_cm": 1501.6944547530036,
+        "reactant_status": "coordinate_target_reached",
+        "reactant_accepted": "reactant_reference",
+        "reactant_minima_climbed": 1,
+        "product_status": "asymptote_converged",
+        "product_accepted": "asymptote"
+      },
+      "full_instanton": {
+        "nbeads": 96,
+        "valid": true,
+        "below_crossover": true,
+        "factor": 1.2661438387420443,
+        "log_factor": 0.23597593396797303,
+        "spread": 43.62293173869746,
+        "phase_mode_relative_residual": 3.0491339349306044e-06,
+        "seconds": 4.016360759735107,
+        "crosscheck": null
+      },
+      "full_reference": {
+        "core_dimension": 2,
+        "embedded_dimension": 8,
+        "shape": [
+          123,
+          34
+        ],
+        "quantum": {
+          "rate": 1.4187670301854557e-10,
+          "method": "sylvester",
+          "retained_points": 4120,
+          "seconds": 207.0797975063324
+        },
+        "rpmd": {
+          "rate": 7.684246272554236e-11,
+          "rate_standard_error": 1.7750228962556725e-12,
+          "log_standard_error": 0.02309950557669538,
+          "transmission": 0.8889367126061938,
+          "seconds": 776.7511048316956
+        },
+        "C_exact": 1.8463320667543608,
+        "ln_C_exact": 0.6132010043857059,
+        "log_standard_error": 0.02309950557669538
+      },
+      "subspace": {
+        "1d": {
+          "dimension": 1,
+          "shape": [
+            187
+          ],
+          "captured_curvature": null,
+          "bath_stable": true,
+          "quantum": {
+            "rate": 4.1929764716309754e-11,
+            "method": "sylvester",
+            "retained_points": 187,
+            "seconds": 0.49004077911376953
+          },
+          "rpmd": {
+            "rate": 2.9053429882099865e-11,
+            "rate_standard_error": 5.717983808371679e-13,
+            "log_standard_error": 0.019680925218039717,
+            "transmission": 0.9230324087416505,
+            "seconds": 20.210036516189575
+          },
+          "C_S": 1.4431949992294417,
+          "ln_C_S": 0.3668594052630138,
+          "log_standard_error": 0.019680925218039717,
+          "anchor_valid": true,
+          "skeleton_defect_log": 0.19894866676866746,
+          "skeleton_defect_valid": true,
+          "anchor_log_shift": 0.037027267199305575,
+          "C_S_anchored": 1.4976342141427845,
+          "ln_C_S_anchored": 0.40388667246231946,
+          "naive_defect_log": 0.24295288966521184,
+          "naive_log_shift": -0.006976955697238801,
+          "ln_C_S_naive": 0.359882449565775,
+          "transfer_error_log": 0.2463415991226921,
+          "anchored_skeleton_error_log": 0.20931433192338644,
+          "combined_log_standard_error": 0.030346762188507896,
+          "relative_error_unanchored": -0.21834483340452815,
+          "relative_error_skeleton": -0.18885977170106072,
+          "anchored_naive_error_log": 0.25331855481993093
+        },
+        "1d_sct": {
+          "dimension": 1,
+          "shape": [
+            187
+          ],
+          "captured_curvature": null,
+          "bath_stable": true,
+          "quantum": {
+            "rate": 3.093501203938981e-09,
+            "method": "sylvester",
+            "retained_points": 187,
+            "seconds": 0.4999086856842041
+          },
+          "rpmd": {
+            "rate": 1.7686131522419425e-09,
+            "rate_standard_error": 3.878047908443074e-11,
+            "log_standard_error": 0.021927055690653178,
+            "transmission": 0.9176965856089323,
+            "seconds": 19.82546043395996
+          },
+          "C_S": 1.7491112740044785,
+          "ln_C_S": 0.5591078155132626,
+          "log_standard_error": 0.021927055690653178,
+          "anchor_valid": true,
+          "skeleton_defect_log": 0.5491707523838865,
+          "skeleton_defect_valid": true,
+          "anchor_log_shift": -0.31319481841591346,
+          "C_S_anchored": 1.2787883104068194,
+          "ln_C_S_anchored": 0.24591299709734932,
+          "naive_defect_log": null,
+          "naive_log_shift": null,
+          "ln_C_S_naive": null,
+          "transfer_error_log": 0.0540931888724433,
+          "anchored_skeleton_error_log": 0.3672880072883566,
+          "combined_log_standard_error": 0.03184937878748637,
+          "relative_error_unanchored": -0.05265617951422208,
+          "relative_error_skeleton": -0.3073898604519273,
+          "anchored_naive_error_log": null
+        },
+        "rph": {
+          "dimension": 2,
+          "shape": [
+            229,
+            52
+          ],
+          "captured_curvature": 0.9961107911707663,
+          "bath_stable": true,
+          "quantum": {
+            "rate": 8.057270223419838e-11,
+            "method": "sylvester",
+            "retained_points": 8508,
+            "seconds": 675.4953422546387
+          },
+          "rpmd": {
+            "rate": 7.206633065478863e-11,
+            "rate_standard_error": 1.7605223403081162e-12,
+            "log_standard_error": 0.02442919355421815,
+            "transmission": 0.8660620838612163,
+            "seconds": 97.58565068244934
+          },
+          "C_S": 1.118035308612518,
+          "ln_C_S": 0.11157295617742669,
+          "log_standard_error": 0.02442919355421815,
+          "anchor_valid": true,
+          "skeleton_defect_log": 0.23566888484332438,
+          "skeleton_defect_valid": true,
+          "anchor_log_shift": 0.0003070491246486562,
+          "C_S_anchored": 1.118378653084466,
+          "ln_C_S_anchored": 0.11188000530207518,
+          "naive_defect_log": 0.23570671749883554,
+          "naive_log_shift": 0.0002692164691374954,
+          "ln_C_S_naive": 0.11184217264656418,
+          "transfer_error_log": 0.5016280482082792,
+          "anchored_skeleton_error_log": 0.5013209990836307,
+          "combined_log_standard_error": 0.033621015088739284,
+          "relative_error_unanchored": -0.3944559980600373,
+          "relative_error_skeleton": -0.3942700377562922,
+          "anchored_naive_error_log": 0.5013588317391418
+        }
+      },
+      "nested_sensitivity": {
+        "unanchored_1d_to_rph": {
+          "beta": 1804.4287131656404,
+          "steps": [
+            {
+              "from": 1,
+              "to": 2,
+              "log_change": -0.2552864490855871,
+              "standard_error": 0.031370755731214464,
+              "status": "changed",
+              "settled": false
+            }
+          ],
+          "factors": {
+            "1": 1.4431949992294417,
+            "2": 1.118035308612518
+          },
+          "recommended_dimension": 2,
+          "tolerance": 0.05,
+          "full_budget_used": true
+        },
+        "skeleton_anchored_1d_to_rph": {
+          "beta": 1804.4287131656404,
+          "steps": [
+            {
+              "from": 1,
+              "to": 2,
+              "log_change": -0.29200666716024426,
+              "standard_error": 0.031370755731214464,
+              "status": "changed",
+              "settled": false
+            }
+          ],
+          "factors": {
+            "1": 1.4976342141427845,
+            "2": 1.118378653084466
+          },
+          "recommended_dimension": 2,
+          "tolerance": 0.05,
+          "full_budget_used": true
+        }
+      },
+      "exact_general_rate_claim": false,
+      "wall_seconds": 1732.9118752479553
+    },
+    "prereaction_complex_8d_200K": {
+      "key": "prereaction_complex_8d_200K",
+      "suite_key": "prereaction_complex_8d",
+      "topology": "deep_pre_and_post_complex",
+      "dimension": 8,
+      "rigid_body": false,
+      "temperature_K": 200.0,
+      "beta": 1578.8751240199356,
+      "nbeads": 48,
+      "crossover_temperature_K": 316.4498144124481,
+      "t_over_tc": 0.632011746858944,
+      "barrier_energy_eh": 0.009510184022841714,
+      "barrier_submerged": false,
+      "reactant_end_energy_eh": 5.689337316701037e-08,
+      "product_end_energy_eh": -0.024237063358262118,
+      "path": {
+        "points": 75,
+        "seconds": 2.482745885848999,
+        "imaginary_frequency_cm": 1381.9465708826044,
+        "reactant_status": "asymptote_converged",
+        "reactant_accepted": "asymptote",
+        "reactant_minima_climbed": 1,
+        "product_status": "minimum_reached",
+        "product_accepted": "product_well"
+      },
+      "full_instanton": {
+        "nbeads": 96,
+        "valid": true,
+        "below_crossover": true,
+        "factor": 1.1529413526245131,
+        "log_factor": 0.14231637496681132,
+        "spread": 41.15043713362198,
+        "phase_mode_relative_residual": 1.3653907867965726e-05,
+        "seconds": 4.8466455936431885,
+        "crosscheck": null
+      },
+      "full_reference": {
+        "core_dimension": 2,
+        "embedded_dimension": 8,
+        "shape": [
+          134,
+          33
+        ],
+        "quantum": {
+          "rate": 5.738828924602627e-07,
+          "method": "sylvester",
+          "retained_points": 4414,
+          "seconds": 247.95477437973022
+        },
+        "rpmd": {
+          "rate": 1.7567622551613702e-06,
+          "rate_standard_error": 6.45879881526125e-08,
+          "log_standard_error": 0.03676535510872509,
+          "transmission": 0.6452556776774268,
+          "seconds": 485.8602833747864
+        },
+        "C_exact": 0.32667077788937793,
+        "ln_C_exact": -1.1188024106891776,
+        "log_standard_error": 0.03676535510872509
+      },
+      "subspace": {
+        "1d": {
+          "dimension": 1,
+          "shape": [
+            150
+          ],
+          "captured_curvature": null,
+          "bath_stable": true,
+          "quantum": {
+            "rate": 5.771147352905975e-07,
+            "method": "sylvester",
+            "retained_points": 150,
+            "seconds": 0.3459746837615967
+          },
+          "rpmd": {
+            "rate": 4.846660225522898e-07,
+            "rate_standard_error": 2.1678365665601482e-08,
+            "log_standard_error": 0.04472846177960131,
+            "transmission": 0.5354671782883134,
+            "seconds": 41.287131547927856
+          },
+          "C_S": 1.190747253647915,
+          "ln_C_S": 0.17458105429089468,
+          "log_standard_error": 0.04472846177960131,
+          "anchor_valid": true,
+          "skeleton_defect_log": 0.16853536949165038,
+          "skeleton_defect_valid": true,
+          "anchor_log_shift": -0.026218994524839057,
+          "C_S_anchored": 1.159932785338835,
+          "ln_C_S_anchored": 0.1483620597660557,
+          "naive_defect_log": 0.2090056491483007,
+          "naive_log_shift": -0.06668927418148937,
+          "ln_C_S_naive": 0.10789178010940531,
+          "transfer_error_log": -1.2933834649800724,
+          "anchored_skeleton_error_log": -1.2671644704552334,
+          "combined_log_standard_error": 0.057899280042500646,
+          "relative_error_unanchored": 2.6450987790868252,
+          "relative_error_skeleton": 2.550769961222637,
+          "anchored_naive_error_log": -1.2266941907985829
+        },
+        "1d_sct": {
+          "dimension": 1,
+          "shape": [
+            150
+          ],
+          "captured_curvature": null,
+          "bath_stable": true,
+          "quantum": {
+            "rate": 1.9807618377859455e-06,
+            "method": "sylvester",
+            "retained_points": 150,
+            "seconds": 0.3160586357116699
+          },
+          "rpmd": {
+            "rate": 8.210896088648124e-05,
+            "rate_standard_error": 9.2040009896165e-06,
+            "log_standard_error": 0.11209496369514871,
+            "transmission": 0.18639616131217282,
+            "seconds": 40.276832580566406
+          },
+          "C_S": 0.024123576968954997,
+          "ln_C_S": -3.724565619239613,
+          "log_standard_error": 0.11209496369514871,
+          "anchor_valid": false,
+          "skeleton_defect_log": null,
+          "skeleton_defect_valid": false,
+          "anchor_log_shift": null,
+          "C_S_anchored": null,
+          "ln_C_S_anchored": null,
+          "naive_defect_log": null,
+          "naive_log_shift": null,
+          "ln_C_S_naive": null,
+          "transfer_error_log": 2.605763208550435,
+          "anchored_skeleton_error_log": null,
+          "combined_log_standard_error": 0.1179702175215735,
+          "relative_error_unanchored": -0.9261532447903128,
+          "relative_error_skeleton": null,
+          "anchored_naive_error_log": null
+        },
+        "rph": {
+          "dimension": 2,
+          "shape": [
+            199,
+            62
+          ],
+          "captured_curvature": 0.9960327410990641,
+          "bath_stable": true,
+          "quantum": {
+            "rate": 9.126965789512124e-07,
+            "method": "sylvester",
+            "retained_points": 7116,
+            "seconds": 393.25782442092896
+          },
+          "rpmd": {
+            "rate": 1.6525576297944119e-06,
+            "rate_standard_error": 5.823615691617716e-08,
+            "log_standard_error": 0.03524001575873762,
+            "transmission": 0.6567671416489292,
+            "seconds": 1033.0577783584595
+          },
+          "C_S": 0.5522933436607336,
+          "ln_C_S": -0.5936759541832298,
+          "log_standard_error": 0.03524001575873762,
+          "anchor_valid": true,
+          "skeleton_defect_log": 0.14185532666281053,
+          "skeleton_defect_valid": true,
+          "anchor_log_shift": 0.00046104830400078844,
+          "C_S_anchored": 0.5525480362784275,
+          "ln_C_S_anchored": -0.5932149058792288,
+          "naive_defect_log": 0.1422748128489098,
+          "naive_log_shift": 4.156211790151687e-05,
+          "ln_C_S_naive": -0.5936343920653283,
+          "transfer_error_log": -0.5251264565059478,
+          "anchored_skeleton_error_log": -0.5255875048099489,
+          "combined_log_standard_error": 0.05092690886895389,
+          "relative_error_unanchored": 0.6906726314153488,
+          "relative_error_skeleton": 0.6914522928816715,
+          "anchored_naive_error_log": -0.5251680186238493
+        }
+      },
+      "nested_sensitivity": {
+        "unanchored_1d_to_rph": {
+          "beta": 1578.8751240199356,
+          "steps": [
+            {
+              "from": 1,
+              "to": 2,
+              "log_change": -0.7682570084741245,
+              "standard_error": 0.05694290125946632,
+              "status": "changed",
+              "settled": false
+            }
+          ],
+          "factors": {
+            "1": 1.190747253647915,
+            "2": 0.5522933436607336
+          },
+          "recommended_dimension": 2,
+          "tolerance": 0.05,
+          "full_budget_used": true
+        },
+        "skeleton_anchored_1d_to_rph": {
+          "beta": 1578.8751240199356,
+          "steps": [
+            {
+              "from": 1,
+              "to": 2,
+              "log_change": -0.7415769656452844,
+              "standard_error": 0.05694290125946632,
+              "status": "changed",
+              "settled": false
+            }
+          ],
+          "factors": {
+            "1": 1.159932785338835,
+            "2": 0.5525480362784275
+          },
+          "recommended_dimension": 2,
+          "tolerance": 0.05,
+          "full_budget_used": true
+        }
+      },
+      "exact_general_rate_claim": false,
+      "wall_seconds": 2146.5801713466644
+    },
+    "submerged_complex_6d_200K": {
+      "key": "submerged_complex_6d_200K",
+      "suite_key": "submerged_complex_6d",
+      "topology": "submerged_barrier_complex",
+      "dimension": 6,
+      "rigid_body": false,
+      "temperature_K": 200.0,
+      "beta": 1578.8751240199356,
+      "nbeads": 48,
+      "crossover_temperature_K": 278.38863960216787,
+      "t_over_tc": 0.7184201204683158,
+      "barrier_energy_eh": -0.0029572002397751694,
+      "barrier_submerged": true,
+      "reactant_end_energy_eh": 1.466822995992116e-08,
+      "product_end_energy_eh": -0.027573647986020335,
+      "path": {
+        "points": 76,
+        "seconds": 1.9979588985443115,
+        "imaginary_frequency_cm": 1215.7321856628128,
+        "reactant_status": "coordinate_target_reached",
+        "reactant_accepted": "reactant_reference",
+        "reactant_minima_climbed": 1,
+        "product_status": "minimum_reached",
+        "product_accepted": "product_well"
+      },
+      "full_instanton": {
+        "nbeads": 96,
+        "valid": true,
+        "below_crossover": true,
+        "factor": 1.3175230273316212,
+        "log_factor": 0.27575347933120736,
+        "spread": 20.333766619257915,
+        "phase_mode_relative_residual": 4.090173507943502e-05,
+        "seconds": 1.0879664421081543,
+        "crosscheck": null
+      },
+      "full_reference": {
+        "core_dimension": 2,
+        "embedded_dimension": 6,
+        "shape": [
+          134,
+          33
+        ],
+        "quantum": {
+          "rate": 0.003991864054186037,
+          "method": "sylvester",
+          "retained_points": 4422,
+          "seconds": 247.56939363479614
+        },
+        "rpmd": {
+          "rate": 23.169752256121214,
+          "rate_standard_error": 0.6096210155686492,
+          "log_standard_error": 0.026311071815953213,
+          "transmission": 0.7816690641826165,
+          "seconds": 487.8800768852234
+        },
+        "C_exact": 0.00017228773143793228,
+        "ln_C_exact": -8.666344621620627,
+        "log_standard_error": 0.026311071815953213
+      },
+      "subspace": {
+        "1d": {
+          "dimension": 1,
+          "shape": [
+            142
+          ],
+          "captured_curvature": null,
+          "bath_stable": true,
+          "quantum": {
+            "rate": 0.0017627888522978895,
+            "method": "sylvester",
+            "retained_points": 142,
+            "seconds": 0.4466845989227295
+          },
+          "rpmd": {
+            "rate": 11.80548562851669,
+            "rate_standard_error": 0.35537876548373193,
+            "log_standard_error": 0.030102850205949876,
+            "transmission": 0.7628510431517614,
+            "seconds": 40.16083788871765
+          },
+          "C_S": 0.00014931946958961117,
+          "ln_C_S": -8.809422456096641,
+          "log_standard_error": 0.030102850205949876,
+          "anchor_valid": true,
+          "skeleton_defect_log": 0.1805753619077396,
+          "skeleton_defect_valid": true,
+          "anchor_log_shift": 0.09517811742346777,
+          "C_S_anchored": 0.00016422972654769183,
+          "ln_C_S_anchored": -8.714244338673172,
+          "naive_defect_log": -0.02067378889120134,
+          "naive_log_shift": 0.2964272682224087,
+          "ln_C_S_naive": -8.512995187874232,
+          "transfer_error_log": 0.14307783447601352,
+          "anchored_skeleton_error_log": 0.04789971705254459,
+          "combined_log_standard_error": 0.03998067146292198,
+          "relative_error_unanchored": -0.13331339182787694,
+          "relative_error_skeleton": -0.046770625064172844,
+          "anchored_naive_error_log": -0.15334943374639565
+        },
+        "1d_sct": {
+          "dimension": 1,
+          "shape": [
+            142
+          ],
+          "captured_curvature": null,
+          "bath_stable": true,
+          "quantum": {
+            "rate": 0.0013231266694693194,
+            "method": "sylvester",
+            "retained_points": 142,
+            "seconds": 0.4546544551849365
+          },
+          "rpmd": {
+            "rate": 144.94582970248246,
+            "rate_standard_error": 7.34326967820939,
+            "log_standard_error": 0.05066216595042626,
+            "transmission": 0.4253441072368133,
+            "seconds": 38.365601778030396
+          },
+          "C_S": 9.12842178478115e-06,
+          "ln_C_S": -11.604117738673937,
+          "log_standard_error": 0.05066216595042626,
+          "anchor_valid": true,
+          "skeleton_defect_log": 0.07819722623838017,
+          "skeleton_defect_valid": true,
+          "anchor_log_shift": 0.1975562530928272,
+          "C_S_anchored": 1.1122266304105215e-05,
+          "ln_C_S_anchored": -11.40656148558111,
+          "naive_defect_log": 0.17404049149330333,
+          "naive_log_shift": 0.10171298783790403,
+          "ln_C_S_naive": -11.502404750836032,
+          "transfer_error_log": 2.9377731170533092,
+          "anchored_skeleton_error_log": 2.740216863960482,
+          "combined_log_standard_error": 0.0570870174285956,
+          "relative_error_unanchored": -0.9470164142937263,
+          "relative_error_skeleton": -0.9354436545697272,
+          "anchored_naive_error_log": 2.8360601292154044
+        },
+        "rph": {
+          "dimension": 2,
+          "shape": [
+            206,
+            61
+          ],
+          "captured_curvature": 0.9903189067329433,
+          "bath_stable": true,
+          "quantum": {
+            "rate": 0.0006594007160149538,
+            "method": "sylvester",
+            "retained_points": 7476,
+            "seconds": 432.39953875541687
+          },
+          "rpmd": {
+            "rate": 23.54222526169729,
+            "rate_standard_error": 0.7439848214127186,
+            "log_standard_error": 0.031602145215353386,
+            "transmission": 0.7886700913312289,
+            "seconds": 210.87893915176392
+          },
+          "C_S": 2.800927731703362e-05,
+          "ln_C_S": -10.482974769916444,
+          "log_standard_error": 0.031602145215353386,
+          "anchor_valid": true,
+          "skeleton_defect_log": 0.2744481584537529,
+          "skeleton_defect_valid": true,
+          "anchor_log_shift": 0.0013053208774544411,
+          "C_S_anchored": 2.8045862283843798e-05,
+          "ln_C_S_anchored": -10.48166944903899,
+          "naive_defect_log": 0.2737265723924216,
+          "naive_log_shift": 0.0020269069387857663,
+          "ln_C_S_naive": -10.480947862977658,
+          "transfer_error_log": 1.8166301482958165,
+          "anchored_skeleton_error_log": 1.8153248274183618,
+          "combined_log_standard_error": 0.04112138230065388,
+          "relative_error_unanchored": -0.8374273253047961,
+          "relative_error_skeleton": -0.8372149772373809,
+          "anchored_naive_error_log": 1.8146032413570303
+        }
+      },
+      "nested_sensitivity": {
+        "unanchored_1d_to_rph": {
+          "beta": 1578.8751240199356,
+          "steps": [
+            {
+              "from": 1,
+              "to": 2,
+              "log_change": -1.673552313819803,
+              "standard_error": 0.04364489858774035,
+              "status": "changed",
+              "settled": false
+            }
+          ],
+          "factors": {
+            "1": 0.00014931946958961117,
+            "2": 2.800927731703362e-05
+          },
+          "recommended_dimension": 2,
+          "tolerance": 0.05,
+          "full_budget_used": true
+        },
+        "skeleton_anchored_1d_to_rph": {
+          "beta": 1578.8751240199356,
+          "steps": [
+            {
+              "from": 1,
+              "to": 2,
+              "log_change": -1.7674251103658172,
+              "standard_error": 0.04364489858774035,
+              "status": "changed",
+              "settled": false
+            }
+          ],
+          "factors": {
+            "1": 0.00016422972654769183,
+            "2": 2.8045862283843798e-05
+          },
+          "recommended_dimension": 2,
+          "tolerance": 0.05,
+          "full_budget_used": true
+        }
+      },
+      "exact_general_rate_claim": false,
+      "wall_seconds": 1341.744027853012
+    },
+    "leps_ion_complex_9d_220K": {
+      "key": "leps_ion_complex_9d_220K",
+      "suite_key": "leps_ion_complex_9d",
+      "topology": "molecular_cartesian_3atom_complex",
+      "dimension": 9,
+      "rigid_body": true,
+      "temperature_K": 220.0,
+      "beta": 1435.341021836305,
+      "nbeads": 48,
+      "crossover_temperature_K": 376.53713922767264,
+      "t_over_tc": 0.584271714740408,
+      "barrier_energy_eh": -0.16942729144628701,
+      "barrier_submerged": false,
+      "reactant_end_energy_eh": -0.17441857441888528,
+      "product_end_energy_eh": -0.18963008788066715,
+      "path": {
+        "points": 324,
+        "seconds": 3.2290382385253906,
+        "imaginary_frequency_cm": 1644.2603298947838,
+        "reactant_status": "coordinate_target_reached",
+        "reactant_accepted": "reactant_reference",
+        "reactant_minima_climbed": 1,
+        "product_status": "asymptote_converged",
+        "product_accepted": "asymptote"
+      },
+      "full_instanton": {
+        "nbeads": 64,
+        "valid": true,
+        "below_crossover": true,
+        "factor": 1.4562781250430403,
+        "log_factor": 0.3758839514796502,
+        "spread": 27.289764627959144,
+        "phase_mode_relative_residual": 1.832810307484217e-05,
+        "seconds": 4.287555932998657,
+        "crosscheck": {
+          "optimize_instanton_factor": 1.4562698756520969,
+          "optimize_instanton_log_factor": 0.37587828675519486,
+          "log_difference": 5.664724455345382e-06
+        }
+      },
+      "full_reference": null,
+      "subspace": {
+        "1d": {
+          "dimension": 1,
+          "shape": [
+            577
+          ],
+          "captured_curvature": null,
+          "bath_stable": true,
+          "quantum": {
+            "rate": 0.0001803714001460803,
+            "method": "sylvester",
+            "retained_points": 577,
+            "seconds": 3.4580702781677246
+          },
+          "rpmd": {
+            "rate": 0.00017808929809553172,
+            "rate_standard_error": 5.8258593807509555e-05,
+            "log_standard_error": 0.32713135730513204,
+            "transmission": 0.9280456250265007,
+            "seconds": 221.83588290214539
+          },
+          "C_S": 1.0128143693919462,
+          "ln_C_S": 0.012732960095385534,
+          "log_standard_error": 0.32713135730513204,
+          "anchor_valid": true,
+          "skeleton_defect_log": 0.33514078979741396,
+          "skeleton_defect_valid": true,
+          "anchor_log_shift": 0.04074316168223624,
+          "C_S_anchored": 1.054931801570692,
+          "ln_C_S_anchored": 0.05347612177762176,
+          "naive_defect_log": null,
+          "naive_log_shift": null,
+          "ln_C_S_naive": null,
+          "vs_rph_unanchored_log": 0.13817798921301283,
+          "vs_rph_skeleton_log": 0.098033318236778,
+          "vs_rph_log_standard_error": 0.3402651716163767
+        },
+        "1d_sct": {
+          "dimension": 1,
+          "shape": [
+            577
+          ],
+          "captured_curvature": null,
+          "bath_stable": true,
+          "quantum": {
+            "rate": 0.0004164915827665161,
+            "method": "sylvester",
+            "retained_points": 577,
+            "seconds": 1.8220195770263672
+          },
+          "rpmd": {
+            "rate": 0.0003154632052456506,
+            "rate_standard_error": 8.737199652027162e-05,
+            "log_standard_error": 0.2769641437334513,
+            "transmission": 0.83777693380873,
+            "seconds": 246.09657287597656
+          },
+          "C_S": 1.3202540766749482,
+          "ln_C_S": 0.27782420040543887,
+          "log_standard_error": 0.2769641437334513,
+          "anchor_valid": true,
+          "skeleton_defect_log": 0.42659442277832466,
+          "skeleton_defect_valid": true,
+          "anchor_log_shift": -0.05071047129867445,
+          "C_S_anchored": 1.2549725867357882,
+          "ln_C_S_anchored": 0.2271137291067644,
+          "naive_defect_log": -0.00986059422414941,
+          "naive_log_shift": 0.3857445457037996,
+          "ln_C_S_naive": 0.6635687461092385,
+          "vs_rph_unanchored_log": -0.12691325109704052,
+          "vs_rph_skeleton_log": -0.07560428909236463,
+          "vs_rph_log_standard_error": 0.2923603923188437
+        },
+        "rph": {
+          "dimension": 2,
+          "shape": [
+            166,
+            110
+          ],
+          "captured_curvature": 0.9999999999654332,
+          "bath_stable": true,
+          "quantum": {
+            "rate": 0.00040919401004201354,
+            "method": "sylvester",
+            "retained_points": 3231,
+            "seconds": 78.3920202255249
+          },
+          "rpmd": {
+            "rate": 0.00035187586123340705,
+            "rate_standard_error": 3.294404199394973e-05,
+            "log_standard_error": 0.09362404649887937,
+            "transmission": 0.48554228231443125,
+            "seconds": 495.70265769958496
+          },
+          "C_S": 1.1628930970362474,
+          "ln_C_S": 0.15091094930839835,
+          "log_standard_error": 0.09362404649887937,
+          "anchor_valid": true,
+          "skeleton_defect_log": 0.3752854607736488,
+          "skeleton_defect_valid": true,
+          "anchor_log_shift": 0.0005984907060013755,
+          "C_S_anchored": 1.1635892860574455,
+          "ln_C_S_anchored": 0.15150944001439975,
+          "naive_defect_log": null,
+          "naive_log_shift": null,
+          "ln_C_S_naive": null,
+          "vs_rph_unanchored_log": 0.0,
+          "vs_rph_skeleton_log": 0.0,
+          "vs_rph_log_standard_error": 0.0
+        }
+      },
+      "nested_sensitivity": {
+        "unanchored_1d_to_rph": {
+          "beta": 1435.341021836305,
+          "steps": [
+            {
+              "from": 1,
+              "to": 2,
+              "log_change": 0.13817798921301283,
+              "standard_error": 0.3402651716163767,
+              "status": "undetermined",
+              "settled": false
+            }
+          ],
+          "factors": {
+            "1": 1.0128143693919462,
+            "2": 1.1628930970362474
+          },
+          "recommended_dimension": null,
+          "tolerance": 0.05,
+          "full_budget_used": false
+        },
+        "skeleton_anchored_1d_to_rph": {
+          "beta": 1435.341021836305,
+          "steps": [
+            {
+              "from": 1,
+              "to": 2,
+              "log_change": 0.098033318236778,
+              "standard_error": 0.3402651716163767,
+              "status": "undetermined",
+              "settled": false
+            }
+          ],
+          "factors": {
+            "1": 1.054931801570692,
+            "2": 1.1635892860574455
+          },
+          "recommended_dimension": null,
+          "tolerance": 0.05,
+          "full_budget_used": false
+        }
+      },
+      "exact_general_rate_claim": false,
+      "wall_seconds": 1100.1717250347137
+    },
+    "leps_ion_complex_9d_180K": {
+      "key": "leps_ion_complex_9d_180K",
+      "suite_key": "leps_ion_complex_9d",
+      "topology": "molecular_cartesian_3atom_complex",
+      "dimension": 9,
+      "rigid_body": true,
+      "temperature_K": 180.0,
+      "beta": 1754.3056933554838,
+      "nbeads": 64,
+      "crossover_temperature_K": 376.53713922767264,
+      "t_over_tc": 0.4780404938785156,
+      "barrier_energy_eh": -0.16942729144628701,
+      "barrier_submerged": false,
+      "reactant_end_energy_eh": -0.17441857441888528,
+      "product_end_energy_eh": -0.18963008788066715,
+      "path": {
+        "points": 324,
+        "seconds": 3.3902738094329834,
+        "imaginary_frequency_cm": 1644.2603298947838,
+        "reactant_status": "coordinate_target_reached",
+        "reactant_accepted": "reactant_reference",
+        "reactant_minima_climbed": 1,
+        "product_status": "asymptote_converged",
+        "product_accepted": "asymptote"
+      },
+      "full_instanton": {
+        "nbeads": 64,
+        "valid": true,
+        "below_crossover": true,
+        "factor": 1.483202041592779,
+        "log_factor": 0.39420329230691714,
+        "spread": 32.718864609301406,
+        "phase_mode_relative_residual": 0.0001323475808997682,
+        "seconds": 9.413855075836182,
+        "crosscheck": {
+          "optimize_instanton_factor": 1.4831901598250148,
+          "optimize_instanton_log_factor": 0.3941952813852605,
+          "log_difference": 8.010921656642633e-06
+        }
+      },
+      "full_reference": null,
+      "subspace": {
+        "1d": {
+          "dimension": 1,
+          "shape": [
+            550
+          ],
+          "captured_curvature": null,
+          "bath_stable": true,
+          "quantum": {
+            "rate": 8.490935907286222e-05,
+            "method": "sylvester",
+            "retained_points": 550,
+            "seconds": 3.7371063232421875
+          },
+          "rpmd": {
+            "rate": 8.138617232296385e-05,
+            "rate_standard_error": 3.020373806748045e-05,
+            "log_standard_error": 0.37111633592526366,
+            "transmission": 0.8775812886378034,
+            "seconds": 51.60110545158386
+          },
+          "C_S": 1.0432897462718524,
+          "ln_C_S": 0.042378938275036346,
+          "log_standard_error": 0.37111633592526366,
+          "anchor_valid": true,
+          "skeleton_defect_log": 0.370344199043057,
+          "skeleton_defect_valid": true,
+          "anchor_log_shift": 0.023859093263860154,
+          "C_S_anchored": 1.068481019080108,
+          "ln_C_S_anchored": 0.06623803153889649,
+          "naive_defect_log": -0.039333518004129396,
+          "naive_log_shift": 0.4335368103110465,
+          "ln_C_S_naive": 0.4759157485860829,
+          "vs_rph_unanchored_log": -0.1471148759971595,
+          "vs_rph_skeleton_log": -0.16998254085660547,
+          "vs_rph_log_standard_error": 0.3944734369646112
+        },
+        "1d_sct": {
+          "dimension": 1,
+          "shape": [
+            550
+          ],
+          "captured_curvature": null,
+          "bath_stable": true,
+          "quantum": {
+            "rate": 0.00027558621203548544,
+            "method": "sylvester",
+            "retained_points": 550,
+            "seconds": 1.981687307357788
+          },
+          "rpmd": {
+            "rate": 0.0006570086902123332,
+            "rate_standard_error": 0.00021506120960737741,
+            "log_standard_error": 0.3273338888985982,
+            "transmission": 0.7247175421065801,
+            "seconds": 57.3555428981781
+          },
+          "C_S": 0.41945596175664135,
+          "ln_C_S": -0.868796736519554,
+          "log_standard_error": 0.3273338888985982,
+          "anchor_valid": true,
+          "skeleton_defect_log": 0.3929248545796113,
+          "skeleton_defect_valid": true,
+          "anchor_log_shift": 0.0012784377273058478,
+          "C_S_anchored": 0.4199925530092613,
+          "ln_C_S_anchored": -0.8675182987922481,
+          "naive_defect_log": null,
+          "naive_log_shift": null,
+          "ln_C_S_naive": null,
+          "vs_rph_unanchored_log": 0.7640607987974308,
+          "vs_rph_skeleton_log": 0.7637737894745391,
+          "vs_rph_log_standard_error": 0.3535950119862549
+        },
+        "rph": {
+          "dimension": 2,
+          "shape": [
+            177,
+            117
+          ],
+          "captured_curvature": 0.9999999999626717,
+          "bath_stable": true,
+          "quantum": {
+            "rate": 0.00017164261844029082,
+            "method": "sylvester",
+            "retained_points": 3431,
+            "seconds": 94.53654098510742
+          },
+          "rpmd": {
+            "rate": 0.0001905949419107826,
+            "rate_standard_error": 2.5487010761989646e-05,
+            "log_standard_error": 0.1337234372878589,
+            "transmission": 0.2284418787396011,
+            "seconds": 148.06501841545105
+          },
+          "C_S": 0.9005622957226045,
+          "ln_C_S": -0.10473593772212315,
+          "log_standard_error": 0.1337234372878589,
+          "anchor_valid": true,
+          "skeleton_defect_log": 0.39321186390250296,
+          "skeleton_defect_valid": true,
+          "anchor_log_shift": 0.0009914284044141852,
+          "C_S_anchored": 0.9014555815038069,
+          "ln_C_S_anchored": -0.10374450931770897,
+          "naive_defect_log": null,
+          "naive_log_shift": null,
+          "ln_C_S_naive": null,
+          "vs_rph_unanchored_log": 0.0,
+          "vs_rph_skeleton_log": 0.0,
+          "vs_rph_log_standard_error": 0.0
+        }
+      },
+      "nested_sensitivity": {
+        "unanchored_1d_to_rph": {
+          "beta": 1754.3056933554838,
+          "steps": [
+            {
+              "from": 1,
+              "to": 2,
+              "log_change": -0.1471148759971595,
+              "standard_error": 0.3944734369646112,
+              "status": "undetermined",
+              "settled": false
+            }
+          ],
+          "factors": {
+            "1": 1.0432897462718524,
+            "2": 0.9005622957226045
+          },
+          "recommended_dimension": null,
+          "tolerance": 0.05,
+          "full_budget_used": false
+        },
+        "skeleton_anchored_1d_to_rph": {
+          "beta": 1754.3056933554838,
+          "steps": [
+            {
+              "from": 1,
+              "to": 2,
+              "log_change": -0.16998254085660547,
+              "standard_error": 0.3944734369646112,
+              "status": "undetermined",
+              "settled": false
+            }
+          ],
+          "factors": {
+            "1": 1.068481019080108,
+            "2": 0.9014555815038069
+          },
+          "recommended_dimension": null,
+          "tolerance": 0.05,
+          "full_budget_used": false
+        }
+      },
+      "exact_general_rate_claim": false,
+      "wall_seconds": 429.6112976074219
+    }
+  },
+  "exact_general_rate_claim": false
+}
