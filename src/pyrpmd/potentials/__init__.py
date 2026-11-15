@@ -117,12 +117,16 @@ def validate_periodic_spec(config, system=None, *, _nested=False):
         if not isinstance(config.get("virial", params.get("virial", False)), (bool, np.bool_)):
             raise PotentialError("batched ML virial must be a boolean")
         max_batch_frames = config.get("max_batch_frames", params.get("max_batch_frames"))
-        if max_batch_frames is not None and (
+        if max_batch_frames is not None and not (
+            isinstance(max_batch_frames, str) and max_batch_frames == "auto"
+        ) and (
             isinstance(max_batch_frames, (bool, np.bool_))
             or not isinstance(max_batch_frames, (int, np.integer))
             or int(max_batch_frames) < 1
         ):
-            raise PotentialError("batched ML max_batch_frames must be a positive integer")
+            raise PotentialError(
+                "batched ML max_batch_frames must be a positive integer or 'auto'"
+            )
     if periodic and kind in ("rpmdrate", "f2py", "diabatic_python", "pyscf"):
         raise PotentialError(
             f"Provider {kind!r} has no periodic cell/PBC contract"

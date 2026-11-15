@@ -377,3 +377,44 @@ def test_mace_cuda_chunking_matches_unchunked_and_preserves_stream(custom_stream
     assert torch.max(torch.abs(actual.energy - expected.energy)).item() < 1e-13
     assert torch.max(torch.abs(actual.forces - expected.forces)).item() < 1e-13
     assert torch.max(torch.abs(actual.virial - expected.virial)).item() < 1e-13
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is unavailable")
+def test_mace_cuda_auto_max_batch_frames_calibrates_from_vram():
+    model = make_random_mace(dtype="float64")
+    q, cell = _geometry(6)
+    symbols = ["D", "T", "H", "O"]
+    pbc = [True, True, True]
+    with MACEBatchedPotential(symbols, deepcopy(model), device="cuda:0", dtype="float64",
+                              cell=cell, pbc=pbc, virial=True) as full, \
+         MACEBatchedPotential(symbols, model, device="cuda:0", dtype="float64",
+                              cell=cell, pbc=pbc, virial=True,
+                              max_batch_frames="auto") as auto_pes:
+        assert auto_pes.max_batch_frames == "auto"
+        assert auto_pes.resolved_max_batch_frames is None
+        assert "model_calls_per_batch" not in auto_pes.metadata
+        tensor = torch.as_tensor(q, dtype=torch.float64, device="cuda:0")
+        expected = full.evaluate_tensor(tensor)
+        actual = auto_pes.evaluate_tensor(tensor)
+        resolved = auto_pes.resolved_max_batch_frames
+        assert isinstance(resolved, int) and resolved >= 1
+        assert auto_pes.metadata["resolved_max_batch_frames"] == resolved
+        assert auto_pes.as_torch_pes().metadata["resolved_max_batch_frames"] == resolved
+        seen_second = []
+
+        def rec_second(_, args):
+            seen_second.append(len(args[0]["ptr"]) - 1)
+
+        hook = auto_pes.model.register_forward_pre_hook(rec_second)
+        try:
+            second = auto_pes.evaluate_tensor(tensor)
+        finally:
+            hook.remove()
+    expected_second = [6] if resolved >= 6 else [
+        min(resolved, 6 - s) for s in range(0, 6, resolved)
+    ]
+    assert seen_second == expected_second
+    assert torch.max(torch.abs(second.energy - expected.energy)).item() < 1e-13
+    assert torch.max(torch.abs(actual.energy - expected.energy)).item() < 1e-13
+    assert torch.max(torch.abs(actual.forces - expected.forces)).item() < 1e-13
+    assert torch.max(torch.abs(actual.virial - expected.virial)).item() < 1e-13

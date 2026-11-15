@@ -92,12 +92,16 @@ model. Do not reduce the physical bead count merely to fit a performance
 target. When a full `K * P` batch exceeds device memory (for example, `float64`
 equivariant MACE evaluation on dense periodic condensed-phase cells on 16 GiB
 GPUs), configure `potential.params.max_batch_frames` (or `max_batch_frames=...`
-in Python) to a positive integer upfront. The provider deterministically
-partitions `[F,N,3]` inputs along axis 0 into contiguous slices of at most
-`max_batch_frames` frames, releases per-chunk intermediate autograd graphs
-immediately, and concatenates the device results. There is no automatic
-post-failure microbatching, per-frame inference retry or CPU fallback after an
-out-of-memory or model error.
+in Python) upfront to a positive integer or `"auto"`. With `"auto"` on CUDA
+devices, the provider measures single-frame activation memory and live free GPU
+VRAM on the first evaluation (`metadata["resolved_max_batch_frames"]`) and
+selects a safe sub-batch frame cap with headroom for allocator fragmentation and
+neighbor fluctuations. The provider deterministically partitions `[F,N,3]`
+inputs along axis 0 into contiguous slices of at most `resolved_max_batch_frames`
+frames, releases per-chunk intermediate autograd graphs immediately, and
+concatenates the device results. There is no automatic post-failure
+microbatching, per-frame inference retry or CPU fallback after an out-of-memory
+or model error.
 
 The complete example input is
 [`examples/potentials/batched_ml.inp`](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/potentials/batched_ml.inp).

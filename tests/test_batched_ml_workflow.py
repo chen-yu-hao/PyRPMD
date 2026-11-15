@@ -132,3 +132,9 @@ def test_public_pimd_batches_isotopes_and_resumes_regrouped(model_path, periodic
         run(chunked_resume, output=tmp_path / "resumed_chunked", resume=True)
     assert max(frames) == 5 and set(frames) == {1, 4, 5}
     _assert_streams_equal(resolved, system, reference, tmp_path / "resumed_chunked")
+
+    auto_cfg = copy.deepcopy(config)
+    auto_cfg["parallel"]["trajectory_batch_size"] = 2
+    auto_cfg["potential"]["params"] = {"max_batch_frames": "auto"}
+    run(auto_cfg, output=tmp_path / "auto_chunked")
+    _assert_streams_equal(resolved, system, reference, tmp_path / "auto_chunked")
