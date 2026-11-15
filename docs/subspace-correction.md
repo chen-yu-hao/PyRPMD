@@ -54,6 +54,10 @@ unconverged_path = "reject"   # both path continuations must end at an accepted 
 unstable_bath = "reject"      # the transverse Hessian of the path model must be stable
 outside_grid = "reject"       # the RPMD estimator must stay on the V_S grid
 max_outside_fraction = 0.01
+submerged_surface = "reject"  # the RPMD dividing surface must be the free-energy bottleneck
+max_submerged_kt = 1.0
+folded_ribbon = "reject"      # an RPH 2D path may not bend more tightly than its transverse mode is wide
+max_curvature_width = 0.5
 on_invalid = "stop"           # or "diagnose": solve a rejected model anyway, never apply it
 ```
 
@@ -167,7 +171,7 @@ compatibility and calls the same numerical pipeline.
 ### Validity gates
 
 A positive `k_QM(H_S) / k_RPMD(H_S)` is not yet a correction factor: the ratio
-is only meaningful if `H_S` is a valid model. Three gates are evaluated, and a
+is only meaningful if `H_S` is a valid model. Five gates are evaluated, and a
 model that fails one is recorded but never applied.
 
 | Gate | Passes when | Evidence in `subspace_pipeline.json` |
@@ -175,7 +179,27 @@ model that fails one is recorded but never applied.
 | `path` | both continuations ended at an accepted terminus — `asymptote_converged`, the reactant reference `xi <= reactant_xi` after climbing out of a complex, or a product well `product_drop_kt` below the barrier — and the 1D reactant reference slice lies in the free reactant channel | `path.reactant_termination`, `path.product_termination` (status, `accepted`, `reason`, steps, arc length, trailing energy range, end energy, drop below the barrier top, `minima`, `exit_coordinate`); `reactant_reference` |
 | `bath` | no normal-plane curvature below `-soft_mode_frequency**2` along the 1D path model | `models.1.model_construction.significant_unstable` (arc length, imaginary frequency, character) |
 | `grid` | at most `max_outside_fraction` of the ring-polymer estimator saw `V_S` outside its grid | `corrections.D.rpmd.diagnostics.grid_exit` |
+| `ribbon` | (RPH 2D model) the path's curvature times the transverse width, `kappa / sqrt(2 omega_n)`, stays at most `max_curvature_width` from the reference slice to the product absorber | `models.2.model_construction.ribbon_fold` |
+| `surface` | the RPMD dividing surface lies at most `max_submerged_kt` below the centroid free-energy maximum between the reactant reference and the surface | `corrections.D.rpmd.diagnostics.free_energy_bottleneck` |
 | `solver` | the planned quantum route accepts the model's options and size, and the tasks fit the execution memory budget | `solver_plans.D` (also `models.D.solver_plan`) |
+
+**Ribbon.** The RPH coordinates `x = w(s) + q n(s)` fold at `q = 1 / kappa`. When the
+radius of curvature is comparable to the width `sigma = 1 / sqrt(2 omega_n)` of the transverse
+ground state, the fold lies inside the wavefunction and the reaction-path Hamiltonian no
+longer describes the system (the large-curvature regime). The validated curved valleys have
+`kappa * sigma` of 0.21 to 0.25; on a model with deep complexes and a tight bend at the saddle
+(0.56) the RPH quantum rate came out 66% too high. Use `model_2d = "plane"` there.
+
+**Surface.** The Bennett–Chandler rate does not depend on the dividing surface only if the
+transmission coefficient is converged to its long-time value. A barrier submerged below the
+reactant asymptote, behind an ion–dipole complex, is not the bottleneck: the centroid free
+energy at it lies below that of the entrance channel, so QTST through it exceeds the rate the
+entrance channel allows by up to `exp(beta * depth)`, and trajectories trapped in the complex
+keep recrossing far longer than any recrossing run. On a 6D submerged-barrier model the RPMD
+rate through the barrier came out 2300 times the free-particle flux with a transmission
+coefficient still at 0.79. The gate refuses such a factor and reports where the free-energy
+maximum is; the RPMD surface belongs there. The quantum rate, computed with absorbers, does
+not depend on the surface.
 
 **Path.** The continuations have no step budget. How far an asymptote lies is a
 property of the potential — an ion–dipole tail needs far more steps than a

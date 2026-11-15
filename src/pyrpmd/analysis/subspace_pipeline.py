@@ -1101,6 +1101,27 @@ def _rph_product_start(energies, k_top, beta, drop_kt, reference_kt):
     return found.get(criterion, len(energies) - 1), criterion
 
 
+def _ribbon_fold(development, arcs, normal_curvature, start, stop) -> dict:
+    """Largest ``|kappa| * sigma`` between ``start`` and ``stop`` on the path.
+
+    The ribbon coordinates ``x = w(s) + q n(s)`` fold at ``q = 1 / kappa``.  The
+    transverse ground state has width ``sigma = 1 / sqrt(2 omega_n)``, so with
+    ``kappa * sigma`` near one the fold lies inside the wavefunction and the RPH
+    Hamiltonian does not describe the system there (the large-curvature regime).
+    """
+    arcs = np.asarray(arcs, dtype=float)
+    keep = (arcs >= start) & (arcs <= stop) & (np.asarray(normal_curvature) > 0)
+    if not keep.any():
+        return {"max_curvature_width": None, "arc": None, "radius": None, "width": None}
+    kappa = np.abs(np.interp(arcs[keep], development.s, development.kappa))
+    width = 1.0 / np.sqrt(2.0 * np.sqrt(np.asarray(normal_curvature)[keep]))
+    product = kappa * width
+    k = int(np.argmax(product))
+    return {"max_curvature_width": float(product[k]), "arc": float(arcs[keep][k]),
+            "radius": float(1.0 / kappa[k]) if kappa[k] > 0 else None, "width": float(width[k]),
+            "definition": "max |kappa| / sqrt(2 omega_n) from the reference slice to the product absorber"}
+
+
 def rph_model(run: RateRun, path, options: Mapping[str, Any]):
     """2D reaction-path Hamiltonian on the MEP: arc length x the curvature normal (:mod:`.subspace_rph`).
 
@@ -1174,6 +1195,7 @@ def rph_model(run: RateRun, path, options: Mapping[str, Any]):
                     soft_mode_frequency=float(validity.get("soft_mode_frequency", 2.3e-4)))
     positive = bath["normal_curvature"][bath["normal_curvature"] > 0]
     sigma = float(np.min(1.0 / np.sqrt(2.0 * np.sqrt(positive)))) if positive.size else 5.0
+    ribbon_fold = _ribbon_fold(development, bath_arcs, bath["normal_curvature"], reference_arc, absorb_hi)
     half_width = max(padding, 6.0 * float(np.max(1.0 / np.sqrt(2.0 * np.sqrt(positive)))) if positive.size else padding)
     needed_extend = max(0.0, -box_lo, box_hi - float(arc[-1])) + 1.5 * half_width
     if needed_extend > extend + 1e-9:
@@ -1211,7 +1233,7 @@ def rph_model(run: RateRun, path, options: Mapping[str, Any]):
                       unstable_characters=bath["unstable_characters"],
                       minimum_complement_curvature=bath["minimum_complement_curvature"],
                       soft_complement_points=bath["soft_complement_points"],
-                      captured_curvature=development.captured_curvature,
+                      captured_curvature=development.captured_curvature, ribbon_fold=ribbon_fold,
                       **_model_provenance(path_info, validity))
     rpmd_model = SubspaceModel(tuple(axes), values, (1.0, 1.0), float(surface_point[0, 0]), "asymptotic",
                                float(reference_point[0, 0]), provenance, bare_values=bare_used)
