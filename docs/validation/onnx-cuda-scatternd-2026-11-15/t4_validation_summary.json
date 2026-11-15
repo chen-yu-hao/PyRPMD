@@ -1,0 +1,132 @@
+{
+  "date": "2026-11-15",
+  "issue": 202,
+  "environment": {
+    "gpu": "NVIDIA Tesla T4 (compute capability 7.5, 15360 MiB)",
+    "nvidia_driver": "580.82.07",
+    "os": "Linux 6.6.159+ x86_64",
+    "cxx_compiler": "GNU 13.3.0",
+    "cuda_toolkit": "13.0.88",
+    "cmake": "3.31.10",
+    "nlohmann_json": "3.11.3",
+    "python": "3.11.17",
+    "export_stack": {
+      "jaxpip_commit": "a18c8cca1e795202194d4082919ebd71722df125",
+      "jaxpip": "1.0.0",
+      "jax": "0.9.0",
+      "equinox": "0.13.2",
+      "jax2onnx": "0.17.1",
+      "onnx": "1.20.1",
+      "onnx_ir": "1.1.0",
+      "onnxruntime_cpu": "1.24.1"
+    },
+    "gpu_runtime_sdk": "onnxruntime-linux-x64-gpu-1.32.0 (CUDA 13)",
+    "cpu_runtime_sdk": "onnxruntime-linux-x64-1.24.1"
+  },
+  "cuda_ep_partitioning": {
+    "allow_cpu_fallback": false,
+    "session_disable_cpu_ep_fallback": "1",
+    "models": {
+      "linear_morse_3atom": {
+        "sha256": "ed0e08c1714fd4d39ed85f19cd658ac697efa95b2115a139aadd31233bb4ae70",
+        "cuda_ep_nodes": 87,
+        "cpu_ep_nodes": 0,
+        "ort_warnings": 0
+      },
+      "nn_tanh_morse_3atom": {
+        "sha256": "5d87b84239ba3b80e91056aa385a01ddb5420a8f3e3f5aa5a2d8dd13a9fedbb9",
+        "cuda_ep_nodes": 112,
+        "cpu_ep_nodes": 0,
+        "ort_warnings": 0
+      },
+      "nn_isru_reciprocal_4atom": {
+        "sha256": "fac9bda7c09b9383695f19dde779f6f3b0675b079432393f45d5cde912747b87",
+        "cuda_ep_nodes": 139,
+        "cpu_ep_nodes": 0,
+        "ort_warnings": 0
+      }
+    }
+  },
+  "jaxpip_roundtrip_cuda0": {
+    "linear": {
+      "device": "cuda:0",
+      "capabilities": {
+        "allow_cpu_fallback": false,
+        "float64_cuda_scatter_nd": true,
+        "host_memory": true,
+        "independent_contexts": true,
+        "native_batch": true,
+        "stateful": false
+      },
+      "load_seconds": 0.079472879,
+      "batch_errors_vs_jax": {
+        "1": {"energy_hartree": 0.0, "forces_hartree_per_bohr": 3.3881317890172014e-21},
+        "8": {"energy_hartree": 4.336808689942018e-19, "forces_hartree_per_bohr": 2.710505431213761e-20},
+        "32": {"energy_hartree": 4.336808689942018e-19, "forces_hartree_per_bohr": 2.710505431213761e-20},
+        "128": {"energy_hartree": 4.336808689942018e-19, "forces_hartree_per_bohr": 2.710505431213761e-20}
+      },
+      "batch_errors_vs_cpu_ort": {
+        "1": {"energy_hartree": 4.336808689942018e-19, "forces_hartree_per_bohr": 3.3881317890172014e-20},
+        "8": {"energy_hartree": 4.336808689942018e-19, "forces_hartree_per_bohr": 5.421010862427522e-20},
+        "32": {"energy_hartree": 4.336808689942018e-19, "forces_hartree_per_bohr": 4.743384504624082e-20},
+        "128": {"energy_hartree": 4.336808689942018e-19, "forces_hartree_per_bohr": 4.743384504624082e-20}
+      },
+      "timings_seconds_per_call": {
+        "1": {"native_abi_from_python_seconds": 0.00079399458, "jax_jit_from_python_seconds": 0.00117273952},
+        "8": {"native_abi_from_python_seconds": 0.00125297972, "jax_jit_from_python_seconds": 0.0015156618},
+        "32": {"native_abi_from_python_seconds": 0.0011474689, "jax_jit_from_python_seconds": 0.00136553926},
+        "128": {"native_abi_from_python_seconds": 0.00122964184, "jax_jit_from_python_seconds": 0.00146737996}
+      },
+      "native_block_100_steps_seconds": 0.09272253,
+      "python_block_100_steps_seconds": 0.152349316,
+      "energy_range_hartree": 4.524158825347513e-15
+    },
+    "nn": {
+      "device": "cuda:0",
+      "capabilities": {
+        "allow_cpu_fallback": false,
+        "float64_cuda_scatter_nd": true,
+        "host_memory": true,
+        "independent_contexts": true,
+        "native_batch": true,
+        "stateful": false
+      },
+      "load_seconds": 0.036432519,
+      "batch_errors_vs_jax": {
+        "1": {"energy_hartree": 0.0, "forces_hartree_per_bohr": 6.505213034913027e-19},
+        "8": {"energy_hartree": 2.927345865710862e-18, "forces_hartree_per_bohr": 2.0816681711721685e-17},
+        "32": {"energy_hartree": 2.927345865710862e-18, "forces_hartree_per_bohr": 1.9949319973733282e-17},
+        "128": {"energy_hartree": 2.927345865710862e-18, "forces_hartree_per_bohr": 1.9949319973733282e-17}
+      },
+      "batch_errors_vs_cpu_ort": {
+        "1": {"energy_hartree": 9.486769009248164e-20, "forces_hartree_per_bohr": 6.5052130349130266e-18},
+        "8": {"energy_hartree": 2.1412992906588713e-18, "forces_hartree_per_bohr": 2.3852447794681098e-17},
+        "32": {"energy_hartree": 2.1412992906588713e-18, "forces_hartree_per_bohr": 2.3852447794681098e-17},
+        "128": {"energy_hartree": 2.1412992906588713e-18, "forces_hartree_per_bohr": 2.3852447794681098e-17}
+      },
+      "timings_seconds_per_call": {
+        "1": {"native_abi_from_python_seconds": 0.0009939006, "jax_jit_from_python_seconds": 0.00118312742},
+        "8": {"native_abi_from_python_seconds": 0.00109019594, "jax_jit_from_python_seconds": 0.00130171694},
+        "32": {"native_abi_from_python_seconds": 0.00117867692, "jax_jit_from_python_seconds": 0.00137523032},
+        "128": {"native_abi_from_python_seconds": 0.00114145156, "jax_jit_from_python_seconds": 0.00140676652}
+      },
+      "native_block_100_steps_seconds": 0.076884835,
+      "python_block_100_steps_seconds": 0.134666232,
+      "energy_range_hartree": 1.860927481989877e-12
+    }
+  },
+  "isru_reciprocal_4atom_cuda0": {
+    "batch_errors_vs_jax": {
+      "1": {"energy_hartree": 2.385e-18, "forces_hartree_per_bohr": 0.0},
+      "8": {"energy_hartree": 3.469e-18, "forces_hartree_per_bohr": 9.021e-17},
+      "32": {"energy_hartree": 6.039e-17, "forces_hartree_per_bohr": 2.082e-16},
+      "128": {"energy_hartree": 6.077e-17, "forces_hartree_per_bohr": 1.213e-15}
+    },
+    "batch_errors_vs_cpu_ort": {
+      "1": {"energy_hartree": 1.952e-18, "forces_hartree_per_bohr": 2.082e-17},
+      "8": {"energy_hartree": 2.927e-17, "forces_hartree_per_bohr": 1.062e-15},
+      "32": {"energy_hartree": 6.099e-17, "forces_hartree_per_bohr": 1.062e-15},
+      "128": {"energy_hartree": 1.216e-16, "forces_hartree_per_bohr": 2.044e-15}
+    }
+  }
+}

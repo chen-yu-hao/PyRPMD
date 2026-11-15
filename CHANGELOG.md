@@ -5,6 +5,24 @@ not been published as a new wheel release; no release date or DOI is assigned.
 
 ## Unreleased
 
+- Potentials and Torch workflows: add first-class zero-copy JAX DLPack potential
+  provider (`provider = "jax-dlpack"`, `JAXDLPackPotential`) and device-resident
+  `sampling.engine = "torch"` gas-phase rate workflow (`gpu_rate.py`,
+  `torch_rate.py`, issue #205). `JAXDLPackPotential` enforces `jax_enable_x64`
+  and `float64` precision on `"cpu"` or `"cuda[:index]"` without implicit device
+  or dtype fallback, compiles scalar $E(q)$ or `(energy, forces)` / mapping
+  callables via `jax.jit` / `jax.vmap` / `jax.value_and_grad` (including
+  periodic `(positions, cell, pbc)` and JAX AD strain virials plus
+  `max_frames_per_call` chunking), and hardens PyTorch/XLA DLPack handoff across
+  non-default `torch.cuda.Stream`s (`__dlpack__(stream=...)`, `record_stream`,
+  cross-stream CUDA event ordering, and retained output buffers).
+  `JaxPIPPotential` (`provider = "jaxpip"`) delegates its NumPy and `TorchPES`
+  DLPack paths to `JAXDLPackPotential` while preserving `pyrpmd.jaxpip-fit/1`
+  manifest and bounds checks, and `sampling.engine = "torch"` under
+  `task = "rate"` and `pimd`/`diffusion` accepts `jax-dlpack`, `jaxpip`,
+  `torch`, batched ML providers (`*-batched`, `metatomic`), and analytic
+  `free`/`harmonic`/`periodic_cosine` models while rejecting host-only or
+  `float32` configurations at preflight.
 - Instantons: `pyrpmd.instanton.steepest_descent_rpmd_defect(result)` returns
   `ln[2 pi / (beta hbar eta_1)]`, the steepest-descent part of
   `ln(k_QM / k_RPMD)` below the crossover temperature, from the eigenvalues an
@@ -39,6 +57,16 @@ not been published as a new wheel release; no release date or DOI is assigned.
 - Subspace correction: `exact_quantum_rate` checks a supplied absorber on
   the dividing surface instead of against end caps it does not use; the RPH
   model's channel stays open beyond its box for ring polymers.
+- Native ONNX PES (`native/onnx`): add optional `-DPYRPMD_ONNX_CUDA_KERNELS=ON`
+  custom float64 CUDA `ScatterND` operator (`none`, `add`, `mul`, `max`, `min`
+  reductions with `atomicAdd(double*, double)` accumulation and out-of-bounds
+  index detection) bound to `CUDAExecutionProvider` via a load-time custom
+  domain rewrite for float64 `ScatterND` nodes, keeping CPU builds free of CUDA
+  Toolkit dependencies and reporting `capabilities.float64_cuda_scatter_nd` in
+  provider metadata. `tools/export_jaxpip_onnx.py` also canonicalizes dynamic
+  batch shape helpers so exported `PolynomialLinearModel` and
+  `PolynomialNeuralNetwork` graphs execute on `cuda:<id>` with
+  `allow_cpu_fallback=false` and zero CPU fallback nodes (issue #202).
 
 - **Compatibility:** the subspace correction now builds its reaction path from
   the minimum-energy path by default (`path.source = "mep"`; previously

@@ -78,12 +78,52 @@ def test_new_provider_named_registry_dispatches_without_ase(kind):
     {"dtype": "float16"}, {"dtype": 64}, {"virial": "auto"},
     {"dtype": "float64", "params": {"dtype": "float32"}},
     {"virial": True, "params": {"virial": False}},
+    {"max_batch_frames": 0}, {"max_batch_frames": -1},
+    {"max_batch_frames": True}, {"max_batch_frames": False},
+    {"max_batch_frames": 1.5}, {"max_batch_frames": "2"},
+    {"max_batch_frames": "AUTO"}, {"max_batch_frames": ""},
+    {"params": {"max_batch_frames": 0}}, {"params": {"max_batch_frames": -2}},
+    {"params": {"max_batch_frames": True}}, {"params": {"max_batch_frames": 2.0}},
+    {"params": {"max_batch_frames": "none"}},
+    {"max_batch_frames": 2, "params": {"max_batch_frames": 4}},
+    {"max_batch_frames": "auto", "params": {"max_batch_frames": "auto"}},
 ])
 def test_schema_rejects_implicit_precision_and_ambiguous_options(option):
     config = small_collision()
     config["potential"] = {"provider": "mace-batched", "model": "missing.model", **option}
     with pytest.raises(InputError):
         JobSpec.from_mapping(config).resolve()
+
+
+def test_non_batched_provider_rejects_top_level_max_batch_frames():
+    with pytest.raises(PotentialError, match="batched ML"):
+        validate_periodic_spec({"provider": "builtin", "name": "harmonic", "max_batch_frames": 2})
+
+
+@pytest.mark.parametrize("kind", sorted(BATCHED_ML_PROVIDERS))
+@pytest.mark.parametrize("via_params", [True, False])
+@pytest.mark.parametrize("setting", [3, "auto"])
+def test_schema_accepts_and_forwards_max_batch_frames(kind, via_params, setting, tmp_path):
+    config = small_collision()
+    if via_params:
+        config["potential"] = {
+            "provider": kind, "model": "models/local.pt",
+            "params": {"max_batch_frames": setting},
+        }
+    else:
+        config["potential"] = {
+            "provider": kind, "model": "models/local.pt", "max_batch_frames": setting,
+        }
+    resolved, system = JobSpec.from_mapping(config, base_directory=tmp_path).resolve()
+    spec = resolved["potential"]
+    with patch("pyrpmd.potentials.adapters.make_named_potential") as factory:
+        make_potential(spec, system)
+    assert factory.call_args.args == (kind,)
+    assert factory.call_args.kwargs["params"]["max_batch_frames"] == setting
+    baseline = copy.deepcopy(resolved)
+    baseline["potential"].pop("max_batch_frames", None)
+    baseline["potential"].pop("params", None)
+    assert scientific_config(resolved) == scientific_config(baseline)
 
 
 @pytest.mark.parametrize("kind", sorted(BATCHED_ML_PROVIDERS))
@@ -164,10 +204,128 @@ def test_bad_tensor_contracts_fail_before_model_call():
 def test_batch_failure_is_not_retried_or_split():
     torch = pytest.importorskip("torch")
     pes = AnalyticBatch()
-    with patch.object(pes, "_evaluate_tensor", side_effect=RuntimeError("out of memory")) as evaluate:
-        with pytest.raises(PotentialError, match="out of memory"):
+    with patch.object(pes, "_evaluate_tensor", side_effect=RuntimeError("CUDA out of memory")) as evaluate:
+        with pytest.raises(PotentialError, match=r"out of memory.*max_batch_frames"):
             pes.evaluate_tensor(torch.ones((8, 2, 3), dtype=torch.float64))
     assert evaluate.call_count == 1
+
+    chunked = AnalyticBatch(max_batch_frames=3)
+    seen = []
+
+    def fail_second(q):
+        seen.append(len(q))
+        if len(seen) == 2:
+            raise RuntimeError("CUDA out of memory")
+        return AnalyticBatch._evaluate_tensor(chunked, q)
+
+    with patch.object(chunked, "_evaluate_tensor", side_effect=fail_second):
+        with pytest.raises(PotentialError, match=r"out of memory.*below 3"):
+            chunked.evaluate_tensor(torch.ones((8, 2, 3), dtype=torch.float64))
+    assert seen == [3, 3]
+
+
+@pytest.mark.parametrize("bad", [0, -1, True, False, 1.5, 2.0, "2", "AUTO", "", float("nan"), float("inf")])
+def test_invalid_max_batch_frames_rejected_at_construction(bad):
+    pytest.importorskip("torch")
+    with pytest.raises(ValueError, match="max_batch_frames"):
+        AnalyticBatch(max_batch_frames=bad)
+
+
+def test_auto_max_batch_frames_cpu_and_vram_calibration_contract():
+    torch = pytest.importorskip("torch")
+    mib = 1024 ** 2
+    q7 = torch.arange(42, dtype=torch.float64).reshape(7, 2, 3) / 10.0 + 0.05
+    ref = AnalyticBatch(virial=True).evaluate_tensor(q7)
+
+    # On CPU, 'auto' stays unchunked with zero extra calibration calls.
+    cpu_auto = AnalyticBatch(virial=True, max_batch_frames="auto")
+    assert cpu_auto.max_batch_frames == "auto"
+    assert cpu_auto.resolved_max_batch_frames is None
+    assert cpu_auto.metadata["max_batch_frames"] == "auto"
+    assert cpu_auto.metadata["resolved_max_batch_frames"] is None
+    cpu_out = cpu_auto.evaluate_tensor(q7)
+    assert cpu_auto.calls == 1
+    torch.testing.assert_close(cpu_out.energy, ref.energy, rtol=0.0, atol=1e-14)
+
+    # Simulate CUDA VRAM calibration: 1000 MiB/frame, 4600 MiB available -> int(4600*0.65 // 1000) == 2.
+    auto_pes = AnalyticBatch(
+        cell=np.eye(3) * 10.0, pbc=[True, True, True], virial=True, max_batch_frames="auto",
+    )
+    borrowed = auto_pes.as_torch_pes()
+    auto_pes._auto_calibrated = False
+    seen = []
+    real_eval = auto_pes._evaluate_tensor
+
+    with patch.object(auto_pes, "_evaluate_tensor", side_effect=lambda x: (seen.append(len(x)), real_eval(x))[1]), \
+         patch.object(torch.cuda, "memory_allocated", side_effect=[100 * mib, 102 * mib]), \
+         patch.object(torch.cuda, "reset_peak_memory_stats"), \
+         patch.object(torch.cuda, "max_memory_allocated", return_value=1100 * mib), \
+         patch.object(torch.cuda, "memory_reserved", return_value=1202 * mib), \
+         patch.object(torch.cuda, "mem_get_info", return_value=(3500 * mib, 16000 * mib)):
+        out1 = auto_pes.evaluate_tensor(q7)
+        assert auto_pes.resolved_max_batch_frames == 2
+        assert auto_pes.metadata["resolved_max_batch_frames"] == 2
+        assert borrowed.metadata["resolved_max_batch_frames"] == 2
+        assert seen == [1, 2, 2, 2, 1]
+        seen.clear()
+        out2 = auto_pes.evaluate_tensor(q7)
+        assert seen == [2, 2, 2, 1]
+    assert torch.equal(out1.energy, out2.energy)
+    torch.testing.assert_close(out2.energy, ref.energy, rtol=0.0, atol=1e-14)
+    torch.testing.assert_close(out2.forces, ref.forces, rtol=0.0, atol=1e-14)
+    torch.testing.assert_close(out2.virial, ref.virial, rtol=0.0, atol=1e-14)
+
+    # Small cell compression (<15%) keeps calibration; large compression (>15%) invalidates it.
+    auto_pes.set_cell(np.eye(3) * 9.8)
+    assert auto_pes.resolved_max_batch_frames == 2
+    auto_pes.set_cell(np.eye(3) * 8.0)
+    assert auto_pes.resolved_max_batch_frames is None
+    assert borrowed.metadata["resolved_max_batch_frames"] is None
+
+    # Tight VRAM -> resolved == 1 reuses the calibration frame without an extra model call.
+    auto_pes._auto_calibrated = False
+    seen.clear()
+    with patch.object(auto_pes, "_evaluate_tensor", side_effect=lambda x: (seen.append(len(x)), real_eval(x))[1]), \
+         patch.object(torch.cuda, "memory_allocated", side_effect=[100 * mib, 101 * mib]), \
+         patch.object(torch.cuda, "reset_peak_memory_stats"), \
+         patch.object(torch.cuda, "max_memory_allocated", return_value=1300 * mib), \
+         patch.object(torch.cuda, "memory_reserved", return_value=1351 * mib), \
+         patch.object(torch.cuda, "mem_get_info", return_value=(200 * mib, 16000 * mib)):
+        out_tight = auto_pes.evaluate_tensor(q7[:4])
+    assert auto_pes.resolved_max_batch_frames == 1
+    assert seen == [1, 1, 1, 1]
+    torch.testing.assert_close(out_tight.energy, ref.energy[:4], rtol=0.0, atol=1e-14)
+
+    # Rebinding system resets calibration.
+    auto_pes._auto_calibrated = True
+    auto_pes.bind_system({"symbols": ["H", "H"], "cell": np.eye(3) * 10.0, "pbc": [True, True, True]})
+    assert auto_pes.resolved_max_batch_frames is None
+
+
+@pytest.mark.parametrize("dtype", ["float64", "float32"])
+@pytest.mark.parametrize("virial", [False, True])
+@pytest.mark.parametrize("frames,expected_chunks", [(1, [1]), (2, [2]), (5, [2, 2, 1]), (7, [2, 2, 2, 1])])
+def test_deterministic_sub_batch_chunking_contract(dtype, virial, frames, expected_chunks):
+    torch = pytest.importorskip("torch")
+    full = AnalyticBatch(dtype=dtype, virial=virial)
+    chunked = AnalyticBatch(dtype=dtype, virial=virial, max_batch_frames=2)
+    assert full.metadata["max_batch_frames"] is None
+    assert chunked.metadata["max_batch_frames"] == 2
+    assert chunked.as_torch_pes().metadata["max_batch_frames"] == 2 if dtype == "float64" else True
+
+    seen = []
+    real_eval = chunked._evaluate_tensor
+    q = torch.arange(frames * 6, dtype=getattr(torch, dtype)).reshape(frames, 2, 3) / 10.0 + 0.05
+    expected = full.evaluate_tensor(q)
+    with patch.object(chunked, "_evaluate_tensor", side_effect=lambda x: (seen.append(len(x)), real_eval(x))[1]):
+        actual = chunked.evaluate_tensor(q)
+    assert seen == expected_chunks
+    torch.testing.assert_close(actual.energy, expected.energy, rtol=0.0, atol=1e-14)
+    torch.testing.assert_close(actual.forces, expected.forces, rtol=0.0, atol=1e-14)
+    if virial:
+        torch.testing.assert_close(actual.virial, expected.virial, rtol=0.0, atol=1e-14)
+    else:
+        assert actual.virial is None
 
 
 def test_native_reduction_dtypes_are_preserved_and_checked():

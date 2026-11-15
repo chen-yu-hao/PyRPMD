@@ -41,6 +41,7 @@ include_patterns = [
     "quantum-statistics.md", "quantum-correction.md", "subspace-correction.md", "subspace-transfer-theory.md", "subspace-instanton-anchor.md",
     "performance-dynamics.md", "batched-dynamics.md",
     "batched-ml-potentials.md",
+    "jaxpip-gpu-rate.md",
     "t19-performance.md",
     "tempering.md",
     "builtin-native-potentials.md",

@@ -49,12 +49,17 @@ def propagation_backend_plan(config, system, *, potential=None):
     advances a state, making it safe for ``pyrpmd validate``. An optional live
     potential is borrowed from preparation and remains owned by its caller.
     """
-    if (config.get("task") in ("pimd", "diffusion")
+    if (config.get("task") in ("pimd", "diffusion", "rate")
             and config.get("sampling", {}).get("engine") == "torch"):
         return [{
-            "stage": "production" if config["task"] == "diffusion" else "propagation",
+            "stage": ("production" if config["task"] == "diffusion" else
+                       "rate_gpu" if config["task"] == "rate" else "propagation"),
             "backend": "unknown",
-            "reason": "Torch tensor workflow; device and execution backend are confirmed at runtime",
+            "reason": (
+                "Torch/JAX device-resident rate workflow; device and execution backend are confirmed at runtime"
+                if config["task"] == "rate" else
+                "Torch tensor workflow; device and execution backend are confirmed at runtime"
+            ),
             "planned_steps": _planned_propagation_steps(config),
         }]
 
@@ -316,7 +321,9 @@ def _spec(value):
     return JobSpec.from_mapping(value)
 
 
-def _validate_resume_identity(config, system, path, old, hashes, digest):
+def _validate_resume_identity(
+    config, system, path, old, hashes, digest, *, allow_mutable_input=False
+):
     """Authenticate a resume without changing saved inputs or manifest bytes."""
     from .propagation import scientific_config
 
@@ -346,16 +353,18 @@ def _validate_resume_identity(config, system, path, old, hashes, digest):
             migrated_fes = fingerprint(scientific_config(normalized), stored_system) == digest
         if not migrated_fes:
             raise InputError("Cannot resume with changed scientific settings or system")
-    mutable_input = None
-    if config.get("task") == "rate" and "subspace_correction" in config.get("rate", {}):
+    mutable_inputs = set()
+    if allow_mutable_input or (
+        config.get("task") == "rate" and "subspace_correction" in config.get("rate", {})
+    ):
         stored_config = json.loads((path / "input" / "resolved.json").read_text())
         # Physics equality was established above. Allow editing only the .inp
         # wrapper to tune postprocessing, never a PES/model dependency.
         source = stored_config.get("_input_path")
         if source and Path(source).suffix.lower() in (".inp", ".toml"):
-            mutable_input = source
+            mutable_inputs = {source, str(Path(source).resolve())}
     for file, sha in old.get("files", {}).items():
-        if file == mutable_input:
+        if file in mutable_inputs:
             continue
         if hashes.get(file) != sha:
             raise InputError(f"Input/model file changed or is missing: {file}")
@@ -497,7 +506,7 @@ def _initialize_output(config, system, output, resume=False, initialized_from=No
     identity_file = "model.json" if config["task"] == "pcet" else "system.json"
     write_json(path / "input" / identity_file, system.to_dict())
     if config.get("_input_path"):
-        source = Path(config["_input_path"])
+        source = Path(config["_input_path"]).resolve()
         shutil.copy2(source, path / "input" / ("original" + source.suffix))
 
 

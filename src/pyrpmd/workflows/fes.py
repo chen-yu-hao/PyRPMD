@@ -311,7 +311,11 @@ def validate_fes_request(config, system):
         )
         checked_integer(sampling["equilibration_steps"], "sampling.equilibration_steps", 0)
         checked_integer(sampling.get("replicas", 1), "sampling.replicas")
-        fes_sampler({**config, "sampling": sampling})
+        if config.get("sampling", {}).get("engine") == "torch":
+            if config.get("task") != "rate" or sampling.get("thermostat", "andersen") != "andersen":
+                raise ValueError("GPU rate umbrella validation requires Andersen sampling")
+        else:
+            fes_sampler({**config, "sampling": sampling})
         if production // interval < 2:
             raise ValueError(
                 "sampling.production_steps must include at least two saved samples per umbrella; "
@@ -464,6 +468,9 @@ def separate_reactants_to_xi(geometry, coordinate, target, masses):
 
 
 def _sample_window(task):
+    if task["config"].get("sampling", {}).get("engine") == "torch":
+        from .gpu_rate import sample_window
+        return sample_window(task)
     config, system = task["config"], task["system"]
     cv = make_cvs(task["specs"], system)
     for component in cv.cvs:
@@ -978,7 +985,13 @@ def _validate_umbrella_sampling(config, system):
     from . import validate_bond_constraint_workflow
     validate_bond_constraint_workflow(system, "fes")
     validate_andersen_schedule(config, "fes")
-    fes_sampler(config)
+    if config.get("sampling", {}).get("engine") != "torch":
+        fes_sampler(config)
+    else:
+        if config.get("task") != "rate":
+            raise ValueError("sampling.engine='torch' umbrella sampling is currently rate-only")
+        if config.get("sampling", {}).get("thermostat", "andersen") != "andersen":
+            raise ValueError("GPU rate umbrella sampling currently requires thermostat='andersen'")
     batch_size = trajectory_batch_size(config)
     if batch_size > 1 and (config.get("replica_exchange") or config.get("adaptive_umbrella")):
         raise ValueError("trajectory batching currently requires independent fixed umbrella windows")

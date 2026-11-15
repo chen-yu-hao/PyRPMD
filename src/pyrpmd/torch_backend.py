@@ -381,7 +381,7 @@ class TorchDynamics:
     """
     def __init__(self, potential, masses, beta, nbeads, dt, *, inner_steps=1,
                  integrator="normal-mode-bab", thermostat=None, gamma_centroid=1.0,
-                 seed=0, normal_mode_layout="rfft"):
+                 seed=0, normal_mode_layout="rfft", bias=None):
         if normal_mode_layout not in ("rfft", "rpmdrate"):
             raise ValueError("normal_mode_layout must be rfft or rpmdrate")
         self.normal_mode_layout = normal_mode_layout
@@ -399,6 +399,9 @@ class TorchDynamics:
         if thermostat not in (None, "pile-l", "trpmd"):
             raise ValueError("thermostat must be None, pile-l, or trpmd")
         self.potential, self.device = potential, potential.device
+        if bias is not None and not callable(getattr(bias, "evaluate_tensor", None)):
+            raise TypeError("bias must implement evaluate_tensor(q)")
+        self.bias = bias
         self.integrator, self.thermostat = integrator, thermostat
         self.gamma_centroid = _positive(gamma_centroid, "gamma_centroid", allow_zero=True)
         raw_masses = torch.as_tensor(masses, device=self.device)
@@ -449,7 +452,8 @@ class TorchDynamics:
 
     def _signature(self):
         return (self.nbeads, self.inner_steps, self.beta, self.dt, self.integrator,
-                self.thermostat, self.gamma_centroid, id(self.potential), self.normal_mode_layout)
+                self.thermostat, self.gamma_centroid, id(self.potential), self.normal_mode_layout,
+                id(self.bias))
 
     def _check(self, state):
         if not isinstance(state, TorchState):
@@ -541,6 +545,11 @@ class TorchDynamics:
             self.force_evaluations[kind] += 1
             evaluator = self.potential.evaluate_fast if kind == "fast" else self.potential.evaluate_slow
             result = evaluator(q)
+            if kind == "fast" and self.bias is not None:
+                biased = self.bias.evaluate_tensor(q)
+                result = TensorPESResult(result.energy + biased.energy,
+                                         result.forces + biased.forces,
+                                         result.virial)
             valid = valid & torch.isfinite(result.energy).all() & torch.isfinite(result.forces).all()
             return result.forces.clone()
 
@@ -586,6 +595,11 @@ class TorchDynamics:
         """Return one sum-beads Hamiltonian per trajectory, still on device."""
         self._check(state)
         result = self.potential.evaluate_tensor(state.q)
+        if self.bias is not None:
+            biased = self.bias.evaluate_tensor(state.q)
+            result = TensorPESResult(result.energy + biased.energy,
+                                     result.forces + biased.forces,
+                                     result.virial)
         kinetic = (state.p.square() / (2 * self._mass)).sum(dim=(1, 2, 3))
         dq = state.q - torch.roll(state.q, -1, dims=1)
         spring = 0.5 * (self.nbeads / self.beta) ** 2 * (self._mass * dq.square()).sum(dim=(1, 2, 3))

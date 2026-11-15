@@ -5,9 +5,10 @@
 Version 2 is implemented by `CABIPotential` and declared in
 `include/pyrpmd/pes_api_v2.h`. It retains synchronous, contiguous host-memory
 batch evaluation and adds an explicit cell and PBC flags for every frame,
-plus optional physical configurational virials. Fixed composition is shared
-by all frames; variable compositions and device pointers remain outside this
-ABI. Batches can contain beads or several independent trajectories.
+plus optional physical configurational virials. Fixed composition is shared by all frames; variable compositions remain
+outside this ABI, while optional CUDA device-pointer evaluation is specified
+by the companion header `include/pyrpmd/pes_api_cuda_v1.h` described below.
+Batches can contain beads or several independent trajectories.
 
 The loader selects v2 when `pyrpmd_pes_abi_version_v2` is exported, otherwise
 it uses v1. An explicitly supplied `abi_version=1` or `abi_version=2` selects
@@ -224,3 +225,124 @@ Fortran wrappers should use `ISO_C_BINDING`, `BIND(C)`, `integer(c_int32_t)`,
 `integer(c_int64_t)` and `real(c_double)`. Explicitly account for the memory
 layout: viewing the C coordinates as `(3,N,B)` is convenient in Fortran.
 The working C example is `native/examples/harmonic_pes.c`.
+
+## Companion CUDA device-memory extension (v1)
+
+The optional companion header `include/pyrpmd/pes_api_cuda_v1.h` extends an
+existing PES v1 or v2 context with zero-copy CUDA device-pointer and stream
+evaluation for device-resident integrators such as `TorchDynamics`. It never
+includes `<cuda_runtime_api.h>`, so C11 and C++17 consumers can inspect and
+call the ABI using standard integer and `void *` types alone. The base host
+headers `pes_api_v1.h` and `pes_api_v2.h` remain unchanged, and libraries
+exporting only host v1/v2 continue to load and evaluate identically.
+
+### Symbols and capability gating
+
+A provider implementing the CUDA device-memory extension exports its normal
+v1 or v2 lifecycle symbols (`create`, `metadata`, `evaluate`, `destroy`) **plus**
+both companion symbols:
+
+1. `pyrpmd_pes_cuda_abi_version_v1() -> int32_t`, returning `1` (`PYRPMD_PES_CUDA_ABI_VERSION_V1`).
+2. `pyrpmd_pes_evaluate_cuda_v1(context, input*, output*, error*) -> int32_t`.
+
+Exporting only one of the two symbols, or returning any version other than `1`,
+is rejected at load time.
+
+In addition, the context metadata JSON returned by `pyrpmd_pes_metadata_v1` /
+`pyrpmd_pes_metadata_v2` must explicitly opt in for the active context:
+
+```json
+{
+  "batch_independent": true,
+  "capabilities": {
+    "host_memory": true,
+    "cuda_device_memory": true,
+    "execution_device": "cuda:0"
+  }
+}
+```
+
+- `capabilities.cuda_device_memory` must be a JSON boolean (`true` only when
+  both CUDA ABI symbols are exported and the context is bound to a concrete
+  CUDA device).
+- `capabilities.execution_device` (and optional top-level `execution_device` if
+  present) must match `"cuda:<nonnegative_index>"`. CPU contexts (`"cpu"`) must
+  report `"cuda_device_memory": false`.
+- `CABIPotential.as_torch_pes()` additionally requires `batch_independent: true`
+  and `capabilities.stateful: false`. Host-only v1/v2 libraries fail fast with
+  an actionable `PotentialError` when `as_torch_pes()`, `evaluate_tensor()`, or
+  `make_workflow_torch_pes()` is requested; they never silently copy device
+  tensors through host NumPy arrays.
+
+### Input, output and device buffer contract
+
+`pyrpmd_pes_cuda_input_v1` and `pyrpmd_pes_cuda_output_v1` check
+`cuda_abi_version == 1` and exact `struct_size` before reading other fields:
+
+| Struct / Field | Type and shape | Meaning |
+| --- | --- | --- |
+| `input.device_id` | `int32` | Target CUDA device ordinal matching `"cuda:<device_id>"` |
+| `input.cuda_stream` | `void *` | Opaque `cudaStream_t` (`NULL` denotes stream `0`) |
+| `input.d_positions` | `const double *`, `[B,N,3]` | Contiguous CUDA device positions in bohr (read-only) |
+| `input.d_cells` | `const double *`, `[B,3,3]` or `NULL` | v2 only: row lattice vectors on device in bohr (`NULL` with `cells_count=0` when uncelled or on v1) |
+| `input.d_pbc` | `const int32_t *`, `[B,3]` or `NULL` | v2 only: `0` or `1` flags on device (`NULL` with `pbc_count=0` on v1) |
+| `output.d_energies` | `double *`, `[B]` | Contiguous CUDA device energies in hartree |
+| `output.d_forces` | `double *`, `[B,N,3]` | Contiguous CUDA device forces `-dE/dq` in hartree/bohr |
+| `output.d_virials` | `double *`, `[B,3,3]` or `NULL` | Optional v2 device strain virials in hartree |
+| `output.d_structure_status` | `int32_t *`, `[B]` or `NULL` | Optional device per-frame status codes (`0` = OK) |
+
+- Every `d_*` pointer must address contiguous device memory on `input.device_id`
+  (passing host memory or a pointer from another GPU returns
+  `PYRPMD_CUDA_INVALID_ARGUMENT_V1`).
+- Output device buffers (`d_energies`, `d_forces`, `d_virials`,
+  `d_structure_status`) must not alias input buffers or each other.
+- `d_positions` is strictly read-only. Providers performing unit conversion
+  (such as `bohr -> angstrom`) must stage scaled coordinates into internal
+  device scratch rather than mutating `d_positions` in place.
+- Host `pyrpmd_cuda_error_v1` mirrors `pyrpmd_error_v1` and carries synchronous
+  launch/validation diagnostics when the global return code is nonzero.
+
+### Stream ordering and nonfinite status rules
+
+- All reads of `d_positions`, `d_cells`, and `d_pbc`, and all writes to
+  `d_energies`, `d_forces`, `d_virials`, and `d_structure_status`, must be
+  stream-ordered with respect to `input.cuda_stream` before
+  `pyrpmd_pes_evaluate_cuda_v1` returns to the caller.
+- If a provider internally executes work on a private non-blocking stream (for
+  example, an `Ort::Session` bound to a dedicated compute stream), it must
+  bridge stream dependencies in both directions using lightweight CUDA events
+  (`caller_stream -> provider_stream -> caller_stream`) without blocking the
+  host CPU thread or introducing default-stream synchronization hazards.
+- Providers must **not** call `cudaStreamSynchronize` or `cudaDeviceSynchronize`
+  during normal evaluation.
+- When a frame encounters nonfinite input coordinates or produces nonfinite
+  energies, forces, or requested virials, the provider must write IEEE `NaN` to
+  that frame's `d_energies`, `d_forces` (and `d_virials` when supplied), and—if
+  `d_structure_status != NULL`—write a nonzero status code such as
+  `PYRPMD_CUDA_STRUCTURE_NONFINITE_V1` (`3`), while still returning global
+  `PYRPMD_CUDA_OK_V1` (`0`). Device-resident integrators (`TorchDynamics`)
+  detect the resulting `NaN` values via their existing block-level device
+  finiteness accumulator without per-step host `.item()` synchronization; direct
+  tensor callers can pass `return_status=True` to `CABIPotential.evaluate_tensor()`
+  to inspect `d_structure_status` on the GPU.
+
+### Zero-copy Python / Torch integration
+
+```python
+from pyrpmd.potentials import CABIPotential, make_workflow_torch_pes
+from pyrpmd.torch_backend import TorchDynamics, TorchState
+
+with CABIPotential(
+    "./build/onnx/libpyrpmd_onnx.so",
+    {"model": "/abs/path/model.onnx", "device": "cuda:0"},
+) as cabi_pes:
+    torch_pes = make_workflow_torch_pes(cabi_pes, device="cuda:0")
+    dyn = TorchDynamics(torch_pes, masses, beta=1000.0, nbeads=32, dt=1.0)
+    dyn.propagate(state, nsteps=256)
+```
+
+`CABIPotential.as_torch_pes()` returns a `_CABITorchPES` compatible with
+`TorchDynamics`, `TorchRPCTerm`, `make_workflow_torch_pes()`, and
+`sampling.engine = "torch"` (`pimd` and `diffusion` workflows). On each step it
+queries `torch.cuda.current_stream(device).cuda_stream` and dispatches directly
+to `pyrpmd_pes_evaluate_cuda_v1` while the parent `CABIPotential` remains open.

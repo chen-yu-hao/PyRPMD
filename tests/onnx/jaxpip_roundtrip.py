@@ -28,9 +28,10 @@ BASIS = [[[0, 0, 0]], [[0, 0, 1], [0, 1, 0]], [[1, 0, 0]],
 WATER = np.array([[0., 0.78383672, 0.44340501], [0., -0.78383672, 0.44340501], [0., 0., -0.11085125]])
 
 
-def run(output):
+def run(output, *, device="cpu", allow_cpu_fallback=False, exporter_python=None):
     output.mkdir(parents=True, exist_ok=True)
     root = Path(__file__).resolve().parents[2]
+    exporter_exe = str(exporter_python) if exporter_python else sys.executable
     basis = output / "basis.json"
     basis.write_text(json.dumps(BASIS))
     xyz = WATER[None] + np.random.default_rng(7).normal(0., 0.025, (8, 3, 3))
@@ -46,7 +47,7 @@ def run(output):
         checkpoint = output / f"{kind}.eqx"
         model.save(str(checkpoint))
         onnx_file = output / f"{kind}.onnx"
-        result = subprocess.run([sys.executable, str(root / "tools/export_jaxpip_onnx.py"),
+        result = subprocess.run([exporter_exe, str(root / "tools/export_jaxpip_onnx.py"),
             "--basis", str(basis), "--checkpoint", str(checkpoint),
             "--geometries", str(geometries), "--output", str(onnx_file), "--kind", kind,
             "--atomic-numbers", "1", "1", "8", "--charge", "0", "--multiplicity", "1",
@@ -62,54 +63,78 @@ def run(output):
         def reference(q):
             return jax.vmap(model.get_energy_and_forces)(q)
         start = time.perf_counter()
-        pes = CABIPotential(library, {"model": str(onnx_file.resolve()), "device": "cpu"})
+        pes = CABIPotential(library, {"model": str(onnx_file.resolve()), "device": device,
+                                      "allow_cpu_fallback": allow_cpu_fallback})
         load_seconds = time.perf_counter()-start
-        errors, timings = {}, {}
-        with pes:
-            for batch in (1, 8, 32, 128):
-                q = xyz[np.arange(batch) % len(xyz)] / BOHR_ANGSTROM
-                e, f = jax.device_get(reference(jnp.asarray(q*BOHR_ANGSTROM)))
-                expected_e, expected_f = e*EV_TO_AU, f*EV_TO_AU*BOHR_ANGSTROM
-                got = pes.evaluate(q)
-                np.testing.assert_allclose(got.energy, expected_e, atol=1e-10, rtol=1e-8)
-                np.testing.assert_allclose(got.forces, expected_f, atol=1e-10, rtol=1e-8)
-                errors[str(batch)] = {"energy_hartree": float(np.max(np.abs(got.energy-expected_e))),
-                                      "forces_hartree_per_bohr": float(np.max(np.abs(got.forces-expected_f)))}
-                # Warm both paths; device_get synchronizes JAX. Separate load/JIT.
-                pes.evaluate(q)
-                jax.device_get(reference(jnp.asarray(q*BOHR_ANGSTROM)))
-                repeats = 50
-                start = time.perf_counter()
-                for _ in range(repeats):
+        cpu_ref_pes = (CABIPotential(library, {"model": str(onnx_file.resolve()), "device": "cpu"})
+                       if device != "cpu" else None)
+        errors, cpu_ort_errors, timings = {}, {}, {}
+        try:
+            with pes:
+                assert pes.metadata["execution_device"] == device
+                assert pes.metadata["capabilities"]["allow_cpu_fallback"] is allow_cpu_fallback
+                if device.startswith("cuda:"):
+                    assert pes.metadata["capabilities"]["float64_cuda_scatter_nd"] is True
+                for batch in (1, 8, 32, 128):
+                    q = xyz[np.arange(batch) % len(xyz)] / BOHR_ANGSTROM
+                    e, f = jax.device_get(reference(jnp.asarray(q*BOHR_ANGSTROM)))
+                    expected_e, expected_f = e*EV_TO_AU, f*EV_TO_AU*BOHR_ANGSTROM
+                    got = pes.evaluate(q)
+                    np.testing.assert_allclose(got.energy, expected_e, atol=1e-12, rtol=1e-12)
+                    np.testing.assert_allclose(got.forces, expected_f, atol=1e-12, rtol=1e-12)
+                    errors[str(batch)] = {"energy_hartree": float(np.max(np.abs(got.energy-expected_e))),
+                                          "forces_hartree_per_bohr": float(np.max(np.abs(got.forces-expected_f)))}
+                    if cpu_ref_pes is not None:
+                        got_cpu = cpu_ref_pes.evaluate(q)
+                        np.testing.assert_allclose(got.energy, got_cpu.energy, atol=1e-12, rtol=1e-12)
+                        np.testing.assert_allclose(got.forces, got_cpu.forces, atol=1e-12, rtol=1e-12)
+                        cpu_ort_errors[str(batch)] = {
+                            "energy_hartree": float(np.max(np.abs(got.energy-got_cpu.energy))),
+                            "forces_hartree_per_bohr": float(np.max(np.abs(got.forces-got_cpu.forces))),
+                        }
+                    # Warm both paths; device_get synchronizes JAX. Separate load/JIT.
                     pes.evaluate(q)
-                onnx_seconds = (time.perf_counter()-start)/repeats
-                start = time.perf_counter()
-                for _ in range(repeats):
                     jax.device_get(reference(jnp.asarray(q*BOHR_ANGSTROM)))
-                jax_seconds = (time.perf_counter()-start)/repeats
-                timings[str(batch)] = {"native_abi_from_python_seconds": onnx_seconds,
-                                      "jax_jit_from_python_seconds": jax_seconds}
-            q = np.repeat(xyz[:1], 8, axis=0) / BOHR_ANGSTROM
-            force_check = check_potential(pes, q[:1])
-            assert force_check["max_absolute_force_error"] < 1e-7
-            dyn = Dynamics(pes, [1800., 1800., 29000.], 220., 8, 0.1)
-            p = np.random.default_rng(8).normal(scale=0.1, size=q.shape)
-            a, b = State(q.copy(), p.copy()), State(q.copy(), p.copy())
-            start = time.perf_counter()
-            native = dyn.propagate_block(a, 100, backend="native", record_states=True)
-            native_seconds = time.perf_counter()-start
-            start = time.perf_counter()
-            python = dyn.propagate_block(b, 100, backend="python", record_states=True)
-            python_seconds = time.perf_counter()-start
-            np.testing.assert_allclose(native.q, python.q, atol=1e-10, rtol=1e-10)
-            np.testing.assert_allclose(native.p, python.p, atol=1e-9, rtol=1e-10)
-            drift = float(np.max(np.abs(native.energies-native.energies[0])))
-            assert drift < 1e-6
-        report[kind] = {"load_seconds": load_seconds, "batch_errors": errors,
-                        "force_check": force_check, "timings": timings,
-                        "native_block_100_steps_seconds": native_seconds,
-                        "python_block_100_steps_seconds": python_seconds,
-                        "energy_range_hartree": drift}
+                    repeats = 50
+                    start = time.perf_counter()
+                    for _ in range(repeats):
+                        pes.evaluate(q)
+                    onnx_seconds = (time.perf_counter()-start)/repeats
+                    start = time.perf_counter()
+                    for _ in range(repeats):
+                        jax.device_get(reference(jnp.asarray(q*BOHR_ANGSTROM)))
+                    jax_seconds = (time.perf_counter()-start)/repeats
+                    timings[str(batch)] = {"native_abi_from_python_seconds": onnx_seconds,
+                                          "jax_jit_from_python_seconds": jax_seconds}
+                q = np.repeat(xyz[:1], 8, axis=0) / BOHR_ANGSTROM
+                force_check = check_potential(pes, q[:1])
+                assert force_check["max_absolute_force_error"] < 1e-7
+                dyn = Dynamics(pes, [1800., 1800., 29000.], 220., 8, 0.1)
+                p = np.random.default_rng(8).normal(scale=0.1, size=q.shape)
+                a, b = State(q.copy(), p.copy()), State(q.copy(), p.copy())
+                start = time.perf_counter()
+                native = dyn.propagate_block(a, 100, backend="native", record_states=True)
+                native_seconds = time.perf_counter()-start
+                start = time.perf_counter()
+                python = dyn.propagate_block(b, 100, backend="python", record_states=True)
+                python_seconds = time.perf_counter()-start
+                np.testing.assert_allclose(native.q, python.q, atol=1e-10, rtol=1e-10)
+                np.testing.assert_allclose(native.p, python.p, atol=1e-9, rtol=1e-10)
+                drift = float(np.max(np.abs(native.energies-native.energies[0])))
+                assert drift < 1e-6
+                caps = dict(pes.metadata["capabilities"])
+        finally:
+            if cpu_ref_pes is not None:
+                cpu_ref_pes.close()
+        entry = {"device": device, "capabilities": caps,
+                 "load_seconds": load_seconds, "batch_errors": errors,
+                 "force_check": force_check, "timings": timings,
+                 "native_block_100_steps_seconds": native_seconds,
+                 "python_block_100_steps_seconds": python_seconds,
+                 "energy_range_hartree": drift}
+        if cpu_ort_errors:
+            entry["cpu_ort_parity_errors"] = cpu_ort_errors
+        report[kind] = entry
         print(json.dumps({kind: report[kind]}, indent=2), flush=True)
     (output / "report.json").write_text(json.dumps(report, indent=2))
 
@@ -117,4 +142,11 @@ def run(output):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
-    run(parser.parse_args().output.resolve())
+    parser.add_argument("--device", default="cpu", help="Execution device (cpu or cuda:<index>)")
+    parser.add_argument("--allow-cpu-fallback", action="store_true",
+                        help="Permit ORT CPUExecutionProvider fallback on CUDA sessions")
+    parser.add_argument("--exporter-python", type=Path, default=None,
+                        help="Optional Python interpreter for tools/export_jaxpip_onnx.py")
+    args = parser.parse_args()
+    run(args.output.resolve(), device=args.device,
+        allow_cpu_fallback=args.allow_cpu_fallback, exporter_python=args.exporter_python)

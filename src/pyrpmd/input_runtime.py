@@ -150,7 +150,15 @@ def resolve_sampling(d, runtime, *, selected, materials, native_pimd):
             # The Torch workflow's equilibration map is explicitly BCOCB,
             # independently of the selected deterministic production map.
             sampler = "bcocb"
-            sampling.setdefault("device", d.get("potential", {}).get("device", "cpu"))
+            potential_spec = d.get("potential", {})
+            default_device = "cpu"
+            if isinstance(potential_spec, Mapping):
+                kind = potential_spec.get("provider", potential_spec.get("type"))
+                fallback = "cuda" if kind in ("torch", "jaxpip") else "cpu"
+                params = potential_spec.get("params")
+                param_device = params.get("device", fallback) if isinstance(params, Mapping) else fallback
+                default_device = potential_spec.get("device", param_device)
+            sampling.setdefault("device", default_device if isinstance(default_device, str) else "cpu")
             sampling.setdefault("normal_mode_layout", "rfft")
         if native_pimd and sampling["thermostat"] == "nhc" and sampler is not None:
             from .workflows.native_pimd import sampling_splitting
@@ -209,6 +217,24 @@ def resolve_sampling(d, runtime, *, selected, materials, native_pimd):
                 raise InputError("NHC sampling.integrator must match dynamics.integrator + '-nose-hoover-chain'")
             if "gamma_centroid" in sampling:
                 raise InputError("sampling.gamma_centroid requires PILE-L sampling")
+        elif sampling.get("engine") == "torch" and task == "rate":
+            if sampling["thermostat"] != "andersen":
+                raise InputError("Torch rate sampling currently requires thermostat='andersen'")
+            from .potentials import _normalize_device_request
+            if not isinstance(sampling.get("device"), str):
+                raise InputError("sampling.device must be cpu, cuda or cuda:<index>")
+            try:
+                _normalize_device_request(sampling["device"])
+            except ValueError as error:
+                raise InputError("sampling.device must be cpu, cuda or cuda:<index>") from error
+            if sampling.get("normal_mode_layout", "rfft") not in ("rfft", "rpmdrate"):
+                raise InputError("sampling.normal_mode_layout must be rfft or rpmdrate")
+            if integrator == "velocity-verlet":
+                raise InputError("Torch rate workflow requires cayley-bcb or normal-mode-bab")
+            expected_torch_sampler = integrator + "-andersen"
+            if sampling.get("integrator", expected_torch_sampler) not in (expected_torch_sampler, "torch"):
+                raise InputError(f"Torch rate sampling.integrator must be '{expected_torch_sampler}' or 'torch'")
+            sampling["integrator"] = expected_torch_sampler
         elif (materials or task == "drpmd" or (task == "fes" and method in ("umbrella", "metadynamics"))) and sampling["thermostat"] == "pile-l":
             from .workflows.sampling import middle_sampling_method
             try:

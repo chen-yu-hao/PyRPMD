@@ -17,6 +17,11 @@ ONNX Runtime GPU SDK 与系统依赖，不能把 CPU CI 通过当作 GPU 验证�
 每个 context 只加载一次模型；一次推理全部 `[B,N,3]` 坐标；缓存 host buffers；
 float64 能量和负梯度；angstrom/eV 与 bohr/hartree 成套转换；严格检查原子顺序、
 电子态、I/O 形状和逐结构失败状态。显式 CUDA 请求失败时不偷偷切回 CPU。
+开启 `-DPYRPMD_ONNX_CUDA_KERNELS=ON` 构建时，`libpyrpmd_onnx` 为
+`CUDAExecutionProvider` 注册自定义 float64 `ScatterND` 算子（支持 `none`/`add`/
+`mul`/`max`/`min` 与 `atomicAdd(double*, double)` 力累加），并通过
+`capabilities.float64_cuda_scatter_nd` 报告该能力；默认 CPU 构建不依赖 CUDA
+Toolkit。
 
 复用 `provider="cabi"` 与现有连续传播，不引入 Python 回调包装，也不复制积分器。
 独立 context 可供 C++/OpenMP 调用方并发使用；同一 context 加锁保护。
@@ -27,8 +32,11 @@ float64 能量和负梯度；angstrom/eV 与 bohr/hartree 成套转换；严格�
 转换器的 Equinox 插件干扰自动微分，也避免固定整个 batch 的中间维度。
 对固定的 jax2onnx 0.17.1，另有仅在导出上下文内生效的 Pad 形状元数据修正：
 将 JAX 符号维度转换为 ONNX 符号名，不改变 Pad 运算或数值计算。兼容层在
-成功或异常退出时均恢复原插件引用，不修改已安装依赖文件；该信息写入模型
-元数据。导出应使用独立进程，不支持同一解释器内多线程同时转换。
+成功或异常退出时均恢复原插件引用，不修改已安装依赖文件。导出后，导出器将
+与动态 batch 相关的 `int64`/`bool` 形状辅助子图规范化为静态初始值与纯张量
+运算，消除 ONNX Runtime 在 `allow_cpu_fallback=false` 下将动态形状节点回退到
+`CPUExecutionProvider` 的问题；上述信息写入模型元数据。导出应使用独立进程，
+不支持同一解释器内多线程同时转换。
 
 这些兼容措施不放宽 float64、动态形状、多 batch 能量/力一致性或有限差分
 验证；任何检查失败时，不会发布待运行的 ONNX 文件。
@@ -37,7 +45,7 @@ float64 能量和负梯度；angstrom/eV 与 bohr/hartree 成套转换；严格�
 
 - 插件接受 `B=K*P`，但现有轨迹调度器不会自动把 K 条轨迹打包成一次推理。
 - OpenMP 测试验证独立 context 的并发正确性，不是新增了一个多轨迹 RPMD 驱动。
-- C ABI v1 仍使用 host memory，GPU 路径仍有主机/设备传输；不是全 GPU 积分器。
+- C ABI v1（`pyrpmd_pes_evaluate_v1`）面向 CPU/C++ 原生传播时仍使用 host memory；当启用 CUDA 工具链构建并配置 `device="cuda:<index>"` 时，插件额外导出伴随设备内存接口 `pes_api_cuda_v1.h`（通过 `Ort::IoBinding` 与 `CABIPotential.as_torch_pes()` 接入全 GPU `TorchDynamics`，消除内步 host 往返拷贝）。
 - 不包含 OpenVINO、周期性晶胞、virial 或非绝热耦合；也不附送真实化学体系的拟合势能面。
 
 PIP/FI 基组不是训练好的势能面。生产计算仍须提供对应 checkpoint，并独立验证
