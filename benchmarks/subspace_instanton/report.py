@@ -43,7 +43,7 @@ def adiabatic_height(record: dict, model) -> float:
 
 def eckart_entry(results: dict, u: float, v: float, nbeads: int | None = None):
     """The Eckart run at ``(u, v)``; with several bead numbers the default one unless ``nbeads`` is given."""
-    default = 32 if u <= 6.0 else (48 if u <= 9.0 else 64)
+    default = 32 if u <= 6.0 else (64 if u <= 9.0 else 128)
     for entry in results["eckart"]:
         if abs(entry["u"] - u) < 1e-9 and abs(entry["v"] - v) < 1e-9 and entry["nbeads"] == (nbeads or default):
             return entry

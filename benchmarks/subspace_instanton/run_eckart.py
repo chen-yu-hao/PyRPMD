@@ -2,11 +2,11 @@
 
     python run_eckart.py 6.0 2.1 results/eckart_u6.000_v2.100.json
     python run_eckart.py 2pi/0.8 1.75 results/eckart_u7.854_v1.750.json      # u of T = 0.8 T_c
-    python run_eckart.py 2pi/0.55 2.1 results/eckart_u11.424_v2.100_P128.json --nbeads 128
+    python run_eckart.py 2pi/0.55 2.1 results/eckart_u11.424_v2.100_P64.json --nbeads 64   # bead check
 
 Units hbar = m = omega_b = 1, so ``beta = u`` and the barrier height is ``v``.
 ``u`` is a number or ``2pi/<T/T_c>``.  The default bead number is 32 up to
-``u = 6``, 48 up to ``u = 9`` and 64 beyond.
+``u = 6``, 64 up to ``u = 9`` and 128 beyond.
 """
 
 from __future__ import annotations
@@ -25,6 +25,10 @@ from benchmarks.subspace_instanton.models import eckart  # noqa: E402
 from benchmarks.subspace_instanton.run_rpmd import solve, tabulated_model  # noqa: E402
 
 
+def default_beads(u: float) -> int:
+    return 32 if u <= 6.0 else (64 if u <= 9.0 else 128)
+
+
 def parse_u(text: str) -> float:
     return 2.0 * np.pi / float(text[4:]) if text.startswith("2pi/") else float(text)
 
@@ -37,11 +41,11 @@ def main() -> int:
     parser.add_argument("--nbeads", type=int)
     args = parser.parse_args()
     u, v, out_path = args.u, args.v, args.output
-    nbeads = args.nbeads or (32 if u <= 6.0 else (48 if u <= 9.0 else 64))
+    nbeads = args.nbeads or default_beads(u)
     potential, slope, curvature, _ = eckart(v)
     x = np.arange(-18.0, 18.005, 0.01)
     values = potential(x)
-    record = solve(tabulated_model(x, values, "eckart"), u, nbeads, seed=7, walkers=16, sweeps=800)
+    record = solve(tabulated_model(x, values, "eckart"), u, nbeads, seed=7, walkers=32, sweeps=1600)
     record["k_qm"] = barrier_rates(x, values, [u])[u]
     record["eps"] = record["k_qm"] / record["rate"]
     instanton = find_instanton(lambda b: slope(b[:, 0])[:, None], lambda b: curvature(b[:, 0])[:, None, None],
