@@ -30,11 +30,12 @@ class MetatomicBatchedPotential(_TensorBatchPotential):
 
     def __init__(self, symbols, model, *, device="cpu", dtype="float64", cell=None,
                  pbc=None, charge=0, multiplicity=1, virial=False,
-                 check_consistency=True):
+                 check_consistency=True, max_batch_frames=None):
         self._setup(
             symbols, "metatomic", device=device, dtype=dtype, cell=cell, pbc=pbc,
             charge=charge, multiplicity=multiplicity, virial=virial,
             length_factor=1.0 / BOHR_ANGSTROM, energy_factor=EV_HARTREE,
+            max_batch_frames=max_batch_frames,
         )
         if not isinstance(check_consistency, bool):
             raise ValueError("check_consistency must be a boolean")

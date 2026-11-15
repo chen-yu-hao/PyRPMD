@@ -604,6 +604,8 @@ def scientific_config(config):
         result["parallel"].pop("trajectory_batch_size", None)
         if not result["parallel"]:
             result.pop("parallel")
+    from .potentials.batched_ml import BATCHED_ML_PROVIDERS
+
     def strip_batch_contract(spec):
         if not isinstance(spec, dict):
             return
@@ -612,6 +614,15 @@ def scientific_config(config):
             # The opt-in promises frame independence; it does not change the
             # calculator, Hamiltonian or units. Keep opaque model params intact.
             spec.pop("trajectory_batch_safe", None)
+        elif kind in BATCHED_ML_PROVIDERS:
+            # Deterministic frame sub-batching controls peak memory / launch
+            # grouping without changing model weights, precision or units.
+            spec.pop("max_batch_frames", None)
+            params = spec.get("params")
+            if isinstance(params, dict) and "max_batch_frames" in params:
+                params.pop("max_batch_frames", None)
+                if not params:
+                    spec.pop("params", None)
         elif kind == "committee":
             for member in spec.get("members", ()):
                 strip_batch_contract(member)
