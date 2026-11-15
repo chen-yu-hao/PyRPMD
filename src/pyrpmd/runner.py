@@ -49,12 +49,17 @@ def propagation_backend_plan(config, system, *, potential=None):
     advances a state, making it safe for ``pyrpmd validate``. An optional live
     potential is borrowed from preparation and remains owned by its caller.
     """
-    if (config.get("task") in ("pimd", "diffusion")
+    if (config.get("task") in ("pimd", "diffusion", "rate")
             and config.get("sampling", {}).get("engine") == "torch"):
         return [{
-            "stage": "production" if config["task"] == "diffusion" else "propagation",
+            "stage": ("production" if config["task"] == "diffusion" else
+                       "rate_gpu" if config["task"] == "rate" else "propagation"),
             "backend": "unknown",
-            "reason": "Torch tensor workflow; device and execution backend are confirmed at runtime",
+            "reason": (
+                "Torch/JAX device-resident rate workflow; device and execution backend are confirmed at runtime"
+                if config["task"] == "rate" else
+                "Torch tensor workflow; device and execution backend are confirmed at runtime"
+            ),
             "planned_steps": _planned_propagation_steps(config),
         }]
 

@@ -22,6 +22,11 @@ PES 请求。固定晶胞、默认 `legacy` 引擎的材料 `pimd` / `diffusion`
 `bead_workers=1`，以及势能明确支持无历史依赖的独立 frame。详见
 [批处理契约](../batched-dynamics.md)与[真实 Ni–H 验收](../../benchmarks/materials/batch_acceptance.md)。
 
+原生 ONNX/JaxPIP provider 满足这个批处理契约。在 GPU 模式下，worker 内的 K 条轨迹
+会把 P 个珠子的物理构型合并为一次 `[K*P,N,3]` 推理；使用
+`dynamics.loop_backend="auto"` 或 `"python"`。每个 worker 有独立的 ONNX Runtime
+context；每张卡还可用 `trajectories_per_gpu` 运行多个 worker，显存占用会随模型副本数增加。
+
 本地 GPU 队列不足以填满配置 slots 时，先分散到不同 GPU，再给同一卡分配第二个
 进程。例如 `[0,1]`、每卡 2 个 slots、实际仅有 2 个任务/批组时，两张卡各得到一个
 进程；满额映射和 MPI 的 node-local 布局不变。动态 MPI 的 worker 也会在整条任务
