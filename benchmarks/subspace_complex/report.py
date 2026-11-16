@@ -20,7 +20,21 @@ import numpy as np
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-SUBSPACE_MODELS = ("1d", "1d_sct", "rph")
+SUBSPACE_MODELS = ("1d", "1d_sct", "plane", "rph")
+
+
+def _present(case: dict[str, Any]) -> list[str]:
+    """Subspace models solved for a case, in report order."""
+    return [m for m in SUBSPACE_MODELS if m in case["subspace"]]
+
+
+def _label(m: str, entry: dict[str, Any]) -> str:
+    """Model name, marked when a validity gate rejected it (older results carry no record)."""
+    validity = entry.get("validity")
+    if validity is None or validity.get("valid", True):
+        return f"`{m}`"
+    failed = [g for g, ok in validity.get("gates", {}).items() if not ok]
+    return f"`{m}` (rejected: {', '.join(failed)})"
 
 
 def _rms(vals: Sequence[float]) -> float:
@@ -44,7 +58,7 @@ def summarize_complex_metrics(data: dict[str, Any]) -> dict[str, Any]:
     for key, case in data["cases"].items():
         if case.get("full_reference") is not None:
             exact_cases.append(key)
-            for m in SUBSPACE_MODELS:
+            for m in _present(case):
                 entry = case["subspace"][m]
                 by_model[m]["unanchored"].append(float(entry["transfer_error_log"]))
                 if entry.get("anchored_skeleton_error_log") is not None:
@@ -88,7 +102,7 @@ def format_complex_report(data: dict[str, Any]) -> str:
         case = data["cases"][key]
         ln_c = float(case["full_reference"]["ln_C_exact"])
         a_h = float(case["full_instanton"]["log_factor"])
-        for idx, m in enumerate(SUBSPACE_MODELS):
+        for idx, m in enumerate(_present(case)):
             e = case["subspace"][m]
             se = float(e["combined_log_standard_error"])
             head = (
@@ -105,7 +119,7 @@ def format_complex_report(data: dict[str, Any]) -> str:
                 else "invalid"
             )
             lines.append(
-                f"{head}| `{m}` | {e['ln_C_S']:+.3f} | {shift_str} | "
+                f"{head}| {_label(m, e)} | {e['ln_C_S']:+.3f} | {shift_str} | "
                 f"{e['transfer_error_log']:+.3f} ± {se:.3f} | "
                 f"{skel_err_str} |"
             )
@@ -117,6 +131,8 @@ def format_complex_report(data: dict[str, Any]) -> str:
     lines.append("| --- | ---: | ---: | ---: | ---: | ---: |")
     for m in SUBSPACE_MODELS:
         s = metrics["by_subspace_model"][m]
+        if not s["count"]:
+            continue
         lines.append(
             f"| `{m}` | {s['count']} | {s['rms_unanchored']:.3f} | {s['rms_skeleton']:.3f} | "
             f"{s['max_unanchored']:.3f} | {s['max_skeleton']:.3f} |"
@@ -137,7 +153,7 @@ def format_complex_report(data: dict[str, Any]) -> str:
             a_h = float(case["full_instanton"]["log_factor"])
             chk = case["full_instanton"].get("crosscheck") or {}
             diff_opt = float(chk.get("log_difference", float("nan")))
-            for idx, m in enumerate(SUBSPACE_MODELS):
+            for idx, m in enumerate(_present(case)):
                 e = case["subspace"][m]
                 head = (
                     f"| `{key}` | {case['temperature_K']:.0f} | {case['t_over_tc']:.2f} | "
@@ -151,7 +167,7 @@ def format_complex_report(data: dict[str, Any]) -> str:
                     f"{e['vs_rph_skeleton_log']:+.3f}" if e.get("vs_rph_skeleton_log") is not None else "invalid"
                 )
                 lines.append(
-                    f"{head}| `{m}` | {e['ln_C_S']:+.3f} | {shift_str} | "
+                    f"{head}| {_label(m, e)} | {e['ln_C_S']:+.3f} | {shift_str} | "
                     f"{ln_anch_str} | {e['vs_rph_unanchored_log']:+.3f} | "
                     f"{vs_skel_str} |"
                 )

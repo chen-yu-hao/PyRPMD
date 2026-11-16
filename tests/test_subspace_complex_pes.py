@@ -352,7 +352,11 @@ def test_complex_pes_merged_benchmark_and_report():
         assert case["full_instanton"]["valid"] is True
         assert case["full_instanton"]["below_crossover"] is True
         assert case["full_instanton"]["phase_mode_relative_residual"] < 5e-4
+        # Every case solves 1D, 1D+SCT and RPH; the plane model where its spec lists it.
+        spec_models = next(spec for spec in CASE_SPECS if spec["key"] == key).get("models", ("1d", "1d_sct", "rph"))
         for m in SUBSPACE_MODELS:
+            if m not in spec_models:
+                continue
             assert m in case["subspace"]
             assert case["subspace"][m]["quantum"]["rate"] > 0.0
             assert case["subspace"][m]["rpmd"]["rate"] > 0.0
@@ -373,6 +377,31 @@ def test_complex_pes_merged_benchmark_and_report():
     assert abs(sub_case["subspace"]["1d"]["anchored_skeleton_error_log"]) < abs(
         sub_case["subspace"]["1d"]["transfer_error_log"]
     )
+
+    # Asymptotic normalization bounds every RPMD rate by the free-particle flux sqrt(1 / (2 pi beta))
+    # unless the dividing surface is the free-energy bottleneck; a submerged barrier is not.
+    sub_ref = sub_case["full_reference"]["rpmd"]
+    assert sub_ref["capture_surface"]["applied"] is True
+    flux = np.sqrt(1.0 / (2.0 * np.pi * sub_case["beta"]))
+    assert sub_ref["rate"] < flux
+    for name, entry in sub_case["subspace"].items():
+        assert entry["rpmd"]["rate"] < flux, name
+        assert entry["validity"]["gates"]["surface"] is True
+    assert -1.5 < sub_case["full_reference"]["ln_C_exact"] < -0.5
+    # The plane model holds the rotated 2D core; the RPH ribbon folds and is rejected.
+    assert sub_case["subspace"]["plane"]["validity"]["valid"] is True
+    assert sub_case["subspace"]["rph"]["validity"]["gates"]["ribbon"] is False
+    assert abs(sub_case["subspace"]["plane"]["transfer_error_log"]) < abs(sub_case["subspace"]["1d"]["transfer_error_log"])
+
+    # The deep-complex 8D case: the exact reference is unchanged (independently confirmed to 4% by a
+    # Green's-function rate); the gates reject the SCT model (submerged surface) and the RPH ribbon,
+    # and the plane model is the closest accepted 2D model.
+    pos_case = data["cases"]["prereaction_complex_8d_200K"]
+    gates = {m: e["validity"]["gates"] for m, e in pos_case["subspace"].items()}
+    assert gates["rph"]["ribbon"] is False and gates["1d_sct"]["surface"] is False
+    assert pos_case["subspace"]["plane"]["validity"]["valid"] is True
+    errors = {m: abs(e["transfer_error_log"]) for m, e in pos_case["subspace"].items()}
+    assert errors["plane"] < errors["rph"] < errors["1d"]
 
     metrics = summarize_complex_metrics(data)
     assert len(metrics["exact_reference_cases"]) == 5
