@@ -492,6 +492,11 @@ def test_parent_counters_survive_enabled_postprocessing(tmp_path, monkeypatch):
     ({"backend": "process", "trajectory_workers": 64, "threads_per_rank": 4}, {},
      {"backend": "process", "cpus": 32, "blas_threads": 8}),
     ({"trajectory_workers": 8}, {"cpus": 1}, None),
+    ({}, {"cpus": "auto"}, {"backend": "process", "cpus": 32, "blas_threads": 8}),
+    ({"backend": "process", "trajectory_workers": 4, "threads_per_rank": 2}, {"cpus": "auto"},
+     {"backend": "process", "cpus": 8, "blas_threads": 8}),
+    ({"backend": "process", "workers": 4}, {},
+     {"backend": "process", "cpus": 4, "blas_threads": 4}),
     ({}, {"cpus": 6, "workers": 2, "blas_threads": 3, "memory_limit_mb": 1000.},
      {"backend": "process", "cpus": 6, "blas_threads": 3, "memory_limit_mb": 1000., "workers": 2}),
 ])

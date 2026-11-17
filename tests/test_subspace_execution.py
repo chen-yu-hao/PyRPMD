@@ -190,3 +190,174 @@ def test_mpi_tasks_complete_or_fail_collectively_and_resume(tmp_path, mode):
         assert len(set(report["pids"])) == 2
     else:
         assert report["collective_failure"]
+
+
+def test_execution_cpus_auto_and_invalid_values(monkeypatch):
+    monkeypatch.setattr(execution, "_affinity_cpus", lambda: 6)
+    assert execution._options({"cpus": "auto"})["cpus"] == 6
+    assert execution._options({})["cpus"] == 1
+    for bad in ("all", 0, -2, True):
+        with pytest.raises(ValueError, match="cpus"):
+            execution._options({"cpus": bad})
+
+
+def test_dynamic_scheduler_avoids_quarter_cpu_cap_on_mixed_1d_2d_tasks(monkeypatch):
+    from concurrent.futures import Future
+
+    x1 = np.linspace(-5.0, 5.0, 65)
+    m1 = SubspaceModel((x1,), 0.3 / np.cosh(x1) ** 2, [1.0], 0.0, reactant_reference=-3.0)
+    x2 = np.linspace(-6.0, 6.0, 81)
+    y2 = np.linspace(-3.0, 3.0, 45)  # 3645 grid points -> realistic 2D Sylvester task
+    X2, Y2 = np.meshgrid(x2, y2, indexing="ij")
+    m2 = SubspaceModel((x2, y2), 0.015 / np.cosh(X2) ** 2 + 0.02 * Y2**2,
+                       [1.0, 1.0], 0.0, reactant_reference=-4.0)
+    mixed = {
+        "1d": dict(model=m1, beta=1500.0, nbeads=64,
+                   rpmd_options=dict(windows=24, walkers=16, burn_in=20, sweeps=40, trajectories=128, seed=1)),
+        "2d": dict(model=m2, beta=1500.0, nbeads=128,
+                   quantum_options=dict(method="sylvester", dense_limit=5000),
+                   rpmd_options=dict(windows=48, walkers=32, burn_in=200, sweeps=400, trajectories=512, seed=1)),
+    }
+    monkeypatch.setattr(execution, "_affinity_cpus", lambda: 8)
+    monkeypatch.setattr(execution, "_native_openmp", lambda: True)
+    opts = execution._options({"backend": "process", "cpus": "auto"})
+    assert opts["cpus"] == 8
+
+    def run_sim(tasks_list):
+        for t in tasks_list:
+            t["blas_threads"] = opts["blas_threads"]
+        profiles = {t["key"]: execution._task_profile(t, opts["cpus"], opts["blas_threads"]) for t in tasks_list}
+        events = []
+        max_concurrent_cpus = 0
+        in_flight = {}
+        finish_at = {}
+        sim_now = 0.0
+
+        class FakePool:
+            def __init__(self, *args, **kwargs):
+                pass
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                return False
+
+            def submit(self, fn, task, threads, mem):
+                nonlocal max_concurrent_cpus
+                fut = Future()
+                dur = execution._est_wall(profiles[task["key"]], threads)
+                in_flight[fut] = (task["key"], threads)
+                finish_at[fut] = sim_now + dur
+                max_concurrent_cpus = max(max_concurrent_cpus, sum(c for _, c in in_flight.values()))
+                events.append((task["key"], threads))
+                res = (
+                    execution.QuantumRateResult(1500.0, 1.0, 1.0, 1.0, "mock")
+                    if task["kind"] == "quantum"
+                    else execution.RingPolymerRateResult(
+                        1500.0, 1, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0,
+                        np.zeros(4), np.zeros(4), np.zeros(4), np.zeros(4), np.zeros(2), np.zeros(2),
+                    )
+                )
+                fut.set_result(res)
+                return fut
+
+        def fake_wait(fs, return_when=None):
+            nonlocal sim_now
+            first = min(fs, key=lambda f: finish_at[f])
+            sim_now = finish_at.pop(first)
+            in_flight.pop(first, None)
+            return {first}, set(fs) - {first}
+
+        monkeypatch.setattr(execution.time, "perf_counter", lambda: sim_now)
+        monkeypatch.setattr(execution, "ProcessPoolExecutor", FakePool)
+        monkeypatch.setattr(execution, "wait", fake_wait)
+        checkpoints = execution._Checkpoints(tasks_list, opts)
+        execution._local(tasks_list, opts, checkpoints, {})
+        return dict(events), max_concurrent_cpus
+
+    all_tasks = execution._tasks(mixed)
+    alloc, max_concurrent_cpus = run_sim(all_tasks)
+    assert max_concurrent_cpus <= 8
+    assert alloc[("1d", "quantum")] == 1
+    assert alloc[("2d", "rpmd")] >= 6
+
+    pair_only = [t for t in execution._tasks(mixed) if t["key"] in (("1d", "quantum"), ("2d", "rpmd"))]
+    pair_alloc, _ = run_sim(pair_only)
+    assert pair_alloc[("1d", "quantum")] == 1
+    assert pair_alloc[("2d", "rpmd")] == 8
+
+    # Platforms built without OpenMP (e.g. macOS AppleClang / Windows MSVC) cap single-process RPMD at 1 thread.
+    monkeypatch.setattr(execution, "_native_openmp", lambda: False)
+    no_omp_alloc, no_omp_max = run_sim(execution._tasks(mixed))
+    assert no_omp_max <= 8
+    assert no_omp_alloc[("2d", "rpmd")] == 1
+
+
+def test_thread_count_determinism_and_cpus_auto_cli(tmp_path, monkeypatch):
+    from pyrpmd.cli import main as cli_main
+
+    x1 = np.linspace(-5.0, 5.0, 41)
+    m1 = SubspaceModel((x1,), 0.3 / np.cosh(x1) ** 2, [1.0], 0.0, reactant_reference=-3.0)
+    x2 = np.linspace(-5.0, 5.0, 29)
+    y2 = np.linspace(-2.0, 2.0, 15)  # 435 points > 256
+    X2, Y2 = np.meshgrid(x2, y2, indexing="ij")
+    m2 = SubspaceModel((x2, y2), 0.3 / np.cosh(X2) ** 2 + 0.2 * Y2**2, [1.0, 1.0], 0.0, reactant_reference=-3.0)
+    mixed = {
+        "1d": dict(model=m1, beta=2.0, nbeads=4,
+                   rpmd_options=dict(windows=7, walkers=4, burn_in=2, sweeps=4, leapfrog_steps=2, trajectories=16, md_time=1.0, md_dt=0.05, bootstrap=6, seed=11)),
+        "2d": dict(model=m2, beta=2.0, nbeads=4,
+                   rpmd_options=dict(windows=7, walkers=4, burn_in=2, sweeps=4, leapfrog_steps=2, trajectories=16, md_time=1.0, md_dt=0.05, bootstrap=6, seed=11)),
+    }
+
+    ckpt = tmp_path / "ckpt"
+    serial = subspace_corrections(mixed, execution={"backend": "serial", "cpus": 1})
+    proc2 = subspace_corrections(mixed, execution={"backend": "process", "cpus": 2})
+    auto = subspace_corrections(mixed, execution={"backend": "process", "cpus": "auto", "checkpoint_dir": str(ckpt)})
+    reused = subspace_corrections(mixed, execution={"backend": "serial", "cpus": 1, "checkpoint_dir": str(ckpt)})
+
+    for dim in ("1d", "2d"):
+        assert proc2[dim].factor == pytest.approx(serial[dim].factor, rel=1e-12)
+        assert auto[dim].factor == pytest.approx(serial[dim].factor, rel=1e-12)
+        assert auto[dim].log_standard_error == pytest.approx(serial[dim].log_standard_error, rel=1e-12)
+        np.testing.assert_array_equal(auto[dim].rpmd.kappa, serial[dim].rpmd.kappa)
+        np.testing.assert_array_equal(proc2[dim].rpmd.kappa, serial[dim].rpmd.kappa)
+        assert reused[dim].quantum.diagnostics["checkpoint_reused"]
+        assert reused[dim].rpmd.diagnostics["checkpoint_reused"]
+
+    cli_dir = tmp_path / "cli_run"
+    cli_dir.mkdir()
+    pipeline_fixture(monkeypatch, cli_dir)
+    toml = cli_dir / "correct.toml"
+    toml.write_text(
+        f"""
+[source]
+rate_run = "{cli_dir.as_posix()}"
+
+[subspace]
+dimension = [1, 2]
+
+[rpmd]
+windows = 7
+walkers = 4
+burn_in = 2
+sweeps = 4
+leapfrog_steps = 2
+trajectories = 16
+md_time = 1.0
+md_dt = 0.05
+bootstrap = 6
+seed = 123
+
+[execution]
+backend = "process"
+cpus = "auto"
+
+[output]
+directory = "{(cli_dir / "out").as_posix()}"
+""",
+        encoding="utf-8",
+    )
+    assert cli_main(["subspace-correct", str(toml)]) == 0
+    report = json.loads((cli_dir / "out" / "subspace_pipeline.json").read_text(encoding="utf-8"))
+    assert report["dimensions_computed"] == [1, 2]
