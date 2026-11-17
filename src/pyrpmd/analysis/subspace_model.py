@@ -743,6 +743,10 @@ def _sinc_dvr_kinetic_1d(axis: np.ndarray) -> np.ndarray:
     return matrix / (2.0 * spacing * spacing)
 
 
+_MAX_DVR_HALF_WIDTH = 3000.0
+_MAX_DVR_CARTESIAN_DISPLACEMENT = 4.0
+
+
 def _normal_dvr_term(
     potential: Callable[[np.ndarray], float],
     x: np.ndarray,
@@ -756,6 +760,7 @@ def _normal_dvr_term(
     points: int,
     half_width: float | None,
     spacing: float | None,
+    rigid_body: bool = False,
 ) -> tuple[float, float]:
     """Solve one mass-weighted normal cut with a finite sinc DVR.
 
@@ -767,11 +772,20 @@ def _normal_dvr_term(
     adiabatic environment this is the lowest eigenvalue; for ``free_energy``
     it is ``-beta**-1 log Tr exp(-beta H_cut)`` relative to the path energy.
     """
+    base_energy = float(base_energy)
+    if not np.isfinite(base_energy):
+        raise FloatingPointError("normal-cut DVR encountered a non-finite potential")
     frequency = float(frequency)
     if half_width is None:
         # Eight oscillator lengths place the hard walls far beyond the ground
-        # state (the harmonic-limit error is below 1e-8 with the default grid).
-        half_width = 8.0 / np.sqrt(frequency)
+        # state (the harmonic-limit error is below 1e-8 with the default grid),
+        # capped so asymptotic soft/zero modes do not sweep into atomic overlap.
+        freq_eff = max(frequency, 1.0e-8)
+        half_width = min(8.0 / np.sqrt(freq_eff), _MAX_DVR_HALF_WIDTH)
+        if rigid_body:
+            max_disp = float(np.max(np.abs(np.asarray(direction, dtype=float) / np.asarray(sqrt_m, dtype=float))))
+            if max_disp > 0.0:
+                half_width = min(half_width, _MAX_DVR_CARTESIAN_DISPLACEMENT / max_disp)
     half_width = float(half_width)
     if not np.isfinite(half_width) or half_width <= 0:
         raise ValueError("dvr_half_width must be finite and positive")
@@ -789,12 +803,52 @@ def _normal_dvr_term(
         count += 1
     axis = np.linspace(-half_width, half_width, count)
     cuts = x[None, :] + axis[:, None] * direction[None, :] / sqrt_m[None, :]
-    energies = np.asarray([float(potential(point)) for point in cuts], dtype=float)
-    if not np.isfinite(energies).all():
+    energies = None
+    owner = getattr(potential, "__self__", None)
+    if owner is not None and getattr(owner, "energy", None) == potential:
+        batch_fn = getattr(owner, "energies", None) or getattr(owner, "energy_batch", None)
+        if callable(batch_fn):
+            try:
+                candidate = np.asarray(batch_fn(cuts), dtype=float)
+                if candidate.shape == (count,):
+                    energies = candidate
+            except (ArithmeticError, ValueError, RuntimeError):
+                energies = None
+    if energies is None:
+        energies = np.empty(count, dtype=float)
+        for idx, point in enumerate(cuts):
+            try:
+                energies[idx] = float(potential(point))
+            except (ArithmeticError, ValueError, RuntimeError):
+                energies[idx] = np.nan
+    center = count // 2
+    if not np.isfinite(energies[center]):
         raise FloatingPointError("normal-cut DVR encountered a non-finite potential")
+    if not np.isfinite(energies).all():
+        # Seal both outer wings outward from the first invalid point so a linear
+        # cut passing through two atoms cannot form an unphysical mirror well.
+        valid_mask = np.ones(count, dtype=bool)
+        for idx in range(center - 1, -1, -1):
+            if not np.isfinite(energies[idx]):
+                valid_mask[: idx + 1] = False
+                break
+        for idx in range(center + 1, count):
+            if not np.isfinite(energies[idx]):
+                valid_mask[idx:] = False
+                break
+        dx = float(axis[1] - axis[0])
+        kinetic_scale = float(np.pi**2 / (6.0 * dx * dx))
+        wall_cap = base_energy + max(100.0, 100.0 * max(frequency, 0.0), 20.0 * kinetic_scale)
+        finite_max = float(np.max(np.minimum(energies[valid_mask], wall_cap)))
+        wall_value = min(max(finite_max + 1.0, base_energy + max(2.0, 10.0 * kinetic_scale)), wall_cap)
+        energies = np.where(valid_mask, np.minimum(energies, wall_cap), wall_value)
+    else:
+        max_cap = base_energy + 1.0e4
+        if float(np.max(energies)) > max_cap:
+            energies = np.minimum(energies, max_cap)
     hamiltonian = _sinc_dvr_kinetic_1d(axis) + np.diag(energies)
     spectrum = np.linalg.eigvalsh(hamiltonian)
-    relative = spectrum - float(base_energy)
+    relative = spectrum - base_energy
     if environment == "free_energy":
         # All DVR states contribute to the one-dimensional quantum partition
         # function; logsumexp avoids overflow at the low temperatures used by
@@ -818,6 +872,7 @@ def _path_dvr_environment(
     points: int,
     half_width: float | None,
     spacing: float | None,
+    rigid_body: bool = False,
 ) -> tuple[float, float, int]:
     """Sum independent normal-mode DVR free energies at one path point."""
     if complement.shape[1] == 0:
@@ -834,11 +889,11 @@ def _path_dvr_environment(
         term, _ = _normal_dvr_term(
             potential, x, direction, sqrt_m, base_energy,
             # Harmonic ZPE drops non-positive modes.  A DVR cut still needs a
-            # finite box for such a mode; use a conservative 1e-4 Eh
-            # curvature scale for the box-size heuristic while retaining the
-            # actual anharmonic cut potential in the Hamiltonian.
-            np.sqrt(float(value) if value > 0.0 else 1.0e-4), environment, beta,
-            points=points, half_width=half_width, spacing=spacing,
+            # finite box for such a mode; cap non-positive curvatures at 1e-4 Eh
+            # while keeping continuous width scaling across zero.
+            np.sqrt(float(value)) if value > 0.0 else np.sqrt(min(abs(float(value)), 1.0e-4)),
+            environment, beta,
+            points=points, half_width=half_width, spacing=spacing, rigid_body=rigid_body,
         )
         total += term
     return float(total), lowest, unstable
@@ -977,6 +1032,7 @@ def project_path_subspace(
                 zpe[i], lowest, _ = _path_dvr_environment(
                     potential, x, complement, sqrt_m, k, values[i], environment, beta,
                     points=dvr_points, half_width=dvr_half_width, spacing=dvr_spacing,
+                    rigid_body=rigid_body,
                 )
             else:
                 # Both quadratic selectors use the same linear normal cut.
