@@ -37,6 +37,7 @@ import os
 from pathlib import Path
 import sys
 import time
+from dataclasses import replace
 from types import SimpleNamespace
 from typing import Any
 
@@ -62,6 +63,7 @@ from pyrpmd.analysis.subspace_correction import (  # noqa: E402
     instanton_anchor,
     nested_subspace_sensitivity,
     subspace_instanton_defect,
+    validity_gates,
 )
 from pyrpmd.analysis.subspace_model import SubspaceModel  # noqa: E402
 from pyrpmd.analysis.subspace_quantum import exact_quantum_rate  # noqa: E402
@@ -137,6 +139,8 @@ CASE_SPECS: tuple[dict[str, Any], ...] = (
     },
     {
         "key": "prereaction_complex_8d_200K",
+        # Rotated 2D core: the plane model holds it exactly; the RPH ribbon folds (kappa * sigma > 0.5).
+        "models": ("1d", "1d_sct", "plane", "rph"),
         "shard": 2,
         "suite_key": "prereaction_complex_8d",
         "topology": "deep_pre_and_post_complex",
@@ -158,6 +162,8 @@ CASE_SPECS: tuple[dict[str, Any], ...] = (
     },
     {
         "key": "submerged_complex_6d_200K",
+        # Rotated 2D core: the plane model holds it exactly; the RPH ribbon folds (kappa * sigma > 0.5).
+        "models": ("1d", "1d_sct", "plane", "rph"),
         "shard": 2,
         "suite_key": "submerged_complex_6d",
         "topology": "submerged_barrier_complex",
@@ -176,6 +182,9 @@ CASE_SPECS: tuple[dict[str, Any], ...] = (
         "sweeps": 600,
         "trajectories": 768,
         "seed": 302,
+        # Submerged barrier: RPMD surface at the entrance-channel bottleneck (see capture_surface).
+        "rpmd_surface_offset": 20.0,
+        "rpmd_md_time": 20000.0,
     },
     {
         "key": "leps_ion_complex_9d_220K",
@@ -214,14 +223,53 @@ CASE_SPECS: tuple[dict[str, Any], ...] = (
 )
 
 
-def _run_rpmd(model: SubspaceModel, beta: float, nbeads: int, options: dict[str, Any]) -> dict[str, Any]:
+def capture_surface(model: SubspaceModel, beta: float, spec: dict[str, Any]) -> tuple[SubspaceModel, dict[str, Any]]:
+    """Move the RPMD dividing surface of a submerged barrier to the capture bottleneck.
+
+    With the barrier below the reactant asymptote, the free-energy maximum between
+    the reactant reference and the barrier lies in the entrance channel.  A surface
+    at the barrier gives QTST up to ``exp(beta * depth)`` above what that bottleneck
+    allows, and trajectories trapped below it recross for far longer than any
+    practical ``md_time`` (the ``surface`` validity gate of the pipeline).  The
+    surface is put ``rpmd_surface_offset`` past the reference, at the largest
+    channel-floor value of ``V_S`` from there to the barrier.  The quantum rate,
+    computed with absorbers, does not depend on it and keeps the model's surface.
+    """
+    offset = spec.get("rpmd_surface_offset")
+    axis = np.asarray(model.axes[0], dtype=float)
+    floor = model.values if model.dimension == 1 else model.values.reshape(len(axis), -1).min(axis=1)
+    reference, barrier = float(model.reactant_reference), float(model.dividing_surface)
+    record = {"applied": False, "model_surface": barrier}
+    if offset is None or model.reactant != "asymptotic":
+        return model, record
+    between = (axis >= reference + float(offset)) & (axis <= barrier)
+    depth = float(beta * (np.max(floor[(axis >= reference) & (axis <= barrier)]) - np.interp(barrier, axis, floor)))
+    record["barrier_below_channel_kt"] = depth
+    if depth <= 1.0 or not between.any():
+        return model, record
+    surface = float(axis[between][int(np.argmax(floor[between]))])
+    record.update(applied=True, rpmd_surface=surface)
+    return replace(model, dividing_surface=surface), record
+
+
+def _run_rpmd(model: SubspaceModel, beta: float, nbeads: int, options: dict[str, Any],
+              spec: dict[str, Any] | None = None) -> dict[str, Any]:
     t0 = time.time()
+    surface = {"applied": False}
+    if spec is not None:
+        model, surface = capture_surface(model, beta, spec)
+        if surface["applied"] and spec.get("rpmd_md_time") is not None:
+            options = {**options, "md_time": float(spec["rpmd_md_time"])}
     res = ring_polymer_rate(model, beta, nbeads, **options)
     return {
         "rate": float(res.rate),
         "rate_standard_error": float(res.rate_standard_error),
         "log_standard_error": float(res.rate_standard_error / res.rate),
         "transmission": float(res.transmission),
+        "md_time": float(res.diagnostics["md_time"]),
+        "plateau_drift": float(res.diagnostics["plateau_drift"]),
+        "free_energy_bottleneck": res.diagnostics["free_energy_bottleneck"],
+        "capture_surface": surface,
         "seconds": float(time.time() - t0),
     }
 
@@ -361,7 +409,7 @@ def run_case(spec: dict[str, Any]) -> dict[str, Any]:
         instanton_crosscheck = None
     full_def_seconds = float(time.time() - t_inst)
 
-    # 2. Build and solve subspace models (1d, 1d_sct, rph) on the high-dimensional PES.
+    # 2. Build and solve subspace models (1d, 1d_sct, rph and, where listed, plane) on the high-dimensional PES.
     extra_q = {
         "truncation_kt": float(spec["truncation_kt"]),
         "truncation_min": float(spec["truncation_min"]),
@@ -371,7 +419,7 @@ def run_case(spec: dict[str, Any]) -> dict[str, Any]:
     saved_q = dict(QUANTUM)
     QUANTUM.update(extra_q)
     try:
-        built = subspace_models(run, path, path_info, which=("1d", "1d_sct", "rph"))
+        built = subspace_models(run, path, path_info, which=tuple(spec.get("models", ("1d", "1d_sct", "rph"))))
     finally:
         QUANTUM.clear()
         QUANTUM.update(saved_q)
@@ -399,7 +447,7 @@ def run_case(spec: dict[str, Any]) -> dict[str, Any]:
     for idx_m, (m_name, (model, q_opts, m_info, rpmd_model)) in enumerate(built.items()):
         m_rpmd_opts = {**rpmd_opts, "seed": int(spec["seed"]) + 10 * (idx_m + 1)}
         qm_res = _run_quantum(model, run.beta, q_opts)
-        rp_res = _run_rpmd(rpmd_model, run.beta, nbeads, m_rpmd_opts)
+        rp_res = _run_rpmd(rpmd_model, run.beta, nbeads, m_rpmd_opts, spec)
         c_s = float(qm_res["rate"] / rp_res["rate"])
         ln_c_s = float(math.log(c_s))
         corr_obj = SubspaceCorrection(
@@ -427,7 +475,11 @@ def run_case(spec: dict[str, Any]) -> dict[str, Any]:
             a_s_naive = None
             naive_shift = None
 
+        gates = validity_gates(rpmd_model.provenance, {"free_energy_bottleneck": rp_res["free_energy_bottleneck"]})
         subspace_out[m_name] = {
+            "validity": {"valid": bool(gates["valid"]), "failures": gates["failures"],
+                         "gates": {g["gate"]: bool(g["passed"]) for g in gates["gates"]}},
+            "ribbon_fold": rpmd_model.provenance.get("ribbon_fold"),
             "dimension": int(model.dimension),
             "shape": list(model.shape),
             "captured_curvature": _finite(m_info.get("captured_curvature")),
@@ -473,6 +525,7 @@ def run_case(spec: dict[str, Any]) -> dict[str, Any]:
             run.beta,
             nbeads,
             {**rpmd_opts, "seed": int(spec["seed"]) + 99},
+            spec,
         )
         c_exact = float(core_qm["rate"] / core_rp["rate"])
         ln_c_exact = float(math.log(c_exact))

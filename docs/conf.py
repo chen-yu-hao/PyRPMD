@@ -93,7 +93,7 @@ html_context = {
     "doc_path": "docs",
     # English-only extension guides return to the Chinese contents rather than
     # claiming a translation at a nonexistent same-name page.
-    "bilingual_pages": ["index", "genindex", "search", "enhanced-sampling", "replica-exchange", "rate-pmf-selection", "rate-input-v2"] + [
+    "bilingual_pages": ["index", "genindex", "search", "enhanced-sampling", "replica-exchange", "rate-pmf-selection", "rate-input-v2", "subspace-correction"] + [
         "manual/" + path.stem
         for path in sorted((ROOT / "docs" / "manual").glob("*.md"))
         if (ROOT / "docs" / "zh" / "manual" / path.name).is_file()

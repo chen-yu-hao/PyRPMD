@@ -39,6 +39,22 @@ molecular coordinates (`rigid_body = True`, `RPMDrateCoordinate`).
    and `RPMDrateCoordinate`, cross-checking `full_instanton_defect` against
    `pyrpmd.instanton.optimize_instanton` at $220\,\mathrm{K}$ and $180\,\mathrm{K}$.
 
+## Corrections to the first results
+
+- `submerged_complex_6d_200K`: the barrier is 4.7 kT below the reactant asymptote on the valley floor
+  (8 kT in centroid free energy), so an RPMD dividing surface at it is not the bottleneck. The first run gave an
+  RPMD rate 2300 times the free-particle flux and `ln C_exact = -8.67`. `capture_surface` in
+  `run_shard.py` now puts the RPMD surface at the entrance-channel bottleneck
+  (`rpmd_surface_offset`, `rpmd_md_time` in the case spec), giving `-0.893 +- 0.021`; the
+  pipeline's `surface` validity gate refuses the old construction.
+- Both deep-complex cases bend more tightly at the saddle than the transverse mode is wide; the
+  RPH model's `ribbon` gate rejects them, and the `plane` model, which holds a rotated 2D core
+  exactly, is included (`models` in the case spec). Its RPMD rate agrees with the exact one; its
+  quantum rate is still 16-26% off in 8D (see the theory page).
+- The 8D exact quantum rate was checked independently with the recursive Green's function of
+  `benchmarks/subspace_instanton/greens.py` (valley form `v(x) + w(x)^2 (y - g(x))^2 / 2`,
+  6400 energy points, two grid spacings): `5.51e-7` against `5.74e-7` here.
+
 ## Reproducing the benchmark
 
 ```bash

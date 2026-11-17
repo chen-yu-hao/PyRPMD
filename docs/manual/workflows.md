@@ -55,6 +55,7 @@ pyrpmd run examples/rate/from_endpoints.inp --output runs/manual-endpoint-rate
 | `sampling` | Equilibration, production, save interval and replicas per window | Distribution shapes, effective sample size, independent repeats |
 | `rate.pmf_method` | `ui` or `mbar` | UI's Gaussian-window assumption; MBAR bins and support |
 | `recrossing` | Parent count, sampling interval, child pairs, propagation time | Independent parents, a stable plateau, energy errors |
+| `rate.subspace_correction` | Optional exact 1D/2D subspace quantum rate correction $C_S=k_{\mathrm{QM}}(H_S)/k_{\mathrm{RPMD}}(H_S)$ | Validity gates (`path`, `bath`, `grid`, `ribbon`, `surface`, `solver`), `truncation_min` at low $T$, nested 1D/2D sensitivity |
 
 The rate PMF uses the `rate_flux` measure, which includes the mass-weighted flux metric; a generic
 `fes` uses `cv_density`. `rate.pmf_method="mbar"` switches the PMF estimator within the same
@@ -82,6 +83,7 @@ Maxwell momenta and launches with `+p` and `-p`, without thermostat or umbrella.
 | `conditional_rate_standard_error_cm3_s` | Recrossing error with the QTST factor held fixed |
 | `rate_uncertainty` | Error availability, requested/attempted/valid/rejected bootstrap counts and qualifying notes |
 | `pmf.adaptive_umbrella` | Adaptive pilot and independent production diagnostics in the final summary; also `adaptive_umbrella` in `rate_pmf.json` and `umbrella/summary.json` |
+| `subspace/` (`rate_quantum_corrected.json`, `subspace_pipeline.json`, `status.json`) | Subspace quantum correction factor $C_S$, validity gates, solver plans and corrected rate when `[rate.subspace_correction]` or `pyrpmd subspace-correct` is used |
 
 Rates are in `cm^3 molecule^-1 s^-1`. If the PMF overlap is disconnected or the dividing surface
 lacks support, add windows or sampling before reading a rate.
@@ -136,6 +138,29 @@ The command extends umbrella production only. It does not increase parent/child 
 propagation time, and it does not automatically refresh a containing rate study's aggregate results.
 Inspect PMF support, the recrossing plateau and the uncertainty diagnostics again; a larger budget
 does not by itself establish convergence or make a withheld rate available.
+
+### Subspace quantum rate correction
+
+To correct the full-dimensional RPMD rate for deep tunnelling, corner cutting or reaction-coordinate
+resonances with an exact 1D or 2D quantum calculation ($k \approx k_{\mathrm{RPMD}} \times C_S$,
+$C_S = k_{\mathrm{QM}}(H_S)/k_{\mathrm{RPMD}}(H_S)$), choose one of three entry points:
+
+1. **In the same `.inp` (`[rate.subspace_correction] enabled = true`):** automatically enables
+   `output.centroid_path = true` before umbrella sampling and runs the subspace solve after
+   recrossing (`examples/rate/subspace.inp`).
+2. **Postprocessing an existing rate run:** re-run only the subspace stage after editing subspace
+   controls with `pyrpmd run calculation.inp --stage subspace`, or run the standalone command
+   `pyrpmd subspace-correct correct.toml` on any saved rate directory recorded with
+   `output.centroid_path = true` (or using `path.source = "mep"`).
+3. **Python API (`pyrpmd.analysis`):** construct $H_S$ directly from a PES and saddle without
+   umbrella sampling (`project_linear_subspace`, `project_path_subspace`, `subspace_correction`,
+   `correct_rate_run`).
+
+All dimensional controls in `[rate.subspace_correction.*]` use bare atomic units (`bohr * sqrt(m_e)`
+for path steps and grid spacings, `Eh` for `truncation_min` and `soft_mode_frequency`, `bohr` for
+`hessian_displacement`, and `K` for `crossover_temperature`). See
+[Subspace rate correction](../subspace-correction.md) for the complete parameter and unit tables,
+validity gates, and low-temperature convergence rules.
 
 ## Direct collisions: `drpmd`
 

@@ -572,6 +572,20 @@ def ring_polymer_rate(
             grid_exit["ti_sample_outside_fraction"], grid_exit["surface_sample_outside_fraction"],
             grid_exit["recrossing_contaminated_flux_fraction"])
 
+    # The Bennett-Chandler rate is independent of the dividing surface only with the
+    # long-time transmission coefficient.  A surface below the centroid free-energy
+    # maximum between the reference and the surface (a submerged barrier behind a
+    # complex) needs kappa ~ exp(-beta * depth), reached only after trajectories
+    # trapped below the bottleneck have recrossed many times; QTST then exceeds the
+    # rate the bottleneck allows by up to that factor.
+    peak = int(np.argmax(free_energy))
+    bottleneck = {
+        "surface_below_maximum_kt": float(beta * (free_energy[peak] - free_energy[-1])),
+        "maximum_position": float(grid[peak]),
+        "maximum_free_energy": float(free_energy[peak] - free_energy[0]),
+        "definition": "centroid free-energy maximum on the TI grid between the reference and the dividing "
+                      "surface, relative to the surface (kT)",
+    }
     qtst = float(np.exp(log_qtst))
     rate = qtst * plateau
     relative = np.hypot(log_qtst_error, kappa_error / plateau if plateau > 0 else np.inf)
@@ -600,6 +614,7 @@ def ring_polymer_rate(
         "qtst_log_statistical_error": log_qtst_statistical,
         "ti_quadrature_log_error": float(quadrature_error),
         "barrier_free_energy": float(free_energy[-1] - free_energy[0]) if model.reactant == "asymptotic" else float(free_energy[-1] - free_energy.min()),
+        "free_energy_bottleneck": bottleneck,
         "spline_outside_fraction": spline.outside_fraction if spline is not None else 0.0,
         "grid_exit": grid_exit,
         "normalization": model.reactant,

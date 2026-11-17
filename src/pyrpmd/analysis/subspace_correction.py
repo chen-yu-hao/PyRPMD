@@ -41,7 +41,8 @@ CORRECTED_SCHEMA = "pyrpmd.rate_quantum_corrected"
 # (an explicit, recorded override).  ``max_outside_fraction`` bounds the share
 # of estimator samples that saw the constant continuation of a gridded V_S.
 VALIDITY_POLICY = {"unconverged_path": "reject", "unstable_bath": "reject", "outside_grid": "reject",
-                   "max_outside_fraction": 0.01}
+                   "max_outside_fraction": 0.01, "submerged_surface": "reject", "max_submerged_kt": 1.0,
+                   "folded_ribbon": "reject", "max_curvature_width": 0.5}
 
 
 def validity_policy(policy: Mapping[str, Any] | None = None) -> dict:
@@ -50,13 +51,21 @@ def validity_policy(policy: Mapping[str, Any] | None = None) -> dict:
     for key, value in dict(policy or {}).items():
         if key in merged and value is not None:
             merged[key] = value
-    for key in ("unconverged_path", "unstable_bath", "outside_grid"):
+    for key in ("unconverged_path", "unstable_bath", "outside_grid", "submerged_surface", "folded_ribbon"):
         if merged[key] not in ("reject", "allow"):
             raise ValueError(f"validity policy {key} must be 'reject' or 'allow'")
     limit = float(merged["max_outside_fraction"])
     if not np.isfinite(limit) or not 0 <= limit <= 1:
         raise ValueError("max_outside_fraction must lie in [0, 1]")
     merged["max_outside_fraction"] = limit
+    depth = float(merged["max_submerged_kt"])
+    if not np.isfinite(depth) or depth < 0:
+        raise ValueError("max_submerged_kt must be finite and nonnegative")
+    merged["max_submerged_kt"] = depth
+    fold = float(merged["max_curvature_width"])
+    if not np.isfinite(fold) or fold <= 0:
+        raise ValueError("max_curvature_width must be finite and positive")
+    merged["max_curvature_width"] = fold
     return merged
 
 
@@ -80,7 +89,7 @@ def validity_gates(construction: Mapping[str, Any], rpmd_diagnostics: Mapping[st
                    policy: Mapping[str, Any] | None = None) -> dict:
     """Decide whether a subspace model may carry a correction factor.
 
-    ``construction`` is the model provenance.  Three gates are evaluated when
+    ``construction`` is the model provenance.  Five gates are evaluated when
     their evidence is present:
 
     ``path``   both continuations of an assembled reaction path ended at an
@@ -94,7 +103,17 @@ def validity_gates(construction: Mapping[str, Any], rpmd_diagnostics: Mapping[st
                (``bath_stable``);
     ``grid``   the ring-polymer estimator did not sample the constant
                continuation outside a gridded ``V_S`` (``grid_exit`` of the
-               RPMD diagnostics; absent before the rates are solved).
+               RPMD diagnostics; absent before the rates are solved);
+    ``ribbon`` the path of an RPH 2D model bends less tightly than its
+               transverse mode is wide: ``kappa * sigma`` at most
+               ``max_curvature_width`` (``ribbon_fold``).  Beyond it the ribbon
+               coordinates fold inside the transverse wavefunction;
+    ``surface`` the RPMD dividing surface lies at most ``max_submerged_kt``
+               below the centroid free-energy maximum between the reactant
+               reference and the surface (``free_energy_bottleneck``).  A
+               submerged barrier behind a complex fails it: QTST through it
+               exceeds what the bottleneck allows, and the finite-time
+               transmission coefficient does not remove the excess.
 
     The policy stored in the provenance (``validity_policy``) is used unless
     ``policy`` is given.  Returns ``{"valid", "failures", "overrides",
@@ -135,6 +154,14 @@ def validity_gates(construction: Mapping[str, Any], rpmd_diagnostics: Mapping[st
             "dropped_zero_point_bound": construction.get("dropped_zero_point_bound"),
             "unstable_arc_lengths": [r["arc_length"] for r in unstable],
         }))
+    fold = construction.get("ribbon_fold")
+    if fold is not None and fold.get("max_curvature_width") is not None:
+        value, limit = float(fold["max_curvature_width"]), policy["max_curvature_width"]
+        gates.append(_gate("ribbon", value <= limit, policy["folded_ribbon"],
+                           f"the RPH path bends with radius {fold['radius']:.3g} at arc length {fold['arc']:.6g}, "
+                           f"inside the transverse width {fold['width']:.3g} (kappa * sigma = {value:.3g}, limit "
+                           f"{limit:.3g}): the ribbon coordinates fold inside the wavefunction; use "
+                           "model_2d = \"plane\"", dict(fold, max_curvature_width_limit=limit)))
     exits = (rpmd_diagnostics or {}).get("grid_exit")
     if exits is not None:
         limit = policy["max_outside_fraction"]
@@ -157,6 +184,15 @@ def validity_gates(construction: Mapping[str, Any], rpmd_diagnostics: Mapping[st
                                "recrossing_uphill_exit_fraction", "recrossing_contaminated_flux_fraction",
                                "recrossing_max_edge_slope", "estimator_outside_fraction")}
                            | {"max_outside_fraction": limit, "dominant_component": dominant}))
+    bottleneck = (rpmd_diagnostics or {}).get("free_energy_bottleneck")
+    if bottleneck is not None:
+        depth = float(bottleneck["surface_below_maximum_kt"])
+        limit = policy["max_submerged_kt"]
+        gates.append(_gate("surface", depth <= limit, policy["submerged_surface"],
+                           f"the RPMD dividing surface lies {depth:.3g} kT below the centroid free-energy "
+                           f"maximum at axis-0 position {bottleneck['maximum_position']:.6g} (limit {limit:.3g} kT); "
+                           "place the dividing surface at that bottleneck",
+                           dict(bottleneck, max_submerged_kt=limit)))
     failures = [g["reason"] for g in gates if not g["passed"] and not g["overridden"]]
     return {"valid": not failures, "failures": failures,
             "overrides": [g["gate"] for g in gates if g["overridden"]],

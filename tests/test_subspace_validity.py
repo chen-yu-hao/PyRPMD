@@ -269,6 +269,58 @@ def test_a_grid_that_ends_on_a_slope_invalidates_the_correction(tmp_path):
     assert overridden.to_dict()["factor"] == pytest.approx(correction.factor)
 
 
+def submerged(surface=0.0):
+    """A barrier 2 energy units below the reactant asymptote, inside a deep complex."""
+    axis = np.linspace(-16.0, 16.0, 321)
+    values = -3.0 / np.cosh(axis / 4.0) ** 2 + 1.0 / np.cosh(axis) ** 2
+    return SubspaceModel((axis,), values, [1.0], surface, "asymptotic", -15.0)
+
+
+def test_a_submerged_dividing_surface_fails_the_surface_gate():
+    """QTST through a barrier below the asymptote exceeds the free-particle flux.
+
+    The finite-time transmission coefficient does not remove the excess
+    (trajectories trapped in the complex keep recrossing), so the factor would
+    be wrong by up to exp(beta * depth); the gate refuses it and names the
+    bottleneck.  Moving the surface there passes.
+    """
+    beta = 4.0
+    result = ring_polymer_rate(submerged(), beta, 4, **RPMD)
+    bottleneck = result.diagnostics["free_energy_bottleneck"]
+    assert bottleneck["surface_below_maximum_kt"] > 5.0
+    assert bottleneck["maximum_position"] < -10.0          # in the entrance channel
+    assert result.qtst_rate > 20.0 * np.sqrt(1.0 / (2.0 * np.pi * beta))
+    gates = validity_gates({}, result.diagnostics)
+    assert not gates["valid"] and "below the centroid free-energy maximum" in gates["failures"][0]
+    assert [g["gate"] for g in gates["gates"]] == ["grid", "surface"]
+    allowed = validity_gates({}, result.diagnostics, policy={"submerged_surface": "allow"})
+    assert allowed["valid"] and allowed["overrides"] == ["surface"]
+    loose = validity_gates({}, result.diagnostics, policy={"max_submerged_kt": 50.0})
+    assert loose["valid"]
+
+    at_bottleneck = ring_polymer_rate(submerged(surface=-12.0), beta, 4, **RPMD)
+    assert at_bottleneck.diagnostics["free_energy_bottleneck"]["surface_below_maximum_kt"] < 1.0
+    assert validity_gates({}, at_bottleneck.diagnostics)["valid"]
+    # An ordinary barrier is its own bottleneck.
+    ordinary = ring_polymer_rate(barrier(), 8.0, 4, **RPMD)
+    assert ordinary.diagnostics["free_energy_bottleneck"]["surface_below_maximum_kt"] == pytest.approx(0.0, abs=1e-12)
+
+
+def test_a_ribbon_that_folds_inside_the_transverse_mode_fails_the_ribbon_gate():
+    """kappa * sigma near one puts the fold q = 1 / kappa inside the transverse wavefunction."""
+    tight = {"ribbon_fold": {"max_curvature_width": 0.56, "arc": 178.3, "radius": 17.0, "width": 9.55}}
+    gates = validity_gates(tight)
+    assert not gates["valid"] and [g["gate"] for g in gates["gates"]] == ["ribbon"]
+    assert "radius 17" in gates["failures"][0] and 'model_2d = "plane"' in gates["failures"][0]
+    assert validity_gates(tight, policy={"folded_ribbon": "allow"})["overrides"] == ["ribbon"]
+    assert validity_gates(tight, policy={"max_curvature_width": 0.6})["valid"]
+    # The validated curved-valley models sit at 0.21-0.25; a path without curvature records nothing.
+    assert validity_gates({"ribbon_fold": dict(tight["ribbon_fold"], max_curvature_width=0.25)})["valid"]
+    assert validity_gates({"ribbon_fold": {"max_curvature_width": None}})["gates"] == []
+    with pytest.raises(ValueError, match="max_curvature_width"):
+        validity_gates(tight, policy={"max_curvature_width": 0.0})
+
+
 def test_segmented_recrossing_reproduces_one_propagation():
     from pyrpmd.analysis.subspace_native import make_ring
 
@@ -355,7 +407,7 @@ def test_pipeline_applies_a_factor_when_every_gate_passes(tmp_path, monkeypatch)
     assert report["status"] == "complete" and report["validity"]["valid"]
     assert report["applied_dimension"] == 1 and report["corrected_rate"]["factor"] > 0
     assert report["corrections"]["1"]["factor"] == pytest.approx(report["corrected_rate"]["factor"])
-    assert [g["gate"] for g in report["validity"]["dimensions"]["1"]["gates"]] == ["path", "grid"]
+    assert [g["gate"] for g in report["validity"]["dimensions"]["1"]["gates"]] == ["path", "grid", "surface"]
     assert report["options"]["path"]["max_steps"] is None
 
 
@@ -424,10 +476,11 @@ def options(**table):
 
 
 def test_input_accepts_the_validity_table_and_an_unbounded_path():
-    resolved = options(validity={"unstable_bath": "allow", "max_outside_fraction": 0.05, "on_invalid": "diagnose"},
+    resolved = options(validity={"unstable_bath": "allow", "max_outside_fraction": 0.05, "on_invalid": "diagnose",
+                                 "submerged_surface": "allow", "max_submerged_kt": 2.0},
                        path={"asymptote_patience": 20}, hessian_displacement=0.01)
     assert resolved["validity"] == {"unstable_bath": "allow", "max_outside_fraction": 0.05,
-                                    "on_invalid": "diagnose"}
+                                    "on_invalid": "diagnose", "submerged_surface": "allow", "max_submerged_kt": 2.0}
     assert "max_steps" not in resolved["path"] and resolved["path"]["asymptote_patience"] == 20
 
 
@@ -435,6 +488,11 @@ def test_input_accepts_the_validity_table_and_an_unbounded_path():
     ({"validity": {"unstable_bath": "ignore"}}, "reject or allow"),
     ({"validity": {"on_invalid": "continue"}}, "stop or diagnose"),
     ({"validity": {"max_outside_fraction": 1.5}}, r"\[0, 1\]"),
+    ({"validity": {"submerged_surface": "ignore"}}, "reject or allow"),
+    ({"validity": {"max_submerged_kt": -1.0}}, "max_submerged_kt"),
+    ({"validity": {"folded_ribbon": "warn"}}, "reject or allow"),
+    ({"validity": {"max_curvature_width": 0.0}}, "max_curvature_width"),
+    ({"validity": {"max_curvature_width": -0.5}}, "max_curvature_width"),
     ({"validity": {"strict": True}}, "Unknown"),
     ({"path": {"asymptote_patience": 0}}, "asymptote_patience"),
     ({"hessian_displacement": 0.0}, "hessian_displacement"),

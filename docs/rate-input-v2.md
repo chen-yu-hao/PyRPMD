@@ -259,3 +259,39 @@ New implicit rate umbrella plans use `beta*kappa=500`, giving
 `sigma_xi=1/sqrt(500)=0.04472`. UI remains the estimator default. The explicit research examples now use `force_constant=0.1` in both regions, with 0.005 spacing, to match the RPMDrate H + H2 example convention. This is not a convergence-validated universal recommendation. Existing explicit spring settings and resolved checkpoints
 retain their values. Window narrowing reduces the Gaussian-model error; it
 does not replace sampling or estimator comparisons.
+
+## Optional subspace quantum rate correction
+
+Add `[rate.subspace_correction]` to the same schema-2 `.inp` file
+([`examples/rate/subspace.inp`](../examples/rate/subspace.inp)) to run an exact
+1D/2D subspace quantum rate correction ($C_S = k_{\mathrm{QM}}(H_S)/k_{\mathrm{RPMD}}(H_S)$)
+after recrossing:
+
+```toml
+[rate.subspace_correction]
+enabled = true
+mode = "apply"             # or "factor_only"
+dimension = "auto"         # 1, 2, or [1, 2]
+environment = "adiabatic"  # "frozen", "adiabatic", or "free_energy"
+model_2d = "rph"           # "rph" (default) or "plane"
+anchor = "none"            # "none" or "skeleton"
+
+[rate.subspace_correction.path]
+source = "mep"             # default IRC from refined saddle; or "centroid", "instanton", ...
+step = 10.0                # bare atomic units: bohr * sqrt(m_e)
+
+[rate.subspace_correction.quantum]
+truncation_kt = 30.0
+truncation_min = 0.0       # set to ~6 transverse quanta (Eh) at low T
+dense_limit = 8000
+```
+
+Setting `enabled = true` automatically turns on `output.centroid_path = true`
+before umbrella sampling and inherits temperature, beads, masses, PES and output
+directory from the rate run. Re-run only the subspace postprocessing after tuning
+subspace controls with `pyrpmd run subspace.inp --stage subspace`, or postprocess
+an existing saved run with `pyrpmd subspace-correct correct.toml`. All
+dimensional numbers in `[rate.subspace_correction.*]` use bare atomic units
+(unit strings are rejected). See [Subspace rate correction](subspace-correction.md)
+for the complete parameter/unit reference, validity gates and low-temperature
+convergence rules.

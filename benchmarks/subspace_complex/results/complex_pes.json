@@ -688,16 +688,16 @@
       "temperature_K": 200.0,
       "beta": 1578.8751240199356,
       "nbeads": 48,
-      "crossover_temperature_K": 316.4498144124481,
-      "t_over_tc": 0.632011746858944,
+      "crossover_temperature_K": 316.44981441244687,
+      "t_over_tc": 0.6320117468589466,
       "barrier_energy_eh": 0.009510184022841714,
       "barrier_submerged": false,
-      "reactant_end_energy_eh": 5.689337316701037e-08,
-      "product_end_energy_eh": -0.024237063358262118,
+      "reactant_end_energy_eh": 5.689337383240202e-08,
+      "product_end_energy_eh": -0.024237063358211488,
       "path": {
         "points": 75,
-        "seconds": 2.482745885848999,
-        "imaginary_frequency_cm": 1381.9465708826044,
+        "seconds": 0.8843636512756348,
+        "imaginary_frequency_cm": 1381.9465708825717,
         "reactant_status": "asymptote_converged",
         "reactant_accepted": "asymptote",
         "reactant_minima_climbed": 1,
@@ -708,11 +708,11 @@
         "nbeads": 96,
         "valid": true,
         "below_crossover": true,
-        "factor": 1.1529413526245131,
-        "log_factor": 0.14231637496681132,
-        "spread": 41.15043713362198,
-        "phase_mode_relative_residual": 1.3653907867965726e-05,
-        "seconds": 4.8466455936431885,
+        "factor": 1.1529413526248147,
+        "log_factor": 0.14231637496707283,
+        "spread": 41.150437133621935,
+        "phase_mode_relative_residual": 1.365390925867276e-05,
+        "seconds": 3.471179962158203,
         "crosscheck": null
       },
       "full_reference": {
@@ -723,24 +723,46 @@
           33
         ],
         "quantum": {
-          "rate": 5.738828924602627e-07,
+          "rate": 5.738828924597153e-07,
           "method": "sylvester",
           "retained_points": 4414,
-          "seconds": 247.95477437973022
+          "seconds": 200.15743446350098
         },
         "rpmd": {
-          "rate": 1.7567622551613702e-06,
-          "rate_standard_error": 6.45879881526125e-08,
-          "log_standard_error": 0.03676535510872509,
+          "rate": 1.7567622551613638e-06,
+          "rate_standard_error": 6.458798815261263e-08,
+          "log_standard_error": 0.0367653551087253,
           "transmission": 0.6452556776774268,
-          "seconds": 485.8602833747864
+          "md_time": 4125.044321355203,
+          "plateau_drift": 0.0,
+          "free_energy_bottleneck": {
+            "surface_below_maximum_kt": 0.3208235752126134,
+            "maximum_position": -5.838446189478688,
+            "maximum_free_energy": 0.005404848286597626,
+            "definition": "centroid free-energy maximum on the TI grid between the reference and the dividing surface, relative to the surface (kT)"
+          },
+          "capture_surface": {
+            "applied": false,
+            "model_surface": -0.23126602012218642
+          },
+          "seconds": 399.9442067146301
         },
-        "C_exact": 0.32667077788937793,
-        "ln_C_exact": -1.1188024106891776,
-        "log_standard_error": 0.03676535510872509
+        "C_exact": 0.32667077788906757,
+        "ln_C_exact": -1.1188024106901278,
+        "log_standard_error": 0.0367653551087253
       },
       "subspace": {
         "1d": {
+          "validity": {
+            "valid": true,
+            "failures": [],
+            "gates": {
+              "path": true,
+              "bath": true,
+              "surface": true
+            }
+          },
+          "ribbon_fold": null,
           "dimension": 1,
           "shape": [
             150
@@ -748,38 +770,62 @@
           "captured_curvature": null,
           "bath_stable": true,
           "quantum": {
-            "rate": 5.771147352905975e-07,
+            "rate": 5.907002549011602e-07,
             "method": "sylvester",
             "retained_points": 150,
-            "seconds": 0.3459746837615967
+            "seconds": 0.0339963436126709
           },
           "rpmd": {
-            "rate": 4.846660225522898e-07,
-            "rate_standard_error": 2.1678365665601482e-08,
-            "log_standard_error": 0.04472846177960131,
-            "transmission": 0.5354671782883134,
-            "seconds": 41.287131547927856
+            "rate": 5.087602000992149e-07,
+            "rate_standard_error": 2.151918806727528e-08,
+            "log_standard_error": 0.042297310330247445,
+            "transmission": 0.5560753123004495,
+            "md_time": 2865.297279737043,
+            "plateau_drift": 0.0,
+            "free_energy_bottleneck": {
+              "surface_below_maximum_kt": 0.5322454548603969,
+              "maximum_position": 174.7877380368701,
+              "maximum_free_energy": 0.006229441657628151,
+              "definition": "centroid free-energy maximum on the TI grid between the reference and the dividing surface, relative to the surface (kT)"
+            },
+            "capture_surface": {
+              "applied": false,
+              "model_surface": 180.54997115896475
+            },
+            "seconds": 89.59961938858032
           },
-          "C_S": 1.190747253647915,
-          "ln_C_S": 0.17458105429089468,
-          "log_standard_error": 0.04472846177960131,
+          "C_S": 1.161058303668341,
+          "ln_C_S": 0.14933191994609807,
+          "log_standard_error": 0.042297310330247445,
           "anchor_valid": true,
-          "skeleton_defect_log": 0.16853536949165038,
+          "skeleton_defect_log": 0.16853536963270555,
           "skeleton_defect_valid": true,
-          "anchor_log_shift": -0.026218994524839057,
-          "C_S_anchored": 1.159932785338835,
-          "ln_C_S_anchored": 0.1483620597660557,
-          "naive_defect_log": 0.2090056491483007,
-          "naive_log_shift": -0.06668927418148937,
-          "ln_C_S_naive": 0.10789178010940531,
-          "transfer_error_log": -1.2933834649800724,
-          "anchored_skeleton_error_log": -1.2671644704552334,
-          "combined_log_standard_error": 0.057899280042500646,
-          "relative_error_unanchored": 2.6450987790868252,
-          "relative_error_skeleton": 2.550769961222637,
-          "anchored_naive_error_log": -1.2266941907985829
+          "anchor_log_shift": -0.02621899466563271,
+          "C_S_anchored": 1.1310121335987564,
+          "ln_C_S_anchored": 0.12311292528046529,
+          "naive_defect_log": 0.20900564817673634,
+          "naive_log_shift": -0.0666892732096635,
+          "ln_C_S_naive": 0.08264264673643457,
+          "transfer_error_log": -1.2681343306362258,
+          "anchored_skeleton_error_log": -1.241915335970593,
+          "combined_log_standard_error": 0.0560424285469851,
+          "relative_error_unanchored": 2.554215382138095,
+          "relative_error_skeleton": 2.4622384680604363,
+          "anchored_naive_error_log": -1.2014450574265623
         },
         "1d_sct": {
+          "validity": {
+            "valid": false,
+            "failures": [
+              "the RPMD dividing surface lies 1.23 kT below the centroid free-energy maximum at axis-0 position 151.509 (limit 1 kT); place the dividing surface at that bottleneck"
+            ],
+            "gates": {
+              "path": true,
+              "bath": true,
+              "surface": false
+            }
+          },
+          "ribbon_fold": null,
           "dimension": 1,
           "shape": [
             150
@@ -787,21 +833,33 @@
           "captured_curvature": null,
           "bath_stable": true,
           "quantum": {
-            "rate": 1.9807618377859455e-06,
+            "rate": 1.917754424504152e-06,
             "method": "sylvester",
             "retained_points": 150,
-            "seconds": 0.3160586357116699
+            "seconds": 0.0325930118560791
           },
           "rpmd": {
-            "rate": 8.210896088648124e-05,
-            "rate_standard_error": 9.2040009896165e-06,
-            "log_standard_error": 0.11209496369514871,
-            "transmission": 0.18639616131217282,
-            "seconds": 40.276832580566406
+            "rate": 8.26325331685958e-05,
+            "rate_standard_error": 9.17165172086748e-06,
+            "log_standard_error": 0.1109932295329067,
+            "transmission": 0.19075519169438787,
+            "md_time": 2524.91871841304,
+            "plateau_drift": 0.0,
+            "free_energy_bottleneck": {
+              "surface_below_maximum_kt": 1.2329418533895853,
+              "maximum_position": 151.50893731632493,
+              "maximum_free_energy": 0.002771664452638117,
+              "definition": "centroid free-energy maximum on the TI grid between the reference and the dividing surface, relative to the surface (kT)"
+            },
+            "capture_surface": {
+              "applied": false,
+              "model_surface": 161.3778003595716
+            },
+            "seconds": 88.00976657867432
           },
-          "C_S": 0.024123576968954997,
-          "ln_C_S": -3.724565619239613,
-          "log_standard_error": 0.11209496369514871,
+          "C_S": 0.023208225029134017,
+          "ln_C_S": -3.7632485360219166,
+          "log_standard_error": 0.1109932295329067,
           "anchor_valid": false,
           "skeleton_defect_log": null,
           "skeleton_defect_valid": false,
@@ -811,52 +869,144 @@
           "naive_defect_log": null,
           "naive_log_shift": null,
           "ln_C_S_naive": null,
-          "transfer_error_log": 2.605763208550435,
+          "transfer_error_log": 2.644446125331789,
           "anchored_skeleton_error_log": null,
-          "combined_log_standard_error": 0.1179702175215735,
-          "relative_error_unanchored": -0.9261532447903128,
+          "combined_log_standard_error": 0.11692385701136952,
+          "relative_error_unanchored": -0.9289553073001982,
           "relative_error_skeleton": null,
           "anchored_naive_error_log": null
         },
+        "plane": {
+          "validity": {
+            "valid": true,
+            "failures": [],
+            "gates": {
+              "path": true,
+              "surface": true
+            }
+          },
+          "ribbon_fold": null,
+          "dimension": 2,
+          "shape": [
+            214,
+            39
+          ],
+          "captured_curvature": null,
+          "bath_stable": null,
+          "quantum": {
+            "rate": 7.230345746954461e-07,
+            "method": "sylvester",
+            "retained_points": 7581,
+            "seconds": 1076.7722733020782
+          },
+          "rpmd": {
+            "rate": 1.6091963671368958e-06,
+            "rate_standard_error": 6.651489057713874e-08,
+            "log_standard_error": 0.04133422864698791,
+            "transmission": 0.5849007078435698,
+            "md_time": 8127.142725723964,
+            "plateau_drift": 0.0,
+            "free_energy_bottleneck": {
+              "surface_below_maximum_kt": 0.3309538733081489,
+              "maximum_position": -5.447300325572201,
+              "maximum_free_energy": 0.0054046350629992435,
+              "definition": "centroid free-energy maximum on the TI grid between the reference and the dividing surface, relative to the surface (kT)"
+            },
+            "capture_surface": {
+              "applied": false,
+              "model_surface": 0.0
+            },
+            "seconds": 213.13262939453125
+          },
+          "C_S": 0.44931407344765456,
+          "ln_C_S": -0.8000331403437092,
+          "log_standard_error": 0.04133422864698791,
+          "anchor_valid": true,
+          "skeleton_defect_log": 0.1426749538870569,
+          "skeleton_defect_valid": true,
+          "anchor_log_shift": -0.00035857891998405944,
+          "C_S_anchored": 0.4491529877751533,
+          "ln_C_S_anchored": -0.8003917192636933,
+          "naive_defect_log": 0.14277869582970867,
+          "naive_log_shift": -0.00046232086263583994,
+          "ln_C_S_naive": -0.8004954612063451,
+          "transfer_error_log": -0.31876927034641855,
+          "anchored_skeleton_error_log": -0.3184106914264344,
+          "combined_log_standard_error": 0.05531916299178929,
+          "relative_error_unanchored": 0.375433934896481,
+          "relative_error_skeleton": 0.37494082169687926,
+          "anchored_naive_error_log": -0.3183069494837827
+        },
         "rph": {
+          "validity": {
+            "valid": false,
+            "failures": [
+              "the RPH path bends with radius 17 at arc length 178.318, inside the transverse width 9.55 (kappa * sigma = 0.56, limit 0.5): the ribbon coordinates fold inside the wavefunction; use model_2d = \"plane\""
+            ],
+            "gates": {
+              "path": true,
+              "bath": true,
+              "ribbon": false,
+              "surface": true
+            }
+          },
+          "ribbon_fold": {
+            "max_curvature_width": 0.5604637211271268,
+            "arc": 178.31847483655764,
+            "radius": 17.04430499150863,
+            "width": 9.552714599566588,
+            "definition": "max |kappa| / sqrt(2 omega_n) from the reference slice to the product absorber"
+          },
           "dimension": 2,
           "shape": [
             199,
             62
           ],
-          "captured_curvature": 0.9960327410990641,
+          "captured_curvature": 0.9960322667345738,
           "bath_stable": true,
           "quantum": {
-            "rate": 9.126965789512124e-07,
+            "rate": 9.127227429760229e-07,
             "method": "sylvester",
             "retained_points": 7116,
-            "seconds": 393.25782442092896
+            "seconds": 890.7778124809265
           },
           "rpmd": {
-            "rate": 1.6525576297944119e-06,
-            "rate_standard_error": 5.823615691617716e-08,
-            "log_standard_error": 0.03524001575873762,
-            "transmission": 0.6567671416489292,
-            "seconds": 1033.0577783584595
+            "rate": 1.6295334484335164e-06,
+            "rate_standard_error": 5.890180856024037e-08,
+            "log_standard_error": 0.03614642498861447,
+            "transmission": 0.6719424476056444,
+            "md_time": 7552.924777919513,
+            "plateau_drift": 0.0,
+            "free_energy_bottleneck": {
+              "surface_below_maximum_kt": 0.22321375191782128,
+              "maximum_position": -5.438025031365925,
+              "maximum_free_energy": 0.005416308960913293,
+              "definition": "centroid free-energy maximum on the TI grid between the reference and the dividing surface, relative to the surface (kT)"
+            },
+            "capture_surface": {
+              "applied": false,
+              "model_surface": 5.4511950509095186e-14
+            },
+            "seconds": 2255.1528284549713
           },
-          "C_S": 0.5522933436607336,
-          "ln_C_S": -0.5936759541832298,
-          "log_standard_error": 0.03524001575873762,
+          "C_S": 0.5601129230292453,
+          "ln_C_S": -0.5796168673147116,
+          "log_standard_error": 0.03614642498861447,
           "anchor_valid": true,
-          "skeleton_defect_log": 0.14185532666281053,
+          "skeleton_defect_log": 0.14185532365430023,
           "skeleton_defect_valid": true,
-          "anchor_log_shift": 0.00046104830400078844,
-          "C_S_anchored": 0.5525480362784275,
-          "ln_C_S_anchored": -0.5932149058792288,
-          "naive_defect_log": 0.1422748128489098,
-          "naive_log_shift": 4.156211790151687e-05,
-          "ln_C_S_naive": -0.5936343920653283,
-          "transfer_error_log": -0.5251264565059478,
-          "anchored_skeleton_error_log": -0.5255875048099489,
-          "combined_log_standard_error": 0.05092690886895389,
-          "relative_error_unanchored": 0.6906726314153488,
-          "relative_error_skeleton": 0.6914522928816715,
-          "anchored_naive_error_log": -0.5251680186238493
+          "anchor_log_shift": 0.00046105131277260347,
+          "C_S_anchored": 0.5603712233679885,
+          "ln_C_S_anchored": -0.5791558160019389,
+          "naive_defect_log": 0.1422748194627726,
+          "naive_log_shift": 4.155550430023913e-05,
+          "ln_C_S_naive": -0.5795753118104114,
+          "transfer_error_log": -0.5391855433754161,
+          "anchored_skeleton_error_log": -0.5396465946881889,
+          "combined_log_standard_error": 0.05155827165187179,
+          "relative_error_unanchored": 0.7146098180212836,
+          "relative_error_skeleton": 0.7154005233926435,
+          "anchored_naive_error_log": -0.5392270988797163
         }
       },
       "nested_sensitivity": {
@@ -866,15 +1016,15 @@
             {
               "from": 1,
               "to": 2,
-              "log_change": -0.7682570084741245,
-              "standard_error": 0.05694290125946632,
+              "log_change": -0.7289487872608097,
+              "standard_error": 0.055638354582345353,
               "status": "changed",
               "settled": false
             }
           ],
           "factors": {
-            "1": 1.190747253647915,
-            "2": 0.5522933436607336
+            "1": 1.161058303668341,
+            "2": 0.5601129230292453
           },
           "recommended_dimension": 2,
           "tolerance": 0.05,
@@ -886,15 +1036,15 @@
             {
               "from": 1,
               "to": 2,
-              "log_change": -0.7415769656452844,
-              "standard_error": 0.05694290125946632,
+              "log_change": -0.7022687412824041,
+              "standard_error": 0.055638354582345353,
               "status": "changed",
               "settled": false
             }
           ],
           "factors": {
-            "1": 1.159932785338835,
-            "2": 0.5525480362784275
+            "1": 1.1310121335987564,
+            "2": 0.5603712233679885
           },
           "recommended_dimension": 2,
           "tolerance": 0.05,
@@ -902,7 +1052,7 @@
         }
       },
       "exact_general_rate_claim": false,
-      "wall_seconds": 2146.5801713466644
+      "wall_seconds": 6037.991195201874
     },
     "submerged_complex_6d_200K": {
       "key": "submerged_complex_6d_200K",
@@ -913,16 +1063,16 @@
       "temperature_K": 200.0,
       "beta": 1578.8751240199356,
       "nbeads": 48,
-      "crossover_temperature_K": 278.38863960216787,
-      "t_over_tc": 0.7184201204683158,
+      "crossover_temperature_K": 278.3886396021516,
+      "t_over_tc": 0.7184201204683577,
       "barrier_energy_eh": -0.0029572002397751694,
       "barrier_submerged": true,
-      "reactant_end_energy_eh": 1.466822995992116e-08,
-      "product_end_energy_eh": -0.027573647986020335,
+      "reactant_end_energy_eh": 1.4668230031716818e-08,
+      "product_end_energy_eh": -0.027573647986721038,
       "path": {
         "points": 76,
-        "seconds": 1.9979588985443115,
-        "imaginary_frequency_cm": 1215.7321856628128,
+        "seconds": 0.5352456569671631,
+        "imaginary_frequency_cm": 1215.7321856627677,
         "reactant_status": "coordinate_target_reached",
         "reactant_accepted": "reactant_reference",
         "reactant_minima_climbed": 1,
@@ -933,11 +1083,11 @@
         "nbeads": 96,
         "valid": true,
         "below_crossover": true,
-        "factor": 1.3175230273316212,
-        "log_factor": 0.27575347933120736,
+        "factor": 1.3175230273318022,
+        "log_factor": 0.2757534793313447,
         "spread": 20.333766619257915,
-        "phase_mode_relative_residual": 4.090173507943502e-05,
-        "seconds": 1.0879664421081543,
+        "phase_mode_relative_residual": 4.090173707797001e-05,
+        "seconds": 0.9513864517211914,
         "crosscheck": null
       },
       "full_reference": {
@@ -948,24 +1098,48 @@
           33
         ],
         "quantum": {
-          "rate": 0.003991864054186037,
+          "rate": 0.003991864054180487,
           "method": "sylvester",
           "retained_points": 4422,
-          "seconds": 247.56939363479614
+          "seconds": 192.2185595035553
         },
         "rpmd": {
-          "rate": 23.169752256121214,
-          "rate_standard_error": 0.6096210155686492,
-          "log_standard_error": 0.026311071815953213,
-          "transmission": 0.7816690641826165,
-          "seconds": 487.8800768852234
+          "rate": 0.009753463371063451,
+          "rate_standard_error": 0.00020194825331965925,
+          "log_standard_error": 0.020705286485085777,
+          "transmission": 0.7602564567298055,
+          "md_time": 20007.46039991013,
+          "plateau_drift": 0.003344496617910586,
+          "free_energy_bottleneck": {
+            "surface_below_maximum_kt": 0.24513911608162567,
+            "maximum_position": -132.0,
+            "maximum_free_energy": 0.0,
+            "definition": "centroid free-energy maximum on the TI grid between the reference and the dividing surface, relative to the surface (kT)"
+          },
+          "capture_surface": {
+            "applied": true,
+            "model_surface": -0.92774616282277,
+            "barrier_below_channel_kt": 4.696633098721304,
+            "rpmd_surface": -111.20000000000005
+          },
+          "seconds": 530.7762022018433
         },
-        "C_exact": 0.00017228773143793228,
-        "ln_C_exact": -8.666344621620627,
-        "log_standard_error": 0.026311071815953213
+        "C_exact": 0.4092765720557826,
+        "ln_C_exact": -0.893364136174568,
+        "log_standard_error": 0.020705286485085777
       },
       "subspace": {
         "1d": {
+          "validity": {
+            "valid": true,
+            "failures": [],
+            "gates": {
+              "path": true,
+              "bath": true,
+              "surface": true
+            }
+          },
+          "ribbon_fold": null,
           "dimension": 1,
           "shape": [
             142
@@ -973,38 +1147,62 @@
           "captured_curvature": null,
           "bath_stable": true,
           "quantum": {
-            "rate": 0.0017627888522978895,
+            "rate": 0.0017627888302622443,
             "method": "sylvester",
             "retained_points": 142,
-            "seconds": 0.4466845989227295
+            "seconds": 0.030138731002807617
           },
           "rpmd": {
-            "rate": 11.80548562851669,
-            "rate_standard_error": 0.35537876548373193,
-            "log_standard_error": 0.030102850205949876,
-            "transmission": 0.7628510431517614,
-            "seconds": 40.16083788871765
+            "rate": 0.010039393424764741,
+            "rate_standard_error": 6.998030918628849e-05,
+            "log_standard_error": 0.0069705714504288765,
+            "transmission": 0.9240580110554022,
+            "md_time": 20008.587944776915,
+            "plateau_drift": 0.005544783610150095,
+            "free_energy_bottleneck": {
+              "surface_below_maximum_kt": 0.07891434040647088,
+              "maximum_position": 32.59589990089421,
+              "maximum_free_energy": 0.0,
+              "definition": "centroid free-energy maximum on the TI grid between the reference and the dividing surface, relative to the surface (kT)"
+            },
+            "capture_surface": {
+              "applied": true,
+              "model_surface": 181.8508099734098,
+              "barrier_below_channel_kt": 5.527248460894335,
+              "rpmd_surface": 53.1827840488274
+            },
+            "seconds": 197.71347284317017
           },
-          "C_S": 0.00014931946958961117,
-          "ln_C_S": -8.809422456096641,
-          "log_standard_error": 0.030102850205949876,
+          "C_S": 0.175587184970147,
+          "ln_C_S": -1.7396195789740978,
+          "log_standard_error": 0.0069705714504288765,
           "anchor_valid": true,
-          "skeleton_defect_log": 0.1805753619077396,
+          "skeleton_defect_log": 0.1805753619703099,
           "skeleton_defect_valid": true,
-          "anchor_log_shift": 0.09517811742346777,
-          "C_S_anchored": 0.00016422972654769183,
-          "ln_C_S_anchored": -8.714244338673172,
-          "naive_defect_log": -0.02067378889120134,
-          "naive_log_shift": 0.2964272682224087,
-          "ln_C_S_naive": -8.512995187874232,
-          "transfer_error_log": 0.14307783447601352,
-          "anchored_skeleton_error_log": 0.04789971705254459,
-          "combined_log_standard_error": 0.03998067146292198,
-          "relative_error_unanchored": -0.13331339182787694,
-          "relative_error_skeleton": -0.046770625064172844,
-          "anchored_naive_error_log": -0.15334943374639565
+          "anchor_log_shift": 0.09517811736103479,
+          "C_S_anchored": 0.19312039783144372,
+          "ln_C_S_anchored": -1.644441461613063,
+          "naive_defect_log": -0.02067378868574776,
+          "naive_log_shift": 0.29642726801709246,
+          "ln_C_S_naive": -1.4431923109570053,
+          "transfer_error_log": 0.8462554427995298,
+          "anchored_skeleton_error_log": 0.7510773254384949,
+          "combined_log_standard_error": 0.021847145231700407,
+          "relative_error_unanchored": -0.5709815881026896,
+          "relative_error_skeleton": -0.5281420657395404,
+          "anchored_naive_error_log": 0.5498281747824373
         },
         "1d_sct": {
+          "validity": {
+            "valid": true,
+            "failures": [],
+            "gates": {
+              "path": true,
+              "bath": true,
+              "surface": true
+            }
+          },
+          "ribbon_fold": null,
           "dimension": 1,
           "shape": [
             142
@@ -1012,76 +1210,186 @@
           "captured_curvature": null,
           "bath_stable": true,
           "quantum": {
-            "rate": 0.0013231266694693194,
+            "rate": 0.0013233204888900036,
             "method": "sylvester",
             "retained_points": 142,
-            "seconds": 0.4546544551849365
+            "seconds": 0.030823707580566406
           },
           "rpmd": {
-            "rate": 144.94582970248246,
-            "rate_standard_error": 7.34326967820939,
-            "log_standard_error": 0.05066216595042626,
-            "transmission": 0.4253441072368133,
-            "seconds": 38.365601778030396
+            "rate": 0.009845562001883612,
+            "rate_standard_error": 8.341006321094761e-05,
+            "log_standard_error": 0.00847184378047591,
+            "transmission": 0.9013184864422255,
+            "md_time": 20002.026734562252,
+            "plateau_drift": 0.0028939851568877684,
+            "free_energy_bottleneck": {
+              "surface_below_maximum_kt": 0.08433461527769946,
+              "maximum_position": 32.9274818669822,
+              "maximum_free_energy": 0.0,
+              "definition": "centroid free-energy maximum on the TI grid between the reference and the dividing surface, relative to the surface (kT)"
+            },
+            "capture_surface": {
+              "applied": true,
+              "model_surface": 162.20536142886243,
+              "barrier_below_channel_kt": 5.565891712879369,
+              "rpmd_surface": 53.88133396415269
+            },
+            "seconds": 201.2790105342865
           },
-          "C_S": 9.12842178478115e-06,
-          "ln_C_S": -11.604117738673937,
-          "log_standard_error": 0.05066216595042626,
+          "C_S": 0.13440781629701093,
+          "ln_C_S": -2.0068766956123314,
+          "log_standard_error": 0.00847184378047591,
           "anchor_valid": true,
-          "skeleton_defect_log": 0.07819722623838017,
+          "skeleton_defect_log": 0.07821067658382597,
           "skeleton_defect_valid": true,
-          "anchor_log_shift": 0.1975562530928272,
-          "C_S_anchored": 1.1122266304105215e-05,
-          "ln_C_S_anchored": -11.40656148558111,
-          "naive_defect_log": 0.17404049149330333,
-          "naive_log_shift": 0.10171298783790403,
-          "ln_C_S_naive": -11.502404750836032,
-          "transfer_error_log": 2.9377731170533092,
-          "anchored_skeleton_error_log": 2.740216863960482,
-          "combined_log_standard_error": 0.0570870174285956,
-          "relative_error_unanchored": -0.9470164142937263,
-          "relative_error_skeleton": -0.9354436545697272,
-          "anchored_naive_error_log": 2.8360601292154044
+          "anchor_log_shift": 0.19754280274751873,
+          "C_S_anchored": 0.16376318430555908,
+          "ln_C_S_anchored": -1.8093338928648128,
+          "naive_defect_log": 0.17404027336907255,
+          "naive_log_shift": 0.10171320596227215,
+          "ln_C_S_naive": -1.9051634896500593,
+          "transfer_error_log": 1.1135125594377633,
+          "anchored_skeleton_error_log": 0.9159697566902448,
+          "combined_log_standard_error": 0.02237143324577717,
+          "relative_error_unanchored": -0.6715966036807703,
+          "relative_error_skeleton": -0.5998715893192175,
+          "anchored_naive_error_log": 1.0117993534754914
+        },
+        "plane": {
+          "validity": {
+            "valid": true,
+            "failures": [],
+            "gates": {
+              "path": true,
+              "surface": true
+            }
+          },
+          "ribbon_fold": null,
+          "dimension": 2,
+          "shape": [
+            225,
+            39
+          ],
+          "captured_curvature": null,
+          "bath_stable": null,
+          "quantum": {
+            "rate": 0.0034494689527248016,
+            "method": "sylvester",
+            "retained_points": 8045,
+            "seconds": 1104.919827222824
+          },
+          "rpmd": {
+            "rate": 0.009991885277384411,
+            "rate_standard_error": 7.011622088222324e-05,
+            "log_standard_error": 0.007017316445868727,
+            "transmission": 0.9216447184996813,
+            "md_time": 20002.360217236463,
+            "plateau_drift": 0.003163430804015044,
+            "free_energy_bottleneck": {
+              "surface_below_maximum_kt": 0.07678597589512336,
+              "maximum_position": -142.61041757137355,
+              "maximum_free_energy": 0.0,
+              "definition": "centroid free-energy maximum on the TI grid between the reference and the dividing surface, relative to the surface (kT)"
+            },
+            "capture_surface": {
+              "applied": true,
+              "model_surface": 0.0,
+              "barrier_below_channel_kt": 4.670935049883464,
+              "rpmd_surface": -122.34375090470684
+            },
+            "seconds": 352.19051146507263
+          },
+          "C_S": 0.34522703743730065,
+          "ln_C_S": -1.0635529988617514,
+          "log_standard_error": 0.007017316445868727,
+          "anchor_valid": true,
+          "skeleton_defect_log": 0.2753610694418017,
+          "skeleton_defect_valid": true,
+          "anchor_log_shift": 0.0003924098895429773,
+          "C_S_anchored": 0.3453625345243884,
+          "ln_C_S_anchored": -1.0631605889722084,
+          "naive_defect_log": 0.2753557775504757,
+          "naive_log_shift": 0.00039770178086900865,
+          "ln_C_S_naive": -1.0631552970808824,
+          "transfer_error_log": 0.17018886268718336,
+          "anchored_skeleton_error_log": 0.16979645279764044,
+          "combined_log_standard_error": 0.02186210462263264,
+          "relative_error_unanchored": -0.1564945051625195,
+          "relative_error_skeleton": -0.15616344031214913,
+          "anchored_naive_error_log": 0.1697911609063144
         },
         "rph": {
+          "validity": {
+            "valid": false,
+            "failures": [
+              "the RPH path bends with radius 14.3 at arc length 177.953, inside the transverse width 9.69 (kappa * sigma = 0.679, limit 0.5): the ribbon coordinates fold inside the wavefunction; use model_2d = \"plane\""
+            ],
+            "gates": {
+              "path": true,
+              "bath": true,
+              "ribbon": false,
+              "surface": true
+            }
+          },
+          "ribbon_fold": {
+            "max_curvature_width": 0.6792866993440909,
+            "arc": 177.9529664132329,
+            "radius": 14.272019184519472,
+            "width": 9.694792804827776,
+            "definition": "max |kappa| / sqrt(2 omega_n) from the reference slice to the product absorber"
+          },
           "dimension": 2,
           "shape": [
             206,
             61
           ],
-          "captured_curvature": 0.9903189067329433,
+          "captured_curvature": 0.9903189082289203,
           "bath_stable": true,
           "quantum": {
-            "rate": 0.0006594007160149538,
+            "rate": 0.0006598863577041177,
             "method": "sylvester",
             "retained_points": 7476,
-            "seconds": 432.39953875541687
+            "seconds": 921.3496179580688
           },
           "rpmd": {
-            "rate": 23.54222526169729,
-            "rate_standard_error": 0.7439848214127186,
-            "log_standard_error": 0.031602145215353386,
-            "transmission": 0.7886700913312289,
-            "seconds": 210.87893915176392
+            "rate": 0.009948143241971468,
+            "rate_standard_error": 6.893291286638684e-05,
+            "log_standard_error": 0.006929223995846494,
+            "transmission": 0.9228761097995325,
+            "md_time": 20000.227765343745,
+            "plateau_drift": 0.0016623432008712191,
+            "free_energy_bottleneck": {
+              "surface_below_maximum_kt": 0.07106342101184569,
+              "maximum_position": -142.21406470307568,
+              "maximum_free_energy": 0.0,
+              "definition": "centroid free-energy maximum on the TI grid between the reference and the dividing surface, relative to the surface (kT)"
+            },
+            "capture_surface": {
+              "applied": true,
+              "model_surface": 5.1181281435219717e-14,
+              "barrier_below_channel_kt": 4.676341641376821,
+              "rpmd_surface": -121.94739803640903
+            },
+            "seconds": 1007.4125835895538
           },
-          "C_S": 2.800927731703362e-05,
-          "ln_C_S": -10.482974769916444,
-          "log_standard_error": 0.031602145215353386,
+          "C_S": 0.06633261520803604,
+          "ln_C_S": -2.7130735689938628,
+          "log_standard_error": 0.006929223995846494,
           "anchor_valid": true,
-          "skeleton_defect_log": 0.2744481584537529,
+          "skeleton_defect_log": 0.27444815829584307,
           "skeleton_defect_valid": true,
-          "anchor_log_shift": 0.0013053208774544411,
-          "C_S_anchored": 2.8045862283843798e-05,
-          "ln_C_S_anchored": -10.48166944903899,
-          "naive_defect_log": 0.2737265723924216,
-          "naive_log_shift": 0.0020269069387857663,
-          "ln_C_S_naive": -10.480947862977658,
-          "transfer_error_log": 1.8166301482958165,
-          "anchored_skeleton_error_log": 1.8153248274183618,
-          "combined_log_standard_error": 0.04112138230065388,
-          "relative_error_unanchored": -0.8374273253047961,
-          "relative_error_skeleton": -0.8372149772373809,
-          "anchored_naive_error_log": 1.8146032413570303
+          "anchor_log_shift": 0.0013053210355016276,
+          "C_S_anchored": 0.06641925710144778,
+          "ln_C_S_anchored": -2.711768247958361,
+          "naive_defect_log": 0.27372657250395177,
+          "naive_log_shift": 0.002026906827392927,
+          "ln_C_S_naive": -2.7110466621664697,
+          "transfer_error_log": 1.8197094328192946,
+          "anchored_skeleton_error_log": 1.818404111783793,
+          "combined_log_standard_error": 0.0218339880373259,
+          "relative_error_unanchored": -0.837927162859947,
+          "relative_error_skeleton": -0.8377154676412919,
+          "anchored_naive_error_log": 1.8176825259919016
         }
       },
       "nested_sensitivity": {
@@ -1091,15 +1399,15 @@
             {
               "from": 1,
               "to": 2,
-              "log_change": -1.673552313819803,
-              "standard_error": 0.04364489858774035,
+              "log_change": -0.973453990019765,
+              "standard_error": 0.009828683102539678,
               "status": "changed",
               "settled": false
             }
           ],
           "factors": {
-            "1": 0.00014931946958961117,
-            "2": 2.800927731703362e-05
+            "1": 0.175587184970147,
+            "2": 0.06633261520803604
           },
           "recommended_dimension": 2,
           "tolerance": 0.05,
@@ -1111,15 +1419,15 @@
             {
               "from": 1,
               "to": 2,
-              "log_change": -1.7674251103658172,
-              "standard_error": 0.04364489858774035,
+              "log_change": -1.0673267863452982,
+              "standard_error": 0.009828683102539678,
               "status": "changed",
               "settled": false
             }
           ],
           "factors": {
-            "1": 0.00016422972654769183,
-            "2": 2.8045862283843798e-05
+            "1": 0.19312039783144372,
+            "2": 0.06641925710144778
           },
           "recommended_dimension": 2,
           "tolerance": 0.05,
@@ -1127,7 +1435,7 @@
         }
       },
       "exact_general_rate_claim": false,
-      "wall_seconds": 1341.744027853012
+      "wall_seconds": 4959.037361383438
     },
     "leps_ion_complex_9d_220K": {
       "key": "leps_ion_complex_9d_220K",

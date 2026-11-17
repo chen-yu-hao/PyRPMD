@@ -14,6 +14,7 @@ _FIELDS = {"enabled", "mode", "dimension", "environment", "threshold", "reuse", 
            "validity", "execution"}
 _EXECUTION = {"cpus", "workers", "blas_threads", "memory_limit_mb"}
 _VALIDITY = {"unconverged_path", "unstable_bath", "outside_grid", "max_outside_fraction",
+             "submerged_surface", "max_submerged_kt", "folded_ribbon", "max_curvature_width",
              "soft_mode_frequency", "on_invalid"}
 _PATH = {"source", "step", "max_steps", "spread_factor", "asymptote_tolerance", "asymptote_patience", "smoothing",
          "reactant_xi", "mep_displacement", "ts_gradient_tolerance", "pmf_constraint_tolerance",
@@ -87,8 +88,8 @@ def rate_subspace_options(config):
         if key == "on_invalid":
             if value not in ("stop", "diagnose"):
                 raise InputError(f"{name} must be stop or diagnose")
-        elif key in ("max_outside_fraction", "soft_mode_frequency"):
-            validity[key] = _real(value, name, zero=True)
+        elif key in ("max_outside_fraction", "soft_mode_frequency", "max_submerged_kt", "max_curvature_width"):
+            validity[key] = _real(value, name, zero=key != "max_curvature_width")
             if key == "max_outside_fraction" and validity[key] > 1:
                 raise InputError(f"{name} must lie in [0, 1]")
         elif value not in ("reject", "allow"):

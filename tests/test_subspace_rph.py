@@ -16,6 +16,7 @@ import numpy as np
 import pytest
 
 from pyrpmd.analysis import subspace_pipeline as pipeline
+from pyrpmd.analysis.subspace_correction import validity_gates
 from pyrpmd.analysis.subspace_rph import develop_path, rph_bath
 from pyrpmd.input_schema import InputError
 from pyrpmd.input_subspace import rate_subspace_options
@@ -207,6 +208,17 @@ def test_the_reference_slice_lies_where_quantum_and_centroid_densities_agree():
     exact = run.beta**2 * abs(d2) / 12 + run.beta**3 * d1**2 / 24
     k = int(np.argmin(abs(path[:, 0] - x)))
     assert mismatch[k] == pytest.approx(exact, rel=0.2)
+
+
+def test_the_rph_model_records_how_tightly_its_path_bends(curved_2d):
+    """The validated curved valley bends with a radius four times its transverse width."""
+    potential, run, path, info = curved_2d
+    model, _, _, _ = rph(run, path, info)
+    fold = model.provenance["ribbon_fold"]
+    assert 0.1 < fold["max_curvature_width"] < 0.5
+    assert fold["radius"] > 3.0 * fold["width"]
+    assert fold["max_curvature_width"] == pytest.approx(fold["width"] / fold["radius"])
+    assert "ribbon" in [g["gate"] for g in validity_gates(model.provenance)["gates"]]
 
 
 def test_the_plane_absorber_runs_past_the_path_ends(curved_2d):

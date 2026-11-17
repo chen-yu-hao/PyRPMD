@@ -332,15 +332,39 @@ cases (`results/complex_pes.json`, `report.py`) spanning four complex reaction t
   $220\,\mathrm{K}$, reducing the 1D-vs-RPH gap from $+0.138$ to $+0.098$), and `1d_sct` breaks down
   severely at $180\,\mathrm{K}$ ($\ln C_S = -0.869$ vs $-0.105$ for 2D RPH).
 - **Submerged barriers and deep complexes (`prereaction_complex_8d` and `submerged_complex_6d`).**
-  When $V_{\mathrm{TS}} < V_{\mathrm{asymptote}}$ (`submerged_complex_6d_200K`), centroid PMF
-  umbrella integration lowers the free energy at the submerged central saddle below the asymptotic
-  reactant reference while short-time recrossing trajectories trap transiently inside the flanking
-  complexes, causing a four-order-of-magnitude breakdown of the raw short-time RPMD plateau rate
-  ($\ln C_{\mathrm{exact}} \ll 0$). Even in this extreme regime, `1d` + skeleton anchoring improves
-  the log-rate transfer error by $+0.095$ (whereas `1d_sct` overshoots RPMD by an order of magnitude
-  and misses $\ln C_{\mathrm{exact}}$ by $\sim 3$ log units). On the positive-barrier complex
-  `prereaction_complex_8d_200K`, 2D RPH captures the complex-to-barrier bend and matches
-  $\ln C_{\mathrm{exact}}$ to $\sim 0.11$ log units while 1D misses by $\sim 0.85$ log units.
+  Both models are a rotated 2D core: a valley that bends with a radius of curvature (7.5) below
+  the transverse width (9.7) at the saddle, between deep pre- and post-reaction complexes.
+
+  *Submerged barrier (6D).* The barrier lies 4.7 kT below the reactant asymptote on the valley
+  floor (8 kT in centroid free energy), so it is not the bottleneck: Bennett–Chandler through it gave an RPMD rate 2300
+  times the free-particle flux, with a transmission coefficient still falling at the end of the
+  trajectories, and an artifactual $\ln C_{\mathrm{exact}} = -8.67$. With the RPMD dividing
+  surface at the entrance-channel bottleneck the rate converges (independent seeds and
+  trajectory lengths of 20\,000 and 40\,000 a.u. agree to 2%), every RPMD rate lies just below
+  the free-particle flux, and $\ln C_{\mathrm{exact}} = -0.893 \pm 0.021$. The `surface`
+  validity gate now refuses the first construction.
+
+  *Deep complex (8D).* The exact reference holds: an independent Green's-function rate of the
+  2D core, converged in energy resolution, agrees with it to 4%. The failures are those of the
+  models. The 1D RPMD rate is 3.4 times below the 2D one (centroid free-energy barrier 9.3 kT
+  against 8.1 kT), and the RPH ribbon folds inside the transverse wavefunction
+  ($\kappa\sigma = 0.56$, 0.68 in 6D), which the `ribbon` gate now rejects.
+
+  | model | $\Delta$ 8D | $\Delta$ 6D | |
+  | --- | ---: | ---: | --- |
+  | `1d` | $-1.27 \pm 0.06$ | $+0.85 \pm 0.02$ | |
+  | `1d_sct` | $+2.64 \pm 0.12$ | $+1.11 \pm 0.02$ | 8D rejected (`surface`) |
+  | `plane` | $-0.32 \pm 0.06$ | $+0.17 \pm 0.02$ | |
+  | `rph` | $-0.54 \pm 0.05$ | $+1.82 \pm 0.02$ | rejected (`ribbon`) |
+
+  The plane model, which holds a rotated 2D core exactly, agrees with the exact RPMD rate (8D:
+  $1.61$ and $1.76 \times 10^{-6}$ in two runs, against $1.76 \times 10^{-6}$) and is the best
+  model on both cases, but its quantum rate is
+  still off: 26% high in 8D on the case grid and 16% high on the reference grid spacing. A
+  likely cause, not yet tested, is that the models absorb products inside the deep
+  post-reaction complex while the exact reference absorbs only at the grid ends. The skeleton
+  anchor shifts these errors by at most 0.2 and removes none of them: they are not
+  steepest-descent errors.
 
 ## API and workflow usage
 
