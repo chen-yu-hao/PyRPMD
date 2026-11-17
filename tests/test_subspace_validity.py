@@ -477,10 +477,12 @@ def options(**table):
 
 def test_input_accepts_the_validity_table_and_an_unbounded_path():
     resolved = options(validity={"unstable_bath": "allow", "max_outside_fraction": 0.05, "on_invalid": "diagnose",
-                                 "submerged_surface": "allow", "max_submerged_kt": 2.0},
+                                 "submerged_surface": "allow", "max_submerged_kt": 2.0,
+                                 "tight_truncation": "allow", "min_truncation_quanta": 3.5},
                        path={"asymptote_patience": 20}, hessian_displacement=0.01)
     assert resolved["validity"] == {"unstable_bath": "allow", "max_outside_fraction": 0.05,
-                                    "on_invalid": "diagnose", "submerged_surface": "allow", "max_submerged_kt": 2.0}
+                                    "on_invalid": "diagnose", "submerged_surface": "allow", "max_submerged_kt": 2.0,
+                                    "tight_truncation": "allow", "min_truncation_quanta": 3.5}
     assert "max_steps" not in resolved["path"] and resolved["path"]["asymptote_patience"] == 20
 
 
@@ -493,6 +495,9 @@ def test_input_accepts_the_validity_table_and_an_unbounded_path():
     ({"validity": {"folded_ribbon": "warn"}}, "reject or allow"),
     ({"validity": {"max_curvature_width": 0.0}}, "max_curvature_width"),
     ({"validity": {"max_curvature_width": -0.5}}, "max_curvature_width"),
+    ({"validity": {"tight_truncation": "warn"}}, "reject or allow"),
+    ({"validity": {"min_truncation_quanta": 0.0}}, "min_truncation_quanta"),
+    ({"validity": {"min_truncation_quanta": -2.0}}, "min_truncation_quanta"),
     ({"validity": {"strict": True}}, "Unknown"),
     ({"path": {"asymptote_patience": 0}}, "asymptote_patience"),
     ({"hessian_displacement": 0.0}, "hessian_displacement"),
@@ -500,3 +505,130 @@ def test_input_accepts_the_validity_table_and_an_unbounded_path():
 def test_input_rejects_bad_validity_options(table, message):
     with pytest.raises(InputError, match=message):
         options(**table)
+
+
+# --- 4. 2D transverse wall-confinement truncation gate -----------------------
+
+def _confinement_channel_2d(omega_y=0.01, v_bar=0.01):
+    x = np.linspace(-20.0, 20.0, 81)
+    y = np.linspace(-35.0, 35.0, 35)
+    values = v_bar / np.cosh(x / 4.0)[:, None] ** 2 + 0.5 * (omega_y ** 2) * y[None, :] ** 2
+    return SubspaceModel((x, y), values, [1.0, 1.0], 0.0, "asymptotic", -12.0,
+                         provenance={"model_2d": "rph",
+                                     "transverse_frequencies": {"reference": omega_y, "dividing_surface": omega_y}})
+
+
+def test_tight_2d_truncation_is_rejected_with_truncation_min_and_dense_limit_guidance(tmp_path, monkeypatch):
+    """Low-T default truncation_kt = 30 can squeeze transverse ZPE below dense_limit; gate must intercept."""
+    from pyrpmd.analysis import quantum_solver_plan, run_subspace_pipeline
+    from pyrpmd.analysis import subspace_pipeline as pipeline
+
+    omega_y, v_bar = 0.01, 0.01
+    model2 = _confinement_channel_2d(omega_y=omega_y, v_bar=v_bar)
+    # 0.02 Eh above energy_floor=0 leaves only 0.01 Eh = 1.0 * hbar*omega_y at the barrier top.
+    tight_q = {"truncation_energy": 0.02, "energy_floor": 0.0, "normalization": "slice", "dense_limit": 8000}
+    plan = quantum_solver_plan(model2, **tight_q)
+    assert plan["feasible"] and plan["retained_points"] < 8000
+    tc = plan["truncation_confinement"]
+    assert tc["bottleneck_slice"] == "dividing_surface"
+    assert tc["truncation_quanta"] == pytest.approx(1.0, rel=1e-3)
+    assert plan["required_truncation_min"] == pytest.approx(v_bar + 2.5 * omega_y, rel=1e-3)
+    assert plan["recommended_truncation_min"] == pytest.approx(v_bar + 6.0 * omega_y, rel=1e-3)
+    assert plan["recommended_dense_limit"] >= tc["required_dense_limit"] > plan["retained_points"]
+
+    # Direct subspace_correction marks the wall-squeezed 2D factor invalid.
+    direct = subspace_correction(model2, 200.0, 4, quantum_options=tight_q, rpmd_options=RPMD)
+    assert not direct.valid
+    assert any("transverse vibration" in r and "truncation_min" in r for r in direct.invalid_reasons)
+
+    # Pipeline rejects 2D before solving, both for explicit dimension=2 and dimension="auto" when verdict==2.
+    spec2, _ = pipeline_spec(monkeypatch, tmp_path / "d2", termination=CONVERGED, plane=model2, dimension=2,
+                             plane_quantum=tight_q)
+    monkeypatch.setattr(pipeline, "subspace_correction", lambda **case: pytest.fail("solved wall-squeezed 2D model"))
+    rep2 = run_subspace_pipeline(spec2)
+    assert rep2["status"] == "invalid_model" and not rep2["validity"]["valid"]
+    assert rep2["validity"]["rejected_before_solving"] == [2]
+    assert any("truncation_min" in r and "dense_limit" in r for r in rep2["solver_plans"]["2"]["recommendations"])
+
+    spec_auto, _ = pipeline_spec(monkeypatch, tmp_path / "auto", termination=CONVERGED, plane=model2,
+                                 dimension="auto", plane_quantum=tight_q)
+    monkeypatch.setattr(pipeline, "_static_curvature_width",
+                        lambda *args: {"maximum": 0.95, "candidate_direction": [0.0, 1.0]})
+    real_solve = subspace_correction
+    monkeypatch.setattr(pipeline, "subspace_correction", real_solve)
+    rep_auto = run_subspace_pipeline(spec_auto)
+    assert rep_auto["status"] == "invalid_model" and not rep_auto["validity"]["valid"]
+    assert rep_auto["applied_dimension"] is None and rep_auto["corrected_rate"] is None
+    assert rep_auto["validity"]["rejected_before_solving"] == [2]
+
+    # Raising truncation above required_truncation_min passes the truncation gate cleanly.
+    safe_model = _confinement_channel_2d(omega_y=omega_y, v_bar=v_bar)
+    safe_q = {"truncation_energy": v_bar + 3.5 * omega_y, "energy_floor": 0.0, "normalization": "slice",
+              "dense_limit": 8000}
+    safe_plan = quantum_solver_plan(safe_model, **safe_q)
+    assert validity_gates(safe_model.provenance, quantum_diagnostics=safe_plan)["valid"]
+    # Explicit policy override is recorded.
+    over = validity_gates(model2.provenance, quantum_diagnostics=plan, policy={"tight_truncation": "allow"})
+    assert over["valid"] and over["overrides"] == ["truncation"]
+
+
+# --- 5. linear-subspace / plane_model bath stability gate --------------------
+
+def test_linear_subspace_bath_gate_flags_active_instability_and_ignores_walls_and_asymptotes():
+    from pyrpmd.analysis.subspace_model import project_linear_subspace
+
+    # 3D potential projected onto (x, y); z is the complement mode.
+    # Case A: negative z curvature (-4e-4 < -soft_mode_frequency^2) inside the active channel around (0, 0).
+    def pot_unstable(q):
+        x, y, z = q
+        kz = -4e-4 if abs(x) < 1.5 else 2e-3
+        return 0.01 / np.cosh(x) ** 2 + 0.05 * y ** 2 + 0.5 * kz * z ** 2
+
+    def grad_unstable(q):
+        x, y, z = q
+        kz = -4e-4 if abs(x) < 1.5 else 2e-3
+        return np.array([-0.02 * np.tanh(x) / np.cosh(x) ** 2, 0.1 * y, kz * z])
+
+    basis = np.array([[1.0, 0.0], [0.0, 1.0], [0.0, 0.0]])
+    axes = (np.linspace(-3.0, 3.0, 13), np.linspace(-1.0, 1.0, 9))
+    bad_model = project_linear_subspace(pot_unstable, grad_unstable, [0.0, 0.0, 0.0], [1.0, 1.0, 1.0], basis, axes,
+                                        environment="adiabatic", rigid_body=False)
+    assert not bad_model.provenance["bath_stable"]
+    assert bad_model.provenance["significant_unstable_points"] > 0
+    gates_bad = validity_gates(bad_model.provenance)
+    assert not gates_bad["valid"]
+    assert any(g["gate"] == "bath" and not g["passed"] for g in gates_bad["gates"])
+    assert "grid points" in gates_bad["failures"][0]
+    with pytest.raises(ValueError, match="unstable transverse Hessian"):
+        project_linear_subspace(pot_unstable, grad_unstable, [0.0, 0.0, 0.0], [1.0, 1.0, 1.0], basis, axes,
+                                environment="adiabatic", rigid_body=False, unstable_bath="error")
+
+    # Case B: negative z curvature occurs ONLY in high-energy walls (|y| > 1.5, V > ceiling)
+    # and asymptotic regions (|x| > 2.0, outside active_mask); active channel is bound.
+    def pot_edge_only(q):
+        x, y, z = q
+        in_wall_or_asym = (abs(y) > 1.5) or (abs(x) > 2.0)
+        kz = -4e-4 if in_wall_or_asym else 2e-3
+        return 0.01 / np.cosh(x) ** 2 + 0.04 * y ** 2 + 0.5 * kz * z ** 2
+
+    def grad_edge_only(q):
+        x, y, z = q
+        in_wall_or_asym = (abs(y) > 1.5) or (abs(x) > 2.0)
+        kz = -4e-4 if in_wall_or_asym else 2e-3
+        return np.array([-0.02 * np.tanh(x) / np.cosh(x) ** 2, 0.08 * y, kz * z])
+
+    axes_wide = (np.linspace(-3.0, 3.0, 13), np.linspace(-2.0, 2.0, 9))
+    unmasked = project_linear_subspace(pot_edge_only, grad_edge_only, [0.0, 0.0, 0.0], [1.0, 1.0, 1.0],
+                                       basis, axes_wide, environment="adiabatic", rigid_body=False)
+    assert unmasked.provenance["unstable_complement_points"] > 0
+    assert not unmasked.provenance["bath_stable"]
+
+    masked = project_linear_subspace(
+        pot_edge_only, grad_edge_only, [0.0, 0.0, 0.0], [1.0, 1.0, 1.0], basis, axes_wide,
+        environment="adiabatic", rigid_body=False,
+        active_mask=lambda pts: np.abs(pts[:, 0]) <= 2.0,
+        active_energy_ceiling=0.10,
+    )
+    assert masked.provenance["unstable_complement_points"] > 0  # raw full-grid count preserved
+    assert masked.provenance["bath_stable"] and masked.provenance["significant_unstable_points"] == 0
+    assert validity_gates(masked.provenance)["valid"]

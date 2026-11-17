@@ -384,13 +384,14 @@ def _route_plan(model, retained, *, method, dense_limit, dense_only, normalizati
 def quantum_solver_plan(model: SubspaceModel, *, method: str = "auto", dense_limit: int = 1600,
                         truncation_energy: Any = None, energy_floor: float | None = None,
                         normalization: str = "default", max_flux_states: int = 256,
-                        memory_limit_mb: float | None = None, **_solver_options) -> dict:
+                        memory_limit_mb: float | None = None,
+                        min_truncation_quanta: float | None = None, **_solver_options) -> dict:
     """Route, size and memory of :func:`exact_quantum_rate` for ``model``, without solving it.
 
     Takes the same keywords (other solver options are ignored) and costs one
     comparison per grid point.  ``feasible`` is false, with ``status``
     (``dense_limit_exceeded``, ``dense_route_required`` or
-    ``memory_limit_exceeded``), ``reason`` and ``alternatives``, exactly when
+    ``memory_limit_mb``), ``reason`` and ``alternatives``, exactly when
     the solve would be refused for its route or size; ``memory_limit_mb``
     (optional) also bounds the iterative route, as the task scheduler does.
     """
@@ -398,15 +399,31 @@ def quantum_solver_plan(model: SubspaceModel, *, method: str = "auto", dense_lim
         raise TypeError("model must be a SubspaceModel")
     if normalization not in ("default", "slice"):
         raise ValueError("normalization must be 'default' or 'slice'")
+    potential = np.asarray(model.values, dtype=float)
     retained = int(np.prod(model.shape))
+    margin_info = {}
     if truncation_energy is not None:
         threshold = _truncation_threshold(model, truncation_energy)
-        retained = int(np.count_nonzero(np.asarray(model.values, dtype=float) <= threshold))
+        retained = int(np.count_nonzero(potential <= threshold))
+        policy_quanta = ((model.provenance or {}).get("validity_policy") or {}).get("min_truncation_quanta")
+        quanta_limit = float(min_truncation_quanta if min_truncation_quanta is not None
+                             else (policy_quanta if policy_quanta is not None else _DEFAULT_MIN_TRUNCATION_QUANTA))
+        margin_info = _truncation_margin(model, potential, threshold, energy_floor=energy_floor,
+                                         min_quanta=quanta_limit)
     used = (truncation_energy is not None, energy_floor is not None, normalization == "slice")
-    return _route_plan(model, retained, method=method, dense_limit=dense_limit,
+    plan = _route_plan(model, retained, method=method, dense_limit=dense_limit,
                        dense_only=[name for name, on in zip(_DENSE_ONLY_OPTIONS, used) if on],
                        normalization=normalization, max_flux_states=max_flux_states,
                        memory_limit_mb=memory_limit_mb)
+    if "truncation_margin" in margin_info:
+        plan["truncation_margin"] = margin_info["truncation_margin"]
+    if "truncation_confinement" in margin_info:
+        tc = margin_info["truncation_confinement"]
+        plan["truncation_confinement"] = tc
+        plan["required_truncation_min"] = tc["required_truncation_min"]
+        plan["recommended_truncation_min"] = tc["recommended_truncation_min"]
+        plan["recommended_dense_limit"] = tc["recommended_dense_limit"]
+    return plan
 
 
 def _dense_rate_matrix(
@@ -776,13 +793,46 @@ def _truncation_threshold(model, truncation_energy):
     return np.asarray(threshold, dtype=float)
 
 
-def _truncation_margin(model, potential, threshold):
+_DEFAULT_MIN_TRUNCATION_QUANTA = 2.5
+_RECOMMENDED_TRUNCATION_QUANTA = 6.0
+_DEFAULT_SOFT_MODE_FREQUENCY = 2.3e-4
+
+
+def _slice_transverse_frequency(model: SubspaceModel, potential: np.ndarray, row: int, floor_flat: int) -> float:
+    """Estimate the stiffest transverse harmonic frequency on axis-0 slice ``row``."""
+    slice_v = potential[row]
+    trans_idx = np.unravel_index(int(floor_flat), slice_v.shape)
+    omega_max = 0.0
+    for axis_offset, idx in enumerate(trans_idx):
+        n_pts = slice_v.shape[axis_offset]
+        if n_pts < 3:
+            continue
+        h = float(model.spacing[axis_offset + 1])
+        mass = float(model.masses[axis_offset + 1])
+        if h <= 0.0 or mass <= 0.0:
+            continue
+        j = int(np.clip(idx, 1, n_pts - 2))
+        idx_lo = list(trans_idx)
+        idx_mid = list(trans_idx)
+        idx_hi = list(trans_idx)
+        idx_lo[axis_offset] = j - 1
+        idx_mid[axis_offset] = j
+        idx_hi[axis_offset] = j + 1
+        d2v = float(slice_v[tuple(idx_hi)] - 2.0 * slice_v[tuple(idx_mid)] + slice_v[tuple(idx_lo)]) / (h * h)
+        if np.isfinite(d2v) and d2v > 0.0:
+            omega_max = max(omega_max, float(np.sqrt(d2v / mass)))
+    return omega_max
+
+
+def _truncation_margin(model, potential, threshold, *, energy_floor=None, min_quanta=_DEFAULT_MIN_TRUNCATION_QUANTA):
     """Threshold minus transverse-line floor at the reference and dividing-surface lines.
 
     ``truncation_margin`` is the smaller of the two (the lines that set the
     reactant normalization and the flux); ``truncation_margin_minimum`` is the
     smallest over all axis-0 lines that keep points, which also picks up box
-    edges and is informative only for simple valleys.
+    edges and is informative only for simple valleys.  For 2D/3D models with
+    bound transverse modes, ``truncation_confinement`` also compares each slice
+    margin against the local transverse harmonic quantum ``hbar * omega_perp``.
     """
     if potential.ndim == 1:
         value = float(np.min(threshold - potential.min()))
@@ -796,12 +846,63 @@ def _truncation_margin(model, potential, threshold):
     axis0 = model.axes[0]
     reference = int(np.argmin(abs(axis0 - model.reactant_reference)))
     surface = int(np.argmin(abs(axis0 - model.dividing_surface)))
-    return {
+    result = {
         "truncation_margin": float(min(margins[reference], margins[surface])),
         "truncation_margin_reference": float(margins[reference]),
         "truncation_margin_dividing_surface": float(margins[surface]),
         "truncation_margin_minimum": float(margins[kept].min()) if kept.any() else None,
     }
+    prov = dict(model.provenance or {})
+    stored_freqs = prov.get("transverse_frequencies")
+    if isinstance(stored_freqs, Mapping):
+        omega_ref = float(stored_freqs.get("reference") or 0.0)
+        omega_div = float(stored_freqs.get("dividing_surface") or 0.0)
+    else:
+        omega_ref = _slice_transverse_frequency(model, potential, reference, int(floor_index[reference]))
+        omega_div = _slice_transverse_frequency(model, potential, surface, int(floor_index[surface]))
+    soft_freq = float(prov.get("soft_mode_frequency")
+                      or (prov.get("validity_policy") or {}).get("soft_mode_frequency")
+                      or _DEFAULT_SOFT_MODE_FREQUENCY)
+    bound_floor = max(soft_freq, 1e-12)
+    v_ref = float(flat_v[reference, floor_index[reference]])
+    v_div = float(flat_v[surface, floor_index[surface]])
+    quanta_ref = float(margins[reference] / omega_ref) if omega_ref > bound_floor else None
+    quanta_div = float(margins[surface] / omega_div) if omega_div > bound_floor else None
+    bound_slices = []
+    if quanta_ref is not None:
+        bound_slices.append(("reference", quanta_ref, v_ref, omega_ref, float(margins[reference])))
+    if quanta_div is not None:
+        bound_slices.append(("dividing_surface", quanta_div, v_div, omega_div, float(margins[surface])))
+    if bound_slices:
+        bottleneck = min(bound_slices, key=lambda item: item[1])
+        base_floor = (float(energy_floor) if energy_floor is not None and np.isfinite(float(energy_floor))
+                      else float(min(v_ref, potential.min())))
+        req_tmin = float(max(max(0.0, v_s - base_floor + float(min_quanta) * w_s)
+                             for _, _, v_s, w_s, _ in bound_slices))
+        rec_tmin = float(max(max(0.0, v_s - base_floor + _RECOMMENDED_TRUNCATION_QUANTA * w_s)
+                             for _, _, v_s, w_s, _ in bound_slices))
+        req_dense = int(np.count_nonzero(potential <= base_floor + req_tmin))
+        rec_dense = int(np.count_nonzero(potential <= base_floor + rec_tmin))
+        norm_mode = "slice" if prov.get("model_2d") in ("rph", "plane") else "default"
+        result["truncation_confinement"] = {
+            "min_truncation_quanta": float(min_quanta),
+            "recommended_quanta": _RECOMMENDED_TRUNCATION_QUANTA,
+            "truncation_quanta": float(bottleneck[1]),
+            "truncation_quanta_reference": quanta_ref,
+            "truncation_quanta_dividing_surface": quanta_div,
+            "bottleneck_slice": bottleneck[0],
+            "bottleneck_margin": float(bottleneck[4]),
+            "bottleneck_frequency": float(bottleneck[3]),
+            "transverse_frequencies": {"reference": omega_ref, "dividing_surface": omega_div},
+            "slice_floors": {"reference": v_ref, "dividing_surface": v_div},
+            "energy_floor": base_floor,
+            "required_truncation_min": req_tmin,
+            "recommended_truncation_min": rec_tmin,
+            "required_dense_limit": req_dense,
+            "recommended_dense_limit": rec_dense,
+            "recommended_dense_memory_mb": float(_dense_memory_mb(model, rec_dense, norm_mode)),
+        }
+    return result
 
 
 def exact_quantum_rate(
@@ -918,7 +1019,10 @@ def exact_quantum_rate(
     if truncation_energy is not None:
         threshold = _truncation_threshold(model, truncation_energy)
         keep = np.flatnonzero(operators.potential.ravel() <= threshold.ravel())
-        margin_info = _truncation_margin(model, operators.potential, threshold)
+        policy_quanta = ((model.provenance or {}).get("validity_policy") or {}).get("min_truncation_quanta")
+        quanta_limit = float(policy_quanta) if policy_quanta is not None else _DEFAULT_MIN_TRUNCATION_QUANTA
+        margin_info = _truncation_margin(model, operators.potential, threshold, energy_floor=energy_floor,
+                                         min_quanta=quanta_limit)
     retained = operators.size if keep is None else len(keep)
     used = (keep is not None, energy_floor is not None, normalization != "default")
     plan = _route_plan(model, retained, method=method, dense_limit=dense_limit,

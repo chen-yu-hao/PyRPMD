@@ -15,6 +15,7 @@ _FIELDS = {"enabled", "mode", "dimension", "environment", "threshold", "reuse", 
 _EXECUTION = {"cpus", "workers", "blas_threads", "memory_limit_mb"}
 _VALIDITY = {"unconverged_path", "unstable_bath", "outside_grid", "max_outside_fraction",
              "submerged_surface", "max_submerged_kt", "folded_ribbon", "max_curvature_width",
+             "tight_truncation", "min_truncation_quanta",
              "soft_mode_frequency", "on_invalid"}
 _PATH = {"source", "step", "max_steps", "spread_factor", "asymptote_tolerance", "asymptote_patience", "smoothing",
          "reactant_xi", "mep_displacement", "ts_gradient_tolerance", "pmf_constraint_tolerance",
@@ -88,8 +89,9 @@ def rate_subspace_options(config):
         if key == "on_invalid":
             if value not in ("stop", "diagnose"):
                 raise InputError(f"{name} must be stop or diagnose")
-        elif key in ("max_outside_fraction", "soft_mode_frequency", "max_submerged_kt", "max_curvature_width"):
-            validity[key] = _real(value, name, zero=key != "max_curvature_width")
+        elif key in ("max_outside_fraction", "soft_mode_frequency", "max_submerged_kt", "max_curvature_width",
+                     "min_truncation_quanta"):
+            validity[key] = _real(value, name, zero=key not in {"max_curvature_width", "min_truncation_quanta"})
             if key == "max_outside_fraction" and validity[key] > 1:
                 raise InputError(f"{name} must lie in [0, 1]")
         elif value not in ("reject", "allow"):
@@ -141,7 +143,8 @@ def rate_subspace_options(config):
     if options["enabled"]:
         pmf = rate.get("pmf", {})
         method = pmf.get("method", "umbrella") if isinstance(pmf, Mapping) else None
-        if method != "umbrella" or rate.get("pmf_source") not in (None, "umbrella"):
+        mep_factor_only = options["mode"] == "factor_only" and options["path"].get("source") == "mep"
+        if not mep_factor_only and (method != "umbrella" or rate.get("pmf_source") not in (None, "umbrella")):
             raise InputError(f"{_SECTION} requires locally sampled umbrella windows; "
                              "external PMFs, metadynamics and OPES have no centroid_path moments")
     return options
@@ -153,5 +156,9 @@ def normalize_rate_subspace(config):
     if options is not None:
         config["rate"]["subspace_correction"] = options
         if options["enabled"]:
-            config.setdefault("output", {})["centroid_path"] = True
+            rate = config.get("rate", {})
+            pmf = rate.get("pmf", {}) if isinstance(rate, Mapping) else {}
+            method = pmf.get("method", "umbrella") if isinstance(pmf, Mapping) else None
+            if method == "umbrella" and (not isinstance(rate, Mapping) or rate.get("pmf_source") in (None, "umbrella")):
+                config.setdefault("output", {})["centroid_path"] = True
     return options

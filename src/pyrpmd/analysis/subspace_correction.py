@@ -42,7 +42,8 @@ CORRECTED_SCHEMA = "pyrpmd.rate_quantum_corrected"
 # of estimator samples that saw the constant continuation of a gridded V_S.
 VALIDITY_POLICY = {"unconverged_path": "reject", "unstable_bath": "reject", "outside_grid": "reject",
                    "max_outside_fraction": 0.01, "submerged_surface": "reject", "max_submerged_kt": 1.0,
-                   "folded_ribbon": "reject", "max_curvature_width": 0.5}
+                   "folded_ribbon": "reject", "max_curvature_width": 0.5,
+                   "tight_truncation": "reject", "min_truncation_quanta": 2.5}
 
 
 def validity_policy(policy: Mapping[str, Any] | None = None) -> dict:
@@ -51,7 +52,8 @@ def validity_policy(policy: Mapping[str, Any] | None = None) -> dict:
     for key, value in dict(policy or {}).items():
         if key in merged and value is not None:
             merged[key] = value
-    for key in ("unconverged_path", "unstable_bath", "outside_grid", "submerged_surface", "folded_ribbon"):
+    for key in ("unconverged_path", "unstable_bath", "outside_grid", "submerged_surface", "folded_ribbon",
+                "tight_truncation"):
         if merged[key] not in ("reject", "allow"):
             raise ValueError(f"validity policy {key} must be 'reject' or 'allow'")
     limit = float(merged["max_outside_fraction"])
@@ -66,6 +68,10 @@ def validity_policy(policy: Mapping[str, Any] | None = None) -> dict:
     if not np.isfinite(fold) or fold <= 0:
         raise ValueError("max_curvature_width must be finite and positive")
     merged["max_curvature_width"] = fold
+    quanta = float(merged["min_truncation_quanta"])
+    if not np.isfinite(quanta) or quanta <= 0:
+        raise ValueError("min_truncation_quanta must be finite and positive")
+    merged["min_truncation_quanta"] = quanta
     return merged
 
 
@@ -86,34 +92,38 @@ def _path_evidence(end):
 
 
 def validity_gates(construction: Mapping[str, Any], rpmd_diagnostics: Mapping[str, Any] | None = None,
-                   policy: Mapping[str, Any] | None = None) -> dict:
+                   policy: Mapping[str, Any] | None = None, *,
+                   quantum_diagnostics: Mapping[str, Any] | None = None) -> dict:
     """Decide whether a subspace model may carry a correction factor.
 
-    ``construction`` is the model provenance.  Five gates are evaluated when
+    ``construction`` is the model provenance.  Six gates are evaluated when
     their evidence is present:
 
-    ``path``   both continuations of an assembled reaction path ended at an
-               accepted terminus (``path_termination``, set by the pipeline):
-               an asymptote, the reactant reference ``xi = 0`` after climbing
-               out of a pre-reaction complex, or on the product side a well
-               deep enough below the barrier to commit products; and the
-               reactant reference slice of a 1D model lies in the free
-               reactant channel (``reactant_reference``);
-    ``bath``   the normal-plane Hessian of a path projection is stable
-               (``bath_stable``);
-    ``grid``   the ring-polymer estimator did not sample the constant
-               continuation outside a gridded ``V_S`` (``grid_exit`` of the
-               RPMD diagnostics; absent before the rates are solved);
-    ``ribbon`` the path of an RPH 2D model bends less tightly than its
-               transverse mode is wide: ``kappa * sigma`` at most
-               ``max_curvature_width`` (``ribbon_fold``).  Beyond it the ribbon
-               coordinates fold inside the transverse wavefunction;
-    ``surface`` the RPMD dividing surface lies at most ``max_submerged_kt``
-               below the centroid free-energy maximum between the reactant
-               reference and the surface (``free_energy_bottleneck``).  A
-               submerged barrier behind a complex fails it: QTST through it
-               exceeds what the bottleneck allows, and the finite-time
-               transmission coefficient does not remove the excess.
+    ``path``       both continuations of an assembled reaction path ended at an
+                   accepted terminus (``path_termination``, set by the pipeline):
+                   an asymptote, the reactant reference ``xi = 0`` after climbing
+                   out of a pre-reaction complex, or on the product side a well
+                   deep enough below the barrier (or settled at its asymptote) to
+                   commit products; and the reactant reference slice of a 1D model
+                   lies in the free reactant channel (``reactant_reference``);
+    ``bath``       the complement Hessian of a path or active plane projection is
+                   stable (``bath_stable``);
+    ``truncation`` the energy-truncated DVR walls leave at least
+                   ``min_truncation_quanta`` transverse harmonic quanta above the
+                   valley floor at the reference and dividing-surface slices;
+    ``grid``       the ring-polymer estimator did not sample the constant
+                   continuation outside a gridded ``V_S`` (``grid_exit`` of the
+                   RPMD diagnostics; absent before the rates are solved);
+    ``ribbon``     the path of an RPH 2D model bends less tightly than its
+                   transverse mode is wide: ``kappa * sigma`` at most
+                   ``max_curvature_width`` (``ribbon_fold``).  Beyond it the ribbon
+                   coordinates fold inside the transverse wavefunction;
+    ``surface``    the RPMD dividing surface lies at most ``max_submerged_kt``
+                   below the centroid free-energy maximum between the reactant
+                   reference and the surface (``free_energy_bottleneck``).  A
+                   submerged barrier behind a complex fails it: QTST through it
+                   exceeds what the bottleneck allows, and the finite-time
+                   transmission coefficient does not remove the excess.
 
     The policy stored in the provenance (``validity_policy``) is used unless
     ``policy`` is given.  Returns ``{"valid", "failures", "overrides",
@@ -140,20 +150,26 @@ def validity_gates(construction: Mapping[str, Any], rpmd_diagnostics: Mapping[st
                            detail))
     if "bath_stable" in construction and construction.get("environment") != "frozen":
         unstable = list(construction.get("significant_unstable") or [])
+        count = int(construction.get("significant_unstable_points", len(unstable)))
         worst = min(unstable, key=lambda r: r["curvature"]) if unstable else None
         reason = None
         if worst is not None:
-            reason = (f"unstable transverse Hessian at {len(unstable)} path points (worst "
+            noun = "grid points" if construction.get("kind") == "linear_projection" else "path points"
+            reason = (f"unstable transverse Hessian at {count} {noun} (worst "
                       f"{worst['imaginary_frequency_cm']:.0f}i cm^-1, "
                       f"{', '.join(construction.get('unstable_characters') or ['unclassified'])})")
-        gates.append(_gate("bath", construction["bath_stable"], policy["unstable_bath"], reason, {
-            "significant_unstable_points": len(unstable),
+        bath_detail = {
+            "significant_unstable_points": count,
             "minimum_complement_curvature": construction.get("minimum_complement_curvature"),
             "unstable_characters": construction.get("unstable_characters"),
             "soft_complement_points": construction.get("soft_complement_points"),
             "dropped_zero_point_bound": construction.get("dropped_zero_point_bound"),
-            "unstable_arc_lengths": [r["arc_length"] for r in unstable],
-        }))
+            "unstable_arc_lengths": [r["arc_length"] for r in unstable if "arc_length" in r],
+        }
+        coords = [r["coordinates"] for r in unstable if "coordinates" in r]
+        if coords:
+            bath_detail["unstable_coordinates"] = coords
+        gates.append(_gate("bath", construction["bath_stable"], policy["unstable_bath"], reason, bath_detail))
     fold = construction.get("ribbon_fold")
     if fold is not None and fold.get("max_curvature_width") is not None:
         value, limit = float(fold["max_curvature_width"]), policy["max_curvature_width"]
@@ -162,6 +178,41 @@ def validity_gates(construction: Mapping[str, Any], rpmd_diagnostics: Mapping[st
                            f"inside the transverse width {fold['width']:.3g} (kappa * sigma = {value:.3g}, limit "
                            f"{limit:.3g}): the ribbon coordinates fold inside the wavefunction; use "
                            "model_2d = \"plane\"", dict(fold, max_curvature_width_limit=limit)))
+    confinement = (quantum_diagnostics or {}).get("truncation_confinement")
+    if confinement is None:
+        confinement = construction.get("truncation_confinement")
+    if isinstance(confinement, Mapping) and confinement.get("truncation_quanta") is not None:
+        quanta = float(confinement["truncation_quanta"])
+        limit = policy["min_truncation_quanta"]
+        req_tmin = confinement.get("required_truncation_min")
+        floors = confinement.get("slice_floors") or {}
+        freqs = confinement.get("transverse_frequencies") or {}
+        efloor = confinement.get("energy_floor")
+        if efloor is not None and floors and freqs:
+            candidates = [max(0.0, float(floors[s]) - float(efloor) + limit * float(freqs[s]))
+                          for s in ("reference", "dividing_surface")
+                          if s in floors and float(freqs.get(s) or 0.0) > 0.0]
+            if candidates:
+                req_tmin = float(max(candidates))
+        rec_tmin = confinement.get("recommended_truncation_min")
+        rec_dense = confinement.get("recommended_dense_limit")
+        req_dense = confinement.get("required_dense_limit")
+        guidance = []
+        if rec_tmin is not None and req_tmin is not None:
+            guidance.append(f"set quantum.truncation_min >= {req_tmin:.3g} Eh (recommended {rec_tmin:.3g} Eh)")
+        if rec_dense is not None:
+            dense_hint = f"quantum.dense_limit >= {rec_dense}"
+            if req_dense is not None and req_dense != rec_dense:
+                dense_hint = f"quantum.dense_limit >= {req_dense} (recommended {rec_dense})"
+            guidance.append(dense_hint)
+        slice_name = confinement.get("bottleneck_slice", "channel")
+        margin_eh = confinement.get("bottleneck_margin")
+        margin_text = f"{margin_eh:.4g} Eh = " if margin_eh is not None else ""
+        reason = (f"energy-truncated DVR wall confines the transverse vibration at {slice_name} "
+                  f"({margin_text}{quanta:.3g} hbar*omega_perp, minimum {limit:.3g})"
+                  + ("; " + " and ".join(guidance) if guidance else ""))
+        gates.append(_gate("truncation", quanta >= limit, policy["tight_truncation"], reason,
+                           dict(confinement, min_truncation_quanta=limit, required_truncation_min=req_tmin)))
     exits = (rpmd_diagnostics or {}).get("grid_exit")
     if exits is not None:
         limit = policy["max_outside_fraction"]
@@ -355,7 +406,8 @@ def _validate_rpmd_model(model, rpmd_model):
 
 def _assemble_correction(model, beta, nbeads, quantum, rpmd):
     described = model.describe()
-    validity = validity_gates(described["construction"], rpmd.diagnostics)
+    validity = validity_gates(described["construction"], rpmd.diagnostics,
+                              quantum_diagnostics=getattr(quantum, "diagnostics", None))
     positive = bool(np.isfinite(quantum.rate) and np.isfinite(rpmd.rate) and quantum.rate > 0 and rpmd.rate > 0)
     if not positive:
         # Keep both component results: a ratio that cannot be formed is a
@@ -569,6 +621,23 @@ def _rate_summary(root: Path):
             summary = data
             files.append(published)
     return summary, config, manifest, files
+
+
+def check_correctable_rate_run(directory) -> Path:
+    """Verify upfront that ``directory`` has a saved rate estimate to multiply."""
+    from .rate_io import _root
+
+    root = _root(directory, "summary.json")
+    summary, config, _, _ = _rate_summary(root)
+    task = summary.get("task")
+    if task not in ("rate", "surface_rate"):
+        raise ValueError("correct_rate_run accepts a gas or surface rate run")
+    if config.get("beta") is None:
+        raise ValueError("input/resolved.json with beta is required to check the correction temperature")
+    unit = "s_inv" if task == "surface_rate" else "cm3_s"
+    if summary.get("rate_estimate_" + unit) is None:
+        raise ValueError("the saved run has no rate estimate to correct")
+    return root
 
 
 def correct_rate_run(directory, correction, *, output=None, beta_rtol: float = 1e-6) -> dict:
