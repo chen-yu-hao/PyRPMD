@@ -219,6 +219,7 @@ def test_dynamic_scheduler_avoids_quarter_cpu_cap_on_mixed_1d_2d_tasks(monkeypat
                    rpmd_options=dict(windows=48, walkers=32, burn_in=200, sweeps=400, trajectories=512, seed=1)),
     }
     monkeypatch.setattr(execution, "_affinity_cpus", lambda: 8)
+    monkeypatch.setattr(execution, "_native_openmp", lambda: True)
     opts = execution._options({"backend": "process", "cpus": "auto"})
     assert opts["cpus"] == 8
 
@@ -285,6 +286,12 @@ def test_dynamic_scheduler_avoids_quarter_cpu_cap_on_mixed_1d_2d_tasks(monkeypat
     pair_alloc, _ = run_sim(pair_only)
     assert pair_alloc[("1d", "quantum")] == 1
     assert pair_alloc[("2d", "rpmd")] == 8
+
+    # Platforms built without OpenMP (e.g. macOS AppleClang / Windows MSVC) cap single-process RPMD at 1 thread.
+    monkeypatch.setattr(execution, "_native_openmp", lambda: False)
+    no_omp_alloc, no_omp_max = run_sim(execution._tasks(mixed))
+    assert no_omp_max <= 8
+    assert no_omp_alloc[("2d", "rpmd")] == 1
 
 
 def test_thread_count_determinism_and_cpus_auto_cli(tmp_path, monkeypatch):

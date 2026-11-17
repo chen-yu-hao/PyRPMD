@@ -60,6 +60,14 @@ class PathDevelopment:
     captured_curvature: float
     record: dict = field(default_factory=dict)
     _tree: Any = None
+    _theta_cache: Any = field(default=None, init=False, repr=False)
+
+    def _unwrapped_theta(self) -> tuple[np.ndarray, np.ndarray]:
+        if self._theta_cache is None:
+            theta_g = np.unwrap(np.arctan2(self.tangent2[:, 1], self.tangent2[:, 0]))
+            unit_t = np.column_stack([np.cos(theta_g), np.sin(theta_g)])
+            self._theta_cache = (theta_g, unit_t)
+        return self._theta_cache
 
     def orient(self, origin_arc: float, axis: Any) -> None:
         """Move ``c(origin_arc)`` to the origin and turn ``axis`` (a developed direction) onto +X."""
@@ -70,12 +78,14 @@ class PathDevelopment:
         self.tangent2 = self.tangent2 @ rotation.T
         self.normal2 = self.normal2 @ rotation.T
         self._tree = None
+        self._theta_cache = None
 
     def point(self, s: Any) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         """Developed point, tangent and normal at arc lengths ``s``."""
         s = np.atleast_1d(np.asarray(s, dtype=float))
+        theta_g, _ = self._unwrapped_theta()
         c = np.column_stack([np.interp(s, self.s, self.plane[:, i]) for i in range(2)])
-        theta = np.interp(s, self.s, np.unwrap(np.arctan2(self.tangent2[:, 1], self.tangent2[:, 0])))
+        theta = np.interp(s, self.s, theta_g)
         tangent = np.column_stack([np.cos(theta), np.sin(theta)])
         return c, tangent, np.column_stack([-tangent[:, 1], tangent[:, 0]])
 
@@ -86,9 +96,12 @@ class PathDevelopment:
         points = np.atleast_2d(np.asarray(points, dtype=float))
         if self._tree is None:
             self._tree = cKDTree(self.plane)
-        _, index = self._tree.query(points)
-        s = self.s[index].copy()
-        for _ in range(3):
+        workers = -1 if len(points) >= 32768 else 1
+        _, index = self._tree.query(points, workers=workers)
+        _, unit_t = self._unwrapped_theta()
+        s = np.clip(self.s[index] + np.sum((points - self.plane[index]) * unit_t[index], axis=1),
+                    self.s[0], self.s[-1])
+        for _ in range(2):
             c, tangent, _ = self.point(s)
             s = np.clip(s + np.sum((points - c) * tangent, axis=1), self.s[0], self.s[-1])
         c, _, normal = self.point(s)
@@ -98,6 +111,8 @@ class PathDevelopment:
         """Cartesian configurations ``x(s, q) = (w(s) + q n(s)) / sqrt(m)``, ``[m, n]``."""
         s = np.atleast_1d(np.asarray(s, dtype=float))
         q = np.broadcast_to(np.asarray(q, dtype=float), s.shape)
+        if s.size == 0:
+            return np.empty((0, self.w.shape[1]), dtype=float)
         w = np.column_stack([np.interp(s, self.s, self.w[:, i]) for i in range(self.w.shape[1])])
         normal = np.column_stack([np.interp(s, self.s, self.n[:, i]) for i in range(self.n.shape[1])])
         normal /= np.linalg.norm(normal, axis=1, keepdims=True)
@@ -264,9 +279,44 @@ def rph_bath(gradient: Callable[[np.ndarray], np.ndarray], development: PathDeve
             "soft_complement_points": soft}
 
 
+_RPH_BATCH_CHUNK = 16384
+_RPH_SCALAR_FALLBACK = 32
+
+
+def _scalar_eval(potential: Callable[[np.ndarray], float], configs: np.ndarray) -> np.ndarray:
+    computed = np.empty(len(configs), dtype=float)
+    for i, x in enumerate(configs):
+        try:
+            computed[i] = float(potential(x))
+        except (ArithmeticError, ValueError, RuntimeError):
+            computed[i] = np.inf
+    return computed
+
+
+def _batch_eval_chunk(
+    potential: Callable[[np.ndarray], float],
+    batch_potential: Callable[[np.ndarray], Any],
+    chunk: np.ndarray,
+) -> np.ndarray:
+    try:
+        raw = np.asarray(batch_potential(chunk), dtype=float)
+        if raw.shape != (len(chunk),):
+            raise ValueError("batch potential returned an unexpected shape")
+        return raw
+    except (ArithmeticError, ValueError, RuntimeError):
+        if len(chunk) <= _RPH_SCALAR_FALLBACK:
+            return _scalar_eval(potential, chunk)
+        mid = len(chunk) // 2
+        return np.concatenate([
+            _batch_eval_chunk(potential, batch_potential, chunk[:mid]),
+            _batch_eval_chunk(potential, batch_potential, chunk[mid:]),
+        ])
+
+
 def project_rph_values(potential: Callable[[np.ndarray], float], development: PathDevelopment, axes: Sequence[Any],
                        bath: Mapping[str, Any], *, arc_range: tuple[float, float], half_width: float,
-                       wall_energy: float, return_bare: bool = False) -> np.ndarray | tuple[np.ndarray, np.ndarray]:
+                       wall_energy: float, return_bare: bool = False,
+                       batch_potential: Callable[[np.ndarray], Any] | None = None) -> np.ndarray | tuple[np.ndarray, np.ndarray]:
     """``V_S`` on the developed tensor grid ``axes`` (``indexing='ij'``).
 
     Points farther than ``half_width`` from the path are walls
@@ -288,12 +338,23 @@ def project_rph_values(potential: Callable[[np.ndarray], float], development: Pa
     inside = np.abs(q) <= half_width
     configurations = development.configuration(s[inside], q[inside])
     extra = np.interp(s[inside], bath["arc"], bath["energy"])
-    computed = np.empty(len(configurations))
-    for i, x in enumerate(configurations):
-        try:
-            computed[i] = float(potential(x))
-        except (ArithmeticError, ValueError, RuntimeError):
-            computed[i] = np.inf
+    if batch_potential is None:
+        owner = getattr(potential, "__self__", None)
+        if owner is not None and getattr(owner, "energy", None) == potential:
+            for attr in ("energies", "energy_batch"):
+                candidate = getattr(owner, attr, None)
+                if callable(candidate):
+                    batch_potential = candidate
+                    break
+    if len(configurations) == 0:
+        computed = np.empty(0, dtype=float)
+    elif batch_potential is None:
+        computed = _scalar_eval(potential, configurations)
+    else:
+        computed = np.concatenate([
+            _batch_eval_chunk(potential, batch_potential, configurations[start:start + _RPH_BATCH_CHUNK])
+            for start in range(0, len(configurations), _RPH_BATCH_CHUNK)
+        ])
     if bare is not None:
         bare_inside = np.where(np.isfinite(computed), computed, np.inf)
         bare[inside] = np.minimum(bare_inside, float(wall_energy))

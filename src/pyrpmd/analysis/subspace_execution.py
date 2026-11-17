@@ -233,6 +233,14 @@ def _passive_openmp():
         os.environ.pop("OMP_WAIT_POLICY", None)
 
 
+def _native_openmp() -> bool:
+    try:
+        from pyrpmd import _subspace
+        return bool(getattr(_subspace, "openmp", 0))
+    except ImportError:
+        return False
+
+
 def _task_profile(task, cpus, blas_threads):
     """Estimate task work (s at 1 CPU), serial fraction alpha, and scaling cap."""
     model, beta, beads, options = task["model"], task["beta"], task["nbeads"], task["options"]
@@ -267,11 +275,7 @@ def _task_profile(task, cpus, blas_threads):
         polymer_steps = hmc_steps + md_total
         bead_evals = polymer_steps * int(beads)
         max_batch = max(nw * walkers, 2 * trajectories)
-        try:
-            from pyrpmd import _subspace
-            native_omp = bool(getattr(_subspace, "openmp", 0))
-        except ImportError:
-            native_omp = False
+        native_omp = _native_openmp()
         uses_native = (
             native_omp
             and options.get("backend", "auto") != "python"
