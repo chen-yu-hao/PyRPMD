@@ -294,3 +294,77 @@ def test_pipeline_rejects_fractional_dvr_points_without_truncating():
     with pytest.raises(ValueError, match="dvr_points must be an integer"):
         path_model(run, path, {**DEFAULTS["quantum"], "zero_point": "dvr",
                                "dvr_points": 51.5})
+
+
+def test_dvr_caps_asymptotic_soft_modes_and_truncates_nonfinite_wings():
+    """Asymptotic near-zero modes and nuclear-overlap cut wings do not trigger FloatingPointError or mirror wells."""
+    m_h = 1837.1526464
+    masses = np.full(9, m_h)
+    r_eq = 1.4
+    # Separating H + H2 path along z with rigid-body modes removed.
+    seps = np.linspace(8.0, 12.0, 9)
+    path = np.zeros((len(seps), 9))
+    path[:, 2] = -seps
+    path[:, 5] = -0.5 * r_eq
+    path[:, 8] = 0.5 * r_eq
+    arc = path_curvature(path, masses, samples=len(seps))[0]
+    axis = np.linspace(0.0, arc[-1] - 1e-9, 9)
+
+    omega_stretch = 0.02
+    omega_soft = 1.0e-6
+
+    def overlap_guard_potential(x):
+        p = np.asarray(x, dtype=float).reshape(3, 3)
+        r01 = float(np.linalg.norm(p[0] - p[1]))
+        r12 = float(np.linalg.norm(p[1] - p[2]))
+        r02 = float(np.linalg.norm(p[0] - p[2]))
+        min_r = min(r01, r12, r02)
+        if min_r < 0.25:
+            raise ValueError("nuclear overlap")
+        if min_r < 0.35:
+            return float("nan")
+        # Artificial low value if a linear cut passed cleanly through r12=0 to the far side (p2[2] < p1[2]).
+        mirror = -5.0 if p[2, 2] < p[1, 2] - 0.1 else 0.0
+        return (
+            mirror
+            + 0.5 * (0.5 * m_h) * omega_stretch**2 * ((p[2, 2] - p[1, 2]) - r_eq) ** 2
+            + 0.5 * m_h * omega_soft**2 * (p[0, 0] ** 2 + p[0, 1] ** 2)
+        )
+
+    def harmonic_soft_hessian(_x):
+        # Projectable symmetric Hessian in Cartesian coordinates with stretch along z12 and ultra-soft bends.
+        h = np.zeros((9, 9))
+        dz = np.array([0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 1.0]) / np.sqrt(2.0)
+        h += (m_h * omega_stretch**2) * np.outer(dz, dz)
+        for idx in (0, 1, 3, 4, 6, 7):
+            h[idx, idx] += m_h * omega_soft**2
+        return h
+
+    # 1) Default dvr_half_width=None with rigid_body=True caps the ultra-soft mode cleanly.
+    model = project_path_subspace(
+        overlap_guard_potential, None, path, masses, axis,
+        environment="adiabatic", zero_point="dvr", hessian=harmonic_soft_hessian,
+        rigid_body=True, dividing_surface=float(axis[4]), reactant_reference=float(axis[0]),
+    )
+    assert np.isfinite(model.values).all()
+    assert np.allclose(model.values, 0.5 * omega_stretch, atol=5e-4)
+
+    # 2) Explicit large half-width sweeping across r12=0 into the -5.0 mirror well seals the wing outward.
+    sealed = project_path_subspace(
+        overlap_guard_potential, None, path, masses, axis,
+        environment="adiabatic", zero_point="dvr", hessian=harmonic_soft_hessian,
+        rigid_body=True, dvr_half_width=300.0, dvr_points=121,
+        dividing_surface=float(axis[4]), reactant_reference=float(axis[0]),
+    )
+    assert np.isfinite(sealed.values).all()
+    assert sealed.values.min() > -0.1
+
+    # 3) Non-finite center point must still raise FloatingPointError.
+    from pyrpmd.analysis.subspace_model import _normal_dvr_term
+
+    with pytest.raises(FloatingPointError, match="non-finite potential"):
+        _normal_dvr_term(
+            lambda _x: float("nan"),
+            path[0], np.eye(9)[0], np.sqrt(masses), 0.0, 0.01, "adiabatic", None,
+            points=21, half_width=10.0, spacing=None, rigid_body=True,
+        )

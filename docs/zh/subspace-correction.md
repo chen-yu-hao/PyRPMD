@@ -323,7 +323,7 @@ res = apply_subspace_correction(k_rpmd, corr, standard_error=se_rpmd, beta=beta,
 | `submerged_surface` | `submerged_surface` | `str` | `"reject"` | `"reject"`, `"allow"` | —（`surface` 门禁策略：RPMD 分割面不得低于上游质心自由能最高点超过 `max_submerged_kt`） |
 | `max_submerged_kt` | `max_submerged_kt` | `float` | `1.0` | $\ge 0$ | $k_B T$ — RPMD 分割面相对于反应物参考切片与分割面之间质心自由能瓶颈的最大允许下沉深度 |
 | `folded_ribbon` | `folded_ribbon` | `str` | `"reject"` | `"reject"`, `"allow"` | —（2D RPH 模型 `ribbon` 门禁策略：$\lvert\kappa\rvert\sigma_\perp \le \text{max\_curvature\_width}$） |
-| `max_curvature_width` | `max_curvature_width` | `float` | `0.5` | $> 0$（`.inp` $\ge 0$） | 无量纲 — 2D RPH 模型从参考切片到产物吸收势之间 $\max \lvert\kappa\rvert/\sqrt{2\omega_n}$ 的上限 |
+| `max_curvature_width` | `max_curvature_width` | `float` | `0.5` | $> 0$ | 无量纲 — 2D RPH 模型从参考切片到产物吸收势之间 $\max \lvert\kappa\rvert/\sqrt{2\omega_n}$ 的上限 |
 | `soft_mode_frequency` | `soft_mode_frequency` | `float` | `2.3e-4` | $\ge 0$ | $\mathrm{E_h}$（$\approx 50\,\mathrm{cm}^{-1}$）— 软模虚频豁免阈值（低于该值的法平面虚频视为碎片自由转动等软模，不触发 `bath` 失败） |
 | `on_invalid` | `on_invalid` | `str` | `"stop"` | `"stop"`, `"diagnose"` | —（`"stop"` 跳过未通过预检门禁的模型求解；`"diagnose"` 仍求解其量子/RPMD 速率并记入 `diagnostic_factor`，但绝不用于修正速率） |
 
@@ -331,8 +331,8 @@ res = apply_subspace_correction(k_rpmd, corr, standard_error=se_rpmd, beta=beta,
 
 | `.inp` 键名 (`[rate.subspace_correction.execution]`) | `correct.toml` 键名 (`[execution]`) | 类型 | 默认值 | 允许取值 / 范围 | 精确物理单位与含义 |
 | --- | --- | --- | --- | --- | --- |
-| `cpus` | `cpus` | `"auto"` 或 `int` | `"auto"` (`.inp`) / `1` (`correct.toml`) | `"auto"`（仅 `.inp`）或 $\ge 1$ | CPU 核心数 — 总 CPU 预算（MPI 模式下为每节点预算），受当前进程 CPU 亲和性上限约束 |
-| `workers` | `workers` | `int` | 省略（$\min(\text{未完成任务数}, \text{cpus})$） | $\ge 1$ | 进程数 — `"process"` 后端的最大并发任务进程数；每个进程分配 $\lfloor\text{cpus}/\text{workers}\rfloor$ 个 OpenMP 线程 |
+| `cpus` | `cpus` | `"auto"` 或 `int` | `"auto"` (`.inp`) / `1` (`correct.toml`) | `"auto"` 或 $\ge 1$ | CPU 核心数 — 总 CPU 预算（`.inp` 中 `"auto"` 由 `[parallel]` 推导，`correct.toml` 与 MPI 模式下自动检测进程/节点 CPU 亲和性），受操作系统 CPU 亲和性上限约束 |
+| `workers` | `workers` | `int` | 省略（$\min(\text{未完成任务数}, \text{cpus})$） | $\ge 1$ | 进程数 — `"process"` 后端的最大并发任务进程数；本地调度器依据任务工作量与扩展上限从空闲核心预算中动态分配 OpenMP 线程并重叠执行轻量与重度 2D 任务 |
 | `blas_threads` | `blas_threads` | `int` | `8`（$\min(8, \text{cpus})$） | $\ge 1$ | 线程数 — 单个任务内稠密本征求解、Schur 分解与 Sylvester 方程的最大 BLAS 线程数 |
 | `memory_limit_mb` | `memory_limit_mb` | `float` | 物理内存/cgroup 的 `75%` (`.inp`) / `4096.0` (`correct.toml`) | $> 0$ | $\mathrm{MiB}$（$2^{20}$ 字节）— 工作内存上限（MPI 模式下为每节点预算），任务准入前与求解器计划均会检查 |
 | *(由 `[parallel]` 自动推导)* | `backend` | `str` | `"process"` | `"serial"`, `"process"`, `"mpi"` | —（仅 `correct.toml` / Python API 可配；`.inp` 中由全局 `[parallel]` 自动决定） |
@@ -458,8 +458,8 @@ Python 端仍掌管 NumPy 随机数流、随机化蛙跳步数、Metropolis 接�
 ```toml
 [execution]
 backend = "process"
-cpus = 32
-workers = 4
+cpus = "auto"        # 或显式正整数，例如 32
+# workers = 4        # 可选：限制最大并发任务进程数
 blas_threads = 8
 memory_limit_mb = 8192
 resume = true
@@ -469,7 +469,7 @@ resume = true
 backend = "native"
 ```
 
-在 Python 脚本中可同样调用任务调度器：
+本地 `process` 调度器依据各任务的工作量估算与扩展上限动态分配空闲 OpenMP 线程，并将轻量阶段与重度 2D 任务重叠执行，避免重度任务被静态限制在 $\lfloor\text{cpus}/\text{workers}\rfloor$ 线程上。在 Python 脚本中可同样调用任务调度器：
 
 ```python
 from pyrpmd.analysis import subspace_correction, subspace_corrections

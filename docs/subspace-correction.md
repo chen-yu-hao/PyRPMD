@@ -413,7 +413,7 @@ res = apply_subspace_correction(k_rpmd, corr, standard_error=se_rpmd, beta=beta,
 | `submerged_surface` | `submerged_surface` | `str` | `"reject"` | `"reject"`, `"allow"` | — (policy for the `surface` gate: RPMD dividing surface must not lie $> \text{max\_submerged\_kt}$ below upstream centroid PMF peak) |
 | `max_submerged_kt` | `max_submerged_kt` | `float` | `1.0` | $\ge 0$ | $k_B T$ — maximum allowed submergence of the RPMD dividing surface below the upstream free-energy bottleneck |
 | `folded_ribbon` | `folded_ribbon` | `str` | `"reject"` | `"reject"`, `"allow"` | — (policy for the 2D RPH `ribbon` gate: $\lvert\kappa\rvert\sigma_\perp \le \text{max\_curvature\_width}$) |
-| `max_curvature_width` | `max_curvature_width` | `float` | `0.5` | $> 0$ (`.inp` $\ge 0$) | Dimensionless — upper bound on $\max \lvert\kappa\rvert/\sqrt{2\omega_n}$ between reference slice and product absorber in 2D RPH |
+| `max_curvature_width` | `max_curvature_width` | `float` | `0.5` | $> 0$ | Dimensionless — upper bound on $\max \lvert\kappa\rvert/\sqrt{2\omega_n}$ between reference slice and product absorber in 2D RPH |
 | `soft_mode_frequency` | `soft_mode_frequency` | `float` | `2.3e-4` | $\ge 0$ | $\mathrm{E_h}$ ($\approx 50\,\mathrm{cm}^{-1}$) — imaginary transverse frequency cutoff below which modes are treated as harmless soft rotations |
 | `on_invalid` | `on_invalid` | `str` | `"stop"` | `"stop"`, `"diagnose"` | — (`"stop"` skips solving models that fail pre-solve gates; `"diagnose"` solves them for `diagnostic_factor` but never applies them) |
 
@@ -421,8 +421,8 @@ res = apply_subspace_correction(k_rpmd, corr, standard_error=se_rpmd, beta=beta,
 
 | `.inp` key (`[rate.subspace_correction.execution]`) | `correct.toml` key (`[execution]`) | Type | Default | Allowed values / range | Physical unit & meaning |
 | --- | --- | --- | --- | --- | --- |
-| `cpus` | `cpus` | `"auto"` or `int` | `"auto"` (`.inp`) / `1` (`correct.toml`) | `"auto"` (`.inp` only) or $\ge 1$ | CPU cores — total CPU budget (per-node under MPI), capped by OS CPU affinity |
-| `workers` | `workers` | `int` | Omitted ($\min(\text{tasks}, \text{cpus})$) | $\ge 1$ | Processes — max concurrent task processes in `"process"` backend; each gets $\lfloor\text{cpus}/\text{workers}\rfloor$ OpenMP threads |
+| `cpus` | `cpus` | `"auto"` or `int` | `"auto"` (`.inp`) / `1` (`correct.toml`) | `"auto"` or $\ge 1$ | CPU cores — total CPU budget (`"auto"` derives from `[parallel]` in `.inp` or uses process CPU affinity in `correct.toml` / MPI), capped by OS CPU affinity |
+| `workers` | `workers` | `int` | Omitted ($\min(\text{tasks}, \text{cpus})$) | $\ge 1$ | Processes — max concurrent task processes in `"process"` backend; the dynamic scheduler overlaps light stages alongside heavy 2D tasks from the idle CPU budget |
 | `blas_threads` | `blas_threads` | `int` | `8` ($\min(8, \text{cpus})$) | $\ge 1$ | Threads — max BLAS threads per task for dense eigensolvers, Schur and Sylvester |
 | `memory_limit_mb` | `memory_limit_mb` | `float` | `75%` of RAM/cgroup (`.inp`) / `4096.0` (`correct.toml`) | $> 0$ | $\mathrm{MiB}$ ($2^{20}$ bytes) — working memory budget (per-node under MPI) checked before admitting tasks |
 | *(derived from `[parallel]`)* | `backend` | `str` | `"process"` | `"serial"`, `"process"`, `"mpi"` | — (`correct.toml` / Python API only; derived automatically in `.inp`) |
@@ -713,8 +713,8 @@ dimensions are requested, all four stages of $C_S(\mathrm{1D})$ and $C_S(\mathrm
 ```toml
 [execution]
 backend = "process"
-cpus = 32
-workers = 4
+cpus = "auto"        # or an explicit positive integer, e.g. 32
+# workers = 4        # optional cap on concurrent tasks
 blas_threads = 8
 memory_limit_mb = 8192
 resume = true
@@ -724,9 +724,12 @@ resume = true
 backend = "native"
 ```
 
-`cpus` is the total CPU budget and `workers` the maximum number of concurrent
-tasks. Each process receives $\lfloor\text{cpus} / \text{workers}\rfloor$ OpenMP threads
-(using fewer workers if there are fewer unfinished tasks). BLAS uses at most
+`cpus` is the total CPU budget (`"auto"` uses this process's CPU affinity, or the
+node affinity union under MPI) and `workers` caps the maximum number of concurrent
+tasks. The local `process` scheduler dynamically allocates threads from the idle
+CPU budget and overlaps lighter stages alongside heavy 2D tasks based on each
+task's workload and scaling cap, avoiding stranding heavy tasks at
+$\lfloor\text{cpus} / \text{workers}\rfloor$ threads. BLAS uses at most
 `blas_threads` (default 8) and never exceeds that process's CPU allocation.
 Large thread teams can slow the sequential stages of complex Schur decomposition;
 the cap is independently adjustable for the installed BLAS and matrix size. Set

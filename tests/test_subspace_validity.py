@@ -491,6 +491,7 @@ def test_input_accepts_the_validity_table_and_an_unbounded_path():
     ({"validity": {"submerged_surface": "ignore"}}, "reject or allow"),
     ({"validity": {"max_submerged_kt": -1.0}}, "max_submerged_kt"),
     ({"validity": {"folded_ribbon": "warn"}}, "reject or allow"),
+    ({"validity": {"max_curvature_width": 0.0}}, "max_curvature_width"),
     ({"validity": {"max_curvature_width": -0.5}}, "max_curvature_width"),
     ({"validity": {"strict": True}}, "Unknown"),
     ({"path": {"asymptote_patience": 0}}, "asymptote_patience"),

@@ -534,3 +534,38 @@ def test_sct_does_not_clamp_out_of_grid_reactant_reference(curvature):
                               lambda x: np.array([-2.0*x[0]*np.exp(-x[0]**2), 0.04*x[1]]),
                               path, [1.0, 1.0], axis, dividing_surface=4.0,
                               reactant_reference=-0.1, curvature=curvature)
+
+
+def test_thermal_frequency_ignores_wall_energy_step_and_falls_back_on_narrow_grid():
+    from pyrpmd.analysis.subspace_model import SubspaceModel
+    from pyrpmd.analysis.subspace_rpmd import _thermal_frequency
+
+    beta = 1500.0
+    x = np.linspace(-6.0, 6.0, 49)
+    y = np.linspace(-3.0, 3.0, 49)
+    X, Y = np.meshgrid(x, y, indexing="ij")
+    omega = 0.2
+    values = 0.015 / np.cosh(X) ** 2 + 0.5 * omega**2 * Y**2
+    unwalled = SubspaceModel((x, y), values, [1.0, 1.0], 0.0, reactant_reference=-4.0)
+    walled_values = np.where(np.abs(Y) > 1.125, 1.0, values)
+    walled = SubspaceModel((x, y), walled_values, [1.0, 1.0], 0.0, reactant_reference=-4.0)
+
+    freq_unwalled = _thermal_frequency(unwalled, beta)
+    freq_walled = _thermal_frequency(walled, beta)
+    assert freq_unwalled == pytest.approx(omega, rel=2e-2)
+    assert freq_walled == pytest.approx(freq_unwalled, rel=2e-2)
+
+    opts = dict(windows=12, walkers=8, burn_in=15, sweeps=25, trajectories=48, bootstrap=50, seed=7)
+    r_unwalled = ring_polymer_rate(unwalled, beta, 4, **opts)
+    r_walled = ring_polymer_rate(walled, beta, 4, **opts)
+    assert r_walled.diagnostics["md_time_step"] == pytest.approx(r_unwalled.diagnostics["md_time_step"], rel=2e-2)
+    kappa_se = np.hypot(r_walled.transmission_standard_error, r_unwalled.transmission_standard_error)
+    assert r_walled.transmission == pytest.approx(r_unwalled.transmission, abs=max(0.05, 3.0 * kappa_se))
+    rate_se = np.hypot(r_walled.rate_standard_error, r_unwalled.rate_standard_error)
+    assert r_walled.rate == pytest.approx(r_unwalled.rate, abs=max(0.1 * r_unwalled.rate, 3.0 * rate_se))
+
+    # Fallback when no 3-point stencil has all three points accessible.
+    narrow = SubspaceModel((np.linspace(-3.0, 4.0, 8),),
+                           np.array([1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0]),
+                           [1.0], 0.0, reactant_reference=-3.0)
+    assert _thermal_frequency(narrow, 1000.0) == pytest.approx(np.sqrt(2.0), rel=1e-12)

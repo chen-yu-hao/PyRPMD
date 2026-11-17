@@ -180,20 +180,25 @@ class _RingPolymer:
 
 def _thermal_frequency(model: SubspaceModel, beta: float) -> float:
     values = model.values
-    accessible = values <= min(values.max(), np.min(values[np.searchsorted(model.axes[0], model.dividing_surface)])
-                               + 30.0 / beta)
+    div_idx = int(np.clip(np.searchsorted(model.axes[0], model.dividing_surface), 0, len(model.axes[0]) - 1))
+    accessible = values <= min(values.max(), np.min(values[div_idx]) + 30.0 / beta)
     accessible = accessible | (values <= values.min() + 30.0 / beta)
     curvature = 0.0
     for axis, mass in enumerate(model.masses):
         if len(model.axes[axis]) < 3:
             continue
         h = model.axes[axis][1] - model.axes[axis][0]
-        second = (np.roll(values, -1, axis) - 2 * values + np.roll(values, 1, axis)) / (h * h)
-        interior = [slice(None)] * values.ndim
-        interior[axis] = slice(1, -1)
-        mask = accessible[tuple(interior)]
+        left = [slice(None)] * values.ndim
+        center = [slice(None)] * values.ndim
+        right = [slice(None)] * values.ndim
+        left[axis] = slice(None, -2)
+        center[axis] = slice(1, -1)
+        right[axis] = slice(2, None)
+        second = (values[tuple(right)] - 2 * values[tuple(center)] + values[tuple(left)]) / (h * h)
+        stencil = accessible[tuple(left)] & accessible[tuple(center)] & accessible[tuple(right)]
+        mask = stencil if stencil.any() else accessible[tuple(center)]
         if mask.any():
-            curvature = max(curvature, float(np.max(np.abs(second[tuple(interior)][mask]))) / mass)
+            curvature = max(curvature, float(np.max(np.abs(second[mask]))) / mass)
     return float(np.sqrt(max(curvature, 1e-30)))
 
 
@@ -465,19 +470,47 @@ def ring_polymer_rate(
             window = np.maximum(12.0 * float(np.max(model.spacing)), 0.15 * face_span)
             unit_shifts = np.linspace(-1.0, 1.0, 401)
             shifts = window[:, None] * unit_shifts[None, :]
-            pts_out = np.clip(
-                inside[new][:, None, :] + shifts[:, :, None] * tangent[:, None, :],
-                spline.lower,
-                spline.upper,
-            )
-            pts_in = np.clip(
-                (inside[new] - delta * normal)[:, None, :] + shifts[:, :, None] * tangent[:, None, :],
-                spline.lower,
-                spline.upper,
-            )
-            v_out = spline.energy(pts_out.reshape(-1, 2)).reshape(len(new), -1).min(axis=1)
-            v_in = spline.energy(pts_in.reshape(-1, 2)).reshape(len(new), -1).min(axis=1)
-            slope = np.minimum(slope, (v_out - v_in) / delta)
+            step_in = max(delta, 4.0 * float(np.max(model.spacing)))
+            vals_2d = model.values
+            wmax = float(vals_2d.max())
+            wall_mask = (vals_2d == wmax) if np.count_nonzero(vals_2d == wmax) >= 4 else None
+            if wall_mask is not None:
+                from scipy.ndimage import binary_dilation
+
+                margin = min(10, min(model.shape) // 6)
+                if margin > 0:
+                    wall_mask = binary_dilation(wall_mask, iterations=margin)
+
+            def _floor_min(centers_2d):
+                pts_b = np.clip(
+                    centers_2d[:, None, :] + shifts[:, :, None] * tangent[:, None, :],
+                    spline.lower,
+                    spline.upper,
+                )
+                flat_p = pts_b.reshape(-1, 2)
+                e_p = spline.energy(flat_p).reshape(pts_b.shape[:2])
+                if wall_mask is not None and wall_mask.any():
+                    i0 = np.clip(np.searchsorted(model.axes[0], flat_p[:, 0], side="right") - 1, 0, model.shape[0] - 1)
+                    i1 = np.clip(np.searchsorted(model.axes[1], flat_p[:, 1], side="right") - 1, 0, model.shape[1] - 1)
+                    keep = ~wall_mask[i0, i1].reshape(pts_b.shape[:2])
+                    has_keep = keep.any(axis=1)
+                    e_use = np.where(has_keep[:, None], np.where(keep, e_p, np.inf), e_p)
+                else:
+                    e_use = e_p
+                best_idx = np.argmin(e_use, axis=1)
+                best_pt = pts_b[np.arange(len(centers_2d)), best_idx]
+                ds_loc = window[:, None] / 200.0
+                fine_s = ds_loc * np.linspace(-1.0, 1.0, 41)[None, :]
+                pts_f = np.clip(
+                    best_pt[:, None, :] + fine_s[:, :, None] * tangent[:, None, :],
+                    spline.lower,
+                    spline.upper,
+                )
+                return spline.energy(pts_f.reshape(-1, 2)).reshape(len(centers_2d), -1).min(axis=1)
+
+            v_out = _floor_min(inside[new])
+            v_in = _floor_min(inside[new] - step_in * normal)
+            slope = np.minimum(slope, (v_out - v_in) / step_in)
         thermal_length = np.sqrt(beta * np.sum(normal**2 / model.masses[None, :], axis=1))
         edge_slope[new] = beta * slope * thermal_length
 

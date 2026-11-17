@@ -5,24 +5,49 @@ not been published as a new wheel release; no release date or DOI is assigned.
 
 ## Unreleased
 
-- Subspace correction: two validity gates for failures found on the 6D/8D
-  complex-PES benchmark. `surface` rejects an RPMD factor whose dividing
-  surface lies more than `validity.max_submerged_kt` (1 kT) below the centroid
-  free-energy maximum between the reactant reference and the surface: through a
-  barrier submerged below the asymptote, QTST exceeds what the entrance channel
-  allows and the finite-time transmission coefficient never removes the excess.
-  On the 6D submerged-barrier model the exact-reference RPMD rate was 2300 times
-  the free-particle flux and its `ln C_exact = -8.67` an artifact; with the RPMD
+- Subspace correction triatomic RPH construction, normal-cut DVR robustness,
+  and batched grid evaluation: orient 2D `rph_model` axis 0 along the bisector
+  of the reactant reference and product absorber tangents (with oblique endcap
+  padding and wall-masked 2D `record_edge_slope` floor refinement) so symmetric
+  $120^\circ$ triatomic exchange paths advance cleanly; bound `half_width`
+  normal-curvature sampling to the active barrier/channel region to prevent
+  asymptotic soft-mode grid bloat; add vectorized `RateRun.energies` and
+  chunked `project_rph_values` evaluation with recursive bisection/scalar
+  fallback (30.0x RPH grid speedup on 3D H + H$_2$ BKMP2); and cap adaptive
+  `zero_point = "dvr"` half-widths / rigid-body displacements while sealing
+  non-finite outer cut wings outward.
+- Subspace correction performance and multi-core scheduling:
+  `_thermal_frequency` in `pyrpmd.analysis.subspace_rpmd` now requires all
+  three central-difference stencil points to lie inside the thermally
+  accessible region (falling back to the center-point mask only on narrow
+  grids), eliminating spurious curvature spikes across `wall_energy` boundaries
+  (5.25x 2D RPMD speedup with statistically invariant `kappa` and `C_S` on
+  200 K H + H2, P = 128). In `pyrpmd.analysis.subspace_execution` and
+  `pyrpmd.workflows.rate_subspace`, local `process` execution now overlaps
+  lighter stages alongside heavy 2D tasks with workload-aware dynamic thread
+  allocation (avoiding stranding heavy tasks at `cpus // workers` threads while
+  preserving thread-count determinism and task checkpoint fingerprints), and
+  `execution.cpus = "auto"` resolves process CPU affinity for both `process`
+  and `mpi` backends (`pyrpmd subspace-correct` CLI included).
+- Subspace correction validity gates and bilingual documentation: two validity
+  gates for failures found on the 6D/8D complex-PES benchmark. `surface`
+  rejects an RPMD factor whose dividing surface lies more than
+  `validity.max_submerged_kt` (1 kT) below the centroid free-energy maximum
+  between the reactant reference and the surface: through a barrier submerged
+  below the asymptote, QTST exceeds what the entrance channel allows and the
+  finite-time transmission coefficient never removes the excess. On the 6D
+  submerged-barrier model the exact-reference RPMD rate was 2300 times the
+  free-particle flux and its `ln C_exact = -8.67` an artifact; with the RPMD
   surface at the entrance-channel bottleneck it is `-0.89 +- 0.02`. `ribbon`
   rejects an RPH 2D model whose path bends more tightly than its transverse mode
   is wide (`kappa / sqrt(2 omega_n)` above `validity.max_curvature_width`, 0.5),
   where the ribbon coordinates fold inside the wavefunction; on the complex
   models (0.56 in 8D, 0.68 in 6D) its quantum rate was 66% high (8D) and a
-  factor of 6 low (6D).
-  `ring_polymer_rate` records `free_energy_bottleneck`; `rph_model` records
-  `ribbon_fold`. Both gates are `reject`/`allow` policies
-  (`submerged_surface`, `folded_ribbon`).
-
+  factor of 6 low (6D). `ring_polymer_rate` records `free_energy_bottleneck`;
+  `rph_model` records `ribbon_fold`. Both gates are `reject`/`allow` policies
+  (`submerged_surface`, `folded_ribbon`). Restructure `docs/subspace-correction.md`
+  and add the full Chinese guide `docs/zh/subspace-correction.md` with
+  workflow cross-links across EN/ZH manuals.
 - Potentials and Torch workflows: add first-class zero-copy JAX DLPack potential
   provider (`provider = "jax-dlpack"`, `JAXDLPackPotential`) and device-resident
   `sampling.engine = "torch"` gas-phase rate workflow (`gpu_rate.py`,

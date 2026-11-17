@@ -33,6 +33,12 @@ def _positive_int(value, name):
     return int(value)
 
 
+def _affinity_cpus():
+    if hasattr(os, "sched_getaffinity"):
+        return max(1, len(os.sched_getaffinity(0)))
+    return max(1, os.cpu_count() or 1)
+
+
 def _options(execution):
     options = dict(execution or {})
     unknown = set(options) - {"backend", "cpus", "workers", "blas_threads", "memory_limit_mb", "checkpoint_dir", "resume"}
@@ -41,7 +47,11 @@ def _options(execution):
     options.setdefault("backend", "process")
     if options["backend"] not in ("serial", "process", "mpi"):
         raise ValueError("execution.backend must be serial, process or mpi")
-    options["cpus"] = _positive_int(options.get("cpus", 1), "execution.cpus")
+    raw_cpus = options.get("cpus", 1)
+    if isinstance(raw_cpus, str) and raw_cpus == "auto":
+        options["cpus"] = _affinity_cpus()
+    else:
+        options["cpus"] = _positive_int(raw_cpus, "execution.cpus")
     options["blas_threads"] = _positive_int(options.get("blas_threads", 8), "execution.blas_threads")
     if "workers" in options:
         options["workers"] = _positive_int(options["workers"], "execution.workers")
@@ -223,19 +233,100 @@ def _passive_openmp():
         os.environ.pop("OMP_WAIT_POLICY", None)
 
 
+def _native_openmp() -> bool:
+    try:
+        from pyrpmd import _subspace
+        return bool(getattr(_subspace, "openmp", 0))
+    except ImportError:
+        return False
+
+
+def _task_profile(task, cpus, blas_threads):
+    """Estimate task work (s at 1 CPU), serial fraction alpha, and scaling cap."""
+    model, beta, beads, options = task["model"], task["beta"], task["nbeads"], task["options"]
+    if task["kind"] == "quantum":
+        plan = quantum_solver_plan(model, **options)
+        if plan["route"] == "sylvester":
+            n = max(1, int(plan["retained_points"]))
+            work = 1e-3 + 3.2e-9 * (n ** 3)
+            if n < 256:
+                alpha, cap = 1.0, 1
+            elif n < 1500:
+                alpha, cap = 0.35, max(1, min(4, blas_threads, cpus))
+            else:
+                alpha, cap = 0.40, max(1, min(blas_threads, cpus))
+        else:
+            grid_n = max(1, int(np.prod(model.shape)))
+            states = max(1, min(int(options.get("max_flux_states", 256)), 64))
+            work = 1e-2 + 2.0e-6 * grid_n * states * model.dimension
+            alpha, cap = 0.20, max(1, min(blas_threads, cpus))
+    else:
+        windows = options.get("windows", 48)
+        nw = int(windows) if np.ndim(windows) == 0 else len(windows)
+        walkers, trajectories = int(options.get("walkers", 32)), int(options.get("trajectories", 512))
+        burn_in, sweeps = int(options.get("burn_in", 200)), int(options.get("sweeps", 400))
+        leapfrog = int(options.get("leapfrog_steps", 8))
+        dt = float(options.get("md_dt") or 0.1 / _thermal_frequency(model, beta))
+        duration = float(options.get("md_time") or 0.3 * (model.axes[0][-1] - model.axes[0][0]) * np.sqrt(beta * model.masses[0]))
+        steps = max(10, int(np.ceil(duration / dt)))
+        surf_sweeps = int(np.ceil(trajectories / max(walkers, 1)))
+        hmc_steps = (nw * walkers * (burn_in + sweeps) + surf_sweeps * walkers) * leapfrog
+        md_total = 2 * trajectories * steps
+        polymer_steps = hmc_steps + md_total
+        bead_evals = polymer_steps * int(beads)
+        max_batch = max(nw * walkers, 2 * trajectories)
+        native_omp = _native_openmp()
+        uses_native = (
+            native_omp
+            and options.get("backend", "auto") != "python"
+            and model.function is None
+            and model.gradient is None
+        )
+        if uses_native:
+            work = 5e-3 + bead_evals * 1.3e-7 * (3.5 ** (model.dimension - 1))
+            alpha = (0.28 * hmc_steps + 0.05 * md_total) / max(polymer_steps, 1)
+            cap = max(1, min(cpus, max_batch))
+        else:
+            work = 5e-3 + bead_evals * 1.2e-6 * (2.2 ** (model.dimension - 1))
+            alpha, cap = 1.0, 1
+    return {"work": float(work), "alpha": float(alpha), "cap": int(cap)}
+
+
+def _est_wall(profile, n_threads, overhead=0.02):
+    eff = max(1, min(int(n_threads), profile["cap"]))
+    return overhead + profile["work"] * (profile["alpha"] + (1.0 - profile["alpha"]) / eff)
+
+
+def _best_overlap_split(p_heavy, p_partner, others_profiles, total_cpus):
+    best = None
+    for c_heavy in range(1, min(p_heavy["cap"], total_cpus - 1) + 1):
+        c_other = total_cpus - c_heavy
+        c_partner = min(p_partner["cap"], c_other)
+        c_heavy_eff = min(p_heavy["cap"], total_cpus - c_partner)
+        c_lane = total_cpus - c_heavy_eff
+        lane_heavy = _est_wall(p_heavy, c_heavy_eff)
+        lane_other = sum(_est_wall(p, min(c_lane, p["cap"])) for p in others_profiles)
+        cost = max(lane_heavy, lane_other)
+        key = (cost, -(c_heavy_eff + c_partner), abs(c_heavy_eff - c_partner))
+        if best is None or key < best[0]:
+            best = (key, cost, c_heavy_eff, c_partner)
+    return best[1], best[2], best[3]
+
+
 def _local(tasks, options, checkpoints, results):
     cpus, memory = options["cpus"], options["memory_limit_mb"]
-    available = len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else os.cpu_count() or 1
+    available = _affinity_cpus()
     if cpus > available:
         raise ValueError(f"execution.cpus={cpus} exceeds CPU affinity ({available})")
-    workers = 1 if options["backend"] == "serial" else min(options.get("workers", len(tasks) or 1), cpus, len(tasks) or 1)
-    threads = max(1, cpus // workers)
     for task in tasks:
         if task["memory_mb"] > memory:
             raise MemoryError(f"{task['key']} needs about {task['memory_mb']:.1f} MiB; budget is {memory:.1f} MiB")
-    if workers == 1:
+    if not tasks:
+        return
+    max_workers = 1 if options["backend"] == "serial" else min(options.get("workers", cpus), cpus, len(tasks))
+    if max_workers == 1:
         for task in tasks:
-            value = _run_task(task, threads, memory)
+            value = _run_task(task, cpus, memory)
             checkpoints.save(task, value)
             results[task["key"]] = value
         return
@@ -244,20 +335,89 @@ def _local(tasks, options, checkpoints, results):
         pickle.dumps(tasks)
     except (TypeError, pickle.PicklingError, AttributeError) as error:
         raise ValueError("process tasks need pickleable models; use gridded models or serial execution") from error
-    pending, active = list(tasks), {}
-    with _passive_openmp(), ProcessPoolExecutor(workers, mp_context=multiprocessing.get_context("spawn")) as pool:
+    profiles = {task["key"]: _task_profile(task, cpus, options["blas_threads"]) for task in tasks}
+    pending = list(tasks)
+    active = {}
+
+    with _passive_openmp(), ProcessPoolExecutor(max_workers, mp_context=multiprocessing.get_context("spawn")) as pool:
+        def submit(task, t_cpus):
+            pending[:] = [item for item in pending if item is not task]
+            future = pool.submit(_run_task, task, t_cpus, task["memory_mb"])
+            active[future] = {
+                "task": task,
+                "cpus": t_cpus,
+                "started": time.perf_counter(),
+                "est": _est_wall(profiles[task["key"]], t_cpus),
+            }
+
         while pending or active:
-            reserved = sum(t["memory_mb"] for t in active.values())
-            while len(active) < workers:
-                index = next((i for i, t in enumerate(pending) if reserved + t["memory_mb"] <= memory), None)
-                if index is None:
+            while len(active) < max_workers and pending:
+                free_cpus = cpus - sum(item["cpus"] for item in active.values())
+                free_mem = memory - sum(item["task"]["memory_mb"] for item in active.values())
+                if free_cpus < 1:
                     break
-                task = pending.pop(index)
-                active[pool.submit(_run_task, task, threads, task["memory_mb"])] = task
-                reserved += task["memory_mb"]
+                admissible = [t for t in pending if t["memory_mb"] <= free_mem]
+                if not admissible:
+                    break
+                if not active:
+                    heaviest = max(admissible, key=lambda t: (_est_wall(profiles[t["key"]], free_cpus), -admissible.index(t)))
+                    p_heavy = profiles[heaviest["key"]]
+                    others_fit = [t for t in admissible if t is not heaviest and heaviest["memory_mb"] + t["memory_mb"] <= free_mem]
+                    if others_fit:
+                        if (
+                            p_heavy["cap"] < free_cpus
+                            and _est_wall(p_heavy, p_heavy["cap"])
+                            >= 0.5 * sum(_est_wall(profiles[t["key"]], free_cpus - p_heavy["cap"]) for t in others_fit)
+                        ):
+                            submit(heaviest, p_heavy["cap"])
+                            continue
+                        if max_workers - len(active) >= 2 and free_cpus >= 2:
+                            partner = max(others_fit, key=lambda t: (_est_wall(profiles[t["key"]], free_cpus), -admissible.index(t)))
+                            others_profiles = [profiles[t["key"]] for t in others_fit]
+                            par_cost, c_heavy, c_partner = _best_overlap_split(
+                                p_heavy, profiles[partner["key"]], others_profiles, free_cpus
+                            )
+                            seq_cost = (
+                                _est_wall(p_heavy, min(free_cpus, p_heavy["cap"]))
+                                + sum(_est_wall(p, min(free_cpus, p["cap"])) for p in others_profiles)
+                            )
+                            if par_cost < seq_cost:
+                                submit(heaviest, c_heavy)
+                                submit(partner, c_partner)
+                                continue
+                            t0 = min(admissible, key=lambda t: (_est_wall(profiles[t["key"]], free_cpus), admissible.index(t)))
+                        else:
+                            t0 = admissible[0]
+                    else:
+                        t0 = admissible[0]
+                    t0_cpus = (
+                        free_cpus
+                        if (len(pending) == 1 and t0["kind"] == "rpmd")
+                        else min(free_cpus, profiles[t0["key"]]["cap"])
+                    )
+                    submit(t0, t0_cpus)
+                else:
+                    now = time.perf_counter()
+                    soonest = min(active.values(), key=lambda item: max(0.0, item["est"] - (now - item["started"])))
+                    rem_wait = max(0.0, soonest["est"] - (now - soonest["started"]))
+                    combined_cpus = min(cpus, free_cpus + soonest["cpus"])
+                    submitted = False
+                    for cand in sorted(admissible, key=lambda t: (-_est_wall(profiles[t["key"]], free_cpus), admissible.index(t))):
+                        pc = profiles[cand["key"]]
+                        if pc["cap"] <= free_cpus or _est_wall(pc, free_cpus) <= rem_wait + _est_wall(pc, combined_cpus):
+                            cand_cpus = (
+                                free_cpus
+                                if (len(admissible) == 1 and cand["kind"] == "rpmd" and not active)
+                                else min(free_cpus, pc["cap"])
+                            )
+                            submit(cand, cand_cpus)
+                            submitted = True
+                            break
+                    if not submitted:
+                        break
             done, _ = wait(active, return_when=FIRST_COMPLETED)
             for future in done:
-                task = active.pop(future)
+                task = active.pop(future)["task"]
                 value = future.result()
                 checkpoints.save(task, value)
                 results[task["key"]] = value
@@ -270,16 +430,17 @@ def _packet(task, threads, memory):
         return None, f"{task['key']}: {type(error).__name__}: {error}"
 
 
-def _mpi(tasks, options, checkpoints, results, comm):
+def _mpi(tasks, options, checkpoints, results, comm, *, auto_cpus=False):
     from mpi4py import MPI
 
     local = comm.Split_type(MPI.COMM_TYPE_SHARED)
     affinity = set(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else set(range(os.cpu_count() or 1))
     union = set().union(*local.allgather(affinity))
-    threads = min(len(affinity), options["cpus"] // local.size)
+    node_cpus = len(union) if auto_cpus else options["cpus"]
+    threads = min(len(affinity), node_cpus // local.size)
     capacity = (threads, options["memory_limit_mb"] / local.size)
     error = None
-    if threads < 1 or options["cpus"] > len(union):
+    if threads < 1 or node_cpus > len(union):
         error = "MPI ranks per node and CPU affinity are incompatible with execution.cpus (a per-node budget)"
     capacities = comm.allgather(capacity)
     errors = comm.allgather(error)
@@ -355,6 +516,8 @@ def subspace_corrections(cases, *, execution=None):
     """
     from .subspace_correction import _assemble_correction
 
+    raw_cpus = (execution or {}).get("cpus")
+    auto_cpus = isinstance(raw_cpus, str) and raw_cpus == "auto"
     options = _options(execution)
     comm = None
     if options["backend"] == "mpi":
@@ -387,7 +550,7 @@ def subspace_corrections(cases, *, execution=None):
         failure = comm.bcast(failure, root=0)
         if failure:
             raise RuntimeError(failure)
-        _mpi(tasks, options, checkpoints, results, comm)
+        _mpi(tasks, options, checkpoints, results, comm, auto_cpus=auto_cpus)
     else:
         _local(tasks, options, checkpoints, results)
     corrections, failure = None, None

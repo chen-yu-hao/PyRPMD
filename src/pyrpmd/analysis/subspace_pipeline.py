@@ -127,7 +127,28 @@ class RateRun:
 
     def energy(self, x):
         result = self.provider.evaluate(np.asarray(x, dtype=float).reshape(1, -1, 3))
+        status = getattr(result, "status", None)
+        if status is not None and int(np.asarray(status).ravel()[0]) != 0:
+            return float("nan")
         return float(np.asarray(result.energy).ravel()[0])
+
+    def energies(self, configs):
+        arr = np.asarray(configs, dtype=float)
+        n_atoms = len(np.asarray(self.system.masses))
+        frames = arr.reshape(-1, n_atoms, 3)
+        if len(frames) == 0:
+            return np.empty(0, dtype=float)
+        result = self.provider.evaluate(frames)
+        out = np.asarray(result.energy, dtype=float).reshape(len(frames))
+        status = getattr(result, "status", None)
+        if status is not None:
+            bad = np.asarray(status).reshape(len(frames)) != 0
+            if np.any(bad):
+                out = out.copy()
+                out[bad] = np.nan
+        return out
+
+    energy_batch = energies
 
     def gradient(self, x):
         result = self.provider.evaluate(np.asarray(x, dtype=float).reshape(1, -1, 3))
@@ -1101,6 +1122,41 @@ def _rph_product_start(energies, k_top, beta, drop_kt, reference_kt):
     return found.get(criterion, len(energies) - 1), criterion
 
 
+def _run_batch_energy(run):
+    """Return a vectorized ``configs -> energies`` callable for ``run`` when safe."""
+    run_dict = getattr(run, "__dict__", {})
+    if (isinstance(run, RateRun) and "energy" in run_dict
+            and "energies" not in run_dict and "energy_batch" not in run_dict):
+        return None
+    for attr in ("energies", "energy_batch"):
+        fn = getattr(run, attr, None)
+        if callable(fn):
+            return fn
+    provider = getattr(run, "provider", None)
+    if (_rigid(run) and provider is not None
+            and callable(getattr(provider, "evaluate", None))
+            and "energy" not in run_dict):
+        n_atoms = len(np.asarray(run.system.masses))
+
+        def _eval_batch(configs):
+            arr = np.asarray(configs, dtype=float)
+            frames = arr.reshape(-1, n_atoms, 3)
+            if len(frames) == 0:
+                return np.empty(0, dtype=float)
+            result = provider.evaluate(frames)
+            out = np.asarray(result.energy, dtype=float).reshape(len(frames))
+            status = getattr(result, "status", None)
+            if status is not None:
+                bad = np.asarray(status).reshape(len(frames)) != 0
+                if np.any(bad):
+                    out = out.copy()
+                    out[bad] = np.nan
+            return out
+
+        return _eval_batch
+    return None
+
+
 def _ribbon_fold(development, arcs, normal_curvature, start, stop) -> dict:
     """Largest ``|kappa| * sigma`` between ``start`` and ``stop`` on the path.
 
@@ -1136,8 +1192,9 @@ def rph_model(run: RateRun, path, options: Mapping[str, Any]):
     settled).  Absorbers are keyed to arc length; the rates are normalized on
     the reference slice, and the dividing line passes through the barrier
     top.  The developed plane is turned so that axis 0 bisects the path
-    direction at the reference slice and at the barrier; the path must
-    advance along axis 0 through the whole box.
+    direction at the reference slice and at the product absorber start
+    (falling back to the barrier tangent when they are nearly opposite); the
+    path must advance along axis 0 through the whole box.
     """
     from .subspace_rph import develop_path, project_rph_values, rph_bath
 
@@ -1174,12 +1231,19 @@ def rph_model(run: RateRun, path, options: Mapping[str, Any]):
     extend = max(0.0, -box_lo, box_hi - float(arc[-1])) + padding
     weights = np.exp(-beta * np.maximum(energies[k_top] - energies, 0.0))
     development = develop_path(path, masses, rigid_body=rigid, weights=weights, extend=extend)
-    # Axis 0 bisects the path direction at the reference slice and at the barrier.
-    _, t_ref, _ = development.point(reference_arc)
-    _, t_top, _ = development.point(top_arc)
-    axis = t_ref[0] + t_top[0]
-    if np.linalg.norm(axis) < 1e-6:
-        raise ValueError("the path turns back by 180 degrees between the reference slice and the barrier")
+
+    # Axis 0 bisects the reactant reference and product absorber tangents so
+    # symmetric bends (e.g. 120 deg triatomic exchange) keep +/-60 deg advance.
+    def _bisector_axis(dev):
+        _, t_ref, _ = dev.point(reference_arc)
+        _, t_top, _ = dev.point(top_arc)
+        _, t_prod, _ = dev.point(absorb_hi)
+        candidate = t_ref[0] + t_prod[0]
+        if np.linalg.norm(candidate) < 1e-2 or float(candidate @ t_top[0]) <= 0.0:
+            return t_top[0]
+        return candidate
+
+    axis = _bisector_axis(development)
     development.orient(top_arc, axis)
     inside = (development.s >= box_lo) & (development.s <= box_hi)
     advance = development.tangent2[inside, 0]
@@ -1196,13 +1260,37 @@ def rph_model(run: RateRun, path, options: Mapping[str, Any]):
     positive = bath["normal_curvature"][bath["normal_curvature"] > 0]
     sigma = float(np.min(1.0 / np.sqrt(2.0 * np.sqrt(positive)))) if positive.size else 5.0
     ribbon_fold = _ribbon_fold(development, bath_arcs, bath["normal_curvature"], reference_arc, absorb_hi)
-    half_width = max(padding, 6.0 * float(np.max(1.0 / np.sqrt(2.0 * np.sqrt(positive)))) if positive.size else padding)
-    needed_extend = max(0.0, -box_lo, box_hi - float(arc[-1])) + 1.5 * half_width
-    if needed_extend > extend + 1e-9:
-        extend = needed_extend
-        development = develop_path(path, masses, rigid_body=rigid, weights=weights, extend=extend)
-        development.orient(top_arc, axis)
-        inside = (development.s >= box_lo) & (development.s <= box_hi)
+    # Exclude flat asymptotic regions where soft hindered-rotation/translation
+    # modes have near-zero curvature and would inflate half_width into empty space.
+    soft_freq = float(validity.get("soft_mode_frequency", 2.3e-4))
+    ref_kt = float(options.get("reference_kt", 0.3))
+    k_min_r = k_ref + int(np.argmin(energies[k_ref:k_top + 1]))
+    k_min_p = k_top + int(np.argmin(energies[k_top:k_p + 1]))
+    e_top = float(energies[k_top])
+    e_min_r, e_min_p = float(energies[k_min_r]), float(energies[k_min_p])
+    e_asym_r, e_asym_p = float(energies[k_ref]), float(energies[k_p])
+    bath_energies = np.interp(bath_arcs, arc, energies)
+    e_floor_side = np.where(bath_arcs <= top_arc, e_min_r, e_min_p)
+    e_asym_side = np.where(bath_arcs <= top_arc, e_asym_r, e_asym_p)
+    in_barrier = (
+        (bath_arcs >= float(arc[k_min_r]))
+        & (bath_arcs <= float(arc[k_min_p]))
+        & (bath_energies >= e_floor_side + 0.2 * (e_top - e_floor_side))
+    )
+    in_complex = (
+        (bath_arcs >= reference_arc)
+        & (bath_arcs <= absorb_hi)
+        & (bath_energies <= e_asym_side - max(ref_kt, 1.0) / beta)
+    )
+    active_region = in_barrier | in_complex
+    if not np.any(active_region):
+        active_region = np.arange(len(bath_arcs)) == int(np.argmin(np.abs(bath_arcs - top_arc)))
+    bound_curvature_floor = max((2.0 * soft_freq) ** 2, 1.0e-6)
+    bound_positive = bath["normal_curvature"][active_region & (bath["normal_curvature"] > bound_curvature_floor)]
+    half_width = max(
+        padding,
+        6.0 * float(np.max(1.0 / np.sqrt(2.0 * np.sqrt(bound_positive)))) if bound_positive.size else padding,
+    )
     emax = float(np.ptp(energies[(arc >= box_lo) & (arc <= box_hi)])) + _truncation_offset(options, beta)
     spacing = options.get("spacing_2d")
     if spacing is None:
@@ -1212,7 +1300,20 @@ def rph_model(run: RateRun, path, options: Mapping[str, Any]):
         # model) left the curved-valley test model 15% off its full rate.
         spacing = [min(sigma / 3.0, 0.5 * np.pi / np.sqrt(2.0 * emax))] * 2
     spacing = np.broadcast_to(np.asarray(spacing, dtype=float), (2,))
-    edge = development.s[inside]
+    _, t_ends, _ = development.point([box_lo, box_hi])
+
+    def _endcap_pad(t_vec):
+        ax, ay = abs(float(t_vec[0])), abs(float(t_vec[1]))
+        return half_width * (min(ax, ay) / max(max(ax, ay), 1e-12))
+
+    pad_lo, pad_hi = _endcap_pad(t_ends[0]), _endcap_pad(t_ends[1])
+    needed_extend = max(0.0, -(box_lo - pad_lo), (box_hi + pad_hi) - float(arc[-1])) + 1.5 * half_width
+    if needed_extend > extend + 1e-9:
+        extend = needed_extend
+        development = develop_path(path, masses, rigid_body=rigid, weights=weights, extend=extend)
+        axis = _bisector_axis(development)
+        development.orient(top_arc, axis)
+    edge = development.s[(development.s >= box_lo - pad_lo) & (development.s <= box_hi + pad_hi)]
     c, _, normal = development.point(edge)
     corners = np.vstack([c + half_width * normal, c - half_width * normal])
     lo, hi = corners.min(axis=0), corners.max(axis=0)
@@ -1226,7 +1327,8 @@ def rph_model(run: RateRun, path, options: Mapping[str, Any]):
     floor_guess = float(max(energies[k_ref], energies[-1]))
     skip = floor_guess + 2.0 * _truncation_offset(options, beta) + 0.05
     values, bare = project_rph_values(run.energy, development, axes, bath, arc_range=(box_lo, box_hi),
-                                      half_width=half_width, wall_energy=skip + 1.0, return_bare=True)
+                                      half_width=half_width, wall_energy=skip + 1.0, return_bare=True,
+                                      batch_potential=_run_batch_energy(run))
     bare_used = bare if environment != "frozen" else None
     provenance = dict(environment=environment, model_2d="rph", refinement=refinement,
                       bath_stable=bath["bath_stable"], significant_unstable=bath["significant_unstable"],
@@ -1296,7 +1398,8 @@ def pipeline_identity(root, options):
     analysis = Path(__file__).resolve().parent
     implementation = {p.name: file_sha256(p) for p in
                       (analysis / name for name in ("subspace_pipeline.py", "subspace_model.py",
-                       "subspace_quantum.py", "subspace_rpmd.py", "subspace_correction.py", "centroid_path.py"))}
+                       "subspace_rph.py", "subspace_quantum.py", "subspace_rpmd.py",
+                       "subspace_correction.py", "centroid_path.py"))}
     implementation["instanton.py"] = file_sha256(analysis.parent / "instanton.py")
     return fingerprint_payload({"schema": 1, "version": __version__, "files": files,
                                 "potential_files": referenced_files({"potential": saved["potential"]}),

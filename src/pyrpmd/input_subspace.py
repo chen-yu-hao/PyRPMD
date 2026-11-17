@@ -89,7 +89,7 @@ def rate_subspace_options(config):
             if value not in ("stop", "diagnose"):
                 raise InputError(f"{name} must be stop or diagnose")
         elif key in ("max_outside_fraction", "soft_mode_frequency", "max_submerged_kt", "max_curvature_width"):
-            validity[key] = _real(value, name, zero=True)
+            validity[key] = _real(value, name, zero=key != "max_curvature_width")
             if key == "max_outside_fraction" and validity[key] > 1:
                 raise InputError(f"{name} must lie in [0, 1]")
         elif value not in ("reject", "allow"):

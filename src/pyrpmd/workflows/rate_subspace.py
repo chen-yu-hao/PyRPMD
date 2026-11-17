@@ -116,9 +116,14 @@ def subspace_execution(config, options):
     if mpi:
         derived = threads
     else:
-        workers = int(parallel.get("trajectory_workers", parallel.get("trajectory_groups", 1)) or 1)
+        workers = int(parallel.get("trajectory_workers", parallel.get("trajectory_groups", parallel.get("workers", 1))) or 1)
         derived = workers * int(parallel.get("bead_workers", 1) or 1) * threads
-    requested = derived if user.get("cpus", "auto") == "auto" else int(user["cpus"])
+    if "cpus" not in user:
+        requested = derived
+    elif user["cpus"] == "auto":
+        requested = derived if (mpi or derived > 1) else _affinity_cpus()
+    else:
+        requested = int(user["cpus"])
     cpus = max(1, min(requested, _affinity_cpus()))
     if cpus == 1:
         return None
