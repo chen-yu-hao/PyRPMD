@@ -300,7 +300,7 @@ def test_leps_ion_complex_9d_end_to_end_cartesian_pipeline(tmp_path):
         "path": {"source": "mep", "step": 3.5, "instanton_beads": 48},
         "subspace": {"dimension": [1, 2], "model_2d": "rph", "environment": "adiabatic"},
         "quantum": {"spacing_2d": [6.0, 4.5], "truncation_kt": 24.0, "truncation_min": 0.04},
-        "rpmd": {"nbeads": 24, "windows": 12, "walkers": 12, "burn_in": 20, "sweeps": 40, "trajectories": 48, "seed": 13},
+        "rpmd": {"nbeads": 24, "windows": 12, "walkers": 12, "burn_in": 30, "sweeps": 60, "trajectories": 128, "seed": 13},
     }
     rep_none = pipeline.run_subspace_pipeline(
         {**base_spec, "output": {"directory": str(tmp_path / "none"), "reuse": False},
