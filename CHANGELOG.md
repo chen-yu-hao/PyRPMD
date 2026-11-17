@@ -5,6 +5,17 @@ not been published as a new wheel release; no release date or DOI is assigned.
 
 ## Unreleased
 
+- Subspace correction triatomic RPH construction, normal-cut DVR robustness,
+  and batched grid evaluation: orient 2D `rph_model` axis 0 along the bisector
+  of the reactant reference and product absorber tangents (with oblique endcap
+  padding and wall-masked 2D `record_edge_slope` floor refinement) so symmetric
+  $120^\circ$ triatomic exchange paths advance cleanly; bound `half_width`
+  normal-curvature sampling to the active barrier/channel region to prevent
+  asymptotic soft-mode grid bloat; add vectorized `RateRun.energies` and
+  chunked `project_rph_values` evaluation with recursive bisection/scalar
+  fallback (30.0x RPH grid speedup on 3D H + H$_2$ BKMP2); and cap adaptive
+  `zero_point = "dvr"` half-widths / rigid-body displacements while sealing
+  non-finite outer cut wings outward.
 - Potentials and Torch workflows: add first-class zero-copy JAX DLPack potential
   provider (`provider = "jax-dlpack"`, `JAXDLPackPotential`) and device-resident
   `sampling.engine = "torch"` gas-phase rate workflow (`gpu_rate.py`,

@@ -1241,17 +1241,26 @@ def rph_model(run: RateRun, path, options: Mapping[str, Any]):
     # Exclude flat asymptotic regions where soft hindered-rotation/translation
     # modes have near-zero curvature and would inflate half_width into empty space.
     soft_freq = float(validity.get("soft_mode_frequency", 2.3e-4))
+    ref_kt = float(options.get("reference_kt", 0.3))
     k_min_r = k_ref + int(np.argmin(energies[k_ref:k_top + 1]))
     k_min_p = k_top + int(np.argmin(energies[k_top:k_p + 1]))
     e_top = float(energies[k_top])
     e_min_r, e_min_p = float(energies[k_min_r]), float(energies[k_min_p])
+    e_asym_r, e_asym_p = float(energies[k_ref]), float(energies[k_p])
     bath_energies = np.interp(bath_arcs, arc, energies)
     e_floor_side = np.where(bath_arcs <= top_arc, e_min_r, e_min_p)
-    active_region = (
+    e_asym_side = np.where(bath_arcs <= top_arc, e_asym_r, e_asym_p)
+    in_barrier = (
         (bath_arcs >= float(arc[k_min_r]))
         & (bath_arcs <= float(arc[k_min_p]))
         & (bath_energies >= e_floor_side + 0.2 * (e_top - e_floor_side))
     )
+    in_complex = (
+        (bath_arcs >= reference_arc)
+        & (bath_arcs <= absorb_hi)
+        & (bath_energies <= e_asym_side - max(ref_kt, 1.0) / beta)
+    )
+    active_region = in_barrier | in_complex
     if not np.any(active_region):
         active_region = np.arange(len(bath_arcs)) == int(np.argmin(np.abs(bath_arcs - top_arc)))
     bound_curvature_floor = max((2.0 * soft_freq) ** 2, 1.0e-6)
