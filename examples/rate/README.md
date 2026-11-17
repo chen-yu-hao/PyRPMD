@@ -112,3 +112,29 @@ children. An unsuccessful child trajectory is never replaced by an assumed trans
 | --- | --- |
 | `rate_estimate_cm3_s` | Finite-time estimate |
 | `rate_cm3_s` | The rate, reported when PMF support, the time-plateau check and the endpoint energy-drift check all pass |
+
+## Subspace quantum rate correction
+
+[`subspace.inp`](subspace.inp) adds `[rate.subspace_correction]` to the schema-2 rate
+layout to compute the multiplicative quantum correction
+$C_S = k_{\mathrm{QM}}(H_S) / k_{\mathrm{RPMD}}(H_S)$ in a 1D or 2D reaction subspace:
+
+```bash
+# Run the full rate workflow plus the subspace postprocessing stage:
+pyrpmd run examples/rate/subspace.inp --output runs/rate-with-subspace
+
+# Re-run only the subspace postprocessing after editing [rate.subspace_correction.*]:
+pyrpmd run examples/rate/subspace.inp --output runs/rate-with-subspace --stage subspace
+
+# Or postprocess any saved rate run (with output.centroid_path=true or path.source="mep"):
+pyrpmd subspace-correct correct.toml
+```
+
+All dimensional numerical controls under `[rate.subspace_correction.*]` take bare atomic
+units (`bohr * sqrt(m_e)` for `step`, `spacing_1d`, `spacing_2d`, `padding` and
+`dvr_half_width`; `Eh` for `truncation_min` and `soft_mode_frequency`; `bohr` for
+`hessian_displacement`; `K` for `crossover_temperature`; unit strings are rejected). At low
+temperature, set `quantum.truncation_min` to about six quanta of the stiffest transverse
+mode and adjust `quantum.dense_limit` from `solver_plans` in `subspace/status.json`. See
+the full user guide in [`docs/subspace-correction.md`](../../docs/subspace-correction.md)
+([中文指南](../../docs/zh/subspace-correction.md)).

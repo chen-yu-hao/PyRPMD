@@ -166,6 +166,7 @@ FES、metadynamics 和 OPES 可通过 `sampling.thermostat_params` 选择正则�
 | `[umbrella]` | 伞形 FES；`rate`、`network`、`site_rate`、`surface_rate` | 窗口中心与刚度；FES 中可写为 `[fes.umbrella]` |
 | `[reaction]` | `rate`（`drpmd` 可用 `electronic_weight`） | `fragments`、`forming_bonds`、`breaking_bonds`、`rinf`、`symmetry_factor`、`equivalent_paths`；`entry_side` 选择 TS 下降的一侧；`preparation` 调整 TS Hessian/下降（`gradient_tolerance`、`hessian_step`、`displacement`、`trace_step`、`trace_steps`、`bond_scale`） |
 | `[rate]` | `rate` | `pmf_method`、`dividing_surface`、`pmf_search_range`、`compare_ui`、可选 `pmf_source`，见[PMF 来源](../enhanced-sampling.md#rate-选择-pmf-来源) |
+| `[rate.subspace_correction]` | `rate`（本地伞 PMF） | 可选的 1D/2D 子空间精确量子速率修正 $C_S$：`enabled`、`mode`、`dimension`、`environment`、`model_2d`、`anchor`、`curvature`、`zero_point`、`path`、`quantum`、`rpmd`、`validity`、`execution`；见[子空间速率修正](../subspace-correction.md) |
 | `[recrossing]` | `rate`、`network`、`site_rate`、`surface_rate` | 母链数、母链间隔、child pairs、child 时间、bootstrap；`dynamics="trpmd"` 与 `friction_scale`，`child_batch_pairs` 批量传播 child；见 [TRPMD](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/trpmd-spectroscopy.md) 与[批量轨迹](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/batched-dynamics.md)（英文） |
 | `[collision]`、`[outcomes]` | `drpmd` | 发射分布、`energy`、`bmax`、总轨迹数、`max_time`；产物分类（`factory`、`channels`、`bond_cutoffs`、`exit_distance`、`persistence`、`check_interval`） |
 | `[nonadiabatic]` | `drpmd`（实验性 NRPMD） | 见[非绝热 NRPMD](nonadiabatic.md) |
@@ -180,7 +181,7 @@ FES、metadynamics 和 OPES 可通过 `sampling.thermostat_params` 选择正则�
 | `[diffusion]`、`[site_rate]`、`[surface]` | 同名任务（`[surface]` 属于 `surface_rate`） | 见[材料与表面](periodic.md)；`surface.free_energy = {directory, axis, selection}` 从已保存的多维 FES 运行读取 PMF（`analysis.method="source"`） |
 | `[network]` | `network` | 入口、通道、过渡态 |
 | `[pcet]` | `pcet` | PCET 只接受 `schema_version`、`task`、`preset`、`description`、`temperature`、`pcet`、`output` |
-| `[output]` | 全部 | `directory`、`checkpoint_interval` / `checkpoint_steps`、`trajectory_stride`；`trajectory_storage`、`chunk_frames`（`pimd`、`diffusion`）；`diagnostics = {energy_parts, ring_radii}`（`drpmd`；使用 `[initial_ensemble]` 时默认开启） |
+| `[output]` | 全部 | `directory`、`checkpoint_interval` / `checkpoint_steps`、`trajectory_stride`；`trajectory_storage`、`chunk_frames`（`pimd`、`diffusion`）；`centroid_path`（`rate` 窗口质心统计矩，供[子空间速率修正](../subspace-correction.md)使用）；`diagnostics = {energy_parts, ring_radii}`（`drpmd`；使用 `[initial_ensemble]` 时默认开启） |
 
 全部字段与组合规则见[输入规范](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/input.md)。
 
@@ -280,13 +281,14 @@ stiffness = "0.002 hartree/bohr^2"      # 也可写 kappa
 | `pyrpmd init DIR` | 向新目录或空目录写入内置谐振子 FES 入门输入 | 打印输入路径和下一步命令 |
 | `pyrpmd validate INPUT` | 解析配置并检查任务 | `--check-pes`、`--output DIR`、`--write-resolved FILE` |
 | `pyrpmd prepare INPUT` | 显示准备信息 | `--pilot` 执行数值准备；`--output FILE` 写出 JSON |
-| `pyrpmd run INPUT` | 开始运行，或按输入继续 | `--output DIR`、`--resume`；`--report` 在运行结束后出图 |
+| `pyrpmd run INPUT` | 开始运行，或按输入继续 | `--output DIR`、`--resume`、`--stage subspace`（仅重跑 `[rate.subspace_correction]` 子空间后处理阶段）；`--report` 在运行结束后出图 |
 | `pyrpmd resume DIR` | 按保存的配置续跑 | `--workers N`、`--loop-backend auto`、`--block-steps N`；`--adaptive-max-rounds`、`--adaptive-max-windows`、`--adaptive-max-pilot-steps` 放宽已耗尽的自适应 pilot 预算 |
 | `pyrpmd extend DIR` | 提高已有 dRPMD 时间预算或固定窗口气相速率的生产预算 | 必须且只能指定 `--max-time '20 ps'` 或 `--production-steps 200000`；二者均为新的总目标 |
 | `pyrpmd state-check INPUT` | 无碰撞赋速演化已准备核初态，检查谐振模式稳定性 | `--time '100 fs'`、`--samples 8`、`--stride 10`、`--output report.json` |
 | `pyrpmd analyze DIR` | 读取结果或离线重分析 | `--recompute`、`--bins`、`--bootstrap`；扩散选项见下文；`--report` |
 | `pyrpmd report RUN [RUN ...]` | 由保存结果自动分析，生成出版级图、`index.html` 与 `report.json` | `--output DIR`（多个运行时必填）、`--style jctc\|nature`、`--formats png pdf svg`、`--labels`、`--series`、`--reference CSV`、`--kie A B`、`--convergence beads`、`--overwrite`；见[自动分析与出图](analysis-reports.md) |
 | `pyrpmd rate-postprocess DIR` | 由已保存 PMF/FES 与带符号通道通量计算速率，不再运行动力学 | `--spec FILE.json`（二维分割面）、`--output FILE`、`--bootstrap 200`、`--seed 0`；见[二维速率后处理（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-postprocessing.md) |
+| `pyrpmd subspace-correct FILE` | 由已保存的速率运行目录执行 1D/2D 子空间精确量子速率修正 $C_S$ | 接受 `correct.toml`（或 `.json`）；写出 `subspace_pipeline.json` 与 `rate_quantum_corrected.json`；见[子空间速率修正](../subspace-correction.md) |
 | `pyrpmd project DIR` | 把已保存的 CV 密度 FES 按 Boltzmann 权重边缘化到更少的 CV | 必填 `--axes 0 1`（保留的轴，从 0 计）与 `--output DIR`；可选 `--selection mask.npy` |
 | `pyrpmd study INPUT` | 对已有速率任务做温度/同位素与数值收敛扫描 | `--plan`（只列出算例，不跑动力学）、`--output DIR`、`--resume`；见[速率研究（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-studies.md) |
 | `pyrpmd checkpoint FILE` | 校验检查点容器 | `--require-integrity` 拒绝没有校验值的旧容器 |

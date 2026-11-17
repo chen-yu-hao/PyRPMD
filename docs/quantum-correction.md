@@ -1,5 +1,9 @@
 # Exact quantum references and controlled RPMD correction
 
+> **Which quantum-correction workflow do I need?**
+> - **Time-correlation functions, spectral responses and online Ehrenfest trajectories (this page):** Use `run_quantum_correction` for frequency-domain response defects $\widetilde\chi(\omega)$, `OnlineQuantumRPMD` for coupled ring-polymer + 1D wavefunction propagation, or `hybrid_flux_side_correction` for time-dependent flux–side curves.
+> - **Thermal reaction rate constants $k \approx k_{\mathrm{RPMD}} \times C_S$:** Go to **[Subspace rate correction](subspace-correction.md)** ([中文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/zh/subspace-correction.md)) for the multiplicative rate factor $C_S = k_{\mathrm{QM}}(H_S) / k_{\mathrm{RPMD}}(H_S)$ in a 1–3D reaction subspace (`[rate.subspace_correction]` in `.inp`, `pyrpmd subspace-correct correct.toml`, or the `pyrpmd.analysis` Python API).
+
 PyRPMD separates two tasks that are often conflated:
 
 1. an **exact-reference calculation** for a small quantum system, where finite

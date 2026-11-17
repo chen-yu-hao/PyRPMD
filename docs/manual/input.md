@@ -184,6 +184,7 @@ to choose lengths, replicas, bead number and uncertainty precision for the actua
 | `[umbrella]` | Umbrella FES; `rate`, `network`, `site_rate`, `surface_rate` | Window centers and stiffness; `[fes.umbrella]` is the nested FES form |
 | `[reaction]` | `rate` (`drpmd` may use `electronic_weight`) | `fragments`, `forming_bonds`, `breaking_bonds`, `rinf`, `symmetry_factor`, `equivalent_paths`; `entry_side` picks one TS descent direction; `preparation` tunes the TS Hessian/descent (`gradient_tolerance`, `hessian_step`, `displacement`, `trace_step`, `trace_steps`, `bond_scale`) |
 | `[rate]` | `rate` | `pmf_method`, `dividing_surface`, `pmf_search_range`, `compare_ui`, optional `pmf_source`; see [PMF sources](../enhanced-sampling.md#choosing-a-pmf-source-for-rate) |
+| `[rate.subspace_correction]` | `rate` (local umbrella PMF) | Optional 1D/2D subspace quantum rate correction $C_S$: `enabled`, `mode`, `dimension`, `environment`, `model_2d`, `anchor`, `curvature`, `zero_point`, `path`, `quantum`, `rpmd`, `validity`, `execution`; see [Subspace rate correction](../subspace-correction.md) |
 | `[recrossing]` | `rate`, `network`, `site_rate`, `surface_rate` | Parent count, parent interval, child pairs, child time, bootstrap; `dynamics="trpmd"` with `friction_scale`, `child_batch_pairs` for batched children; see [TRPMD](../trpmd-spectroscopy.md) and [Trajectory batching](../batched-dynamics.md) |
 | `[collision]`, `[outcomes]` | `drpmd` | Launch distribution, `energy`, `bmax`, total trajectories, `max_time`; product classification (`factory`, `channels`, `bond_cutoffs`, `exit_distance`, `persistence`, `check_interval`) |
 | `[nonadiabatic]` | `drpmd` (experimental NRPMD) | See [Nonadiabatic NRPMD](nonadiabatic.md) |
@@ -198,7 +199,7 @@ to choose lengths, replicas, bead number and uncertainty precision for the actua
 | `[diffusion]`, `[site_rate]`, `[surface]` | The task of the same name (`[surface]` belongs to `surface_rate`) | See [Materials and surfaces](periodic.md); `surface.free_energy = {directory, axis, selection}` takes the PMF from a saved multidimensional FES run (`analysis.method="source"`) |
 | `[network]` | `network` | Entrances, channels, transition states |
 | `[pcet]` | `pcet` | PCET accepts only `schema_version`, `task`, `preset`, `description`, `temperature`, `pcet`, `output` |
-| `[output]` | All | `directory`, `checkpoint_interval` / `checkpoint_steps`, `trajectory_stride`; `trajectory_storage`, `chunk_frames` (`pimd`, `diffusion`); `diagnostics = {energy_parts, ring_radii}` (`drpmd`, on by default with `[initial_ensemble]`) |
+| `[output]` | All | `directory`, `checkpoint_interval` / `checkpoint_steps`, `trajectory_stride`; `trajectory_storage`, `chunk_frames` (`pimd`, `diffusion`); `centroid_path` (`rate` window centroid moments for [subspace rate correction](../subspace-correction.md)); `diagnostics = {energy_parts, ring_radii}` (`drpmd`, on by default with `[initial_ensemble]`) |
 
 Every field and combination rule is in the
 [input specification](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/input.md).
@@ -312,13 +313,14 @@ different dimensions, write each entry as a string with units.
 | `pyrpmd init DIR` | Write the bundled harmonic FES starter in a new or empty directory | Prints the input path and next commands |
 | `pyrpmd validate INPUT` | Parse the configuration and check the task | `--check-pes`, `--output DIR`, `--write-resolved FILE` |
 | `pyrpmd prepare INPUT` | Show preparation information | `--pilot` runs the numerical preparation; `--output FILE` writes JSON |
-| `pyrpmd run INPUT` | Start a run, or continue one from its input | `--output DIR`, `--resume`; `--report` writes figures after the run |
+| `pyrpmd run INPUT` | Start a run, or continue one from its input | `--output DIR`, `--resume`, `--stage subspace` (re-run only `[rate.subspace_correction]` postprocessing); `--report` writes figures after the run |
 | `pyrpmd resume DIR` | Continue from the saved configuration | `--workers N`, `--loop-backend auto`, `--block-steps N`; `--adaptive-max-rounds`, `--adaptive-max-windows`, `--adaptive-max-pilot-steps` extend an exhausted adaptive pilot |
 | `pyrpmd extend DIR` | Raise a saved dRPMD time budget or fixed-window gas-phase rate production budget | Exactly one of `--max-time '20 ps'` or `--production-steps 200000`; both specify a new total |
 | `pyrpmd state-check INPUT` | Evolve prepared nuclear states without a collision kick and report harmonic-mode stability | `--time '100 fs'`, `--samples 8`, `--stride 10`, `--output report.json` |
 | `pyrpmd analyze DIR` | Read results or reanalyze offline | `--recompute`, `--bins`, `--bootstrap`; diffusion options below; `--report` |
 | `pyrpmd report RUN [RUN ...]` | Automatic analysis, publication figures, `index.html` and `report.json` from saved results | `--output DIR` (required for several runs), `--style jctc\|nature`, `--formats png pdf svg`, `--labels`, `--series`, `--reference CSV`, `--kie A B`, `--convergence beads`, `--overwrite`; see [Automatic analysis](analysis-reports.md) |
 | `pyrpmd rate-postprocess DIR` | Rates from a saved PMF/FES and signed channel fluxes, without new dynamics | `--spec FILE.json` (2D dividing surface), `--output FILE`, `--bootstrap 200`, `--seed 0`; see [2D rate postprocessing](../rate-postprocessing.md) |
+| `pyrpmd subspace-correct FILE` | Exact 1D/2D subspace quantum rate correction $C_S$ from a saved rate run | Takes `correct.toml` (or `.json`); writes `subspace_pipeline.json` and `rate_quantum_corrected.json`; see [Subspace rate correction](../subspace-correction.md) |
 | `pyrpmd project DIR` | Boltzmann-marginalize a saved CV-density FES onto fewer CVs | `--axes 0 1` (retained, zero based, required), `--selection mask.npy`, `--output DIR` (required) |
 | `pyrpmd study INPUT` | Temperature/isotope and numerical-convergence scans of an existing rate job | `--plan` (list cases without dynamics), `--output DIR`, `--resume`; see [Rate studies](../rate-studies.md) |
 | `pyrpmd checkpoint FILE` | Verify a checkpoint container | `--require-integrity` rejects legacy containers without checksums |

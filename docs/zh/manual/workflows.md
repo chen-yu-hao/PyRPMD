@@ -37,6 +37,7 @@ pyrpmd resume runs/manual-rate
 | `sampling` | 每窗口的平衡、生产、保存间隔与副本 | 分布形状、有效样本数、独立重复 |
 | `rate.pmf_method` | `ui` 或 `mbar` | UI 的高斯窗口假设；MBAR 的 bin 与支持 |
 | `recrossing` | 母链数、采样间隔、child pairs、传播时间 | 独立母构型、稳定平台、能量误差 |
+| `rate.subspace_correction` | 可选的 1D/2D 子空间精确量子速率修正 $C_S=k_{\mathrm{QM}}(H_S)/k_{\mathrm{RPMD}}(H_S)$ | 有效性门禁（`path`、`bath`、`grid`、`ribbon`、`surface`、`solver`）、低温 `truncation_min`、1D/2D 嵌套灵敏度 |
 
 速率 PMF 使用 `rate_flux` 测度，含质量加权的通量度量；通用 `fes` 使用 `cv_density`。
 `rate.pmf_method="mbar"` 在同一测度下切换 PMF 估计器。用 `recrossing.dividing_surface` 固定分割面；否则工作流把它
@@ -62,6 +63,7 @@ pyrpmd resume runs/manual-rate
 | `conditional_rate_standard_error_cm3_s` | 固定 QTST 因子时的回穿误差 |
 | `rate_uncertainty` | 误差是否可用、bootstrap 请求/尝试/有效/拒绝次数与限定说明 |
 | `pmf.adaptive_umbrella` | 最终摘要中的 pilot 与独立生产诊断；`rate_pmf.json` 和 `umbrella/summary.json` 中也保留 `adaptive_umbrella` |
+| `subspace/`（`rate_quantum_corrected.json`、`subspace_pipeline.json`、`status.json`） | 启用 `[rate.subspace_correction]` 或运行 `pyrpmd subspace-correct` 时生成的子空间修正因子 $C_S$、门禁诊断、求解器计划与修正后速率 |
 
 速率单位为 `cm^3 molecule^-1 s^-1`。若 PMF 重叠不连通或分割面缺少采样支持，先增加窗口或采样，再读取速率。
 自适应运行需分别查看 `pmf.adaptive_umbrella.production_target_met` 与 `pilot_target_met`。
@@ -101,6 +103,24 @@ pyrpmd resume runs/manual-rate
 
 此命令仅扩展伞生产采样，不增加母链/子轨迹数量或其传播时间，也不会自动刷新所属速率研究的汇总结果。
 扩展后仍需检查 PMF 支持、回穿平台和误差诊断；更大的预算本身不证明收敛，也不保证原先保留为 `null` 的速率可报告。
+
+### 子空间量子速率修正
+
+若需针对深穿隧、切角效应（corner cutting）或反应坐标共振，使用 1D 或 2D 精确量子计算对全维 RPMD 速率做乘性修正
+（$k \approx k_{\mathrm{RPMD}} \times C_S$，$C_S = k_{\mathrm{QM}}(H_S)/k_{\mathrm{RPMD}}(H_S)$），可按场景选择三种入口之一：
+
+1. **随 `rate` 一步运行（`.inp` 中配置 `[rate.subspace_correction] enabled = true`）：** 在伞抽样开始前自动开启
+   `output.centroid_path = true`，并在回穿结束后自动求解子空间修正（示例见 `examples/rate/subspace.inp`）。
+2. **对已有运行后处理：** 修改子空间数值参数后运行 `pyrpmd run calculation.inp --stage subspace` 仅重跑后处理阶段，
+   或对已保存的速率目录（含 `output.centroid_path = true` 或使用 `path.source = "mep"`）执行独立命令
+   `pyrpmd subspace-correct correct.toml`。
+3. **纯 Python API（`pyrpmd.analysis`）：** 无需伞抽样，直接从势能面与过渡态几何构造 $H_S$ 并计算 $C_S$
+   （`project_linear_subspace`、`project_path_subspace`、`subspace_correction`、`correct_rate_run`）。
+
+`[rate.subspace_correction.*]` 中的有量纲数值参数一律采用裸原子单位（步长与网格间距为电子质量加权单位
+$\mathrm{bohr}\cdot\sqrt{m_e}$，`truncation_min` 与 `soft_mode_frequency` 为 $\mathrm{E_h}$，
+`hessian_displacement` 为 $\mathrm{bohr}$，`crossover_temperature` 为 $\mathrm{K}$，不支持单位字符串）。
+完整参数与单位对照表、六项有效性门禁及低温收敛要点见[子空间速率修正](../subspace-correction.md)。
 
 ## 直接碰撞：`drpmd`
 

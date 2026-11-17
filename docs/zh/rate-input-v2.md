@@ -205,3 +205,34 @@ pyrpmd resume runs/research-layout
 UI 仍是默认估计器。research 示例在入口/势垒区均采用 `k/T=0.1`，
 间隔均为 `0.005`；此设置还需独立的收敛验证。显式弹簧参数和已解析 checkpoint 不变；收窄窗口
 不能替代采样收敛以及 UI/MBAR 同样本比较。
+
+## 可选的子空间量子速率修正
+
+在同一份 schema-2 `.inp` 文件中追加 `[rate.subspace_correction]`
+（完整示例见 [`examples/rate/subspace.inp`](../../examples/rate/subspace.inp)），即可在回穿阶段后自动执行
+1D/2D 子空间精确量子速率修正（$C_S = k_{\mathrm{QM}}(H_S)/k_{\mathrm{RPMD}}(H_S)$）：
+
+```toml
+[rate.subspace_correction]
+enabled = true
+mode = "apply"             # 或 "factor_only"
+dimension = "auto"         # 1、2 或 [1, 2]
+environment = "adiabatic"  # "frozen"、"adiabatic" 或 "free_energy"
+model_2d = "rph"           # "rph"（默认）或 "plane"
+anchor = "none"            # "none" 或 "skeleton"
+
+[rate.subspace_correction.path]
+source = "mep"             # 默认从细化鞍点出发的 IRC；也可选 "centroid"、"instanton" 等
+step = 10.0                # 裸原子单位：bohr * sqrt(m_e)
+
+[rate.subspace_correction.quantum]
+truncation_kt = 30.0
+truncation_min = 0.0       # 低温强高频横模下设为约 6 倍横模量子（单位 Eh）
+dense_limit = 8000
+```
+
+`enabled = true` 会在伞抽样开始前自动启用 `output.centroid_path = true`，并自动继承主任务的温度、珠子数、
+质量、PES 与输出目录。仅调整子空间数值参数后，可用 `pyrpmd run subspace.inp --stage subspace` 单独重跑子空间阶段，
+或用 `pyrpmd subspace-correct correct.toml` 对已有速率目录做独立后处理。`[rate.subspace_correction.*]`
+中的所有有量纲数值均使用裸原子单位（不支持单位字符串）。完整参数与单位速查表、有效性门禁及低温收敛指南见
+[子空间速率修正](subspace-correction.md)。
