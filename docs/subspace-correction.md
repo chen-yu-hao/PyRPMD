@@ -566,8 +566,8 @@ dimensions are requested, all four stages of `C_S(1D)` and `C_S(2D)`:
 ```toml
 [execution]
 backend = "process"
-cpus = 32
-workers = 4
+cpus = "auto"        # or an explicit positive integer, e.g. 32
+# workers = 4        # optional cap on concurrent tasks
 blas_threads = 8
 memory_limit_mb = 8192
 resume = true
@@ -577,9 +577,12 @@ resume = true
 backend = "native"
 ```
 
-`cpus` is the total CPU budget and `workers` the maximum number of concurrent
-tasks. Each process receives `floor(cpus / workers)` OpenMP threads
-(using fewer workers if there are fewer unfinished tasks). Memory estimates
+`cpus` is the total CPU budget (`"auto"` uses this process's CPU affinity) and
+`workers` caps the maximum number of concurrent tasks. The local `process`
+scheduler dynamically allocates threads from the idle CPU budget and overlaps
+lighter stages alongside heavy 2D tasks based on each task's workload and
+scaling cap, avoiding stranding heavy tasks at `cpus // workers` threads.
+Memory estimates
 include dense linear algebra or RPMD state, side histories and bootstrap
 temporaries; tasks are admitted only while their combined estimates fit the
 budget. BLAS uses at most `blas_threads` (default 8) and never exceeds that

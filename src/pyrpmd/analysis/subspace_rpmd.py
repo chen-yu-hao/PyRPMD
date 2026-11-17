@@ -180,20 +180,25 @@ class _RingPolymer:
 
 def _thermal_frequency(model: SubspaceModel, beta: float) -> float:
     values = model.values
-    accessible = values <= min(values.max(), np.min(values[np.searchsorted(model.axes[0], model.dividing_surface)])
-                               + 30.0 / beta)
+    div_idx = int(np.clip(np.searchsorted(model.axes[0], model.dividing_surface), 0, len(model.axes[0]) - 1))
+    accessible = values <= min(values.max(), np.min(values[div_idx]) + 30.0 / beta)
     accessible = accessible | (values <= values.min() + 30.0 / beta)
     curvature = 0.0
     for axis, mass in enumerate(model.masses):
         if len(model.axes[axis]) < 3:
             continue
         h = model.axes[axis][1] - model.axes[axis][0]
-        second = (np.roll(values, -1, axis) - 2 * values + np.roll(values, 1, axis)) / (h * h)
-        interior = [slice(None)] * values.ndim
-        interior[axis] = slice(1, -1)
-        mask = accessible[tuple(interior)]
+        left = [slice(None)] * values.ndim
+        center = [slice(None)] * values.ndim
+        right = [slice(None)] * values.ndim
+        left[axis] = slice(None, -2)
+        center[axis] = slice(1, -1)
+        right[axis] = slice(2, None)
+        second = (values[tuple(right)] - 2 * values[tuple(center)] + values[tuple(left)]) / (h * h)
+        stencil = accessible[tuple(left)] & accessible[tuple(center)] & accessible[tuple(right)]
+        mask = stencil if stencil.any() else accessible[tuple(center)]
         if mask.any():
-            curvature = max(curvature, float(np.max(np.abs(second[tuple(interior)][mask]))) / mass)
+            curvature = max(curvature, float(np.max(np.abs(second[mask]))) / mass)
     return float(np.sqrt(max(curvature, 1e-30)))
 
 

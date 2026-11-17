@@ -5,6 +5,19 @@ not been published as a new wheel release; no release date or DOI is assigned.
 
 ## Unreleased
 
+- Subspace correction performance and multi-core scheduling:
+  `_thermal_frequency` in `pyrpmd.analysis.subspace_rpmd` now requires all
+  three central-difference stencil points to lie inside the thermally
+  accessible region (falling back to the center-point mask only on narrow
+  grids), eliminating spurious curvature spikes across `wall_energy` boundaries
+  (5.25x 2D RPMD speedup with statistically invariant `kappa` and `C_S` on
+  200 K H + H2, P = 128). In `pyrpmd.analysis.subspace_execution` and
+  `pyrpmd.workflows.rate_subspace`, local `process` execution now overlaps
+  lighter stages alongside heavy 2D tasks with workload-aware dynamic thread
+  allocation (avoiding stranding heavy tasks at `cpus // workers` threads while
+  preserving thread-count determinism and task checkpoint fingerprints), and
+  `execution.cpus = "auto"` resolves process CPU affinity for both `process`
+  and `mpi` backends (`pyrpmd subspace-correct` CLI included).
 - Potentials and Torch workflows: add first-class zero-copy JAX DLPack potential
   provider (`provider = "jax-dlpack"`, `JAXDLPackPotential`) and device-resident
   `sampling.engine = "torch"` gas-phase rate workflow (`gpu_rate.py`,
