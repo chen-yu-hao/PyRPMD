@@ -462,6 +462,8 @@ def run_precision(directory, *, max_jobs=None):
             plan = _next_plan(controller, frozen, saved["execution"]["job_max_cost"])
             if plan is None:
                 return precision_status(root)
+            if max_jobs is not None and completed_now >= max_jobs:
+                return {**precision_status(root), "status": "paused"}
             controller.ledger.start(plan["plan_id"], execution_id="precision:" + plan["plan_id"])
             planned, claimed = _claim_precision_job(root, saved, frozen, plan, system)
             if planned is None:
@@ -478,10 +480,10 @@ def run_precision(directory, *, max_jobs=None):
                     continue
                 raise PrecisionLedgerError("Precision plan has no executable or recoverable job")
 
-        pause_owner = planned["job_id"] == plan["jobs"][0]["job_id"]
         with job_execution_lock(root, planned["job_id"]):
             data = _execute_job(root, saved, frozen, plan, planned, system)
 
+        completed_plan_now = False
         with execution_lock(root):
             controller = _controller(root, saved, spec, frozen)
             if data["state"] == "failed":
@@ -493,23 +495,22 @@ def run_precision(directory, *, max_jobs=None):
             all_complete = (len(jobs) == len(plan["jobs"])
                             and all(j["state"] == "completed" for j in jobs))
             if all_complete:
-                records = [j["record"] for j in jobs]
-                controller.ledger.complete(
-                    plan["plan_id"], execution_id="precision:" + plan["plan_id"],
-                    actual_cost=sum(j["charged_cost"] for j in jobs),
-                    result_ids=[r["source_id"] for r in records],
-                    result={"job_ids": [r["job_id"] for r in records], "records": records,
-                            "accounting": _ACCOUNTING},
-                )
-        if all_complete:
-            # Let the next loop reconcile the completed look and publish its
-            # terminal assessment before applying max_jobs pause semantics.
-            if (pause_owner and max_jobs is not None
-                    and completed_now >= max_jobs):
-                return {**precision_status(root), "status": "paused"}
+                plan_state = controller.ledger.snapshot()["plans"].get(plan["plan_id"], {}).get("state")
+                if plan_state != "completed":
+                    records = [j["record"] for j in jobs]
+                    controller.ledger.complete(
+                        plan["plan_id"], execution_id="precision:" + plan["plan_id"],
+                        actual_cost=sum(j["charged_cost"] for j in jobs),
+                        result_ids=[r["source_id"] for r in records],
+                        result={"job_ids": [r["job_id"] for r in records], "records": records,
+                                "accounting": _ACCOUNTING},
+                    )
+                    completed_plan_now = True
+        if completed_plan_now:
+            # Exactly the executor that sealed the completed look loops once to
+            # reconcile and publish its terminal assessment before applying max_jobs.
             continue
-        if (pause_owner and max_jobs is not None
-                and completed_now >= max_jobs):
+        if max_jobs is not None and completed_now >= max_jobs:
             return {**precision_status(root), "status": "paused"}
 
 
