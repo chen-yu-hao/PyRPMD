@@ -678,12 +678,23 @@ def test_mep_source_runs_without_centroid_path_npz(tmp_path):
 
     # End-to-end --stage subspace with path.source = "mep" and NO centroid_path.npz or rate_pmf.json!
     job = JobSpec.from_file(EXAMPLES / "subspace.inp").with_overrides(output=tmp_path / "mep-ts-only")
+    job.data["beads"] = 8
+    job.data["parallel"] = {"backend": "serial"}
     job.data["rate"]["subspace_correction"] = {
         "enabled": True,
         "mode": "factor_only",
         "dimension": 1,
-        "path": {"source": "mep", "step": 15.0},
-        "rpmd": {"windows": 8, "walkers": 4, "burn_in": 10, "sweeps": 20, "trajectories": 16, "seed": 3},
+        "path": {"source": "mep", "step": 10.0},
+        "quantum": {"product_drop_kt": 22.0},
+        "rpmd": {
+            "windows": 16,
+            "walkers": 8,
+            "burn_in": 30,
+            "sweeps": 60,
+            "trajectories": 32,
+            "md_time": 600.0,
+            "seed": 3,
+        },
     }
     config, system = job.resolve()
     root = Path(config["output"]["directory"])
