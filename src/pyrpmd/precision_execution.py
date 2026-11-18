@@ -113,6 +113,25 @@ def execution_lock(directory):
         os.close(fd)
 
 
+@contextmanager
+def job_execution_lock(directory, job_id):
+    """Serialize execution of one claimed precision job.
+
+    The campaign lock protects short plan and ledger transactions.  A job lock
+    keeps a second executor from relaunching the same journal while independent
+    jobs in one frozen increment can run concurrently.
+    """
+    path = inside(directory, "precision", "jobs", job_id + ".lock")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd = os.open(path, os.O_CREAT | os.O_RDWR | getattr(os, "O_NOFOLLOW", 0)
+                 | getattr(os, "O_BINARY", 0), 0o600)
+    try:
+        with _exclusive_file_lock(fd):
+            yield
+    finally:
+        os.close(fd)
+
+
 class ForceBudgetExceeded(PrecisionBudgetError):
     """The next complete PES batch cannot fit its immutable execution cap."""
 

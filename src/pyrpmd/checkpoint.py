@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 import re
 import tempfile
+import time
 
 import numpy as np
 
@@ -22,6 +23,20 @@ from . import __version__
 SCHEMA = "pyrpmd.checkpoint"
 SCHEMA_VERSION = 2
 ENVELOPE = "_pyrpmd_checkpoint"
+
+
+def _replace_checkpoint(temporary, path):
+    """Publish a checkpoint after transient Windows sharing conflicts clear."""
+    delays = (0.005, 0.01, 0.02, 0.04, 0.08)
+    for attempt in range(len(delays) + 1):
+        try:
+            os.replace(temporary, path)
+            return
+        except OSError as error:
+            if (os.name != "nt" or getattr(error, "winerror", None) not in (5, 32, 33)
+                    or attempt == len(delays)):
+                raise
+            time.sleep(delays[attempt])
 
 
 class CheckpointError(ValueError):
@@ -80,7 +95,7 @@ def _atomic_savez(path, kind, arrays, *, compress):
             writer(stream, **payload)
             stream.flush()
             os.fsync(stream.fileno())
-        os.replace(temporary, path)
+        _replace_checkpoint(temporary, path)
         if os.name == "posix":
             directory = os.open(path.parent, os.O_RDONLY)
             try:

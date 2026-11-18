@@ -414,6 +414,8 @@ res = apply_subspace_correction(k_rpmd, corr, standard_error=se_rpmd, beta=beta,
 | `max_submerged_kt` | `max_submerged_kt` | `float` | `1.0` | $\ge 0$ | $k_B T$ — maximum allowed submergence of the RPMD dividing surface below the upstream free-energy bottleneck |
 | `folded_ribbon` | `folded_ribbon` | `str` | `"reject"` | `"reject"`, `"allow"` | — (policy for the 2D RPH `ribbon` gate: $\lvert\kappa\rvert\sigma_\perp \le \text{max\_curvature\_width}$) |
 | `max_curvature_width` | `max_curvature_width` | `float` | `0.5` | $> 0$ | Dimensionless — upper bound on $\max \lvert\kappa\rvert/\sqrt{2\omega_n}$ between reference slice and product absorber in 2D RPH |
+| `tight_truncation` | `tight_truncation` | `str` | `"reject"` | `"reject"`, `"allow"` | — (policy for the 2D `truncation` gate: energy-truncated DVR walls must leave at least `min_truncation_quanta` transverse quanta) |
+| `min_truncation_quanta` | `min_truncation_quanta` | `float` | `2.5` | $> 0$ | Dimensionless ($\hbar\omega_\perp$ units) — minimum required truncation margin above the valley floor at reference and dividing-surface slices |
 | `soft_mode_frequency` | `soft_mode_frequency` | `float` | `2.3e-4` | $\ge 0$ | $\mathrm{E_h}$ ($\approx 50\,\mathrm{cm}^{-1}$) — imaginary transverse frequency cutoff below which modes are treated as harmless soft rotations |
 | `on_invalid` | `on_invalid` | `str` | `"stop"` | `"stop"`, `"diagnose"` | — (`"stop"` skips solving models that fail pre-solve gates; `"diagnose"` solves them for `diagnostic_factor` but never applies them) |
 
@@ -437,14 +439,15 @@ res = apply_subspace_correction(k_rpmd, corr, standard_error=se_rpmd, beta=beta,
 ### Validity gates
 
 A positive $k_{\mathrm{QM}}(H_S) / k_{\mathrm{RPMD}}(H_S)$ is not yet a correction factor: the ratio
-is only meaningful if $H_S$ is a valid model. Five model gates (`path`, `bath`, `grid`,
+is only meaningful if $H_S$ is a valid model. Six model gates (`path`, `bath`, `truncation`, `grid`,
 `ribbon`, `surface`) plus the pre-solve capacity gate (`solver`) are evaluated, and a
 model that fails one is recorded but never applied.
 
 | Gate | Policy / threshold key | Passes when | Evidence in `subspace_pipeline.json` |
 | --- | --- | --- | --- |
-| `path` | `unconverged_path` (`"reject"`) | Both continuations ended at an accepted terminus — `asymptote_converged`, the reactant reference $\xi \le \text{reactant\_xi}$ after climbing out of a complex, or a product well `product_drop_kt` below the barrier — and the 1D reactant reference slice lies in the free reactant channel | `path.reactant_termination`, `path.product_termination` (`status`, `accepted`, `reason`, `steps`, `arc_length`, `tail_energy_range`, `end_energy`, `drop_below_top`, `minima`, `exit_coordinate`); `models.1.model_construction.reactant_reference` |
-| `bath` | `unstable_bath` (`"reject"`), `soft_mode_frequency` (`2.3e-4` $\mathrm{E_h}$) | No normal-plane curvature below $-\text{soft\_mode\_frequency}^2$ along the 1D path model | `models.1.model_construction.significant_unstable` (arc length, imaginary frequency, character) |
+| `path` | `unconverged_path` (`"reject"`) | Both continuations ended at an accepted terminus — `asymptote_converged`, the reactant reference $\xi \le \text{reactant\_xi}$ after climbing out of a complex, or on the product side a well `product_drop_kt` below the barrier or a shallow asymptotic van der Waals exit settled within `reference_kt` (`product_asymptote`) — and the 1D reactant reference slice lies in the free reactant channel | `path.reactant_termination`, `path.product_termination` (`status`, `accepted`, `reason`, `steps`, `arc_length`, `tail_energy_range`, `end_energy`, `drop_below_top`, `minima`, `exit_coordinate`); `models.1.model_construction.reactant_reference` |
+| `bath` | `unstable_bath` (`"reject"`), `soft_mode_frequency` (`2.3e-4` $\mathrm{E_h}$) | No complement curvature below $-\text{soft\_mode\_frequency}^2$ along the 1D/RPH path or inside the active region of the 2D `plane` model | `models.D.model_construction.significant_unstable` (arc length or grid coordinates, imaginary frequency, character) |
+| `truncation` | `tight_truncation` (`"reject"`), `min_truncation_quanta` (`2.5`) | (Energy-truncated 2D/3D DVR) The truncation margin at the reactant reference and dividing-surface slices is at least `min_truncation_quanta` $\hbar\omega_\perp$ | `solver_plans.2.truncation_confinement` (`truncation_quanta`, `required_truncation_min`, `recommended_truncation_min`, `recommended_dense_limit`) |
 | `grid` | `outside_grid` (`"reject"`), `max_outside_fraction` (`0.01`) | At most `max_outside_fraction` of the ring-polymer estimator saw $V_S$ outside its grid | `corrections.D.rpmd.diagnostics.grid_exit` |
 | `ribbon` | `folded_ribbon` (`"reject"`), `max_curvature_width` (`0.5`) | (RPH 2D model) The path's curvature times the transverse width, $\lvert\kappa\rvert / \sqrt{2 \omega_n}$, stays at most `max_curvature_width` from the reference slice to the product absorber | `models.2.model_construction.ribbon_fold` |
 | `surface` | `submerged_surface` (`"reject"`), `max_submerged_kt` (`1.0`) | The RPMD dividing surface lies at most `max_submerged_kt` below the centroid free-energy maximum between the reactant reference and the surface | `corrections.D.rpmd.diagnostics.free_energy_bottleneck` |

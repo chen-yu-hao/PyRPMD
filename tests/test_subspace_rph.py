@@ -560,3 +560,80 @@ def test_real_bkmp2_3d_h3_rph_and_dvr_models():
     v_batch = project_rph_values(run.energy, dev, (gx, gy), bath, arc_range=tuple(info_2d["box_arc"]),
                                  half_width=14.0, wall_energy=0.5, batch_potential=run.energies)
     assert np.max(np.abs(v_batch - v_scalar)) < 1e-14
+
+
+@pytest.mark.skipif(
+    not (Path(__file__).resolve().parents[1] / "benchmarks" / "h3" / "build" / "libbkmp2.so").is_file(),
+    reason="build BKMP2 with benchmarks/h3/build_pes.py",
+)
+def test_real_bkmp2_h3_validity_gates_across_temperatures():
+    """Verify H + H2 (BKMP2) 200 K truncation/plane-bath gates and 200/300/400 K path self-consistency."""
+    from benchmarks.h3.pes import build as build_bkmp2
+    from pyrpmd.analysis.subspace_paths import mep_core
+    from pyrpmd.analysis.subspace_quantum import quantum_solver_plan
+    from pyrpmd.constants import AMU_TO_AU, KB_AU
+    from pyrpmd.cv import RPMDrateCoordinate
+
+    provider = build_bkmp2()
+    masses_au = np.full(3, 1.00782503223 * AMU_TO_AU)
+    ts_geom = np.array([[-1.7570000251, 0.0, 0.0], [0.0, 0.0, 0.0], [1.7570000251, 0.0, 0.0]])
+    coordinate = RPMDrateCoordinate([[0], [1, 2]], masses_au, ts_geom, [[0, 1]], [[1, 2]], 10.0,
+                                    equivalent_paths=[[0, 2, 1]])
+
+    def make_run(temp_k, nbeads):
+        return pipeline.RateRun(
+            root=None,
+            config={},
+            system=SimpleNamespace(masses=masses_au, geometry=ts_geom),
+            reaction={"fragments": [[0], [1, 2]], "forming_bonds": [[0, 1]], "breaking_bonds": [[1, 2]]},
+            coordinate=coordinate,
+            provider=provider,
+            beta=1.0 / (KB_AU * temp_k),
+            nbeads=nbeads,
+            xi_star=1.0,
+        )
+
+    # 1. Path gate across 200 K, 300 K and 400 K (400 K shallow vdW well with 15 kT > classical barrier).
+    paths_by_t = {}
+    for temp_k, nbeads, expected_prod in (
+        (200.0, 128, "product_well"),
+        (300.0, 64, "product_well"),
+        (400.0, 32, "product_asymptote"),
+    ):
+        r_t = make_run(temp_k, nbeads)
+        _, _, p_t, pi_t = pipeline.build_path(r_t, {"source": "mep", "step": 10.0, "product_drop_kt": 15.0})
+        assert pi_t["termini_accepted"], f"H+H2 path rejected at {temp_k} K: {pi_t['product_termination']}"
+        assert pi_t["product_termination"]["accepted"] == expected_prod
+        g_t = validity_gates({"path_termination": {"reactant": pi_t["reactant_termination"],
+                                                   "product": pi_t["product_termination"]}})
+        assert g_t["valid"]
+        paths_by_t[temp_k] = (r_t, p_t, pi_t)
+
+    # 2. 200 K default truncation_kt=30, truncation_min=0 (< 8000 points) is intercepted by truncation gate.
+    run200, path200, pi200 = paths_by_t[200.0]
+    default_opts = {**pipeline.DEFAULTS["quantum"], "environment": "adiabatic", **GATING, "path_info": pi200}
+    m_rph, q_rph, info_rph, _ = pipeline.rph_model(run200, path200, default_opts)
+    assert info_rph["retained_points"] < 8000
+    plan_default = quantum_solver_plan(m_rph, **q_rph)
+    gates_default = validity_gates(m_rph.provenance, quantum_diagnostics=plan_default)
+    assert not gates_default["valid"]
+    assert any(g["gate"] == "truncation" and not g["passed"] for g in gates_default["gates"])
+    assert plan_default["required_truncation_min"] > 0.03
+    assert plan_default["recommended_truncation_min"] > 0.06
+    assert plan_default["recommended_dense_limit"] > 8000
+
+    safe_opts = {**default_opts, "truncation_min": 0.08, "dense_limit": 20000}
+    m_safe, q_safe, _, _ = pipeline.rph_model(run200, path200, safe_opts)
+    plan_safe = quantum_solver_plan(m_safe, **q_safe)
+    gates_safe = validity_gates(m_safe.provenance, quantum_diagnostics=plan_safe)
+    assert any(g["gate"] == "truncation" and g["passed"] for g in gates_safe["gates"]), gates_safe
+
+    # 3. 200 K plane_model catches off-collinear bend instability in the active region via bath gate.
+    direction = np.asarray(pipeline._static_curvature_width(run200, path200, 0.5)["candidate_direction"])
+    m_plane, _, _, _ = pipeline.plane_model(run200, path200, direction,
+                                            {**safe_opts, "spacing_2d": [3.5, 3.5], "refinement": 1})
+    assert not m_plane.provenance["bath_stable"]
+    assert m_plane.provenance["significant_unstable_points"] > 0
+    gates_plane = validity_gates(m_plane.provenance)
+    assert not gates_plane["valid"]
+    assert any(g["gate"] == "bath" and not g["passed"] for g in gates_plane["gates"])

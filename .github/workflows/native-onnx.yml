@@ -33,9 +33,18 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y nlohmann-json3-dev
           python -m pip install -e '.[test]' 'onnx==1.20.1' 'onnxruntime==1.24.1'
-          curl --fail --location --retry 3 https://github.com/microsoft/onnxruntime/releases/download/v1.24.1/onnxruntime-linux-x64-1.24.1.tgz -o "$RUNNER_TEMP/ort.tgz"
-          echo "9142552248b735920f9390027e4512a2cacf8946a1ffcbe9071a5c210531026f  $RUNNER_TEMP/ort.tgz" | sha256sum --check
-          tar -xzf "$RUNNER_TEMP/ort.tgz" -C "$RUNNER_TEMP"
+          if curl --fail --location --retry 3 https://github.com/microsoft/onnxruntime/releases/download/v1.24.1/onnxruntime-linux-x64-1.24.1.tgz -o "$RUNNER_TEMP/ort.tgz"; then
+            echo "9142552248b735920f9390027e4512a2cacf8946a1ffcbe9071a5c210531026f  $RUNNER_TEMP/ort.tgz" | sha256sum --check
+            tar -xzf "$RUNNER_TEMP/ort.tgz" -C "$RUNNER_TEMP"
+          else
+            curl --fail --location --retry 3 https://www.nuget.org/api/v2/package/Microsoft.ML.OnnxRuntime/1.24.1 -o "$RUNNER_TEMP/ort.nupkg"
+            echo "5fca4421974b450711520f17a27e527fec60a78c2b6f9db3b05c159d9b5a346d  $RUNNER_TEMP/ort.nupkg" | sha256sum --check
+            mkdir -p "$RUNNER_TEMP/onnxruntime-linux-x64-1.24.1/include" "$RUNNER_TEMP/onnxruntime-linux-x64-1.24.1/lib"
+            unzip -q -j "$RUNNER_TEMP/ort.nupkg" 'build/native/include/*' -d "$RUNNER_TEMP/onnxruntime-linux-x64-1.24.1/include"
+            unzip -q -j "$RUNNER_TEMP/ort.nupkg" 'runtimes/linux-x64/native/*' -d "$RUNNER_TEMP/onnxruntime-linux-x64-1.24.1/lib"
+            ln -sf libonnxruntime.so "$RUNNER_TEMP/onnxruntime-linux-x64-1.24.1/lib/libonnxruntime.so.1"
+            ln -sf libonnxruntime.so "$RUNNER_TEMP/onnxruntime-linux-x64-1.24.1/lib/libonnxruntime.so.1.24.1"
+          fi
       - name: Build the real ONNX Runtime plugin
         run: |
           cmake -S native/onnx -B build/onnx -DCMAKE_BUILD_TYPE=Release -DONNXRUNTIME_ROOT="$RUNNER_TEMP/onnxruntime-linux-x64-1.24.1" -DPYRPMD_ONNX_CONTEXT_TEST=ON

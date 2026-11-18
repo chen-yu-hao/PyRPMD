@@ -458,8 +458,12 @@ def ring_polymer_rate(
         if not len(new):
             return
         normal = offset[new] / distance[new, None]
+        # A one-cell finite difference is sensitive to tiny endpoint noise in
+        # projected grids. Average over a short inward span so the gate sees a
+        # sustained uphill trend while retaining its physical edge-slope test.
         delta = float(np.min(model.spacing))
-        slope = (spline.energy(inside[new]) - spline.energy(inside[new] - delta * normal)) / delta
+        span = 4.0 * float(np.max(model.spacing))
+        slope = (spline.energy(inside[new]) - spline.energy(inside[new] - span * normal)) / span
         if model.dimension == 2:
             # An open channel crossing a rectangular boundary at an oblique angle
             # has nonzero transverse gradient dV/dq along the axis normal when a

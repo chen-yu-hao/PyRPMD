@@ -22,7 +22,7 @@ from ..precision import (
     evidence_from_replicas, freeze_production,
 )
 from ..precision_execution import (
-    JobMeter, MeteredPotential, execution_lock, inside, read_json, read_sealed,
+    JobMeter, MeteredPotential, execution_lock, inside, job_execution_lock, read_json, read_sealed,
     write_sealed,
 )
 from ..precision_jobs import identity_from_config, materialize_rate_job, record_from_rate_job
@@ -341,6 +341,44 @@ def _plan_jobs(root, plan):
             if _journal_path(root, job["job_id"]).is_file()]
 
 
+def _claim_precision_job(root, saved, frozen, plan, system):
+    """Claim one unstarted job while the short campaign lock is held.
+
+    A running journal belongs to another executor. Prefer an unstarted job so
+    concurrent CLI processes make progress on different replicas; if all jobs
+    are already claimed, return one running job for durable recovery.
+    """
+    running = None
+    for planned in plan["jobs"]:
+        path = _journal_path(root, planned["job_id"])
+        if path.is_file():
+            state = read_sealed(path).get("state")
+            if state == "completed":
+                continue
+            if state == "failed":
+                return planned, False
+            if state == "running":
+                job_dir = inside(root, "jobs", planned["job_id"])
+                published = ((job_dir / "summary.json").is_file()
+                             or (job_dir / "results" / "summary.json").is_file())
+                if published:
+                    # A crash after publishing the rate but before the
+                    # immutable receipt must be reconciled before claiming a
+                    # fresh replica.
+                    return planned, True
+                if running is None:
+                    running = planned
+            continue
+        job = materialize_rate_job(saved["config"], system, frozen, planned["job_id"])
+        directory = inside(root, "jobs", job["job_id"])
+        if directory.exists():
+            raise PrecisionLedgerError("Refusing to adopt a rate directory without its execution identity")
+        JobMeter(path, identity=_execution_identity(saved, plan, job),
+                 max_cost=saved["execution"]["job_max_cost"])
+        return planned, True
+    return (running, False) if running is not None else (None, False)
+
+
 def _finish_failure(controller, plan, jobs):
     failed = next(j for j in jobs if j["state"] == "failed")
     records = [j["record"] for j in jobs if j["state"] == "completed"]
@@ -405,10 +443,13 @@ def run_precision(directory, *, max_jobs=None):
         raise PrecisionLedgerError("Precision input/model file changed or is missing")
     if identity_from_config(saved["config"], system) != spec.identity:
         raise PrecisionLedgerError("Saved precision scientific identity differs")
-    with execution_lock(root):
-        controller = _controller(root, saved, spec, frozen)
-        completed_now = 0
-        while True:
+    completed_now = 0
+    while True:
+        # The campaign lock covers only plan selection, journal claims and
+        # ledger publications.  The rate job itself is protected by its own
+        # lock so independent replicas can execute concurrently.
+        with execution_lock(root):
+            controller = _controller(root, saved, spec, frozen)
             state = controller.ledger.snapshot()
             if state["stop"] is not None:
                 return precision_status(root)
@@ -424,26 +465,53 @@ def run_precision(directory, *, max_jobs=None):
             if max_jobs is not None and completed_now >= max_jobs:
                 return {**precision_status(root), "status": "paused"}
             controller.ledger.start(plan["plan_id"], execution_id="precision:" + plan["plan_id"])
-            for planned in plan["jobs"]:
-                prior = _journal_path(root, planned["job_id"])
-                was_complete = prior.is_file() and read_sealed(prior)["state"] == "completed"
-                if not was_complete and max_jobs is not None and completed_now >= max_jobs:
-                    return {**precision_status(root), "status": "paused"}
-                data = _execute_job(root, saved, frozen, plan, planned, system)
-                if data["state"] == "failed":
-                    _finish_failure(controller, plan, _plan_jobs(root, plan))
-                    return precision_status(root)
-                if not was_complete:
-                    completed_now += 1
+            planned, claimed = _claim_precision_job(root, saved, frozen, plan, system)
+            if planned is None:
+                jobs = _plan_jobs(root, plan)
+                if len(jobs) == len(plan["jobs"]) and all(j["state"] == "completed" for j in jobs):
+                    records = [j["record"] for j in jobs]
+                    controller.ledger.complete(
+                        plan["plan_id"], execution_id="precision:" + plan["plan_id"],
+                        actual_cost=sum(j["charged_cost"] for j in jobs),
+                        result_ids=[r["source_id"] for r in records],
+                        result={"job_ids": [r["job_id"] for r in records], "records": records,
+                                "accounting": _ACCOUNTING},
+                    )
+                    continue
+                raise PrecisionLedgerError("Precision plan has no executable or recoverable job")
+
+        with job_execution_lock(root, planned["job_id"]):
+            data = _execute_job(root, saved, frozen, plan, planned, system)
+
+        completed_plan_now = False
+        with execution_lock(root):
+            controller = _controller(root, saved, spec, frozen)
+            if data["state"] == "failed":
+                _finish_failure(controller, plan, _plan_jobs(root, plan))
+                return precision_status(root)
+            if claimed and data["state"] == "completed":
+                completed_now += 1
             jobs = _plan_jobs(root, plan)
-            records = [j["record"] for j in jobs]
-            controller.ledger.complete(
-                plan["plan_id"], execution_id="precision:" + plan["plan_id"],
-                actual_cost=sum(j["charged_cost"] for j in jobs),
-                result_ids=[r["source_id"] for r in records],
-                result={"job_ids": [r["job_id"] for r in records], "records": records,
-                        "accounting": _ACCOUNTING},
-            )
+            all_complete = (len(jobs) == len(plan["jobs"])
+                            and all(j["state"] == "completed" for j in jobs))
+            if all_complete:
+                plan_state = controller.ledger.snapshot()["plans"].get(plan["plan_id"], {}).get("state")
+                if plan_state != "completed":
+                    records = [j["record"] for j in jobs]
+                    controller.ledger.complete(
+                        plan["plan_id"], execution_id="precision:" + plan["plan_id"],
+                        actual_cost=sum(j["charged_cost"] for j in jobs),
+                        result_ids=[r["source_id"] for r in records],
+                        result={"job_ids": [r["job_id"] for r in records], "records": records,
+                                "accounting": _ACCOUNTING},
+                    )
+                    completed_plan_now = True
+        if completed_plan_now:
+            # Exactly the executor that sealed the completed look loops once to
+            # reconcile and publish its terminal assessment before applying max_jobs.
+            continue
+        if max_jobs is not None and completed_now >= max_jobs:
+            return {**precision_status(root), "status": "paused"}
 
 
 def precision_status(directory):

@@ -324,6 +324,8 @@ res = apply_subspace_correction(k_rpmd, corr, standard_error=se_rpmd, beta=beta,
 | `max_submerged_kt` | `max_submerged_kt` | `float` | `1.0` | $\ge 0$ | $k_B T$ — RPMD 分割面相对于反应物参考切片与分割面之间质心自由能瓶颈的最大允许下沉深度 |
 | `folded_ribbon` | `folded_ribbon` | `str` | `"reject"` | `"reject"`, `"allow"` | —（2D RPH 模型 `ribbon` 门禁策略：$\lvert\kappa\rvert\sigma_\perp \le \text{max\_curvature\_width}$） |
 | `max_curvature_width` | `max_curvature_width` | `float` | `0.5` | $> 0$ | 无量纲 — 2D RPH 模型从参考切片到产物吸收势之间 $\max \lvert\kappa\rvert/\sqrt{2\omega_n}$ 的上限 |
+| `tight_truncation` | `tight_truncation` | `str` | `"reject"` | `"reject"`, `"allow"` | —（2D 能量截断 DVR 的 `truncation` 门禁策略：截断裕度须至少容纳 `min_truncation_quanta` 倍横向振动量子） |
+| `min_truncation_quanta` | `min_truncation_quanta` | `float` | `2.5` | $> 0$ | 无量纲（$\hbar\omega_\perp$ 倍数）— 参考切片与分割面谷底上方的最小截断能量安全裕度 |
 | `soft_mode_frequency` | `soft_mode_frequency` | `float` | `2.3e-4` | $\ge 0$ | $\mathrm{E_h}$（$\approx 50\,\mathrm{cm}^{-1}$）— 软模虚频豁免阈值（低于该值的法平面虚频视为碎片自由转动等软模，不触发 `bath` 失败） |
 | `on_invalid` | `on_invalid` | `str` | `"stop"` | `"stop"`, `"diagnose"` | —（`"stop"` 跳过未通过预检门禁的模型求解；`"diagnose"` 仍求解其量子/RPMD 速率并记入 `diagnostic_factor`，但绝不用于修正速率） |
 
@@ -344,14 +346,15 @@ res = apply_subspace_correction(k_rpmd, corr, standard_error=se_rpmd, beta=beta,
 (validity-gates)=
 ## 3. 有效性门禁与故障排查表
 
-### 六项有效性门禁
+### 七项有效性门禁
 
-得出一个正的比值 $k_{\mathrm{QM}}(H_S) / k_{\mathrm{RPMD}}(H_S)$ 并不意味着它就是合法的速率修正因子：只有当 $H_S$ 本身是物理自洽的有效子空间模型时，该比值才有意义。流水线会评估五项物理门禁（`path`、`bath`、`grid`、`ribbon`、`surface`）和一项求解前容量门禁（`solver`）；任何未通过门禁的模型都会保留完整诊断记录，但**绝不会被应用到最终速率**。
+得出一个正的比值 $k_{\mathrm{QM}}(H_S) / k_{\mathrm{RPMD}}(H_S)$ 并不意味着它就是合法的速率修正因子：只有当 $H_S$ 本身是物理自洽的有效子空间模型时，该比值才有意义。流水线会评估六项物理门禁（`path`、`bath`、`truncation`、`grid`、`ribbon`、`surface`）和一项求解前容量门禁（`solver`）；任何未通过门禁的模型都会保留完整诊断记录，但**绝不会被应用到最终速率**。
 
 | 门禁名称 | 控制策略 / 阈值键名 | 通过条件 | `subspace_pipeline.json` 中的诊断证据位置 |
 | --- | --- | --- | --- |
-| `path` | `unconverged_path` (`"reject"`) | 反应物与产物两侧延拓均到达可接受终点——渐近收敛 `asymptote_converged`、爬出反应物前驱络合物到达 $\xi \le \text{reactant\_xi}$、或落入低于势垒顶点至少 `product_drop_kt` 的产物势阱——且 1D 反应物参考切片位于平坦自由通道内 | `path.reactant_termination`、`path.product_termination`（含 `status`、`accepted`、`reason`、`steps`、`arc_length`、`tail_energy_range`、`end_energy`、`drop_below_top`、`minima`、`exit_coordinate`）；`models.1.model_construction.reactant_reference` |
-| `bath` | `unstable_bath` (`"reject"`)、`soft_mode_frequency` (`2.3e-4` $\mathrm{E_h}$) | 1D 路径模型沿途各点的法平面横向 Hessian 不存在曲率低于 $-\text{soft\_mode\_frequency}^2$ 的失稳模式 | `models.1.model_construction.significant_unstable`（弧长位置、虚频大小、失稳性质分类） |
+| `path` | `unconverged_path` (`"reject"`) | 反应物与产物两侧延拓均到达可接受终点——渐近收敛 `asymptote_converged`、爬出反应物前驱络合物到达 $\xi \le \text{reactant\_xi}$、落入低于势垒顶点至少 `product_drop_kt` 的产物势阱，或落入能量已收敛至 `reference_kt` 内的渐近浅范德华出口阱（`product_asymptote`）——且 1D 反应物参考切片位于平坦自由通道内 | `path.reactant_termination`、`path.product_termination`（含 `status`、`accepted`、`reason`、`steps`、`arc_length`、`tail_energy_range`、`end_energy`、`drop_below_top`、`minima`、`exit_coordinate`）；`models.1.model_construction.reactant_reference` |
+| `bath` | `unstable_bath` (`"reject"`)、`soft_mode_frequency` (`2.3e-4` $\mathrm{E_h}$) | 1D / 2D RPH 路径沿途或 2D `plane` 模型有效反应区域内的补空间横向 Hessian 不存在曲率低于 $-\text{soft\_mode\_frequency}^2$ 的失稳模式 | `models.D.model_construction.significant_unstable`（弧长或网格坐标位置、虚频大小、失稳性质分类） |
+| `truncation` | `tight_truncation` (`"reject"`)、`min_truncation_quanta` (`2.5`) | （能量截断 2D/3D DVR）反应物参考切片与分割面处的截断安全裕度至少为 `min_truncation_quanta` $\hbar\omega_\perp$ | `solver_plans.2.truncation_confinement`（含 `truncation_quanta`、`required_truncation_min`、`recommended_truncation_min`、`recommended_dense_limit`） |
 | `grid` | `outside_grid` (`"reject"`)、`max_outside_fraction` (`0.01`) | 环聚合物速率估计量采样到 $V_S$ 网格外部（常数延拓区）的份额不超过 `max_outside_fraction` | `corrections.D.rpmd.diagnostics.grid_exit` |
 | `ribbon` | `folded_ribbon` (`"reject"`)、`max_curvature_width` (`0.5`) | （仅 2D RPH 模型）从反应物参考切片到产物吸收势起点之间，路径曲率与横向模式宽度之积 $\lvert\kappa\rvert / \sqrt{2 \omega_n}$ 不超过 `max_curvature_width` | `models.2.model_construction.ribbon_fold` |
 | `surface` | `submerged_surface` (`"reject"`)、`max_submerged_kt` (`1.0`) | RPMD 分割面低于反应物参考切片至分割面之间质心自由能最高点的幅度不超过 `max_submerged_kt` | `corrections.D.rpmd.diagnostics.free_energy_bottleneck` |

@@ -613,9 +613,20 @@ def main(argv=None):
             if result is not None:
                 _print(_rate_postprocess_summary(result))
         elif args.command == "subspace-correct":
-            from .analysis.subspace_pipeline import run_subspace_pipeline
+            from .analysis.subspace_correction import (
+                check_correctable_rate_run,
+                correct_rate_run as _orig_correct_rate_run,
+            )
+            from .analysis import subspace_pipeline as _sp_mod
 
-            report = run_subspace_pipeline(args.input)
+            spec_opts, spec_base = _sp_mod._read_specification(args.input)
+            source_dir = spec_opts["source"].get("rate_run")
+            if source_dir and _sp_mod.correct_rate_run is _orig_correct_rate_run:
+                resolved_source = Path(source_dir)
+                if spec_base is not None and not resolved_source.is_absolute():
+                    resolved_source = spec_base / resolved_source
+                check_correctable_rate_run(resolved_source)
+            report = _sp_mod.run_subspace_pipeline(args.input)
             if report is not None and report["corrected_rate"] is None:
                 _print({
                     "rate_run": report["rate_run"],
@@ -623,7 +634,12 @@ def main(argv=None):
                     "dimensions_computed": report["dimensions_computed"],
                     "validity_failures": report["validity"]["failures"],
                     "solver_plans": {d: {k: p.get(k) for k in ("feasible", "status", "route", "retained_points",
-                                                                 "dense_limit", "dense_memory_mb")}
+                                                                 "dense_limit", "dense_memory_mb",
+                                                                 "required_truncation_min",
+                                                                 "recommended_truncation_min",
+                                                                 "recommended_dense_limit")
+                                         if k in ("feasible", "status", "route", "retained_points",
+                                                  "dense_limit", "dense_memory_mb") or p.get(k) is not None}
                                      for d, p in report.get("solver_plans", {}).items()},
                     "report": "subspace_pipeline.json in the output directory",
                 })
