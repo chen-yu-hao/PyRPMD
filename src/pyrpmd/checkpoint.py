@@ -27,7 +27,7 @@ ENVELOPE = "_pyrpmd_checkpoint"
 
 def _replace_checkpoint(temporary, path):
     """Publish a checkpoint after transient Windows sharing conflicts clear."""
-    delays = (0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.64, 1.28)
+    delays = (0.005, 0.01, 0.02, 0.04, 0.08)
     for attempt in range(len(delays) + 1):
         try:
             os.replace(temporary, path)
