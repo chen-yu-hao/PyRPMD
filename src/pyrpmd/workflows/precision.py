@@ -462,8 +462,6 @@ def run_precision(directory, *, max_jobs=None):
             plan = _next_plan(controller, frozen, saved["execution"]["job_max_cost"])
             if plan is None:
                 return precision_status(root)
-            if max_jobs is not None and completed_now >= max_jobs:
-                return {**precision_status(root), "status": "paused"}
             controller.ledger.start(plan["plan_id"], execution_id="precision:" + plan["plan_id"])
             planned, claimed = _claim_precision_job(root, saved, frozen, plan, system)
             if planned is None:
@@ -480,6 +478,7 @@ def run_precision(directory, *, max_jobs=None):
                     continue
                 raise PrecisionLedgerError("Precision plan has no executable or recoverable job")
 
+        pause_owner = planned["job_id"] == plan["jobs"][0]["job_id"]
         with job_execution_lock(root, planned["job_id"]):
             data = _execute_job(root, saved, frozen, plan, planned, system)
 
@@ -505,8 +504,12 @@ def run_precision(directory, *, max_jobs=None):
         if all_complete:
             # Let the next loop reconcile the completed look and publish its
             # terminal assessment before applying max_jobs pause semantics.
+            if (pause_owner and max_jobs is not None
+                    and completed_now >= max_jobs):
+                return {**precision_status(root), "status": "paused"}
             continue
-        if max_jobs is not None and completed_now >= max_jobs:
+        if (pause_owner and max_jobs is not None
+                and completed_now >= max_jobs):
             return {**precision_status(root), "status": "paused"}
 
 
