@@ -51,7 +51,7 @@ measurements from the tutorial batch above. Unmeasured entries are `pending`.
 | `examples/nonadiabatic/extensions/` | SM-NRPMD, CA-RP-MASH, BA/DM RPSH, DBOC and complex SOC inputs | pending | [Extended methods](../nonadiabatic-workflow.md) |
 | `examples/nonadiabatic/extensions/nah2_sm_nrpmd.inp` | Published NaH2 molecular two-state PES with Cartesian gradients | pending | [Molecular potentials](../molecular-nonadiabatic.md) |
 | `examples/rate/research.inp` | Explicit reaction, independent TS checks, regional windows and separate parent/child stages | pending | [Rate input guide](../rate-input-v2.md) |
-| `examples/rate/subspace.inp`, `examples/subspace_correction/eckart_bath_2d.py` | Native `rate` with `[rate.subspace_correction]` (`--stage subspace`) and Python API 1D/2D subspace rate correction $C_S$ | pending | [Subspace rate correction](../subspace-correction.md) |
+| `examples/rate/subspace.inp`, `examples/subspace_correction/eckart_bath_2d.py`, `molecular_ts_to_cs.py` | Low-$T$ native `rate` with `[rate.subspace_correction]` (`--stage subspace`), 2D Eckart benchmark, and umbrella-free 9D Cartesian TS $\to$ $C_S, B_P$ | ~20–50 s | [Subspace rate correction](../subspace-correction.md) |
 | `examples/rate/pilot.inp` | Legacy schema-1 TS preparation, PMF and recrossing | ~15 s | [Gas phase and free energy](workflows.md) |
 | `examples/rate/general_coordinate.inp` | `site_rate` along a smooth nonlinear centroid coordinate | pending | [General-coordinate rates](../general-coordinate-rates.md) |
 | `examples/studies/site_rate.json`, `drpmd.json` | `pyrpmd study` temperature/isotope/convergence scans; inspect with `--plan` | pending | [Rate studies](../rate-studies.md) |

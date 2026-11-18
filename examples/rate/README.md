@@ -116,25 +116,58 @@ children. An unsuccessful child trajectory is never replaced by an assumed trans
 ## Subspace quantum rate correction
 
 [`subspace.inp`](subspace.inp) adds `[rate.subspace_correction]` to the schema-2 rate
-layout to compute the multiplicative quantum correction
-$C_S = k_{\mathrm{QM}}(H_S) / k_{\mathrm{RPMD}}(H_S)$ in a 1D or 2D reaction subspace:
+layout in a low-temperature tunnelling regime ($T = 200\,\mathrm{K} \approx 0.55\,T_c$,
+$P = 24$, `toy_exchange.py` tuned to a $7.5\,\mathrm{kcal/mol}$ barrier with
+$T_c \approx 363\,\mathrm{K}$) so that quantum corner cutting and tunnelling yield a
+substantial correction factor ($C_S(\mathrm{2D}) \approx 3$, versus $C_S \approx 1$ near the
+classical limit) while still completing a full pilot run in under a minute on a multi-core
+machine:
 
 ```bash
-# Run the full rate workflow plus the subspace postprocessing stage:
+# 1. Validate the input and analytic teaching PES:
+pyrpmd validate examples/rate/subspace.inp --check-pes
+
+# 2. Run preparation, umbrella PMF, recrossing, and 1D + 2D RPH subspace correction:
 pyrpmd run examples/rate/subspace.inp --output runs/rate-with-subspace
 
-# Re-run only the subspace postprocessing after editing [rate.subspace_correction.*]:
+# 3. Inspect the saved summary (including subspace_correction factors and corrected estimate):
+pyrpmd analyze runs/rate-with-subspace
+
+# 4. Re-run ONLY the subspace stage after editing [rate.subspace_correction.*]
+#    (for example refining quantum.spacing_2d, changing rpmd.sweeps, or toggling anchor):
 pyrpmd run examples/rate/subspace.inp --output runs/rate-with-subspace --stage subspace
 
-# Or postprocess any saved rate run (with output.centroid_path=true or path.source="mep"):
-pyrpmd subspace-correct correct.toml
+# 5. Or postprocess any saved rate run standalone via a TOML specification:
+pyrpmd subspace-correct benchmarks/h3_subspace/correct_200K.toml
 ```
+
+### Parallelism, low-temperature DVR truncation, and stage artifacts
+
+- **Multi-core execution (`[parallel]` and `[rate.subspace_correction.execution]`):**
+  `[parallel]` runs umbrella and recrossing trajectories across worker processes, and
+  `[rate.subspace_correction.execution] cpus = "auto"` reuses that CPU allocation to overlap
+  the 1D/2D quantum Sylvester and compiled C++/OpenMP subspace RPMD tasks.
+- **Low-temperature DVR wall margin (`quantum.truncation_min`):** At $200\,\mathrm{K}$,
+  $30\,k_B T \approx 0.019\,\mathrm{E_h}$ is smaller than two quanta of a stiff stretch mode,
+  so energy-truncated 2D DVR walls would artificially confine transverse zero-point motion.
+  Set `quantum.truncation_min` (bare $\mathrm{E_h}$) to about six quanta of the stiffest
+  transverse mode (`0.08` $\mathrm{E_h}$ here) and size `quantum.dense_limit` from
+  `solver_plans` in `runs/rate-with-subspace/subspace/status.json`.
+- **Inspecting full-run vs `--stage subspace` outputs:** `pyrpmd analyze runs/rate-with-subspace`
+  prints `results/summary.json` from the full `pyrpmd run` (including `rate_estimate_cm3_s`
+  and its `subspace_correction` summary). A subsequent `--stage subspace` recomputation never
+  mutates `summary.json` or `results/summary.json`; it prints the updated `subspace_correction`
+  JSON to stdout and writes authoritative postprocessing artifacts under
+  `runs/rate-with-subspace/subspace/` (`status.json`, `subspace_pipeline.json`, `C_S_1d.json`,
+  `C_S_2d.json`, and `rate_quantum_corrected.json`).
+- **Umbrella-free $C_S$ from TS + PES only:** If you only want $C_S$ and the finite-bead
+  factor $B_P$ without running umbrella windows first, see
+  [`examples/subspace_correction/molecular_ts_to_cs.py`](../subspace_correction/molecular_ts_to_cs.py)
+  and [`examples/subspace_correction/README.md`](../subspace_correction/README.md).
 
 All dimensional numerical controls under `[rate.subspace_correction.*]` take bare atomic
 units (`bohr * sqrt(m_e)` for `step`, `spacing_1d`, `spacing_2d`, `padding` and
 `dvr_half_width`; `Eh` for `truncation_min` and `soft_mode_frequency`; `bohr` for
-`hessian_displacement`; `K` for `crossover_temperature`; unit strings are rejected). At low
-temperature, set `quantum.truncation_min` to about six quanta of the stiffest transverse
-mode and adjust `quantum.dense_limit` from `solver_plans` in `subspace/status.json`. See
+`hessian_displacement`; `K` for `crossover_temperature`; unit strings are rejected). See
 the full user guide in [`docs/subspace-correction.md`](../../docs/subspace-correction.md)
 ([中文指南](../../docs/zh/subspace-correction.md)).

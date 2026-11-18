@@ -551,3 +551,71 @@ def test_spawned_workers_inherit_passive_openmp_only_while_pool_lives(monkeypatc
     with _passive_openmp():
         assert os.environ["OMP_WAIT_POLICY"] == "ACTIVE"
     assert os.environ["OMP_WAIT_POLICY"] == "ACTIVE"
+
+
+def test_subspace_inp_example_configures_low_temperature_tunnelling_and_parallelism():
+    from pyrpmd.analysis.subspace_paths import refine_saddle
+    from pyrpmd.constants import KB_AU
+    from pyrpmd.instanton import crossover_temperature
+    from pyrpmd.potentials import make_potential
+
+    job = JobSpec.from_file(EXAMPLES / "subspace.inp")
+    config, system = job.resolve()
+    assert config["output"]["centroid_path"] is True
+    assert config["beads"] >= 16
+    assert config["parallel"]["backend"] == "process"
+    assert config["parallel"]["trajectory_workers"] >= 2
+
+    sub = config["rate"]["subspace_correction"]
+    assert sub["enabled"] is True
+    assert sub["mode"] == "apply"
+    assert sub["model_2d"] == "rph"
+    assert sub["anchor"] == "skeleton"
+    assert sub["quantum"]["truncation_min"] >= 0.06
+    assert sub["execution"].get("cpus", "auto") == "auto"
+
+    exec_budget = stage.subspace_execution(config, sub)
+    assert exec_budget is not None and exec_budget["backend"] == "process"
+
+    pes = make_potential(config["potential"], system)
+    masses_cart = np.repeat(np.asarray(system.masses, dtype=float), 3)
+    grad_fn = lambda x: -np.asarray(pes.evaluate(np.asarray(x, dtype=float).reshape(1, -1, 3)).forces[0], dtype=float).ravel()
+    saddle_flat, rec = refine_saddle(grad_fn, np.asarray(system.geometry, dtype=float).ravel(), masses_cart,
+                                     rigid_body=True, gradient_tolerance=1e-9)
+    assert rec["saddle"] is True
+    tc_k = crossover_temperature(pes, saddle_flat.reshape(-1, 3), system.masses)
+    temp_k = 1.0 / (KB_AU * float(config["beta"]))
+    assert temp_k < 0.75 * tc_k
+
+
+def test_molecular_ts_to_cs_example_script_runs_end_to_end(tmp_path):
+    import importlib.util
+
+    script_path = Path(__file__).resolve().parents[1] / "examples" / "subspace_correction" / "molecular_ts_to_cs.py"
+    spec_mod = importlib.util.spec_from_file_location("molecular_ts_to_cs_example", script_path)
+    mod = importlib.util.module_from_spec(spec_mod)
+    spec_mod.loader.exec_module(mod)
+
+    out_json = tmp_path / "cs_9d.json"
+    rc = mod.main([
+        "--cpus", "1",
+        "--beads", "16",
+        "--sweeps", "30",
+        "--trajectories", "48",
+        "--rpmd-rate", "2.5e-16",
+        "--rpmd-se", "2.0e-17",
+        "--out", str(out_json),
+    ])
+    assert rc == 0
+    summary = json.loads(out_json.read_text(encoding="utf-8"))
+    assert summary["temperature_K"] < summary["crossover_temperature_K"]
+    assert summary["saddle"]["rigid_modes_removed"] == 5
+    assert summary["validity"]["valid"] is True
+    assert summary["validity"]["valid_dimensions"] == [1, 2]
+    c1 = summary["corrections"]["1d"]
+    c2 = summary["corrections"]["2d_rph"]
+    assert c2["anchored_factor"] > 1.5
+    assert c1["anchored_factor"] > 1.05
+    assert c1["anchor_log_shift"] > abs(c2["anchor_log_shift"]) + 0.03
+    assert c1["bead_factor_B_P"] != pytest.approx(c2["bead_factor_B_P"], rel=1e-2)
+    assert summary["applied_rate"]["corrected_rate"] > 2.5e-16

@@ -1,15 +1,19 @@
-# One-dimensional SCT curvature-mass recomputation for the saved H + H2 run.
-# Restore the raw run from data/subspace-runs-2026-11 first, then run:
+# One-dimensional SCT curvature-mass recomputation for the 3D/9D H + H2 (BKMP2) run at 200 K:
 #   pyrpmd subspace-correct benchmarks/h3_subspace/correct_200K_curvature.toml
+# Source: rate_200K.inp (benchmarks/h3_subspace/runs/h3-200K-P128-b20).
 
 [source]
 rate_run = "runs/h3-200K-P128-b20"
+
+[path]
+source = "mep"
+step = 10.0
 
 [subspace]
 dimension = 1
 threshold = 0.5
 environment = "adiabatic"
-curvature = "small"
+curvature = "small"          # small-curvature tunnelling (SCT) effective mass mu_eff(sigma)
 
 [quantum]
 refinement = 3
@@ -21,10 +25,21 @@ product_drop_kt = 15.0
 dense_limit = 11500
 
 [rpmd]
+backend = "native"
 walkers = 32
 sweeps = 800
 trajectories = 1024
 seed = 17
+
+[validity]
+soft_mode_frequency = 4.5e-4 # BKMP2 long-range collinear van der Waals hindered rotation (<= 85i cm^-1)
+
+[execution]
+backend = "process"
+cpus = "auto"
+blas_threads = 8
+memory_limit_mb = 8192
+resume = false
 
 [output]
 directory = "runs/h3-200K-P128-b20/subspace-sct-1d"
