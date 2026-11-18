@@ -379,6 +379,33 @@ def _claim_precision_job(root, saved, frozen, plan, system):
     return (running, False) if running is not None else (None, False)
 
 
+def _pause_marker(root, plan):
+    return inside(root, "precision", "pause_" + plan["plan_id"] + ".json")
+
+
+def _ensure_pause_owner(root, plan, job_id):
+    path = _pause_marker(root, plan)
+    if path.is_file():
+        saved = read_sealed(path)
+        if saved.get("plan_id") != plan["plan_id"] or not isinstance(saved.get("job_id"), str):
+            raise PrecisionLedgerError("Precision pause marker differs from its plan")
+    else:
+        saved = {"plan_id": plan["plan_id"], "job_id": job_id, "paused": False}
+        write_sealed(path, saved)
+    return saved["job_id"] == job_id
+
+
+def _consume_pause(root, plan):
+    path = _pause_marker(root, plan)
+    if not path.is_file():
+        raise PrecisionLedgerError("Precision pause marker is missing")
+    saved = read_sealed(path)
+    if saved.get("paused"):
+        return False
+    write_sealed(path, {**saved, "paused": True})
+    return True
+
+
 def _finish_failure(controller, plan, jobs):
     failed = next(j for j in jobs if j["state"] == "failed")
     records = [j["record"] for j in jobs if j["state"] == "completed"]
@@ -479,16 +506,10 @@ def run_precision(directory, *, max_jobs=None):
                     )
                     continue
                 raise PrecisionLedgerError("Precision plan has no executable or recoverable job")
+            pause_owner = _ensure_pause_owner(root, plan, planned["job_id"])
 
-        if os.name == "nt":
-            # Windows runners serialize the short-lived Python rate jobs to
-            # avoid process-spawn and filesystem contention; the durable job
-            # claim still prevents a duplicate launch after interruption.
-            with execution_lock(root):
-                data = _execute_job(root, saved, frozen, plan, planned, system)
-        else:
-            with job_execution_lock(root, planned["job_id"]):
-                data = _execute_job(root, saved, frozen, plan, planned, system)
+        with job_execution_lock(root, planned["job_id"]):
+            data = _execute_job(root, saved, frozen, plan, planned, system)
 
         completed_plan_now = False
         with execution_lock(root):
@@ -516,9 +537,16 @@ def run_precision(directory, *, max_jobs=None):
         if completed_plan_now:
             # Exactly the executor that sealed the completed look loops once to
             # reconcile and publish its terminal assessment before applying max_jobs.
+            if pause_owner and max_jobs is not None and completed_now >= max_jobs:
+                with execution_lock(root):
+                    if _consume_pause(root, plan):
+                        return {**precision_status(root), "status": "paused"}
             continue
         if max_jobs is not None and completed_now >= max_jobs:
-            return {**precision_status(root), "status": "paused"}
+            if pause_owner:
+                with execution_lock(root):
+                    if _consume_pause(root, plan):
+                        return {**precision_status(root), "status": "paused"}
 
 
 def precision_status(directory):
