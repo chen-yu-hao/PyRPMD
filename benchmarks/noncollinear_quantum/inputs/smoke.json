@@ -1,0 +1,1 @@
+{"temperature_K":300,"beads":8,"trajectories":128,"dt_au":4,"tmax_au":160000,"launch_R_bohr":14,"exit_radius_bohr":16,"bmax_bohr":8,"hmc_cycles":400,"proposal_temperature_ratio":1,"seed":2026110801}
