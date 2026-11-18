@@ -480,8 +480,15 @@ def run_precision(directory, *, max_jobs=None):
                     continue
                 raise PrecisionLedgerError("Precision plan has no executable or recoverable job")
 
-        with job_execution_lock(root, planned["job_id"]):
-            data = _execute_job(root, saved, frozen, plan, planned, system)
+        if os.name == "nt":
+            # Windows runners serialize the short-lived Python rate jobs to
+            # avoid process-spawn and filesystem contention; the durable job
+            # claim still prevents a duplicate launch after interruption.
+            with execution_lock(root):
+                data = _execute_job(root, saved, frozen, plan, planned, system)
+        else:
+            with job_execution_lock(root, planned["job_id"]):
+                data = _execute_job(root, saved, frozen, plan, planned, system)
 
         completed_plan_now = False
         with execution_lock(root):
