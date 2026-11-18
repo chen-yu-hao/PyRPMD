@@ -115,7 +115,7 @@ python examples/subspace_correction/molecular_ts_to_cs.py \
 | `temperature_K`, `crossover_temperature_K`, `beads` | Target $T$, saddle crossover $T_c$, and matched bead count $P$ |
 | `saddle` | Refined 3D geometry (`bohr`), `rigid_modes_removed`, classical barrier (`Eh`), and TS/reactant frequencies ($\mathrm{cm}^{-1}$) |
 | `curvature_width_max`, `applied_dimension` | Peak $\kappa\rho$ along the MEP and selected subspace dimension (`1` or `2`) |
-| `validity` | Pre- and post-solve gate status (`path`, `bath`, `ribbon`, `grid`, `surface`, `solver`) |
+| `validity` | Pre- and post-solve gate status (`path`, `bath`, `truncation`, `ribbon`, `grid`, `surface`, `solver`) |
 | `instanton_anchor` | Full 9D instanton defect $\varepsilon_{\mathrm{SD}}(H)$ and per-dimension skeleton shifts $A_H - A_{S^0}$ |
 | `corrections.1d`, `corrections.2d_rph` | `unanchored_factor`, `anchored_factor`, `anchor_log_shift`, `log_standard_error`, complement `bead_factor_B_P`, and `effective_multiplier_C_over_B_P` ($C_S / B_P$) |
 | `applied_rate` | Optional `apply_subspace_correction` result when `--rpmd-rate` is supplied |

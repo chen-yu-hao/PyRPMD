@@ -114,7 +114,12 @@ def main():
     if args.checkpoint_dir is not None:
         options["checkpoint_dir"] = str(args.checkpoint_dir)
     implementation = _implementation_digest().hex()
-    revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    try:
+        revision = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True, stderr=subprocess.DEVNULL
+        ).strip()
+    except (OSError, subprocess.CalledProcessError):
+        revision = "unknown"
     started = time.perf_counter()
     results = subspace_corrections(cases, execution=options)
     elapsed = time.perf_counter() - started

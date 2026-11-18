@@ -303,7 +303,7 @@ def main(argv: list[str] | None = None) -> int:
         f"reactant={[round(float(w * HARTREE_TO_CM), 1) for w in reactant_real]}"
     )
     print(
-        f"Path & curvature: MEP points={len(report['path']['reactant_termination'] and report['curvature_width_path']['arc_length'])}, "
+        f"Path & curvature: MEP points={len(report['curvature_width_path']['arc_length'])}, "
         f"max(kappa*rho)={report['curvature_width_path']['maximum']:.3f} -> recommended {chosen_dim}D "
         f"({report['applied_dimension_reason']})"
     )

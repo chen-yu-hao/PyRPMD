@@ -154,9 +154,10 @@ pyrpmd subspace-correct benchmarks/h3_subspace/correct_200K.toml
   transverse mode (`0.08` $\mathrm{E_h}$ here) and size `quantum.dense_limit` from
   `solver_plans` in `runs/rate-with-subspace/subspace/status.json`.
 - **Inspecting full-run vs `--stage subspace` outputs:** `pyrpmd analyze runs/rate-with-subspace`
-  prints `results/summary.json` from the full `pyrpmd run` (including `rate_estimate_cm3_s`
-  and its `subspace_correction` summary). A subsequent `--stage subspace` recomputation never
-  mutates `summary.json` or `results/summary.json`; it prints the updated `subspace_correction`
+  reads `results/summary.json` from the full `pyrpmd run` and dynamically attaches any newer
+  postprocessing status and `quantum_corrected_rate` from `runs/rate-with-subspace/subspace/`.
+  A subsequent `--stage subspace` (or `pyrpmd subspace-correct`) recomputation never mutates
+  `summary.json` or `results/summary.json` on disk; it prints the updated `subspace_correction`
   JSON to stdout and writes authoritative postprocessing artifacts under
   `runs/rate-with-subspace/subspace/` (`status.json`, `subspace_pipeline.json`, `C_S_1d.json`,
   `C_S_2d.json`, and `rate_quantum_corrected.json`).
