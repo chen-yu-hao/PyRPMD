@@ -1,30 +1,51 @@
-# Subspace quantum correction of the 3D H + H2 (BKMP2) RPMD rate at 200 K:
+# Subspace quantum correction of the full-dimensional 3D/9D H + H2 (BKMP2) RPMD rate at 200 K:
 #   pyrpmd subspace-correct benchmarks/h3_subspace/correct_200K.toml
 # Source: rate_200K.inp (P = 128, output.centroid_path = true).
 
 [source]
 rate_run = "runs/h3-200K-P128-b20"
 
+[path]
+source = "mep"               # intrinsic reaction coordinate from the refined BKMP2 saddle
+step = 10.0                  # mass-weighted continuation step (bohr * sqrt(m_e))
+
 [subspace]
-dimension = "auto"
+dimension = "auto"           # computes 1D MEP and adds 2D RPH because kappa * rho ~= 0.84 > 0.5
 threshold = 0.5
-environment = "adiabatic"   # bend and H2 stretch: beta hbar omega >= 6 at 200 K
+environment = "adiabatic"    # bend and H2 stretch: beta * hbar * omega >= 6 at 200 K
+model_2d = "rph"             # unrolled reaction-path Hamiltonian on the MEP (or "plane")
 zero_point = "harmonic"      # alternatives: "rph" or normal-cut "dvr"
 
 [quantum]
-refinement = 3
+spacing_2d = [2.2, 2.2]      # ~10,273 retained DVR points (~19 GiB); use [2.0, 2.0] with dense_limit = 13000 (~28 GiB) for finer checks
+refinement = 3               # 3x finer B-spline grid for subspace RPMD on the same V_S
 truncation_kt = 30.0
-truncation_min = 0.10        # walls 0.10 Eh above the floor (collinear H+H2 at 200 K: ~1% from the 0.16 Eh limit)
+truncation_min = 0.10        # walls 0.10 Eh above the floor (>= 6 quanta of the H2 stretch at 200 K)
 threshold_margin = 1.0
 reference_kt = 0.3
 product_drop_kt = 15.0
-dense_limit = 11500         # 11165 retained points at 0.10 Eh (~10 GB with the lean dense route)
+dense_limit = 11500
 
 [rpmd]
+backend = "native"
 walkers = 32
 sweeps = 800
 trajectories = 1024
 seed = 17
+
+[validity]
+# BKMP2 has a weak degenerate van der Waals orientation anisotropy (<= 85i cm^-1)
+# in the long-range collinear entrance/exit channel (~3.0-3.8 bohr) and reaches
+# max |kappa| * sigma_n ~= 0.53 around the 120-degree mass-weighted turn.
+soft_mode_frequency = 4.5e-4
+max_curvature_width = 0.60
+
+[execution]
+backend = "process"
+cpus = "auto"
+blas_threads = 8
+memory_limit_mb = 24576      # raise to 32768 when using spacing_2d = [2.0, 2.0]
+resume = true
 
 [output]
 directory = "runs/h3-200K-P128-b20/subspace"

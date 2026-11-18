@@ -64,7 +64,12 @@ def make_cases(backend):
     length = float(_arc_length_spline(path)[2][-1])
     fine1 = project_path_subspace(potential, potential.gradient, path, [1., 1.], np.linspace(0., length, 321),
                                   rigid_body=False, reactant_reference=.2 * length)
-    coarse1 = replace(fine1, axes=(fine1.axes[0][::2],), values=fine1.values[::2])
+    coarse1 = replace(
+        fine1,
+        axes=(fine1.axes[0][::2],),
+        values=fine1.values[::2],
+        bare_values=None if fine1.bare_values is None else fine1.bare_values[::2],
+    )
     e0 = h2_ground_energy()
     eps = absorber(30. * np.sqrt(2. / (np.pi * beta)) / 35.)(coarse2.grid_points())
     rpmd = dict(windows=24, walkers=32, burn_in=40, sweeps=80, leapfrog_steps=8,
@@ -109,7 +114,12 @@ def main():
     if args.checkpoint_dir is not None:
         options["checkpoint_dir"] = str(args.checkpoint_dir)
     implementation = _implementation_digest().hex()
-    revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    try:
+        revision = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True, stderr=subprocess.DEVNULL
+        ).strip()
+    except (OSError, subprocess.CalledProcessError):
+        revision = "unknown"
     started = time.perf_counter()
     results = subspace_corrections(cases, execution=options)
     elapsed = time.perf_counter() - started

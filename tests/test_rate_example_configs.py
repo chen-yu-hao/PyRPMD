@@ -18,6 +18,7 @@ EXAMPLES = ROOT / "examples" / "rate"
 CASES = [
     ("minimal.inp", "umbrella", "ui"),
     ("research.inp", "umbrella", "ui"),
+    ("subspace.inp", "umbrella", "ui"),
     ("pmf_umbrella.inp", "umbrella", "ui"),
     ("pmf_umbrella_mbar.inp", "umbrella", "mbar"),
     ("pmf_metadynamics.inp", "metadynamics", "reweighted_histogram"),
@@ -29,6 +30,7 @@ CASES = [
     "path",
     [
         "examples/rate/research.inp",
+        "examples/rate/subspace.inp",
         "benchmarks/clhbr_subspace/rate.inp",
         "benchmarks/clhbr_subspace/rate_production.inp",
     ],

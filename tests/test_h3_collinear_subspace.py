@@ -25,6 +25,7 @@ def test_symmetric_coordinates_are_orthonormal():
 @pytest.mark.skipif(not LIBRARY.exists(), reason="build BKMP2 with benchmarks/h3/build_pes.py")
 def test_collinear_saddle_and_crossover_temperature():
     from collinear import Collinear, to_st
+    from parallel import make_cases
 
     potential = Collinear()
     ts = np.array([0.0, to_st(1.757, 1.757)[1]])
@@ -38,3 +39,36 @@ def test_collinear_saddle_and_crossover_temperature():
     e = np.array([1e-4, 0.0])
     fd = (potential(ts + [3.0, 2.0] + e) - potential(ts + [3.0, 2.0] - e)) / 2e-4
     assert g[0, 0] == pytest.approx(fd, rel=1e-5)
+
+    cases = make_cases("native")
+    assert cases["1d"]["model"].shape == (161,)
+    assert cases["1d"]["rpmd_model"].shape == (321,)
+    assert cases["2d"]["model"].shape == (111, 111)
+
+
+def test_h3_subspace_200k_configs_configure_rph_gates_and_parallel_execution():
+    from pyrpmd.analysis.subspace_execution import _options as execution_options
+    from pyrpmd.analysis.subspace_pipeline import _read_specification
+
+    bench_dir = ROOT / "benchmarks" / "h3_subspace"
+    spec_rph, base_rph = _read_specification(bench_dir / "correct_200K.toml")
+    assert base_rph == bench_dir.resolve()
+    assert spec_rph["path"]["source"] == "mep"
+    assert spec_rph["subspace"]["dimension"] == "auto"
+    assert spec_rph["subspace"]["model_2d"] == "rph"
+    assert spec_rph["quantum"]["truncation_min"] >= 0.10
+    assert spec_rph["validity"]["soft_mode_frequency"] >= 4.0e-4
+    assert spec_rph["validity"]["max_curvature_width"] >= 0.55
+    exec_rph = execution_options(spec_rph["execution"])
+    assert exec_rph["backend"] == "process"
+    assert exec_rph["memory_limit_mb"] >= 20000.0
+
+    spec_sct, base_sct = _read_specification(bench_dir / "correct_200K_curvature.toml")
+    assert base_sct == bench_dir.resolve()
+    assert spec_sct["path"]["source"] == "mep"
+    assert spec_sct["subspace"]["dimension"] == 1
+    assert spec_sct["subspace"]["curvature"] == "small"
+    assert spec_sct["validity"]["soft_mode_frequency"] >= 4.0e-4
+    exec_sct = execution_options(spec_sct["execution"])
+    assert exec_sct["backend"] == "process"
+    assert (bench_dir / "README.md").is_file()
