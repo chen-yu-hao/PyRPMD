@@ -167,7 +167,8 @@ pyrpmd subspace-correct benchmarks/h3_subspace/correct_200K.toml
 
 All dimensional numerical controls under `[rate.subspace_correction.*]` take bare atomic
 units (`bohr * sqrt(m_e)` for `step`, `spacing_1d`, `spacing_2d`, `padding` and
-`dvr_half_width`; `Eh` for `truncation_min` and `soft_mode_frequency`; `bohr` for
-`hessian_displacement`; `K` for `crossover_temperature`; unit strings are rejected). See
+`dvr_half_width`; `Eh` for `truncation_min` and `soft_mode_frequency`; `hbar / Eh` for
+`hmc_dt`, `md_dt` and `md_time`; `bohr` for `hessian_displacement`; `K` for
+`crossover_temperature`; unit strings are rejected). See
 the full user guide in [`docs/subspace-correction.md`](../../docs/subspace-correction.md)
 ([中文指南](../../docs/zh/subspace-correction.md)).

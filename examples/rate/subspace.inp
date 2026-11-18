@@ -143,7 +143,7 @@ truncation_kt = 30.0
 # At low T (200 K: 30 kT ~= 0.019 Eh), set truncation_min (hartree) to ~6 quanta
 # of the stiffest transverse stretch so energy-truncated DVR walls do not squeeze ZPE.
 truncation_min = 0.08
-product_drop_kt = 18.0
+product_drop_kt = 22.0
 dense_limit = 8000
 
 [rate.subspace_correction.rpmd]
@@ -154,4 +154,6 @@ walkers = 24
 burn_in = 100
 sweeps = 300
 trajectories = 384
+# 900 a.u. (~21.8 fs ~= 6.5 / omega_b) plateaus kappa(t) well inside the subspace grid.
+md_time = 900.0
 seed = 17

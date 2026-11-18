@@ -226,7 +226,8 @@ def main(argv: list[str] | None = None) -> int:
                 "refinement": 3,
                 "truncation_kt": 30.0,
                 "truncation_min": truncation_min,
-                "product_drop_kt": 18.0,
+                # Barrier is ~19 kT at 200 K; >20 kT places the product absorber in the flat asymptote.
+                "product_drop_kt": 22.0,
                 "dense_limit": 8000,
             },
             "rpmd": {
@@ -236,6 +237,9 @@ def main(argv: list[str] | None = None) -> int:
                 "burn_in": 100,
                 "sweeps": int(args.sweeps),
                 "trajectories": int(args.trajectories),
+                # 900 a.u. (~21.8 fs ~= 6.5 / omega_b) plateaus kappa(t) across the barrier
+                # before fast barrier-crossing trajectories reach the finite subspace box edges.
+                "md_time": 900.0,
                 "seed": int(args.seed),
             },
             "execution": {
