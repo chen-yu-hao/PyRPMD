@@ -854,6 +854,127 @@ def extend_run(directory, *, max_time=None, production_steps=None):
     return extend_drpmd(directory, max_time=max_time)
 
 
+def _attach_subspace_analysis(path: Path, result: dict) -> dict:
+    """Attach post-hoc subspace correction status and corrected rate without mutating saved summaries."""
+    def _load_dict(candidate: Path):
+        if not candidate.is_file():
+            return None, -1
+        try:
+            data = json.loads(candidate.read_text(encoding="utf-8"))
+            mtime = candidate.stat().st_mtime_ns
+        except (OSError, ValueError):
+            return None, -1
+        return (data, mtime) if isinstance(data, dict) else (None, -1)
+
+    status_path = path / "subspace" / "status.json"
+    pipeline_path = path / "subspace" / "subspace_pipeline.json"
+    status_data, status_mtime = _load_dict(status_path)
+    if status_data is not None and status_data.get("schema") != "pyrpmd.rate_subspace":
+        status_data, status_mtime = None, -1
+    pipeline_data, pipeline_mtime = _load_dict(pipeline_path)
+    if pipeline_data is not None and pipeline_data.get("schema") != "pyrpmd.subspace_pipeline":
+        pipeline_data, pipeline_mtime = None, -1
+
+    subspace_summary = None
+    subspace_mtime = -1
+    if status_data is not None and (pipeline_data is None or status_mtime >= pipeline_mtime):
+        subspace_summary = status_data
+        subspace_mtime = status_mtime
+    elif pipeline_data is not None:
+        subspace_mtime = pipeline_mtime
+        corrections = pipeline_data.get("corrections")
+        factors = ({str(d): c.get("factor") for d, c in corrections.items() if isinstance(c, dict)}
+                   if isinstance(corrections, dict) else {})
+        subspace_summary = {
+            "schema": "pyrpmd.subspace_pipeline",
+            "schema_version": pipeline_data.get("schema_version", 1),
+            "status": pipeline_data.get("status"),
+            "mode": pipeline_data.get("mode"),
+            "directory": str(pipeline_path.parent),
+            "validity": pipeline_data.get("validity"),
+            "dimensions_computed": pipeline_data.get("dimensions_computed", []),
+            "selected_dimension": pipeline_data.get("applied_dimension"),
+            "correction_factors": factors,
+            "solver_plans": pipeline_data.get("solver_plans", {}),
+            "solve_failures": pipeline_data.get("solve_failures", {}),
+            "warnings": pipeline_data.get("warnings", []),
+            "report": str(pipeline_path),
+        }
+        pipe_corr = pipeline_data.get("corrected_rate")
+        if isinstance(pipe_corr, dict):
+            unit = "s_inv" if pipe_corr.get("task") == "surface_rate" else "cm3_s"
+            subspace_summary.update({
+                "corrected_rate_file": str(pipeline_path.parent / "rate_quantum_corrected.json"),
+                f"corrected_rate_{unit}": pipe_corr.get(f"corrected_rate_{unit}"),
+                f"corrected_rate_estimate_{unit}": pipe_corr.get(f"corrected_rate_estimate_{unit}"),
+                f"corrected_rate_standard_error_{unit}": pipe_corr.get(f"corrected_rate_standard_error_{unit}"),
+            })
+
+    corrected_records = []
+    for candidate in (path / "subspace" / "rate_quantum_corrected.json", path / "rate_quantum_corrected.json"):
+        corr_data, corr_mtime = _load_dict(candidate)
+        if corr_data is not None and corr_data.get("schema") == "pyrpmd.rate_quantum_corrected":
+            corrected_records.append((candidate, corr_data, corr_mtime))
+
+    chosen_corrected = None
+    if corrected_records:
+        preferred = subspace_summary.get("corrected_rate_file") if isinstance(subspace_summary, dict) else None
+        if isinstance(subspace_summary, dict) and (
+            subspace_summary.get("status") != "complete" or subspace_summary.get("mode") == "factor_only"
+        ):
+            newer = [item for item in corrected_records if item[2] > subspace_mtime]
+            if newer:
+                chosen_corrected = max(newer, key=lambda item: item[2])
+        else:
+            if preferred:
+                for item in corrected_records:
+                    if item[0].resolve() == Path(preferred).resolve():
+                        chosen_corrected = item
+                        break
+            if chosen_corrected is None:
+                chosen_corrected = max(corrected_records, key=lambda item: item[2])
+
+    if subspace_summary is None and chosen_corrected is None:
+        return result
+
+    out = dict(result)
+    if chosen_corrected is not None:
+        corr_path, corr_data, _ = chosen_corrected
+        unit = "s_inv" if corr_data.get("task") == "surface_rate" else "cm3_s"
+        corr_obj = corr_data.get("correction") if isinstance(corr_data.get("correction"), dict) else {}
+        qc_summary = {
+            "file": str(corr_path),
+            "rate_unit": corr_data.get("rate_unit"),
+            "source_rate_publishable": corr_data.get("source_rate_publishable"),
+            f"rpmd_rate_estimate_{unit}": corr_data.get(f"rpmd_rate_estimate_{unit}"),
+            f"corrected_rate_{unit}": corr_data.get(f"corrected_rate_{unit}"),
+            f"corrected_rate_estimate_{unit}": corr_data.get(f"corrected_rate_estimate_{unit}"),
+            f"corrected_rate_standard_error_{unit}": corr_data.get(f"corrected_rate_standard_error_{unit}"),
+            "dimension": corr_obj.get("dimension"),
+            "correction_factor": corr_obj.get("factor"),
+            "log_standard_error": corr_obj.get("log_standard_error"),
+            "valid": corr_obj.get("valid"),
+            "approximation": corr_data.get("approximation"),
+        }
+        out["quantum_corrected_rate"] = qc_summary
+        if subspace_summary is None:
+            dim = corr_obj.get("dimension")
+            subspace_summary = {
+                "schema": "pyrpmd.rate_quantum_corrected",
+                "status": "complete",
+                "mode": "apply",
+                "selected_dimension": dim,
+                "correction_factors": {str(dim): corr_obj.get("factor")} if dim is not None else {},
+                "corrected_rate_file": str(corr_path),
+                f"corrected_rate_{unit}": corr_data.get(f"corrected_rate_{unit}"),
+                f"corrected_rate_estimate_{unit}": corr_data.get(f"corrected_rate_estimate_{unit}"),
+                f"corrected_rate_standard_error_{unit}": corr_data.get(f"corrected_rate_standard_error_{unit}"),
+            }
+    if subspace_summary is not None:
+        out["subspace_correction"] = subspace_summary
+    return out
+
+
 def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffusion=None):
     """Read results or reanalyze saved FES/transport data without new trajectories."""
     path = Path(directory).resolve()
@@ -880,7 +1001,7 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
 
             if (path / "fes.npz").is_file():
                 return FESResult.read(path, summary=result).summary()
-        return result
+        return _attach_subspace_analysis(path, result)
     if not (path / "input" / "resolved.json").is_file():
         raise InputError(
             f"No saved input in {path}; reanalysis needs the run directory written by "

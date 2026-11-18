@@ -192,3 +192,62 @@ def test_a_supplied_absorber_is_checked_on_the_dividing_surface_not_against_end_
     with pytest.raises(ValueError, match="between the absorbing regions"):
         exact_quantum_rate(model, beta, absorber=covering)
     assert axis[0] < 0.0 < axis[-1]
+
+
+def test_thermoneutral_shallow_vdw_product_well_passes_at_high_temperature_while_shoulder_well_fails():
+    """High-T thermoneutral exit with 15 kT > classical barrier accepts shallow asymptotic vdW well."""
+    kb = 3.166811563e-6
+    barrier_h = 0.01535
+    vdw_depth = 1.0e-4
+
+    def vdw_pot(q):
+        x, y = q
+        sech2 = 1.0 / np.cosh(x / 1.5) ** 2
+        vdw = -vdw_depth * np.exp(-((x - 7.5) / 2.2) ** 2)
+        return barrier_h * sech2 + vdw + 0.1 * y ** 2
+
+    def vdw_grad(q):
+        x, y = q
+        sech2 = 1.0 / np.cosh(x / 1.5) ** 2
+        dv = -2.0 * barrier_h / 1.5 * sech2 * np.tanh(x / 1.5)
+        dv += 2.0 * vdw_depth * (x - 7.5) / (2.2 ** 2) * np.exp(-((x - 7.5) / 2.2) ** 2)
+        return np.array([dv, 0.2 * y])
+
+    core = np.column_stack([np.linspace(-0.6, 0.6, 5), np.zeros(5)])
+    for temp_k, expected_accepted in ((200.0, "product_well"), (300.0, "product_well"), (400.0, "product_asymptote")):
+        beta = 1.0 / (kb * temp_k)
+        _, info = assemble_reaction_path(
+            core, vdw_pot, vdw_grad, [1.0, 1.0], step=0.4, rigid_body=False,
+            product_well_drop=15.0 / beta, product_asymptote_tolerance=0.3 / beta,
+        )
+        assert info["termini_accepted"], f"failed at {temp_k} K: {info['product_termination']}"
+        assert info["product_termination"]["accepted"] == expected_accepted
+        gates = validity_gates({"path_termination": {"reactant": info["reactant_termination"],
+                                                     "product": info["product_termination"]}})
+        assert gates["valid"]
+
+    # Negative case: a shallow dimple high on the product shoulder (above asymptote) must STILL be rejected!
+    def shoulder_pot(q):
+        x, y = q
+        base = barrier_h / np.cosh(x / 3.0) ** 2
+        dimple = -3e-3 * np.exp(-((x - 1.5) / 0.4) ** 2)
+        return base + dimple + 0.1 * y ** 2
+
+    def shoulder_grad(q):
+        x, y = q
+        sech2 = 1.0 / np.cosh(x / 3.0) ** 2
+        dv = -2.0 * barrier_h / 3.0 * sech2 * np.tanh(x / 3.0)
+        dv += 2.0 * 3e-3 * (x - 1.5) / (0.4 ** 2) * np.exp(-((x - 1.5) / 0.4) ** 2)
+        return np.array([dv, 0.2 * y])
+
+    beta_400 = 1.0 / (kb * 400.0)
+    _, bad_info = assemble_reaction_path(
+        core, shoulder_pot, shoulder_grad, [1.0, 1.0], step=0.25, rigid_body=False,
+        product_well_drop=15.0 / beta_400, product_asymptote_tolerance=0.3 / beta_400,
+    )
+    assert bad_info["product_termination"]["status"] == "minimum_reached"
+    assert not bad_info["product_termination"]["converged"]
+    assert "not committed" in bad_info["product_termination"]["reason"]
+    with pytest.raises(ValueError, match="product_asymptote_tolerance"):
+        assemble_reaction_path(core, vdw_pot, vdw_grad, [1.0, 1.0], step=0.4, rigid_body=False,
+                               product_well_drop=0.01, product_asymptote_tolerance=-1e-4)

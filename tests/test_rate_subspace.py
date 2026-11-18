@@ -165,6 +165,7 @@ def test_stage_routes_shared_pipeline_and_preserves_sources(tmp_path, monkeypatc
 
 def test_failure_is_recorded_without_losing_rate_and_explicit_stage_raises(tmp_path, monkeypatch):
     config, _, root = saved_run(tmp_path)
+    config["rate"]["subspace_correction"]["path"] = {"source": "centroid"}
     before = source_hashes(root)
     summary = json.loads((root / "summary.json").read_text())
     with pytest.warns(RuntimeWarning, match="uncorrected RPMD result is intact"):
@@ -519,6 +520,8 @@ def test_resolved_input_parallel_reaches_the_pipeline(tmp_path, monkeypatch):
     monkeypatch.setattr(stage, "_check_centroid_path", lambda *a: None)
     root = Path(config["output"]["directory"])
     _initialize_output(config, system, root)
+    write_json(root / "summary.json", {"task": "rate", "status": "pilot_requires_convergence",
+                                       "rate_cm3_s": None, "rate_estimate_cm3_s": 2e-12})
     calls = []
     monkeypatch.setattr("pyrpmd.analysis.subspace_pipeline.run_subspace_pipeline",
                         lambda specification, **k: calls.append(specification) or fake_report())
@@ -619,3 +622,168 @@ def test_molecular_ts_to_cs_example_script_runs_end_to_end(tmp_path):
     assert c1["anchor_log_shift"] > abs(c2["anchor_log_shift"]) + 0.03
     assert c1["bead_factor_B_P"] != pytest.approx(c2["bead_factor_B_P"], rel=1e-2)
     assert summary["applied_rate"]["corrected_rate"] > 2.5e-16
+
+
+def test_apply_mode_fails_fast_before_pipeline_when_run_lacks_rate_estimate(tmp_path, monkeypatch, capsys):
+    from pyrpmd.cli import main
+
+    config, system, root = saved_run(tmp_path, mode="apply")
+    monkeypatch.setattr(stage, "_check_centroid_path", lambda *a: pytest.fail("checked centroid before rate preflight"))
+    monkeypatch.setattr("pyrpmd.analysis.subspace_pipeline.run_subspace_pipeline",
+                        lambda *a, **k: pytest.fail("ran expensive subspace pipeline without rate estimate"))
+
+    # Case 1: summary.json exists, but rate_estimate_cm3_s is None.
+    no_est = {"task": "rate", "status": "incomplete", "rate_cm3_s": None, "rate_estimate_cm3_s": None}
+    write_json(root / "summary.json", no_est)
+    write_json(root / "results" / "summary.json", no_est)
+    before = source_hashes(root)
+    with pytest.raises(ValueError, match="no rate estimate to correct"):
+        stage.run_subspace_stage(config, system, root)
+    assert json.loads((root / "subspace" / "status.json").read_text())["status"] == "failed"
+    assert source_hashes(root) == before
+
+    # CLI subspace-correct also fails immediately before calling run_subspace_pipeline.
+    capsys.readouterr()
+    toml_path = tmp_path / "correct.toml"
+    toml_path.write_text(f'[source]\nrate_run = "{root.as_posix()}"\n', encoding="utf-8")
+    assert main(["subspace-correct", str(toml_path)]) != 0
+    assert "no rate estimate to correct" in capsys.readouterr().err
+
+    # Case 2: summary.json missing altogether.
+    (root / "summary.json").unlink()
+    with pytest.raises(ValueError, match="summary.json"):
+        stage.postprocess_rate_subspace(config, root, strict=True)
+
+    # Positive counterpart: mode = "factor_only" succeeds without any rate estimate.
+    config_fo = deepcopy(config)
+    config_fo["rate"]["subspace_correction"]["mode"] = "factor_only"
+    monkeypatch.setattr("pyrpmd.analysis.subspace_pipeline.run_subspace_pipeline",
+                        lambda spec, **kw: fake_report(apply=False))
+    status = stage.postprocess_rate_subspace(config_fo, root, strict=True)
+    assert status["status"] == "complete" and "corrected_rate_cm3_s" not in status
+
+
+def test_mep_source_runs_without_centroid_path_npz(tmp_path):
+    # Input normalization allows non-umbrella PMF when path.source == "mep" and mode == "factor_only".
+    cfg = {
+        "task": "rate",
+        "rate": {
+            "pmf": {"method": "external"},
+            "subspace_correction": {"enabled": True, "mode": "factor_only", "path": {"source": "mep"}},
+        },
+    }
+    opts = normalize_rate_subspace(cfg)
+    assert opts["mode"] == "factor_only" and opts["path"]["source"] == "mep"
+    assert not cfg.get("output", {}).get("centroid_path")
+
+    # End-to-end --stage subspace with path.source = "mep" and NO centroid_path.npz or rate_pmf.json!
+    job = JobSpec.from_file(EXAMPLES / "subspace.inp").with_overrides(output=tmp_path / "mep-ts-only")
+    job.data["rate"]["subspace_correction"] = {
+        "enabled": True,
+        "mode": "factor_only",
+        "dimension": 1,
+        "path": {"source": "mep", "step": 15.0},
+        "rpmd": {"windows": 8, "walkers": 4, "burn_in": 10, "sweeps": 20, "trajectories": 16, "seed": 3},
+    }
+    config, system = job.resolve()
+    root = Path(config["output"]["directory"])
+    _initialize_output(config, system, root)
+    assert not (root / "centroid_path.npz").exists()
+    assert not (root / "rate_pmf.json").exists()
+    res = run_resolved(config, system, stage="subspace")
+    assert res["subspace_correction"]["status"] == "complete"
+    assert res["subspace_correction"]["correction_factors"]["1"] > 0.0
+    assert (root / "subspace" / "C_S_1d.json").is_file()
+
+
+def test_analyze_run_surfaces_posthoc_subspace_results_without_mutating_summary(tmp_path, capsys):
+    from pyrpmd.analysis.subspace_correction import CORRECTED_SCHEMA
+    from pyrpmd.cli import main
+    from pyrpmd.runner import analyze_run
+
+    config, _, root = saved_run(tmp_path, mode="apply")
+    raw_summary_bytes = (root / "summary.json").read_bytes()
+    pub_summary_bytes = (root / "results" / "summary.json").read_bytes()
+
+    # Without subspace files, analyze_run returns the saved summary as-is.
+    plain = analyze_run(root)
+    assert "subspace_correction" not in plain and "quantum_corrected_rate" not in plain
+
+    # 1. Post-hoc --stage subspace (status.json + rate_quantum_corrected.json).
+    corrected_payload = {
+        "schema": CORRECTED_SCHEMA,
+        "schema_version": 1,
+        "task": "rate",
+        "rate_unit": "cm^3 molecule^-1 s^-1",
+        "source_directory": str(root),
+        "source_status": "pilot_requires_convergence",
+        "source_rate_publishable": False,
+        "rpmd_rate_estimate_cm3_s": 2e-12,
+        "rpmd_rate_standard_error_cm3_s": 1e-13,
+        "corrected_rate_estimate_cm3_s": 5.8e-12,
+        "corrected_rate_cm3_s": None,
+        "corrected_rate_standard_error_cm3_s": 3e-13,
+        "correction": {"dimension": 2, "factor": 2.9, "log_standard_error": 0.02, "valid": True},
+        "approximation": "multiplicative subspace defect",
+    }
+    corr_file = root / "subspace" / "rate_quantum_corrected.json"
+    write_json(corr_file, corrected_payload)
+    status_payload = {
+        "schema": "pyrpmd.rate_subspace",
+        "schema_version": 1,
+        "status": "complete",
+        "mode": "apply",
+        "directory": str(root / "subspace"),
+        "selected_dimension": 2,
+        "correction_factors": {"1": 1.1, "2": 2.9},
+        "corrected_rate_file": str(corr_file),
+        "corrected_rate_cm3_s": None,
+        "corrected_rate_estimate_cm3_s": 5.8e-12,
+        "corrected_rate_standard_error_cm3_s": 3e-13,
+    }
+    write_json(root / "subspace" / "status.json", status_payload)
+
+    assert main(["analyze", str(root)]) == 0
+    cli_out = json.loads(capsys.readouterr().out)
+    assert cli_out["subspace_correction"]["status"] == "complete"
+    assert cli_out["subspace_correction"]["selected_dimension"] == 2
+    assert cli_out["quantum_corrected_rate"]["corrected_rate_estimate_cm3_s"] == pytest.approx(5.8e-12)
+    assert cli_out["quantum_corrected_rate"]["correction_factor"] == pytest.approx(2.9)
+    assert (root / "summary.json").read_bytes() == raw_summary_bytes
+    assert (root / "results" / "summary.json").read_bytes() == pub_summary_bytes
+
+    # 2. If a later stage retry fails (or switches to factor_only), stale corrected_rate is not surfaced as active.
+    failed_status = {**status_payload, "status": "invalid_model"}
+    failed_status.pop("corrected_rate_file", None)
+    write_json(root / "subspace" / "status.json", failed_status)
+    after_fail = analyze_run(root)
+    assert after_fail["subspace_correction"]["status"] == "invalid_model"
+    assert "quantum_corrected_rate" not in after_fail
+
+    # 3. Standalone pyrpmd subspace-correct (subspace_pipeline.json + rate_quantum_corrected.json, no status.json).
+    (root / "subspace" / "status.json").unlink()
+    write_json(corr_file, corrected_payload)
+    write_json(root / "subspace" / "subspace_pipeline.json", {
+        "schema": "pyrpmd.subspace_pipeline",
+        "schema_version": 1,
+        "status": "complete",
+        "mode": "apply",
+        "dimensions_computed": [1, 2],
+        "applied_dimension": 2,
+        "corrections": {"1": {"factor": 1.1}, "2": {"factor": 2.9}},
+        "corrected_rate": {
+            "task": "rate",
+            "corrected_rate_cm3_s": None,
+            "corrected_rate_estimate_cm3_s": 5.8e-12,
+            "corrected_rate_standard_error_cm3_s": 3e-13,
+        },
+        "validity": {"valid": True},
+        "solver_plans": {},
+        "warnings": [],
+    })
+    standalone = analyze_run(root)
+    assert standalone["subspace_correction"]["status"] == "complete"
+    assert standalone["subspace_correction"]["selected_dimension"] == 2
+    assert standalone["quantum_corrected_rate"]["corrected_rate_estimate_cm3_s"] == pytest.approx(5.8e-12)
+    assert (root / "summary.json").read_bytes() == raw_summary_bytes
+    assert (root / "results" / "summary.json").read_bytes() == pub_summary_bytes

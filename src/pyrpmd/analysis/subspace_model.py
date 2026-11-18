@@ -545,6 +545,81 @@ def _check_environment(environment, beta, allowed):
     return None
 
 
+_MAX_RECORDED_UNSTABLE_POINTS = 64
+
+
+def _linear_bath_stability(
+    grids: Sequence[np.ndarray],
+    total_values: np.ndarray,
+    lowest_grid: np.ndarray,
+    unstable_modes_grid: np.ndarray,
+    dropped_grid: np.ndarray,
+    *,
+    soft_mode_frequency: float = SOFT_MODE_FREQUENCY,
+    active_mask: Any = None,
+    active_energy_ceiling: float | None = None,
+    unstable_bath: str = "record",
+) -> dict:
+    """Summarize complement-Hessian stability of a linear subspace over its active region."""
+    soft_curvature = float(soft_mode_frequency) ** 2
+    evaluated = np.isfinite(lowest_grid)
+    shape = total_values.shape
+    if active_mask is not None:
+        if callable(active_mask):
+            pts = np.stack(np.meshgrid(*grids, indexing="ij"), axis=-1).reshape(-1, len(grids))
+            mask = np.asarray(active_mask(pts), dtype=bool).reshape(shape)
+        else:
+            mask = np.asarray(active_mask, dtype=bool).reshape(shape)
+        evaluated = evaluated & mask
+    if active_energy_ceiling is not None:
+        evaluated = evaluated & (total_values <= float(active_energy_ceiling))
+    nonpos = evaluated & (lowest_grid <= 0.0)
+    sig_mask = evaluated & (lowest_grid < -soft_curvature)
+    soft_mask = nonpos & ~sig_mask
+    significant_count = int(np.count_nonzero(sig_mask))
+    soft_count = int(np.count_nonzero(soft_mask))
+    dropped_bound = float(dropped_grid[nonpos].max()) if np.any(nonpos) else 0.0
+    active_min = float(lowest_grid[evaluated].min()) if np.any(evaluated) else None
+    records = []
+    characters: set[str] = set()
+    if significant_count:
+        flat_sig = np.flatnonzero(sig_mask.ravel())
+        if np.any(unstable_modes_grid.ravel()[flat_sig] >= 2):
+            characters.add("ridge")
+        if np.any(unstable_modes_grid.ravel()[flat_sig] < 2):
+            characters.add("complement_unstable")
+        order = flat_sig[np.argsort(lowest_grid.ravel()[flat_sig])[:_MAX_RECORDED_UNSTABLE_POINTS]]
+        for flat_idx in order:
+            idx = np.unravel_index(int(flat_idx), shape)
+            lowest = float(lowest_grid[idx])
+            umodes = int(unstable_modes_grid[idx])
+            records.append({
+                "index": [int(i) for i in idx],
+                "coordinates": [float(grids[a][idx[a]]) for a in range(len(grids))],
+                "curvature": lowest,
+                "imaginary_frequency_cm": float(np.sqrt(-lowest) * _HARTREE_TO_WAVENUMBER),
+                "unstable_modes": umodes,
+                "character": "ridge" if umodes >= 2 else "complement_unstable",
+            })
+        if unstable_bath == "error":
+            worst = records[0]
+            raise ValueError(
+                f"unstable transverse Hessian at {significant_count} grid points "
+                f"(worst {worst['imaginary_frequency_cm']:.0f}i cm^-1)"
+            )
+    return {
+        "bath_stable": significant_count == 0,
+        "soft_mode_frequency": float(soft_mode_frequency),
+        "soft_complement_points": soft_count,
+        "significant_unstable_points": significant_count,
+        "significant_unstable": records,
+        "unstable_characters": sorted(characters),
+        "dropped_zero_point_bound": dropped_bound,
+        "active_complement_points": int(np.count_nonzero(evaluated)),
+        "active_minimum_complement_curvature": active_min,
+    }
+
+
 def project_linear_subspace(
     potential: Callable[[np.ndarray], float],
     gradient: Callable[[np.ndarray], np.ndarray],
@@ -565,7 +640,12 @@ def project_linear_subspace(
     skip_above: float | None = None,
     wall_energy: float | None = None,
     beta: float | None = None,
-) -> SubspaceModel:
+    soft_mode_frequency: float = SOFT_MODE_FREQUENCY,
+    unstable_bath: str = "record",
+    active_mask: Any = None,
+    active_energy_ceiling: float | None = None,
+    _return_bath_arrays: bool = False,
+) -> SubspaceModel | tuple[SubspaceModel, tuple[np.ndarray, np.ndarray, np.ndarray]]:
     """Project a full Cartesian Hamiltonian onto a 1-3D mass-weighted subspace.
 
     ``x(s, y) = reference + (U s + W y) / sqrt(m)`` with orthonormal
@@ -590,16 +670,24 @@ def project_linear_subspace(
     ``potential(x)`` and ``gradient(x)`` act on one Cartesian vector.  The
     complement Hessian is taken from ``hessian(x)`` when supplied, otherwise
     by central differences of the gradient.  Negative complement curvature is
-    recorded (its zero-point term is dropped), never hidden.  ``rigid_body``
-    (molecules in 3D Cartesian coordinates) removes the overall translations
-    and rotations from the complement, as in a reaction-path Hamiltonian;
-    without it, off-equilibrium rotations acquire spurious curvature.
-    ``skip_above`` keeps the frozen energy (no relaxation, no zero-point
-    term) at points whose frozen energy exceeds it -- regions a grid needs
-    only as walls.  ``wall_energy`` replaces failed or non-finite potential
-    evaluations (e.g. overlapping atoms outside the PES domain); the count is
-    recorded.
+    recorded (its zero-point term is dropped), never hidden, and sets
+    ``bath_stable = False`` when a complement mode in the active region falls
+    below ``-soft_mode_frequency**2`` (``unstable_bath='error'`` raises).
+    ``rigid_body`` (molecules in 3D Cartesian coordinates) removes the overall
+    translations and rotations from the complement, as in a reaction-path
+    Hamiltonian; without it, off-equilibrium rotations acquire spurious
+    curvature.  ``skip_above`` keeps the frozen energy (no relaxation, no
+    zero-point term) at points whose frozen energy exceeds it -- regions a
+    grid needs only as walls.  ``wall_energy`` replaces failed or non-finite
+    potential evaluations (e.g. overlapping atoms outside the PES domain); the
+    count is recorded.
     """
+    if unstable_bath not in ("record", "error"):
+        raise ValueError("unstable_bath must be 'record' or 'error'")
+    soft_mode_frequency = float(soft_mode_frequency)
+    if not np.isfinite(soft_mode_frequency) or soft_mode_frequency < 0:
+        raise ValueError("soft_mode_frequency must be finite and nonnegative")
+    soft_curvature = soft_mode_frequency ** 2
     beta = _check_environment(environment, beta, ("frozen", "relaxed", "adiabatic", "free_energy"))
     if not callable(potential) or not callable(gradient):
         raise TypeError("potential and gradient must be callable")
@@ -622,6 +710,9 @@ def project_linear_subspace(
     shape = tuple(len(a) for a in grids)
     values = np.empty(shape)
     zpe = np.zeros(shape)
+    lowest_grid = np.full(shape, np.nan)
+    unstable_modes_grid = np.zeros(shape, dtype=int)
+    dropped_grid = np.zeros(shape, dtype=float)
     y = np.zeros(w.shape[1])
     unstable, failures, min_curvature, max_gradient = 0, 0, np.inf, 0.0
 
@@ -652,16 +743,18 @@ def project_linear_subspace(
                     raise FloatingPointError("potential is not finite on the subspace grid")
                 values[index] = float(wall_energy)
                 walls += 1
+                y = np.zeros(w.shape[1])
                 continue
             if skip_above is not None and frozen > skip_above:
                 values[index] = frozen
                 skipped += 1
+                y = np.zeros(w.shape[1])
                 continue
         if environment != "frozen" and w.shape[1]:
             result = minimize(objective, y, args=(s,), jac=True, method="BFGS",
                               options={"gtol": relax_tolerance, "maxiter": int(max_iterations)})
             failures += int(not result.success)
-            y = result.x
+            y = result.x if result.success else np.zeros(w.shape[1])
             max_gradient = max(max_gradient, float(np.linalg.norm(result.jac)))
         x = cartesian(s, y if environment != "frozen" else np.zeros_like(y))
         values[index] = float(potential(x))
@@ -669,10 +762,17 @@ def project_linear_subspace(
             local = _vibrational_complement(x, u, sqrt_m, True) if rigid_body else w
             k = _complement_hessian(x, local, sqrt_m, gradient, hessian, finite_difference_step)
             zpe[index], lowest = _environment_term(k, environment, beta)
+            lowest_grid[index] = lowest
+            if lowest <= 0.0:
+                eigs = np.linalg.eigvalsh(k)
+                neg = eigs[eigs < 0.0]
+                dropped_grid[index] = 0.5 * float(np.sum(np.sqrt(-neg)))
+                unstable_modes_grid[index] = int(np.count_nonzero(neg < -soft_curvature))
             min_curvature = min(min_curvature, lowest)
             unstable += int(lowest < 0)
     if not np.isfinite(values).all():
         raise FloatingPointError("projected potential is not finite")
+    total_values = values + zpe
     info = {
         "kind": "linear_projection",
         "environment": environment,
@@ -689,9 +789,31 @@ def project_linear_subspace(
         "zero_point_range": [float(zpe.min()), float(zpe.max())],
         "beta": beta,
     }
+    if environment in ("adiabatic", "free_energy"):
+        if w.shape[1]:
+            info.update(_linear_bath_stability(
+                grids, total_values, lowest_grid, unstable_modes_grid, dropped_grid,
+                soft_mode_frequency=soft_mode_frequency, active_mask=active_mask,
+                active_energy_ceiling=active_energy_ceiling, unstable_bath=unstable_bath,
+            ))
+        else:
+            info.update({
+                "bath_stable": True,
+                "soft_mode_frequency": float(soft_mode_frequency),
+                "soft_complement_points": 0,
+                "significant_unstable_points": 0,
+                "significant_unstable": [],
+                "unstable_characters": [],
+                "dropped_zero_point_bound": 0.0,
+                "active_complement_points": int(total_values.size - skipped - walls),
+                "active_minimum_complement_curvature": None,
+            })
     bare = values if environment in ("adiabatic", "free_energy") else None
-    return SubspaceModel(grids, values + zpe, np.ones(d), dividing_surface, reactant,
-                         reactant_reference, info, bare_values=bare)
+    model = SubspaceModel(grids, total_values, np.ones(d), dividing_surface, reactant,
+                          reactant_reference, info, bare_values=bare)
+    if _return_bath_arrays:
+        return model, (lowest_grid, unstable_modes_grid, dropped_grid)
+    return model
 
 
 def _arc_length_spline(path_mass_weighted: np.ndarray, samples: int = 4001):
@@ -1555,6 +1677,7 @@ def assemble_reaction_path(
     asymptote_tolerance: float = 1e-6,
     patience: int = 50,
     product_well_drop: float | None = None,
+    product_asymptote_tolerance: float | None = None,
     reactant_coordinate: Callable[[np.ndarray], tuple[float, np.ndarray]] | None = None,
     reactant_target: float = 0.0,
 ) -> tuple[np.ndarray, dict]:
@@ -1573,10 +1696,10 @@ def assemble_reaction_path(
     * an ``asymptote_converged`` end is accepted on either side;
     * a product continuation that stops in a minimum (``minimum_reached``)
       is accepted as a product well when the minimum lies at least
-      ``product_well_drop`` (energy) below the highest energy on the path.
-      The correction only needs the products to be committed: they are
-      absorbed once the path has dropped that far below its maximum, so a
-      deep post-reaction complex is as good an end as the separated products;
+      ``product_well_drop`` (energy) below the highest energy on the path, or
+      as ``product_asymptote`` when ``product_asymptote_tolerance`` is given
+      and the minimum is a shallow asymptotic van der Waals exit well whose
+      approach has already settled within that tolerance;
     * a reactant continuation that stops in a minimum is never accepted.  It
       is a bound pre-reaction complex, and the rates are normalized per unit
       length on a slice of the *free* reactant channel, which lies beyond it.
@@ -1595,6 +1718,10 @@ def assemble_reaction_path(
         raise ValueError("a core path needs at least two points")
     if product_well_drop is not None and not (np.isfinite(product_well_drop) and product_well_drop >= 0):
         raise ValueError("product_well_drop must be finite and nonnegative, or None")
+    if product_asymptote_tolerance is not None and not (
+        np.isfinite(product_asymptote_tolerance) and product_asymptote_tolerance >= 0
+    ):
+        raise ValueError("product_asymptote_tolerance must be finite and nonnegative, or None")
     sqrt_m = np.sqrt(_positive_vector(masses, points.shape[1], "masses"))
     mw = points * sqrt_m
     options = dict(step=step, max_steps=max_steps, rigid_body=rigid_body, patience=patience,
@@ -1625,8 +1752,33 @@ def assemble_reaction_path(
             end["required_drop"] = float(product_well_drop)
         else:
             end["required_drop"] = float(product_well_drop)
-            end["reason"] = (f"product well only {end['drop_below_top']:.3g} below the barrier top "
-                             f"(needs {product_well_drop:.3g}): not committed")
+            settled_asymptote = False
+            if product_asymptote_tolerance is not None:
+                tol = float(product_asymptote_tolerance)
+                path_energies = np.array([float(potential(p)) for p in path], dtype=float)
+                path_mw = path * sqrt_m[None, :]
+                path_arc = np.r_[0.0, np.cumsum(np.linalg.norm(np.diff(path_mw, axis=0), axis=1))]
+                k_top = int(np.argmax(path_energies))
+                tail_span = max(2.0 * float(step), 1e-12)
+                arc_past_top = float(path_arc[-1] - path_arc[k_top])
+                if arc_past_top >= tail_span:
+                    k_tail = max(k_top, int(np.searchsorted(path_arc, path_arc[-1] - tail_span * (1.0 + 1e-9))))
+                    approach_range = float(np.ptp(path_energies[k_tail:]))
+                else:
+                    approach_range = float("inf")
+                end["asymptote_reference_tolerance"] = tol
+                end["approach_energy_range"] = None if not np.isfinite(approach_range) else approach_range
+                reactant_floor = float(reactant["end_energy"])
+                committed_depth = (
+                    end["end_energy"] <= reactant_floor + tol
+                    or end["drop_below_top"] >= 0.5 * max(top - reactant_floor, 0.0)
+                )
+                settled_asymptote = bool(end["drop_below_top"] > tol and approach_range <= tol and committed_depth)
+            if settled_asymptote:
+                end["converged"], end["accepted"] = True, "product_asymptote"
+            else:
+                end["reason"] = (f"product well only {end['drop_below_top']:.3g} below the barrier top "
+                                 f"(needs {product_well_drop:.3g}): not committed")
     accepted = bool(reactant["converged"] and product["converged"])
     info = {
         "core_points": int(len(points)),
@@ -1642,6 +1794,9 @@ def assemble_reaction_path(
         "termini_accepted": accepted,
         "asymptotes_converged": accepted,
         "product_well_drop": None if product_well_drop is None else float(product_well_drop),
+        "product_asymptote_tolerance": (
+            None if product_asymptote_tolerance is None else float(product_asymptote_tolerance)
+        ),
         "reactant_target": float(reactant_target) if reactant_coordinate is not None else None,
     }
     return path, info

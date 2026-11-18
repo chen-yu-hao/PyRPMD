@@ -64,6 +64,12 @@ def _source_identity(root, options):
     return pipeline_identity(root, {k: v for k, v in options.items() if k != "execution"})
 
 
+def _check_rate_estimate(root):
+    from ..analysis.subspace_correction import check_correctable_rate_run
+
+    check_correctable_rate_run(root)
+
+
 def _check_centroid_path(root, config):
     from ..analysis.centroid_path import mean_path_from_rate_run
 
@@ -155,7 +161,11 @@ def postprocess_rate_subspace(config, directory, *, strict=False):
     try:
         if (root / "results" / "extensions.json").exists():
             raise InputError("Subspace postprocessing of rate-extension generations is not supported by this stage")
-        _check_centroid_path(root, config)
+        if options["mode"] == "apply":
+            _check_rate_estimate(root)
+        source = str(options["path"].get("source", "mep")).lower()
+        if source != "mep" or (root / "centroid_path.npz").is_file():
+            _check_centroid_path(root, config)
         identity = _source_identity(root, options)
         specification = {
             "source": {"rate_run": str(root)},

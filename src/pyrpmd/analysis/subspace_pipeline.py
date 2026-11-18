@@ -40,8 +40,8 @@ from .centroid_path import mean_path_from_rate_run, rigid_body_modes
 from .subspace_correction import (CORRECTED_SCHEMA, SubspaceCorrection, correct_rate_run, full_instanton_defect,
                                   instanton_anchor, nested_subspace_sensitivity, subspace_correction, validity_gates,
                                   validity_policy)
-from .subspace_model import (SubspaceModel, _vibrational_complement, assemble_reaction_path, path_curvature,
-                             project_linear_subspace, project_path_subspace, relaxed_path)
+from .subspace_model import (SubspaceModel, _linear_bath_stability, _vibrational_complement, assemble_reaction_path,
+                             path_curvature, project_linear_subspace, project_path_subspace, relaxed_path)
 from .subspace_paths import rigid_modes
 from .subspace_quantum import _json_safe, quantum_solver_plan, sinc_dvr_kinetic
 
@@ -86,7 +86,8 @@ DEFAULTS = {
     # on_invalid = "stop": a model whose path or bath gate fails is not solved;
     # "diagnose": solve it anyway and keep the component rates (never applied).
     "validity": {"unconverged_path": "reject", "unstable_bath": "reject", "outside_grid": "reject",
-                 "max_outside_fraction": 0.01, "soft_mode_frequency": 2.3e-4, "on_invalid": "stop"},
+                 "max_outside_fraction": 0.01, "tight_truncation": "reject", "min_truncation_quanta": 2.5,
+                 "soft_mode_frequency": 2.3e-4, "on_invalid": "stop"},
     "quantum": {"spacing_1d": None, "spacing_2d": None, "refinement": 3, "absorber_fraction": 0.2,
                 "threshold_margin": 1.0, "truncation_kt": 30.0, "truncation_min": 0.0, "padding": None,
                 "dense_limit": 8000,
@@ -185,6 +186,12 @@ def load_rate_run(directory) -> RateRun:
     system = prepared_system(system, preparation)
     reaction = dict(config.get("reaction", {}))
     reaction.update(preparation.get("reaction", {}))
+    if "fragments" not in reaction and "reactant_fragments" in reaction:
+        reaction["fragments"] = reaction["reactant_fragments"]
+    if isinstance(reaction.get("rinf"), str):
+        from ..units import parse_quantity
+
+        reaction["rinf"] = parse_quantity(reaction["rinf"], "length")
     for key in ("fragments", "forming_bonds", "breaking_bonds"):
         if key not in reaction:
             raise ValueError(f"the rate run does not record reaction.{key}")
@@ -553,12 +560,14 @@ def _assemble(run, core, options, sampled):
     # out along decreasing xi, to the rate's own reactant reference xi = 0
     # (fragments R_inf apart) unless path.reactant_xi says otherwise.
     drop_kt = options.get("product_drop_kt")
+    ref_kt = float(options.get("reference_kt", 0.3))
     path, info = assemble_reaction_path(
         core, run.energy, run.gradient, run.cartesian_masses, step=float(options.get("step", 10.0)),
         max_steps=None if options.get("max_steps") is None else int(options["max_steps"]), rigid_body=_rigid(run),
         asymptote_tolerance=float(options.get("asymptote_tolerance", 1e-6)),
         patience=int(options.get("asymptote_patience", 50)),
         product_well_drop=None if drop_kt is None else float(drop_kt) / run.beta,
+        product_asymptote_tolerance=None if drop_kt is None else ref_kt / run.beta,
         reactant_coordinate=lambda x: run.xi_value_gradient(x),
         reactant_target=float(options.get("reactant_xi", 0.0)),
     )
@@ -1001,16 +1010,38 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
     fine = spacing / refinement
     counts = [int(np.ceil((hi[i] - lo[i]) / spacing[i])) * refinement + 1 for i in range(2)]
     axes = [lo[i] + fine[i] * np.arange(counts[i]) for i in range(2)]
-    skip = (floor_guess + 2.0 * _truncation_offset(options, run.beta) + 0.05)
+    h_step = _hessian_step(options, masses)
+
+    def _in_plane_normal_frequency(k_idx):
+        t = plane[min(k_idx + 1, len(arc) - 1)] - plane[max(k_idx - 1, 0)]
+        t_norm = float(np.linalg.norm(t))
+        if t_norm <= 0.0:
+            return 0.0
+        n = np.array([-t[1], t[0]]) / t_norm
+        v = n[0] * e0 + n[1] * e1
+        dx = h_step * v / sqrt_m
+        curv = float(v @ ((run.gradient(path[k_idx] + dx) - run.gradient(path[k_idx] - dx)) / (2.0 * h_step) / sqrt_m))
+        return float(np.sqrt(max(curv, 0.0)))
+
+    omega_ref = _in_plane_normal_frequency(k_ref)
+    omega_div = _in_plane_normal_frequency(k_ts)
+    soft_freq = float(validity.get("soft_mode_frequency", 2.3e-4))
+    skip = (floor_guess + max(2.0 * _truncation_offset(options, run.beta), 6.0 * max(omega_ref, omega_div)) + 0.05)
     environment = options.get("environment", "adiabatic")
-    fine_model = project_linear_subspace(run.energy, run.gradient, ts, masses, np.column_stack([e0, e1]), axes,
-                                         environment=environment, dividing_surface=0.0, rigid_body=_rigid(run),
-                                         skip_above=skip, wall_energy=skip + 1.0,
-                                         finite_difference_step=_hessian_step(options, masses),
-                                         beta=run.beta if environment == "free_energy" else None)
+    fine_model, bath_arrays = project_linear_subspace(
+        run.energy, run.gradient, ts, masses, np.column_stack([e0, e1]), axes,
+        environment=environment, dividing_surface=0.0, rigid_body=_rigid(run),
+        skip_above=skip, wall_energy=skip + 1.0,
+        finite_difference_step=h_step,
+        beta=run.beta if environment == "free_energy" else None,
+        soft_mode_frequency=soft_freq,
+        _return_bath_arrays=True,
+    )
     reference_point = np.array([np.interp(reference_arc, arc, plane[:, 0]), np.interp(reference_arc, arc, plane[:, 1])])
     reference_point[0] = _grid_reference(fine_model.axes[0][::refinement], reference_point[0])
-    provenance = dict(fine_model.provenance, plane_basis=[e0.tolist(), e1.tolist()], refinement=refinement, model_2d="plane",
+    provenance = dict(fine_model.provenance, plane_basis=[e0.tolist(), e1.tolist()], refinement=refinement,
+                      model_2d="plane", soft_mode_frequency=soft_freq,
+                      transverse_frequencies={"reference": omega_ref, "dividing_surface": omega_div},
                       **_model_provenance(path_info, validity))
     rpmd_model = type(fine_model)(fine_model.axes, fine_model.values, fine_model.masses, 0.0, "asymptotic",
                                   float(reference_point[0]), provenance,
@@ -1024,7 +1055,7 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
     width_lo, width_hi = absorb_lo - box_lo, box_hi - absorb_hi
     strength = 30.0 * np.sqrt(2.0 / run.beta)
 
-    def absorber(points):
+    def _projected_arc(points):
         _, index = tree.query(points)
         s = arc[index].copy()
         # Beyond the path ends the arc length continues along the end directions
@@ -1034,6 +1065,10 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
         first, last = index == 0, index == len(arc) - 1
         s[first] = arc[0] - np.maximum((points[first] - plane[0]) @ out_start, 0.0)
         s[last] = arc[-1] + np.maximum((points[last] - plane[-1]) @ out_end, 0.0)
+        return s
+
+    def absorber(points):
+        s = _projected_arc(points)
         eps = np.zeros(len(points))
         left = (s < absorb_lo) & (points[:, 0] < -float(spacing[0]))
         right = (s > absorb_hi) & (points[:, 0] > float(spacing[0]))
@@ -1054,6 +1089,17 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
         thresholds.append(_in_plane_threshold(rpmd_model, center, normal))
     floor = max(thresholds) - float(options["threshold_margin"]) / run.beta
     truncation = floor + _truncation_offset(options, run.beta)
+    if environment in ("adiabatic", "free_energy") and fine_model.provenance.get("complement_dimension", 0) > 0:
+        fine_pts = fine_model.grid_points().reshape(-1, 2)
+        s_fine = _projected_arc(fine_pts).reshape(fine_model.shape)
+        in_channel = (s_fine >= reference_arc) & (s_fine <= absorb_hi)
+        active_bath = _linear_bath_stability(
+            fine_model.axes, fine_model.values, *bath_arrays,
+            soft_mode_frequency=soft_freq, active_mask=in_channel, active_energy_ceiling=truncation,
+        )
+        provenance.update(active_bath)
+        rpmd_model.provenance.update(active_bath)
+        model.provenance.update(active_bath)
     quantum = {"absorber": absorber, "normalization": "slice", "energy_floor": floor,
                "truncation_energy": truncation, "dense_limit": int(options["dense_limit"])}
     retained = int(np.sum(model.values <= truncation))
@@ -1064,7 +1110,8 @@ def plane_model(run: RateRun, path, direction, options: Mapping[str, Any]):
             "absorber_arc": [float(absorb_lo), float(absorb_hi)], "box_arc": [float(box_lo), float(box_hi)],
             "reference_arc": reference_arc, "reactant_reference": float(reference_point[0]),
             "channel_thresholds": thresholds, "energy_floor": floor, "truncation_energy": truncation,
-            "product_absorber": product_absorber}
+            "product_absorber": product_absorber,
+            "model_construction": {k: v for k, v in model.provenance.items() if k != "significant_unstable"}}
     return model, quantum, info, rpmd_model
 
 
@@ -1325,7 +1372,9 @@ def rph_model(run: RateRun, path, options: Mapping[str, Any]):
     surface_point, _, _ = development.point(top_arc)
     reference_point[0, 0] = _grid_reference(axes[0][::refinement], reference_point[0, 0])
     floor_guess = float(max(energies[k_ref], energies[-1]))
-    skip = floor_guess + 2.0 * _truncation_offset(options, beta) + 0.05
+    omega_ref = float(np.sqrt(max(float(np.interp(reference_arc, bath_arcs, bath["normal_curvature"])), 0.0)))
+    omega_div = float(np.sqrt(max(float(np.interp(top_arc, bath_arcs, bath["normal_curvature"])), 0.0)))
+    skip = floor_guess + max(2.0 * _truncation_offset(options, beta), 6.0 * max(omega_ref, omega_div)) + 0.05
     values, bare = project_rph_values(run.energy, development, axes, bath, arc_range=(box_lo, box_hi),
                                       half_width=half_width, wall_energy=skip + 1.0, return_bare=True,
                                       batch_potential=_run_batch_energy(run))
@@ -1335,6 +1384,8 @@ def rph_model(run: RateRun, path, options: Mapping[str, Any]):
                       unstable_characters=bath["unstable_characters"],
                       minimum_complement_curvature=bath["minimum_complement_curvature"],
                       soft_complement_points=bath["soft_complement_points"],
+                      soft_mode_frequency=soft_freq,
+                      transverse_frequencies={"reference": omega_ref, "dividing_surface": omega_div},
                       captured_curvature=development.captured_curvature, ribbon_fold=ribbon_fold,
                       **_model_provenance(path_info, validity))
     rpmd_model = SubspaceModel(tuple(axes), values, (1.0, 1.0), float(surface_point[0, 0]), "asymptotic",
@@ -1463,7 +1514,8 @@ def _build_cases(run, out_dir, options, base, reuse_key):
 
     out_dir.mkdir(parents=True, exist_ok=True)
     mean, mask, path, path_info = build_path(
-        run, dict(options["path"], product_drop_kt=options["quantum"].get("product_drop_kt", 15.0)))
+        run, dict(options["path"], product_drop_kt=options["quantum"].get("product_drop_kt", 15.0),
+                  reference_kt=options["quantum"].get("reference_kt", 0.3)))
     np.save(out_dir / "path.npy", path)
     threshold = float(options["subspace"]["threshold"])
     sampled_cw = None
@@ -1495,15 +1547,15 @@ def _build_cases(run, out_dir, options, base, reuse_key):
         budget = execution_options(options["execution"])["memory_limit_mb"]
 
     def admit(dimension, case, info):
-        """Gate a model on what is known before any rate is solved (path, bath, solver capacity).
+        """Gate a model on what is known before any rate is solved (path, bath, truncation, solver capacity).
 
         A model whose solves cannot run (route or memory) is refused here,
         with its plan, also under ``on_invalid = "diagnose"``: solving it
         would only fail later.
         """
-        gates = validity_gates(case["model"].provenance)
         plan = _solver_plan(dimension, case, budget)
         info["solver_plan"] = plan
+        gates = validity_gates(case["model"].provenance, quantum_diagnostics=plan)
         if not plan["feasible"]:
             capacity[dimension] = plan
             gates = _with_solver_gate(gates, plan)
@@ -1623,6 +1675,15 @@ def _solver_plan(dimension, case, memory_limit_mb=None):
     if not plan["feasible"]:
         recommendations.append(f"or shrink the {dimension}D grid with {shrink}, then check that C_S is "
                                "converged with respect to it (truncation_margin, box and spacing)")
+    tc = plan.get("truncation_confinement")
+    if isinstance(tc, Mapping) and tc.get("truncation_quanta") is not None:
+        if float(tc["truncation_quanta"]) < float(tc["min_truncation_quanta"]):
+            recommendations.append(
+                f"set quantum.truncation_min = {tc['recommended_truncation_min']:.3g} "
+                f"(at least {tc['required_truncation_min']:.3g}) and quantum.dense_limit = "
+                f"{tc['recommended_dense_limit']} (about {tc['recommended_dense_memory_mb'] / 1024:.1f} GiB) "
+                "to avoid transverse wall confinement"
+            )
     plan["recommendations"] = recommendations
     return plan
 
@@ -1632,7 +1693,7 @@ def _with_solver_gate(gates, plan):
     reason = f"solver capacity: {plan['reason']}"
     gate = {"gate": "solver", "passed": False, "policy": "reject", "overridden": False,
             "reason": reason, "detail": plan}
-    return dict(gates, valid=False, failures=list(gates.get("failures", [])) + [reason],
+    return dict(gates, valid=False, failures=[reason] + list(gates.get("failures", [])),
                 gates=list(gates.get("gates", [])) + [gate])
 
 
@@ -1747,12 +1808,24 @@ def _finish_pipeline(state, computed, apply):
     # others keep their record (and component rates) but decide nothing.
     usable = {d: c for d, c in corrections.items() if c.valid}
     sensitivity = nested_subspace_sensitivity(list(usable.values())) if len(usable) > 1 else None
+    gates_2d = (rejected.get(2) or (corrections[2].validity if 2 in corrections else {})).get("gates", [])
+    truncation_blocked_2d = (
+        options["subspace"].get("dimension") == "auto"
+        and verdict == 2
+        and 2 not in usable
+        and 2 not in capacity
+        and any(g.get("gate") == "truncation" and not g.get("passed") and not g.get("overridden") for g in gates_2d)
+    )
     if not usable:
         chosen, reason = None, "no subspace model passed the validity gates"
         if capacity:
             reason = "no subspace model passed; the solver plan refused " + ", ".join(f"{d}D" for d in sorted(capacity))
         elif solve_failures:
             reason = "no subspace model passed; solving failed for " + ", ".join(f"{d}D" for d in sorted(solve_failures))
+    elif truncation_blocked_2d:
+        chosen = None
+        reason = ("curvature x width requires a 2D subspace, and the 2D model failed the truncation gate "
+                  "(raise quantum.truncation_min and quantum.dense_limit)")
     elif sensitivity is None:
         chosen = max(usable)
         attempted = len(corrections) + len(rejected) + len(solve_failures)
