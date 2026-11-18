@@ -1,0 +1,15 @@
+{
+  "python": "3.13.5",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "pytest": "9.0.2",
+  "base_commit": "ffa14f247e453e9626b2e3fb3c288da0ca753d2e",
+  "native_package_available": false,
+  "native_PMF_recrossing_executed": false,
+  "tests_passed": 45,
+  "tests_skipped": 1,
+  "compileall_passed": true,
+  "remote_PR_created": false,
+  "remote_CI_executed": false,
+  "physical_converged": false
+}
