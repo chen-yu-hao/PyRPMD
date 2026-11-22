@@ -252,3 +252,131 @@ def test_backend_source_diabatizes_a_toy_avoided_crossing_with_phase_flips(tmp_p
     frame = np.linalg.eigh(exact[0] - common[0] * np.eye(2))[1]  # the backend's states at the anchor
     recovered = propagation_diabatization(line.energies, line.overlaps).diabatic
     assert np.max(np.abs(recovered - np.einsum("ia,nij,jb->nab", frame, exact, frame))) < 1e-12
+
+
+class CrossingCIDPEM:
+    """CrossingCI2D as a one-atom Cartesian DPEM (x, y as above, z a spectator mode)."""
+
+    nstates, natoms = 2, 1
+    metadata = {"provider": "test_dpem", "nstates": 2, "natoms": 1, "thread_safety": "reentrant"}
+
+    def __init__(self, base=CrossingCI2D(), omega_z=1200.0 * CM):
+        self.base, self.omega_z = base, omega_z
+
+    def evaluate(self, q):
+        from pyrpmd.nonadiabatic import DiabaticResult
+
+        q = np.asarray(q, dtype=float)
+        x, y, z = q[:, 0, 0], q[:, 0, 1], q[:, 0, 2]
+        b = self.base
+        matrix = b.diabatic(q[:, 0, :2]) + (0.5 * self.omega_z**2 * z**2)[:, None, None] * np.eye(2)
+        rise = np.tanh(x / b.width)
+        envelope = np.exp(-((x / b.c) ** 2))
+        gradients = np.zeros((len(q), 2, 2, 1, 3))
+        slope = 0.5 * b.D * (1 - rise**2) / b.width
+        gradients[:, 0, 0, 0, 0], gradients[:, 1, 1, 0, 0] = slope, -slope
+        for i in range(2):
+            gradients[:, i, i, 0, 1] = b.omega**2 * y
+            gradients[:, i, i, 0, 2] = self.omega_z**2 * z
+        dx = b.lam * (y - b.y_c) * envelope * (-2.0 * x / b.c**2)
+        dy = b.lam * envelope
+        for i, j in ((0, 1), (1, 0)):
+            gradients[:, i, j, 0, 0], gradients[:, i, j, 0, 1] = dx, dy
+        return DiabaticResult(matrix, gradients)
+
+
+class Adiabat:
+    """Lowest adiabat of a one-atom DPEM through the diabatic_adiabat provider, on flat coordinates."""
+
+    dimension = 3
+
+    def __init__(self, dpem):
+        from pyrpmd.potentials.diabatic import DiabaticAdiabatPotential
+
+        self.pes = DiabaticAdiabatPotential(dpem)
+
+    def energy(self, x):
+        return float(self.pes.evaluate(np.asarray(x, dtype=float).reshape(1, 1, 3)).energy[0])
+
+    def gradient(self, x):
+        return -self.pes.evaluate(np.asarray(x, dtype=float).reshape(1, 1, 3)).forces.ravel()
+
+
+def test_diabatic_adiabat_provider_on_the_published_nah2_dpem():
+    from pyrpmd.potentials import make_potential
+    from pyrpmd.potentials.base import check_potential
+    from pyrpmd.potentials.nah2_leps import NaH2LEPS5G
+
+    q = np.array([[[0.1, 0.2, 4.0], [0.0, 0.3, -0.7], [0.05, 0.0, 0.75]],
+                  [[0.0, 0.1, 3.0], [0.1, 0.0, -0.8], [0.0, 0.2, 0.7]]])
+    matrices = NaH2LEPS5G().evaluate(q).matrix
+    for state in (0, 1):
+        pes = make_potential({"provider": "diabatic_adiabat", "diabatic": {"model": "nah2_leps_5g_1992"},
+                              "state": state}, {"symbols": ["Na", "H", "H"]})
+        assert np.allclose(pes.evaluate(q).energy, np.linalg.eigvalsh(matrices)[:, state], rtol=0, atol=1e-14)
+        assert check_potential(pes, q, 1e-5)["max_absolute_force_error"] < 1e-8
+        assert pes.metadata["diabatic"]["provider"] == "molecular_diabatic"
+    from pyrpmd.potentials.base import PotentialError
+
+    with pytest.raises(PotentialError, match="states"):
+        make_potential({"provider": "diabatic_adiabat", "diabatic": {"model": "tully1"}, "states": 1})
+    with pytest.raises(ValueError, match="needs a diabatic"):
+        make_potential({"provider": "diabatic_adiabat"})
+
+
+def test_named_and_plugin_dpems_are_built_from_tables():
+    from pyrpmd.potentials.diabatic import make_diabatic_potential
+    from pyrpmd.potentials.nonadiabatic_models import TullyModelOne
+
+    model = make_diabatic_potential({"model": "tully1", "params": {"natoms": 1}})
+    assert isinstance(model, TullyModelOne)
+    live = CrossingCIDPEM()
+    assert make_diabatic_potential(live) is live
+    with pytest.raises(ValueError):
+        make_diabatic_potential({"model": "no_such_surface"})
+    with pytest.raises(ValueError, match="model = "):
+        make_diabatic_potential({"provider": "python", "function": "m:f"})
+
+
+def test_pipeline_calls_a_diabatic_potential_for_both_the_rate_pes_and_eta(tmp_path):
+    dpem = CrossingCIDPEM()
+    run = abstract_rate_run(Adiabat(dpem), 300.0, 16)
+    spec = specification(tmp_path / "dpem", None)
+    spec["electronic"] = {"source": "diabatic", "potential": dpem, "nstates": 2}
+    report = pipeline.run_subspace_pipeline(spec, run=run)
+    record = report["nonadiabatic"]["1"]
+    assert report["status"] == "complete" and record["valid"]
+    assert record["electronic"]["diabatization"] == "supplied"
+    assert record["options"]["points"] == "grid" and record["electronic"]["interpolation_error_kt"] == 0.0
+    # The rate PES is the DPEM's own lowest adiabat.
+    assert record["electronic"]["ground_state_mismatch_kt"] < 1e-8
+    assert abs(record["born_oppenheimer_consistency"]) < 1e-10
+
+    class Vectors:
+        def __call__(self, geometry):
+            energies, vectors = np.linalg.eigh(dpem.evaluate(np.asarray(geometry).reshape(1, 1, 3)).matrix[0])
+            if geometry[0] > 0:  # reorder and flip the states past the crossing, as a code may
+                energies, vectors = energies[::-1], -vectors[:, ::-1]
+            return {"energies": energies, "vectors": vectors}
+
+    adiabatic = pipeline.run_subspace_pipeline(
+        specification(tmp_path / "vectors", Vectors(), points="grid"), run=run)
+    assert record["factor"] == pytest.approx(adiabatic["nonadiabatic"]["1"]["factor"], rel=1e-9)
+    assert 0.1 < record["factor"] < 0.5
+    saved = json.loads((tmp_path / "dpem" / "subspace_pipeline.json").read_text())
+    assert saved["options"]["electronic"]["potential"].endswith("CrossingCIDPEM")
+
+
+def test_diabatic_electronic_tables_are_checked():
+    resolved = electronic_options({"source": "diabatic", "potential": {"model": "nah2_leps_5g_1992"}, "nstates": 2})
+    assert resolved["points"] == "grid"
+    assert electronic_options({"source": "diabatic", "potential": {"model": "tully1"}, "nstates": 2,
+                               "points": 80})["points"] == 80
+    with pytest.raises(ValueError, match="exactly one of electronic.potential"):
+        electronic_options({"source": "diabatic", "nstates": 2})
+    with pytest.raises(ValueError, match="exactly one of electronic.potential"):
+        electronic_options({"source": "diabatic", "potential": {"model": "tully1"}, "object": "m:f", "nstates": 2})
+    config = {"task": "rate", "rate": {"subspace_correction": {"electronic": {
+        "source": "diabatic", "potential": {"provider": "diabatic_python", "factory": "/abs/dpem.py:make"},
+        "nstates": 2}}}}
+    assert rate_subspace_options(config)["electronic"]["potential"]["factory"] == "/abs/dpem.py:make"

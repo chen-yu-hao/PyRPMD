@@ -92,7 +92,7 @@ rate_run = "rate_output"
 dimension = 1                    # coupled states are implemented for the 1D path model
 
 [electronic]
-source = "backend"               # "backend", "python" or "file"
+source = "backend"               # "diabatic", "backend", "python" or "file"
 object = "es_backend.py:make"    # factory returning an ExcitedStateBackend
 arguments = { basis = "6-31g*" } # keyword arguments of the factory
 nstates = 2                      # retained adiabatic states, ground state included
@@ -116,8 +116,9 @@ $V_S^{(0)}$. Two consequences follow:
 
 **Sources.**
 
-| `source` | `object` / `file` | Returns per geometry |
+| `source` | `object` / `potential` / `file` | Returns per geometry |
 | --- | --- | --- |
+| `"diabatic"` | `potential`: a diabatic potential energy matrix (DPEM), given as `{model = "nah2_leps_5g_1992"}` (builtin and published names of the nonadiabatic input: `tully1`–`tully3`, `lvc`, `spin_boson`, `nah2_leps_5g_1992`), `{provider = "diabatic_python", factory = "dpem.py:make", params = {...}}`, or a live object with `evaluate(q)`; or `object = "module:factory"` called with `arguments` | the diabatic matrix itself, evaluated in batches on `[atoms, 3]` bohr geometries; no diabatization, so there is no leakage gate, and `points` defaults to `"grid"` (no spline) |
 | `"backend"` | an `ExcitedStateBackend` class or factory, called with `arguments` (PySCF TDA/TDDFT, ORCA, Q-Chem, OpenMolcas, `FileProgramBackend`, the toy backend) | `BackendResult.energies` and `.overlap` (or `backend.overlap(...)`); geometries are passed as `[atoms, 3]` bohr |
 | `"python"` | a callable `f(geometry, **arguments)`; the geometry is the flat coordinate vector of the rate run | `{"energies": [S], "vectors": [basis, S]}` (orthonormal state coefficients in a fixed basis, any sign and order) or `{"diabatic": [S, S]}` |
 | `"file"` | an `.npz` with `geometries`, `energies` and `overlaps` (or `diabatic`) | read as is; if the file is missing or its geometries differ, the pipeline writes `electronic_1d_request.npz` (`arcs`, `geometries`) and stops with status `electronic_data_required` |
@@ -129,6 +130,29 @@ the electronic structure elsewhere at exactly those geometries, then run again. 
 `python` results are cached in `electronic_1d.npz` and reused with `output.reuse = true` when the
 geometries and the source identity match. A relative `file.py:object` or `file` is resolved
 against the directory of the TOML specification.
+
+**A DPEM for both surfaces.** With a DPEM, run the ground-state RPMD rate on its lowest adiabat
+using the scalar provider `diabatic_adiabat`, then call the same DPEM in `[electronic]`:
+
+```toml
+# rate input
+[potential]
+provider = "diabatic_adiabat"
+state = 0
+diabatic = { model = "nah2_leps_5g_1992" }     # or { provider = "diabatic_python", factory = "dpem.py:make" }
+
+# subspace-correct
+[electronic]
+source = "diabatic"
+potential = { model = "nah2_leps_5g_1992" }
+nstates = 2
+```
+
+`diabatic_adiabat` returns eigenvalue `state` of the matrix and the Hellmann–Feynman force
+$-\langle k|\partial V/\partial q|k\rangle$. Both are exact for a fixed diabatic basis, except where
+the adiabat touches a neighbour; there the force is one-sided and the frame carries a message.
+The surface has no nonadiabatic couplings, which is why its RPMD rate is the single-surface
+reference that $\eta_\mathrm{NA}$ corrects. The `ground_state_mismatch` gate is then zero to round-off.
 
 **Gates** (policy `"reject"` or `"allow"`, set in `[electronic]`):
 
@@ -247,7 +271,12 @@ ground-state path. It checks:
 - the `file` source writes the geometry request and then reproduces the `python` result;
 - leaking overlaps reject the factor unless `leakage = "allow"`;
 - the toy excited-state backend (with a forced phase flip) is diabatized exactly through the
-  `backend` source.
+  `backend` source;
+- `diabatic_adiabat` on the published NaH$_2$ DPEM reproduces its eigenvalues to $10^{-14}$ and
+  its forces pass a finite-difference check to $10^{-8}$ hartree/bohr;
+- a one-atom Cartesian DPEM with the same conical intersection drives both the RPMD rate (through
+  `diabatic_adiabat`) and $\eta_\mathrm{NA}$ (through `source = "diabatic"`), with zero ground-state
+  mismatch and the same factor as diabatized adiabatic data to $10^{-9}$.
 
 ## 8. Not yet available
 

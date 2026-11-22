@@ -104,6 +104,7 @@ finally:
 | `tblite` / `xtb` | 即时 GFN1/GFN2/IPEA1-xTB |
 | `pyscf` | 分子 HF/DFT 及解析核梯度 |
 | `diabatic_python` | 实验性 NRPMD 的实对称或复 Hermitian 矩阵势及其梯度 |
+| `diabatic_adiabat` | 把透热势能矩阵（DPEM）的某一个绝热面作为单面势能，力由 Hellmann–Feynman 定理给出：`diabatic = {model = "nah2_leps_5g_1992"}`（或 `tully1`、`lvc` 等，或 `{provider = "diabatic_python", factory = ...}`），`state = 0`。用于在同一个 DPEM 上先算基态 RPMD 速率，再算[非绝热子空间因子](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/zh/multistate-subspace.md) |
 
 电子计算中 D 和 T 按氢传递，同时保留各自的核质量。
 

@@ -10,8 +10,10 @@ intersection, intersystem or charge-transfer crossings):
    point with ``points = "grid"``);
 2. a source supplies adiabatic energies and adjacent-frame overlaps
    ``O_n[i, j] = <phi_i(s_n)|phi_j(s_{n+1})>`` (or diabatic matrices directly):
-   a Python callable, an :class:`~pyrpmd.potentials.excited_state.ExcitedStateBackend`,
-   or a precomputed ``.npz`` file; results are cached next to the report;
+   a diabatic potential energy matrix (DPEM, ``source = "diabatic"``, no
+   diabatization needed), a Python callable, an
+   :class:`~pyrpmd.potentials.excited_state.ExcitedStateBackend`, or a
+   precomputed ``.npz`` file; results are cached next to the report;
 3. :func:`~pyrpmd.analysis.multistate_subspace.propagation_diabatization`
    (anchored at the reactant end) gives ``V_d(s)``, which is splined onto the
    model grid;
@@ -53,6 +55,7 @@ ELECTRONIC_DEFAULTS = {
     "object": None,
     "arguments": {},
     "file": None,
+    "potential": None,
     "nstates": None,
     "state": 0,
     "points": 64,
@@ -66,7 +69,7 @@ ELECTRONIC_DEFAULTS = {
     "ground_state_mismatch": "allow",
 }
 ELECTRONIC_FIELDS = frozenset(ELECTRONIC_DEFAULTS)
-_SOURCES = ("python", "backend", "file")
+_SOURCES = ("diabatic", "python", "backend", "file")
 _POLICIES = ("leakage", "resolution", "ground_state_mismatch")
 CACHE_SCHEMA = "pyrpmd.subspace_electronic"
 
@@ -91,7 +94,10 @@ def electronic_options(raw: Mapping[str, Any] | None) -> dict | None:
     if unknown:
         raise ValueError(f"unknown electronic fields {sorted(unknown)}; allowed: {sorted(ELECTRONIC_FIELDS)}")
     options = dict(ELECTRONIC_DEFAULTS)
-    options.update({k: v for k, v in raw.items() if v is not None or k in ("object", "file")})
+    options.update({k: v for k, v in raw.items() if v is not None or k in ("object", "file", "potential")})
+    if options["source"] == "diabatic" and "points" not in raw:
+        # A DPEM is evaluated directly: use every model grid point, no spline.
+        options["points"] = "grid"
     if not isinstance(options["enabled"], bool):
         raise ValueError("electronic.enabled must be boolean")
     if not options["enabled"]:
@@ -102,6 +108,13 @@ def electronic_options(raw: Mapping[str, Any] | None) -> dict | None:
         raise ValueError(f"electronic.source = '{options['source']}' needs electronic.object")
     if options["source"] == "file" and not options["file"]:
         raise ValueError("electronic.source = 'file' needs electronic.file")
+    if options["source"] == "diabatic":
+        if (options["potential"] is None) == (options["object"] is None):
+            raise ValueError("electronic.source = 'diabatic' needs exactly one of electronic.potential "
+                             "(a DPEM table such as {model = 'nah2_leps_5g_1992'}) and electronic.object")
+        if options["potential"] is not None and not isinstance(options["potential"], Mapping) and not callable(
+                getattr(options["potential"], "evaluate", None)):
+            raise ValueError("electronic.potential must be a table or a DPEM object with evaluate(q)")
     if not isinstance(options["arguments"], Mapping):
         raise ValueError("electronic.arguments must be a table")
     options["arguments"] = dict(options["arguments"])
@@ -158,6 +171,9 @@ def public_options(options: Mapping[str, Any] | None) -> dict | None:
     out["arguments"] = _json_safe(dict(out.get("arguments") or {}))
     if out.get("file") is not None:
         out["file"] = str(out["file"])
+    potential = out.get("potential")
+    if potential is not None:
+        out["potential"] = _json_safe(dict(potential)) if isinstance(potential, Mapping) else _object_name(potential)
     return out
 
 
@@ -269,6 +285,18 @@ def _backend_line(backend, geometries, nstates, scratch_root: Path):
     return np.asarray(energies), np.asarray(overlaps), None
 
 
+def _resolve_plugin_table(table, base):
+    """Resolve relative ``file.py:object`` plugins of a DPEM table against ``base``."""
+    import copy
+
+    table = copy.deepcopy(dict(table))
+    if base is not None:
+        from ..input_paths import _plugin_paths
+
+        _plugin_paths(table, Path(base))
+    return table
+
+
 def _resolve_plugin(target, base):
     """A relative ``file.py:object`` plugin is resolved against the specification directory."""
     if isinstance(target, str) and base is not None and ":" in target:
@@ -278,18 +306,46 @@ def _resolve_plugin(target, base):
     return target
 
 
+def _diabatic_line(dpem, geometries, nstates, chunk=512):
+    """Diabatic matrices of a DPEM at Cartesian ``geometries[K, 3N]`` (bohr)."""
+    from ..nonadiabatic import validate_diabatic_result
+
+    geometries = np.asarray(geometries, dtype=float)
+    if geometries.shape[1] % 3:
+        raise ValueError("a diabatic potential needs Cartesian geometries with three coordinates per atom")
+    frames = geometries.reshape(len(geometries), -1, 3)
+    matrices = []
+    for start in range(0, len(frames), chunk):
+        block = frames[start:start + chunk]
+        result = validate_diabatic_result(dpem.evaluate(block), block.shape, nstates)
+        status = getattr(result, "status", None)
+        if status is not None and np.any(np.asarray(status) != 0):
+            bad = start + int(np.flatnonzero(np.asarray(status) != 0)[0])
+            raise ValueError(f"the diabatic potential failed at electronic frame {bad}")
+        matrices.append(np.asarray(result.matrix))
+    diabatic = np.concatenate(matrices)
+    diabatic = 0.5 * (diabatic + np.conj(np.swapaxes(diabatic, -1, -2)))
+    if np.iscomplexobj(diabatic) and not np.any(diabatic.imag):
+        diabatic = diabatic.real
+    return np.linalg.eigvalsh(diabatic), None, diabatic
+
+
 def _load(path: Path):
     with np.load(path, allow_pickle=False) as data:
         return {key: data[key] for key in data.files}
 
 
 def _identity(options) -> dict:
-    return {"source": options["source"], "object": None if options["object"] is None else _object_name(options["object"]),
-            "arguments": _json_safe(dict(options["arguments"])), "nstates": options["nstates"]}
+    identity = {"source": options["source"],
+                "object": None if options["object"] is None else _object_name(options["object"]),
+                "arguments": _json_safe(dict(options["arguments"])), "nstates": options["nstates"]}
+    if options.get("potential") is not None:
+        identity["potential"] = public_options({"potential": options["potential"]})["potential"]
+    return identity
 
 
 def electronic_line(options: Mapping[str, Any], path, masses, arcs, out_dir: Path, *, base: Path | None = None,
-                    reuse: bool = False, backend_identity: Callable | None = None) -> ElectronicLine:
+                    reuse: bool = False, system: Any = None) -> ElectronicLine:
     """Electronic energies and overlaps at ``arcs`` along ``path`` (cached in ``out_dir``)."""
     out_dir = Path(out_dir)
     cache = out_dir / "electronic_1d.npz"
@@ -335,7 +391,32 @@ def electronic_line(options: Mapping[str, Any], path, masses, arcs, out_dir: Pat
             pass  # A damaged or foreign cache is recomputed.
     started = perf_counter()
     target = _resolve_plugin(options["object"], base)
-    if options["source"] == "python":
+    if options["source"] == "diabatic":
+        from ..potentials.diabatic import make_diabatic_potential
+
+        spec = options["potential"]
+        if isinstance(spec, Mapping):
+            spec = _resolve_plugin_table(spec, base)
+        elif spec is None:
+            spec = target
+            if isinstance(spec, str):
+                from ..potentials.python import import_object
+
+                spec = import_object(spec)
+                if not callable(getattr(spec, "evaluate", None)) or isinstance(spec, type):
+                    spec = spec(**options["arguments"])
+        dpem = make_diabatic_potential(spec, system)
+        model_identity = dict(getattr(dpem, "metadata", {}) or {}).get("model_identity")
+        if model_identity is not None:
+            identity = dict(identity, model_identity=_json_safe(model_identity))
+        try:
+            energies, overlaps, diabatic = _diabatic_line(dpem, geometries, nstates)
+        finally:
+            if dpem is not options["potential"] and dpem is not options["object"] \
+                    and callable(getattr(dpem, "close", None)):
+                dpem.close()
+        owned = None
+    elif options["source"] == "python":
         if isinstance(target, str):
             from ..potentials.python import import_object
 
@@ -494,7 +575,8 @@ def nonadiabatic_path_factor(run, path, model, quantum: Mapping[str, Any], optio
     try:
         axis = model.axes[0]
         arcs = axis.copy() if options["points"] == "grid" else np.linspace(axis[0], axis[-1], options["points"])
-        line = electronic_line(options, path, run.cartesian_masses, arcs, out_dir, base=base, reuse=reuse)
+        line = electronic_line(options, path, run.cartesian_masses, arcs, out_dir, base=base, reuse=reuse,
+                               system=getattr(run, "system", None))
         bare = np.array([run.energy(g) for g in line.geometries])
         multistate, info = multistate_path_model(model, line, options, beta=run.beta, bare_energies=bare)
         np.savez(out_dir / "multistate_1d.npz", axis=axis, diabatic=multistate.diabatic,

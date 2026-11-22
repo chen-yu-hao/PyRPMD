@@ -441,7 +441,8 @@ $\eta_\mathrm{NA}$ and the applied correction is $C_S\,\eta_\mathrm{NA}$; see
 | `.inp` key (`[rate.subspace_correction.electronic]`) | `correct.toml` key (`[electronic]`) | Type | Default | Allowed values / range | Physical unit & meaning |
 | --- | --- | --- | --- | --- | --- |
 | `enabled` | `enabled` | `bool` | `true` | `true`, `false` | — (`false` ignores the table) |
-| `source` | `source` | `str` | required | `"backend"`, `"python"`, `"file"` | — (where adiabatic energies and adjacent-frame overlaps come from) |
+| `source` | `source` | `str` | required | `"diabatic"`, `"backend"`, `"python"`, `"file"` | — (a DPEM's diabatic matrix, or adiabatic energies and adjacent-frame overlaps) |
+| `potential` | `potential` | table | required for `diabatic` (or `object`) | `{model = ...}` or `{provider = "diabatic_python", ...}` | — (diabatic potential energy matrix; `points` then defaults to `"grid"`) |
 | `object` | `object` | `str` | required for `backend`/`python` | `"module:object"` or `"file.py:object"` | — (`ExcitedStateBackend` class/factory, or callable `f(geometry, **arguments)`) |
 | `arguments` | `arguments` | table | `{}` | — | — (keyword arguments of the factory or callable) |
 | `file` | `file` | `str` | required for `file` | `.npz` path | — (`geometries`, `energies`, `overlaps` or `diabatic`) |

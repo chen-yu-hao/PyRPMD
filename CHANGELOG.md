@@ -5,6 +5,16 @@ not been published as a new wheel release; no release date or DOI is assigned.
 
 ## Unreleased
 
+- Diabatic potential energy matrices (DPEMs) in the subspace pipeline and the
+  rate run (research): `[electronic] source = "diabatic"` evaluates a DPEM
+  (`potential = {model = "nah2_leps_5g_1992" | "tully1" | "lvc" | ...}`,
+  `{provider = "diabatic_python", factory = ...}`, or a live object) directly
+  along the 1D path, with no diabatization and `points = "grid"` by default.
+  The new scalar provider `provider = "diabatic_adiabat"` (`diabatic = {...}`,
+  `state = 0`) exposes one adiabat of a DPEM with Hellmann-Feynman forces, so
+  the ground-state RPMD rate and `eta_NA` can come from the same surface.
+  `pyrpmd.potentials.diabatic.make_diabatic_potential` builds a DPEM from a
+  table or passes a live object through.
 - Conical intersections along the reaction path in the subspace pipeline
   (research): an `[electronic]` table in `subspace-correct` (and
   `[rate.subspace_correction.electronic]` in `rate` inputs) computes the

@@ -109,6 +109,7 @@ finally:
 | `tblite` / `xtb` | On-the-fly GFN1/GFN2/IPEA1-xTB through tblite |
 | `pyscf` | Molecular HF/DFT with analytic nuclear gradients |
 | `diabatic_python` | Real symmetric or complex Hermitian matrix potential with gradients for experimental NRPMD |
+| `diabatic_adiabat` | One adiabat of a diabatic potential energy matrix (DPEM) as a single-surface PES, with Hellmann–Feynman forces: `diabatic = {model = "nah2_leps_5g_1992"}` (or `tully1`, `lvc`, …, or `{provider = "diabatic_python", factory = ...}`), `state = 0`. Couples a ground-state RPMD rate to the [nonadiabatic subspace factor](../multistate-subspace.md) of the same DPEM |
 
 For electronic calculations, D and T are passed as hydrogen and keep their nuclear masses.
 

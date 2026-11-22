@@ -34,6 +34,9 @@ _PHYSICAL_SPEC_FIELDS = frozenset(
 _LIFECYCLE_SPEC_FIELDS = {
     "committee": frozenset({"provider", "type", "members"}),
     "delta": frozenset({"provider", "type", "reference", "correction", "contracted_beads", "nbeads"}),
+    # One adiabat of a diabatic potential energy matrix; ``diabatic`` is the DPEM table.
+    "diabatic_adiabat": frozenset({"provider", "type", "diabatic", "state", "degeneracy_tolerance",
+                                   "trajectory_batch_safe"}),
 }
 _POTENTIAL_SPEC_FIELDS = _PHYSICAL_SPEC_FIELDS.union(*_LIFECYCLE_SPEC_FIELDS.values())
 
@@ -334,6 +337,15 @@ def _make_potential(config, system=None):
         if params:
             raise ValueError("native_periodic input does not accept opaque context parameters")
         return NativePeriodicPES(spec["library"], spec.get("function", "evaluate"), len(get("masses")))
+    if kind == "diabatic_adiabat":
+        from .diabatic import DiabaticAdiabatPotential, make_diabatic_potential
+
+        if "diabatic" not in spec:
+            raise ValueError("diabatic_adiabat needs a diabatic = {model = ...} or {provider = 'diabatic_python', ...} table")
+        inner = make_diabatic_potential(spec["diabatic"], system)
+        return DiabaticAdiabatPotential(inner, state=spec.get("state", 0),
+                                        degeneracy_tolerance=spec.get("degeneracy_tolerance", 1e-8),
+                                        owns=inner is not spec["diabatic"])
     if kind == "diabatic_python":
         from .diabatic import DiabaticPythonPotential
 

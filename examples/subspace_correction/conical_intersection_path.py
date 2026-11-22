@@ -21,6 +21,18 @@ example (TOML for ``pyrpmd subspace-correct``):
     nstates = 2
     points = 64
 
+With a diabatic potential energy matrix (DPEM), run the RPMD rate on its
+lowest adiabat and call the same matrix for eta_NA (no diabatization):
+
+    [potential]                                   # rate input
+    provider = "diabatic_adiabat"
+    diabatic = { model = "nah2_leps_5g_1992" }    # or { provider = "diabatic_python", factory = "dpem.py:make" }
+
+    [electronic]                                  # subspace-correct
+    source = "diabatic"
+    potential = { model = "nah2_leps_5g_1992" }
+    nstates = 2
+
 Linear-response TDDFT does not give the correct dimensionality of S0/S1
 conical intersections; use a multireference method (or spin-flip TDDFT) for
 the states that meet.

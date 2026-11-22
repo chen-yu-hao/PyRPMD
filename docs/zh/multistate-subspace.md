@@ -82,7 +82,7 @@ rate_run = "rate_output"
 dimension = 1                    # 多电子态目前只支持一维路径模型
 
 [electronic]
-source = "backend"               # "backend"、"python" 或 "file"
+source = "backend"               # "diabatic"、"backend"、"python" 或 "file"
 object = "es_backend.py:make"    # 返回 ExcitedStateBackend 的工厂函数
 arguments = { basis = "6-31g*" } # 传给工厂函数的关键字参数
 nstates = 2                      # 保留的绝热态数（含基态）
@@ -102,8 +102,9 @@ $V_d(s)$，再用样条插值到模型网格上。然后每个网格点整体平
 
 **数据源。**
 
-| `source` | `object` / `file` | 每个几何返回的内容 |
+| `source` | `object` / `potential` / `file` | 每个几何返回的内容 |
 | --- | --- | --- |
+| `"diabatic"` | `potential`：透热势能矩阵（DPEM），写成 `{model = "nah2_leps_5g_1992"}`（可用非绝热输入里的内置及已发表模型名：`tully1`–`tully3`、`lvc`、`spin_boson`、`nah2_leps_5g_1992`）、`{provider = "diabatic_python", factory = "dpem.py:make", params = {...}}`，或带 `evaluate(q)` 的对象；也可以用 `object = "module:factory"` 加 `arguments` | 透热矩阵本身，在 `[原子数, 3]`（bohr）几何上批量计算；无需透热化，因此没有泄漏检查，`points` 默认为 `"grid"`（不做样条插值） |
 | `"backend"` | `ExcitedStateBackend` 类或工厂函数，用 `arguments` 调用（PySCF TDA/TDDFT、ORCA、Q-Chem、OpenMolcas、`FileProgramBackend`、玩具后端） | `BackendResult.energies` 和 `.overlap`（或 `backend.overlap(...)`）；几何以 `[原子数, 3]`（bohr）传入 |
 | `"python"` | 可调用对象 `f(geometry, **arguments)`，geometry 是 rate run 的展平坐标向量 | `{"energies": [S], "vectors": [基组, S]}`（固定基下的正交归一态系数，符号和顺序任意）或 `{"diabatic": [S, S]}` |
 | `"file"` | 含 `geometries`、`energies` 和 `overlaps`（或 `diabatic`）的 `.npz` | 直接读入；文件不存在或几何不一致时，流程写出 `electronic_1d_request.npz`（`arcs`、`geometries`），并以 `electronic_data_required` 状态停止 |
@@ -113,6 +114,28 @@ $V_d(s)$，再用样条插值到模型网格上。然后每个网格点整体平
 `file` 数据源适合昂贵的计算：先运行一次得到几何请求，在别处对这些几何做电子结构计算，再运行一次。
 `backend` 和 `python` 的结果缓存在 `electronic_1d.npz` 中，`output.reuse = true` 且几何与数据源标识
 都一致时会复用。相对路径的 `file.py:object` 和 `file` 都相对于 TOML 文件所在目录解析。
+
+**用同一个 DPEM 提供两个面。** 有 DPEM 时，先用标量 provider `diabatic_adiabat` 在它的最低绝热面上
+算基态 RPMD 速率，再在 `[electronic]` 中调用同一个 DPEM：
+
+```toml
+# rate 输入
+[potential]
+provider = "diabatic_adiabat"
+state = 0
+diabatic = { model = "nah2_leps_5g_1992" }     # 或 { provider = "diabatic_python", factory = "dpem.py:make" }
+
+# subspace-correct
+[electronic]
+source = "diabatic"
+potential = { model = "nah2_leps_5g_1992" }
+nstates = 2
+```
+
+`diabatic_adiabat` 返回矩阵的第 `state` 个本征值，力为 Hellmann–Feynman 力
+$-\langle k|\partial V/\partial q|k\rangle$。在固定透热基下两者都是精确的；只有在该绝热面与相邻面接触处，
+力是单侧导数，相应帧会附带提示信息。这个面不含非绝热耦合，因此它的 RPMD 速率正是 $\eta_\mathrm{NA}$
+所要修正的单面参考；此时 `ground_state_mismatch` 在舍入误差内为零。
 
 **有效性检查**（策略为 `"reject"` 或 `"allow"`，在 `[electronic]` 中设置）：
 
@@ -212,7 +235,11 @@ $\lambda(y-y_c)$ 交叉，锥形交叉点距基态路径 2.5 个横向宽度。�
 - 电子结构缓存可以和已复用的 $C_S$ 一起复用；
 - `file` 数据源先写出几何请求，之后得到与 `python` 数据源相同的结果；
 - 重叠有泄漏时因子被拒绝，除非设置 `leakage = "allow"`；
-- 通过 `backend` 数据源，玩具激发态后端（带强制相位翻转）被精确透热化。
+- 通过 `backend` 数据源，玩具激发态后端（带强制相位翻转）被精确透热化；
+- 在已发表的 NaH$_2$ DPEM 上，`diabatic_adiabat` 的能量与矩阵本征值一致到 $10^{-14}$，力的有限差分检验
+  误差小于 $10^{-8}$ hartree/bohr；
+- 一个带同样锥形交叉的单原子笛卡尔 DPEM 同时提供 RPMD 速率（通过 `diabatic_adiabat`）和
+  $\eta_\mathrm{NA}$（通过 `source = "diabatic"`），基态失配为零，因子与透热化绝热数据的结果一致到 $10^{-9}$。
 
 ## 8. 尚未提供
 
