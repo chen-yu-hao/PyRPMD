@@ -26,6 +26,7 @@ def test_registry_is_complete_json_and_returns_independent_snapshots():
     ({"task": "nonadiabatic", "method": "rp-iesh"}, "research"),
     ({"task": "nonadiabatic_rate"}, "research"),
     ({"task": "rate", "method": "subspace-correction"}, "research"),
+    ({"task": "rate", "method": "multistate-subspace"}, "research"),
     ({"task": "fes", "fes": {"method": "opes"}}, "beta"),
     ({"task": "opes"}, "beta"),
     ({"task": "fes", "fes": {"method": "metadynamics", "metadynamics": {"multiple_walkers": True}}}, "beta"),

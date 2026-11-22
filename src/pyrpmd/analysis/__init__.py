@@ -93,6 +93,17 @@ from .subspace_channels import (
     exact_channel_rate,
 )
 from .subspace_rpmd import RingPolymerRateResult, ring_polymer_rate
+from .multistate_subspace import (
+    MultistateRateResult,
+    MultistateRouteUnavailable,
+    MultistateSubspaceModel,
+    PropagationDiabatization,
+    exact_multistate_rate,
+    multistate_hamiltonian,
+    multistate_model_from_function,
+    nonadiabatic_subspace_factor,
+    propagation_diabatization,
+)
 from .centroid_path import CentroidAccumulator, RingPolymerMeanPath, mean_path_from_rate_run
 from .subspace_pipeline import run_subspace_pipeline
 from .subspace_execution import subspace_corrections
@@ -198,4 +209,13 @@ __all__ = [
     "RingPolymerMeanPath",
     "mean_path_from_rate_run",
     "run_subspace_pipeline",
+    "MultistateRateResult",
+    "MultistateRouteUnavailable",
+    "MultistateSubspaceModel",
+    "PropagationDiabatization",
+    "exact_multistate_rate",
+    "multistate_hamiltonian",
+    "multistate_model_from_function",
+    "nonadiabatic_subspace_factor",
+    "propagation_diabatization",
 ]

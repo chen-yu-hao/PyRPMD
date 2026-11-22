@@ -41,11 +41,13 @@ METHOD_STABILITY = {
     "method:seo_thermal_nrpmd": "research",
     "method:subspace-correction": "research",
     "method:subspace_correction": "research",
+    "method:multistate-subspace": "research",
+    "method:multistate_subspace": "research",
     "path_integral:suzuki-chin": "beta", "path_integral:suzuki_chin": "beta",
     "path_integral:bosonic": "beta", "path_integral:pigs": "beta",
     "path_integral:fermionic": "research",
     "feature:shared_walkers": "beta", "feature:nonadiabatic_scattering": "research",
-    "feature:subspace_correction": "research", "feature:state_selected_scattering": "beta",
+    "feature:subspace_correction": "research", "feature:multistate_subspace": "research", "feature:state_selected_scattering": "beta",
 }
 
 

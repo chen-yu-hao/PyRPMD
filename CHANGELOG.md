@@ -5,6 +5,19 @@ not been published as a new wheel release; no release date or DOI is assigned.
 
 ## Unreleased
 
+- Coupled electronic states in a quantum subspace (research, Python API):
+  `pyrpmd.analysis.multistate_subspace` adds `MultistateSubspaceModel` (a
+  Hermitian diabatic `S x S` matrix, real or complex, on a 1-3D sinc-DVR grid)
+  and `exact_multistate_rate`, the dense Miller-Schwartz-Tromp/Sylvester rate
+  with a nuclear dividing surface summed over electronic states and product
+  flux resolved into adiabatic or diabatic channels from one shared Schur form
+  (`channel_sum_residual` checks the channel sum rule).
+  `nonadiabatic_subspace_factor` returns the coupled-state rate over the exact
+  rate on one Born-Oppenheimer adiabat of the same subspace, and
+  `propagation_diabatization` builds 1D diabatic matrices from adiabatic
+  energies and raw adjacent-frame overlaps (the excited-state
+  `BackendResult.overlap` convention). Not yet wired into `subspace-correct`;
+  dense route only. See `docs/multistate-subspace.md`.
 - Subspace correction triatomic RPH construction, normal-cut DVR robustness,
   and batched grid evaluation: orient 2D `rph_model` axis 0 along the bisector
   of the reactant reference and product absorber tangents (with oblique endcap

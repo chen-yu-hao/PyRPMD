@@ -46,6 +46,7 @@ go straight to your task:
 | Higher-order equilibrium sampling and quantum estimators | Python API | [Quantum statistics](quantum-statistics.md) |
 | Exact quantum references and controlled RPMD response correction | Python API | [Quantum correction](quantum-correction.md) |
 | RPMD rate × exact 1–3D subspace quantum correction | `rate` (`[rate.subspace_correction]`); `subspace-correct` command; Python API | [Subspace rate correction](subspace-correction.md) |
+| Exact coupled-electronic-state subspace rates and nonadiabatic factor (research) | Python API | [Coupled electronic states in a subspace](multistate-subspace.md) |
 | PA-CMD and relative IR/Raman/SFG spectra | `spectroscopy` | [Spectroscopy](tier2-spectroscopy.md) |
 | Suzuki–Chin, bosonic exchange and PIGS | `pimd` + `[path_integral]` | [Path-integral actions](tier2-path-integral.md) |
 | Condensed-phase SC energy/Cv/Cp/pressure, SC-NPT, PIGLET-NPT and RPC virial | SC workflow, native PIGLET or Python RPC | [Condensed-phase NQE validation](condensed-phase-nqe.md) |
@@ -151,6 +152,7 @@ Quantum correction <quantum-correction>
 Subspace rate correction <subspace-correction>
 Subspace transfer theory <subspace-transfer-theory>
 Subspace instanton anchor <subspace-instanton-anchor>
+Coupled electronic states in a subspace <multistate-subspace>
 Tier 2 coverage <tier2-methods>
 PA-CMD and property spectra <tier2-spectroscopy>
 Main-engine path-integral actions <tier2-path-integral>

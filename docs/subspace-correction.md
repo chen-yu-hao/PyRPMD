@@ -5,6 +5,7 @@
 > **Which quantum-correction workflow do I need?**
 > - **Thermal reaction rate constants $k \approx k_{\mathrm{RPMD}} \times C_S$ (this page):** Computes a multiplicative quantum/RPMD correction factor $C_S = k_{\mathrm{QM}}(H_S) / k_{\mathrm{RPMD}}(H_S)$ in a 1–3D reaction subspace via `[rate.subspace_correction]` in `.inp`, `pyrpmd subspace-correct correct.toml`, or the `pyrpmd.analysis` Python API.
 > - **Time-correlation functions, spectral responses and online Ehrenfest trajectories:** Go to **[Quantum correction](quantum-correction.md)** for frequency-domain response defect transfers (`run_quantum_correction`), online coupled ring-polymer + 1D wavefunction propagation (`OnlineQuantumRPMD`), and time-dependent flux–side curve transfers (`hybrid_flux_side_correction`).
+> - **Reactions through several coupled electronic states (conical intersections, intersystem crossing, charge-transfer crossings):** See **[Coupled electronic states in a subspace](multistate-subspace.md)** (research, Python API) for the exact coupled-state subspace rate and the nonadiabatic factor $\eta_\mathrm{NA}$ that multiplies $C_S$.
 
 RPMD treats the environment of a reaction well (zero-point energy, adiabatic following,
 recrossing) but misses deep tunnelling, resonances and coherence along the reaction

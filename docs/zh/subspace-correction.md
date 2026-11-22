@@ -5,6 +5,7 @@
 > **我应该选择哪套量子修正工作流？**
 > - **热反应速率常数乘性修正 $k \approx k_{\mathrm{RPMD}} \times C_S$（本页）：** 在 1–3 维反应子空间 $S$ 中计算量子与 RPMD 速率之比 $C_S = k_{\mathrm{QM}}(H_S) / k_{\mathrm{RPMD}}(H_S)$，支持在 `.inp` 中配置 `[rate.subspace_correction]`、独立命令行 `pyrpmd subspace-correct correct.toml` 或 `pyrpmd.analysis` Python API。
 > - **时间关联函数、光谱响应与在线 Ehrenfest 轨迹：** 若需频域响应缺陷传递（`run_quantum_correction`）、在线环聚合物 + 一维波函数耦合演化（`OnlineQuantumRPMD`）或含时通量–布居曲线修正（`hybrid_flux_side_correction`），请前往 **[量子修正英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/quantum-correction.md)**。
+> - **经过多个耦合电子态的反应（锥形交叉、系间窜越、电荷转移交叉）：** 见 **[多电子态耦合子空间](multistate-subspace.md)**（research，Python API），其中给出多态子空间精确速率，以及与 $C_S$ 相乘的非绝热因子 $\eta_\mathrm{NA}$。
 
 RPMD 能很好地处理反应环境效应（零点能、绝热跟随、回穿），但在沿反应坐标的深穿隧、共振与量子相干方面存在方法学误差。子空间修正保留全维 RPMD 速率，仅通过 1 至 3 个反应关键坐标上的精确量子计算修正上述内禀缺陷：
 
