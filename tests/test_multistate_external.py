@@ -230,3 +230,140 @@ def test_optional_adapter_rejects_wrong_source_and_bad_backend_matrix(tmp_path, 
 def test_optional_adapter_difference_step_must_be_explicit_positive_real(step):
     with pytest.raises(ValueError):
         ChemPotPyDPEM(difference_step_bohr=step)
+
+
+TOY_SOURCE = "      subroutine dpem(x,igrad,u,ug)\n      integer, parameter :: natoms=2, nstates=3\n      end\n"
+
+
+def _toy_matrix(x):
+    """Synthetic 3-state DPEM in eV of angstrom coordinates x[2, 3] (a unit fixture, not a molecule)."""
+    s = float(np.sum(x * x))
+    matrix = np.diag([s, 1.0 + 2.0 * s, 2.0 + 0.5 * s])
+    matrix[0, 1] = matrix[1, 0] = 0.3 * x[0, 0]
+    matrix[1, 2] = matrix[2, 1] = 0.1 * x[1, 2]
+    matrix[0, 2] = matrix[2, 0] = 0.05 * x[0, 0] * x[1, 1]
+    return matrix
+
+
+def _toy_gradient(x):
+    gradient = np.zeros((3, 3, 2, 3))
+    for i, factor in enumerate((2.0, 4.0, 1.0)):
+        gradient[i, i] = factor * x
+    gradient[0, 1, 0, 0] = gradient[1, 0, 0, 0] = 0.3
+    gradient[1, 2, 1, 2] = gradient[2, 1, 1, 2] = 0.1
+    gradient[0, 2, 0, 0] = gradient[2, 0, 0, 0] = 0.05 * x[1, 1]
+    gradient[0, 2, 1, 1] = gradient[2, 0, 1, 1] = 0.05 * x[0, 0]
+    return gradient
+
+
+def _mock_generic_chempotpy(tmp_path, monkeypatch, *, energy_only=False):
+    """A ChemPotPy-shaped module with one synthetic 3-state entry TOY/TOY_DPEM."""
+    package = tmp_path / "chempotpy"
+    (package / "TOY").mkdir(parents=True)
+    (package / "__init__.py").write_text("# generic unit fixture\n")
+    (package / "TOY" / "TOY_DPEM.f90").write_text(TOY_SOURCE)
+    calls = {"u": 0, "ug": 0}
+
+    def u(system, surface, geom):
+        assert (system, surface) == ("TOY", "TOY_DPEM") and [row[0] for row in geom] == ["C", "O"]
+        calls["u"] += 1
+        return _toy_matrix(np.array([row[1:] for row in geom], dtype=float))
+
+    def ug(system, surface, geom):
+        calls["ug"] += 1
+        x = np.array([row[1:] for row in geom], dtype=float)
+        if energy_only:  # what an energy-only upstream entry returns from ug
+            return np.zeros((3, 3)), np.zeros((3, 3, 2, 3))
+        return _toy_matrix(x), _toy_gradient(x)
+
+    api = SimpleNamespace(__file__=str(package / "__init__.py"), __version__="9.9-test", u=u, ug=ug,
+                          multi_state_list=["TOY_DPEM", "NaH2_LEPS_5G_1992_DPEM"])
+    monkeypatch.setitem(sys.modules, "chempotpy", api)
+    return api, calls, package
+
+
+TOY_Q = np.array([[[0.4, -0.3, 0.2], [1.1, 0.25, -0.6]], [[-0.2, 0.5, 0.1], [0.9, -0.4, 0.3]]])
+
+
+def test_generic_chempotpy_dpem_uses_verified_analytic_gradients(tmp_path, monkeypatch):
+    _, calls, _ = _mock_generic_chempotpy(tmp_path, monkeypatch)
+    dpem = ChemPotPyDPEM(system="TOY", surface="TOY_DPEM", symbols=["C", "O"])
+    assert dpem.nstates == 3 and dpem.natoms == 2  # nstates read from the Fortran source
+    result = dpem.evaluate(TOY_Q)
+    assert dpem.metadata["gradient_mode"] == "analytic" and dpem.metadata["gradient_check"]["passed"]
+    x = TOY_Q * BOHR_ANGSTROM
+    np.testing.assert_allclose(result.matrix, [_toy_matrix(f) * EV_TO_AU for f in x], rtol=0, atol=1e-14)
+    np.testing.assert_allclose(result.gradients, [_toy_gradient(f) * EV_TO_AU * BOHR_ANGSTROM for f in x],
+                               rtol=0, atol=1e-14)
+    # One verification (1 + 12N u calls, one ug) at the first frame, then one ug per frame.
+    assert calls == {"u": 25, "ug": 3}
+    assert check_diabatic_potential(dpem, TOY_Q, 3)["max_absolute_gradient_error"] < 1e-9
+    before = dict(calls)
+    np.testing.assert_allclose(dpem.matrices(TOY_Q), result.matrix, rtol=0, atol=1e-15)
+    assert calls["u"] - before["u"] == 2 and calls["ug"] == before["ug"]
+    identity = dpem.metadata["source_identity"]
+    assert identity["source"]["path"] == "chempotpy/TOY/TOY_DPEM.f90" and identity["chempotpy_version"] == "9.9-test"
+    assert identity["source"]["sha256"] == hashlib.sha256(TOY_SOURCE.encode()).hexdigest()
+
+
+def test_energy_only_chempotpy_entries_fall_back_to_differences_or_refuse(tmp_path, monkeypatch):
+    _mock_generic_chempotpy(tmp_path, monkeypatch, energy_only=True)
+    auto = ChemPotPyDPEM(system="TOY", surface="TOY_DPEM", symbols=["C", "O"])
+    result = auto.evaluate(TOY_Q[:1])
+    assert auto.metadata["gradient_mode"] == "difference"
+    assert "energy-only entry returns zeros" in auto.metadata["gradient_check"]["reason"]
+    expected = _toy_gradient(TOY_Q[0] * BOHR_ANGSTROM) * EV_TO_AU * BOHR_ANGSTROM
+    np.testing.assert_allclose(result.gradients[0], expected, rtol=0, atol=1e-9)
+    with pytest.raises(BackendUnavailableError, match="does not provide usable analytic DPEM gradients"):
+        ChemPotPyDPEM(system="TOY", surface="TOY_DPEM", symbols=["C", "O"], gradient="analytic").evaluate(TOY_Q)
+
+
+def test_generic_chempotpy_entries_are_checked_before_use(tmp_path, monkeypatch):
+    _, _, package = _mock_generic_chempotpy(tmp_path, monkeypatch)
+    with pytest.raises(ValueError, match="symbols are required"):
+        ChemPotPyDPEM(system="TOY", surface="TOY_DPEM")
+    with pytest.raises(ValueError, match="letters, digits and underscores"):
+        ChemPotPyDPEM(system="../TOY", surface="TOY_DPEM", symbols=["C", "O"])
+    with pytest.raises(BackendUnavailableError, match="not a ChemPotPy DPEM"):
+        ChemPotPyDPEM(system="TOY", surface="TOY_PES", symbols=["C", "O"])
+    with pytest.raises(BackendUnavailableError, match="pinned hash"):
+        ChemPotPyDPEM(system="TOY", surface="TOY_DPEM", symbols=["C", "O"], source_sha256="0" * 64)
+    with pytest.raises(ValueError, match="gradient must be"):
+        ChemPotPyDPEM(system="TOY", surface="TOY_DPEM", symbols=["C", "O"], gradient="numerical")
+    with pytest.raises(PotentialError, match="requires 2 atoms"):
+        ChemPotPyDPEM(system="TOY", surface="TOY_DPEM", symbols=["C", "O"]).evaluate(geometries()[:1])
+
+
+def test_chempotpy_tables_feed_the_adiabat_provider_and_the_path_source(tmp_path, monkeypatch):
+    from pyrpmd.analysis.subspace_electronic import _diabatic_line
+    from pyrpmd.potentials import make_potential
+    from pyrpmd.potentials.base import check_potential
+    from pyrpmd.potentials.diabatic import make_diabatic_potential
+
+    _, calls, _ = _mock_generic_chempotpy(tmp_path, monkeypatch)
+    table = {"provider": "chempotpy", "system": "TOY", "surface": "TOY_DPEM", "gradient": "analytic"}
+    dpem = make_diabatic_potential(table, {"symbols": ["C", "O"]})  # symbols from the system
+    assert isinstance(dpem, ChemPotPyDPEM) and dpem.symbols == ("C", "O")
+    with pytest.raises(ValueError, match="unknown chempotpy fields"):
+        make_diabatic_potential({**table, "symbols": ["C", "O"], "step": 1e-4})
+    pes = make_potential({"provider": "diabatic_adiabat", "diabatic": {**table, "symbols": ["C", "O"]}, "state": 1})
+    assert check_potential(pes, TOY_Q, 1e-5)["max_absolute_force_error"] < 1e-8
+    before = calls["u"]
+    energies, overlaps, diabatic = _diabatic_line(dpem, TOY_Q.reshape(2, 6), 3)
+    assert overlaps is None and diabatic.shape == (2, 3, 3)
+    assert calls["u"] - before == 2  # matrices only: no gradient stencil along the path
+    np.testing.assert_allclose(energies, np.linalg.eigvalsh(diabatic), rtol=0, atol=1e-15)
+
+
+def test_real_chempotpy_oh3_dpem_if_compiled():
+    """Runs only where ChemPotPy and its OH3 FFW1 DPEM extension are compiled for this Python."""
+    pytest.importorskip("chempotpy")
+    try:
+        dpem = ChemPotPyDPEM(system="OH3", surface="OH3_PIP_FFW1_2019_DPEM", symbols=["O", "H", "H", "H"])
+        q = np.array([[[0.0, 0.0, 0.0], [0.97, 0.0, 0.0], [-1.8, 0.4, 0.0], [-2.5, 0.4, 0.0]]]) / BOHR_ANGSTROM
+        result = dpem.evaluate(q)
+    except (BackendUnavailableError, ImportError) as error:
+        pytest.skip(f"ChemPotPy OH3 FFW1 DPEM is not usable here: {error}")
+    assert dpem.nstates == 3 and dpem.metadata["gradient_mode"] == "analytic"
+    assert check_diabatic_potential(dpem, q, 3, 1e-4)["max_absolute_gradient_error"] < 1e-6
+    np.testing.assert_allclose(result.matrix, result.matrix.transpose(0, 2, 1), rtol=0, atol=1e-12)

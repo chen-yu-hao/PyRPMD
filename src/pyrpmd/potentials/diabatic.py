@@ -70,7 +70,11 @@ def make_diabatic_potential(spec, system=None):
       ``nah2_leps_5g_1992`` takes its atom order from ``system`` when
       ``params.symbols`` is omitted;
     * ``{"provider": "diabatic_python", "factory" | "function": ..., ...}``,
-      the plugin adapter of :func:`pyrpmd.potentials.make_potential`.
+      the plugin adapter of :func:`pyrpmd.potentials.make_potential`;
+    * ``{"provider": "chempotpy", "system": "OH3", "surface": "OH3_PIP_FFW1_2019_DPEM",
+      "symbols": [...], "gradient": "auto"}``, a ChemPotPy DPEM through
+      :class:`~pyrpmd.potentials.multistate_external.ChemPotPyDPEM`; ``symbols``
+      default to the atom order of ``system``.
     """
     from collections.abc import Mapping
 
@@ -90,11 +94,30 @@ def make_diabatic_potential(spec, system=None):
         from ..nonadiabatic_input import _model
 
         return _model({"name": spec["model"], "params": params})
-    if spec.get("provider", spec.get("type")) == "diabatic_python":
+    kind = spec.get("provider", spec.get("type"))
+    if kind == "diabatic_python":
         from . import make_potential
 
         return make_potential(dict(spec), system)
-    raise ValueError("a diabatic potential specification needs model = '<name>' or provider = 'diabatic_python'")
+    if kind == "chempotpy":
+        from .multistate_external import ChemPotPyDPEM
+
+        allowed = {"provider", "type", "system", "surface", "symbols", "gradient", "difference_step_bohr",
+                   "nstates", "source_sha256", "gradient_check_tolerance"}
+        unknown = set(spec) - allowed
+        if unknown:
+            raise ValueError(f"unknown chempotpy fields {sorted(unknown)}; allowed: {sorted(allowed)}")
+        if "system" not in spec or "surface" not in spec:
+            raise ValueError("a chempotpy DPEM needs system and surface, e.g. system = 'OH3', "
+                             "surface = 'OH3_PIP_FFW1_2019_DPEM'")
+        options = {k: v for k, v in spec.items() if k not in ("provider", "type")}
+        if "symbols" not in options and system is not None:
+            symbols = system.get("symbols") if isinstance(system, Mapping) else getattr(system, "symbols", None)
+            if symbols is not None:
+                options["symbols"] = list(symbols)
+        return ChemPotPyDPEM(**options)
+    raise ValueError("a diabatic potential specification needs model = '<name>', provider = 'diabatic_python' "
+                     "or provider = 'chempotpy'")
 
 
 class DiabaticAdiabatPotential(Potential):

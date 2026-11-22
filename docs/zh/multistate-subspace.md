@@ -104,7 +104,7 @@ $V_d(s)$，再用样条插值到模型网格上。然后每个网格点整体平
 
 | `source` | `object` / `potential` / `file` | 每个几何返回的内容 |
 | --- | --- | --- |
-| `"diabatic"` | `potential`：透热势能矩阵（DPEM），写成 `{model = "nah2_leps_5g_1992"}`（可用非绝热输入里的内置及已发表模型名：`tully1`–`tully3`、`lvc`、`spin_boson`、`nah2_leps_5g_1992`）、`{provider = "diabatic_python", factory = "dpem.py:make", params = {...}}`，或带 `evaluate(q)` 的对象；也可以用 `object = "module:factory"` 加 `arguments` | 透热矩阵本身，在 `[原子数, 3]`（bohr）几何上批量计算；无需透热化，因此没有泄漏检查，`points` 默认为 `"grid"`（不做样条插值） |
+| `"diabatic"` | `potential`：透热势能矩阵（DPEM），写成 `{model = "nah2_leps_5g_1992"}`（可用非绝热输入里的内置及已发表模型名：`tully1`–`tully3`、`lvc`、`spin_boson`、`nah2_leps_5g_1992`）、`{provider = "diabatic_python", factory = "dpem.py:make", params = {...}}`、ChemPotPy 条目 `{provider = "chempotpy", system = "OH3", surface = "OH3_PIP_FFW1_2019_DPEM"}`（见 [ChemPotPy DPEM](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/molecular-nonadiabatic.md#optional-chempotpy-dpems)），或带 `evaluate(q)` 的对象；也可以用 `object = "module:factory"` 加 `arguments` | 透热矩阵本身，在 `[原子数, 3]`（bohr）几何上批量计算；无需透热化，因此没有泄漏检查，`points` 默认为 `"grid"`（不做样条插值） |
 | `"backend"` | `ExcitedStateBackend` 类或工厂函数，用 `arguments` 调用（PySCF TDA/TDDFT、ORCA、Q-Chem、OpenMolcas、`FileProgramBackend`、玩具后端） | `BackendResult.energies` 和 `.overlap`（或 `backend.overlap(...)`）；几何以 `[原子数, 3]`（bohr）传入 |
 | `"python"` | 可调用对象 `f(geometry, **arguments)`，geometry 是 rate run 的展平坐标向量 | `{"energies": [S], "vectors": [基组, S]}`（固定基下的正交归一态系数，符号和顺序任意）或 `{"diabatic": [S, S]}` |
 | `"file"` | 含 `geometries`、`energies` 和 `overlaps`（或 `diabatic`）的 `.npz` | 直接读入；文件不存在或几何不一致时，流程写出 `electronic_1d_request.npz`（`arcs`、`geometries`），并以 `electronic_data_required` 状态停止 |

@@ -94,42 +94,82 @@ molecular identity includes atom order, source commit, source hash and
 translation version; restoring a different source under the same model name is
 rejected.
 
-## Optional ChemPotPy installation
+## Optional ChemPotPy DPEMs
 
-`ChemPotPyDPEM` bridges the same pinned 5G entry through the installed
-ChemPotPy `u(system, surface, labeled_geometry)` interface:
+`ChemPotPyDPEM` bridges the diabatic potential energy matrices of
+[ChemPotPy](https://github.com/shuyinan/chempotpy) (its `multi_state_list`: for example
+`OH3_PIP_FFW1_2019_DPEM` and `OH3_PIP_FFW2_2022_DPEM` for OH + H$_2$,
+`NH3_GEN_FFW1_2006_DPEM` and `NH3_GEN_FFW2_2007_DPEM` for NH$_3$, `PHOH_APRP_DPEM`,
+`C6H5SH_APRP_DPEM`, `CH3NH2_APRP_DPEM`, the LiFH, NaFH, NaH$_2$, BrH$_2$ and O$_3$ entries, and
+the MCH/MXH/YRH model surfaces) through the upstream `u` and `ug` calls:
 
 ```python
 from pyrpmd.potentials.multistate_external import ChemPotPyDPEM
 
-# Requires the matching upstream source and a separately compiled ChemPotPy PES.
-pes = ChemPotPyDPEM(symbols=("Na", "H", "H"), difference_step_bohr=1e-4)
-result = pes.evaluate(q)
+pes = ChemPotPyDPEM(system="OH3", surface="OH3_PIP_FFW1_2019_DPEM",
+                    symbols=["O", "H", "H", "H"])   # caller's atom order
+result = pes.evaluate(q)        # q[B, 4, 3] bohr -> matrix [B,3,3] hartree, gradients [B,3,3,4,3]
+matrices = pes.matrices(q)      # matrices only, one upstream call per frame
+pes.metadata["gradient_mode"]   # "analytic" or "difference"
 ```
 
-ChemPotPy's public geometry and matrix units are angstrom and eV. The bridge
-converts them to PyRPMD atomic units with the appropriate coordinate chain rule.
-This particular upstream entry supplies energies only: the bridge explicitly
-uses five-point Cartesian numerical derivatives, records the step, and requires
-its convergence to be checked. The portable `NaH2LEPS5G` implementation above
-provides the directly differentiated path. Because the upstream wrapper's
-historical conversion constants are rounded, its converted results can differ
-slightly from a direct call to the native POTLIB kernel.
+ChemPotPy works in angstrom and eV (gradients in eV/angstrom). The bridge converts to bohr
+and hartree with the coordinate chain rule, and `nstates` is read from the Fortran source.
+`gradient` selects how the derivatives are obtained:
 
-The adapter verifies the installed Fortran source hash. A matching source file
-does not prove that an independently supplied binary was built from it; use a
-controlled build. Calls are serialized across instances because upstream
-Fortran routines hold saved state. Every geometry in a numerical-difference
-stencil is checked before calling Fortran, including its singularity that would
-otherwise invoke `STOP`. Nothing is downloaded or compiled on import.
+| `gradient` | Derivatives |
+| --- | --- |
+| `"auto"` (default) | upstream analytic `ug` if a one-time check passes, otherwise five-point differences of `u`; the outcome is recorded in `metadata["gradient_check"]` |
+| `"analytic"` | upstream `ug`, checked once; a failed check raises |
+| `"difference"` | five-point Cartesian differences of `u` with `difference_step_bohr` (12N+1 calls per frame) |
 
-The complete-matrix contract preserves real or complex Hermitian entries and
-their phases. It does not infer a global diabatic basis from independently
-phased adiabatic eigenvectors. A scalar ASE energy/force callback, an array of
-adiabatic energies, or energies without all required coupling derivatives does
-not meet the contract. Other molecular surfaces require their own verified
-multistate provider; this adapter does not advertise the entire ChemPotPy
-catalog as uniformly usable.
+The check matters because some entries are energy-only. Called through `ug`, such an entry
+prints `Only DPEM is available` and returns an **all-zero matrix and gradient** without raising.
+The check compares `ug` with `u` and with a five-point difference at the first evaluated frame.
+In a compiled ChemPotPy 1.0.7 on Python 3.13, `OH3_PIP_FFW1_2019_DPEM` and
+`NH3_GEN_FFW1_2006_DPEM` passed with their analytic gradients within $10^{-8}$ hartree/bohr of
+the difference. `NaH2_LEPS_5G_1992_DPEM` is energy-only and is differenced.
+
+The same DPEM is available from input tables. Symbols default to the atom order of the system:
+
+```toml
+[potential]                       # ground-state rate on the lowest adiabat
+provider = "diabatic_adiabat"
+diabatic = { provider = "chempotpy", system = "OH3", surface = "OH3_PIP_FFW1_2019_DPEM" }
+
+[electronic]                      # subspace-correct: eta_NA from the same matrix
+source = "diabatic"
+potential = { provider = "chempotpy", system = "OH3", surface = "OH3_PIP_FFW1_2019_DPEM" }
+nstates = 3
+```
+
+Along the subspace path only `matrices()` is called.
+
+**Installation.** PyPI ChemPotPy ships extensions compiled for Python 3.11 only. For another
+Python, compile the entries you use with f2py, linking LAPACK, inside the installed package:
+
+```bash
+cd "$(python -c 'import chempotpy, os; print(os.path.dirname(chempotpy.__file__))')/OH3"
+python -m numpy.f2py -c OH3_PIP_FFW1_2019_DPEM.f90 -m OH3_PIP_FFW1_2019_DPEM -llapack
+```
+
+Nothing is downloaded or compiled by PyRPMD. The Fortran source of each entry is hashed into
+`metadata["source_identity"]`. The default `NaH2_LEPS_5G_1992_DPEM` entry must match its
+pinned hash, which is the same in ChemPotPy 1.0.7, and any entry can be pinned with
+`source_sha256`. A matching source does not authenticate an independently supplied binary.
+Calls are serialized across instances because upstream Fortran routines hold saved state.
+Upstream routines print banners to standard output. An invalid geometry can make their
+Fortran `STOP` the interpreter; only the NaH$_2$ 5G entry is screened for its known singularity
+before every call, so keep other surfaces inside their fitted domain. Cite ChemPotPy (Y. Shu,
+Z. Varga, D. G. Truhlar) and the original paper of each surface.
+
+The complete-matrix contract preserves real or complex Hermitian entries and their phases.
+It does not infer a global diabatic basis from independently phased adiabatic eigenvectors.
+A scalar ASE energy/force callback, an array of adiabatic energies, or energies without all
+required coupling derivatives does not meet the contract, and the single-state ChemPotPy
+entries are refused. The portable `NaH2LEPS5G` implementation above provides the directly
+differentiated NaH$_2$ path; because the upstream wrapper's historical conversion constants are
+rounded, its converted results differ from it by about $10^{-8}$ hartree.
 
 ## Validation and physical limits
 

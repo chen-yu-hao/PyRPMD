@@ -315,8 +315,17 @@ def _diabatic_line(dpem, geometries, nstates, chunk=512):
         raise ValueError("a diabatic potential needs Cartesian geometries with three coordinates per atom")
     frames = geometries.reshape(len(geometries), -1, 3)
     matrices = []
+    # Only the matrices are needed: a DPEM with matrices() (e.g. ChemPotPy) skips its derivatives.
+    only = getattr(dpem, "matrices", None)
     for start in range(0, len(frames), chunk):
         block = frames[start:start + chunk]
+        if callable(only):
+            values = np.asarray(only(block))
+            if values.shape != (len(block), nstates, nstates) or not np.isfinite(values).all():
+                raise ValueError(f"the diabatic potential must return finite [{len(block)}, {nstates}, {nstates}] "
+                                 "matrices")
+            matrices.append(values)
+            continue
         result = validate_diabatic_result(dpem.evaluate(block), block.shape, nstates)
         status = getattr(result, "status", None)
         if status is not None and np.any(np.asarray(status) != 0):

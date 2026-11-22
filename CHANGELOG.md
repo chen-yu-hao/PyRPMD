@@ -5,6 +5,18 @@ not been published as a new wheel release; no release date or DOI is assigned.
 
 ## Unreleased
 
+- ChemPotPy DPEMs (research, optional dependency): `ChemPotPyDPEM` now bridges
+  any entry of ChemPotPy's `multi_state_list` (`system`, `surface`, `symbols`;
+  e.g. `OH3_PIP_FFW1_2019_DPEM`, `NH3_GEN_FFW1_2006_DPEM`), with `nstates`
+  read from the Fortran source and its hash in the identity. `gradient =
+  "auto"` (default for these entries) uses upstream analytic `ug` only after a
+  one-time check against `u` and a five-point difference, because energy-only
+  entries return an all-zero matrix and gradient from `ug`; otherwise it
+  differentiates `u`. `matrices()` returns matrices with one call per frame
+  and is used by the subspace path source. Tables
+  `{provider = "chempotpy", system, surface, ...}` work in `diabatic_adiabat`
+  and `[electronic] source = "diabatic"`. The default NaH2 5G entry and its
+  pinned hash, symbols check and STOP screening are unchanged.
 - Diabatic potential energy matrices (DPEMs) in the subspace pipeline and the
   rate run (research): `[electronic] source = "diabatic"` evaluates a DPEM
   (`potential = {model = "nah2_leps_5g_1992" | "tully1" | "lvc" | ...}`,
