@@ -73,9 +73,14 @@ class ChemPotPyDPEM(Potential):
 
     ``"analytic"``  upstream ``ug``.  Many entries compute analytic DPEM
                     gradients, but some are energy-only and then return an
-                    all-zero matrix and gradient without an error.  The first
-                    evaluation therefore checks ``ug`` against ``u`` and a
-                    five-point difference; a mismatch raises.
+                    all-zero matrix and gradient without an error, and the
+                    coupling gradients of others disagree with their own
+                    matrix.  The first evaluation therefore checks ``ug``
+                    against ``u`` and a five-point difference at the first
+                    frame and at ``check_points - 1`` deterministic random
+                    displacements of it (``check_displacement_bohr``), so a
+                    symmetric frame where a coupling and its error vanish
+                    cannot pass alone; a mismatch raises.
     ``"difference"`` five-point Cartesian differences of ``u`` with
                     ``difference_step_bohr`` (12N+1 calls per frame).
     ``"auto"``      ``"analytic"`` when that check passes, else ``"difference"``;
@@ -96,7 +101,8 @@ class ChemPotPyDPEM(Potential):
     """
 
     def __init__(self, *, system="NaH2", surface="NaH2_LEPS_5G_1992_DPEM", symbols=None, gradient=None,
-                 difference_step_bohr=1e-4, nstates=None, source_sha256=None, gradient_check_tolerance=1e-6):
+                 difference_step_bohr=1e-4, nstates=None, source_sha256=None, gradient_check_tolerance=1e-5,
+                 check_points=4, check_displacement_bohr=0.05):
         step = np.asarray(difference_step_bohr)
         if (step.shape != () or step.dtype.kind not in "fiu" or not np.isfinite(step)
                 or step <= 0):
@@ -124,6 +130,11 @@ class ChemPotPyDPEM(Potential):
         tolerance = float(gradient_check_tolerance)
         if not np.isfinite(tolerance) or tolerance <= 0:
             raise ValueError("gradient_check_tolerance must be finite and positive")
+        if isinstance(check_points, bool) or int(check_points) != check_points or int(check_points) < 1:
+            raise ValueError("check_points must be a positive integer")
+        displacement = float(check_displacement_bohr)
+        if not np.isfinite(displacement) or displacement < 0:
+            raise ValueError("check_displacement_bohr must be finite and nonnegative")
         try:
             api = importlib.import_module("chempotpy")
         except ImportError as exc:
@@ -153,6 +164,7 @@ class ChemPotPyDPEM(Potential):
             nstates = int(found.group(1)) if found else None
         self._api, self.system, self.surface, self.symbols = api, system, surface, symbols
         self.difference_step_bohr, self.gradient_check_tolerance = step, tolerance
+        self.check_points, self.check_displacement_bohr = int(check_points), displacement
         self.natoms = len(symbols)
         self.ncoordinates = 3*self.natoms
         self.coordinates = tuple(range(self.ncoordinates))
@@ -252,22 +264,35 @@ class ChemPotPyDPEM(Potential):
 
     def _verify(self, frame):
         """Check upstream analytic gradients once; decide the mode for ``auto``."""
-        reference, numerical = self._difference(frame)
-        try:
-            matrix, analytic = self._matrix_gradient(frame)
-            scale = max(1.0, float(np.max(np.abs(numerical))))
-            error = float(np.max(np.abs(analytic - numerical)))
+        rng = np.random.default_rng(20261123)
+        points = [frame] + [frame + self.check_displacement_bohr*rng.standard_normal(frame.shape)
+                            for _ in range(self.check_points - 1)]
+        worst_gradient = worst_matrix = 0.0
+        passed, reason = True, None
+        for point in points:
+            reference, numerical = self._difference(point)
+            try:
+                matrix, analytic = self._matrix_gradient(point)
+            except PotentialError as exc:
+                passed, reason = False, str(exc)
+                break
+            matrix_scale = max(1.0, float(np.max(np.abs(reference))))
             matrix_error = float(np.max(np.abs(matrix - reference)))
-            passed = matrix_error <= 1e-10*max(1.0, float(np.max(np.abs(reference)))) and \
-                error <= self.gradient_check_tolerance*scale
-            reason = None if passed else (
-                "ug returned a different matrix than u (an energy-only entry returns zeros)"
-                if matrix_error > 1e-10*max(1.0, float(np.max(np.abs(reference))))
-                else f"analytic gradient differs from the five-point difference by {error:.3g} hartree/bohr")
-        except PotentialError as exc:
-            passed, error, matrix_error, reason = False, None, None, str(exc)
-        self._state["check"] = {"passed": passed, "max_gradient_difference": error,
-                                "max_matrix_difference": matrix_error, "reason": reason,
+            error = float(np.max(np.abs(analytic - numerical)))
+            worst_matrix, worst_gradient = max(worst_matrix, matrix_error), max(worst_gradient, error)
+            if matrix_error > 1e-10*matrix_scale:
+                passed, reason = False, "ug returned a different matrix than u (an energy-only entry returns zeros)"
+                break
+            if error > self.gradient_check_tolerance*max(1.0, float(np.max(np.abs(numerical)))):
+                bad = np.unravel_index(int(np.argmax(np.abs(analytic - numerical))), analytic.shape)
+                passed = False
+                reason = (f"analytic gradient of element ({bad[0]},{bad[1]}) differs from the five-point "
+                          f"difference of u by {error:.3g} hartree/bohr")
+                break
+        self._state["check"] = {"passed": passed, "max_gradient_difference": worst_gradient,
+                                "max_matrix_difference": worst_matrix, "reason": reason,
+                                "points": len(points), "displacement_bohr": self.check_displacement_bohr,
+                                "tolerance": self.gradient_check_tolerance,
                                 "difference_step_bohr": self.difference_step_bohr}
         if not passed and self._state["requested"] == "analytic":
             raise BackendUnavailableError(f"ChemPotPy {self.surface} does not provide usable analytic DPEM "

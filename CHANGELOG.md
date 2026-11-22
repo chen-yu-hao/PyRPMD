@@ -10,8 +10,10 @@ not been published as a new wheel release; no release date or DOI is assigned.
   e.g. `OH3_PIP_FFW1_2019_DPEM`, `NH3_GEN_FFW1_2006_DPEM`), with `nstates`
   read from the Fortran source and its hash in the identity. `gradient =
   "auto"` (default for these entries) uses upstream analytic `ug` only after a
-  one-time check against `u` and a five-point difference, because energy-only
-  entries return an all-zero matrix and gradient from `ug`; otherwise it
+  one-time check against `u` and a five-point difference at the first frame and
+  three deterministic displacements of it, because energy-only entries return an
+  all-zero matrix and gradient from `ug` and the FFW1 OH3 coupling gradients
+  disagree with its matrix away from planar geometries; otherwise it
   differentiates `u`. `matrices()` returns matrices with one call per frame
   and is used by the subspace path source. Tables
   `{provider = "chempotpy", system, surface, ...}` work in `diabatic_adiabat`

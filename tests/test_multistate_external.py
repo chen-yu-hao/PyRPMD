@@ -295,8 +295,10 @@ def test_generic_chempotpy_dpem_uses_verified_analytic_gradients(tmp_path, monke
     np.testing.assert_allclose(result.matrix, [_toy_matrix(f) * EV_TO_AU for f in x], rtol=0, atol=1e-14)
     np.testing.assert_allclose(result.gradients, [_toy_gradient(f) * EV_TO_AU * BOHR_ANGSTROM for f in x],
                                rtol=0, atol=1e-14)
-    # One verification (1 + 12N u calls, one ug) at the first frame, then one ug per frame.
-    assert calls == {"u": 25, "ug": 3}
+    # Verification at the first frame and three displaced copies (1 + 12N u calls and one ug
+    # each), then one ug per frame.
+    assert calls == {"u": 4 * 25, "ug": 4 + 2}
+    assert dpem.metadata["gradient_check"]["points"] == 4
     assert check_diabatic_potential(dpem, TOY_Q, 3)["max_absolute_gradient_error"] < 1e-9
     before = dict(calls)
     np.testing.assert_allclose(dpem.matrices(TOY_Q), result.matrix, rtol=0, atol=1e-15)
@@ -364,6 +366,32 @@ def test_real_chempotpy_oh3_dpem_if_compiled():
         result = dpem.evaluate(q)
     except (BackendUnavailableError, ImportError) as error:
         pytest.skip(f"ChemPotPy OH3 FFW1 DPEM is not usable here: {error}")
-    assert dpem.nstates == 3 and dpem.metadata["gradient_mode"] == "analytic"
+    # Whatever mode the check selects (FFW1's coupling gradients fail it), the derivatives
+    # must be those of the matrix the adapter returns.
+    assert dpem.nstates == 3 and dpem.metadata["gradient_mode"] in ("analytic", "difference")
     assert check_diabatic_potential(dpem, q, 3, 1e-4)["max_absolute_gradient_error"] < 1e-6
     np.testing.assert_allclose(result.matrix, result.matrix.transpose(0, 2, 1), rtol=0, atol=1e-12)
+
+
+def test_a_symmetric_first_frame_cannot_validate_wrong_coupling_gradients(tmp_path, monkeypatch):
+    api, _, _ = _mock_generic_chempotpy(tmp_path, monkeypatch)
+    correct = api.ug
+
+    def wrong_coupling(system, surface, geom):
+        matrix, gradient = correct(system, surface, geom)
+        x = np.array([row[1:] for row in geom], dtype=float)
+        gradient = gradient.copy()
+        gradient[1, 2, 1] += 0.5 * x[1, 2]  # wrong only where x[1, 2] != 0
+        gradient[2, 1, 1] = gradient[1, 2, 1]
+        return matrix, gradient
+
+    api.ug = wrong_coupling
+    symmetric = TOY_Q[:1].copy()
+    symmetric[0, 1, 2] = 0.0  # the error vanishes in this frame
+    single = ChemPotPyDPEM(system="TOY", surface="TOY_DPEM", symbols=["C", "O"], check_points=1)
+    single.evaluate(symmetric)
+    assert single.metadata["gradient_mode"] == "analytic"  # a one-frame check is fooled
+    robust = ChemPotPyDPEM(system="TOY", surface="TOY_DPEM", symbols=["C", "O"])
+    robust.evaluate(symmetric)
+    assert robust.metadata["gradient_mode"] == "difference"
+    assert "element (1,2)" in robust.metadata["gradient_check"]["reason"]

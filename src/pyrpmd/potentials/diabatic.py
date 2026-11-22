@@ -103,7 +103,8 @@ def make_diabatic_potential(spec, system=None):
         from .multistate_external import ChemPotPyDPEM
 
         allowed = {"provider", "type", "system", "surface", "symbols", "gradient", "difference_step_bohr",
-                   "nstates", "source_sha256", "gradient_check_tolerance"}
+                   "nstates", "source_sha256", "gradient_check_tolerance", "check_points",
+                   "check_displacement_bohr"}
         unknown = set(spec) - allowed
         if unknown:
             raise ValueError(f"unknown chempotpy fields {sorted(unknown)}; allowed: {sorted(allowed)}")

@@ -123,12 +123,27 @@ and hartree with the coordinate chain rule, and `nstates` is read from the Fortr
 | `"analytic"` | upstream `ug`, checked once; a failed check raises |
 | `"difference"` | five-point Cartesian differences of `u` with `difference_step_bohr` (12N+1 calls per frame) |
 
-The check matters because some entries are energy-only. Called through `ug`, such an entry
-prints `Only DPEM is available` and returns an **all-zero matrix and gradient** without raising.
-The check compares `ug` with `u` and with a five-point difference at the first evaluated frame.
-In a compiled ChemPotPy 1.0.7 on Python 3.13, `OH3_PIP_FFW1_2019_DPEM` and
-`NH3_GEN_FFW1_2006_DPEM` passed with their analytic gradients within $10^{-8}$ hartree/bohr of
-the difference. `NaH2_LEPS_5G_1992_DPEM` is energy-only and is differenced.
+The check matters for two reasons. First, some entries are energy-only: called through `ug`,
+such an entry prints `Only DPEM is available` and returns an **all-zero matrix and gradient**
+without raising. Second, the coupling gradients of some entries do not match their own matrix.
+The check compares `ug` with `u` and with a five-point difference at the first evaluated frame
+and at three deterministic random displacements of it (`check_points`, `check_displacement_bohr`).
+A symmetric frame, where a coupling and its gradient error may both vanish, therefore cannot
+pass on its own. In ChemPotPy 1.0.7, compiled here for Python 3.13:
+
+| Entry | `ug` versus differences of `u` | `auto` uses |
+| --- | --- | --- |
+| `NH3_GEN_FFW1_2006_DPEM` | agrees within $10^{-7}$ hartree/bohr | analytic |
+| `OH3_PIP_FFW2_2022_DPEM` | agrees within about $10^{-5}$ hartree/bohr | analytic |
+| `OH3_PIP_FFW1_2019_DPEM` | the gradients of couplings (0,1) and (1,2) are wrong at nonplanar geometries (up to several hartree/bohr; planar frames can pass) | difference |
+| `NaH2_LEPS_5G_1992_DPEM` | energy-only (`ug` returns zeros) | difference |
+
+ChemPotPy returns total energies, for example about $-76.8$ hartree for OH$_3$. Five-point
+differences of such energies with `difference_step_bohr = 1e-4` leave round-off of order
+$10^{-9}$ hartree/bohr in the forces. A Hessian built by differencing those forces can then
+show spurious negative rigid-body eigenvalues. For these polynomial surfaces, a step of
+`1e-3` bohr and a transition-state `hessian_step` of `1e-3` bohr keep that noise below the
+saddle-index tolerance without changing the physical frequencies.
 
 The same DPEM is available from input tables. Symbols default to the atom order of the system:
 
@@ -144,6 +159,22 @@ nstates = 3
 ```
 
 Along the subspace path only `matrices()` is called.
+
+**Fitted domain.** Check that a surface was fitted for the configurations you need. The OH$_3$
+`FFW1` and `FFW2` DPEMs were fitted for reactive quenching of OH(A$^2\Sigma^+$) by H$_2$. Their
+asymptotes are sensible: the OH + H$_2$ van der Waals well is about $-0.6$ kcal/mol, and
+H$_2$O + H lies $-15.0$ (FFW1) or $-15.8$ (FFW2) kcal/mol below OH + H$_2$. On the lowest adiabat,
+however, steepest descent from the ground-state saddle ends in spurious regions:
+
+| Surface | Saddle | Descent towards reactants | Descent towards products |
+| --- | --- | --- | --- |
+| FFW1 | 7.2 kcal/mol, 3900i cm$^{-1}$ | $-22$ kcal/mol | collapses (below $-10^3$ kcal/mol) |
+| FFW2 | 5.1 kcal/mol, 4637i cm$^{-1}$ | well at $-40$ kcal/mol | well at $-31$ kcal/mol |
+
+These regions lie within about 1 angstrom of the saddle. Neither surface is therefore suitable
+for thermal ground-state OH + H$_2$ $\to$ H$_2$O + H rates. Note also that the analytic-gradient
+check is local: FFW1 can pass it near its saddle and fail elsewhere, so prefer
+`gradient = "difference"` for an entry known to fail at generic geometries.
 
 **Installation.** PyPI ChemPotPy ships extensions compiled for Python 3.11 only. For another
 Python, compile the entries you use with f2py, linking LAPACK, inside the installed package:
