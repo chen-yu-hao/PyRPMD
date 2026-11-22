@@ -5,6 +5,22 @@ not been published as a new wheel release; no release date or DOI is assigned.
 
 ## Unreleased
 
+- Conical intersections along the reaction path in the subspace pipeline
+  (research): an `[electronic]` table in `subspace-correct` (and
+  `[rate.subspace_correction.electronic]` in `rate` inputs) computes the
+  nonadiabatic factor `eta_NA` of the 1D path model and applies
+  `C_S * eta_NA`. Electronic geometries lie on the same arc-length spline as
+  the 1D model; energies and adjacent-frame overlaps come from an
+  `ExcitedStateBackend` (`source = "backend"`), a Python callable or a
+  precomputed `.npz` (`source = "file"`, which first writes
+  `electronic_1d_request.npz` and reports `electronic_data_required`). The
+  propagation-diabatized matrix is shifted so that adiabat `state` equals
+  `V_S^(0)` exactly. New gates `electronic_leakage`, `electronic_resolution`
+  and `ground_state_mismatch`; new report fields `nonadiabatic` and
+  `applied_factors`; new files `electronic_1d.npz` (cache) and
+  `multistate_1d.npz`. With `[electronic]`, only dimensions with a valid
+  `eta_NA` are applied (2D is recorded as unsupported). Pipelines without the
+  table are unchanged.
 - Coupled electronic states in a quantum subspace (research, Python API):
   `pyrpmd.analysis.multistate_subspace` adds `MultistateSubspaceModel` (a
   Hermitian diabatic `S x S` matrix, real or complex, on a 1-3D sinc-DVR grid)

@@ -432,6 +432,29 @@ res = apply_subspace_correction(k_rpmd, corr, standard_error=se_rpmd, beta=beta,
 | *(always enabled)* | `resume` | `bool` | `true` | `true`, `false` | — (`correct.toml` / Python API only; reuse atomic per-task checkpoints in `checkpoint_dir`) |
 | *(always `<subspace>/tasks`)* | `checkpoint_dir` | `str` | `<output.directory>/tasks` | Directory path | — (`correct.toml` / Python API only; directory for `<fingerprint>.json` task checkpoints) |
 
+### 2.7 Coupled electronic states (`electronic`, research)
+
+Optional. When present, the 1D path model also receives the nonadiabatic factor
+$\eta_\mathrm{NA}$ and the applied correction is $C_S\,\eta_\mathrm{NA}$; see
+[Coupled electronic states in a subspace](multistate-subspace.md) for the construction, sources and outputs.
+
+| `.inp` key (`[rate.subspace_correction.electronic]`) | `correct.toml` key (`[electronic]`) | Type | Default | Allowed values / range | Physical unit & meaning |
+| --- | --- | --- | --- | --- | --- |
+| `enabled` | `enabled` | `bool` | `true` | `true`, `false` | — (`false` ignores the table) |
+| `source` | `source` | `str` | required | `"backend"`, `"python"`, `"file"` | — (where adiabatic energies and adjacent-frame overlaps come from) |
+| `object` | `object` | `str` | required for `backend`/`python` | `"module:object"` or `"file.py:object"` | — (`ExcitedStateBackend` class/factory, or callable `f(geometry, **arguments)`) |
+| `arguments` | `arguments` | table | `{}` | — | — (keyword arguments of the factory or callable) |
+| `file` | `file` | `str` | required for `file` | `.npz` path | — (`geometries`, `energies`, `overlaps` or `diabatic`) |
+| `nstates` | `nstates` | `int` | required | $2$–$32$ | Retained adiabatic states, ground state included |
+| `state` | `state` | `int` | `0` | $0 \le$ `state` $<$ `nstates` | — (adiabat of the RPMD rate run) |
+| `points` | `points` | `int` or `"grid"` | `64` | $\ge 8$ or `"grid"` | Electronic geometries, even in arc length along the path |
+| `channels` | `channels` | `str` | `"adiabatic"` | `"adiabatic"`, `"diabatic"` | — (product-channel resolution of the coupled-state rate) |
+| `min_singular_value` | `min_singular_value` | `float` | `0.9` | $(0, 1]$ | Dimensionless — `electronic_leakage` gate on adjacent-frame overlaps |
+| `max_interpolation_error_kt` | `max_interpolation_error_kt` | `float` | `0.1` | $> 0$ | $k_B T$ — `electronic_resolution` gate (half-grid spline error of $V_d$) |
+| `max_ground_state_mismatch_kt` | `max_ground_state_mismatch_kt` | `float` | `1.0` | $> 0$ | $k_B T$ — `ground_state_mismatch` gate (shape difference to the rate PES) |
+| `mismatch_window_kt` | `mismatch_window_kt` | `float` | `30.0` | $> 0$ | $k_B T$ — path points within this energy of the path minimum enter the mismatch |
+| `leakage`, `resolution`, `ground_state_mismatch` | same | `str` | `"reject"`, `"reject"`, `"allow"` | `"reject"`, `"allow"` | — (gate policies; `"allow"` is a recorded override) |
+
 ---
 
 (validity-gates)=

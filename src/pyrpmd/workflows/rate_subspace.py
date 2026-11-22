@@ -176,6 +176,8 @@ def postprocess_rate_subspace(config, directory, *, strict=False):
             "path": options["path"], "quantum": options["quantum"], "rpmd": options["rpmd"],
             "output": {"directory": str(target), "reuse": options["reuse"]},
         }
+        if options.get("electronic") is not None:
+            specification["electronic"] = options["electronic"]
         execution = subspace_execution(config, options)
         if execution is not None:
             specification["execution"] = execution

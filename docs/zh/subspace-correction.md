@@ -344,6 +344,12 @@ res = apply_subspace_correction(k_rpmd, corr, standard_error=se_rpmd, beta=beta,
 
 ---
 
+### 2.7 多电子态耦合（`electronic`，research）
+
+可选。设置后，一维路径模型还会得到非绝热因子 $\eta_\mathrm{NA}$，施加的修正为 $C_S\,\eta_\mathrm{NA}$。
+`.inp` 中为 `[rate.subspace_correction.electronic]`，`correct.toml` 中为 `[electronic]`。字段、数据源、
+有效性检查和输出见 [多电子态耦合子空间](multistate-subspace.md)。
+
 (validity-gates)=
 ## 3. 有效性门禁与故障排查表
 

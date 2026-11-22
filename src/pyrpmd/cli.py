@@ -642,7 +642,13 @@ def main(argv=None):
                                                   "dense_limit", "dense_memory_mb") or p.get(k) is not None}
                                      for d, p in report.get("solver_plans", {}).items()},
                     "report": "subspace_pipeline.json in the output directory",
+                    **({"nonadiabatic": {d: {k: r.get(k) for k in ("status", "factor", "reason", "request")}
+                                         for d, r in report["nonadiabatic"].items()}}
+                       if "nonadiabatic" in report else {}),
                 })
+                if report["status"] == "electronic_data_required":
+                    raise SystemExit("subspace-correct: electronic data are required for electronic.source = 'file' "
+                                     "(see nonadiabatic.1.request); no correction factor was applied")
                 if report["status"] == "invalid_model":
                     raise SystemExit("subspace-correct: no subspace model passed the validity gates; "
                                      "no correction factor was applied")
@@ -661,6 +667,7 @@ def main(argv=None):
                     "dimensions_computed": report["dimensions_computed"],
                     "correction_factors": {d: c["factor"] for d, c in report["corrections"].items()},
                     "applied_dimension": report["applied_dimension"],
+                    "applied_factors": report.get("applied_factors"),
                     "rpmd_rate_" + unit: corrected.get("rpmd_rate_estimate_" + unit),
                     "corrected_rate_" + unit: corrected.get("corrected_rate_estimate_" + unit),
                 })

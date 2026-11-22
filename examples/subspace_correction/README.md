@@ -119,3 +119,19 @@ python examples/subspace_correction/molecular_ts_to_cs.py \
 | `instanton_anchor` | Full 9D instanton defect $\varepsilon_{\mathrm{SD}}(H)$ and per-dimension skeleton shifts $A_H - A_{S^0}$ |
 | `corrections.1d`, `corrections.2d_rph` | `unanchored_factor`, `anchored_factor`, `anchor_log_shift`, `log_standard_error`, complement `bead_factor_B_P`, and `effective_multiplier_C_over_B_P` ($C_S / B_P$) |
 | `applied_rate` | Optional `apply_subspace_correction` result when `--rpmd-rate` is supplied |
+
+## Reaction path past a conical intersection (`conical_intersection_path.py`, research)
+
+A 2D model whose diabats cross at $x = 0$ with a coupling $\lambda(y - y_c)$, so a conical
+intersection sits 2.5 transverse widths from the ground-state path. The subspace pipeline
+computes $C_S$ on the ground state, diabatizes scrambled adiabatic data from a Python source
+along the same path, and applies $C_S\,\eta_\mathrm{NA}$ (about $1.67 \times 0.21$ at 300 K):
+
+```bash
+python examples/subspace_correction/conical_intersection_path.py --temperature 300
+python examples/subspace_correction/conical_intersection_path.py --coupling-scale 4   # wider gap, eta -> 1
+```
+
+The script's docstring shows the `[electronic]` table for an excited-state backend. See
+[`docs/multistate-subspace.md`](../../docs/multistate-subspace.md) ([中文](../../docs/zh/multistate-subspace.md)).
+

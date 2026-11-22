@@ -11,7 +11,7 @@ from .validation import finite_real
 _SECTION = "rate.subspace_correction"
 _FIELDS = {"enabled", "mode", "dimension", "environment", "threshold", "reuse", "path", "quantum", "rpmd", "model_2d",
            "anchor", "curvature", "zero_point", "dvr_points", "dvr_half_width", "dvr_spacing", "hessian_displacement",
-           "validity", "execution"}
+           "validity", "execution", "electronic"}
 _EXECUTION = {"cpus", "workers", "blas_threads", "memory_limit_mb"}
 _VALIDITY = {"unconverged_path", "unstable_bath", "outside_grid", "max_outside_fraction",
              "submerged_surface", "max_submerged_kt", "folded_ribbon", "max_curvature_width",
@@ -108,6 +108,20 @@ def rate_subspace_options(config):
         else:
             execution[key] = _integer(value, name, 1)
     options["execution"] = execution
+    # Coupled electronic states along the 1D path (research); checked by the analysis module.
+    if "electronic" in options:
+        from .analysis.subspace_electronic import electronic_options
+
+        try:
+            electronic = electronic_options(options["electronic"])
+        except (TypeError, ValueError) as error:
+            raise InputError(f"{_SECTION}.electronic: {error}") from error
+        if electronic is None:
+            options.pop("electronic")
+        else:
+            if not isinstance(electronic["object"], (str, type(None))):
+                raise InputError(f"{_SECTION}.electronic.object must be a 'module:object' string")
+            options["electronic"] = electronic
     # path.max_steps is optional: without it the continuations have no step budget.
     minima = {"max_steps": 1, "asymptote_patience": 1, "least_action_points": 2, "instanton_beads": 1,
               "instanton_max_iterations": 1, "refinement": 1, "dense_limit": 1, "windows": 4,

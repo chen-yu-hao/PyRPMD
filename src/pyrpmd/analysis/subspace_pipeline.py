@@ -95,6 +95,9 @@ DEFAULTS = {
     "rpmd": {"nbeads": None, "windows": 48, "walkers": 32, "burn_in": 200, "sweeps": 400,
              "trajectories": 512, "seed": 0},
     "output": {"directory": None, "reuse": False},
+    # Coupled electronic states along the 1D path (research): see
+    # pyrpmd.analysis.subspace_electronic.ELECTRONIC_DEFAULTS.  None disables it.
+    "electronic": None,
 }
 
 
@@ -1444,13 +1447,18 @@ def pipeline_identity(root, options):
     saved = json.loads((root / "input" / "resolved.json").read_text(encoding="utf-8"))
     numerical = {k: v for k, v in options.items()
                  if k not in {"enabled", "mode", "reuse", "output", "source"}}
+    if numerical.get("electronic") is not None:
+        from .subspace_electronic import public_options
+
+        numerical["electronic"] = public_options(numerical["electronic"])
     # Hash the implementations too: a source checkout can change without a
     # version bump, and its old numerical result must not silently be reused.
     analysis = Path(__file__).resolve().parent
     implementation = {p.name: file_sha256(p) for p in
                       (analysis / name for name in ("subspace_pipeline.py", "subspace_model.py",
                        "subspace_rph.py", "subspace_quantum.py", "subspace_rpmd.py",
-                       "subspace_correction.py", "centroid_path.py"))}
+                       "subspace_correction.py", "centroid_path.py", "multistate_subspace.py",
+                       "subspace_electronic.py"))}
     implementation["instanton.py"] = file_sha256(analysis.parent / "instanton.py")
     return fingerprint_payload({"schema": 1, "version": __version__, "files": files,
                                 "potential_files": referenced_files({"potential": saved["potential"]}),
@@ -1511,7 +1519,9 @@ def _prepare_pipeline(options, base, reuse_key, run=None):
 def _build_cases(run, out_dir, options, base, reuse_key):
     """Build the path and subspace models and list the corrections still to solve."""
     from ..io import file_sha256
+    from .subspace_electronic import electronic_options
 
+    electronic = electronic_options(options.get("electronic"))
     out_dir.mkdir(parents=True, exist_ok=True)
     mean, mask, path, path_info = build_path(
         run, dict(options["path"], product_drop_kt=options["quantum"].get("product_drop_kt", 15.0),
@@ -1599,11 +1609,12 @@ def _build_cases(run, out_dir, options, base, reuse_key):
                 corrections[d] = saved
                 models[d] = previous.get("models", {}).get(str(d), {"reused": True})
                 dimensions.remove(d)
+    environment1 = {k: options["subspace"].get(k) for k in
+                    ("environment", "curvature", "zero_point", "dvr_points", "dvr_half_width", "dvr_spacing")}
+    model1 = quantum1 = None
     if 1 in dimensions:
-        environment = {k: options["subspace"].get(k) for k in
-                       ("environment", "curvature", "zero_point", "dvr_points", "dvr_half_width", "dvr_spacing")}
         model1, quantum1, info1 = path_model(
-            run, path, {**options["quantum"], **environment, **gating},
+            run, path, {**options["quantum"], **environment1, **gating},
             path_source=path_info.get("source", "mep"),
         )
         gates1 = admit(1, dict(model=model1, beta=run.beta, nbeads=nbeads, quantum_options=quantum1,
@@ -1628,6 +1639,11 @@ def _build_cases(run, out_dir, options, base, reuse_key):
                                                                {**options["quantum"], **environment, **gating})
         admit(2, dict(model=model2, beta=run.beta, nbeads=nbeads, quantum_options=quantum2,
                       rpmd_options=rpmd_options, rpmd_model=rpmd_model2), info2)
+    nonadiabatic = {}
+    if electronic is not None:
+        nonadiabatic = _nonadiabatic_records(run, path, path_info, options, electronic, out_dir, base,
+                                             gating, environment1, model1, quantum1, cases, corrections,
+                                             rejected, dimensions, diagnose)
     execution = options.get("execution")
     if execution is not None:
         execution = dict(execution)
@@ -1638,7 +1654,55 @@ def _build_cases(run, out_dir, options, base, reuse_key):
     return dict(out_dir=out_dir, nbeads=nbeads, options=options, cases=cases, execution=execution,
                 corrections=corrections, models=models, path=path, path_info=path_info, sampled_cw=sampled_cw,
                 static_cw=static_cw, verdict=verdict, reuse_key=reuse_key, rejected=rejected,
-                escalation=escalation, capacity=capacity, previous_anchor=previous_anchor)
+                escalation=escalation, capacity=capacity, previous_anchor=previous_anchor,
+                electronic=electronic, nonadiabatic=nonadiabatic)
+
+
+def _nonadiabatic_records(run, path, path_info, options, electronic, out_dir, base, gating, environment,
+                          model1, quantum1, cases, corrections, rejected, dimensions, diagnose):
+    """``eta_NA`` for the 1D path model; other dimensions are recorded as unsupported.
+
+    The electronic structure is only computed for a 1D model that will carry
+    (or already carries) a correction, or under ``on_invalid = "diagnose"``.
+    """
+    from .subspace_electronic import nonadiabatic_path_factor
+
+    records = {}
+    wanted = 1 in cases or (1 in corrections and corrections[1].valid) or (diagnose and 1 in rejected)
+    if wanted:
+        if model1 is None:
+            # The 1D factor was reused from disk; rebuild its model (no rate solve).
+            model1, quantum1, _ = path_model(run, path, {**options["quantum"], **environment, **gating},
+                                             path_source=path_info.get("source", "mep"))
+        records[1] = nonadiabatic_path_factor(run, path, model1, quantum1, electronic, out_dir, base=base,
+                                              reuse=bool(options["output"].get("reuse")))
+    else:
+        reason = ("the 1D single-surface model was rejected before solving" if 1 in rejected
+                  else "no 1D single-surface model was requested")
+        records[1] = {"dimension": 1, "valid": False, "factor": None, "status": "not_computed", "reason": reason}
+    for dimension in sorted(set(dimensions) | set(corrections) | set(rejected)):
+        if dimension != 1:
+            records[dimension] = {
+                "dimension": int(dimension), "valid": False, "factor": None, "status": "unsupported",
+                "reason": "coupled electronic states are implemented for the 1D path model only "
+                          "(2D needs a coupling-direction plane, 2D diabatization and an iterative solver)"}
+    return records
+
+
+def _with_nonadiabatic(correction, record):
+    """``C_S`` times ``eta_NA`` as one applicable correction, keeping both factors in its diagnostics."""
+    from dataclasses import replace
+
+    eta = float(record["factor"])
+    diagnostics = dict(correction.diagnostics)
+    diagnostics.update({
+        "single_surface_factor": correction.factor,
+        "nonadiabatic_factor": eta,
+        "nonadiabatic": {k: record.get(k) for k in ("multistate_rate", "born_oppenheimer_rate", "branching",
+                                                     "channel_basis", "approximation", "validity")},
+    })
+    return replace(correction, factor=correction.factor * eta, quantum_rate=correction.quantum_rate * eta,
+                   diagnostics=diagnostics)
 
 
 def _solver_plan(dimension, case, memory_limit_mb=None):
@@ -1807,6 +1871,21 @@ def _finish_pipeline(state, computed, apply):
     # Only models that passed every gate are evidence about the defect; the
     # others keep their record (and component rates) but decide nothing.
     usable = {d: c for d, c in corrections.items() if c.valid}
+    electronic = state.get("electronic")
+    nonadiabatic = state.get("nonadiabatic") or {}
+    electronic_warnings = []
+    if electronic is not None:
+        for d, record in nonadiabatic.items():
+            single = corrections.get(d)
+            if single is not None and record.get("born_oppenheimer_rate") and single.quantum_rate > 0:
+                record["single_surface_quantum_rate"] = float(single.quantum_rate)
+                record["born_oppenheimer_consistency"] = float(record["born_oppenheimer_rate"] / single.quantum_rate - 1.0)
+        dropped = sorted(d for d in usable if not nonadiabatic.get(d, {}).get("valid"))
+        if dropped:
+            electronic_warnings.append(
+                "electronic states are requested, so only dimensions with a valid nonadiabatic factor are applied; "
+                "dropped " + ", ".join(f"{d}D ({nonadiabatic.get(d, {}).get('status', 'missing')})" for d in dropped))
+        usable = {d: c for d, c in usable.items() if nonadiabatic.get(d, {}).get("valid")}
     sensitivity = nested_subspace_sensitivity(list(usable.values())) if len(usable) > 1 else None
     gates_2d = (rejected.get(2) or (corrections[2].validity if 2 in corrections else {})).get("gates", [])
     truncation_blocked_2d = (
@@ -1822,6 +1901,8 @@ def _finish_pipeline(state, computed, apply):
             reason = "no subspace model passed; the solver plan refused " + ", ".join(f"{d}D" for d in sorted(capacity))
         elif solve_failures:
             reason = "no subspace model passed; solving failed for " + ", ".join(f"{d}D" for d in sorted(solve_failures))
+        if electronic is not None and any(c.valid for c in corrections.values()):
+            reason = "no dimension has both a valid C_S and a valid nonadiabatic factor eta_NA"
     elif truncation_blocked_2d:
         chosen = None
         reason = ("curvature x width requires a 2D subspace, and the 2D model failed the truncation gate "
@@ -1837,7 +1918,16 @@ def _finish_pipeline(state, computed, apply):
         chosen = verdict if verdict in usable else max(usable)
         reason = "nested sensitivity undetermined; curvature x width verdict"
     target = out_dir / "rate_quantum_corrected.json"
-    corrected = correct_rate_run(run.root, usable[chosen], output=target) if apply and chosen is not None else None
+    applied_factors = None
+    if chosen is not None:
+        applied_correction = usable[chosen]
+        applied_factors = {"single_surface": usable[chosen].factor, "nonadiabatic": None,
+                           "total": usable[chosen].factor}
+        if electronic is not None:
+            applied_correction = _with_nonadiabatic(usable[chosen], nonadiabatic[chosen])
+            applied_factors.update(nonadiabatic=float(nonadiabatic[chosen]["factor"]),
+                                   total=applied_correction.factor)
+    corrected = correct_rate_run(run.root, applied_correction, output=target) if apply and chosen is not None else None
     if chosen is None and target.is_file():
         # A corrected rate from an earlier run must not outlive the model it came from.
         try:
@@ -1853,13 +1943,15 @@ def _finish_pipeline(state, computed, apply):
                                       "overrides": [], "gates": [], "solve_failure": failure}
     if chosen is not None:
         status = "complete"
+    elif electronic is not None and any(r.get("status") == "electronic_data_required" for r in nonadiabatic.values()):
+        status = "electronic_data_required"
     elif capacity:
         status = "solver_capacity_exceeded"
     elif solve_failures:
         status = "failed"
     else:
         status = "invalid_model"
-    warnings = []
+    warnings = list(electronic_warnings)
     attempted = set(corrections) | set(rejected) | set(solve_failures)
     if chosen is not None and verdict > chosen and verdict in attempted:
         warnings.append(f"curvature x width recommends a {verdict}D subspace, but only {chosen}D passed; "
@@ -1892,7 +1984,15 @@ def _finish_pipeline(state, computed, apply):
         "reuse_key": reuse_key,
         "correction_files": {f"C_S_{d}d.json": file_sha256(out_dir / f"C_S_{d}d.json") for d in corrections},
         "options": {k: v for k, v in options.items()},
+        "applied_factors": applied_factors,
     }
+    if isinstance(options.get("electronic"), Mapping):
+        from .subspace_electronic import public_options
+
+        # Live objects (callables, backends) are reported by their import names.
+        report["options"]["electronic"] = public_options(electronic or options["electronic"])
+    if electronic is not None:
+        report["nonadiabatic"] = {str(d): record for d, record in sorted(nonadiabatic.items())}
     if anchor_report is not None:
         report["instanton_anchor"] = anchor_report
     report = _json_safe(report)
