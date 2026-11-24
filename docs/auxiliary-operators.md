@@ -1,7 +1,3 @@
----
-orphan: true
----
-
 # Auxiliary operators in the propagation stack
 
 PyRPMD represents electronic mapping variables and other non-nuclear degrees of freedom as **auxiliary operators**. The protocol is implemented in `pyrpmd.auxiliary` and re-exported by `pyrpmd.engine`; `NRPMDDynamics` is the first adapter. The design separates three responsibilities:

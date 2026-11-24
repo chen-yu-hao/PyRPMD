@@ -101,7 +101,7 @@ environment and test it outside the source tree, so an editable install cannot m
 module. Wheel names depend on Python and the platform; install the file that was built.
 
 Portable release wheels now use the separate
-[distribution workflow](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/distribution.md):
+[distribution workflow](../distribution.md):
 cibuildwheel builds CPython 3.11–3.14 wheels and tests each installed artifact. The same
 guide covers opt-in PyPI/TestPyPI trusted publishing and the conda-forge submission
 procedure. The local conda recipe builds and tests packages without uploading them.

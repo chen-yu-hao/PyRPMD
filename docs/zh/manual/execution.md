@@ -106,7 +106,7 @@ threads_per_rank = 1
 
 rank 数为 `1 + trajectory_groups * bead_workers`，上例需要五个 rank。
 world rank 0 负责调度，空闲轨迹组继续领取任务；GPU 模式下调度 rank 不占 GPU 槽。
-静态调度仍为默认。动态选项适用于 MPI，`pes_ranks=1` 约束继续有效。
+静态调度仍为默认；MPI 下 `pes_ranks=1` 约束继续有效。单机多核 CPU 模式（`backend="process"`、`mode="serial"`、`bead_workers=1`、`coordinator_ranks=0`）同样支持 `scheduling="dynamic"` 动态队列，详见[单机 CPU 动态轨迹调度（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/process-scheduling.md)。
 
 ```bash
 mpiexec -n 5 pyrpmd run examples/drpmd/mpi_dynamic.py --output runs/dynamic-mpi
@@ -167,7 +167,7 @@ pyrpmd checkpoint runs/example/checkpoints/ACTUAL_FILE.npz --require-integrity
 `Dynamics.propagate()` 只在每一步都成功时提交整块；`propagate_block()` 保留成功的步骤前缀。工作流在热浴、观测、hill
 沉积和检查点边界提交状态。PES 失败后，异常信息和保存的阶段信息给出运行停止的位置；修正原因后从最后的检查点续跑。
 
-详细约定见[并行](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/parallel.md)、
+详细约定见[并行](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/zh/parallel.md)、
 [原生传播](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-propagation.md)、
 [分段 API](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/block-propagation.md)和
 [检查点](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/checkpoints.md)。

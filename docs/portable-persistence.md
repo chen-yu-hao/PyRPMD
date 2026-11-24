@@ -1,7 +1,3 @@
----
-orphan: true
----
-
 # Portable publication and rate archives
 
 This T18 follow-up repairs three persistence problems found during the first

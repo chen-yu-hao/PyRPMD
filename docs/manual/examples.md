@@ -25,6 +25,7 @@ its production summary.
 | [double-well WT-MetaD](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/tutorials/double_well_metad/README.md) | Exact bin-integrated Boltzmann density | 93.95 s | passed |
 | [free diffusion](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/tutorials/free_diffusion/README.md) | kBT/(m gamma) | 31.07 s | passed |
 | [harmonic spectroscopy](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/tutorials/harmonic_spectroscopy/README.md) | sqrt(k/m) centroid frequency | 95.36 s | passed; 0.225 cm⁻¹ difference within 2.545 cm⁻¹ half-bin bound |
+| [reactive D + H₂ exchange](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/tutorials/exchange_rate/README.md) | Matched dRPMD, UI-BC and MBAR-BC thermal rates on an analytic C ABI PES | pending | 3-SEM cross-route comparison (`compare.py`) |
 
 Use a fresh output directory and run the tutorial's comparison command. These
 fixed-model checks do not certify arbitrary production systems; see
@@ -50,19 +51,26 @@ measurements from the tutorial batch above. Unmeasured entries are `pending`.
 | `examples/nonadiabatic/rpsh_population.inp` | Centroid RPSH on Tully I with optional energy-based decoherence | pending | [Nonadiabatic populations](nonadiabatic.md) |
 | `examples/nonadiabatic/extensions/` | SM-NRPMD, CA-RP-MASH, BA/DM RPSH, DBOC and complex SOC inputs | pending | [Extended methods](../nonadiabatic-workflow.md) |
 | `examples/nonadiabatic/extensions/nah2_sm_nrpmd.inp` | Published NaH2 molecular two-state PES with Cartesian gradients | pending | [Molecular potentials](../molecular-nonadiabatic.md) |
+| `examples/excited_state/toy_rpsh.py` | On-the-fly adiabatic excited-state surface hopping with phase-tracked NACs | ~1 s | [Excited-state interface](../excited-state-interface.md) |
 | `examples/rate/research.inp` | Explicit reaction, independent TS checks, regional windows and separate parent/child stages | pending | [Rate input guide](../rate-input-v2.md) |
 | `examples/rate/subspace.inp`, `examples/subspace_correction/eckart_bath_2d.py`, `molecular_ts_to_cs.py` | Low-$T$ native `rate` with `[rate.subspace_correction]` (`--stage subspace`), 2D Eckart benchmark, and umbrella-free 9D Cartesian TS $\to$ $C_S, B_P$ | ~20–50 s | [Subspace rate correction](../subspace-correction.md) |
 | `examples/rate/pilot.inp` | Legacy schema-1 TS preparation, PMF and recrossing | ~15 s | [Gas phase and free energy](workflows.md) |
 | `examples/rate/general_coordinate.inp` | `site_rate` along a smooth nonlinear centroid coordinate | pending | [General-coordinate rates](../general-coordinate-rates.md) |
+| `examples/rpmdrate_import/` | Convert an RPMDrate Python input (`import-rpmdrate`) and verify resolved settings | ~1 s | [RPMDrate import](../rpmdrate-import.md) |
 | `examples/studies/site_rate.json`, `drpmd.json` | `pyrpmd study` temperature/isotope/convergence scans; inspect with `--plan` | pending | [Rate studies](../rate-studies.md) |
 | `examples/network/two_entrances.py` | Two entrances, four TS/PES paths | ~25 s | [Gas phase and free energy](workflows.md) |
 | `examples/metadynamics/well_tempered_2d.inp` | 2D well-tempered metadynamics | ~2 s | [Gas phase and free energy](workflows.md) |
 | `examples/metadynamics/standard.inp` | Standard constant-height metadynamics on a quartic model | ~1 s | [Gas phase and free energy](workflows.md) |
 | `examples/opes/harmonic_2d.inp` | OPES adaptation, frozen-bias relaxation and histogram reweighting | ~3 s | [OPES](../opes.md) |
+| `examples/tempering/double_well.inp`, `hremd_umbrella.inp` | Parallel tempering (`mode="temperature"`) and Hamiltonian replica exchange (`mode="hamiltonian"`) | ~2 s | [Tempering](../tempering.md) |
 | `examples/plumed/centroid_metadynamics.py` | Optional PLUMED centroid MetaD with explicit kernel updates | pending | [PLUMED](../plumed.md) |
 | `examples/sampling/transition_interface.py` | Four interface ensembles on a confined double-well model | ~7 s | [TIS](../transition-interface-sampling.md) |
 | `examples/instanton/eckart.py` | Ring-polymer instanton and quantum cross-check on an Eckart barrier | ~1 s | [Instantons](../instanton.md) |
 | `examples/quantum_statistics/harmonic_validation.py` | Higher-order PIMD estimators against analytic harmonic results | ~13 s | [Quantum statistics](../quantum-statistics.md) |
+| `examples/path_integral/bosonic.inp`, `fermionic.inp`, `bosonic_winding_npt.inp` | Bosonic/fermionic exchange recursion, periodic winding numbers and PIGS | ~2–5 s | [Path-integral actions](../tier2-path-integral.md) |
+| `examples/spectroscopy/pacmd.inp`, `mixed_trpmd.inp`, `fqcmd_water.py`, `harmonic_properties.py` | PA-CMD, mixed TRPMD, f-QCMD water and IR/Raman/SFG property spectra | ~2–10 s | [Spectroscopy](../tier2-spectroscopy.md), [QCMD](../qcmd.md) |
+| `examples/ml_lifecycle/committee.inp`, `delta_rpc.inp`, `closed_loop.py` | Committee uncertainty monitoring, $\Delta$-learning with RPC and active-learning loop | ~2 s | [ML model lifecycle](../tier2-ml-lifecycle.md) |
+| `examples/anharmonic_quantum/`, `examples/anharmonic_3d_validation/` | Controlled RPMD response correction and 3D anharmonic quantum subspace benchmarks | pending | [Quantum correction](../quantum-correction.md) |
 | `examples/nonadiabatic/method_models.py`, `soc_and_rpsh.py`, `thermal_rates.py` | KC-/MV-/isomorphic RPMD, SOC-NRPMD and RPSH, thermal NRPMD rate curves | 1–3 s | [Nonadiabatic](nonadiabatic.md) |
 
 ```bash
@@ -106,8 +114,9 @@ pyrpmd run examples/pcet/harmonic_scan.inp --output runs/tutorial-pcet
 pyrpmd resume runs/tutorial-pcet
 ```
 
-Further inputs: `examples/pesgen/` ([PES generation](pes-generation.md), [JaxPIP](jaxpip-generation.md)),
-`examples/potentials/` (periodic Torch model, on-the-fly tblite/PySCF), `examples/drpmd/*.py`
+Further inputs: `examples/notebooks/` ([six interactive Jupyter notebooks](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/notebooks/README.md) covering PESs, reaction rates, periodic materials, Torch GPU acceleration, C++ ONNX JaxPIP and JAX DLPack GPU dynamics),
+`examples/pesgen/` ([PES generation](pes-generation.md), [JaxPIP](jaxpip-generation.md)),
+`examples/potentials/` (periodic Torch model, batched ML potentials, on-the-fly tblite/PySCF), `examples/drpmd/*.py`
 (Python, Torch, bead, MPI and GPU layouts), `examples/slurm/` (cluster job scripts) and
 `examples/analysis/reference-rates.csv` (the `pyrpmd report --reference` format).
 

@@ -70,11 +70,13 @@ Python PES 或偏置回调仍由 Python 调度。单独选择的原生 PIMD 引�
 | 安装选项 | 启用功能 | 另需 |
 | --- | --- | --- |
 | `python -m pip install -e '.[ase]'` | ASE calculator 势能 | calculator 的模型或程序 |
+| `python -m pip install -e '.[openmm]'`、`'.[lammps]'` | OpenMM 与 LAMMPS 力场/势能适配器 | 对应的力场或势能文件 |
 | `python -m pip install -e '.[mpi]'` | MPI 轨迹组与珠子分块 | 与 mpi4py 匹配的 MPI 库和启动器 |
-| `python -m pip install -e '.[gpu]'` | Torch 势能 | 与节点驱动匹配的 PyTorch/CUDA 及模型 |
+| `python -m pip install -e '.[gpu]'`、`'.[jax]'` | Torch 势能（`torch`）与零拷贝 JAX DLPack 势能（`jax-dlpack`） | 与节点驱动匹配的 PyTorch/JAX 及模型 |
 | `python -m pip install -e '.[plots]'` | Matplotlib 出图与 `pyrpmd report` 的 HTML/JSON 分析报告 | 保存的 PyRPMD 结果；出报告不需要外部 PES |
 | `python -m pip install -e '.[analysis]'` | PyMBAR 对照及绘图依赖 | 常规 FES 使用内置 MBAR |
 | `python -m pip install -e '.[mace]'`、`'.[nequip]'`、`'.[fairchem]'`、`'.[deepmd]'` | 现成的 ML 势能 provider | 模型检查点 |
+| `python -m pip install -e '.[mace-batched]'`、`'.[nequip-batched]'`、`'.[fairchem-batched]'`、`'.[deepmd-batched]'`、`'.[metatomic]'` | 原生张量批处理 ML 势能 provider（`*-batched`、`metatomic`） | 模型检查点；见[批处理 ML 势能（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/batched-ml-potentials.md) |
 | `python -m pip install -e '.[tblite]'`（别名 `xtb`）、`'.[pyscf]'` | 即时 xTB 与 HF/DFT provider | 无 |
 | `python -m pip install -e '.[pesgen]'` | [势能生成](pes-generation.md)中的 PySCF 参考数据 | 可选原生 Caracal 工具；JaxPIP 有单独固定的依赖栈，见 [JaxPIP](jaxpip-generation.md) |
 | `python -m pip install -e '.[test]'` | pytest 测试 | 缺少可选接口时相应测试跳过 |

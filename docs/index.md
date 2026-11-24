@@ -16,6 +16,8 @@ go straight to your task:
 | --- | --- | --- |
 | Gas-phase bimolecular RPMD rate | `rate` | [Gas phase and free energy](manual/workflows.md) |
 | Automatic AUS sampling and recrossing | `rate` with `auto = true` | [Automatic rate](automatic-rate.md) |
+| Import RPMDrate inputs into PyRPMD | `import-rpmdrate` command | [RPMDrate import](rpmdrate-import.md) |
+| Precision-driven thermal RPMD rate control | `precision` command | [Rate precision control](rate_precision.md) |
 | Direct collisions and product channels | `drpmd` | [Gas phase](manual/workflows.md); [NRPMD](manual/nonadiabatic.md) |
 | Model electronic populations and coherences | `nonadiabatic` | [Population workflow](nonadiabatic-workflow.md) |
 | Collisions from selected incoming vibrational states (NE-RPMD, QCT) | `drpmd` + `[initial_ensemble]`; `state-check`, `extend` commands | [Gas phase](manual/workflows.md#selected-vibrational-initial-states) |
@@ -26,11 +28,13 @@ go straight to your task:
 | Rate matrix for several entrances and transition states | `network` | [Gas phase and free energy](manual/workflows.md) |
 | Standard or well-tempered metadynamics, shared walkers | `fes` + `method="metadynamics"` | [Unified enhanced sampling](enhanced-sampling.md) |
 | OPES probability-based sampling | `fes` + `method="opes"` | [Unified enhanced sampling](enhanced-sampling.md), [OPES](opes.md) |
-| Replica-exchange umbrellas | `fes` + `[replica_exchange]` | [Replica exchange](replica-exchange.md) |
+| ABF, eABF, steered MD, VES, string and learned CVs | `fes` + `method="abf" \| "eabf" \| "steered" \| "ves"` | [Extended CVs and sampling](tier2-sampling.md) |
+| Replica-exchange umbrellas and parallel tempering | `fes` + `[replica_exchange]`; `[tempering]` | [Replica exchange](replica-exchange.md), [Parallel tempering](tempering.md) |
 | Optional PLUMED centroid biases | `plumed` / Python API | [PLUMED bridge](plumed.md) |
-| Transition-interface path ensembles | Python API | [Transition-interface sampling](transition-interface-sampling.md) |
+| Transition-interface path ensembles | `path_sampling` / Python API | [Transition-interface sampling](transition-interface-sampling.md) |
 | Equilibrium nuclear quantum statistics and energy estimators | `pimd` | [Materials and surfaces](manual/periodic.md) |
-| C++ PIMD driver: SVR, GLE, PIGLET, FFL thermostats; BZP/MTTK/RGB/SCR NPT | `pimd` + `sampling.engine="native"`; `pyrpmd-native` | [Materials and surfaces](manual/periodic.md#native-pimd-engine) |
+| C++ PIMD driver: SVR, GLE, PIGLET, FFL thermostats; BZP/MTTK/RGB/SCR NPT | `pimd` + `sampling.engine="native"`; `pyrpmd-native` | [Materials and surfaces](manual/periodic.md#native-pimd-engine), [Native ensembles](native-ensembles.md) |
+| Tensor PIMD and RPMD transport on Torch/GPU potentials | `pimd`, `diffusion` + `sampling.engine="torch"` | [Tensor materials workflows](torch-materials-workflows.md) |
 | RPMD self-diffusion, MSD, VACF | `diffusion` | [Materials and surfaces](manual/periodic.md) |
 | Directed site-to-site hop in a material | `site_rate` | [Materials and surfaces](manual/periodic.md) |
 | Directed escape on a fixed substrate | `surface_rate` | [Materials and surfaces](manual/periodic.md) |
@@ -39,18 +43,19 @@ go straight to your task:
 | Adaptive restrained paths with constant-potential thermal NRPMD | Python API | [Adaptive NRPMD paths](manual/adaptive-nrpmd.md) |
 | Smooth nonlinear centroid escape coordinate | `site_rate` | [General-coordinate rates](general-coordinate-rates.md) |
 | Temperature, isotope and numerical convergence scans | `pyrpmd study` | [Rate studies](rate-studies.md) |
-| Instanton paths and one-dimensional low-temperature rates | Python API | [Instantons](instanton.md) |
-| Multidimensional instanton rates, splittings and TST/Wigner/Eckart | Python API / cached-Hessian CLI | [Low-temperature cross-checks](low-temperature.md) |
-| Thermal NRPMD, surface hopping, SOC, KC-/MV-RPMD, electronic friction | Python API; `diffusion` + `[electronic_friction]` | [Nonadiabatic dynamics](manual/nonadiabatic.md) |
-| Ab initio reference data, fitted PES, JaxPIP and native ONNX export | `python -m pyrpmd.pesgen`, Python API | [PES generation](manual/pes-generation.md), [JaxPIP](manual/jaxpip-generation.md) |
+| Instanton paths and one-dimensional low-temperature rates | `instanton` command / Python API | [Instantons](instanton.md) |
+| Multidimensional instanton rates, splittings and TST/Wigner/Eckart | `instanton` command / Python API | [Low-temperature cross-checks](low-temperature.md), [Phase projection](tunnelling-phase-projection.md) |
+| Variational transition-state theory and SCT | `vtst` command / Python API | [VTST and SCT](vtst.md) |
+| Thermal NRPMD, surface hopping, SOC, KC-/MV-RPMD, electronic friction | Python API; `diffusion` + `[electronic_friction]` | [Nonadiabatic dynamics](manual/nonadiabatic.md), [Excited-state interface](excited-state-interface.md) |
+| Ab initio reference data, fitted PES, JaxPIP and native ONNX export | `python -m pyrpmd.pesgen`, Python API | [PES generation](manual/pes-generation.md), [JaxPIP](manual/jaxpip-generation.md), [JaxPIP/Torch GPU rates](jaxpip-gpu-rate.md) |
 | Higher-order equilibrium sampling and quantum estimators | Python API | [Quantum statistics](quantum-statistics.md) |
 | Exact quantum references and controlled RPMD response correction | Python API | [Quantum correction](quantum-correction.md) |
 | RPMD rate × exact 1–3D subspace quantum correction | `rate` (`[rate.subspace_correction]`); `subspace-correct` command; Python API | [Subspace rate correction](subspace-correction.md) |
-| PA-CMD and relative IR/Raman/SFG spectra | `spectroscopy` | [Spectroscopy](tier2-spectroscopy.md) |
+| PA-CMD, QCMD and relative IR/Raman/SFG spectra | `spectroscopy` | [Spectroscopy](tier2-spectroscopy.md), [QCMD](qcmd.md) |
 | Suzuki–Chin, bosonic exchange and PIGS | `pimd` + `[path_integral]` | [Path-integral actions](tier2-path-integral.md) |
 | Condensed-phase SC energy/Cv/Cp/pressure, SC-NPT, PIGLET-NPT and RPC virial | SC workflow, native PIGLET or Python RPC | [Condensed-phase NQE validation](condensed-phase-nqe.md) |
 | Thermal nonadiabatic population-flux calculation | `nonadiabatic-rate` command | [Direct data and rates](tier2-nonadiabatic.md) |
-| Method coverage, ML lifecycle and remaining gaps | Input / Python APIs | [Tier 2 overview](tier2-methods.md) |
+| Method coverage, ML lifecycle and remaining gaps | Input / Python APIs | [Tier 2 overview](tier2-methods.md), [ML lifecycle](tier2-ml-lifecycle.md) |
 
 The examples use analytic model potentials so they run in seconds. Before a production study,
 work through [Scientific conventions and convergence](manual/science.md).
@@ -86,8 +91,8 @@ Python equivalents are `prepare`, `run`, `analyze_run` and `resume_run`; see the
 | --- | --- |
 | Getting started | [Installation](manual/installation.md) · [Quickstart](manual/quickstart.md) · [Input and CLI](manual/input.md) · [Scientific conventions](manual/science.md) |
 | Tasks | [Gas phase and free energy](manual/workflows.md) · [Materials and surfaces](manual/periodic.md) · [PCET](manual/pcet.md) · [Electrode models](manual/electrochemistry.md) · [Nonadiabatic NRPMD](manual/nonadiabatic.md) · [Examples](manual/examples.md) |
-| Models and runs | [Potentials and plugins](manual/potentials.md) · [PES generation](manual/pes-generation.md) · [JaxPIP fitting](manual/jaxpip-generation.md) · [Execution, parallelism and restart](manual/execution.md) · [Output and analysis](manual/results.md) · [Automatic analysis and figures](manual/analysis-reports.md) |
-| Dynamics extensions | [Common propagation stack](propagation-stack.md) · [Expensive potentials](performance-dynamics.md) · [Trajectory batching](batched-dynamics.md) · [RPC/MTS](rpc-mts.md) · [Mixed sampling](mixed-sampling.md) · [TRPMD and spectra](trpmd-spectroscopy.md) |
+| Models and runs | [Potentials and plugins](manual/potentials.md) · [PES generation](manual/pes-generation.md) · [JaxPIP fitting](manual/jaxpip-generation.md) · [Execution, parallelism and restart](manual/execution.md) · [Progress and logs](manual/progress.md) · [Output and analysis](manual/results.md) · [Automatic analysis and figures](manual/analysis-reports.md) |
+| Dynamics extensions | [Common propagation stack](propagation-stack.md) · [Auxiliary operators](auxiliary-operators.md) · [Expensive potentials](performance-dynamics.md) · [Trajectory batching](batched-dynamics.md) · [Batched ML potentials](batched-ml-potentials.md) · [RPC/MTS](rpc-mts.md) · [Mixed sampling](mixed-sampling.md) · [TRPMD and spectra](trpmd-spectroscopy.md) |
 | Reference | [Original papers](manual/references.md) · [Reproduction checklist](manual/reproduction.md) · [Python API](manual/api.md) · [Troubleshooting](manual/troubleshooting.md) · [Developer guide](manual/development.md) |
 
 ```{toctree}
@@ -111,8 +116,13 @@ Gas phase <manual/workflows>
 Rate PMF selection <rate-pmf-selection>
 Explicit rate input and regional umbrellas <rate-input-v2>
 Automatic AUS rate calculations <automatic-rate>
+Importing RPMDrate inputs <rpmdrate-import>
+Precision-driven rate control <rate_precision>
 Transition-state search <transition-state-search>
 Materials and surfaces <manual/periodic>
+Tensor PIMD and RPMD transport <torch-materials-workflows>
+PIMD engine convergence <pimd-engine-convergence>
+Native thermostat and barostat trajectories <native-ensembles>
 PCET <manual/pcet>
 Electrode models <manual/electrochemistry>
 Nonadiabatic dynamics <manual/nonadiabatic>
@@ -123,21 +133,28 @@ Nonadiabatic comparison and gaps <nonadiabatic-comparison>
 SM-NRPMD and RP-MASH <nonadiabatic-spin-methods>
 BA/DM hopping, DBOC and SOC <nonadiabatic-hopping-extensions>
 Molecular multistate potentials <molecular-nonadiabatic>
+Online excited-state interface <excited-state-interface>
 Electronic propagation performance <nonadiabatic-performance>
 Potentials and plugins <manual/potentials>
+Built-in native potentials <builtin-native-potentials>
+Batched ML potentials <batched-ml-potentials>
 PES generation <manual/pes-generation>
 JaxPIP fitting and native execution <manual/jaxpip-generation>
+JAX DLPack and Torch GPU rates <jaxpip-gpu-rate>
 Execution <manual/execution>
 Progress and structured logs <manual/progress>
 Propagation stack <propagation-stack>
+Auxiliary operators <auxiliary-operators>
 Expensive potentials <performance-dynamics>
 Trajectory batching <batched-dynamics>
 RPC/MTS <rpc-mts>
 Mixed sampling <mixed-sampling>
 Condensed-phase nuclear quantum effects <condensed-phase-nqe>
 TRPMD and spectra <trpmd-spectroscopy>
+Quasi-centroids and f-QCMD <qcmd>
 Output and analysis <manual/results>
 Standard trajectory formats <trajectory-export>
+Portable persistence and rate archives <portable-persistence>
 Bond constraints <bond-constraints>
 rate-postprocessing
 Automatic analysis and figures <manual/analysis-reports>
@@ -146,6 +163,8 @@ General-coordinate rates <general-coordinate-rates>
 Rate studies <rate-studies>
 Instantons <instanton>
 Low-temperature cross-checks <low-temperature>
+Tunnelling phase projection <tunnelling-phase-projection>
+Variational TST and SCT <vtst>
 Quantum statistics <quantum-statistics>
 Quantum correction <quantum-correction>
 Subspace rate correction <subspace-correction>
@@ -166,6 +185,7 @@ ML model lifecycle <tier2-ml-lifecycle>
 Andersen collision timing <andersen-sampling>
 Unified FES and enhanced sampling <enhanced-sampling>
 Replica exchange <replica-exchange>
+Parallel temperature and Hamiltonian tempering <tempering>
 OPES <opes>
 PLUMED bridge <plumed>
 Transition-interface sampling <transition-interface-sampling>
@@ -187,9 +207,12 @@ Developer guide <manual/development>
 Stability and compatibility <development/stability>
 Archive migration <development/archive-migration>
 Review history <development/review-history>
+Implementation review (2026-11-03) <implementation-review-2026-11-03>
+Validation-data archive plan <data-archive-plan>
 Distribution and releases <distribution>
 Literature validation <literature-validation>
 Publication readiness <publication-readiness>
+CUDA and large-system performance <t19-performance>
 Dynamics validation <validation/tier1-2026-10-31/README>
 PMF diagnostic replay <validation/tier1-2026-10-31/pmf-replay>
 ```

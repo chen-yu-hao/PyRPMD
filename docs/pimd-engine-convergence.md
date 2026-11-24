@@ -1,6 +1,3 @@
----
-orphan: true
----
 # PIMD engine convergence and checkpoint compatibility
 
 The standard `pimd` and fixed-cell `diffusion` workflows now select their

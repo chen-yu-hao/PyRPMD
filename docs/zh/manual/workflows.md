@@ -1,7 +1,7 @@
 # 气相反应、自由能与增强采样
 
 本章介绍 `rate`、`drpmd`、`fes`、`network` 和 `metadynamics`。从仓库根目录运行命令，每个计算使用新的输出目录。
-三种 FES 方法现在统一使用 `task="fes"` 加 `[fes] method="umbrella" | "metadynamics" | "opes"`。
+各类 FES 方法统一使用 `task="fes"` 加 `[fes] method="umbrella" | "metadynamics" | "opes" | "abf" | "eabf" | "steered" | "ves"`。
 公共结果、旧入口兼容、三维伞形、共享 walkers 与外部 PMF 见[统一增强采样](../enhanced-sampling.md)。
 周期材料与固定表面见[材料与表面](periodic.md)，局域电化学见 [PCET](pcet.md)，单位与归一化见[科学概念](science.md)。
 
@@ -23,14 +23,24 @@ pyrpmd resume runs/manual-rate
 [输入](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/rate/pilot.inp)使用解析势 `toy_exchange.py`，
 从 `ts.xyz` 开始，用 4 个珠子和较短的采样，约 15 秒完成。`prepare --pilot` 执行数值准备。
 
-只给出 TS 时，准备程序检查力、找到数值 Hessian 的不稳定模，并沿两个方向下降以识别两个入口片段。通道有歧义时，
-显式给出 `reaction.fragments`、`forming_bonds` 和 `breaking_bonds`。
+从 TS 初猜出发时，数值准备用 P-RFO 优化非驻点坐标，检查力与数值 Hessian 的不稳定模，并沿两个方向下降以识别两个入口片段。
+若改为提供一对 `system.reactant` 与 `system.product` 端点几何，则先执行 CI-NEB 搜索，再接 P-RFO 精修与相同的鞍点校验。
+优化后的 TS 提供速率坐标和采样参考。当通道有歧义时，显式给出 `reaction.fragments`、`forming_bonds` 和 `breaking_bonds`。
+
+[过渡态搜索指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/transition-state-search.md)包含控制参数、原子顺序映射要求、适用边界以及可运行的端点示例：
+
+```bash
+pyrpmd prepare examples/rate/from_endpoints.inp --pilot
+pyrpmd run examples/rate/from_endpoints.inp --output runs/manual-endpoint-rate
+```
 
 ### 设置自己的体系
 
 | 输入部分 | 决定的内容 | 检查 |
 | --- | --- | --- |
-| `system.transition_state` | TS 参考几何与原子顺序 | 与 PES、同位素和成断键一致 |
+| `system.transition_state` | TS 初猜几何与原子顺序 | 与 PES、同位素和成断键一致 |
+| `system.reactant`、`system.product` | 用于 CI-NEB 的完整端点几何 | 原子顺序一致、公共参考系、位于目标势阱 |
+| `reaction.preparation` | 鞍点精修、路径搜索与连通性控制 | 力收敛、单一不稳定模、端点连通性匹配 |
 | `reaction.fragments`、成断键 | 入口片段与反应坐标 | 0 起始索引、原子守恒、通道定义 |
 | `reaction.rinf` | 远区归一化距离 | 改变时片段是否解耦、长程势的影响 |
 | `umbrella` | 窗口中心、范围、刚度 | 从反应物参考点到分割面的连通采样支持 |
@@ -49,7 +59,7 @@ pyrpmd resume runs/manual-rate
 
 | 文件 / 摘要字段 | 含义 |
 | --- | --- |
-| `preparation.json` | TS 准备：Hessian 本征值、下降端点、识别的反应与诊断 |
+| `preparation.json` | 优化后的 TS、CI-NEB 路径/能量与 P-RFO 诊断（若启用搜索）、Hessian 本征值、下降端点及识别的反应 |
 | `rate_pmf.csv`、`rate_pmf.npz` | 速率 PMF、支持区域及相关数组 |
 | `rate_pmf.json` | PMF 势垒及误差、$k_{\mathrm{QTST}}$、分割面 `xi_star` 与诊断 |
 | `recrossing.csv`、`recrossing.npz` | 完整 $\kappa(t)$ 曲线、误差与 bootstrap 信息 |
@@ -69,8 +79,8 @@ pyrpmd resume runs/manual-rate
 自适应运行需分别查看 `pmf.adaptive_umbrella.production_target_met` 与 `pilot_target_met`。
 速率非空或 pilot 成功，都不证明生产采样充分或物理收敛。见[验收流程](science.md#评估自适应伞抽样结果)。
 
-数学定义见[速率约定](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/science.md)和
-[UI / MBAR 说明](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/mbar-rate-pmf.md)。
+数学定义见[速率约定](science.md)和
+[UI / MBAR 说明](../rate-pmf-selection.md)。
 [H₃/BKMP2 基准](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/h3/README.md)在已发表的反应势能面上运行完整工作流。
 
 ### 扩展固定窗口速率生产采样
@@ -191,7 +201,7 @@ QCT 要求一个珠子，NE-RPMD 至少两个。仓库示例使用不发生交�
 
 ## 一维与二维自由能：`fes`
 
-`fes` 在一个或两个 CV 上做伞抽样，用 MBAR 去偏置，得到这些坐标上的概率密度自由能。
+`fes`（`method="umbrella"`）在一至三个 CV 维度上做伞抽样，用 MBAR 去偏置，得到这些坐标上的概率密度自由能。
 
 ```bash
 pyrpmd validate examples/fes/harmonic2d.inp --check-pes
@@ -241,7 +251,7 @@ pyrpmd analyze runs/manual-adaptive --recompute --bins 30 --bootstrap 20
 增加预算或解释 FES 前先检查统计诊断。
 
 自适应伞抽样适用于 `fes`、表面 `fes` 和 `rate` PMF，在声明的区域内细化窗口；`surface_rate` 和 `site_rate`
-使用固定窗口。参数见[增强采样规范](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/enhanced-sampling.md)。
+使用固定窗口。参数见[增强采样规范](../enhanced-sampling.md)。
 
 ## 多入口、多过渡态：`network`
 
@@ -305,7 +315,7 @@ standard 模式的自由能估计为 $F\approx -V+C$，WT 模式为 $F\approx-\g
 可选的[网格偏置](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/grid-metadynamics.md)通过局部插值使每步偏置查询量与历史长度无关。
 网格默认间距不超过 `sigma/5`；网格加密需要独立检查，非周期 CV 超出范围会报错并回滚该步。
 Metadynamics 只输出自由能估计。三维估计可用 `pyrpmd project RUN --axes 0 1 --output NEW` 约化到一或两个 CV，
-见[输出与分析](results.md)。方法与续跑时序见[增强采样规范](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/enhanced-sampling.md)。
+见[输出与分析](results.md#速率后处理fes-投影与自动报告)。方法与续跑时序见[增强采样规范](../enhanced-sampling.md)。
 
 ## 原始方法出处与复现任务
 

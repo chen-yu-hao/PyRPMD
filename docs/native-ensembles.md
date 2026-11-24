@@ -1,6 +1,3 @@
----
-orphan: true
----
 # Native thermostat and barostat trajectories
 
 `pyrpmd.native_ensemble.NativeEnsemble` is the persistent C++17 executor used

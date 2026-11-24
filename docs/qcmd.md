@@ -1,7 +1,3 @@
----
-orphan: true
----
-
 # Molecular quasi-centroids and experimental f-QCMD
 
 PyRPMD provides an experimental **f-QCMD** production route for nonperiodic,

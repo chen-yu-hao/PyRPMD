@@ -175,7 +175,7 @@ electronic-state-resolved contributions.
 
 Collisions start from a chosen incoming diabatic electronic state that is decoupled at long range.
 Initial conditions, impact parameters and classification follow ordinary dRPMD; see the
-[gas-phase workflows](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/manual/workflows.md).
+[gas-phase workflows](workflows.md).
 
 ## Run the example
 

@@ -1,7 +1,3 @@
----
-orphan: true
----
-
 # Tensor PIMD and RPMD transport workflows
 
 `sampling.engine="torch"` connects the existing float64, device-resident

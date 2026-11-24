@@ -1,7 +1,3 @@
----
-orphan: true
----
-
 # Importing RPMDrate rate inputs
 
 `pyrpmd import-rpmdrate` records a trusted RPMDrate Python input and writes a

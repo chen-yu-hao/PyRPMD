@@ -69,7 +69,9 @@ RPMD, the PIMD energy estimators and the ring Hamiltonian separately.
 ## Restart and files
 
 `run` never overwrites a non-empty directory. Use `resume DIR` to continue and a new directory for
-new scientific settings. A physics-fingerprint mismatch means the system, method or dependencies
+new scientific settings; to seed a new calculation from an earlier run's configuration, use
+`run INPUT --output NEW --init-from OLD` (see [warm start](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/checkpoints.md#warm-start-a-new-run-from-an-old-configuration)).
+A physics-fingerprint mismatch means the system, method or dependencies
 changed; a container verification failure means the saved state is damaged.
 
 Ordinary geometric CVs (`distance`, `angle`, `bond_difference`) use unwrapped geometry; minimum

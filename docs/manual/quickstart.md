@@ -17,7 +17,9 @@ pyrpmd run my-first-run/quickstart.inp --output my-first-run/run
 pyrpmd analyze my-first-run/run
 ```
 
-`init` writes `quickstart.inp` into a new or empty directory and prints the next commands. It
+`init` writes `quickstart.inp` into a new or empty directory and prints the next commands
+(`--task fes` is the default; `--task pimd`, `--task rate` and `--task drpmd` write self-contained
+starters for those workflows). It
 refuses a nonempty destination, so use another name when starting a separate example. If your
 shell cannot find `pyrpmd`, use `python -m pyrpmd` with the same arguments.
 

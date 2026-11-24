@@ -1,7 +1,3 @@
----
-orphan: true
----
-
 # Online excited-state electronic-structure interface
 
 PyRPMD's excited-state provider layer connects on-the-fly electronic-structure

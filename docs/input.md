@@ -20,7 +20,7 @@ below remain supported for old inputs and checkpoints.
 | Field | Type, units and meaning |
 | --- | --- |
 | `schema_version` | 1 (legacy, default); 2 selects the new explicit rate defaults. Dedicated model schemas remain separate. |
-| `task` | `rate`, `drpmd`, `fes`, `surface_rate`, `network`, `metadynamics`, `opes`, `pcet`, `pimd`, `diffusion`, `site_rate` |
+| `task` | `rate`, `drpmd`, `fes`, `surface_rate`, `network`, `pcet`, `pimd`, `diffusion`, `site_rate`, `nonadiabatic`, `spectroscopy`, `path_sampling`, `plumed` (plus deprecated aliases `metadynamics`, `opes`) |
 | `preset` | `pilot` (default) or `production` |
 | `temperature` | Positive temperature, for example `"300 K"`; bare numbers also mean K |
 | `beads` | Positive integer; `auto` uses P=32 only in a pilot and marks it unconverged |

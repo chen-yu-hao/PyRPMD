@@ -30,19 +30,18 @@ print(summary.get("files", {}))
 
 ## FES：密度、概率质量与自由能
 
-FES 写出 `fes.npz`、`fes.csv` 和 `fes.h5`；摘要中的 `files` 给出路径。CSV 每个 CV 一个坐标列，并含以下列：
+FES 写出 `fes.npz`、`fes.csv` 和 `fes.json`（伞形 FES 另写出 `fes.h5`）；摘要中的 `files` 给出路径。CSV 每个 CV 一个坐标列，并含以下列：
 
 | 列 | 含义 |
 | --- | --- |
 | `cv0_bohr` 等 | 网格中心；列名带单位 |
 | `free_energy_hartree` | 由概率密度得到的相对自由能 |
-| `standard_error_hartree` | 计算时给出的 bootstrap 标准误 |
-| `probability_mass` | 该格的概率质量 |
-| `density` | 单位 CV 体积上的概率密度 |
-| `masked` | 没有采样支持或被诊断排除的格子 |
+| `uncertainty_hartree` | 伞形采样的分块 bootstrap 标准误（`1 SE`），或 MetaD/OPES 的独立副本离散度（`1 SD`）；不可用时为 `NaN` |
+| `masked` | 没有采样支持或被诊断排除的格子（`1` 为屏蔽，`0` 为有支持） |
+| `uncertainty_masked` | 主误差估计不可用的格子（`1` 为屏蔽，`0` 为可用） |
 | `raw_count` | 该格的样本数 |
 
-概率质量与密度相差格子体积。在相同的 CV、分箱和测度下比较 FES 曲线；气相速率使用单独的 `rate_flux` PMF。
+数组容器 `fes.npz`（以及伞形采样的 `fes.h5`）另保存多维数组 `probability_mass`（格子概率质量）、`density`（单位 CV 体积的概率密度）、`edges_0` 等网格边界、`standard_error` 与 `replica_spread`。概率质量与密度相差格子体积。在相同的 CV、分箱和测度下比较 FES 曲线；气相速率使用单独的 `rate_flux` PMF（`rate_pmf.csv` 中误差列名为 `standard_error_hartree`）。
 
 ```python
 import numpy as np

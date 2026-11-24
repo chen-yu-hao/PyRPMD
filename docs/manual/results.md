@@ -33,20 +33,19 @@ runs with `pyrpmd resume`.
 
 ## FES: density, probability mass and free energy
 
-FES writes `fes.npz`, `fes.csv` and `fes.h5`; `files` in the summary gives the paths. The CSV has one coordinate column per CV and these columns:
+FES writes `fes.npz`, `fes.csv` and `fes.json` (umbrella FES also writes `fes.h5`); `files` in the summary gives the paths. The CSV has one coordinate column per CV and these columns:
 
 | Column | Meaning |
 | --- | --- |
 | `cv0_bohr`, … | Grid centers; the column name carries the unit |
 | `free_energy_hartree` | Relative free energy from the probability density |
-| `standard_error_hartree` | Bootstrap standard error, when computed |
-| `probability_mass` | Probability mass of the cell |
-| `density` | Probability density per unit CV volume |
-| `masked` | Cells without sampling support or excluded by diagnostics |
+| `uncertainty_hartree` | Block-bootstrap standard error (`1 SE`) for umbrella sampling, or independent-replica spread (`1 SD`) for MetaD/OPES; `NaN` when unavailable |
+| `masked` | Cells without sampling support or excluded by diagnostics (`1` masked, `0` supported) |
+| `uncertainty_masked` | Cells where the primary uncertainty is unavailable (`1` masked, `0` available) |
 | `raw_count` | Number of samples in the cell |
 
-Probability mass and density differ by the cell volume. Compare FES curves on the same CV, binning
-and measure; gas-phase rates use the separate `rate_flux` PMF.
+The archive `fes.npz` (and `fes.h5` for umbrella sampling) additionally stores the multidimensional arrays `probability_mass`, `density`, `edges_0` (…), `standard_error` and `replica_spread`. Probability mass and density differ by the cell volume. Compare FES curves on the same CV, binning
+and measure; gas-phase rates use the separate `rate_flux` PMF (`rate_pmf.csv` uses `standard_error_hartree`).
 
 ```python
 import numpy as np

@@ -1,7 +1,3 @@
----
-orphan: true
----
-
 # Validation-data archive plan
 
 This is an additive preservation plan. T01 inventories the checkout and proposes

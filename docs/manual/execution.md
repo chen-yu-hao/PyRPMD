@@ -124,8 +124,10 @@ threads_per_rank = 1
 
 This uses `1 + trajectory_groups * bead_workers` ranks: five in this example. World rank 0
 coordinates the queue; each free group requests another task. The static layout remains the
-default. `pes_ranks=1` still applies. Dynamic scheduling is an MPI option, not a new local
-process backend. In GPU mode the coordinator consumes no GPU slot.
+default. `pes_ranks=1` still applies. In GPU mode the coordinator consumes no GPU slot.
+Single-host CPU ensembles (`backend="process"`, `mode="serial"`, `bead_workers=1`,
+`coordinator_ranks=0`) also support `scheduling="dynamic"` using bounded spawn workers; see
+[dynamic CPU trajectory scheduling](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/process-scheduling.md).
 
 ```bash
 mpiexec -n 5 pyrpmd run examples/drpmd/mpi_dynamic.py --output runs/dynamic-mpi

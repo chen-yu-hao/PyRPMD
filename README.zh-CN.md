@@ -34,7 +34,9 @@ pyrpmd analyze first-run/run
 starter 在几秒内算出谐振子的质心自由能，其精确解为 $F(x)=\tfrac12 kx^2$；
 [快速入门](docs/zh/manual/quickstart.md)给出了对比方法，结果与精确解相差约 0.1 $k_BT$。
 下面的教程对其他任务做同样的对照。
-使用 `pyrpmd resume first-run/run` 可恢复已有计算。
+使用 `pyrpmd resume first-run/run` 可恢复已有计算。在另一终端运行
+`pyrpmd status first-run/run --watch` 可查看已提交进度与阶段 ETA；
+覆盖范围、未知预算与 MPI/多进程行为见[进度监控与结构化日志](docs/zh/manual/progress.md)。
 
 ![势垒附近的环聚合物示意图](docs/_static/gifs/ring_polymer.gif)
 

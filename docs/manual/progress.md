@@ -119,16 +119,3 @@ is stale.
 Neither `completed`, 100%, nor a fresh heartbeat establishes physical
 convergence. Continue checking the task's saved diagnostics, warnings and
 [convergence criteria](../convergence.md).
-
-## 中文速览
-
-用 `pyrpmd status RUN_DIR` 读取 JSON；用 `pyrpmd status RUN_DIR --watch`
-在另一个终端刷新阶段、已提交步数、预算百分比和当前阶段 ETA。
-`--interval 5` 调整查询间隔，`--json` 强制逐行 JSON 输出。
-Ctrl-C 只退出查询，不会停止计算。
-
-进度文件是原子更新的 `progress.json`，结构化日志是 `run.log.jsonl`。
-日志由主进程／MPI rank 0 输出到 stderr，stdout 仍保留最终结果 JSON。
-统计只反映已保存的 checkpoint，未知或自适应预算显示 `null`，不会伪造百分比。
-恢复或扩展计算会使用新的日志批次；ETA 不把恢复前已完成的历史当作新完成的工作。
-心跳过期仅表示状态可能陈旧，不能据此判断远程进程已退出；计算完成也不等于科学收敛。

@@ -14,7 +14,7 @@ pyrpmd run my-first-run/quickstart.inp --output my-first-run/run
 pyrpmd analyze my-first-run/run
 ```
 
-`init` 在新目录或空目录中写入 `quickstart.inp` 并打印下一步命令；非空目录会被拒绝，开始另一个例子时请换一个名字。
+`init` 在新目录或空目录中写入 `quickstart.inp` 并打印下一步命令（缺省为 `--task fes`，也支持 `--task pimd`、`--task rate` 和 `--task drpmd` 生成相应工作流的自包含入门模板）；非空目录会被拒绝，开始另一个例子时请换一个名字。
 若 shell 找不到 `pyrpmd`，可使用 `python -m pyrpmd` 加相同参数。
 
 `validate` 检查输入、单位、任务限制和资源设置；`--check-pes` 还会构造势能并完成数值准备。`run`

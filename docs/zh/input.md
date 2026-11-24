@@ -14,7 +14,7 @@
 | 字段 | 类型、单位与含义 |
 | --- | --- |
 | `schema_version` | 1（旧版、缺省）；2 启用新的显式反应默认值。专用模型 schema 不变。 |
-| `task` | `rate`、`drpmd`、`fes`、`surface_rate`、`network`、`metadynamics`、`pcet`、`pimd`、`diffusion`、`site_rate` |
+| `task` | `rate`、`drpmd`、`fes`、`surface_rate`、`network`、`pcet`、`pimd`、`diffusion`、`site_rate`、`nonadiabatic`、`spectroscopy`、`path_sampling`、`plumed`（以及已弃用别名 `metadynamics`、`opes`） |
 | `preset` | `pilot`（缺省）或 `production` |
 | `temperature` | 正温度，例如 `"300 K"`；数值也按 K 解释 |
 | `beads` | 正整数；`auto` 只在 pilot 中使用 P=32 并标记未收敛 |
@@ -49,6 +49,11 @@ Python 或 TOML 也可提供 `symbols`、`geometry=[[...], ...]` 与 `masses`（
 固定晶胞使用 `cell=[[...],[...],[...]]`（每行一个矢量）、`cell_unit="angstrom"`
 及 `pbc=[true,true,false]`。有 cell 时默认全周期，无 cell 时默认非周期。
 晶胞、部分 PBC、连续质心坐标及支持的势能接口见[材料计算](../materials.md)。
+
+`system.bond_constraints` 接受 `[{atoms=[0,1], length="0.9572 angstrom"}]` 等记录。
+这些逐珠键长约束目前要求 `velocity-verlet`、Andersen 采样以及固定晶胞的 `pimd` 或 `diffusion`；
+支持的组合与受约束系综范围见[键约束指南](../bond-constraints.md)。
+
 ## 周期表面
 
 周期表面新增 `system.cell`（3×3 行向量）、`cell_unit`（缺省继承 geometry_unit；inline 默认 bohr，XYZ 默认 angstrom）、
@@ -164,7 +169,23 @@ electronic_weight = 1.0
 乘一次路径数。`electronic_weight` 和额外的 `symmetry_factor` 仍由用户
 根据势能和通道定义给出；`reaction.entry_side` 可选择数值下坡两端之一。
 
-`[recrossing]` 的主要字段是 `parent_replicas`、`parent_samples`、`equilibration`、`parent_interval`、`child_pairs`、`child_time`、`dividing_surface`、`plateau_fraction`、`plateau_tolerance`、`bootstrap`。时间也可用相应 `_steps` 字段。每个 child pair 以相反动量传播，禁止以未计算的 κ=1 替代回穿。完整可运行语法见 `examples/rate/pilot.inp`。
+### 温度相关的电子配分因子
+
+除了固定的 `electronic_weight`，也可在 `[reaction.electronic]` 中列出过渡态和各反应物片段（按 `fragments` 顺序）的电子能级，由 PyRPMD 在作业温度下计算
+
+    electronic_weight(T) = Q_el^TS(T) / prod_r Q_el^r(T),   Q_el(T) = sum_i g_i exp(-E_i / k_B T)
+
+并在 `pyrpmd study` 温度扫描中对每个温度重新求值：
+
+```toml
+[reaction.electronic]
+transition_state = "doublet"                 # 最低反应势能面，自旋二重态
+reactants = ["Cl(2P)", "singlet"]            # Cl(2P3/2, 2P1/2) + H2(X 1Σg+)
+```
+
+每项可以是预设名、能级列表（如 `[{energy = 0, degeneracy = 4}, {energy = "882.3515 cm-1", degeneracy = 2}]` 或 `[[energy, degeneracy], ...]`，裸数值为 hartree），或 `{preset = ...}` / `{levels = [...]}` 表。预设包括 `singlet`、`doublet`、`triplet`、`H(2S)`、`F(2P)`、`Cl(2P)`、`Br(2P)`、`I(2P)`、`O(3P)` 和 `S(3P)`；原子精细结构能级取自 NIST ASD（以最低 J 能级为零点）。`electronic_weight` 与 `[reaction.electronic]` 互斥；解析后的数值与各物种对数配分函数记录在 `reaction.electronic_weight_model` 中。Python 用户也可直接调用 `pyrpmd.electronic_partition.electronic_weight(ts, reactants, temperature)`。
+
+`[recrossing]` 的主要字段是 `parent_replicas`、`parent_samples`、`equilibration`、`parent_interval`、`child_pairs`、`child_time`、`dividing_surface`、`plateau_fraction`、`plateau_tolerance`、`bootstrap`。时间也可用相应 `_steps` 字段。每个 child pair 以相反动量传播，禁止以未计算的 κ=1 替代回穿。推荐使用 `examples/rate/research.inp` 的分阶段语法；`examples/rate/pilot.inp` 保留旧版平铺形式。
 
 ### 速率 PMF 后端与分割面
 

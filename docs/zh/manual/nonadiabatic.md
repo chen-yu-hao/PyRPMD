@@ -137,7 +137,7 @@ hopping/event 内核。现有 focused / harmonic-reference 初始化不是这些
 NRPMD 是 `task="drpmd"` 的实验性模式。它在每个核珠子上加入电子 mapping 变量，在完整的 diabatic 势能矩阵上同时
 推进电子与核，并把电子布居与化学产物分类器结合，给出电子态分辨的贡献。
 
-碰撞从一个指定的入射 diabatic 电子态出发，该态在远区解耦。初始条件、碰撞参数和分类沿用普通 dRPMD，见[气相工作流](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/zh/manual/workflows.md)。
+碰撞从一个指定的入射 diabatic 电子态出发，该态在远区解耦。初始条件、碰撞参数和分类沿用普通 dRPMD，见[气相工作流](workflows.md)。
 
 ## 运行示例
 
