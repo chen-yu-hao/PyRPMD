@@ -91,18 +91,23 @@ finally:
 
 | Provider | 用途 |
 | --- | --- |
-| `builtin` / `free` / `harmonic` 等 | 解析模型势 |
+| `builtin` / `free` / `harmonic` / `morse_pair` / `double_well` / `periodic_cosine` | 解析模型势（含 C++ 编译加速路径，见[内置原生势能（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/builtin-native-potentials.md)） |
 | `python` | `module:factory` 或 `file.py:factory`；包装自己的模型 |
 | `rpmdrate` / `f2py` | 旧 Fortran 包装，`(3,N,B)` 布局与正梯度 |
 | `cabi` / `native` | C ABI v1/v2；v2 支持晶胞、PBC、物理 virial 和批量求值 |
 | `native_periodic` | 由 C++ PIMD 驱动（`sampling.engine="native"`）直接调用的编译周期求值函数；`library`、`function`；签名见 `native/include/pyrpmd/thermal_pes.h` |
 | `ase` | factory 返回 ASE Calculator；处理 eV/Å、晶胞/PBC 与 stress |
+| `openmm`、`lammps` | 常驻 OpenMM `Context` 与 LAMMPS 力场引擎适配器 |
 | `torch` | 分子或显式支持晶胞/PBC 的周期 Torch 模型 |
-| `ipi` | 多客户端持久连接池，并行计算不同珠子 |
+| `jax-dlpack` | 零拷贝 `float64` JAX/XLA 势能（`model`、`factory` 或 `function`），支持 CPU/CUDA DLPack 桥接 |
+| `jaxpip` | 由 [`pyrpmd.pesgen`](jaxpip-generation.md) 拟合的线性 PIP 或 PIP-NN 分子势能面 |
+| `ipi` / `socket` | 多客户端持久连接池，并行计算不同珠子 |
 | `mace`、`nequip`、`fairchem` | 复用 ASE Calculator 的现成 ML 适配器 |
+| `mace-batched`、`nequip-batched`、`fairchem-batched`、`deepmd-batched`、`metatomic` | 原生张量批处理 ML 势能适配器（支持 CPU/CUDA 环聚合物批处理）；见[批处理 ML 势能（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/batched-ml-potentials.md) |
 | `deepmd` | DeepPot 原生结构批处理 |
 | `tblite` / `xtb` | 即时 GFN1/GFN2/IPEA1-xTB |
 | `pyscf` | 分子 HF/DFT 及解析核梯度 |
+| `committee`、`delta` | 委员会不确定度监控（`members`）与 $\Delta$-learning（`reference`、`correction`）组合包装器；见[ML 模型生命周期（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/tier2-ml-lifecycle.md) |
 | `diabatic_python` | 实验性 NRPMD 的实对称或复 Hermitian 矩阵势及其梯度 |
 
 电子计算中 D 和 T 按氢传递，同时保留各自的核质量。

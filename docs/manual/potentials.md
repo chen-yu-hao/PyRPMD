@@ -96,18 +96,23 @@ finally:
 
 | Provider | Use |
 | --- | --- |
-| `builtin` / `free` / `harmonic`, … | Analytic model potentials |
+| `builtin` / `free` / `harmonic` / `morse_pair` / `double_well` / `periodic_cosine` | Analytic model potentials (with compiled C++ fast paths; see [Built-in native potentials](../builtin-native-potentials.md)) |
 | `python` | `module:factory` or `file.py:factory`; wraps your own model |
 | `rpmdrate` / `f2py` | Legacy Fortran wrappers with `(3,N,B)` layout and positive gradients |
 | `cabi` / `native` | Versioned C ABI v1/v2 libraries; v2 adds cells/PBC and physical virials |
 | `native_periodic` | Compiled periodic evaluator called directly by the C++ PIMD driver (`sampling.engine="native"`); `library`, `function`; signature in `native/include/pyrpmd/thermal_pes.h` |
 | `ase` | The factory returns an ASE Calculator; handles eV/Å, cell/PBC and stress |
+| `openmm`, `lammps` | Persistent OpenMM `Context` and LAMMPS force-engine adapters |
 | `torch` | Batched molecular or explicitly cell-aware periodic Torch models |
-| `ipi` | Persistent i-PI client pool, evaluating multiple beads concurrently |
+| `jax-dlpack` | Zero-copy `float64` JAX/XLA potential (`model`, `factory` or `function`) with CPU/CUDA DLPack handoff |
+| `jaxpip` | Fitted linear PIP or PIP-NN molecular PES from [`pyrpmd.pesgen`](jaxpip-generation.md) |
+| `ipi` / `socket` | Persistent i-PI client pool, evaluating multiple beads concurrently |
 | `mace`, `nequip`, `fairchem` | Ready-made reusable ASE calculators for explicit ML checkpoints |
+| `mace-batched`, `nequip-batched`, `fairchem-batched`, `deepmd-batched`, `metatomic` | Native tensor-batched ML potential adapters for CPU/CUDA ring-polymer batches; see [Batched ML potentials](../batched-ml-potentials.md) |
 | `deepmd` | DeePMD `DeepPot` with native structure batching |
 | `tblite` / `xtb` | On-the-fly GFN1/GFN2/IPEA1-xTB through tblite |
 | `pyscf` | Molecular HF/DFT with analytic nuclear gradients |
+| `committee`, `delta` | Committee uncertainty monitoring (`members`) and delta-learning (`reference`, `correction`) wrappers; see [ML model lifecycle](../tier2-ml-lifecycle.md) |
 | `diabatic_python` | Real symmetric or complex Hermitian matrix potential with gradients for experimental NRPMD |
 
 For electronic calculations, D and T are passed as hydrogen and keep their nuclear masses.

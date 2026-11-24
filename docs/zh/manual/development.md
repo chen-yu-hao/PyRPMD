@@ -55,17 +55,15 @@ manifest 身份；提供 `extras` 时使用采样流身份，排除纯分析与�
 修改公共接口时，在同一提交中更新文档、示例以及检查数值与状态行为的测试。修改采样测度、力、约束、随机流或续跑身份时，
 附上科学依据和回归测试。
 
-[实现与使用指南审查记录](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/implementation-guide-audit-2026-10-31.md)
-列出审查范围、按优先级排序的待办事项、已落实修复与尚需验证的边界。
-
-[2026-10-31 用户体验审查](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/ux-review-2026-10-31.md)
-记录本次审查范围、按优先级排列的待办事项、已实施的修复与后续工作。
+历史实现审查结论及其依据汇总在[开发审查归档（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/development/review-history.md)中，其中包括：
+[实现与使用指南审查记录](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/implementation-guide-audit-2026-10-31.md)与
+[2026-10-31 用户体验审查](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/ux-review-2026-10-31.md)。
 
 ## 运行测试
 
 ```bash
 python -m pip install -e '.[test,ase]'
-python -m pytest -q
+python -m pytest -q -m "not campaign"
 git diff --check
 ```
 

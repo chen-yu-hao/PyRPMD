@@ -132,14 +132,8 @@ pyrpmd resume runs/manual-pimd
 科学身份仍兼容的已完成旧任务可在不加载 PES 的情况下迁移存储布局。旧 ASE-backed 运行须按
 [力一致能量约定](potentials.md) 使用新输出目录，已存摘要仍可读取。
 离线相关分析仍加载标量或所选原子的历史，需要单独预算内存。
-详见[流式存储](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/streaming-trajectories.md)。输运性质使用 `diffusion`。
-
-### 原生 PIMD 引擎
-
-`sampling.engine="native"` 选择单独的 C++ 系综引擎。它要求兼容的内置或编译势能，提供更多恒温器、NVT 固定原子支持，
-以及各有适用限制的 BZP、MTTK、RGB 或 SCR barostat。输出使用事务式 `samples/native_pimd_NNNN/journal.json`
-和不可变数据块，不使用默认的材料检查点布局。切换引擎会改变运行身份。完整输入输出约定及示例见
-[原生 PIMD 指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md)；下方 BZP 参数表属于默认引擎。
+详见[流式存储](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/streaming-trajectories.md)。
+`pimd` + `[path_integral]` 的高阶路径积分作用量（Suzuki–Chin、玻色交换与 PIGS）见[路径积分作用量（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/tier2-path-integral.md)；GPU 驻留的 Torch 材料 PIMD 与扩散（`sampling.engine="torch"`）见[Torch 材料工作流（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/torch-materials-workflows.md)。输运性质使用 `diffusion`。
 
 ### 恒压 PIMD
 
@@ -358,7 +352,7 @@ Cu/EMT、Ni–H/EAM 和 CO/O/Pt(111) 示例分别检验不同的模型与工作�
 5. 改变面内超胞、层数、真空、覆盖度及冻结层选择，分别报告模型精度、有限尺寸、统计及数值收敛。
    单一有向一阶速率不能直接给出总逃逸率、粘附概率、周转频率或电导率。
 
-[周期材料审查与 TODO](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/periodic-materials-audit.md)
+[周期材料审查与 TODO](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/zh/periodic-materials-audit.md)
 记录实现发现、开源项目对照及尚待完成的验证。
 
 ## 原始方法出处与复现任务

@@ -16,7 +16,7 @@ from pyrpmd import JobSpec, prepare, run, resume_run, extend_run, analyze_run
 | `JobSpec.with_overrides(...)` | 返回应用覆盖后的新配置 |
 | `JobSpec.resolve()` | 返回 `(config, identity)`；identity 是 `System` 或 PCET 模型 |
 | `prepare(job, numerical=False)` | 返回准备信息；`numerical=True` 执行模型准备并调用 PES |
-| `run(job, output=None, resume=False, init_from=None, init_index=None, init_bias=False)` | 运行任务，在 root rank 返回 JSON 兼容的摘要；`init_from` 从旧运行的构型热启动新运行（见[热启动](../warm-start.md)） |
+| `run(job, output=None, resume=False, init_from=None, init_index=None, init_bias=False, stage="all")` | 运行任务，在 root rank 返回 JSON 兼容的摘要；`init_from` 从旧运行的构型热启动新运行（见[热启动](../warm-start.md)） |
 | `resume_run(directory, parallel=None, execution=None, adaptive_budget=None)` | 按保存的输入与检查点续跑；可覆盖执行资源或增加自适应 FES/rate pilot 的预算 |
 | `extend_run(directory, *, max_time=None, production_steps=None)` | 必须且只能授权一种总预算：dRPMD 从发射计的时限，或固定窗口气相速率中每窗口、每副本的生产步数 |
 | `analyze_run(directory, ...)` | 读取摘要，或对支持的任务离线重分析 |
@@ -70,6 +70,59 @@ if __name__ == "__main__":
 ```
 
 ```{autofunction} pyrpmd.runner.analyze_run
+```
+
+## 其他科学计算 API
+
+变温与同位素研究复用工作流与检查点。瞬子（instanton）与量子统计 API 直接调用 `Potential.evaluate`，保持实时动力学显式。
+归一化约定与适用范围见英文专题指南：[速率研究](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-studies.md)、
+[瞬子](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/instanton.md)与
+[量子统计](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/quantum-statistics.md)。
+
+```{autofunction} pyrpmd.studies.plan_rate_study
+```
+
+```{autofunction} pyrpmd.studies.run_rate_study
+```
+
+```{autofunction} pyrpmd.studies.arrhenius_fit
+```
+
+```{autofunction} pyrpmd.studies.kinetic_isotope_effect
+```
+
+```{autofunction} pyrpmd.instanton.optimize_instanton
+```
+
+```{autofunction} pyrpmd.instanton.instanton_rate_1d
+```
+
+```{autoclass} pyrpmd.path_integral.PathIntegralAction
+:members: evaluate, evaluate_batch
+```
+
+```{autofunction} pyrpmd.path_integral.sample_path_integral
+```
+
+```{autoclass} pyrpmd.path_integral.OpenPathAction
+```
+
+```{autofunction} pyrpmd.path_integral.sample_open_path
+```
+
+```{autofunction} pyrpmd.quantum_statistics.energy_heat_capacity
+```
+
+```{autofunction} pyrpmd.quantum_statistics.quantum_kinetic_energy
+```
+
+```{autofunction} pyrpmd.quantum_statistics.isotope_substitution_free_energy
+```
+
+```{autofunction} pyrpmd.quantum_statistics.isotope_fractionation
+```
+
+```{autofunction} pyrpmd.quantum_statistics.momentum_distribution_from_open_paths
 ```
 
 ## System 与 State
@@ -203,21 +256,136 @@ from pyrpmd.analysis.spectroscopy import (
 :members: step, energy, populations, asymptotic_coupling
 ```
 
-## 电子摩擦与其他非绝热方法
+## 增强采样 API
 
-以下对象可从 `pyrpmd` 直接导入。各方法的初始分布、适用范围和速率定义见[非绝热章节](nonadiabatic.md)。
+```python
+from pyrpmd import (
+    OPESBias, PlumedBias, TransitionInterfaceSampler, TISPath,
+    estimate_effective_flux, combine_tis_rate,
+)
+```
 
-| 功能 | Python 入口 |
-| --- | --- |
-| 质心电子摩擦 | `ElectronicFrictionDynamics`、`ConstantElectronicFriction`、`FrictionResult` |
-| 电子热平衡 NRPMD | `ThermalNRPMDSampler`、`ThermalNRPMDDynamics`、`thermal_flux_side`、`thermal_population_rate` |
-| 环聚合物表面跳跃 | `RPSHDynamics`、`RPSHState`、`HopResult` |
-| MV-RPMD | `MVRPMDState`、`MVRPMDPotential`、`MVRPMDDynamics`、`MVRPMDSampler` |
-| KC-RPMD | `KCCalibration`、`KCRPMDState`、`KCRPMDPotential`、`KCRPMDDynamics`、`KCRPMDSampler` |
-| Isomorphic Hamiltonian | `IsomorphicPotential`、`IsomorphicEhrenfestState`、`IsomorphicEhrenfestDynamics` |
+`task="fes"` 配合 `[fes] method="opes"`（或旧版别名 `task="opes"`）使用标准的 `run`/`prepare`/`resume_run`/`analyze_run` 入口。
+`OPESBias` 也支持通过显式 `update()` 事件直接集成到低层循环中；单纯的力求值不会改变概率估计。
+固定带宽与冻结生产采样的约定见英文专题指南 [OPES](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/opes.md)。
 
-电子摩擦接口使用标量平均力势和物理摩擦张量；其他方法使用完整的 diabatic 矩阵势及正梯度。
-热采样、符号重加权、QC 模型误差和数值收敛应分别检查。
+`PlumedBias.step(dynamics, state)` 管理 PLUMED 的更新时钟并调用现有积分器。`evaluate()` 返回只读诊断而不触发历史更新。
+可选的 PLUMED 运行时仅在构造桥接对象时加载。单位与外部重启文件约定见 [PLUMED](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/plumed.md)。
+
+`TransitionInterfaceSampler` 使用标量 CV 或可调用对象生成并采样无偏路径系综。`TISPath` 持有每条 `q/p` 路径；
+可选的 sample 回调可以流式输出保留的路径（包括拒绝移动后的重复计数）。`estimate_effective_flux` 读取独立的无偏轨迹，
+`combine_tis_rate` 返回候选一阶速率并显式标记其归一化与收敛状态。详见 [TIS](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/transition-interface-sampling.md)。
+
+## 电子摩擦与热非绝热模型
+
+以下类同样可从 `pyrpmd` 直接导入。各方法的初始分布与适用限制见[非绝热章节](nonadiabatic.md)。
+电子摩擦接口使用标量平均力势能面和物理摩擦张量；其他方法使用完整的 diabatic 矩阵势能及正梯度。
+
+```{autoclass} pyrpmd.electronic_friction.ElectronicFrictionDynamics
+:members: step, propagate
+```
+
+```{autoclass} pyrpmd.electronic_friction.ConstantElectronicFriction
+:members: from_rates
+```
+
+```{autoclass} pyrpmd.electronic_friction.FrictionResult
+```
+
+```{autoclass} pyrpmd.thermal_nrpmd.ThermalNRPMDSampler
+:members: sample, snapshot, restore
+```
+
+```{autoclass} pyrpmd.thermal_nrpmd.ThermalNRPMDDynamics
+:members: step, energy, population_flux
+```
+
+```{autofunction} pyrpmd.thermal_nrpmd.thermal_flux_side
+```
+
+```{autofunction} pyrpmd.thermal_nrpmd.thermal_population_rate
+```
+
+```{autoclass} pyrpmd.surface_hopping.RPSHDynamics
+:members: initialize, step, energy, populations, attempt_hop
+```
+
+```{autoclass} pyrpmd.mv_rpmd.MVRPMDDynamics
+:members: step, energy, populations
+```
+
+```{autoclass} pyrpmd.kc_rpmd.KCRPMDDynamics
+:members: step, energy
+```
+
+```{autoclass} pyrpmd.isomorphic.IsomorphicPotential
+:members: evaluate
+```
+
+```{autoclass} pyrpmd.isomorphic.IsomorphicEhrenfestDynamics
+:members: step, energy
+```
+
+## 非绝热系综 API
+
+独立的非平衡模型工作流详见英文专题指南
+[布居动力学](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/nonadiabatic-workflow.md)。可复用的 Python API 包括：
+
+```{autofunction} pyrpmd.nonadiabatic_ensemble.run_nonadiabatic_ensemble
+```
+
+```{autofunction} pyrpmd.nonadiabatic_ensemble.density_matrix
+```
+
+```{autoclass} pyrpmd.nonadiabatic_ensemble.NonadiabaticEnsembleResult
+:members: mean_populations, population_sem, mean_density, density_sem_real, density_sem_imag, active_surface_fractions
+```
+
+```{autofunction} pyrpmd.nonadiabatic_sampling.sample_harmonic_ring
+```
+
+模型类 `TullyModelOne`、`TullyModelTwo`、`TullyModelThree`、`LinearVibronicCoupling` 与 `DiscreteSpinBoson`
+均从 `pyrpmd` 导出。其参数与坐标约定见
+[模型指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/nonadiabatic-models.md)。
+
+## 扩展非绝热方法与分子势能
+
+[自旋映射指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/nonadiabatic-spin-methods.md)定义了二态 W-spin 与 CA-MASH 变体及其估计量；
+[表面跳跃扩展指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/nonadiabatic-hopping-extensions.md)定义了 BA/DM、DBOC 与复数 SOC 约定。
+
+```{autoclass} pyrpmd.spin_mapping.SMNRPMDDynamics
+:members: initialize, step, energy, density_matrix, populations
+```
+
+```{autoclass} pyrpmd.rp_mash.RPMASHDynamics
+:members: initialize, step, energy, populations, correlation
+```
+
+```{autoclass} pyrpmd.advanced_surface_hopping.AdvancedRPSHDynamics
+:members: initialize, step, energy, density_matrix, populations, attempt_hop
+```
+
+```{autoclass} pyrpmd.batched_nonadiabatic.BatchedNRPMDDynamics
+:members: step, energy, density_matrix, populations
+```
+
+```{autoclass} pyrpmd.batched_nonadiabatic.BatchedNRPMDState
+:members: from_states, to_states
+```
+
+```{autofunction} pyrpmd.electronic_backends.electronic_mapping_flow
+```
+
+```{autofunction} pyrpmd.electronic_backends.torch_electronic_mapping_flow
+```
+
+```{autoclass} pyrpmd.potentials.nah2_leps.NaH2LEPS5G
+:members: evaluate, to_dict
+```
+
+```{autoclass} pyrpmd.potentials.multistate_external.ChemPotPyDPEM
+:members: evaluate
+```
 
 ## 版本
 

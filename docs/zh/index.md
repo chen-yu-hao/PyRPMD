@@ -12,6 +12,9 @@ PyRPMD 用一个 Python 或 TOML 输入运行环聚合物分子动力学。它�
 | 计算目标 | `task` | 章节 |
 | --- | --- | --- |
 | 气相双分子 RPMD 速率 | `rate` | [气相与自由能](manual/workflows.md) |
+| 自动自适应伞抽样（AUS）与回穿速率 | `rate` 且 `auto = true` | [自动速率（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/automatic-rate.md) |
+| 导入 RPMDrate 输入文件 | `import-rpmdrate` 命令 | [RPMDrate 导入（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rpmdrate-import.md) |
+| 精度驱动的热 RPMD 速率自适应控制 | `precision` 命令 | [速率精度控制（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate_precision.md) |
 | 直接碰撞与产物通道 | `drpmd` | [气相](manual/workflows.md)；[NRPMD](manual/nonadiabatic.md) |
 | 模型电子布居与相干性 | `nonadiabatic` | [非绝热动力学](manual/nonadiabatic.md) |
 | 从选定入射振动态出发的碰撞（NE-RPMD、QCT） | `drpmd` + `[initial_ensemble]`；`state-check`、`extend` 命令 | [气相](manual/workflows.md) |
@@ -21,11 +24,13 @@ PyRPMD 用一个 Python 或 TOML 输入运行环聚合物分子动力学。它�
 | 自动分析、出版级图与 HTML 报告 | `report` 命令，或 `run`/`analyze --report` | [自动分析与出图](manual/analysis-reports.md) |
 | 多入口、多过渡态的速率矩阵 | `network` | [气相与自由能](manual/workflows.md) |
 | Standard / WT metadynamics、共享 walkers | `fes` + `method="metadynamics"` | [统一增强采样](enhanced-sampling.md) |
-| 同温副本交换伞形采样 | `fes` + `[replica_exchange]` | [副本交换](replica-exchange.md) |
+| 同温副本交换伞形采样与并行回火 | `fes` + `[replica_exchange]`；`[tempering]` | [副本交换](replica-exchange.md)、[并行回火（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/tempering.md) |
 | OPES 概率增强采样 | `fes` + `method="opes"` | [统一增强采样](enhanced-sampling.md)、[OPES 英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/opes.md) |
-| PLUMED 质心偏置、过渡界面路径采样 | `plumed` / Python API | [PLUMED](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/plumed.md) · [TIS](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/transition-interface-sampling.md) |
+| ABF、eABF、牵引动力学（SMD）、VES、弦方法与机器学习 CV | `fes` + `method="abf" \| "eabf" \| "steered" \| "ves"` | [扩展 CV 与增强采样（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/tier2-sampling.md) |
+| PLUMED 质心偏置、过渡界面路径采样 | `plumed`、`path_sampling` / Python API | [PLUMED](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/plumed.md) · [TIS](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/transition-interface-sampling.md) |
 | 平衡核量子统计与能量估计量 | `pimd` | [材料与表面](manual/periodic.md) |
 | C++ PIMD 驱动：SVR、GLE、PIGLET、FFL 恒温器；BZP/MTTK/RGB/SCR 恒压 | `pimd` + `sampling.engine="native"`；`pyrpmd-native` | [材料与表面](manual/periodic.md) |
+| Torch/GPU 势能上的张量 PIMD 与 RPMD 输运 | `pimd`、`diffusion` + `sampling.engine="torch"` | [张量材料工作流（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/torch-materials-workflows.md) |
 | RPMD 自扩散、MSD、VACF | `diffusion` | [材料与表面](manual/periodic.md) |
 | 材料中的有向位点跃迁 | `site_rate` | [材料与表面](manual/periodic.md) |
 | 固定基底上的有向逃逸 | `surface_rate` | [材料与表面](manual/periodic.md) |
@@ -34,12 +39,17 @@ PyRPMD 用一个 Python 或 TOML 输入运行环聚合物分子动力学。它�
 | 自适应受限路径、恒电势与热非绝热 RPMD | Python API | [自适应 NRPMD](manual/adaptive-nrpmd.md) |
 | 光滑非线性质心逃逸坐标 | `site_rate` | [广义坐标速率英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/general-coordinate-rates.md) |
 | 温度、同位素与数值收敛扫描 | `pyrpmd study` | [速率研究英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-studies.md) |
-| Instanton 路径与一维低温速率 | Python API | [Instanton 英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/instanton.md) |
+| Instanton 路径与一维低温速率 | `instanton` 命令 / Python API | [Instanton 英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/instanton.md) |
+| 多维瞬子速率、劈裂及 TST/Wigner/Eckart 对照 | `instanton` 命令 / Python API | [低温对照（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/low-temperature.md) |
+| 变分过渡态理论（VTST）与小曲率穿隧（SCT） | `vtst` 命令 / Python API | [VTST 与 SCT（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/vtst.md) |
 | 高阶平衡采样与量子估计量 | Python API | [量子统计英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/quantum-statistics.md) |
 | 精确量子参照与受控 RPMD 响应修正 | Python API | [量子修正英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/quantum-correction.md) |
 | RPMD 速率 × 1–3 维子空间精确量子修正 | `rate`（`[rate.subspace_correction]`）；`subspace-correct` 命令；Python API | [子空间速率修正](subspace-correction.md) |
-| PA-CMD、Raman/SFG、主引擎 SC/玻色交换/PIGS、非绝热及 ML 扩展 | 输入工作流 / Python API | [Tier 2 覆盖范围与限制](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/tier2-methods.md) |
-| 多维瞬子速率、劈裂及 TST/Wigner/Eckart 对照 | Python API / 缓存 Hessian CLI | [低温对照（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/low-temperature.md) |
+| PA-CMD、QCMD 与相对 IR/Raman/SFG 光谱 | `spectroscopy` | [光谱（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/tier2-spectroscopy.md)、[QCMD（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/qcmd.md) |
+| Suzuki–Chin 高阶作用量、玻色交换与 PIGS | `pimd` + `[path_integral]` | [路径积分作用量（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/tier2-path-integral.md) |
+| 凝聚相 SC 能量/热容/压力、SC-NPT、PIGLET-NPT 与 RPC virial | SC 工作流、原生 PIGLET 或 Python RPC | [凝聚相 NQE 验证（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/condensed-phase-nqe.md) |
+| 热非绝热布居–通量速率计算 | `nonadiabatic-rate` 命令 | [直接非绝热数据与速率（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/tier2-nonadiabatic.md) |
+| 方法覆盖、机器学习主动学习生命周期与剩余边界 | 输入工作流 / Python API | [Tier 2 覆盖范围](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/tier2-methods.md)、[ML 生命周期](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/tier2-ml-lifecycle.md) |
 | 热 NRPMD、表面跳跃、SOC、KC-/MV-RPMD、电子摩擦 | Python API；`diffusion` + `[electronic_friction]` | [非绝热动力学](manual/nonadiabatic.md) |
 | 从头算参考数据、PES 拟合、JaxPIP 与原生 ONNX 导出 | `python -m pyrpmd.pesgen`、Python API | [势能生成](manual/pes-generation.md)、[JaxPIP](manual/jaxpip-generation.md) |
 
@@ -58,7 +68,8 @@ PyRPMD 用一个 Python 或 TOML 输入运行环聚合物分子动力学。它�
 ```bash
 pyrpmd validate job.inp --check-pes     # 检查输入与单位，构造势能
 pyrpmd run job.inp --output runs/job    # 运行；结果位于 runs/job/results/summary.json
-pyrpmd analyze runs/job                 # 读取摘要；三种 FES 方法、扩散及非绝热布居支持 --recompute
+pyrpmd analyze runs/job                 # 读取摘要；各 FES 方法、扩散及非绝热布居支持 --recompute
+pyrpmd status runs/job --watch          # 监控已提交进度与当前阶段 ETA
 pyrpmd resume runs/job                  # 从检查点续跑，科学设置保持不变
 pyrpmd report runs/job                  # 可选：由保存数据生成图、index.html 与 report.json
 ```
@@ -73,8 +84,8 @@ pyrpmd report runs/job                  # 可选：由保存数据生成图、in
 | --- | --- |
 | 开始使用 | [安装](manual/installation.md) · [快速入门](manual/quickstart.md) · [输入与命令行](manual/input.md) · [科学约定](manual/science.md) |
 | 计算任务 | [气相与自由能](manual/workflows.md) · [材料与表面](manual/periodic.md) · [PCET](manual/pcet.md) · [电极模型](manual/electrochemistry.md) · [非绝热 NRPMD](manual/nonadiabatic.md) · [示例](manual/examples.md) |
-| 模型与运行 | [势能与插件](manual/potentials.md) · [势能生成](manual/pes-generation.md) · [JaxPIP 拟合](manual/jaxpip-generation.md) · [执行、并行与续跑](manual/execution.md) · [输出与分析](manual/results.md) · [自动分析与出图](manual/analysis-reports.md) |
-| 动力学扩展（英文指南） | [统一传播栈](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/propagation-stack.md) · [昂贵势能](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/performance-dynamics.md) · [批量轨迹](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/batched-dynamics.md) · [RPC/MTS](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rpc-mts.md) · [TRPMD 与谱](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/trpmd-spectroscopy.md) |
+| 模型与运行 | [势能与插件](manual/potentials.md) · [势能生成](manual/pes-generation.md) · [JaxPIP 拟合](manual/jaxpip-generation.md) · [执行、并行与续跑](manual/execution.md) · [进度监控与日志](manual/progress.md) · [输出与分析](manual/results.md) · [自动分析与出图](manual/analysis-reports.md) |
+| 动力学扩展（英文指南） | [统一传播栈](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/propagation-stack.md) · [辅助算符](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/auxiliary-operators.md) · [昂贵势能](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/performance-dynamics.md) · [批量轨迹](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/batched-dynamics.md) · [批量 ML 势能](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/batched-ml-potentials.md) · [RPC/MTS](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rpc-mts.md) · [混合采样](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/mixed-sampling.md) · [TRPMD 与谱](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/trpmd-spectroscopy.md) |
 | 参考 | [原始论文](manual/references.md) · [复现清单](manual/reproduction.md) · [Python API](manual/api.md) · [常见问题](manual/troubleshooting.md) · [开发者指南](manual/development.md) |
 
 ```{toctree}

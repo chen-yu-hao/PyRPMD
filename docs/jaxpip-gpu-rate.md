@@ -1,7 +1,3 @@
----
-orphan: true
----
-
 # JAX DLPack potentials and Torch GPU rate workflows
 
 PyRPMD provides a first-class zero-copy JAX DLPack potential adapter

@@ -1,7 +1,3 @@
----
-orphan: true
----
-
 # Implementation review and follow-up boundaries
 
 This review distinguishes current `main@8cc402f` from the separate integration

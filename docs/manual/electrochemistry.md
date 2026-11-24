@@ -74,7 +74,7 @@ Periodic proton bond differences can be used as FES coordinates. Surface-rate ca
 must obey the coordinate and mass-metric requirements in the
 [materials and surfaces chapter](periodic.md); the electrode wrapper does not change them.
 
-The [electrochemistry reference](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/electrochemistry.md)
+The [electrochemistry reference](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/electrochemistry.md) *(Chinese)*
 contains the full equations, Python API, source attribution and scope.
 
 ## Primary sources and reproduction tasks

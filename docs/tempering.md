@@ -1,7 +1,3 @@
----
-orphan: true
----
-
 # Parallel temperature and Hamiltonian replica exchange
 
 PyRPMD can run resumable parallel tempering (PT) and Hamiltonian replica

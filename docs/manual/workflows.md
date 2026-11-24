@@ -319,7 +319,7 @@ uses a 1000 fs production budget when omitted; inspect the resulting statistics 
 
 Adaptive umbrellas work for `fes`, surface `fes` and the `rate` PMF, and refine windows inside the
 declared domain; `surface_rate` and `site_rate` use fixed windows. Parameters are in the
-[enhanced-sampling specification](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/enhanced-sampling.md).
+[enhanced-sampling specification](../enhanced-sampling.md).
 
 ## Several entrances and TSs: `network`
 
@@ -398,7 +398,7 @@ keeps lookup work independent of history length. Grid resolution introduces a nu
 that needs its own refinement check. Metadynamics outputs free-energy estimates only. A 3D
 estimate can be reduced to one or two CVs with `pyrpmd project RUN --axes 0 1 --output NEW`; see
 [Output and analysis](results.md#projecting-a-saved-fes). Methods and restart timing are in the
-[enhanced-sampling specification](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/enhanced-sampling.md).
+[enhanced-sampling specification](../enhanced-sampling.md).
 
 ## Primary sources and reproduction tasks
 

@@ -1,7 +1,3 @@
----
-orphan: true
----
-
 # Variational transition-state theory and SCT
 
 PyRPMD provides a deterministic minimum-energy-path workflow for comparing

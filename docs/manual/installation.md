@@ -80,11 +80,13 @@ see [Execution and parallelism](execution.md).
 | Install option | Enables | Also needs |
 | --- | --- | --- |
 | `python -m pip install -e '.[ase]'` | ASE calculator potentials | The calculator's model or program |
+| `python -m pip install -e '.[openmm]'`, `'.[lammps]'` | OpenMM and LAMMPS force-engine adapters | Force-field / potential files |
 | `python -m pip install -e '.[mpi]'` | MPI trajectory groups and bead splitting | An MPI library and launcher matching mpi4py |
-| `python -m pip install -e '.[gpu]'` | Torch potentials | A PyTorch/CUDA build matching the node driver, and a model |
+| `python -m pip install -e '.[gpu]'`, `'.[jax]'` | Torch potentials (`torch`) and zero-copy JAX DLPack potentials (`jax-dlpack`) | A PyTorch/JAX build matching the node driver, and a model |
 | `python -m pip install -e '.[plots]'` | Matplotlib figures and HTML/JSON analysis reports | Saved PyRPMD results; no external PES is needed |
 | `python -m pip install -e '.[analysis]'` | PyMBAR cross-checks and the plotting dependencies | Routine FES uses the built-in MBAR |
 | `python -m pip install -e '.[mace]'`, `'.[nequip]'`, `'.[fairchem]'`, `'.[deepmd]'` | Ready-made ML potential providers | The model checkpoint |
+| `python -m pip install -e '.[mace-batched]'`, `'.[nequip-batched]'`, `'.[fairchem-batched]'`, `'.[deepmd-batched]'`, `'.[metatomic]'` | Native tensor-batched ML potential providers (`*-batched`, `metatomic`) | The model checkpoint; see [Batched ML potentials](../batched-ml-potentials.md) |
 | `python -m pip install -e '.[tblite]'` (alias `xtb`), `'.[pyscf]'` | On-the-fly xTB and HF/DFT providers | Nothing else |
 | `python -m pip install -e '.[pesgen]'` | PySCF reference generation for [PES generation](pes-generation.md) | Optional native Caracal tools; JaxPIP has its own pinned stack, see [JaxPIP](jaxpip-generation.md) |
 | `python -m pip install -e '.[test]'` | pytest suite | Tests for optional interfaces skip when those are missing |

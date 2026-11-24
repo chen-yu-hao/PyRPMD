@@ -187,16 +187,21 @@ to choose lengths, replicas, bead number and uncertainty precision for the actua
 | `[rate.subspace_correction]` | `rate` (local umbrella PMF) | Optional 1D/2D subspace quantum rate correction $C_S$: `enabled`, `mode`, `dimension`, `environment`, `model_2d`, `anchor`, `curvature`, `zero_point`, `path`, `quantum`, `rpmd`, `validity`, `execution`; see [Subspace rate correction](../subspace-correction.md) |
 | `[recrossing]` | `rate`, `network`, `site_rate`, `surface_rate` | Parent count, parent interval, child pairs, child time, bootstrap; `dynamics="trpmd"` with `friction_scale`, `child_batch_pairs` for batched children; see [TRPMD](../trpmd-spectroscopy.md) and [Trajectory batching](../batched-dynamics.md) |
 | `[collision]`, `[outcomes]` | `drpmd` | Launch distribution, `energy`, `bmax`, total trajectories, `max_time`; product classification (`factory`, `channels`, `bond_cutoffs`, `exit_distance`, `persistence`, `check_interval`) |
-| `[nonadiabatic]` | `drpmd` (experimental NRPMD) | See [Nonadiabatic NRPMD](nonadiabatic.md) |
+| `[nonadiabatic]` | `drpmd` (experimental NRPMD); `nonadiabatic` | `method`, `nstates`, `initial_state`, `state_labels`, `initialization`, `asymptotic_coupling_tolerance`; see [Nonadiabatic NRPMD](nonadiabatic.md) and [Population workflow](../nonadiabatic-workflow.md) |
 | `[electronic_friction]` | `diffusion` | `method = "centroid"`, `provider`, `gamma` or `tensor`, or Python `factory` and `params`; see [electronic friction](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/electronic-friction.md) |
 | `[initial_ensemble]` | `drpmd` (experimental nuclear state selection) | `method = "ne_rpmd"` or `"qct"`, explicit NE `beta`, per-fragment Hessians/modes and `vibrational_quanta` under `fragments`; requires `collision.sampling="fixed_energy"` and no top-level `temperature`; see [Direct collisions](workflows.md#selected-vibrational-initial-states) |
 | `[adaptive_umbrella]` | Umbrella FES; `rate` | See [Gas phase and free energy](workflows.md) |
-| `[fes]`, `[[fes.cvs]]`, `[fes.sampling]`, `[fes.analysis]`, `[fes.<method>]` | `fes` | Select umbrella / metadynamics / opes; common and method parameters, [migration guide](../enhanced-sampling.md) |
-| `[fes.metadynamics]` or `[metadynamics]` | FES method `metadynamics` | Hill settings and optional bias grid; `shared_walkers` for synchronized deposition, or `multiple_walkers` / `block_steps` for block synchronization |
-| `[fes.opes]` or `[opes]` | FES method `opes` | Probability-bias widths, barrier, update pace and optional freeze/relaxation steps; [OPES guide](../opes.md) |
+| `[fes]`, `[[fes.cvs]]`, `[fes.sampling]`, `[fes.analysis]`, `[fes.<method>]` | `fes` | Select `umbrella`, `metadynamics`, `opes`, `abf`, `eabf`, `steered` or `ves`; common and method parameters, [unified FES guide](../enhanced-sampling.md) and [extended sampling](../tier2-sampling.md) |
+| `[fes.metadynamics]` or `[metadynamics]` | FES method `metadynamics` | Hill settings and optional bias grid; `shared_walkers` for synchronized deposition, `multiple_walkers` / `block_steps` for block synchronization, or `walkers_mode="mpi_sync"` / `"async_files"` |
+| `[fes.opes]` or `[opes]` | FES method `opes` | Probability-bias widths, barrier, update pace, `mode="explore"` / `adaptive_sigma`, `walkers_mode` and optional freeze/relaxation steps; [OPES guide](../opes.md) |
+| `[fes.abf]` / `[abf]`, `[fes.eabf]` / `[eabf]`, `[fes.steered]` / `[steered]`, `[fes.ves]` / `[ves]` | FES methods `abf`, `eabf`, `steered`, `ves` | Adaptive biasing force, extended-system ABF (CZAR), steered MD work, and variationally enhanced sampling; see [Unified FES](../enhanced-sampling.md) and [Extended sampling](../tier2-sampling.md) |
 | `[replica_exchange]` | Umbrella FES | Fixed-window same-temperature exchange interval and optional graph; [REUS guide](../replica-exchange.md) |
+| `[tempering]` | `pimd`, umbrella `fes` | Parallel tempering (`mode="temperature"`) or Hamiltonian replica exchange (`mode="hamiltonian"`); see [Tempering](../tempering.md) |
 | `[barostat]` | `pimd` | Python engine: `method="bzp"`, `pressure`, `time_constant`, `friction`; native engine: `mode="bzp"`/`"mttk"`/`"rgb"`/`"scr"`, `pressure`, `tau`, `gamma`, plus `stress`, `reference_cell` for RGB; see [Materials](periodic.md) |
+| `[path_integral]` | `pimd` | Higher-order actions and statistics (`method="suzuki_chin"`, `"bosonic_exchange"`, `"fermionic_exchange"`, `"pigs"`); see [Path-integral actions](../tier2-path-integral.md) |
+| `[active_learning]` | `pimd`, `diffusion`, `fes`, `rate` | Committee force/energy uncertainty threshold monitoring (`interval_steps`, `force_threshold`, `energy_threshold`, `directory`, `max_frames`); see [ML lifecycle](../tier2-ml-lifecycle.md) |
 | `[diffusion]`, `[site_rate]`, `[surface]` | The task of the same name (`[surface]` belongs to `surface_rate`) | See [Materials and surfaces](periodic.md); `surface.free_energy = {directory, axis, selection}` takes the PMF from a saved multidimensional FES run (`analysis.method="source"`) |
+| `[spectroscopy]`, `[path_sampling]`, `[plumed]` | `spectroscopy`, `path_sampling`, `plumed` | RPMD/TRPMD/PA-CMD/f-QCMD spectra ([Spectroscopy](../tier2-spectroscopy.md)); FFS/RETIS/∞RETIS path ensembles ([Extended sampling](../tier2-sampling.md)); optional PLUMED centroid bridge ([PLUMED](../plumed.md)) |
 | `[network]` | `network` | Entrances, channels, transition states |
 | `[pcet]` | `pcet` | PCET accepts only `schema_version`, `task`, `preset`, `description`, `temperature`, `pcet`, `output` |
 | `[output]` | All | `directory`, `checkpoint_interval` / `checkpoint_steps`, `trajectory_stride`; `trajectory_storage`, `chunk_frames` (`pimd`, `diffusion`); `centroid_path` (`rate` window centroid moments for [subspace rate correction](../subspace-correction.md)); `diagnostics = {energy_parts, ring_radii}` (`drpmd`, on by default with `[initial_ensemble]`) |
@@ -206,13 +211,13 @@ Every field and combination rule is in the
 
 ### Selecting an FES method
 
-Use `task="fes"` and select `method="umbrella"`, `"metadynamics"` or `"opes"` under
-`[fes]`. The default is `umbrella`. Common `cvs`, `sampling` and `analysis` settings may
-be placed under `fes` or at the top level; each section must appear in only one place.
-Keep bias parameters in the selected method's table. Tables for inactive methods are
-rejected, including empty tables. Umbrella and MetaD support 1–3 CV dimensions; OPES
-supports 1–2. See the [unified FES guide](../enhanced-sampling.md) for a complete migration
-example and the common output format.
+Use `task="fes"` and select `method="umbrella"`, `"metadynamics"`, `"opes"`, `"abf"`, `"eabf"`,
+`"steered"` or `"ves"` under `[fes]`. The default is `umbrella`. Common `cvs`, `sampling` and
+`analysis` settings may be placed under `fes` or at the top level; each section must appear in only
+one place. Keep bias parameters in the selected method's table. Tables for inactive methods are
+rejected, including empty tables. Umbrella and MetaD support 1–3 CV dimensions; OPES, ABF, eABF and
+VES support 1–2; steered MD supports 1–3. See the [unified FES guide](../enhanced-sampling.md) and
+[extended sampling guide](../tier2-sampling.md) for complete examples and the common output format.
 
 The old `task="metadynamics"` and `task="opes"` spellings remain accepted with a
 deprecation warning. They dispatch to the corresponding FES method and can resume
@@ -272,6 +277,11 @@ the unit of **numerical** umbrella centers and analysis ranges; CVs compute in a
 | `distance` | `atoms=[i,j]` | bohr | Interatomic distance on unwrapped geometry |
 | `angle` | `atoms=[i,j,k]` (j is the vertex) | radian | Three distinct atoms; the derivative is undefined at a linear geometry |
 | `bond_difference` (alias `difference`) | `atoms=[i,j,k]` or `bonds=[[i,j],[k,l]]` | bohr | $r_{ij}-r_{jk}$ or $r_{ij}-r_{kl}$, e.g. a proton-transfer coordinate |
+| `dihedral`, `periodic_dihedral` | `atoms=[i,j,k,l]` | radian | Four-atom torsion angle in $(-\pi,\pi]$ (unwrapped or minimum-image); see [Extended CVs](../tier2-sampling.md) |
+| `coordination`, `periodic_coordination` | `group_a`, optional `group_b`, `r0`; optional `exponent=6` | dimensionless | Smooth rational coordination number $\sum (1-(r/r_0)^n)/(1-(r/r_0)^{2n})$ |
+| `rmsd` | `reference`; optional `atoms`, `weights`, `align="optimal"\|"none"` | bohr | Kabsch-aligned or unaligned root-mean-square deviation |
+| `path` | `references`, `path_lambda`; optional `scale`, `component="both"\|"s"\|"z"`, `atoms`, `weights`, `align` | dimensionless (`s`), bohr² (`z`) | Branduardi path collective variables $(s,z)$ |
+| `torchscript` | `model`; optional `dimension=1`, `units`, `periods`, `device="cpu"` | Declared `units` (default bohr) | Exported TorchScript / [mlcolvar](../mlcolvar.md) CV with autograd Jacobian |
 | `cartesian` | `atom`, `axis` as `x`/`y`/`z` or 0/1/2 | bohr | Model systems and restrained sampling |
 | `com_distance` | Optional `fragments`, defaults to the system fragments | bohr | Distance between fragment centers of mass; molecular systems only |
 | `rpmdrate` (alias `rpmdrate_xi`) | `forming_bonds`, `breaking_bonds`, `rinf` | dimensionless | RPMDrate reaction coordinate of the rate workflow; molecular systems only |
@@ -310,23 +320,30 @@ different dimensions, write each entry as a string with units.
 
 | Command | Purpose | Common options |
 | --- | --- | --- |
-| `pyrpmd init DIR` | Write the bundled harmonic FES starter in a new or empty directory | Prints the input path and next commands |
+| `pyrpmd init DIR` | Write a bundled self-contained starter in a new or empty directory | `--task fes\|pimd\|rate\|drpmd` (default `fes`); prints the input path and next commands |
 | `pyrpmd validate INPUT` | Parse the configuration and check the task | `--check-pes`, `--output DIR`, `--write-resolved FILE` |
 | `pyrpmd prepare INPUT` | Show preparation information | `--pilot` runs the numerical preparation; `--output FILE` writes JSON |
-| `pyrpmd run INPUT` | Start a run, or continue one from its input | `--output DIR`, `--resume`, `--stage subspace` (re-run only `[rate.subspace_correction]` postprocessing); `--report` writes figures after the run |
+| `pyrpmd run INPUT` | Start a run, or continue one from its input | `--output DIR`, `--resume`, `--stage subspace` (re-run only `[rate.subspace_correction]` postprocessing); `--init-from RUN_OR_CKPT`, `--init-index N`, `--init-bias` (warm start); `--report` writes figures after the run |
+| `pyrpmd status DIR` | Inspect committed step progress, stage and ETA without loading the PES | `--watch`, `--interval SECONDS`, `--json`; see [Progress and logs](progress.md) |
 | `pyrpmd resume DIR` | Continue from the saved configuration | `--workers N`, `--loop-backend auto`, `--block-steps N`; `--adaptive-max-rounds`, `--adaptive-max-windows`, `--adaptive-max-pilot-steps` extend an exhausted adaptive pilot |
 | `pyrpmd extend DIR` | Raise a saved dRPMD time budget or fixed-window gas-phase rate production budget | Exactly one of `--max-time '20 ps'` or `--production-steps 200000`; both specify a new total |
 | `pyrpmd state-check INPUT` | Evolve prepared nuclear states without a collision kick and report harmonic-mode stability | `--time '100 fs'`, `--samples 8`, `--stride 10`, `--output report.json` |
 | `pyrpmd analyze DIR` | Read results or reanalyze offline | `--recompute`, `--bins`, `--bootstrap`; diffusion options below; `--report` |
+| `pyrpmd export SOURCE DEST` | Export a saved materials centroid trajectory as extxyz, H5MD or ASE `.traj` | `--replica 0`, `--format extxyz\|h5md\|traj`, `--overwrite`; see [Trajectory export](../trajectory-export.md) |
 | `pyrpmd report RUN [RUN ...]` | Automatic analysis, publication figures, `index.html` and `report.json` from saved results | `--output DIR` (required for several runs), `--style jctc\|nature`, `--formats png pdf svg`, `--labels`, `--series`, `--reference CSV`, `--kie A B`, `--convergence beads`, `--overwrite`; see [Automatic analysis](analysis-reports.md) |
 | `pyrpmd rate-postprocess DIR` | Rates from a saved PMF/FES and signed channel fluxes, without new dynamics | `--spec FILE.json` (2D dividing surface), `--output FILE`, `--bootstrap 200`, `--seed 0`; see [2D rate postprocessing](../rate-postprocessing.md) |
 | `pyrpmd subspace-correct FILE` | Exact 1D/2D subspace quantum rate correction $C_S$ from a saved rate run | Takes `correct.toml` (or `.json`); writes `subspace_pipeline.json` and `rate_quantum_corrected.json`; see [Subspace rate correction](../subspace-correction.md) |
+| `pyrpmd nonadiabatic-rate INPUT` | Run a signed thermal NRPMD population-rate workflow | `--output DIR` (required); see [Direct nonadiabatic data and rates](../tier2-nonadiabatic.md) |
 | `pyrpmd project DIR` | Boltzmann-marginalize a saved CV-density FES onto fewer CVs | `--axes 0 1` (retained, zero based, required), `--selection mask.npy`, `--output DIR` (required) |
 | `pyrpmd study INPUT` | Temperature/isotope and numerical-convergence scans of an existing rate job | `--plan` (list cases without dynamics), `--output DIR`, `--resume`; see [Rate studies](../rate-studies.md) |
+| `pyrpmd instanton INPUT` | Multidimensional ring-polymer instanton rate, action splitting or TST/Wigner/Eckart cross-checks from cached Hessians | `--output FILE`; see [Low-temperature cross-checks](../low-temperature.md) |
+| `pyrpmd vtst INPUT` | Variational transition-state theory (CVT) and small-curvature tunnelling (SCT) along a minimum-energy path | `--output FILE`, `--temperature`, MEP/Hessian/symmetry options; see [VTST and SCT](../vtst.md) |
+| `pyrpmd import-rpmdrate INPUT` | Convert a trusted RPMDrate Python rate input into a PyRPMD directory without loading its PES | `--temperature K`, `--beads P`, `--output DIR` (all required), `--pes-module PATH`, `--allow-unmapped`; see [RPMDrate import](../rpmdrate-import.md) |
+| `pyrpmd precision SUBCOMMAND` | Precision-targeted rate campaign planner and resumable ledger (`plan`, `init`, `status`, `run`, `pause`, `resume`, `seal`, `add-budget`, `export`) | See [Precision rate planning](../rate_precision.md) |
 | `pyrpmd checkpoint FILE` | Verify a checkpoint container | `--require-integrity` rejects legacy containers without checksums |
 | `pyrpmd info` | Show version, native capabilities, tasks, integrators and initial ensembles | |
 | `pyrpmd pes build/inspect/check` | Build and test C ABI potentials | See [Potentials](potentials.md) |
-| `pyrpmd-native INPUT` | Standalone C++ NVT/NPT trajectory driver (separate entry point) | `--output DIR`, `--resume CHECKPOINT`; see [native ensembles](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-ensembles.md) |
+| `pyrpmd-native INPUT` | Standalone C++ NVT/NPT trajectory driver (separate entry point) | `--output DIR`, `--resume CHECKPOINT`; see [native ensembles](../native-ensembles.md) |
 
 `validate`, `prepare`, `state-check` and `run` accept the overrides `--pes`, `--pes-manifest`, `--temperature`,
 `--beads` and `--workers`, where they apply to the task; PCET accepts only `--temperature` and

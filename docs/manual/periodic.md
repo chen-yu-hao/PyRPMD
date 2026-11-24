@@ -164,17 +164,8 @@ migrate storage without loading the PES. Historical ASE-backed runs need a new o
 under the [force-consistent energy convention](potentials.md); saved summaries remain readable.
 Correlation analysis still loads scalar or selected-atom histories; budget that memory separately. See
 [streaming and recovery](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/streaming-trajectories.md).
+For higher-order path-integral actions (Suzuki–Chin, bosonic exchange and PIGS) under `pimd` + `[path_integral]`, see [Path-integral actions](../tier2-path-integral.md); for GPU-resident Torch materials PIMD and diffusion (`sampling.engine="torch"`), see [Torch materials workflows](../torch-materials-workflows.md).
 For transport properties use the `diffusion` task.
-
-### Native PIMD engine
-
-`sampling.engine="native"` selects the separate C++ ensemble engine. It has explicit built-in
-and compiled PES requirements, additional thermostats, NVT support for fixed atoms, and BZP,
-MTTK, RGB or SCR barostats subject to their documented restrictions. It uses transactional
-`samples/native_pimd_NNNN/journal.json` files and immutable chunks instead of the default
-materials checkpoint layout. Engine selection changes the run identity. See the
-[native PIMD guide and examples](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md)
-for the full input and output contract; the BZP table below belongs to the default engine.
 
 ### Constant-pressure PIMD
 
@@ -201,7 +192,7 @@ virials, 3D PBC and all atoms mobile. Native fixed-cell NVT does support `fixed_
 The native `mode`/`tau`/`gamma` controls do not replace the legacy
 `method`/`time_constant`/`friction` table above. Flexible-cell inputs have a specified triangular
 cell convention. A cell mask does not establish a slab or frozen-substrate NPT ensemble. The
-[native ensemble guide](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-ensembles.md#barostats)
+[native ensemble guide](../native-ensembles.md#barostats)
 defines these restrictions and the tested numerical controls.
 
 RPMD diffusion production remains fixed-cell and thermostat-free by default.
@@ -252,7 +243,7 @@ native records is the particle ring Hamiltonian, not the NPT conserved quantity.
 `pyrpmd-native INPUT --output DIR` command runs the same driver from its own TOML format
 (`examples/ensembles/native_nvt.toml`, `native_npt.toml`); on `--resume CHECKPOINT` the input
 duration is *added*. Details: [native PIMD workflow](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md)
-and [native ensembles](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-ensembles.md).
+and [native ensembles](../native-ensembles.md).
 
 ## Diffusion: MSD and D from continuous trajectories
 
@@ -394,7 +385,7 @@ their indices need not be 0 and 1. For a fully periodic cell, a wire or a finite
 `surface.normalization.area` with area units to identify the intended surface. This conversion
 does not account for coverage-dependent interactions or turn a local rate into a total turnover
 frequency. See the
-[surface normalization definition](#surface_rate-surfaces-with-fixed-layers).
+[surface normalization specification](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/surface-catalysis.md) *(Chinese)*.
 
 Surface `fes` supports adaptive umbrellas; `surface_rate` uses fixed windows. To run a real ASE
 calculator, install ASE:
@@ -407,8 +398,8 @@ pyrpmd run examples/surface/ase_emt.py --output runs/manual-surface-emt
 
 This input runs a Cu adatom on Cu(111) with ASE EMT, exercising the calculator, a skewed cell and
 fixed layers. Models and sources are described in the
-[materials notes](#tasks-and-boundary-conditions),
-the [surface notes](#surface_rate-surfaces-with-fixed-layers)
+[materials specification](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/materials.md) *(Chinese)*,
+the [surface specification](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/surface-catalysis.md) *(Chinese)*
 and the [Ni–H materials pilot](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/materials/README.md).
 
 ## From a runnable slab to a research calculation
